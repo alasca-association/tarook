@@ -3,6 +3,32 @@
 We offer rook-based ceph storage in the k8s cluster. The storage can be used
 as block storage or as shared filesystem.
 
+## "Good To Know" / "Gotchas"
+
+- We configure the cluster to use Cinder CSI volumes as backing storage. The
+  volumes are already replicated on our OpenStack’s Ceph level, so we set the
+  pool size to 1 (= one replica only) in the Rook cluster.
+
+- Cinder volumes are numbered in rook (e.g. `cinder-2-ceph-data`). The numbering
+  does *not always* correspond to the OSD number using that volume! This is
+  important when debugging OSD issues and when removing OSDs and their storage
+  especially.
+
+- Adding volumes can cause the worker instance to crash with a kernel panic due
+  to a known kernel bug with a race condition when detaching the Cinder volume
+  from the instance.
+
+- To access ceph tools, run:
+
+  ```console
+  $ kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') bash
+  ```
+
+- Rook stores information about the provisioning state of volumes in ConfigMap
+  objects while the provisioning hasn’t completed yet. When removing a
+  provisioning job half way through, it is important to also clean up the
+  corresponding ConfigMap object, otherwise the operator will hang.
+
 ## Administrative tasks
 
 ### Reducing the number of OSDs
