@@ -1,4 +1,10 @@
-# TODO: keepalived_exporter must be executed as root because it uses signals to communicate with the keepalived process. This is a potential security risk. One could fork the project and modify keepalived_exporter to use a separate, non-root process, that exposes the metrics.
+- name: create user
+  become: yes
+  user:
+    system: yes
+    name: keepalived-exporter
+    home: /dev/null
+    create_home: no
 
 - name: Install keepalived exporter
   vars:
@@ -23,8 +29,20 @@
       copy:
         src: "/tmp/{{ folder }}/keepalived_exporter"
         dest: /usr/local/bin
-        mode: u+x
+        owner: keepalived-exporter
+        mode: u=rx,go-rwx
         remote_src: yes
+
+    - name: Set capabilities
+      become: yes
+      capabilities:
+        path: /usr/local/bin/keepalived_exporter
+        capability: "{{ item }}"
+        state: present
+      with_items:
+      - cap_dac_read_search+ep
+      - cap_kill+ep
+      - cap_net_admin+ep
 
 - name: Create a systemd unit for keepalived_exporter
   become: yes

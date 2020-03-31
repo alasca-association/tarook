@@ -37,6 +37,28 @@
        not (metrics.json.data.result | default(False)) or
        metrics.json.data.result[0].value[1] != '1')
 
+  - name: check keepalived exporter scrape endpoint status
+    uri:
+      url: 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="prometheus-keepalived",instance="{{ hostvars[item]["local_ipv4_address"] }}:9650"}'
+      return_content: true
+    register: metrics
+    loop: "{{ groups['gateways'] }}"
+    failed_when: |
+      (metrics.json.status != 'success' or
+       not (metrics.json.data.result | default(False)) or
+       metrics.json.data.result[0].value[1] != '1')
+
+  - name: check haproxy exporter scrape endpoint status
+    uri:
+      url: 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="prometheus-haproxy",instance="{{ hostvars[item]["local_ipv4_address"] }}:9101"}'
+      return_content: true
+    register: metrics
+    loop: "{{ groups['gateways'] }}"
+    failed_when: |
+      (metrics.json.status != 'success' or
+       not (metrics.json.data.result | default(False)) or
+       metrics.json.data.result[0].value[1] != '1')
+
   - name: check ceph mgr scrape endpoint status
     uri:
       url: 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="rook-ceph-mgr"}'
