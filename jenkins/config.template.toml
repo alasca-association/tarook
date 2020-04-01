@@ -51,6 +51,30 @@ cah_users_include_users = ["<user>", "<user>"]
 #ch_k8s_lbaas_shared_secret = "..."
 #ch_k8s_lbaas_version = "0.2.0"
 
+# Pick a networking plugin:
+#
+# - kube-router: High-performance, low-overhead implementation with support
+#   for NetworkPolicy objects
+# - flannel: Historical default option. Do not use for new clusters. It is
+#   still the default (from the ansible side) to not break existing clusters.
+k8s_network_plugin = "kube-router"
+
+# When upgrading to kube-router, configuration on how to handle the transition
+# is required. Note that all pods MUST be restarted (otherwise they’ll have no
+# connectivity after the restart).
+#
+# If set to true, ansible will restart all DaemonSets, StatefulSets and
+# Deployments in all namespaces via `kubectl rollout restart`. If set to false,
+# only our managed namespaces (rook-ceph, monitoring and kube-system) are
+# restarted, which means that the customer will have to do their own restarts.
+#k8s_network_plugin_switch_restart_all_namespaces=true
+#
+# This can be used to change the set of namespaces where restarts are
+# automatically carried out if k8s_network_plugin_switch_restart_all_namespaces
+# is set to false. Generally, you’ll not want to change this.
+#
+#k8s_network_plugin_switch_restart_namespaces=[...]
+
 [ansible.03_final.host_vars.managed-k8s-gw-az1]
 vrrp_priority = 150
 

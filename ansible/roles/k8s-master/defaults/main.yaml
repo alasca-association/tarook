@@ -1,1 +1,6 @@
 k8s_admin_credentials_group: god
+k8s_network_plugin: 'flannel'
+k8s_network_plugin_switch_restart_namespaces:
+- kube-system
+- monitoring
+- rook-ceph

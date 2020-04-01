@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: echo-unblock-namespace
+  namespace: "{{ check_networkpolicy_namespace }}"
+spec:
+  podSelector:
+    matchLabels:
+      app: echo
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          test: "{{ check_networkpolicy_namespace }}"
+  egress: []

@@ -1,0 +1,65 @@
+---
+- name: Check presence of flannel
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s_info:
+    api_version: apps/v1
+    namespace: kube-system
+    kind: DaemonSet
+    label_selectors:
+    - app=flannel
+  register: flannel_ds
+
+- name: Fail if disruptions are not allowed
+  fail:
+    msg: Would have to remove flannel, but disruptions are not allowed.
+  when: flannel_ds.resources and not _allow_disruption
+
+- name: Remove flannel overlay network
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    definition: "{{ lookup('file', 'kube-flannel.yaml') }}"
+    state: "absent"
+    wait: yes
+  when: _allow_disruption
+  register: flannel_ds
+
+- name: Remove flannel config
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['k8s_nodes'] }}"
+  become: yes
+  run_once: yes
+  # when: flannel_ds is changed
+  file:
+    path: /etc/cni/net.d/10-flannel.conflist
+    state: absent
+  register: flannel_config
+
+- name: Restart kubelet
+  delegate_to: "{{ item.item }}"
+  become: yes
+  run_once: yes
+  service:
+    name: kubelet
+    state: restarted
+  loop: "{{ flannel_config.results }}"
+  when: item is changed
+
+- name: Clean flannel devices
+  delegate_to: "{{ item[0] }}"
+  loop: "{{ groups['k8s_nodes'] | product(['cni0', 'flannel.1']) | list }}"
+  become: yes
+  run_once: yes
+  when: flannel_ds is changed
+  shell: |
+    set -e
+    if ip link show dev {{ item[1] | quote }}; then
+      ip link del {{ item[1] | quote }}
+      exit 120
+    fi
+  register: flannel_dev
+  failed_when: flannel_dev.rc != 0 and flannel_dev.rc != 120
+  changed_when: flannel_dev.rc == 120

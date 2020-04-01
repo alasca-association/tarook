@@ -48,6 +48,7 @@ rook_osd_volume_size = "90Gi"
 rook_toolbox = true
 rook_fs = true
 k8s_use_podsecuritypolicies = true
+k8s_network_plugin = "kube-router"
 monitoring_thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
 monitoring_placement_taint = "{{ rook_placement_taint }}"
 monitoring_placement_label = "{{ rook_placement_label }}"
