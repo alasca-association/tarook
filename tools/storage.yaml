@@ -1,0 +1,34 @@
+# Create a debian pod with a ceph volume attached.
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: debian-test
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 40Gi
+  storageClassName: rook-ceph-data
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debian 
+spec:
+  containers:
+  - image: debian:stable
+    imagePullPolicy: IfNotPresent
+    name: debian
+    command: ["tail", "-f", "/dev/null"]
+    volumeMounts:
+      - mountPath: /mnt
+        name: debian-test
+  volumes:
+  - name: debian-test
+    persistentVolumeClaim:
+      claimName: debian-test
+      readOnly: false
+
