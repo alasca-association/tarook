@@ -14,3 +14,5 @@ ch_k8s_lbaas_agent_binary_checksums:
   "0.3.0": "sha256:6272977c5173438cb543f97c3156dde485901bf930997ee39f69835962ac5078"
 
 ch_k8s_lbaas_agent_binary_checksum: "{{ ch_k8s_lbaas_agent_binary_checksums[ch_k8s_lbaas_version] | default('invalid checksum') }}"
+
+ch_k8s_lbaas_use_bgp: "{{ (k8s_network_plugin | default('flannel')) == 'kube-router' }}"

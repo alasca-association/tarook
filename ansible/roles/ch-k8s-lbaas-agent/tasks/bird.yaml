@@ -1,0 +1,20 @@
+---
+- name: install bird
+  apt:
+    name: bird
+    state: present
+
+- name: configure bird
+  template:
+    src: bird.conf
+    dest: /etc/bird/bird.conf
+    owner: bird
+    group: bird
+    mode: 0o640
+  notify: restart bird
+
+- name: disable bird6
+  service:
+    name: bird6
+    enabled: no
+    state: stopped

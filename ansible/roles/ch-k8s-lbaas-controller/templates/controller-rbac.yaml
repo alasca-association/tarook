@@ -19,6 +19,9 @@ rules:
   resources:
   - nodes
   - services
+{% if ch_k8s_lbaas_use_bgp %}
+  - endpoints
+{% endif %}
 - apiGroups:
   - ""
   verbs:
