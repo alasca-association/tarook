@@ -1,11 +1,22 @@
-# IMPORTANT: this playbook is not fully automated because the upgrade procedure tends to change slightly. 
-- name: Upgrade the first master node
-  # TODO: do not hardcode, use jinja for master[0]
-  hosts: master-az1
-  tags:
-    - first_master
+- name: Detect user
+  hosts: k8s_nodes
+  gather_facts: false
+  roles:
+  - detect_user
+
+- name: Run pre-flight checks on all nodes
+  hosts: k8s_nodes
+  gather_facts: true
   roles:
     - kubeadm-upgrade-info
+  tags:
+    - kubernetes-upgrade-preflight-checks
+
+- name: Upgrade the first master node
+  hosts: "{{ (groups['masters'] | sort)[0] }}"
+  tags:
+    - kubeadm-first-master
+  roles:
     - kubeadm-upgrade-kubeadm
       # TODO: insert do_upgrade check flag here
     - kubeadm-drain-node
@@ -13,24 +24,21 @@
     - kubeadm-uncordon-node
 
 - name: Upgrade the residual master nodes
-  # TODO: do not hardcode, use jinja for master[1:]
-  hosts:
-    - master-az2
-    - master-az3
+  hosts: "{{ (groups['masters'] | sort)[1:] }}"
   serial: 1
   tags:
-    - residual_nodes
+    - kubeadm-other-masters
   roles:
     - kubeadm-upgrade-kubeadm
     - kubeadm-drain-node
     - kubeadm-upgrade-node
     - kubeadm-uncordon-node
 
-- name: Upgrade kubelet on all nodes
+- name: Upgrade kubelet on master nodes
   hosts: masters
   tags:
-    - kubelet_masters
-  # TODO: serialize!
+    - kubelet-masters
+  serial: 1
   roles:
     - kubeadm-upgrade-kubelet
 
