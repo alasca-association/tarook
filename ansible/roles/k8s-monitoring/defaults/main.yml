@@ -22,3 +22,5 @@ monitoring_placement_label: False
 monitoring_placement_taint: False
 
 monitoring_prometheus_monitor_all_namespaces: True
+
+monitoring_ch_global_monitoring_nodeport_name: ch-k8s-global-monitoring
