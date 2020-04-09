@@ -1,16 +1,49 @@
-- name: Remove the hold of kubelet
+- name: Upgrade kubelet on apt systems
+  when: ansible_pkg_mgr == 'apt'
   become: yes
-  command: apt-mark unhold kubelet
+  block:
+  - name: Remove the hold of kubelet
+    command: apt-mark unhold kubelet kubectl
 
-- name: Upgrade kubelet
-  become: yes
-  apt:
-    name:
-      - "kubelet={{ next_k8s_version }}-00"
+  - name: Upgrade kubelet
+    apt:
+      name:
+        - "kubelet={{ next_k8s_version }}-00"
+        - "kubectl={{ next_k8s_version }}-00"
 
-- name: Re-hold kubelet
+  - name: Re-hold kubelet
+    command: apt-mark hold kubelet kubectl
+
+- name: Upgrade kubelet on dnf systems
+  when: ansible_pkg_mgr == 'dnf'
   become: yes
-  command: apt-mark hold kubelet
+  block:
+  - name: Remove versionlock on kubelet
+    command:
+    args:
+      argv:
+      - dnf
+      - versionlock
+      - delete
+      - kubelet
+      - kubectl
+
+  - name: Upgrade kubelet
+    dnf:
+      name:
+      - "kubelet-{{ next_k8s_version }}-00"
+      - "kubectl-{{ next_k8s_version }}-00"
+      state: present
+
+  - name: Add versionlock on kubelet
+    command:
+    args:
+      argv:
+      - dnf
+      - versionlock
+      - add
+      - kubelet
+      - kubectl
 
 - name: Restart kubelet
   become: yes

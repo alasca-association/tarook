@@ -1,17 +1,45 @@
-- name: Remove the hold of kubeadm
+- name: Upgrade kubeadm on apt systems
+  when: ansible_pkg_mgr == 'apt'
   become: yes
-  command: apt-mark unhold kubeadm
+  block:
+  - name: Remove the hold of kubeadm
+    command: apt-mark unhold kubeadm
 
-- name: Upgrade kubeadm
+  - name: Upgrade kubeadm
+    apt:
+      name:
+        - "kubeadm={{ next_k8s_version }}-00"
+
+  - name: Re-hold kubeadm
+    command: apt-mark hold kubeadm
+
+  - name: Check kubeadm's version
+    command: kubeadm version
+
+- name: Upgrade kubeadm on dnf systems
+  when: ansible_pkg_mgr == 'dnf'
   become: yes
-  apt:
-    name:
-      - "kubeadm={{ next_k8s_version }}-00"
+  block:
+  - name: Remove versionlock on kubeadm
+    command:
+    args:
+      argv:
+      - dnf
+      - versionlock
+      - delete
+      - kubeadm
 
-- name: Re-hold kubeadm
-  become: yes
-  command: apt-mark hold kubeadm
-  
-- name: Check kubeadm's version
-  command: kubeadm version
+  - name: Upgrade kubeadm
+    dnf:
+      name:
+      - "kubeadm-{{ next_k8s_version }}-00"
+      state: present
 
+  - name: Add versionlock on kubeadm
+    command:
+    args:
+      argv:
+      - dnf
+      - versionlock
+      - add
+      - kubeadm
