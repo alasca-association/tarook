@@ -1,4 +1,8 @@
 ---
+ch_k8s_lbaas: false
+ch_k8s_lbaas_use_floating_ips: true
+ch_k8s_lbaas_controller_image: "publicgitlab-registry.cloudandheat.com/k8s/ch-k8s-lbaas/controller:{{ ch_k8s_lbaas_version }}"
+
 ch_k8s_lbaas_agent_user: ch-k8s-lbaas-agent
 ch_k8s_lbaas_agent_binary_url: "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download/v{{ ch_k8s_lbaas_version }}/ch-k8s-lbaas-agent"
 
