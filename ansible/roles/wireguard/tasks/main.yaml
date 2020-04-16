@@ -79,6 +79,7 @@
     src: wg0_server.conf.j2
     dest: /etc/wireguard/wg0.conf
     mode: '0640'
+  register: wg0_conf
 
 - name: Create a wg0.conf template for each peer
   become: no
@@ -115,24 +116,37 @@
   command: sysctl -p /etc/sysctl.d/wireguard.conf
   changed_when: false
 
-- name: Copy /etc/systemd/system/wireguard.service
+- name: Remove old service
   become: yes
-  copy:
-    src: "{{ role_path }}/files/wireguard.service"
-    dest: /etc/systemd/system/wireguard.service
+  file:
+    path: /etc/systemd/system/wireguard.service
+    state: absent
+  register: old_wg_service
 
-# TODO: this systemd unit is partially broken but at least it's reboot-safe
-- name: Start and enable wireguard.service
+- name: Stop and disable old wireguard service
+  become: yes
+  service:
+    name: wireguard.service
+    state: stopped
+    enabled: no
+  when: old_wg_service is changed
+
+- name: Reload systemd to drop old wireguard service
   become: yes
   systemd:
     daemon_reload: yes
-    enabled: yes
-    name: wireguard
-    state: restarted
+  when: old_wg_service is changed
 
-# TODO: fix systemd and use it consequently
-- name: Restart the wireguard service for good
+- name: Stop wg0 after removal of legacy service so that the new service can take over
   become: yes
-  shell: wg-quick down wg0; wg-quick up wg0
-  changed_when: false
+  command:
+  args:
+    argv: ['wg-quick', 'down', 'wg0']
+  when: old_wg_service is changed
 
+- name: Start and enable wireguard endpoint
+  become: yes
+  service:
+    name: wg-quick@wg0
+    enabled: yes
+    state: "{{ 'restarted' if wg0_conf is changed else 'started' }}"
