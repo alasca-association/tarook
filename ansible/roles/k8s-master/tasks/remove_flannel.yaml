@@ -16,6 +16,34 @@
     msg: Would have to remove flannel, but disruptions are not allowed.
   when: flannel_ds.resources and not _allow_disruption
 
+- name: Delete flannel daemonsets
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    state: absent
+    api_version: apps/v1
+    namespace: kube-system
+    kind: DaemonSet
+    name: "{{ item.metadata.name }}"
+  loop: "{{ flannel_ds.resources }}"
+  register: flannel_ds_deletion
+
+- name: Wait for flannel pods to be gone
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s_info:
+    api_version: v1
+    namespace: kube-system
+    kind: Pod
+    label_selectors:
+    - app=flannel
+  register: flannel_pods
+  until: "'resources' in flannel_pods and not flannel_pods.resources"
+  retries: 60
+  delay: 3
+
 - name: Remove flannel overlay network
   become: yes
   environment:
@@ -25,14 +53,14 @@
     state: "absent"
     wait: yes
   when: _allow_disruption
-  register: flannel_ds
+  register: flannel
 
 - name: Remove flannel config
   delegate_to: "{{ item }}"
   loop: "{{ groups['k8s_nodes'] }}"
   become: yes
   run_once: yes
-  # when: flannel_ds is changed
+  when: flannel_ds_deletion is changed or flannel is changed
   file:
     path: /etc/cni/net.d/10-flannel.conflist
     state: absent
@@ -53,7 +81,7 @@
   loop: "{{ groups['k8s_nodes'] | product(['cni0', 'flannel.1']) | list }}"
   become: yes
   run_once: yes
-  when: flannel_ds is changed
+  when: flannel_ds_deletion is changed or flannel is changed
   shell: |
     set -e
     if ip link show dev {{ item[1] | quote }}; then
