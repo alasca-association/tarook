@@ -3,6 +3,7 @@
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:
+    apply: yes
     definition:
       apiVersion: v1
       kind: Secret
@@ -40,11 +41,13 @@
     - name: Prepare PodSecurityPolicy configuration
       k8s:
         state: "{{ k8s_use_podsecuritypolicies | ternary('present', 'absent') }}"
+        apply: yes
         definition: "{{ lookup('file', 'psp.yaml') }}"
 
     - name: Deploy the CCM and its RBAC
       k8s:
         state: present
+        apply: yes
         definition: "{{ lookup('template', item) }}"
       loop:
       - controller-manager/openstack-cloud-controller-manager-ds.yaml
@@ -54,6 +57,7 @@
     - name: Start the Cinder CSI driver plugin
       k8s:
         state: present
+        apply: yes
         definition: "{{ lookup('template', 'cinder-csi-plugin/' + item) }}"
       loop:
       - cinder-csi-controllerplugin-rbac.yaml
@@ -64,6 +68,7 @@
     - name: Create storage class
       k8s:
         state: present
+        apply: yes
         definition: "{{ lookup('template', 'cinder_storage_class.yaml') }}"
 
 - name: Start the Octavia Ingress Controller
@@ -76,6 +81,7 @@
   block:
     - name: Configure Ingress Controller
       k8s:
+        apply: yes
         definition:
           apiVersion: v1
           kind: Secret
@@ -91,6 +97,7 @@
 
     - name: Deploy Ingress Controller
       k8s:
+        apply: yes
         state: present
         definition: "{{ lookup('template', item) }}"
       loop:

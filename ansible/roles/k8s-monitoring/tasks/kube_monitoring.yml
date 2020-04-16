@@ -18,10 +18,12 @@
 
 - name: create thanos secret
   k8s:
+    apply: yes
     definition:
       apiVersion: v1
       type: Opaque
       kind: Secret
+      apply: yes
       metadata:
         name: "{{ monitoring_thanos_config_secret_name }}"
         namespace: "{{ monitoring_namespace }}"
@@ -38,18 +40,21 @@
 - name: apply manifests
   k8s:
     state: present
+    apply: yes
     definition: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/' + item) }}"
   loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json' ) | from_json }}"
 
 - name: create rook service monitor
   k8s:
     state: present
+    apply: yes
     definition: "{{ lookup('template', 'rook-service-monitor.yaml') }}"
   when: rook
 
 - name: create haproxy service monitor (gateway)
   k8s:
     state: present
+    apply: yes
     definition: "{{ lookup('template', 'haproxy-service-monitor.yaml') }}"
   tags:
     - haproxy-service-monitor
@@ -57,6 +62,7 @@
 - name: create keepalived service monitor (gateway)
   k8s:
     state: present
+    apply: yes
     definition: "{{ lookup('template', 'keepalived-service-monitor.yaml') }}"
   tags:
     - keepalived-service-monitor
@@ -64,6 +70,7 @@
 - name: create LBaaS component service monitors (gateway)
   k8s:
     definition: "{{ lookup('template', item) }}"
+    apply: yes
   with_items:
   - lbaas-service-monitor.yaml
   when: "ch_k8s_lbaas | default(False)"

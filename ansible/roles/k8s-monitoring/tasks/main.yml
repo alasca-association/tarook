@@ -5,6 +5,7 @@
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:
+    apply: yes
     definition:
       apiVersion: v1
       kind: Namespace
@@ -20,6 +21,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:
     definition: "{{ lookup('template', 'default-psp.yaml') }}"
+    apply: yes
     state: "{{ k8s_use_podsecuritypolicies | default(False) | ternary('present', 'absent') }}"
   tags:
   - monitoring
