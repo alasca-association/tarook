@@ -1,0 +1,23 @@
+# This file creates a service account and a very permissive PSP in the default namespace.
+# It is required to use most manifests in this directory, even if you don’t run PSP,
+# because they still refer to the service account.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: test-psp
+  namespace: default 
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: psp:rook
+subjects:
+- kind: ServiceAccount
+  name: test
+  namespace: default

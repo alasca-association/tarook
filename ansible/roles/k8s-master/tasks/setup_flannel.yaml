@@ -1,0 +1,31 @@
+---
+- name: Check kube-router presence
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s_info:
+    api_version: apps/v1
+    kind: DaemonSet
+    namespace: kube-system
+    name: kube-router
+  register: kube_router
+
+- name: Fail if kube-router is present
+  fail:
+    msg: |
+      kube-router is present. Migrating from kube-router to flannel is not
+      supported.
+  when: kube_router.resources
+
+- name: Setup flannel overlay network
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    definition: "{{ lookup('file', 'kube-flannel.yaml') }}"
+    apply: yes
+    state: "present"
+
+- name: Mark networking as configured
+  set_fact:
+    runtime_k8s_networking_configured: true

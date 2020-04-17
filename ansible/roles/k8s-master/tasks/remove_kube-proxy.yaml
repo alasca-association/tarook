@@ -1,0 +1,45 @@
+---
+- name: Check presence of kube-proxy
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s_info:
+    api_version: apps/v1`
+    namespace: kube-system
+    name: kube-proxy
+    kind: DaemonSet
+  register: kube_proxy_ds
+
+- name: Fail if disruptions are not allowed
+  fail:
+    msg: Would have to remove kube-proxy, but disruptions are not allowed.
+  when: kube_proxy_ds.resources and not _allow_disruption
+
+- name: Remove kube-proxy daemonset
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    api_version: apps/v1
+    kind: DaemonSet
+    namespace: kube-system
+    name: kube-proxy
+    state: absent
+    wait: yes
+  register: kube_proxy
+
+- name: Clean up iptables rules
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['k8s_nodes'] }}"
+  become: yes
+  run_once: yes
+  when: kube_proxy is changed
+  command:
+  args:
+    argv: ["docker", "run",
+           "--rm",
+           "--privileged",
+           "-v", "/lib/modules:/lib/modules",
+           "--net=host",
+           "k8s.gcr.io/kube-proxy-amd64:v{{ k8s_version }}",
+           "kube-proxy", "--cleanup"]

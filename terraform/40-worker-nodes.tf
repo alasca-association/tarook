@@ -8,10 +8,7 @@ resource "openstack_networking_port_v2" "worker" {
     subnet_id = openstack_networking_subnet_v2.cluster_subnet.id
   }
 
-  security_group_ids = [
-    data.openstack_networking_secgroup_v2.default.id,
-    openstack_compute_secgroup_v2.cluster_secgroup.id
-  ]
+  port_security_enabled = false
 }
 
 data "openstack_compute_flavor_v2" "worker" {

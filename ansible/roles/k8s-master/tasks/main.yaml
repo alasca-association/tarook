@@ -107,14 +107,6 @@
     loop:
     - psp.yaml
 
-  - name: Setup flannel overlay network
-    become: yes
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s:
-      definition: "{{ lookup('file', 'kube-flannel.yaml') }}"
-      state: "present"
-
   - name: Fetch certificates file and keys from the initial master to localhost
     fetch:
       src: "/etc/kubernetes/pki/{{ item }}"
@@ -203,3 +195,21 @@
     groups: "{{ k8s_admin_credentials_group }}"
     name: "{{ ansible_user }}"
   when: "ansible_user | default(False)"
+
+- name: Setup kube-router networking
+  include_tasks: setup_kube-router.yaml
+  when: k8s_network_plugin == 'kube-router'
+
+- name: Setup flannel networking
+  include_tasks: setup_flannel.yaml
+  when: k8s_network_plugin == 'flannel'
+
+- name: Fail if no networking was configured
+  fail:
+    msg: |
+      You chose "{{ k8s_network_plugin }}", but that did not work.
+      Currently, we support 'kube-router' and 'flannel'.
+  # This variable is set by the setup_*.yaml files included above.
+  # If you reach this point, none of them was included, probably because of
+  # a typo in your k8s_network_plugin variable.
+  when: not (runtime_k8s_networking_configured | default(False))
