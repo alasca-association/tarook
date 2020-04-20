@@ -2,6 +2,8 @@
 
 - name: Install k8s nvidia-device-plugin
   become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:
     state: present
     definition: "{{ lookup('template', 'nvidia-device-plugin.yml') }}"
