@@ -57,7 +57,13 @@ spec:
         - mountPath: /etc/ceph
           name: default-config-dir
         imagePullPolicy: IfNotPresent
-        resources: {}
+        resources:
+          limits:
+            memory: {{ rook_operator_memory_limit | to_json }}
+            cpu: {{ rook_operator_cpu_limit | to_json }}
+          requests:
+            memory: {{ rook_operator_memory_request | to_json }}
+            cpu: {{ rook_operator_cpu_request | to_json }}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         env:

@@ -78,6 +78,43 @@ rook_osd_volume_size = "90Gi"
 rook_toolbox = true
 rook_fs = true
 
+# Rook pod memory limits
+#
+# The default values are the *absolute minimum* values required by rook. Going
+# below these numbers will make rook refuse to even create the pods. See also:
+# https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-configuration-settings
+
+# Memory limit for mon Pods
+#
+#rook_mon_memory_limit = "1Gi"
+#rook_mon_memory_request = "{{ rook_mon_memory_limit }}"
+#rook_mon_cpu_limit = "500m"
+#rook_mon_cpu_request = "100m"
+
+# Resource limits for OSD pods
+#
+# Note that these are chosen so that the OSD pods end up in the Guaranteed QoS
+# class.
+#
+#rook_osd_memory_limit = "2Gi"
+#rook_osd_memory_request = "{{ rook_osd_memory_limit }}"
+#rook_osd_cpu_limit = "500m"
+#rook_osd_cpu_request = "{{ rook_osd_cpu_limit }}"
+
+# Memory limit for mgr Pods
+#
+#rook_mgr_memory_limit = "512Mi"
+#rook_mgr_memory_request = "{{ rook_mgr_memory_limit }}"
+#rook_mgr_cpu_limit = "500m"
+#rook_mgr_cpu_request = "100m"
+
+# Memory limit for MDS / CephFS Pods
+#
+#rook_mds_memory_limit = "4Gi"
+#rook_mds_memory_request = "{{ rook_mds_memory_limit }}"
+#rook_mds_cpu_limit = "1"
+#rook_mds_cpu_request = "{{ rook_mds_cpu_limit }}"
+
 cah_users_include_users = ["<user>", "<user>"]
 
 [ansible.03_final.host_vars.managed-k8s-gw-az1]

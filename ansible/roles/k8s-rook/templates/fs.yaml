@@ -1,3 +1,4 @@
+{% from "roles/k8s-rook/templates/utils.j2" import resource_constraints %}
 apiVersion: ceph.rook.io/v1
 kind: CephFilesystem
 metadata:
@@ -37,10 +38,10 @@ spec:
         operator: Equal
         effect: "{{ rook_placement_taint.effect | default('NoSchedule') }}"
 {% endif %}
-    resources:
-    #  limits:
-    #    cpu: "500m"
-    #    memory: "1024Mi"
-    #  requests:
-    #    cpu: "500m"
-    #    memory: "1024Mi"
+    resources: {
+{% call resource_constraints(
+  rook_mds_memory_request,
+  rook_mds_cpu_request,
+  rook_mds_memory_limit,
+  rook_mds_cpu_limit) %}{% endcall %}
+    }
