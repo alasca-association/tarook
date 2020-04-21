@@ -155,6 +155,108 @@ k8s_network_plugin = "kube-router"
 #rook_mds_cpu_limit = "1"
 #rook_mds_cpu_request = "{{ rook_mds_cpu_limit }}"
 
+# MONITORING
+# Enable monitoring (enabled by default)
+#monitoring: true
+
+# Enable use of Thanos (enabled by default)
+#monitoring_thanos: true
+
+# Thanos uses local storage to keep a copy of the metadata from the object store
+# for faster access. The size and storage class for that volume can be
+# configured:
+#
+#monitoring_thanos_metadata_volume_size="10Gi"
+#monitoring_thanos_metadata_volume_storage_class="rook-ceph-data"
+
+# By default, the monitoring will capture all namespaces. If this is not
+# desired, the following switch can be turned off. In that case, only the
+# kube-system, monitoring and rook namespaces are scraped by Prometheus.
+#
+#monitoring_prometheus_monitor_all_namespaces=true
+
+# Placement controls
+#
+# These controls allow to control the placement of monitoring pods. The `taint`
+# option controls which additional taint the monitoring pods will tolerate. Note
+# that the only supported key is "{{ managed_k8s_control_plane_key }}", but the
+# value can be chosen freely to allow to separate e.g. monitoring and ceph on
+# different workers.
+#
+# The `label` option constraints pods to run *only* on nodes with the specific
+# label. If no nodes have that label, the cluster will not start.
+#
+# It is recommended to set both taint and label to the same thing.
+#
+#monitoring_placement_taint = {
+#    key = "{{ managed_k8s_control_plane_key }}",
+#    value = "meta",
+#}
+#
+#monitoring_placement_label = {
+#    key = "{{ managed_k8s_control_plane_key }}",
+#    value = "meta",
+#}
+#
+# To use the same taint and label controls as rook, set them in the following
+# way:
+#monitoring_placement_taint = "{{ rook_placement_taint }}"
+#monitoring_placement_label = "{{ rook_placement_label }}"
+
+# Monitoring pod resource limits
+#
+# The following limits are applied to the respective pods.
+#
+# Note that the Prometheus limits are chosen fairly conservatively and may need
+# tuning for larger and smaller clusters.
+#
+# By default, we prefer to set limits in such a way that the Pods end up in the
+# Guaranteed QoS class (i.e. both CPU and Memory limits and requests set to the
+# same value).
+#
+#monitoring_alertmanager_memory_limit = "256Mi"
+#monitoring_alertmanager_memory_request = "{{ monitoring_alertmanager_memory_limit }}"
+#monitoring_alertmanager_cpu_limit = "100m"
+#monitoring_alertmanager_cpu_request = "{{ monitoring_alertmanager_cpu_limit }}"
+#
+#monitoring_prometheus_memory_limit = "3Gi"
+#monitoring_prometheus_memory_request = "{{ monitoring_prometheus_memory_limit }}"
+#monitoring_prometheus_cpu_limit = "1"
+#monitoring_prometheus_cpu_request = "{{ monitoring_prometheus_cpu_limit }}"
+#
+#monitoring_grafana_memory_limit = "512Mi"
+#monitoring_grafana_memory_request = "256Mi"
+#monitoring_grafana_cpu_limit = "500m"
+#monitoring_grafana_cpu_request = "100m"
+#
+#monitoring_kube_state_metrics_memory_limit = "128Mi"
+#monitoring_kube_state_metrics_memory_request = "50Mi"
+#monitoring_kube_state_metrics_cpu_limit = "50m"
+#monitoring_kube_state_metrics_cpu_request = "20m"
+#
+#monitoring_thanos_sidecar_memory_limit = "256Mi"
+#monitoring_thanos_sidecar_memory_request = "{{ monitoring_thanos_sidecar_memory_limit }}"
+#monitoring_thanos_sidecar_cpu_limit = "500m"
+#monitoring_thanos_sidecar_cpu_request = "{{ monitoring_thanos_sidecar_cpu_limit }}"
+#
+# Note that the default limits for Thanos are quite experimental. We’re still
+# gathering experience here. Please see also
+# ansible/roles/k8s-monitoring/defaults/main.yaml for more discussion on the
+# defaults.
+#
+# Instead of ad-hoc changing limits in your cluster, seeking discussion with
+# the Flyingdutchman/CID team for a change of defaults is to be preferred.
+#
+#monitoring_thanos_query_memory_limit = "786Mi"
+#monitoring_thanos_query_memory_request = "128Mi"
+#monitoring_thanos_query_cpu_limit = "1"
+#monitoring_thanos_query_cpu_request = "100m"
+#
+#monitoring_thanos_store_memory_limit = "2Gi"
+#monitoring_thanos_store_memory_request = "256Mi"
+#monitoring_thanos_store_cpu_limit = "500m"
+#monitoring_thanos_store_cpu_request = "100m"
+
 cah_users_include_users = ["<user>", "<user>"]
 
 [ansible.03_final.host_vars.managed-k8s-gw-az1]
