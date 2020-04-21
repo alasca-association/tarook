@@ -1,5 +1,17 @@
 # Changelog
 
+## 2020-04-21
+
+* **Resource Limits**
+
+  There are now resource limits (both CPU and Memory) in place for Rook and Monitoring pods. These Kubernetes-side values impose hard limits on the resources usable by processes. In case of the memory limits, crossing those limitswill cause termination by the OOM killer. In case of the CPU limits, throttling takes place.
+
+  The limits are all configurable via config switches documented in the template configuration.
+
+  **Note:** The limits for the MDS daemon do not take effect unless the filesystem is destroyed and recreated. This is most likely a rook bug, but since we’re not on the most recent stable version, we cannot assess this properly at this time.
+
+  **Note:** The default prometheus memory limit is chosen conservatively; we do not have real numbers on the use and it might be too high or too low. Experimentation with real clusters is required and it’s possible that scaling is needed.
+
 ## 2020-04-06
 
 * New wireguard user management
