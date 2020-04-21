@@ -32,24 +32,10 @@ vrrp_priority = 100
 vrrp_priority = 80
 
 [ansible.03_final.group_vars.all]
+# KUBERNETES CLUSTER CONFIGURATION
+#
+# Kubernetes version. Currently, we only support 1.17.x.
 k8s_version = "1.17.3"
-rook = true
-rook_nosds = 3
-rook_osd_volume_size = "90Gi"
-rook_toolbox = true
-rook_fs = true
-cah_users_include_users = ["<user>", "<user>"]
-
-# To enable our LBaaS service, un-comment the following options and fill in a
-# unique, random, base64-encoded secret in place of `...`.
-#
-# To generate such a secret, you can use the following command:
-#
-# $ dd if=/dev/urandom bs=16 count=1 status=none | base64
-#
-#ch_k8s_lbaas = true
-#ch_k8s_lbaas_shared_secret = "..."
-#ch_k8s_lbaas_version = "0.3.0"
 
 # Pick a networking plugin:
 #
@@ -74,6 +60,25 @@ k8s_network_plugin = "kube-router"
 # is set to false. Generally, you’ll not want to change this.
 #
 #k8s_network_plugin_switch_restart_namespaces=[...]
+
+# To enable our LBaaS service, un-comment the following options and fill in a
+# unique, random, base64-encoded secret in place of `...`.
+#
+# To generate such a secret, you can use the following command:
+#
+# $ dd if=/dev/urandom bs=16 count=1 status=none | base64
+#
+#ch_k8s_lbaas = true
+#ch_k8s_lbaas_shared_secret = "..."
+#ch_k8s_lbaas_version = "0.3.0"
+
+rook = true
+rook_nosds = 3
+rook_osd_volume_size = "90Gi"
+rook_toolbox = true
+rook_fs = true
+
+cah_users_include_users = ["<user>", "<user>"]
 
 [ansible.03_final.host_vars.managed-k8s-gw-az1]
 vrrp_priority = 150
