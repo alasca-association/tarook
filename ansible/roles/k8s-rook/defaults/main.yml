@@ -1,3 +1,5 @@
+rook: false
+
 rook_namespace: rook-ceph
 rook_cluster_name: rook-ceph
 

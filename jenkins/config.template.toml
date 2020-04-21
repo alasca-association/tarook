@@ -72,11 +72,51 @@ k8s_network_plugin = "kube-router"
 #ch_k8s_lbaas_shared_secret = "..."
 #ch_k8s_lbaas_version = "0.3.0"
 
-rook = true
-rook_nosds = 3
-rook_osd_volume_size = "90Gi"
-rook_toolbox = true
-rook_fs = true
+# ROOK-BASED CEPH STORAGE CONFIGURATION
+#
+# By default, rook is disabled. Many clusters will want to use it though, so
+# you should enable it here if you want. It requires extra options which need
+# to be chosen with care, which is why the default is `false`.
+#
+# Enable rook deployment
+#rook = true
+
+# Placement controls
+#
+# These controls allow to control the placement of rook pods. The `taint` option
+# controls which additional taint the rook pods will tolerate. Note that the
+# only supported key is "{{ managed_k8s_control_plane_key }}", but the value
+# can be chosen freely to allow to separate e.g. monitoring and ceph on
+# different workers.
+#
+# The `label` option constraints pods to run *only* on nodes with the specific
+# label. If no nodes have that label, the cluster will not start.
+#
+# It is recommended to set both taint and label to the same thing.
+#
+#rook_placement_taint = {
+#    key = "{{ managed_k8s_control_plane_key }}",
+#    value = "meta",
+#}
+#
+#rook_placement_label = {
+#    key = "{{ managed_k8s_control_plane_key }}",
+#    value = "meta",
+#}
+
+# Number of OSDs to run. This should be equal to the number of storage meta
+# workers you use.
+#rook_nosds = 3
+
+# The size of the storage backing each OSD.
+#rook_osd_volume_size = "90Gi"
+
+# Enable the rook toolbox, which is a pod with ceph tools installed to
+# introspect the cluster state.
+#rook_toolbox = true
+
+# Enable the CephFS shaerd filesystem.
+#rook_fs = true
 
 # Rook pod memory limits
 #
