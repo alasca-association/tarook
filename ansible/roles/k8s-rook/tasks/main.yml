@@ -53,7 +53,7 @@
          cluster_info.resources[0].status.ceph.health == 'HEALTH_WARN') and
         cluster_info.resources[0].status.state == 'Created')
     delay: 10
-    retries: 60
+    retries: 90
 
   - name: Wait for the first OSD to appear
     # we need the first OSD otherwise setting up pools will fail
