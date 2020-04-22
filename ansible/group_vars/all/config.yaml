@@ -21,3 +21,6 @@ pki_cert_files: ["ca.crt", "ca.key", "sa.key", "sa.pub", "front-proxy-ca.crt", "
 etcd_files: ["ca.crt", "ca.key"]
 
 network_interface: "{{ ansible_default_ipv4.interface }}"
+
+monitoring_ch_global_monitoring_nodeport: 31911
+monitoring_ch_global_monitoring: True

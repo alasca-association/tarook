@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ monitoring_ch_global_monitoring_nodeport_name | to_json }}
+  labels:
+    prometheus: k8s
+  namespace: monitoring
+spec:
+  type: NodePort
+  ports:
+    - nodePort: {{ monitoring_ch_global_monitoring_nodeport | to_json }}
+      port: 9090 # Prometheus
+      protocol: TCP
+  selector:
+    app: prometheus
+    prometheus: k8s

@@ -28,6 +28,29 @@ frontend healthz
   monitor-uri /healthz
   option dontlognull
 
+frontend k8s_prometheus_front
+  bind {{ private_vip }}:{{ monitoring_ch_global_monitoring_nodeport }}
+  mode tcp
+  log global
+  option tcplog
+  timeout client {{ haproxy_timeout_client }}
+  default_backend k8s_prometheus_back
+
+backend k8s_prometheus_back
+  mode tcp
+  option httpchk GET /-/healthy "HTTP/1.1\r\nHost: 192.168.0.14\r\n\r\n"
+  http-check expect status 200
+  option redispatch
+  log global
+  balance roundrobin
+  timeout connect 10s
+  timeout server {{ haproxy_timeout_server }}
+
+{% for host in groups['masters'] %}
+  server {{ host }} {{ hostvars[host]['local_ipv4_address'] }}:{{ monitoring_ch_global_monitoring_nodeport }} check verify none
+{% endfor %}
+
+
 backend k8s_back
   mode tcp
   option httpchk GET / "HTTP/1.1\r\nHost: 192.168.0.14\r\n\r\n"
