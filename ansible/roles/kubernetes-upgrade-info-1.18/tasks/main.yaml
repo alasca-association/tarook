@@ -26,6 +26,7 @@
   changed_when: false
 
 - name: Pre-flight checks
+  any_errors_fatal: true
   block:
   - name: Obtain installed version
     set_fact:
