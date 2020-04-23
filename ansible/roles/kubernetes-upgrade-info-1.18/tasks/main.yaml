@@ -27,16 +27,41 @@
 
 - name: Pre-flight checks
   block:
+  - name: Obtain installed version
+    set_fact:
+      k8s_installed_version: "{{
+        ((ansible_pkg_mgr == 'apt') and installed_version_dpkg.stdout.split('-')[0]) or
+        ((ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum') and installed_version_rpm.stdout.split('-')[1]) }}"
+
+  - name: Obtain version as per k8s database
+    delegate_to: "{{ (groups['masters'] | sort)[0] }}"
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s_info:
+      api_version: v1
+      kind: Node
+      name: "{{ inventory_hostname }}"
+    register: k8s_node_info
+
+  - name: Extract k8s version
+    set_fact:
+      k8s_running_version: "{{ k8s_node_info.resources[0].status.nodeInfo.kubeletVersion.strip('v') }}"
+
+  - name: Check for failed upgrades
+    fail:
+      msg: |
+        Installed version is {{ k8s_installed_version }}, but the running
+        version is {{ k8s_running_version }}. This indicates that the upgrade
+        of this node was interrupted and you need to fix that manually before
+        proceeding.
+    when: "k8s_running_version != k8s_installed_version"
+
   - name: Require installed version to match configuration
     fail:
       msg: |
-        Installed version is {{ installed_version_short }}, which differs from
+        Installed version is {{ k8s_installed_version }}, which differs from
         the configured version {{ k8s_version }}.
-    vars:
-      installed_version_short: "{{
-        ((ansible_pkg_mgr == 'apt') and installed_version_dpkg.stdout.split('-')[0]) or
-        ((ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum') and installed_version_rpm.stdout.split('-')[1]) }}"
-    when: "installed_version_short != k8s_version"
+    when: "k8s_installed_version != k8s_version"
 
   - name: Require upgrade to 1.18.x
     fail:
