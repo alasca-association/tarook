@@ -17,9 +17,8 @@
   tags:
     - kubeadm-first-master
   roles:
-    - kubeadm-upgrade-kubeadm
-      # TODO: insert do_upgrade check flag here
     - kubeadm-drain-node
+    - kubeadm-upgrade-kubeadm
     - kubeadm-upgrade-apply
     - kubeadm-uncordon-node
 
@@ -29,8 +28,8 @@
   tags:
     - kubeadm-other-masters
   roles:
-    - kubeadm-upgrade-kubeadm
     - kubeadm-drain-node
+    - kubeadm-upgrade-kubeadm
     - kubeadm-upgrade-node
     - kubeadm-uncordon-node
 
@@ -48,10 +47,8 @@
     - workers
   serial: 1
   roles:
-    - kubeadm-upgrade-kubeadm
-    # TODO: delegation does not work properly
-    # workaround: execute kubectl drain / uncordon on localhost
     - kubeadm-drain-node
+    - kubeadm-upgrade-kubeadm
     - kubeadm-upgrade-node
     - kubeadm-upgrade-kubelet
     - kubeadm-uncordon-node
