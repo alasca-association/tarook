@@ -1,17 +1,19 @@
-resource "openstack_compute_secgroup_v2" "gateway_secgroup" {
+resource "openstack_networking_secgroup_v2" "gateway_secgroup" {
   name        = var.gateway_security_group_name
   description = "Security group for HAProxy ports"
+}
 
-  dynamic "rule" {
-    for_each = var.haproxy_ports
+resource "openstack_networking_secgroup_rule_v2" "gateway_secgroup_haproxy_rule" {
+  count = length(var.haproxy_ports)
 
-    content {
-      ip_protocol = "tcp"
-      cidr        = "0.0.0.0/0"
-      from_port   = rule.value
-      to_port     = rule.value
-    }
-  }
+  security_group_id = openstack_networking_secgroup_v2.gateway_secgroup.id
+
+  direction = "ingress"
+  ethertype = "IPv4"
+  protocol = "tcp"
+  port_range_min = var.haproxy_ports[count.index]
+  port_range_max = var.haproxy_ports[count.index]
+  remote_ip_prefix = "0.0.0.0/0"
 }
 
 resource "openstack_networking_port_v2" "gw_vip_port" {
@@ -25,7 +27,7 @@ resource "openstack_networking_port_v2" "gw_vip_port" {
 
   security_group_ids = [
     data.openstack_networking_secgroup_v2.default.id,
-    openstack_compute_secgroup_v2.gateway_secgroup.id,
+    openstack_networking_secgroup_v2.gateway_secgroup.id,
     openstack_networking_secgroup_v2.vpn.id
   ]
 }
