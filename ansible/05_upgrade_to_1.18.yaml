@@ -1,6 +1,8 @@
 - name: Detect user
   hosts: k8s_nodes
   gather_facts: false
+  # we need *all* hosts.
+  any_errors_fatal: true
   roles:
   - detect_user
 
@@ -14,6 +16,7 @@
 
 - name: Upgrade the first master node
   hosts: "{{ (groups['masters'] | sort)[0] }}"
+  any_errors_fatal: true
   tags:
     - kubeadm-first-master
   roles:
@@ -29,6 +32,7 @@
 - name: Upgrade the residual master nodes
   hosts: "{{ (groups['masters'] | sort)[1:] }}"
   serial: 1
+  any_errors_fatal: true
   tags:
     - kubeadm-other-masters
   roles:
@@ -43,6 +47,7 @@
 
 - name: Upgrade kubelet on master nodes
   hosts: masters
+  any_errors_fatal: true
   tags:
     - kubelet-masters
   serial: 1
@@ -52,6 +57,7 @@
 
 - name: Upgrade the worker nodes
   hosts: workers
+  any_errors_fatal: true
   tags:
     - workers
   serial: 1
