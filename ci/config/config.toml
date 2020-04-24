@@ -7,6 +7,7 @@ default_worker_image_name = "mk8s-ci-ubuntu-1804-nightly"
 gateway_image_name = "mk8s-ci-debian-10-nightly"
 worker_flavors = ["L", "M", "L", "M", "L", "M"]
 enable_az_management = false
+cluster_name = "ci"
 
 # dd2a only
 #azs = ["nova"]
@@ -17,9 +18,9 @@ deprecated_nodeport_lb_test_port = 30060
 lb_ports = ["{{ deprecated_nodeport_lb_test_port }}"]
 
 [load-balancing.priorities]
-"managed-k8s-gw-az1" = 150
-"managed-k8s-gw-az2" = 100
-"managed-k8s-gw-az3" = 80
+"ci-gw-az1" = 150
+"ci-gw-az2" = 100
+"ci-gw-az3" = 80
 
 [wireguard]
 ip_cidr = "172.30.153.0/24"
@@ -93,25 +94,25 @@ prometheus_cpu_request = "{{ monitoring_prometheus_cpu_limit }}"
 prometheus_cpu_limit = "200m"
 
 [testing.test-nodes]
-"managed-k8s-worker-1" = "worker0"
-"managed-k8s-worker-3" = "worker1"
-"managed-k8s-worker-5" = "worker2"
+"ci-worker-1" = "worker0"
+"ci-worker-3" = "worker1"
+"ci-worker-5" = "worker2"
 
 [node-scheduling]
 scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 
 [node-scheduling.labels]
-managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true"]
-managed-k8s-worker-1 = ["{{ scheduling_key_prefix }}/monitoring=true"]
-managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true"]
-managed-k8s-worker-3 = ["{{ scheduling_key_prefix }}/monitoring=true"]
-managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true"]
-managed-k8s-worker-5 = ["{{ scheduling_key_prefix }}/monitoring=true"]
+ci-worker-0 = ["{{ scheduling_key_prefix }}/storage=true"]
+ci-worker-1 = ["{{ scheduling_key_prefix }}/monitoring=true"]
+ci-worker-2 = ["{{ scheduling_key_prefix }}/storage=true"]
+ci-worker-3 = ["{{ scheduling_key_prefix }}/monitoring=true"]
+ci-worker-4 = ["{{ scheduling_key_prefix }}/storage=true"]
+ci-worker-5 = ["{{ scheduling_key_prefix }}/monitoring=true"]
 
 [node-scheduling.taints]
-managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
-managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
-managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+ci-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+ci-worker-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+ci-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 
 [passwordstore]
 rollout_company_users = false # False because we don't have the keys
