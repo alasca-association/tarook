@@ -10,45 +10,6 @@ resource "openstack_networking_subnet_v2" "cluster_subnet" {
   ip_version = 4
 }
 
-resource "openstack_compute_secgroup_v2" "cluster_secgroup" {
-  name        = var.security_group_name
-  description = "A barndoor wide open"
-  rule {
-    ip_protocol = "tcp"
-    from_port   = 1
-    to_port     = 65535
-    cidr        = "0.0.0.0/0"
-  }
-  rule {
-    ip_protocol = "udp"
-    from_port   = 1
-    to_port     = 65535
-    cidr        = "0.0.0.0/0"
-  }
-  rule {
-    ip_protocol = "icmp"
-    from_port   = -1
-    to_port     = -1
-    cidr        = "0.0.0.0/0"
-  }
-}
-
-resource "openstack_compute_secgroup_v2" "ssh" {
-  name        = var.ssh_security_group_name
-  description = "SSH access"
-
-  dynamic "rule" {
-    for_each = var.ssh_cidrs
-
-    content {
-      ip_protocol = "tcp"
-      from_port   = 22
-      to_port     = 22
-      cidr        = rule.value
-    }
-  }
-}
-
 resource "openstack_compute_secgroup_v2" "vpn" {
   name        = var.vpn_security_group_name
   description = "VPN access and ICMP ping"
