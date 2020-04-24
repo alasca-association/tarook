@@ -3,15 +3,15 @@ apiVersion: v1
 kind: Pod
 metadata:
   labels:
-    app: writer-test
-  name: writer-test
-  namespace: default
+    app: reader-test
+  name: reader-test
+  namespace: {{ check_block_storage_namespace | to_json }}
 spec:
   containers:
   - image: debian:stable
     imagePullPolicy: IfNotPresent
     name: debian
-    command: ["bash", "-c", "set -euo pipefail; cd /mnt; dd if=/dev/urandom of=noise bs=4k count=1k; sha256sum noise > SHA256SUMS"]
+    command: ["bash", "-c", "set -euo pipefail; cd /mnt; test -e noise; sha256sum -c SHA256SUMS"]
     volumeMounts:
       - mountPath: /mnt
         name: block-storage-test
@@ -21,5 +21,5 @@ spec:
       claimName: block-storage-test
       readOnly: false
   nodeSelector:
-    name: worker1
+    name: worker0
   restartPolicy: Never

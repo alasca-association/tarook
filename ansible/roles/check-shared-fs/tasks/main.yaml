@@ -9,6 +9,13 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
 
   block:
+  - name: create namespace
+    k8s:
+      state: present
+      api_version: v1
+      kind: Namespace
+      name: "{{ check_shared_filesystem_namespace }}"
+
   - name: create PVC
     k8s:
       state: present
@@ -26,7 +33,7 @@
       api_version: v1
       kind: Pod
       name: "shared-fs-test-{{ item.item }}"
-      namespace: default
+      namespace: "{{ check_shared_filesystem_namespace }}"
     register: worker_state
     loop: "{{ worker_pods.results }}"
     until: "worker_state.resources and (worker_state.resources[0].status | default(False)) and (worker_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
@@ -39,18 +46,11 @@
     failed_when: 'item.resources[0].status.phase == "Failed"'
     loop: "{{ worker_state.results }}"
 
-  - name: delete worker pods
+  - name: delete namespace
     k8s:
       state: absent
-      definition: "{{ lookup('template', 'pod.yaml') }}"
-    loop: "{{ test_worker_nodes | map(attribute='name') | list }}"
-    register: worker_pods
-    tags:
-    - test-cleanup
-
-  - name: delete PVC
-    k8s:
-      state: absent
-      definition: "{{ lookup('template', 'pvc.yaml') }}"
+      api_version: v1
+      kind: Namespace
+      name: "{{ check_shared_filesystem_namespace }}"
     tags:
     - test-cleanup
