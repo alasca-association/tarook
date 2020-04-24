@@ -26,7 +26,7 @@ resource "openstack_networking_port_v2" "gw_vip_port" {
   security_group_ids = [
     data.openstack_networking_secgroup_v2.default.id,
     openstack_compute_secgroup_v2.gateway_secgroup.id,
-    openstack_compute_secgroup_v2.vpn.id
+    openstack_networking_secgroup_v2.vpn.id
   ]
 }
 
