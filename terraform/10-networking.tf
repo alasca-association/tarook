@@ -10,44 +10,6 @@ resource "openstack_networking_subnet_v2" "cluster_subnet" {
   ip_version = 4
 }
 
-resource "openstack_networking_secgroup_v2" "vpn" {
-  name        = var.vpn_security_group_name
-  description = "VPN access and ICMP ping"
-}
-
-resource "openstack_networking_secgroup_rule_v2" "vpn_wireguard_rule" {
-  security_group_id = openstack_networking_secgroup_v2.vpn.id
-
-  direction = "ingress"
-  ethertype = "IPv4"
-  protocol = "udp"
-  port_range_min = 7777
-  port_range_max = 7777
-  remote_ip_prefix = "0.0.0.0/0"
-}
-
-resource "openstack_networking_secgroup_rule_v2" "vpn_icmp_echo_request_rule" {
-  security_group_id = openstack_networking_secgroup_v2.vpn.id
-
-  direction = "ingress"
-  ethertype = "IPv4"
-  protocol = "icmp"
-  port_range_min = 0
-  port_range_max = 8
-  remote_ip_prefix = "0.0.0.0/0"
-}
-
-resource "openstack_networking_secgroup_rule_v2" "vpn_icmp_echo_reply_rule" {
-  security_group_id = openstack_networking_secgroup_v2.vpn.id
-
-  direction = "ingress"
-  ethertype = "IPv4"
-  protocol = "icmp"
-  port_range_min = 0
-  port_range_max = 0
-  remote_ip_prefix = "0.0.0.0/0"
-}
-
 resource "openstack_networking_router_v2" "cluster_router" {
   name                = var.router_name
   admin_state_up      = true

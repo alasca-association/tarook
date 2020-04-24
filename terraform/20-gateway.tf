@@ -1,21 +1,3 @@
-resource "openstack_networking_secgroup_v2" "gateway_secgroup" {
-  name        = var.gateway_security_group_name
-  description = "Security group for HAProxy ports"
-}
-
-resource "openstack_networking_secgroup_rule_v2" "gateway_secgroup_haproxy_rule" {
-  count = length(var.haproxy_ports)
-
-  security_group_id = openstack_networking_secgroup_v2.gateway_secgroup.id
-
-  direction = "ingress"
-  ethertype = "IPv4"
-  protocol = "tcp"
-  port_range_min = var.haproxy_ports[count.index]
-  port_range_max = var.haproxy_ports[count.index]
-  remote_ip_prefix = "0.0.0.0/0"
-}
-
 resource "openstack_networking_port_v2" "gw_vip_port" {
   name           = var.vip_port_name
   admin_state_up = true
@@ -24,12 +6,6 @@ resource "openstack_networking_port_v2" "gw_vip_port" {
   fixed_ip {
     subnet_id = openstack_networking_subnet_v2.cluster_subnet.id
   }
-
-  security_group_ids = [
-    data.openstack_networking_secgroup_v2.default.id,
-    openstack_networking_secgroup_v2.gateway_secgroup.id,
-    openstack_networking_secgroup_v2.vpn.id
-  ]
 }
 
 resource "openstack_networking_floatingip_v2" "gw_vip_fip" {
