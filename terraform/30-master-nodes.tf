@@ -1,6 +1,6 @@
 resource "openstack_networking_port_v2" "master" {
   count = var.masters
-  name  = "managed-k8s-master-${try(var.master_names[count.index], count.index)}"
+  name = "${var.cluster_name}-master-${try(var.master_names[count.index], count.index)}"
 
   network_id = openstack_networking_network_v2.cluster_network.id
 
@@ -25,7 +25,7 @@ data "openstack_images_image_v2" "master" {
 resource "openstack_blockstorage_volume_v2" "master-volume" {
   count = var.create_root_disk_on_volume == true ? var.masters : 0
 
-  name        = "managed-k8s-master-volume-${try(var.master_names[count.index], count.index)}"
+  name        = "${var.cluster_name}-master-volume-${try(var.master_names[count.index], count.index)}"
   size        = data.openstack_compute_flavor_v2.master[count.index].disk
   image_id    = data.openstack_images_image_v2.master[count.index].id
   volume_type = var.root_disk_volume_type
