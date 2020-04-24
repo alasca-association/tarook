@@ -16,6 +16,7 @@
 
 - name: Upgrade the first master node
   hosts: "{{ (groups['masters'] | sort)[0] }}"
+  gather_facts: false
   any_errors_fatal: true
   tags:
     - kubeadm-first-master
@@ -31,6 +32,7 @@
 
 - name: Upgrade the residual master nodes
   hosts: "{{ (groups['masters'] | sort)[1:] }}"
+  gather_facts: false
   serial: 1
   any_errors_fatal: true
   tags:
@@ -47,6 +49,7 @@
 
 - name: Upgrade kubelet on master nodes
   hosts: masters
+  gather_facts: false
   any_errors_fatal: true
   tags:
     - kubelet-masters
@@ -57,6 +60,7 @@
 
 - name: Upgrade the worker nodes
   hosts: workers
+  gather_facts: false
   any_errors_fatal: true
   tags:
     - workers
