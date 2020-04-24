@@ -17,10 +17,14 @@
   tags:
     - kubeadm-first-master
   roles:
-    - kubeadm-drain-node
-    - kubeadm-upgrade-kubeadm
-    - kubeadm-upgrade-apply
-    - kubeadm-uncordon-node
+    - name: kubeadm-drain-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-kubeadm
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-apply
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-uncordon-node
+      when: "not (k8s_upgrade_done | default(False))"
 
 - name: Upgrade the residual master nodes
   hosts: "{{ (groups['masters'] | sort)[1:] }}"
@@ -28,10 +32,14 @@
   tags:
     - kubeadm-other-masters
   roles:
-    - kubeadm-drain-node
-    - kubeadm-upgrade-kubeadm
-    - kubeadm-upgrade-node
-    - kubeadm-uncordon-node
+    - name: kubeadm-drain-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-kubeadm
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-uncordon-node
+      when: "not (k8s_upgrade_done | default(False))"
 
 - name: Upgrade kubelet on master nodes
   hosts: masters
@@ -39,7 +47,8 @@
     - kubelet-masters
   serial: 1
   roles:
-    - kubeadm-upgrade-kubelet
+    - name: kubeadm-upgrade-kubelet
+      when: "not (k8s_upgrade_done | default(False))"
 
 - name: Upgrade the worker nodes
   hosts: workers
@@ -47,8 +56,13 @@
     - workers
   serial: 1
   roles:
-    - kubeadm-drain-node
-    - kubeadm-upgrade-kubeadm
-    - kubeadm-upgrade-node
-    - kubeadm-upgrade-kubelet
-    - kubeadm-uncordon-node
+    - name: kubeadm-drain-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-kubeadm
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-kubelet
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-uncordon-node
+      when: "not (k8s_upgrade_done | default(False))"

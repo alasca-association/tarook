@@ -61,8 +61,9 @@
     fail:
       msg: |
         Installed version is {{ k8s_installed_version }}, which differs from
-        the configured version {{ k8s_version }}.
-    when: "k8s_installed_version != k8s_version"
+        the configured version {{ k8s_version }} and the target version
+        {{ next_k8s_version }}.
+    when: "k8s_installed_version != k8s_version and k8s_installed_version != next_k8s_version"
 
   - name: Require upgrade to 1.18.x
     fail:
@@ -78,6 +79,23 @@
         The target version is 1.18.x, so the upgrade can only start with a
         cluster on 1.17.x or 1.18.x.
     when: "not (k8s_version.startswith('1.17.') or k8s_version.startswith('1.18.'))"
+
+- name: Detect if upgrade is already done
+  set_fact:
+    # we use a boolean here instead of an expression since I’ve seen odd
+    # behaviour with non-string valued set_fact statements; I’d like to be sure
+    # that there is no false-positive for this flag.
+    k8s_upgrade_done: true
+  when: "next_k8s_version == k8s_installed_version"
+
+- name: Inform about skipped upgrade
+  debug:
+    msg: |
+      Installed version {{ k8s_installed_version }}
+      (and running version {{ k8s_running_version }})
+      match the expected version {{ next_k8s_version }}, so this node will not
+      see any update activity.
+  when: "k8s_upgrade_done | default(False)"
 
 - name: Update the package cache
   become: yes
