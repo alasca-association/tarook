@@ -108,5 +108,6 @@
   systemd:
     state: restarted
     daemon_reload: yes
+    enabled: yes
     name: kubelet
   when: kubestuff_install_apt is changed or kubestuff_install_dnf is changed or kubelet_configuration is changed

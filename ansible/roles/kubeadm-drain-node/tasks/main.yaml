@@ -7,5 +7,15 @@
 
 - name: Drain this node
   become: no
-  delegate_to: master-az1 # TODO: this is ugly because it assumes a certain scheme
-  command: "kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data=true"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  delegate_to: "{{ (groups['masters'] | sort)[0] }}"
+  command:
+  args:
+    argv:
+    - kubectl
+    - drain
+    - "{{ inventory_hostname }}"
+    - "--force"
+    - "--ignore-daemonsets"
+    - "--delete-local-data=true"

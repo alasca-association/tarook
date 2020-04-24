@@ -1,0 +1,109 @@
+- name: Show k8s version listed in playbook
+  debug:
+    msg: "Current k8s version according to the inventory is {{ k8s_version }}. Execute playbook with -v to see output of apt-cache policy. Pass the version to which the cluster should be updated as parameter 'next_k8s_version', i.e., ansible-playbook -i .. 05_upgrade_cluster.yaml -e next_k8s_version=1.15.4. Afterwards, update the value of k8s_version in the inventory."
+
+- name: Obtain installed version (dpkg)
+  command:
+  args:
+    argv:
+    - dpkg-query
+    - "--showformat=${Version}"
+    - "--show"
+    - kubeadm
+  when: ansible_pkg_mgr == 'apt'
+  register: installed_version_dpkg
+  changed_when: false
+
+- name: Obtain installed version (rpm)
+  command:
+  args:
+    argv:
+    - rpm
+    - "-q"
+    - kubeadm
+  when: ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum'
+  register: installed_version_rpm
+  changed_when: false
+
+- name: Pre-flight checks
+  any_errors_fatal: true
+  block:
+  - name: Obtain installed version
+    set_fact:
+      k8s_installed_version: "{{
+        ((ansible_pkg_mgr == 'apt') and installed_version_dpkg.stdout.split('-')[0]) or
+        ((ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum') and installed_version_rpm.stdout.split('-')[1]) }}"
+
+  - name: Obtain version as per k8s database
+    delegate_to: "{{ (groups['masters'] | sort)[0] }}"
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s_info:
+      api_version: v1
+      kind: Node
+      name: "{{ inventory_hostname }}"
+    register: k8s_node_info
+
+  - name: Extract k8s version
+    set_fact:
+      k8s_running_version: "{{ k8s_node_info.resources[0].status.nodeInfo.kubeletVersion.strip('v') }}"
+
+  - name: Check for failed upgrades
+    fail:
+      msg: |
+        Installed version is {{ k8s_installed_version }}, but the running
+        version is {{ k8s_running_version }}. This indicates that the upgrade
+        of this node was interrupted and you need to fix that manually before
+        proceeding.
+    when: "k8s_running_version != k8s_installed_version"
+
+  - name: Require installed version to match configuration
+    fail:
+      msg: |
+        Installed version is {{ k8s_installed_version }}, which differs from
+        the configured version {{ k8s_version }} and the target version
+        {{ next_k8s_version }}.
+    when: "k8s_installed_version != k8s_version and k8s_installed_version != next_k8s_version"
+
+  - name: Require upgrade to 1.18.x
+    fail:
+      msg: |
+        The target version was set to {{ next_k8s_version | default('') | to_json }}.
+        This is not a patch version of 1.18. You need to set the version via
+        the ansible variable next_k8s_version.
+    when: "next_k8s_version is not defined or not next_k8s_version.startswith('1.18.')"
+
+  - name: Require upgrade from 1.17.x
+    fail:
+      msg: |
+        The target version is 1.18.x, so the upgrade can only start with a
+        cluster on 1.17.x or 1.18.x.
+    when: "not (k8s_version.startswith('1.17.') or k8s_version.startswith('1.18.'))"
+
+- name: Detect if upgrade is already done
+  set_fact:
+    # we use a boolean here instead of an expression since I’ve seen odd
+    # behaviour with non-string valued set_fact statements; I’d like to be sure
+    # that there is no false-positive for this flag.
+    k8s_upgrade_done: true
+  when: "next_k8s_version == k8s_installed_version"
+
+- name: Inform about skipped upgrade
+  debug:
+    msg: |
+      Installed version {{ k8s_installed_version }}
+      (and running version {{ k8s_running_version }})
+      match the expected version {{ next_k8s_version }}, so this node will not
+      see any update activity.
+  when: "k8s_upgrade_done | default(False)"
+
+- name: Update the package cache
+  become: yes
+  apt:
+    update_cache: yes
+  when: ansible_pkg_mgr == 'apt'
+
+- name: Show the available k8s versions
+  command: apt-cache policy kubeadm
+  changed_when: false
+  when: ansible_pkg_mgr == 'apt'

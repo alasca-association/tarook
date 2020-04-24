@@ -1,4 +1,11 @@
 - name: Uncordon the worker node
   become: no
-  delegate_to: master-az1 # TODO: ugly because it assumes a certain scheme (jinja2)
-  command: "kubectl uncordon {{ inventory_hostname }}"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  delegate_to: "{{ (groups['masters'] | sort)[0] }}"
+  command:
+  args:
+    argv:
+    - kubectl
+    - uncordon
+    - "{{ inventory_hostname }}"
