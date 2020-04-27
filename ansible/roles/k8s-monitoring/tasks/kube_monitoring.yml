@@ -35,6 +35,26 @@
   - restart prometheus-k8s-0 pod
   - restart prometheus-k8s-1 pod
 
+- name: check if configmap for customer dashboards exists
+  k8s_info:
+    api_version: v1
+    kind: ConfigMap
+    name: "{{ monitoring_grafana_customer_dashboards_configmap }}"
+    namespace: monitoring
+  register: customer_dashboard
+
+- name: create an empty configmap for customer dashboards
+  when: monitoring_grafana_customer_dashboards and not customer_dashboard.resources
+  k8s:
+    state: present
+    apply: yes
+    definition: |
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: {{ monitoring_grafana_customer_dashboards_configmap | to_json }}
+        namespace: monitoring
+
 - name: apply manifests
   k8s:
     state: present

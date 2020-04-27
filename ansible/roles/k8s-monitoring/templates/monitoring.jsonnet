@@ -32,6 +32,18 @@ local affinity = {
   },
 } + tolerations;
 
+local grafanaCustomerVolumes = {
+  volumes+: [
+    {
+      "configMap" : {
+        "name" : {{ monitoring_grafana_customer_dashboards_configmap | to_json }}
+      },
+      "name" : "grafana-customer-dashboards"
+    },
+  ],
+};
+
+
 local kp =
   (import 'kube-prometheus/kube-prometheus.libsonnet') +
   (import 'kube-prometheus/kube-prometheus-kubeadm.libsonnet') +
@@ -524,13 +536,41 @@ local kp =
       deployment+: {
         spec+: {
           template+: {
-            spec+: affinity
+            spec+: affinity + grafanaCustomerVolumes
           },
         },
       },
     },
 
   };
+
+local kp_with_customer_dashboards = kp + {
+{% if monitoring_grafana_customer_dashboards %}
+  grafana+: {
+    deployment+: {
+      spec+: {
+        template+: {
+          spec+: {
+            containers: [
+                container + {
+                  volumeMounts+: [
+                    {
+                      "mountPath": "/grafana-dashboard-definitions/0/customer-dashboards",
+                      "name" : "grafana-customer-dashboards",
+                      "readOnly" : false
+                    }
+                  ]
+                }
+                for container in kp.grafana.deployment.spec.template.spec.containers
+            ],
+          }
+        }
+      }
+    }
+  }
+{% endif %}
+};
+
 
 { ['00-namespace-' + name]: kp.kubePrometheus[name] for name in std.objectFields(kp.kubePrometheus) } +
 {
@@ -544,4 +584,4 @@ local kp =
 { ['20-alertmanager-' + name]: kp.alertmanager[name] for name in std.objectFields(kp.alertmanager) } +
 { ['20-prometheus-' + name]: kp.prometheus[name] for name in std.objectFields(kp.prometheus) } +
 { ['20-prometheus-adapter-' + name]: kp.prometheusAdapter[name] for name in std.objectFields(kp.prometheusAdapter) } +
-{ ['20-grafana-' + name]: kp.grafana[name] for name in std.objectFields(kp.grafana) }
+{ ['20-grafana-' + name]: kp_with_customer_dashboards.grafana[name] for name in std.objectFields(kp_with_customer_dashboards.grafana) }
