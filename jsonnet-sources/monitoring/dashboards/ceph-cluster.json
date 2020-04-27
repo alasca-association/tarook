@@ -1905,7 +1905,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "ceph_cluster_total_objects",
+          "expr": "sum(ceph_pool_objects)",
           "format": "time_series",
           "interval": "$interval",
           "intervalFactor": 1,
