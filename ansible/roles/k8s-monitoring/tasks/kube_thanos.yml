@@ -19,5 +19,6 @@
 - name: apply manifests
   k8s:
     state: present
+    apply: yes
     definition: "{{ lookup('file', monitoring_jsonnet_dir_thanos + '/' + item) }}"
   loop: "{{ lookup('file', monitoring_jsonnet_dir_thanos + '/manifests.files.json' ) | from_json }}"

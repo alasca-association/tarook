@@ -6,5 +6,6 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:
     state: present
+    apply: yes
     definition: "{{ lookup('template', 'nvidia-device-plugin.yml') }}"
   when: is_gpu_cluster

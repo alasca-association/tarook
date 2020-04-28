@@ -103,6 +103,7 @@
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
       definition: "{{ lookup('file', item) }}"
+      apply: yes
       state: "{{ k8s_use_podsecuritypolicies | ternary('present', 'absent') }}"
     loop:
     - psp.yaml

@@ -22,16 +22,19 @@
   - name: Create common resource definitions
     k8s:
       state: present
+      apply: yes
       definition: "{{ lookup('template', 'common.yaml') }}"
 
   - name: Create the operator
     k8s:
       state: present
+      apply: yes
       definition: "{{ lookup('template', 'operator.yaml') }}"
 
   - name: Create the cluster
     k8s:
       state: present
+      apply: yes
       definition: "{{ lookup('template', 'cluster.yaml') }}"
 
   - name: Wait for cluster to become ready
@@ -71,17 +74,20 @@
   - name: Setup toolbox
     k8s:
       state: "{{ rook_toolbox | ternary('present', 'absent') }}"
+      apply: yes
       definition: "{{ lookup('template', 'toolbox.yaml') }}"
 
   - name: Create ceph pools
     k8s:
       state: present
+      apply: yes
       definition: "{{ lookup('template', 'pool.yaml') }}"
     loop: "{{ rook_pools }}"
 
   - name: Create pool storage classes
     k8s:
       state: present
+      apply: yes
       definition: "{{ lookup('template', 'block_storage_class.yaml') }}"
     when: "item.create_storage_class | default(False)"
     loop: "{{ rook_pools }}"
@@ -89,9 +95,11 @@
   - name: Create shared filesystem
     k8s:
       state: "{{ rook_fs | ternary('present', 'absent') }}"
+      apply: yes
       definition: "{{ lookup('template', 'fs.yaml') }}"
 
   - name: Create shared filesystem storage class
     k8s:
       state: "{{ rook_fs | ternary('present', 'absent') }}"
+      apply: yes
       definition: "{{ lookup('template', 'cephfs_storage_class.yaml') }}"

@@ -8,11 +8,13 @@
   block:
   - name: Create LBaaS controller PodSecurityPolicy objects
     k8s:
+      apply: yes
       definition: "{{ lookup('template', 'controller-psp.yaml') }}"
     when: k8s_use_podsecuritypolicies
 
   - name: Configure LBaaS controller
     k8s:
+      apply: yes
       definition:
         apiVersion: v1
         kind: Secret
@@ -27,6 +29,7 @@
 
   - name: Deploy LBaaS controller
     k8s:
+      apply: yes
       definition: "{{ lookup('template', item) }}"
     with_items:
     - controller-rbac.yaml
