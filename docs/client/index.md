@@ -255,3 +255,9 @@ status: {}
 ## Network policies
 
 The Managed K8s cluster currently only supports the Flannel CNI plugin. Therefore [network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) are not available yet. It is planned to either switch to a different CNI plugin or use Flannel in combination with another framework (e.g. Calico).
+
+## Monitoring
+
+### Grafana
+
+Dashboards that are imported into Grafana via the web interface are lost when the service is restarted. To add dashboards in a persistent manner you can add them to the `ConfigMap` `grafana-customer-dashboards` in the namespace `monitoring`. Grafana will reload its configuration by using a simple curl command: `curl -X http://admin:<admin-password>@localhost:3000/api/admin/provisioning/dashboards/reload`, assuming that grafana's port was forwarded, e.g., via `kubectl port-forward -n monitoring svc/grafana 3000`.
