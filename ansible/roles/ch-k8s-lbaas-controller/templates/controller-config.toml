@@ -1,3 +1,9 @@
+{% if ch_k8s_lbaas_use_bgp %}
+backend-layer='Pod'
+{% else %}
+backend-layer='NodePort'
+{% endif %}
+
 [openstack.auth]
 region={{ lookup('env', 'OS_REGION_NAME') | to_json }}
 username={{ lookup('env','OS_USERNAME') | to_json }}

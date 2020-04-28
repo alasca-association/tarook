@@ -49,7 +49,7 @@ cah_users_include_users = ["<user>", "<user>"]
 #
 #ch_k8s_lbaas = true
 #ch_k8s_lbaas_shared_secret = "..."
-#ch_k8s_lbaas_version = "0.2.0"
+#ch_k8s_lbaas_version = "0.3.0"
 
 # Pick a networking plugin:
 #

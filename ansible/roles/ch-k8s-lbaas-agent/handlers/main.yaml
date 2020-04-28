@@ -8,3 +8,8 @@
   service:
     name: nftables
     state: reloaded
+
+- name: restart bird
+  service:
+    name: bird
+    state: restarted
