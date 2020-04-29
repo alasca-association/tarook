@@ -1,3 +1,4 @@
+{% from "roles/k8s-monitoring/templates/jsonnet-tools.j2" import resource_constraints %}
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
 local sts = k.apps.v1.statefulSet;
 local deployment = k.apps.v1.deployment;
@@ -84,10 +85,17 @@ local affinity = {
 //  },
 //};
 
-local s = t.store + t.store.withVolumeClaimTemplate + t.store.withServiceMonitor + commonConfig + {
+local s = t.store + t.store.withVolumeClaimTemplate + t.store.withServiceMonitor + t.store.withResources + commonConfig + {
   config+:: {
     name: 'thanos-store',
     replicas: 1,
+    resources: {
+      {% call resource_constraints(
+        monitoring_thanos_store_memory_request,
+        monitoring_thanos_store_cpu_request,
+        monitoring_thanos_store_memory_limit,
+        monitoring_thanos_store_cpu_limit) %}{% endcall %}
+    },
   },
 
   statefulSet+: {
@@ -99,7 +107,7 @@ local s = t.store + t.store.withVolumeClaimTemplate + t.store.withServiceMonitor
   },
 };
 
-local q = t.query + t.query.withServiceMonitor + commonConfig + {
+local q = t.query + t.query.withServiceMonitor + t.query.withResources + commonConfig + {
   config+:: {
     name: 'thanos-query',
     replicas: 1,
@@ -110,6 +118,13 @@ local q = t.query + t.query.withServiceMonitor + commonConfig + {
       'dnssrv+_grpc._tcp.prometheus-k8s.monitoring.svc.cluster.local'
     ],
     replicaLabels: ['prometheus_replica', 'rule_replica'],
+    resources: {
+      {% call resource_constraints(
+        monitoring_thanos_query_memory_request,
+        monitoring_thanos_query_cpu_request,
+        monitoring_thanos_query_memory_limit,
+        monitoring_thanos_query_cpu_limit) %}{% endcall %}
+    },
   },
 
   deployment+: {

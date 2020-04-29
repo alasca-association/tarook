@@ -1,3 +1,4 @@
+{% from "roles/k8s-rook/templates/utils.j2" import resource_constraints %}
 apiVersion: "ceph.rook.io/v1"
 kind: "CephCluster"
 metadata:
@@ -67,7 +68,13 @@ spec:
           effect: "{{ rook_placement_taint.effect | default('NoSchedule') }}"
 {% endif %}
 {% endif %}
-      resources: {}
+      resources: {
+{% call resource_constraints(
+  rook_osd_memory_request,
+  rook_osd_cpu_request,
+  rook_osd_memory_limit,
+  rook_osd_cpu_limit) %}{% endcall %}
+      }
       volumeClaimTemplates:
       - metadata:
           creationTimestamp: null
@@ -103,4 +110,18 @@ spec:
         effect: "{{ rook_placement_taint.effect | default('NoSchedule') }}"
 {% endif %}
 {% endif %}
-
+  resources:
+    mon: {
+{% call resource_constraints(
+  rook_mon_memory_request,
+  rook_mon_cpu_request,
+  rook_mon_memory_limit,
+  rook_mon_cpu_limit) %}{% endcall %}
+    }
+    mgr: {
+{% call resource_constraints(
+  rook_mgr_memory_request,
+  rook_mgr_cpu_request,
+  rook_mgr_memory_limit,
+  rook_mgr_cpu_limit) %}{% endcall %}
+    }

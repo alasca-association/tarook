@@ -32,24 +32,10 @@ vrrp_priority = 100
 vrrp_priority = 80
 
 [ansible.03_final.group_vars.all]
+# KUBERNETES CLUSTER CONFIGURATION
+#
+# Kubernetes version. Currently, we only support 1.17.x.
 k8s_version = "1.17.3"
-rook = true
-rook_nosds = 3
-rook_osd_volume_size = "90Gi"
-rook_toolbox = true
-rook_fs = true
-cah_users_include_users = ["<user>", "<user>"]
-
-# To enable our LBaaS service, un-comment the following options and fill in a
-# unique, random, base64-encoded secret in place of `...`.
-#
-# To generate such a secret, you can use the following command:
-#
-# $ dd if=/dev/urandom bs=16 count=1 status=none | base64
-#
-#ch_k8s_lbaas = true
-#ch_k8s_lbaas_shared_secret = "..."
-#ch_k8s_lbaas_version = "0.3.0"
 
 # Pick a networking plugin:
 #
@@ -74,6 +60,204 @@ k8s_network_plugin = "kube-router"
 # is set to false. Generally, you’ll not want to change this.
 #
 #k8s_network_plugin_switch_restart_namespaces=[...]
+
+# To enable our LBaaS service, un-comment the following options and fill in a
+# unique, random, base64-encoded secret in place of `...`.
+#
+# To generate such a secret, you can use the following command:
+#
+# $ dd if=/dev/urandom bs=16 count=1 status=none | base64
+#
+#ch_k8s_lbaas = true
+#ch_k8s_lbaas_shared_secret = "..."
+#ch_k8s_lbaas_version = "0.3.0"
+
+# ROOK-BASED CEPH STORAGE CONFIGURATION
+#
+# By default, rook is disabled. Many clusters will want to use it though, so
+# you should enable it here if you want. It requires extra options which need
+# to be chosen with care, which is why the default is `false`.
+#
+# Enable rook deployment
+#rook = true
+
+# Placement controls
+#
+# These controls allow to control the placement of rook pods. The `taint` option
+# controls which additional taint the rook pods will tolerate. Note that the
+# only supported key is "{{ managed_k8s_control_plane_key }}", but the value
+# can be chosen freely to allow to separate e.g. monitoring and ceph on
+# different workers.
+#
+# The `label` option constraints pods to run *only* on nodes with the specific
+# label. If no nodes have that label, the cluster will not start.
+#
+# It is recommended to set both taint and label to the same thing.
+#
+#rook_placement_taint = {
+#    key = "{{ managed_k8s_control_plane_key }}",
+#    value = "meta",
+#}
+#
+#rook_placement_label = {
+#    key = "{{ managed_k8s_control_plane_key }}",
+#    value = "meta",
+#}
+
+# Number of OSDs to run. This should be equal to the number of storage meta
+# workers you use.
+#rook_nosds = 3
+
+# The size of the storage backing each OSD.
+#rook_osd_volume_size = "90Gi"
+
+# Enable the rook toolbox, which is a pod with ceph tools installed to
+# introspect the cluster state.
+#rook_toolbox = true
+
+# Enable the CephFS shaerd filesystem.
+#rook_fs = true
+
+# Rook pod memory limits
+#
+# The default values are the *absolute minimum* values required by rook. Going
+# below these numbers will make rook refuse to even create the pods. See also:
+# https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-configuration-settings
+
+# Memory limit for mon Pods
+#
+#rook_mon_memory_limit = "1Gi"
+#rook_mon_memory_request = "{{ rook_mon_memory_limit }}"
+#rook_mon_cpu_limit = "500m"
+#rook_mon_cpu_request = "100m"
+
+# Resource limits for OSD pods
+#
+# Note that these are chosen so that the OSD pods end up in the Guaranteed QoS
+# class.
+#
+#rook_osd_memory_limit = "2Gi"
+#rook_osd_memory_request = "{{ rook_osd_memory_limit }}"
+#rook_osd_cpu_limit = "500m"
+#rook_osd_cpu_request = "{{ rook_osd_cpu_limit }}"
+
+# Memory limit for mgr Pods
+#
+#rook_mgr_memory_limit = "512Mi"
+#rook_mgr_memory_request = "{{ rook_mgr_memory_limit }}"
+#rook_mgr_cpu_limit = "500m"
+#rook_mgr_cpu_request = "100m"
+
+# Memory limit for MDS / CephFS Pods
+#
+#rook_mds_memory_limit = "4Gi"
+#rook_mds_memory_request = "{{ rook_mds_memory_limit }}"
+#rook_mds_cpu_limit = "1"
+#rook_mds_cpu_request = "{{ rook_mds_cpu_limit }}"
+
+# MONITORING
+# Enable monitoring (enabled by default)
+#monitoring: true
+
+# Enable use of Thanos (enabled by default)
+#monitoring_thanos: true
+
+# Thanos uses local storage to keep a copy of the metadata from the object store
+# for faster access. The size and storage class for that volume can be
+# configured:
+#
+#monitoring_thanos_metadata_volume_size="10Gi"
+#monitoring_thanos_metadata_volume_storage_class="rook-ceph-data"
+
+# By default, the monitoring will capture all namespaces. If this is not
+# desired, the following switch can be turned off. In that case, only the
+# kube-system, monitoring and rook namespaces are scraped by Prometheus.
+#
+#monitoring_prometheus_monitor_all_namespaces=true
+
+# Placement controls
+#
+# These controls allow to control the placement of monitoring pods. The `taint`
+# option controls which additional taint the monitoring pods will tolerate. Note
+# that the only supported key is "{{ managed_k8s_control_plane_key }}", but the
+# value can be chosen freely to allow to separate e.g. monitoring and ceph on
+# different workers.
+#
+# The `label` option constraints pods to run *only* on nodes with the specific
+# label. If no nodes have that label, the cluster will not start.
+#
+# It is recommended to set both taint and label to the same thing.
+#
+#monitoring_placement_taint = {
+#    key = "{{ managed_k8s_control_plane_key }}",
+#    value = "meta",
+#}
+#
+#monitoring_placement_label = {
+#    key = "{{ managed_k8s_control_plane_key }}",
+#    value = "meta",
+#}
+#
+# To use the same taint and label controls as rook, set them in the following
+# way:
+#monitoring_placement_taint = "{{ rook_placement_taint }}"
+#monitoring_placement_label = "{{ rook_placement_label }}"
+
+# Monitoring pod resource limits
+#
+# The following limits are applied to the respective pods.
+#
+# Note that the Prometheus limits are chosen fairly conservatively and may need
+# tuning for larger and smaller clusters.
+#
+# By default, we prefer to set limits in such a way that the Pods end up in the
+# Guaranteed QoS class (i.e. both CPU and Memory limits and requests set to the
+# same value).
+#
+#monitoring_alertmanager_memory_limit = "256Mi"
+#monitoring_alertmanager_memory_request = "{{ monitoring_alertmanager_memory_limit }}"
+#monitoring_alertmanager_cpu_limit = "100m"
+#monitoring_alertmanager_cpu_request = "{{ monitoring_alertmanager_cpu_limit }}"
+#
+#monitoring_prometheus_memory_limit = "3Gi"
+#monitoring_prometheus_memory_request = "{{ monitoring_prometheus_memory_limit }}"
+#monitoring_prometheus_cpu_limit = "1"
+#monitoring_prometheus_cpu_request = "{{ monitoring_prometheus_cpu_limit }}"
+#
+#monitoring_grafana_memory_limit = "512Mi"
+#monitoring_grafana_memory_request = "256Mi"
+#monitoring_grafana_cpu_limit = "500m"
+#monitoring_grafana_cpu_request = "100m"
+#
+#monitoring_kube_state_metrics_memory_limit = "128Mi"
+#monitoring_kube_state_metrics_memory_request = "50Mi"
+#monitoring_kube_state_metrics_cpu_limit = "50m"
+#monitoring_kube_state_metrics_cpu_request = "20m"
+#
+#monitoring_thanos_sidecar_memory_limit = "256Mi"
+#monitoring_thanos_sidecar_memory_request = "{{ monitoring_thanos_sidecar_memory_limit }}"
+#monitoring_thanos_sidecar_cpu_limit = "500m"
+#monitoring_thanos_sidecar_cpu_request = "{{ monitoring_thanos_sidecar_cpu_limit }}"
+#
+# Note that the default limits for Thanos are quite experimental. We’re still
+# gathering experience here. Please see also
+# ansible/roles/k8s-monitoring/defaults/main.yaml for more discussion on the
+# defaults.
+#
+# Instead of ad-hoc changing limits in your cluster, seeking discussion with
+# the Flyingdutchman/CID team for a change of defaults is to be preferred.
+#
+#monitoring_thanos_query_memory_limit = "786Mi"
+#monitoring_thanos_query_memory_request = "128Mi"
+#monitoring_thanos_query_cpu_limit = "1"
+#monitoring_thanos_query_cpu_request = "100m"
+#
+#monitoring_thanos_store_memory_limit = "2Gi"
+#monitoring_thanos_store_memory_request = "256Mi"
+#monitoring_thanos_store_cpu_limit = "500m"
+#monitoring_thanos_store_cpu_request = "100m"
+
+cah_users_include_users = ["<user>", "<user>"]
 
 [ansible.03_final.host_vars.managed-k8s-gw-az1]
 vrrp_priority = 150

@@ -1,4 +1,5 @@
 {% set generate_psp = k8s_use_podsecuritypolicies | default(False) %}
+{% from "roles/k8s-monitoring/templates/jsonnet-tools.j2" import resource_constraints %}
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
 
 local tolerations = {
@@ -81,7 +82,14 @@ local kp =
             editable: false,
           },
 {% endif %}
-        ]
+        ],
+        container: {
+          {% call resource_constraints(
+  monitoring_grafana_memory_request,
+  monitoring_grafana_cpu_request,
+  monitoring_grafana_memory_limit,
+  monitoring_grafana_cpu_limit) %}{% endcall %}
+        },
       },
     },
     grafanaDashboards+:: {
@@ -171,6 +179,8 @@ local kp =
         spec+: {
           template+: {
             spec+: {
+              // note: we only add a toleration here, not the label constraint,
+              // because the node-exporter needs to run on all the nodes.
               tolerations+: [
                 {
                   key: '{{ managed_k8s_control_plane_key }}',
@@ -359,7 +369,24 @@ local kp =
         ]),
 {% endif %}
       prometheus+: {
-        spec+: affinity
+        spec+: affinity + {
+          resources: {
+{% call resource_constraints(
+  monitoring_prometheus_memory_request,
+  monitoring_prometheus_cpu_request,
+  monitoring_prometheus_memory_limit,
+  monitoring_prometheus_cpu_limit) %}{% endcall %}
+          },
+          thanos+: {
+            resources: {
+{% call resource_constraints(
+  monitoring_thanos_sidecar_memory_request,
+  monitoring_thanos_sidecar_cpu_request,
+  monitoring_thanos_sidecar_memory_limit,
+  monitoring_thanos_sidecar_cpu_limit) %}{% endcall %}
+            }
+          },
+        },
       },
     },
 
@@ -418,7 +445,7 @@ local kp =
       deployment+: {
         spec+: {
           template+: {
-            spec+: affinity
+            spec+: affinity,
           },
         },
       },
@@ -477,7 +504,15 @@ local kp =
         ]),
 {% endif %}
       alertmanager+: {
-        spec+: affinity
+        spec+: affinity + {
+          resources: {
+{% call resource_constraints(
+  monitoring_alertmanager_memory_request,
+  monitoring_alertmanager_cpu_request,
+  monitoring_alertmanager_memory_limit,
+  monitoring_alertmanager_cpu_limit) %}{% endcall %}
+          },
+        },
       },
     },
 
@@ -544,6 +579,44 @@ local kp =
 
   };
 
+// We have to play tricks to attach the resource limits to the
+// kube-state-metrics, because there is no input for them and we have to patch
+// all containers
+
+local kp_with_patched_ksm = kp + {
+  kubeStateMetrics+: {
+    deployment+: {
+      spec+: {
+        template+: {
+          spec+: {
+            containers: [
+              container + {
+                resources: if container.name == "kube-state-metrics" then {
+  {% call resource_constraints(
+  monitoring_kube_state_metrics_memory_request,
+  monitoring_kube_state_metrics_cpu_request,
+  monitoring_kube_state_metrics_memory_limit,
+  monitoring_kube_state_metrics_cpu_limit) %}{% endcall %}
+                } else {
+                  limits: {
+                    cpu: "20m",
+                    memory: "40Mi",
+                  },
+                  requests: {
+                    cpu: "10m",
+                    memory: "20Mi",
+                  },
+                }
+              }
+              for container in kp.kubeStateMetrics.deployment.spec.template.spec.containers
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
 local kp_with_customer_dashboards = kp + {
 {% if monitoring_grafana_customer_dashboards %}
   grafana+: {
@@ -571,7 +644,6 @@ local kp_with_customer_dashboards = kp + {
 {% endif %}
 };
 
-
 { ['00-namespace-' + name]: kp.kubePrometheus[name] for name in std.objectFields(kp.kubePrometheus) } +
 {
   ['01-prometheus-operator-' + name]: kp.prometheusOperator[name]
@@ -580,7 +652,7 @@ local kp_with_customer_dashboards = kp + {
 // serviceMonitor is separated so that it can be created after the CRDs are ready
 { '10-prometheus-operator-serviceMonitor': kp.prometheusOperator.serviceMonitor } +
 { ['20-node-exporter-' + name]: kp.nodeExporter[name] for name in std.objectFields(kp.nodeExporter) } +
-{ ['20-kube-state-metrics-' + name]: kp.kubeStateMetrics[name] for name in std.objectFields(kp.kubeStateMetrics) } +
+{ ['20-kube-state-metrics-' + name]: kp_with_patched_ksm.kubeStateMetrics[name] for name in std.objectFields(kp.kubeStateMetrics) } +
 { ['20-alertmanager-' + name]: kp.alertmanager[name] for name in std.objectFields(kp.alertmanager) } +
 { ['20-prometheus-' + name]: kp.prometheus[name] for name in std.objectFields(kp.prometheus) } +
 { ['20-prometheus-adapter-' + name]: kp.prometheusAdapter[name] for name in std.objectFields(kp.prometheusAdapter) } +
