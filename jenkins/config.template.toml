@@ -94,15 +94,9 @@ k8s_network_plugin = "kube-router"
 #
 # It is recommended to set both taint and label to the same thing.
 #
-#rook_placement_taint = {
-#    key = "{{ managed_k8s_control_plane_key }}",
-#    value = "meta",
-#}
+#rook_placement_taint = { key = "{{ managed_k8s_control_plane_key }}", value = "meta" }
 #
-#rook_placement_label = {
-#    key = "{{ managed_k8s_control_plane_key }}",
-#    value = "meta",
-#}
+#rook_placement_label = { key = "{{ managed_k8s_control_plane_key }}", value = "meta" }
 
 # Number of OSDs to run. This should be equal to the number of storage meta
 # workers you use.
@@ -157,7 +151,7 @@ k8s_network_plugin = "kube-router"
 
 # MONITORING
 # Enable monitoring (enabled by default)
-#monitoring: true
+#monitoring = true
 
 # Enable use of Thanos (enabled by default)
 #monitoring_thanos: true
@@ -188,15 +182,9 @@ k8s_network_plugin = "kube-router"
 #
 # It is recommended to set both taint and label to the same thing.
 #
-#monitoring_placement_taint = {
-#    key = "{{ managed_k8s_control_plane_key }}",
-#    value = "meta",
-#}
+#monitoring_placement_taint = { key = "{{ managed_k8s_control_plane_key }}", value = "meta" }
 #
-#monitoring_placement_label = {
-#    key = "{{ managed_k8s_control_plane_key }}",
-#    value = "meta",
-#}
+#monitoring_placement_label = { key = "{{ managed_k8s_control_plane_key }}", value = "meta" }
 #
 # To use the same taint and label controls as rook, set them in the following
 # way:
