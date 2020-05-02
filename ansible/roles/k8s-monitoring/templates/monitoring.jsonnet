@@ -53,7 +53,9 @@ local kp =
   // (import 'kube-prometheus/kube-prometheus-managed-cluster.libsonnet') +
   // (import 'kube-prometheus/kube-prometheus-node-ports.libsonnet') +
   // (import 'kube-prometheus/kube-prometheus-static-etcd.libsonnet') +
+{% if monitoring_use_thanos %}
   (import 'kube-prometheus/kube-prometheus-thanos-sidecar.libsonnet') +
+{% endif %}
 {% if monitoring_prometheus_monitor_all_namespaces %}
   (import 'kube-prometheus/kube-prometheus-all-namespaces.libsonnet') +
 {% endif %}
@@ -377,6 +379,7 @@ local kp =
   monitoring_prometheus_memory_limit,
   monitoring_prometheus_cpu_limit) %}{% endcall %}
           },
+{% if monitoring_use_thanos %}
           thanos+: {
             resources: {
 {% call resource_constraints(
@@ -386,6 +389,7 @@ local kp =
   monitoring_thanos_sidecar_cpu_limit) %}{% endcall %}
             }
           },
+{% endif %}
         },
       },
     },
