@@ -17,13 +17,14 @@
 
 # This is an extra task because I'm not sure about the order packages are installed.
 # The header files must be available when DKMS wants to build the module
-- name: Install linux-headers package so wg dkms module is built
+- name: Install dependencies so wg dkms module is built
   become: yes
   apt:
     state: present
     update_cache: yes
     name:
       - linux-headers-cloud-amd64
+      - bc
 
 - name: Install wireguard on the wireguard VPN server
   become: yes
