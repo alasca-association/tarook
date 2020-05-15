@@ -125,7 +125,7 @@ def require_unique_names(users: typing.Iterable[WireGuardUser]):
         if user.name in seen_names:
             raise ValueError(
                 "duplicate wireguard user name ({!r}) in {!r} and {!r}".format(
-                    user, seen_names[user.name],
+                    user.name, user, seen_names[user.name],
                 )
             )
         seen_names[user.name] = user
