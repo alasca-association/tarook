@@ -121,3 +121,4 @@
   roles:
   - role: check-monitoring
     tags: test-monitoring
+    when: "monitoring | default(False)"
