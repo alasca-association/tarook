@@ -1,8 +1,6 @@
 - name: Initial node bootstrap
   hosts: k8s_nodes
   gather_facts: false
-  vars_files:
-  - vars/disruption.yaml
   roles:
   - detect_user
   - role: ssh-known-hosts
@@ -11,8 +9,31 @@
     tags: prepare-node
   - role: journald
     tags: journald
-  - role: update_system
-    tags: update_system
+  - role: is-k8s-installed
+    tags: update-system
+
+- name: Upgrade the system
+  hosts: node_with_k8s_installed
+  gather_facts: false
+  serial: 1
+  vars_files:
+  - vars/disruption.yaml
+  roles:
+    - kubeadm-drain-node
+    - update_system
+    - kubeadm-uncordon-node
+  tags:
+    - update-system
+
+- name: Upgrade the system
+  hosts: node_with_k8s_not_installed
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  roles:
+    - update_system
+  tags:
+    - update-system
 
 - name: Detect login for gateways
   hosts: gateways
