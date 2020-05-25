@@ -9,3 +9,5 @@
     - kubectl
     - uncordon
     - "{{ inventory_hostname }}"
+  register: uncordon_result
+  changed_when: "'uncordoned' in uncordon_result.stdout"
