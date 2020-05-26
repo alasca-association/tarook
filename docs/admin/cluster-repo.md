@@ -174,6 +174,10 @@ below.
 [direnv `.envrc`](https://direnv.net/) to have your shell automatically set the
 required variables.
 
+**Hint:** This LCM repository contains
+[a template file](../../jenkins/envrc.template.sh) you can use to bootstrap
+your own .envrc file.
+
 - `wg_conf_name` (used by `wg-up.sh`): The name of the WireGuard interface to
   create. Interface name length is restricted to 15 bytes and should start
   with `wg`. Examples: `wg0`, `wg-k8s-dev`.

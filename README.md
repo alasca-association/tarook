@@ -35,12 +35,8 @@
 ### Hints:
 
 - see [cluster-repo.md](docs/admin/cluster-repo.md) for more info on the cluster repo and the options
+- using direnv is strongly recommended; see the cluster-repo.md docs for details.
 
-- maybe helpful: .envrc with
-```
-export KUBECONFIG="$(pwd)/inventory/.etc/admin.conf"   
-source env.sh
-```
 - k8s gateways: `debian@<ip>`
    k8s master/worker: `ubuntu@<ip>`, only reachable via wireguard
 - to add more ssh user, you have to add these lines in the config.toml
