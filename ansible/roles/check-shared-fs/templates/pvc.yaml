@@ -3,11 +3,11 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: shared-fs-test
-  namespace: default
+  namespace: {{ check_shared_filesystem_namespace | to_json }}
 spec:
   accessModes:
   - ReadWriteMany
   resources:
     requests:
       storage: 2Gi
-  storageClassName: "{{ fs_storage_class }}"
+  storageClassName: {{ fs_storage_class | to_json }}

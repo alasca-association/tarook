@@ -3,13 +3,13 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: "shared-fs-test-{{ item }}"
-  namespace: default
+  namespace: {{ check_shared_filesystem_namespace | to_json }}
 spec:
   containers:
   - image: debian:stable
     imagePullPolicy: IfNotPresent
     name: debian
-    command: ["bash", "-c", "set -euo pipefail; touch /mnt/{{ item }}; for i in $(seq 1 45); do all_ok=1; for worker in $0; do if [ ! -e /mnt/$worker ]; then all_ok=0; echo \"hint for $worker missing\"; fi; done; if [ $all_ok = 1 ]; then break; fi; sleep 1; done; [ $all_ok = 1 ]", "{{ test_worker_nodes | map(attribute='name') | join(' ') }}"]
+    command: ["bash", "-c", "set -euo pipefail; touch /mnt/{{ item }}; for i in $(seq 1 45); do all_ok=1; for worker in $0; do if [ ! -e /mnt/$worker ]; then all_ok=0; echo \"hint for $worker missing\"; fi; done; if [ $all_ok = 1 ]; then break; fi; sleep 1; done; [ $all_ok = 1 ]", {{ test_worker_nodes | map(attribute='name') | join(' ') | to_json }}]
     volumeMounts:
       - mountPath: /mnt
         name: shared-fs-test
@@ -19,5 +19,5 @@ spec:
       claimName: shared-fs-test
       readOnly: false
   nodeSelector:
-    name: "{{ item }}"
+    name: {{ item | to_json }}
   restartPolicy: Never

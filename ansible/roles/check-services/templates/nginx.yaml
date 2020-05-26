@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nginx-service
-  namespace: default
+  namespace: {{ check_services_namespace | to_json }}
 spec:
   selector:
     app: nginx
@@ -20,7 +20,7 @@ metadata:
   labels:
     app: nginx
   name: nginx
-  namespace: default
+  namespace: {{ check_services_namespace | to_json }}
 spec:
   containers:
   - image: nginx

@@ -4,9 +4,16 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
 
   block:
+  - name: create namespace
+    k8s:
+      api_version: v1
+      kind: Namespace
+      state: present
+      name: "{{ check_services_namespace }}"
+
   - name: Apply the nginx+service manifest
     k8s:
-      definition: "{{ lookup('file', 'nginx.yaml') }}"
+      definition: "{{ lookup('template', 'nginx.yaml') }}"
       state: present
       wait: yes
 
@@ -17,10 +24,12 @@
     register: curl_result
     failed_when: curl_result.rc != 0
 
-  - name: Delete the nginx+service manifest
+  - name: delete namespace
     k8s:
-      definition: "{{ lookup('file', 'nginx.yaml') }}"
+      api_version: v1
+      kind: Namespace
       state: absent
+      name: "{{ check_services_namespace }}"
       wait: yes
     tags:
     - test-cleanup

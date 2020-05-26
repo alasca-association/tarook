@@ -9,6 +9,13 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
 
   block:
+  - name: create namespace
+    k8s:
+      api_version: v1
+      kind: Namespace
+      name: "{{ check_block_storage_namespace }}"
+      state: present
+
   - name: create PVC
     k8s:
       definition: "{{ lookup('template', 'pvc.yaml') }}"
@@ -16,7 +23,7 @@
 
   - name: start writer pod
     k8s:
-      definition: "{{ lookup('file', 'writer-pod.yaml') }}"
+      definition: "{{ lookup('template', 'writer-pod.yaml') }}"
       state: present
 
   - name: fetch writer pod completion state
@@ -24,7 +31,7 @@
       api_version: v1
       kind: Pod
       name: writer-test
-      namespace: default
+      namespace: "{{ check_block_storage_namespace }}"
     register: writer_state
     until: "writer_state.resources and (writer_state.resources[0].status | default(False)) and (writer_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
     delay: 1
@@ -37,7 +44,7 @@
 
   - name: run reader pod
     k8s:
-      definition: "{{ lookup('file', 'reader-pod.yaml') }}"
+      definition: "{{ lookup('template', 'reader-pod.yaml') }}"
       state: present
 
   - name: fetch reader pod completion state
@@ -45,7 +52,7 @@
       api_version: v1
       kind: Pod
       name: reader-test
-      namespace: default
+      namespace: "{{ check_block_storage_namespace }}"
     register: reader_state
     until: "reader_state.resources and (reader_state.resources[0].status | default(False)) and (reader_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
     delay: 1
@@ -56,20 +63,11 @@
       msg: "Reader pod is in condition {{ reader_state.resources[0].status.phase }}"
     failed_when: 'reader_state.resources[0].status.phase == "Failed"'
 
-  - name: delete pods
+  - name: delete namespace
     k8s:
-      definition: "{{ lookup('file', item) }}"
-      state: absent
-      wait: yes
-    loop:
-    - "reader-pod.yaml"
-    - "writer-pod.yaml"
-    tags:
-    - test-cleanup
-
-  - name: delete PVC
-    k8s:
-      definition: "{{ lookup('template', 'pvc.yaml') }}"
+      api_version: v1
+      kind: Namespace
+      name: "{{ check_block_storage_namespace }}"
       state: absent
       wait: yes
     tags:
