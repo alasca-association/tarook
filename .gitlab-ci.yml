@@ -20,7 +20,7 @@ shellcheck:
   - when: always
   stage: lint
   script:
-  - "find -iname '*.sh' '!' -ipath './jsonnet-sources/*/vendor/**' -print0 | xargs -0 -- shellcheck -Calways"
+  - "find -iname '*.sh' '!' -ipath './jsonnet-sources/*/vendor/**' '!' -ipath './.git/**' -print0 | xargs -0 -- shellcheck -Calways"
   tags:
   - docker
 

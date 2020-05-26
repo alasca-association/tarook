@@ -27,27 +27,16 @@
 - wg-quick up ~/.wireguard/wg0.conf 
 
 ### HowTo:
-- create a git Repo
-- clone the git Repo
-- copy the `managed-k8s/jenkins/env.template.sh` to the repo and rename it to `env.sh` and adjust it
-- create the folder `config` inside the Repo
-- copy the `managed-k8s/jenkins/config.template.toml` as `config.toml` to the `config` folder and adjust it
-- run `<path-to-managed-k8s>/jenkins/manage_cluster.sh` for rollout of gitlab master state (calls `apply.sh` internally)
+
+- [create a cluster repo](docs/admin/cluster-repo.md#creating-a-new-cluster-repository)
+- run `python3 managed-k8s/jenkins/toml_helper.py`
 - alternatively, run `<path-to-managed-k8s>/actions/apply.sh` to use own changes
-  - when using it for the first time and without having used `manage_cluster.sh` before, run `python3 managed-k8s/jenkins/toml_helper.py` first
+
 ### Hints:
-- the folder structure should look like this:
- ```
- <cluster-repo>
- |- env.sh
- |- config/
- |-- config.toml
- ```
-- maybe helpful: .envrc with
-```
-export KUBECONFIG="$(pwd)/inventory/.etc/admin.conf"   
-source env.sh
-```
+
+- see [cluster-repo.md](docs/admin/cluster-repo.md) for more info on the cluster repo and the options
+- using direnv is strongly recommended; see the cluster-repo.md docs for details.
+
 - k8s gateways: `debian@<ip>`
    k8s master/worker: `ubuntu@<ip>`, only reachable via wireguard
 - to add more ssh user, you have to add these lines in the config.toml
