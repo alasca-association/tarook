@@ -245,6 +245,12 @@ k8s_network_plugin = "kube-router"
 #monitoring_thanos_store_cpu_limit = "500m"
 #monitoring_thanos_store_cpu_request = "100m"
 
+# MISC FEATURES
+
+# Install wireguard on all workers (without setting up any server-side stuff)
+# so that in can be used from within Pods.
+#wireguard_on_workers = true
+
 cah_users_include_users = ["<user>", "<user>"]
 
 [ansible.03_final.host_vars.managed-k8s-gw-az1]
