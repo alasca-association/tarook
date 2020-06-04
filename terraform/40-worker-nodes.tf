@@ -25,7 +25,7 @@ resource "openstack_compute_instance_v2" "worker" {
   count = var.workers
   name = openstack_networking_port_v2.worker[count.index].name
 
-  availability_zone = try(var.worker_azs[count.index], var.azs[count.index % length(var.azs)])
+  availability_zone = var.enable_az_management ? try(var.worker_azs[count.index], var.azs[count.index % length(var.azs)]) : null
   flavor_id = data.openstack_compute_flavor_v2.worker[count.index].id
   image_id = data.openstack_images_image_v2.worker[count.index].id
   key_pair = var.keypair
