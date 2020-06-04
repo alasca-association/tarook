@@ -4,6 +4,7 @@ haproxy_ports = [30060]
 workers = 6
 worker_images = ["CentOS 8", "CentOS 8"]
 worker_flavors = ["L", "M", "L", "M", "L", "M"]
+enable_az_management = false
 
 # dd2a only
 #azs = ["nova"]
