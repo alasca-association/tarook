@@ -61,7 +61,7 @@ resource "openstack_compute_instance_v2" "gateway" {
   image_id = data.openstack_images_image_v2.gateway.id
   flavor_id = data.openstack_compute_flavor_v2.gateway.id
   key_pair = var.keypair
-  availability_zone = var.azs[count.index]
+  availability_zone = var.enable_az_management ? var.azs[count.index] : null
   config_drive = true
 
   network {

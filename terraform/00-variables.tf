@@ -155,3 +155,10 @@ variable "thanos_delete_container" {
   type = bool
   default = false
 }
+
+// If set to false, the availability zone of instances will not be managed.
+// This is useful in CI environments if the Cloud Is Full.
+variable "enable_az_management" {
+  type = bool
+  default = true
+}

@@ -25,7 +25,7 @@ resource "openstack_compute_instance_v2" "master" {
   count = var.masters
   name = openstack_networking_port_v2.master[count.index].name
 
-  availability_zone = try(var.master_azs[count.index], var.azs[count.index % length(var.azs)])
+  availability_zone = var.enable_az_management ? try(var.master_azs[count.index], var.azs[count.index % length(var.azs)]) : null
   config_drive = true
   flavor_id = data.openstack_compute_flavor_v2.master[count.index].id
   image_id = data.openstack_images_image_v2.master[count.index].id
