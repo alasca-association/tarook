@@ -91,9 +91,6 @@
       mode: "u=rw,go=r"
     notify: reload nftables
 
-- include_tasks: bird.yaml
-  when: ch_k8s_lbaas_use_bgp
-
 - name: Disable LBaaS agent
   when: not ch_k8s_lbaas
   block:
