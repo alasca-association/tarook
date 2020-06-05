@@ -4,6 +4,7 @@
   become: no
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
+  when: monitoring
   k8s:
     apply: yes
     definition:
@@ -19,6 +20,7 @@
   become: no
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
+  when: monitoring
   k8s:
     definition: "{{ lookup('template', 'default-psp.yaml') }}"
     apply: yes
@@ -29,6 +31,7 @@
 
 - include: kube_monitoring.yml
   become: no
+  when: monitoring
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   tags:
@@ -38,12 +41,12 @@
   become: no
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  when: monitoring_use_thanos
+  when: monitoring and monitoring_use_thanos
   tags:
   - thanos
 
 - name: Expose Prometheus with a NodePort
-  when: monitoring_ch_global_monitoring
+  when: monitoring and monitoring_ch_global_monitoring
   become: no
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf

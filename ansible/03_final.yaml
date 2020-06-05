@@ -104,7 +104,6 @@
   roles:
   - role: k8s-rook
     tags: rook
-    when: rook
   - role: k8s-monitoring
     tags: k8s-monitoring
   - role: device-plugin
