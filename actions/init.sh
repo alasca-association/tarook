@@ -24,12 +24,12 @@ fi
 run git submodule update --init --recursive
 
 new_actions_dir="$submodule_managed_k8s_name/actions"
-if [ "$(realpath "new_actions_dir")" != "$(realpath "$actions_dir")" ]; then
+if [ "$(realpath "$new_actions_dir")" != "$(realpath "$actions_dir")" ]; then
     if [ -x "$new_actions_dir/init.sh" ]; then
         # execute init from the cloned repository; it should not change anything
         # but it’ll provide a consistent state
         hintf 're-executing init.sh from local submodule'
-        exec "$new_actions_dir/actions/init.sh"
+        exec "$new_actions_dir/init.sh"
     else
         # huh? no executable init.sh in the cloned repository. weird, but let’s
         # continue.
