@@ -10,14 +10,6 @@
     enabled: no
   when: ansible_facts.services['systemd-timesyncd'] is defined
 
-- name: stop systemd time sync
-  become: yes
-  become_user: root
-  service:
-    name: systemd-timesyncd
-    enabled: no
-  when: ansible_facts.services['systemd-timesyncd'] is defined
-
 - name: install chrony
   become: yes
   become_user: root
