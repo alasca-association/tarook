@@ -9,6 +9,8 @@
     tags: ssh-known-hosts
   - role: prepare-node
     tags: prepare-node
+  - role: journald
+    tags: journald
   - role: update_system
     tags: update_system
 
