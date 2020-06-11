@@ -18,9 +18,9 @@ if [ -n "$wg_existing_route" ] && [ -z "${MANAGED_K8S_IGNORE_WIREGUARD_ROUTE:-}"
     exit 2
 fi
 
-if [ -z "$(jq --arg user "$wg_user" -r '.ansible["02_trampoline"].group_vars.gateways.wg_peers[].ident | select(. == $ARGS.named.user)' "$cluster_repository/config/config.json")" ]; then
+ipam_path="$cluster_repository/config/wireguard_ipam.toml"
+if python -c "import toml, sys; sys.exit(any(user['ident'] == '$wg_user' for user in toml.load('$ipam_path')['users']))" ; then
     warningf 'failed to find wireguard user %s in trampoline configuration' "$wg_user" >&2
-    hintf 'since this is likely to break wireguard, it will lead to stage 3 failing with timeouts' >&2
 fi
 
 #set up wireguard
