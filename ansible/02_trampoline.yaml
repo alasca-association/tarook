@@ -43,3 +43,5 @@
     tags: prometheus-haproxy-exporter
   - role: prometheus-keepalived-exporter
     tags: prometheus-keepalived-exporter
+  - role: journald
+    tags: journald

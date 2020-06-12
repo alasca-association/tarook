@@ -1,0 +1,2 @@
+---
+journald_forward_to_syslog: false
