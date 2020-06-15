@@ -105,6 +105,9 @@
       definition: "{{ lookup('file', item) }}"
       apply: yes
       state: "{{ k8s_use_podsecuritypolicies | ternary('present', 'absent') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
     loop:
     - psp.yaml
 

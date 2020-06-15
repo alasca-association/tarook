@@ -38,6 +38,9 @@
     definition: "{{ lookup('template', 'kubeadm-kuberouter.yaml') }}"
     apply: yes
     state: "present"
+    validate:
+      fail_on_error: yes
+      strict: yes
 
 - name: Enumerate all nodes
   become: yes

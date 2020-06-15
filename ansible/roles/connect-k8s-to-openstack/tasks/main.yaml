@@ -13,6 +13,9 @@
       metadata:
         name: cloud-config
         namespace: kube-system
+    validate:
+      fail_on_error: yes
+      strict: yes
   notify:
   - restart CCM
 
@@ -32,6 +35,9 @@
     namespace: kube-system
     name: "kube-controller-manager-{{ inventory_hostname }}"
     wait: no
+    validate:
+      fail_on_error: yes
+      strict: yes
 
 - name: Start the OpenStack Cloud Controller manager
   become: no
@@ -43,12 +49,18 @@
         state: "{{ k8s_use_podsecuritypolicies | ternary('present', 'absent') }}"
         apply: yes
         definition: "{{ lookup('file', 'psp.yaml') }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
 
     - name: Deploy the CCM and its RBAC
       k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', item) }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
       loop:
       - controller-manager/openstack-cloud-controller-manager-ds.yaml
       - rbac/cloud-controller-manager-roles.yaml
@@ -59,6 +71,9 @@
         state: present
         apply: yes
         definition: "{{ lookup('template', 'cinder-csi-plugin/' + item) }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
       loop:
       - cinder-csi-controllerplugin-rbac.yaml
       - cinder-csi-controllerplugin.yaml
@@ -70,6 +85,9 @@
         state: present
         apply: yes
         definition: "{{ lookup('template', 'cinder_storage_class.yaml') }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
 
 - name: Start the Octavia Ingress Controller
   when: openstack_lbaas_ingress
@@ -92,6 +110,9 @@
             name: octavia-ingress-controller-config
             namespace: kube-system
         state: present
+        validate:
+          fail_on_error: yes
+          strict: yes
       notify:
       - restart octavia-ingress-controller
 
@@ -100,6 +121,9 @@
         apply: yes
         state: present
         definition: "{{ lookup('template', item) }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
       loop:
       - octavia-ingress-controller/rbac.yaml
       - octavia-ingress-controller/controller.yaml

@@ -25,6 +25,9 @@
     definition: "{{ lookup('file', 'kube-flannel.yaml') }}"
     apply: yes
     state: "present"
+    validate:
+      fail_on_error: yes
+      strict: yes
 
 - name: Mark networking as configured
   set_fact:

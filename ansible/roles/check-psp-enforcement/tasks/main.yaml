@@ -9,26 +9,41 @@
     k8s:
       definition: "{{ lookup('template', 'namespace.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Configure PSP resources
     k8s:
       definition: "{{ lookup('template', 'psp.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Create job without available policy
     k8s:
       definition: "{{ lookup('template', 'failing-job-no-psp.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Create job without matching policy
     k8s:
       definition: "{{ lookup('template', 'failing-job-psp-mismatch.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Create succeeding job
     k8s:
       definition: "{{ lookup('template', 'succeeding-job.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Fetch succeeding pod completion state
     k8s_info:

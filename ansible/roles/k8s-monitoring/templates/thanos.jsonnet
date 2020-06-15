@@ -101,7 +101,9 @@ local s = t.store + t.store.withVolumeClaimTemplate + t.store.withServiceMonitor
   statefulSet+: {
     spec+: {
       template+: {
-        spec+: affinity
+        spec+: affinity {
+          volumes: [],  // Added to pass the Kubernetes validation
+        }
       }
     }
   },

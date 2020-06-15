@@ -12,6 +12,9 @@
       kind: Namespace
       metadata:
         name: "{{ monitoring_namespace }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
   tags:
   - monitoring
   - thanos
@@ -25,6 +28,9 @@
     definition: "{{ lookup('template', 'default-psp.yaml') }}"
     apply: yes
     state: "{{ k8s_use_podsecuritypolicies | default(False) | ternary('present', 'absent') }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
   tags:
   - monitoring
   - thanos
@@ -56,4 +62,6 @@
   k8s:
     apply: yes
     definition: "{{ lookup('template', 'prometheus-nodeport.yaml') }}"
-
+    validate:
+      fail_on_error: yes
+      strict: yes

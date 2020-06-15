@@ -10,12 +10,18 @@
       kind: Namespace
       state: present
       name: "{{ check_services_namespace }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Apply the nginx+service manifest
     k8s:
       definition: "{{ lookup('template', 'nginx.yaml') }}"
       state: present
       wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Check the connection
     vars:
@@ -31,5 +37,8 @@
       state: absent
       name: "{{ check_services_namespace }}"
       wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
     tags:
     - test-cleanup

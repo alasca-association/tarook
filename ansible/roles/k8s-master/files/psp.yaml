@@ -67,7 +67,7 @@ spec:
       # Forbid adding the root group.
       - min: 1
         max: 65535
-readOnlyRootFilesystem: false
+  readOnlyRootFilesystem: false
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole

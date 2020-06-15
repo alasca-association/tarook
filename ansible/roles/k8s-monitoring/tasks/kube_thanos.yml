@@ -21,4 +21,7 @@
     state: present
     apply: yes
     definition: "{{ lookup('file', monitoring_jsonnet_dir_thanos + '/' + item) }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
   loop: "{{ lookup('file', monitoring_jsonnet_dir_thanos + '/manifests.files.json' ) | from_json }}"

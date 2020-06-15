@@ -26,6 +26,9 @@
     namespace: kube-system
     kind: DaemonSet
     name: "{{ item.metadata.name }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
   loop: "{{ flannel_ds.resources }}"
   register: flannel_ds_deletion
 
@@ -52,6 +55,9 @@
     definition: "{{ lookup('file', 'kube-flannel.yaml') }}"
     state: "absent"
     wait: yes
+    validate:
+      fail_on_error: yes
+      strict: yes
   when: _allow_disruption
   register: flannel
 

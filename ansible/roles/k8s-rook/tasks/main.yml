@@ -25,18 +25,27 @@
       state: present
       apply: yes
       definition: "{{ lookup('template', 'common.yaml') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Create the operator
     k8s:
       state: present
       apply: yes
       definition: "{{ lookup('template', 'operator.yaml') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Create the cluster
     k8s:
       state: present
       apply: yes
       definition: "{{ lookup('template', 'cluster.yaml') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Wait for cluster to become ready
     k8s_info:
@@ -77,12 +86,18 @@
       state: "{{ rook_toolbox | ternary('present', 'absent') }}"
       apply: yes
       definition: "{{ lookup('template', 'toolbox.yaml') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Create ceph pools
     k8s:
       state: present
       apply: yes
       definition: "{{ lookup('template', 'pool.yaml') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
     loop: "{{ rook_pools }}"
 
   - name: Create pool storage classes
@@ -90,6 +105,9 @@
       state: present
       apply: yes
       definition: "{{ lookup('template', 'block_storage_class.yaml') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
     when: "item.create_storage_class | default(False)"
     loop: "{{ rook_pools }}"
 
@@ -98,9 +116,15 @@
       state: "{{ rook_fs | ternary('present', 'absent') }}"
       apply: yes
       definition: "{{ lookup('template', 'fs.yaml') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Create shared filesystem storage class
     k8s:
       state: "{{ rook_fs | ternary('present', 'absent') }}"
       apply: yes
       definition: "{{ lookup('template', 'cephfs_storage_class.yaml') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes

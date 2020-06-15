@@ -108,7 +108,7 @@ spec:
               readOnly: true
       volumes:
         - name: socket-dir
-          emptyDir:
+          emptyDir: {}
         - name: secret-cinderplugin
           secret:
             secretName: cloud-config

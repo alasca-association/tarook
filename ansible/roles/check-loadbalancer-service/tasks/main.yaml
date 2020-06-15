@@ -10,11 +10,17 @@
       name: "{{ check_loadbalancer_service_namespace }}"
       kind: Namespace
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: create service
     k8s:
       definition: "{{ lookup('template', 'service.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: require service to have ingress IP address set
     k8s_info:
@@ -48,6 +54,9 @@
     k8s:
       definition: "{{ lookup('template', 'service.yaml') }}"
       state: absent
+      validate:
+        fail_on_error: yes
+        strict: yes
     tags:
     - test-cleanup
 
@@ -58,5 +67,8 @@
       kind: Namespace
       state: absent
       wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
     tags:
     - test-cleanup
