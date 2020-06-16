@@ -14,6 +14,8 @@ monitoring_thanos_objectstorage_region_name: "{{ lookup('env', 'OS_REGION_NAME')
 monitoring_thanos_metadata_volume_size: 10Gi
 monitoring_thanos_metadata_volume_storage_class: rook-ceph-data
 
+monitoring_thanos_version: v0.12.2
+
 monitoring_jsonnet_dir_monitoring: "{{ playbook_dir }}/../jsonnet-sources/monitoring"
 monitoring_jsonnet_dir_thanos: "{{ playbook_dir }}/../jsonnet-sources/thanos"
 monitoring_thanos_config_secret_name: thanos-objectstorage
@@ -53,6 +55,7 @@ monitoring_thanos_sidecar_memory_request: "{{ monitoring_thanos_sidecar_memory_l
 monitoring_thanos_sidecar_cpu_limit: "500m"
 monitoring_thanos_sidecar_cpu_request: "{{ monitoring_thanos_sidecar_cpu_limit }}"
 
+monitoring_thanos_sidecar_version: "{{ monitoring_thanos_version }}"
 # According to @tony.fiedler, the main memory consumer in the
 # Thanos stack will be Store. Query is mainly a passthrough.
 # Query will still need quite a bit of CPU though.

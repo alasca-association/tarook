@@ -427,7 +427,9 @@ local kp =
   monitoring_thanos_sidecar_cpu_request,
   monitoring_thanos_sidecar_memory_limit,
   monitoring_thanos_sidecar_cpu_limit) %}{% endcall %}
-            }
+            },
+            image: "quay.io/thanos/thanos:{{ monitoring_thanos_sidecar_version }}",
+            version: "{{ monitoring_thanos_sidecar_version }}"
           },
 {% endif %}
         },
