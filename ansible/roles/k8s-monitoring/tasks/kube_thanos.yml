@@ -1,11 +1,15 @@
 - name: configure jsonnet
   connection: local
+  tags:
+    - k8s-monitoring-build
   template:
     src: thanos.jsonnet
     dest: "{{ monitoring_jsonnet_dir_thanos }}/config.jsonnet"
 
 - name: rebuild
   connection: local
+  tags:
+    - k8s-monitoring-build
   command:
   args:
     argv:
