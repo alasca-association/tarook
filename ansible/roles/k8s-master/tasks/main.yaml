@@ -33,6 +33,13 @@
   retries: 3
   ignore_errors: yes
 
+- name: Make sure 'etc_dir' exists
+  delegate_to: localhost
+  become: no
+  file:
+    path: "{{ etc_dir }}"
+    state: directory
+
 - name: Spawn K8s cluster with 'kubeadm init'
   when: "local_kube_apiserver_status is failed and lb_kube_apiserver_status is failed"
   tags:
@@ -88,9 +95,6 @@
         - init
         - --config=/tmp/kubeadm-config.yaml
 
-    # To get the hash of the discovery CA:
-    # https://github.com/kubernetes/kubeadm/issues/659#issuecomment-396070894
-
   - name: Configure bridge-nf-call-iptables
     sysctl:
       name: net.bridge.bridge-nf-call-iptables
@@ -145,13 +149,6 @@
     become: yes
     command: kubeadm token create --print-join-command
     register: kubeadm_token_out
-
-  - name: Make sure 'etc_dir' exists
-    delegate_to: localhost
-    become: no
-    file:
-      path: "{{ etc_dir }}"
-      state: directory
 
   - name: Save access token locally
     delegate_to: localhost
