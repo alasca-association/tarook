@@ -248,6 +248,46 @@ local kp =
           }
         ]),
 {% endif %}
+
+      // For the following resources, the creationTimestamp field is present in the
+      // base files, but has the value "null". This breaks the Kubernetes validation of
+      // the manifest files. Thus, the field is made hidden in the following resources.
+      '0alertmanagerCustomResourceDefinition'+: {
+        metadata+: {
+          creationTimestamp:: null
+        },
+      },
+
+      '0prometheusCustomResourceDefinition'+: {
+        metadata+: {
+          creationTimestamp:: null
+        },
+      },
+
+      '0servicemonitorCustomResourceDefinition'+: {
+        metadata+: {
+          creationTimestamp:: null
+        },
+      },
+
+      '0podmonitorCustomResourceDefinition'+: {
+        metadata+: {
+          creationTimestamp:: null
+        },
+      },
+
+      '0prometheusruleCustomResourceDefinition'+: {
+        metadata+: {
+          creationTimestamp:: null
+        },
+      },
+
+      '0thanosrulerCustomResourceDefinition'+: {
+        metadata+: {
+          creationTimestamp:: null
+        },
+      },
+
       deployment+: {
         spec+: {
           template+: {

@@ -15,16 +15,25 @@
       kind: Namespace
       name: "{{ check_block_storage_namespace }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: create PVC
     k8s:
       definition: "{{ lookup('template', 'pvc.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: start writer pod
     k8s:
       definition: "{{ lookup('template', 'writer-pod.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: fetch writer pod completion state
     k8s_info:
@@ -46,6 +55,9 @@
     k8s:
       definition: "{{ lookup('template', 'reader-pod.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: fetch reader pod completion state
     k8s_info:
@@ -70,5 +82,8 @@
       name: "{{ check_block_storage_namespace }}"
       state: absent
       wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
     tags:
     - test-cleanup

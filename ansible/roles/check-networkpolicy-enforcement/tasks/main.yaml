@@ -14,12 +14,18 @@
           name: "{{ check_networkpolicy_namespace }}"
           labels:
             test: "{{ check_networkpolicy_namespace }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
       state: present
 
   - name: create service
     k8s:
       definition: "{{ lookup('template', 'service.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: get pod IPs
     k8s_info:
@@ -47,6 +53,9 @@
     k8s:
       definition: "{{ lookup('template', 'test-pod.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: fetch blocked-test pod completion state
     k8s_info:
@@ -68,6 +77,9 @@
     k8s:
       definition: "{{ lookup('template', 'unblock-same-namespace.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: start unblocked-test
     vars:
@@ -75,6 +87,9 @@
     k8s:
       definition: "{{ lookup('template', 'test-pod.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: fetch unblocked-test pod completion state
     k8s_info:
@@ -114,6 +129,9 @@
     k8s:
       definition: "{{ lookup('template', 'unblock-all.yaml') }}"
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: check service is reachable from the node
     command:
@@ -139,5 +157,8 @@
       kind: Namespace
       state: absent
       wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
     tags:
     - test-cleanup

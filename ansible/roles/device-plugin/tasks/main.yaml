@@ -8,4 +8,7 @@
     state: present
     apply: yes
     definition: "{{ lookup('template', 'nvidia-device-plugin.yml') }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
   when: is_gpu_cluster

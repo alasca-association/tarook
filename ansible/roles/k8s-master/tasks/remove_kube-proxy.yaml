@@ -26,6 +26,9 @@
     name: kube-proxy
     state: absent
     wait: yes
+    validate:
+      fail_on_error: yes
+      strict: yes
   register: kube_proxy
 
 - name: Clean up iptables rules
