@@ -10,7 +10,7 @@
   - role: journald
     tags: journald
   - role: is-k8s-installed
-    tags: update-system
+    tags: update_system
 
 - name: Upgrade the system
   hosts: node_with_k8s_installed
@@ -23,7 +23,7 @@
     - update_system
     - kubeadm-uncordon-node
   tags:
-    - update-system
+    - update_system
 
 - name: Upgrade the system
   hosts: node_with_k8s_not_installed
@@ -33,7 +33,7 @@
   roles:
     - update_system
   tags:
-    - update-system
+    - update_system
 
 - name: Detect login for gateways
   hosts: gateways
