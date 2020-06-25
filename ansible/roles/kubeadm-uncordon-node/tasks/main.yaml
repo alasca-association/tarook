@@ -3,6 +3,8 @@
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   delegate_to: "{{ (groups['masters'] | sort)[0] }}"
+  retries: 5
+  delay: 10
   command:
   args:
     argv:
@@ -10,4 +12,5 @@
     - uncordon
     - "{{ inventory_hostname }}"
   register: uncordon_result
+  until: uncordon_result is successful
   changed_when: "'uncordoned' in uncordon_result.stdout"
