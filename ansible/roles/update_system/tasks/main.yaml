@@ -40,6 +40,7 @@
   apt:
     update_cache: yes
     upgrade: dist
+    autoremove: yes
   # We’ve been seeing timeouts during this operation. By nudging ssh using
   # SIGWINCH, ansible is allowed to continue.
   #

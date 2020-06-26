@@ -133,3 +133,4 @@
     tags: k8s-monitoring
   - role: device-plugin
     tags: device-plugin
+
