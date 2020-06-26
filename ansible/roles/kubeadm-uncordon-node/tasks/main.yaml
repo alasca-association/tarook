@@ -5,6 +5,7 @@
   delegate_to: "{{ (groups['masters'] | sort)[0] }}"
   retries: 5
   delay: 10
+  when: _allow_disruption
   command:
   args:
     argv:
