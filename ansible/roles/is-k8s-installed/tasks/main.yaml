@@ -1,0 +1,12 @@
+- name: Check if the node has kubernetes installed
+  stat:
+    path: "/etc/kubernetes"
+  register: kubernetes_dir
+
+- name: Set fact for installation status
+  set_fact:
+    install_status: "{{ kubernetes_dir.stat.exists | ternary('installed', 'not_installed', 'installed') }}"
+
+- name: Run groupby
+  group_by:
+    key: node_with_k8s_{{ install_status }}
