@@ -81,9 +81,9 @@ cluster-spawn:
   - python3 managed-k8s/jenkins/toml_helper.py
   - ./managed-k8s/actions/apply-terraform.sh
   - ./reachability-or-recreate.sh
-  - timeout 25m ./managed-k8s/actions/apply-stage2.sh
-  - timeout 50m ./managed-k8s/actions/apply-stage3.sh
-  - timeout 15m ./managed-k8s/actions/test.sh
+  - timeout 40m ./managed-k8s/actions/apply-stage2.sh
+  - timeout 80m ./managed-k8s/actions/apply-stage3.sh
+  - timeout 30m ./managed-k8s/actions/test.sh
   after_script:
   - 'export wg_conf_name=wg0'
   - cd ci
