@@ -3,6 +3,8 @@
   apt:
     name: bird
     state: present
+  tags:
+  - bird
 
 - name: configure bird
   template:
@@ -12,9 +14,13 @@
     group: bird
     mode: 0o640
   notify: restart bird
+  tags:
+  - bird
 
 - name: disable bird6
   service:
     name: bird6
     enabled: no
     state: stopped
+  tags:
+  - bird

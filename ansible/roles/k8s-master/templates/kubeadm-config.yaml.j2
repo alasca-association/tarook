@@ -1,9 +1,10 @@
-apiVersion: kubeadm.k8s.io/v1beta1
+apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 kubernetesVersion: "v{{ k8s_version }}"
 controlPlaneEndpoint: "{{ private_vip }}:{{ hostvars[gateway]['haproxy_frontend_port'] }}"
 networking:
-    podSubnet: 10.244.0.0/16
+    podSubnet: {{ k8s_network_pod_subnet | to_json }}
+    serviceSubnet: {{ k8s_network_service_subnet | to_json }}
 
 apiServer:
     extraArgs:

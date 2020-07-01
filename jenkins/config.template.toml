@@ -61,6 +61,15 @@ k8s_network_plugin = "kube-router"
 #
 #k8s_network_plugin_switch_restart_namespaces=[...]
 
+# NETWORK CONFIGURATION
+
+# This is the subnet used by Kubernetes for Pods. Subnets will be delegated
+# automatically to each node.
+#k8s_network_pod_subnet = "10.244.0.0/16"
+
+# This is the subnet used by Kubernetes for Services.
+#k8s_network_service_subnet = "10.96.0.0/12"
+
 # To enable our LBaaS service, un-comment the following options and fill in a
 # unique, random, base64-encoded secret in place of `...`.
 #
@@ -244,6 +253,12 @@ k8s_network_plugin = "kube-router"
 #monitoring_thanos_store_memory_request = "256Mi"
 #monitoring_thanos_store_cpu_limit = "500m"
 #monitoring_thanos_store_cpu_request = "100m"
+
+# MISC FEATURES
+
+# Install wireguard on all workers (without setting up any server-side stuff)
+# so that in can be used from within Pods.
+#wireguard_on_workers = true
 
 cah_users_include_users = ["<user>", "<user>"]
 

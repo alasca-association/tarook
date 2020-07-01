@@ -67,6 +67,9 @@
       tags: kubeadm
     - role: remove_snap
       tags: remove_snap
+    - role: wireguard-support
+      tags: wireguard
+      when: 'wireguard_on_workers | default(False)'
 
 - name: Spawn the K8s control plane
   hosts: masters
