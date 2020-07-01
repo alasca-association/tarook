@@ -68,7 +68,7 @@ resource "openstack_compute_instance_v2" "gateway" {
     port = openstack_networking_port_v2.gateway[count.index].id
   }
   lifecycle {
-    ignore_changes = [key_pair]
+    ignore_changes = [key_pair, image_id]
   }
 }
 

@@ -40,6 +40,6 @@ resource "openstack_compute_instance_v2" "worker" {
   }
 
   lifecycle {
-      ignore_changes = [key_pair]
+      ignore_changes = [key_pair, image_id]
   }
 }
