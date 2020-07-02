@@ -1,13 +1,63 @@
 ---
-# Source: provisioner/templates/provisioner.yaml
- 
+# Source: provisioner/templates/psp.yaml
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: local-storage
+  labels:
+    helm.sh/chart: provisioner-3.0.0
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: local-storage
+spec:
+  allowPrivilegeEscalation: true
+  allowedHostPaths:
+  - pathPrefix: /dev
+  - pathPrefix: {{ local_storage_discovery_directory }}
+  fsGroup:
+    rule: RunAsAny
+  privileged: true
+  requiredDropCapabilities:
+  - ALL
+  runAsUser:
+    ranges:
+    - max: 65535
+      min: 1
+    rule: MustRunAs
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+  - configMap
+  - secret
+  - hostPath
+---
+# Source: provisioner/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: local-storage
+  namespace: {{ local_storage_namespace }}
+  labels:
+    helm.sh/chart: provisioner-3.0.0
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: local-storage
+---
+# Source: provisioner/templates/configmap.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: local-provisioner-config 
+  name: local-storage-config
   namespace: {{ local_storage_namespace }}
+  labels:
+    helm.sh/chart: provisioner-3.0.0
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: local-storage
 data:
-  storageClassMap: |     
+  storageClassMap: |
     local-storage:
        hostDir: {{ local_storage_discovery_directory }}
        mountDir: {{ local_storage_discovery_directory }}
@@ -18,27 +68,130 @@ data:
        fsType: ext4
        namePattern: "*"
 ---
+# Source: provisioner/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: local-storage-node-clusterrole
+  labels:
+    helm.sh/chart: provisioner-3.0.0
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: local-storage
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get"]
+---
+# Source: provisioner/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: local-storage-pv-binding
+  labels:
+    helm.sh/chart: provisioner-3.0.0
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: local-storage
+subjects:
+- kind: ServiceAccount
+  name: local-storage
+  namespace: {{ local_storage_namespace }}
+roleRef:
+  kind: ClusterRole
+  name: system:persistent-volume-provisioner
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: provisioner/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: local-storage-node-binding
+  labels:
+    helm.sh/chart: provisioner-3.0.0
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: local-storage
+subjects:
+- kind: ServiceAccount
+  name: local-storage
+  namespace: {{ local_storage_namespace }}
+roleRef:
+  kind: ClusterRole
+  name: local-storage-node-clusterrole
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: provisioner/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: local-storage-psp-role
+  namespace: {{ local_storage_namespace }}
+  labels:
+    helm.sh/chart: provisioner-3.0.0
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: local-storage
+rules:
+- apiGroups:
+    - policy
+  resources:
+    - podsecuritypolicies
+  resourceNames:
+    - local-storage
+  verbs:
+    - use
+---
+# Source: provisioner/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: local-storage-psp-rolebinding
+  namespace: {{ local_storage_namespace }}
+  labels:
+    helm.sh/chart: provisioner-3.0.0
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: local-storage
+subjects:
+- kind: ServiceAccount
+  name: local-storage
+  namespace: {{ local_storage_namespace }}
+roleRef:
+  kind: Role
+  name: local-storage-psp-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: provisioner/templates/daemonset.yaml
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: local-volume-provisioner
+  name: local-storage
   namespace: {{ local_storage_namespace }}
   labels:
-    app: local-volume-provisioner
+    helm.sh/chart: provisioner-3.0.0
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: local-storage
 spec:
   selector:
     matchLabels:
-      app: local-volume-provisioner 
+      app.kubernetes.io/name: local-storage
+      app.kubernetes.io/instance: local-storage
   template:
     metadata:
       labels:
-        app: local-volume-provisioner
+        app.kubernetes.io/name: local-storage
+        app.kubernetes.io/instance: local-storage
     spec:
-      serviceAccountName: local-storage-admin
+      serviceAccountName: local-storage
+      tolerations:
+        - effect: NoSchedule
+          key: node-restriction.kubernetes.io/cah-managed-k8s-role
+          operator: Exists
       containers:
-        - image: "quay.io/external_storage/local-volume-provisioner:v2.1.0"
-          imagePullPolicy: "Always"
-          name: provisioner 
+        - image: "quay.io/external_storage/local-volume-provisioner:v2.3.4"
+          name: provisioner
           securityContext:
             privileged: true
           env:
@@ -46,72 +199,28 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
+          - name: MY_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: JOB_CONTAINER_IMAGE
+            value: "quay.io/external_storage/local-volume-provisioner:v2.3.4"
           volumeMounts:
-            - mountPath: /etc/provisioner/config 
+            - mountPath: /etc/provisioner/config
               name: provisioner-config
-              readOnly: true             
-            - mountPath:  {{ local_storage_discovery_directory }}
+              readOnly: true
+            - mountPath: /dev
+              name: provisioner-dev
+            - mountPath: {{ local_storage_discovery_directory }}
               name: local-storage
-              mountPropagation: "HostToContainer" 
-      tolerations:
-        - effect: NoSchedule
-          key: node-restriction.kubernetes.io/cah-managed-k8s-role
-          operator: Exists
+              mountPropagation: "HostToContainer"
       volumes:
         - name: provisioner-config
           configMap:
-            name: local-provisioner-config         
+            name: local-storage-config
+        - name: provisioner-dev
+          hostPath:
+            path: /dev
         - name: local-storage
           hostPath:
             path: {{ local_storage_discovery_directory }}
-
----
-# Source: provisioner/templates/provisioner-service-account.yaml
-
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: local-storage-admin
-  namespace: {{ local_storage_namespace }}
-
----
-# Source: provisioner/templates/provisioner-cluster-role-binding.yaml
-
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: local-storage-provisioner-pv-binding
-  namespace: {{ local_storage_namespace }}
-subjects:
-- kind: ServiceAccount
-  name: local-storage-admin
-  namespace: {{ local_storage_namespace }}
-roleRef:
-  kind: ClusterRole
-  name: system:persistent-volume-provisioner
-  apiGroup: rbac.authorization.k8s.io
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: local-storage-provisioner-node-clusterrole
-  namespace: {{ local_storage_namespace }}
-rules:
-- apiGroups: [""]
-  resources: ["nodes"]
-  verbs: ["get"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: local-storage-provisioner-node-binding
-  namespace: {{ local_storage_namespace }}
-subjects:
-- kind: ServiceAccount
-  name: local-storage-admin
-  namespace: {{ local_storage_namespace }}
-roleRef:
-  kind: ClusterRole
-  name: local-storage-provisioner-node-clusterrole
-  apiGroup: rbac.authorization.k8s.io
-
