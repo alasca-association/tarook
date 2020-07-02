@@ -1,0 +1,43 @@
+- name: Create mount points
+  become: yes
+  block:
+  - name: Create directory structure
+    file:
+      path: "{{ item }}"
+      state: directory
+    loop:
+      - "{{ local_storage_data_directory }}"
+      - "{{ local_storage_discovery_directory }}/disk"
+
+  - name: Create bind mount
+    mount:
+      src: "{{ local_storage_data_directory }}"
+      path: "{{ local_storage_discovery_directory }}/disk"
+      state: mounted
+      opts: bind
+      fstype: ext4
+
+- name: Configure k8s resources
+  delegate_to: "{{ groups['masters'] | first }}"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  become: no
+  block:
+  - name: Create storage class
+    k8s:
+      state: present
+      apply: yes
+      definition: "{{ lookup('template', 'sc.yaml') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: Create provisioner
+    k8s:
+      state: present
+      apply: yes
+      definition: "{{ lookup('template', 'provisioner.yaml') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+

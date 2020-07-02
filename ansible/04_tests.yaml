@@ -132,3 +132,10 @@
   - role: check-monitoring
     tags: test-monitoring
     when: "monitoring | default(False)"
+
+- name: Check local storage
+  hosts: "{{ groups['masters'] | first }}"
+  gather_facts: no
+  roles:
+    - role: check-local-storage
+      tags: test-local-storage

@@ -122,6 +122,12 @@
     - ch-k8s-lbaas
     - ch-k8s-lbaas-agent
 
+- name: Configure the local-storage controller
+  hosts: workers
+  roles:
+    - role: k8s-local-storage-controller
+      tags: lsc
+
 - name: Configure k8s resources
   hosts: masters
   become: yes

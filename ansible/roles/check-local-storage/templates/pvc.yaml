@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-storage-test
+  namespace: {{ check_local_storage_namespace | to_json }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: {{ local_storage_storageclass_name | to_json }}
