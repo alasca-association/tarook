@@ -75,6 +75,8 @@
     - role: check-loadbalancer-service
       tags: test-loadbalancer-service
       when: "openstack_lbaas | default(False) or ch_k8s_lbaas | default(False)"
+    - role: check-local-storage
+      tags: test-local-storage
 
 - name: Remove worker node annotation
   hosts: "{{ groups['masters'] | first }}"
@@ -133,9 +135,4 @@
     tags: test-monitoring
     when: "monitoring | default(False)"
 
-- name: Check local storage
-  hosts: "{{ groups['masters'] | first }}"
-  gather_facts: no
-  roles:
-    - role: check-local-storage
-      tags: test-local-storage
+
