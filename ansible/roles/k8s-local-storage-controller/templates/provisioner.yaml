@@ -53,6 +53,10 @@ spec:
             - mountPath:  {{ local_storage_discovery_directory }}
               name: local-storage
               mountPropagation: "HostToContainer" 
+      tolerations:
+        - effect: NoSchedule
+          key: node-restriction.kubernetes.io/cah-managed-k8s-role
+          operator: Exists
       volumes:
         - name: provisioner-config
           configMap:
