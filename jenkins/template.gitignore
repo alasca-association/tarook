@@ -5,3 +5,4 @@
 /inventory/.etc/kubeadm_token
 /wg*.conf
 .terraform
+/inventory/.etc/manifests/

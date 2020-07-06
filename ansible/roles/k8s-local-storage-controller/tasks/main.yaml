@@ -23,21 +23,46 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   become: no
   block:
-  - name: Create storage class
-    k8s:
-      state: present
-      apply: yes
-      definition: "{{ lookup('template', 'sc.yaml') }}"
-      validate:
-        fail_on_error: yes
-        strict: yes
+    - name: Create storage class
+      k8s:
+        state: present
+        apply: yes
+        definition: "{{ lookup('template', 'sc.yaml') }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
 
-  - name: Create provisioner
-    k8s:
-      state: present
-      apply: yes
-      definition: "{{ lookup('template', 'provisioner.yaml') }}"
-      validate:
-        fail_on_error: yes
-        strict: yes
+    - name: Create provisioner
+      k8s:
+        state: present
+        apply: yes
+        definition: "{{ lookup('template', 'provisioner.yaml') }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
+
+- name: Dump instantiated manifests
+  become: no
+  delegate_to: localhost
+  run_once: yes
+  when: "dump_k8s_manifests | default(False)"
+  vars:
+    manifest_dir: "{{ etc_dir }}/manifests"
+  tags:
+    - dump-k8s-manifests
+  block:
+    - name: Create manifest directory
+      file:
+        state: directory
+        path: "{{ manifest_dir }}"
+
+    - name: Create provisioner manifest
+      template:
+        src: 'provisioner.yaml'
+        dest: "{{ manifest_dir }}/provisioner.yaml"
+
+    - name: Create storage classs manifest
+      template:
+        src: 'provisioner.yaml'
+        dest: "{{ manifest_dir }}/sc.yaml"
 
