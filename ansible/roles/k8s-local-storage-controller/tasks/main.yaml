@@ -28,7 +28,7 @@
       k8s:
         state: present
         apply: yes
-        definition: "{{ lookup('template', 'sc.yaml') }}"
+        definition: "{{ lookup('template', 'sc.yaml.j2') }}"
         validate:
           fail_on_error: yes
           strict: yes
@@ -37,7 +37,16 @@
       k8s:
         state: present
         apply: yes
-        definition: "{{ lookup('template', 'provisioner.yaml') }}"
+        definition: "{{ lookup('template', 'provisioner.yaml.j2') }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
+
+    - name: Create service
+      k8s:
+        state: present
+        apply: yes
+        definition: "{{ lookup('template', 'service.yaml.j2') }}"
         validate:
           fail_on_error: yes
           strict: yes
@@ -59,11 +68,16 @@
 
     - name: Create provisioner manifest
       template:
-        src: 'provisioner.yaml'
+        src: 'provisioner.yaml.j2'
         dest: "{{ manifest_dir }}/provisioner.yaml"
 
-    - name: Create storage classs manifest
+    - name: Create storage class manifest
       template:
-        src: 'provisioner.yaml'
+        src: 'sc.yaml.j2'
         dest: "{{ manifest_dir }}/sc.yaml"
+
+    - name: Create service manifest
+      template:
+        src: 'service.yaml.j2'
+        dest: "{{ manifest_dir }}/service.yaml"
 
