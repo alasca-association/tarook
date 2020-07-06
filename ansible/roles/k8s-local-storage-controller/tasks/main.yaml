@@ -22,6 +22,7 @@
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   become: no
+  run_once: yes
   block:
     - name: Create storage class
       k8s:
