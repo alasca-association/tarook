@@ -5,7 +5,7 @@ rook_cluster_name: rook-ceph
 
 rook_nmons: 3
 rook_mon_volume: true
-rook_mon_volume_storage_class: csi-sc-cinderplugin
+rook_mon_volume_storage_class: local-storage
 rook_mon_volume_size: 10Gi
 rook_mon_allow_multiple_per_node: false
 rook_mon_memory_limit: "1Gi"
