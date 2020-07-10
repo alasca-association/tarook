@@ -19,7 +19,7 @@
 
   - name: create PVC
     k8s:
-      definition: "{{ lookup('template', 'pvc.yaml') }}"
+      definition: "{{ lookup('template', 'pvc.yaml.j2') }}"
       state: present
       validate:
         fail_on_error: yes
@@ -27,7 +27,7 @@
 
   - name: start writer pod
     k8s:
-      definition: "{{ lookup('template', 'writer-pod.yaml') }}"
+      definition: "{{ lookup('template', 'writer-pod.yaml.j2') }}"
       state: present
       validate:
         fail_on_error: yes
@@ -51,7 +51,7 @@
 
   - name: run reader pod
     k8s:
-      definition: "{{ lookup('template', 'reader-pod.yaml') }}"
+      definition: "{{ lookup('template', 'reader-pod.yaml.j2') }}"
       state: present
       validate:
         fail_on_error: yes
@@ -73,6 +73,16 @@
       msg: "Reader pod is in condition {{ reader_state.resources[0].status.phase }}"
     failed_when: 'reader_state.resources[0].status.phase == "Failed"'
 
+  - name: Get the PVC
+    k8s_info:
+      api_version: v1
+      kind: PersistentVolumeClaim
+      name: "{{ check_local_storage_pvc_name }}"
+      namespace: "{{ check_local_storage_namespace }}"
+    register: pvc_info
+    tags:
+      - test-cleanup
+
   - name: delete namespace
     k8s:
       api_version: v1
@@ -85,3 +95,13 @@
         strict: yes
     tags:
     - test-cleanup
+
+  - name: delete PV
+    k8s:
+      api_version: v1
+      kind: PersistentVolume
+      name: "{{ pvc_info.resources[0].spec.volumeName }}"
+      state: absent
+      wait: no
+    tags:
+      - test-cleanup
