@@ -163,7 +163,7 @@ k8s_network_plugin = "kube-router"
 #monitoring = true
 
 # Enable use of Thanos (enabled by default)
-#monitoring_thanos: true
+#monitoring_use_thanos = true
 
 # Thanos uses local storage to keep a copy of the metadata from the object store
 # for faster access. The size and storage class for that volume can be
