@@ -12,12 +12,57 @@ metadata:
   namespace: "{{ check_loadbalancer_service_namespace }}"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: psp:rook
+  kind: Role
+  name: psp:cah-too-permissive
 subjects:
 - kind: ServiceAccount
   name: test
   namespace: "{{ check_loadbalancer_service_namespace }}"
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: cah-too-permissive
+spec:
+  allowPrivilegeEscalation: true
+  allowedCapabilities:
+  - SYS_ADMIN
+  fsGroup:
+    rule: RunAsAny
+  hostIPC: true
+  hostNetwork: true
+  hostPID: true
+  privileged: true
+  runAsUser:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+  - configMap
+  - downwardAPI
+  - emptyDir
+  - persistentVolumeClaim
+  - secret
+  - projected
+  - hostPath
+  - flexVolume
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+   name: psp:cah-too-permissive
+   namespace: "{{ check_loadbalancer_service_namespace }}"
+rules:
+- apiGroups:
+  - policy
+  resourceNames:
+  - cah-too-permissive
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - use
 ---
 apiVersion: apps/v1
 kind: Deployment
