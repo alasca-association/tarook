@@ -11,7 +11,8 @@ import toml
 USERS_PATH = pathlib.Path("wg_user")
 CONFIG_PATH = pathlib.Path("config/config.toml")
 IPAM_PATH = pathlib.Path("config/wireguard_ipam.toml")
-TFVARS_FILE = pathlib.Path("terraform/config.tfvars.json")
+TFVARS_DIR = pathlib.Path("terraform")
+TFVARS_FILE = TFVARS_DIR / "config.tfvars.json"
 ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory")
 IPAM_ANSIBLE_FILE = (
     ANSIBLE_INVENTORY_BASEPATH / "02_trampoline" / "group_vars" /
@@ -225,6 +226,8 @@ def main():
             "ansible.02_trampoline.group_vars.gateways.wg_ip_cidr is not set "
             "or not an IPv4 network",
         )
+
+    TFVARS_DIR.mkdir(exist_ok=True)
 
     terraform_cfg = config["terraform"]
     with open(TFVARS_FILE, "w") as fout:
