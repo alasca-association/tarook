@@ -123,7 +123,7 @@
   - role: check-gpu-support
     tags:
     - test-gpu-support
-    when: "is_gpu_cluster"
+    when: "is_gpu_cluster | default(False)"
 
 # We test the monitoring down here because we need to give Prometheus a bit of
 # time to boot and collect the first bits of data.
