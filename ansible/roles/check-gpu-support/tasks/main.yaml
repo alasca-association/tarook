@@ -17,7 +17,7 @@
 
     - name: Apply the cuda test manifest
       k8s:
-        definition: "{{ lookup('template', 'cuda.yaml') }}"
+        definition: "{{ lookup('file', 'cuda.yaml') }}"
         state: present
         namespace: "{{ check_gpu_support_namespace }}"
         validate:
@@ -44,7 +44,7 @@
       block:
         - name: Delete the test manifest
           k8s:
-            definition: "{{ lookup('template', 'cuda.yaml') }}"
+            definition: "{{ lookup('file', 'cuda.yaml') }}"
             state: absent
             wait: yes
             validate:
