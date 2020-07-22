@@ -1,0 +1,107 @@
+- name: show test information
+  debug:
+    msg: "This test is using the {{ local_storage_storageclass_name }} storageClass"
+
+- name: Run the test
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name: create namespace
+    k8s:
+      api_version: v1
+      kind: Namespace
+      name: "{{ check_local_storage_namespace }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: create PVC
+    k8s:
+      definition: "{{ lookup('template', 'pvc.yaml.j2') }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: start writer pod
+    k8s:
+      definition: "{{ lookup('template', 'writer-pod.yaml.j2') }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: fetch writer pod completion state
+    k8s_info:
+      api_version: v1
+      kind: Pod
+      name: writer-test
+      namespace: "{{ check_local_storage_namespace }}"
+    register: writer_state
+    until: "writer_state.resources and (writer_state.resources[0].status | default(False)) and (writer_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
+    delay: 1
+    retries: 60
+
+  - name: check writer pod success
+    debug:
+      msg: "Writer pod is in condition {{ writer_state.resources[0].status.phase }}"
+    failed_when: 'writer_state.resources[0].status.phase == "Failed"'
+
+  - name: run reader pod
+    k8s:
+      definition: "{{ lookup('template', 'reader-pod.yaml.j2') }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: fetch reader pod completion state
+    k8s_info:
+      api_version: v1
+      kind: Pod
+      name: reader-test
+      namespace: "{{ check_local_storage_namespace }}"
+    register: reader_state
+    until: "reader_state.resources and (reader_state.resources[0].status | default(False)) and (reader_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
+    delay: 1
+    retries: 60
+
+  - name: check writer pod success
+    debug:
+      msg: "Reader pod is in condition {{ reader_state.resources[0].status.phase }}"
+    failed_when: 'reader_state.resources[0].status.phase == "Failed"'
+
+  - name: Get the PVC
+    k8s_info:
+      api_version: v1
+      kind: PersistentVolumeClaim
+      name: "{{ check_local_storage_pvc_name }}"
+      namespace: "{{ check_local_storage_namespace }}"
+    register: pvc_info
+    tags:
+      - test-cleanup
+
+  - name: delete namespace
+    k8s:
+      api_version: v1
+      kind: Namespace
+      name: "{{ check_local_storage_namespace }}"
+      state: absent
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+    tags:
+    - test-cleanup
+
+  - name: delete PV
+    k8s:
+      api_version: v1
+      kind: PersistentVolume
+      name: "{{ pvc_info.resources[0].spec.volumeName }}"
+      state: absent
+      wait: no
+    tags:
+      - test-cleanup

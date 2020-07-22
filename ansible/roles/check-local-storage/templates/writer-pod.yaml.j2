@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: writer-test
+  name: writer-test
+  namespace: {{ check_local_storage_namespace | to_json }}
+spec:
+  containers:
+  - image: debian:stable
+    imagePullPolicy: IfNotPresent
+    name: debian
+    command: ["bash", "-c", "set -euo pipefail; cd /mnt; dd if=/dev/urandom of=noise bs=4k count=1k; sha256sum noise > SHA256SUMS"]
+    volumeMounts:
+      - mountPath: /mnt
+        name: local-storage-test
+  volumes:
+  - name: local-storage-test
+    persistentVolumeClaim:
+      claimName: {{ check_local_storage_pvc_name | to_json }}
+      readOnly: false
+  nodeSelector:
+    name: worker1
+  restartPolicy: Never

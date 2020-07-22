@@ -75,6 +75,8 @@
     - role: check-loadbalancer-service
       tags: test-loadbalancer-service
       when: "openstack_lbaas | default(False) or ch_k8s_lbaas | default(False)"
+    - role: check-local-storage
+      tags: test-local-storage
 
 - name: Remove worker node annotation
   hosts: "{{ groups['masters'] | first }}"
@@ -121,7 +123,7 @@
   - role: check-gpu-support
     tags:
     - test-gpu-support
-    when: "is_gpu_cluster"
+    when: "is_gpu_cluster | default(False)"
 
 # We test the monitoring down here because we need to give Prometheus a bit of
 # time to boot and collect the first bits of data.
@@ -132,3 +134,5 @@
   - role: check-monitoring
     tags: test-monitoring
     when: "monitoring | default(False)"
+
+

@@ -1,0 +1,219 @@
+---
+# Source: provisioner/templates/psp.yaml
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: local-storage
+  labels:
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/instance: local-storage
+    app.kubernetes.io/version: {{ local_storage_version | to_json }}
+spec:
+  allowPrivilegeEscalation: true
+  allowedHostPaths:
+  - pathPrefix: /dev
+  - pathPrefix: {{ local_storage_discovery_directory | to_json }}
+  fsGroup:
+    rule: RunAsAny
+  privileged: true
+  requiredDropCapabilities:
+  - ALL
+  runAsUser:
+    ranges:
+    - max: 65535
+      min: 1
+    rule: MustRunAs
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+  - configMap
+  - secret
+  - hostPath
+---
+# Source: provisioner/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: local-storage
+  namespace: {{ local_storage_namespace | to_json }}
+  labels:
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/instance: local-storage
+    app.kubernetes.io/version: {{ local_storage_version | to_json }}
+---
+# Source: provisioner/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: local-storage-config
+  namespace: {{ local_storage_namespace | to_json }}
+  labels:
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/instance: local-storage
+    app.kubernetes.io/version: {{ local_storage_version | to_json }}
+data:
+  storageClassMap: |
+    local-storage:
+       hostDir: {{ local_storage_discovery_directory | to_json }}
+       mountDir: {{ local_storage_discovery_directory | to_json }}
+       blockCleanerCommand:
+         - "/scripts/shred.sh"
+         - "2"
+       volumeMode: Filesystem
+       fsType: ext4
+       namePattern: "*"
+---
+# Source: provisioner/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: local-storage-node-clusterrole
+  labels:
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/instance: local-storage
+    app.kubernetes.io/version: {{ local_storage_version | to_json }}
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get"]
+---
+# Source: provisioner/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: local-storage-pv-binding
+  labels:
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/instance: local-storage
+    app.kubernetes.io/version: {{ local_storage_version | to_json }}
+subjects:
+- kind: ServiceAccount
+  name: local-storage
+  namespace: {{ local_storage_namespace | to_json }}
+roleRef:
+  kind: ClusterRole
+  name: system:persistent-volume-provisioner
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: provisioner/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: local-storage-node-binding
+  labels:
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/instance: local-storage
+    app.kubernetes.io/version: {{ local_storage_version | to_json }}
+subjects:
+- kind: ServiceAccount
+  name: local-storage
+  namespace: {{ local_storage_namespace | to_json }}
+roleRef:
+  kind: ClusterRole
+  name: local-storage-node-clusterrole
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: provisioner/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: local-storage-psp-role
+  namespace: {{ local_storage_namespace | to_json }}
+  labels:
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/instance: local-storage
+    app.kubernetes.io/version: {{ local_storage_version | to_json }}
+rules:
+- apiGroups:
+    - policy
+  resources:
+    - podsecuritypolicies
+  resourceNames:
+    - local-storage
+  verbs:
+    - use
+---
+# Source: provisioner/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: local-storage-psp-rolebinding
+  namespace: {{ local_storage_namespace | to_json }}
+  labels:
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/instance: local-storage
+    app.kubernetes.io/version: {{ local_storage_version | to_json }}
+subjects:
+- kind: ServiceAccount
+  name: local-storage
+  namespace: {{ local_storage_namespace | to_json }}
+roleRef:
+  kind: Role
+  name: local-storage-psp-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: provisioner/templates/daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: local-storage
+  namespace: {{ local_storage_namespace | to_json }}
+  labels:
+    app.kubernetes.io/name: local-storage
+    app.kubernetes.io/instance: local-storage
+    app.kubernetes.io/version: {{ local_storage_version | to_json }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: local-storage
+      app.kubernetes.io/instance: local-storage
+      app.kubernetes.io/version: {{ local_storage_version | to_json }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: local-storage
+        app.kubernetes.io/instance: local-storage
+        app.kubernetes.io/version: {{ local_storage_version | to_json }}
+    spec:
+      serviceAccountName: local-storage
+      tolerations:
+        - effect: NoSchedule
+          key: node-restriction.kubernetes.io/cah-managed-k8s-role
+          operator: Exists
+      containers:
+        - image: "quay.io/external_storage/local-volume-provisioner:v2.3.4"
+          name: provisioner
+          securityContext:
+            privileged: true
+          env:
+          - name: MY_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: MY_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: JOB_CONTAINER_IMAGE
+            value: "quay.io/external_storage/local-volume-provisioner:{{ local_storage_version }}"
+          volumeMounts:
+            - mountPath: /etc/provisioner/config
+              name: provisioner-config
+              readOnly: true
+            - mountPath: /dev
+              name: provisioner-dev
+            - mountPath: {{ local_storage_discovery_directory | to_json }}
+              name: local-storage
+              mountPropagation: "HostToContainer"
+      volumes:
+        - name: provisioner-config
+          configMap:
+            name: local-storage-config
+        - name: provisioner-dev
+          hostPath:
+            path: /dev
+        - name: local-storage
+          hostPath:
+            path: {{ local_storage_discovery_directory | to_json }}

@@ -29,6 +29,10 @@ as block storage or as shared filesystem.
   provisioning job half way through, it is important to also clean up the
   corresponding ConfigMap object, otherwise the operator will hang.
 
+- The ceph mons use the `local-storage` StorageClass which is a fancy version of `hostPath` and has the advantage of "binding" a pod to a node. `local-storage` works through a controller that presents disks (or bind-mounts of directories, as in our case) as PVs to K8s. The controller also attaches PVCs to these PVs.
+
+- Note that it's _usually_ safe to delete a ceph mon and its PVC if at least one healthy mon remains. To be on the safe side, make sure the quorum is `> floor(mons / 2).`
+
 ## Administrative tasks
 
 ### Reducing the number of OSDs

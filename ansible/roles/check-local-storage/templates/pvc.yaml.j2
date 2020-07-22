@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ check_local_storage_pvc_name | to_json }}
+  namespace: {{ check_local_storage_namespace | to_json }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: {{ local_storage_storageclass_name | to_json }}

@@ -1,0 +1,83 @@
+- name: Create mount points
+  become: yes
+  block:
+  - name: Create directory structure
+    file:
+      path: "{{ item }}"
+      state: directory
+    loop:
+      - "{{ local_storage_data_directory }}"
+      - "{{ local_storage_discovery_directory }}/disk"
+
+  - name: Create bind mount
+    mount:
+      src: "{{ local_storage_data_directory }}"
+      path: "{{ local_storage_discovery_directory }}/disk"
+      state: mounted
+      opts: bind
+      fstype: ext4
+
+- name: Configure k8s resources
+  delegate_to: "{{ groups['masters'] | first }}"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  become: no
+  run_once: yes
+  block:
+    - name: Create storage class
+      k8s:
+        state: present
+        apply: yes
+        definition: "{{ lookup('template', 'sc.yaml.j2') }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
+
+    - name: Create provisioner
+      k8s:
+        state: present
+        apply: yes
+        definition: "{{ lookup('template', 'provisioner.yaml.j2') }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
+
+    - name: Create service
+      k8s:
+        state: present
+        apply: yes
+        definition: "{{ lookup('template', 'service.yaml.j2') }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
+
+- name: Dump instantiated manifests
+  become: no
+  delegate_to: localhost
+  run_once: yes
+  when: "dump_k8s_manifests | default(False)"
+  vars:
+    manifest_dir: "{{ etc_dir }}/manifests"
+  tags:
+    - dump-k8s-manifests
+  block:
+    - name: Create manifest directory
+      file:
+        state: directory
+        path: "{{ manifest_dir }}"
+
+    - name: Create provisioner manifest
+      template:
+        src: 'provisioner.yaml.j2'
+        dest: "{{ manifest_dir }}/provisioner.yaml"
+
+    - name: Create storage class manifest
+      template:
+        src: 'sc.yaml.j2'
+        dest: "{{ manifest_dir }}/sc.yaml"
+
+    - name: Create service manifest
+      template:
+        src: 'service.yaml.j2'
+        dest: "{{ manifest_dir }}/service.yaml"
+

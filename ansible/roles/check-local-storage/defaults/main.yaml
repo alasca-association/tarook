@@ -1,0 +1,3 @@
+local_storage_storageclass_name: local-storage
+check_local_storage_namespace: test-37781c1f-1058-4b0f-be42-f756deb75ff5-local-storage
+check_local_storage_pvc_name:  local-storage-test
