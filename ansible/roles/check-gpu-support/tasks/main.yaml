@@ -1,0 +1,62 @@
+---
+- name: Run the test
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+  block:
+    - name: create namespace
+      k8s:
+        api_version: v1
+        kind: Namespace
+        state: present
+        name: "{{ check_gpu_support_namespace }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
+
+    - name: Apply the cuda test manifest
+      k8s:
+        definition: "{{ lookup('file', 'cuda.yaml') }}"
+        state: present
+        namespace: "{{ check_gpu_support_namespace }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
+    
+    - name: Fetch cuda test completion state
+      k8s_info:
+        api_version: v1
+        kind: Pod
+        name: cuda-vector-add
+        namespace: "{{ check_gpu_support_namespace }}"
+      register: cuda_state
+      until: "cuda_state.resources and (cuda_state.resources[0].status | default(False)) and (cuda_state.resources[0].status.phase | default('') in ['Completed', 'Succeeded', 'Failed'])"
+
+    - name: Check cuda test pod success
+      debug:
+        msg: "Cuda pod is in condition {{ cuda_state.resources[0].status.phase }}"
+      failed_when: 'cuda_state.resources[0].status.phase == "Failed"'
+
+    - name: Clean-up
+      tags: 
+        - test-cleanup
+      block:
+        - name: Delete the test manifest
+          k8s:
+            definition: "{{ lookup('file', 'cuda.yaml') }}"
+            state: absent
+            wait: yes
+            validate:
+              fail_on_error: yes
+              strict: yes
+        - name: Delete the namespace
+          k8s:
+            api_version: v1
+            kind: Namespace
+            state: absent
+            name: "{{ check_gpu_support_namespace }}"
+            wait: yes
+            validate:
+              fail_on_error: yes
+              strict: yes

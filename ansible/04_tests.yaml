@@ -113,6 +113,16 @@
     - test-networkpolicy-enforcement
     when: "(k8s_network_plugin | default('flannel')) == 'kube-router'"
 
+- name: Test GPU support
+  hosts: "{{ groups['masters'] | first }}"
+  become: no
+  gather_facts: no
+  roles:
+  - role: check-gpu-support
+    tags:
+    - test-gpu-support
+    when: "is_gpu_cluster"
+
 # We test the monitoring down here because we need to give Prometheus a bit of
 # time to boot and collect the first bits of data.
 - name: Check monitoring
