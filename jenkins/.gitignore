@@ -1,6 +1,0 @@
-*.key
-env.sh
-/inventory/.etc/ssh_known_hosts
-/inventory/.etc/kubeadm_token
-/wg*.conf
-/terraform/plan.tfplan

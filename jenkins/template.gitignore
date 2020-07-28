@@ -6,3 +6,6 @@
 /wg*.conf
 .terraform
 /inventory/.etc/manifests/
+/terraform/config.tfvars.json
+/terraform/plan.tfplan
+.envrc
