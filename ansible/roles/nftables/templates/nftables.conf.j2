@@ -6,7 +6,7 @@ flush ruleset
 define wan = eth0
 define wg = wg0
 define wg_port = {{ vpn_port }}
-define k8s_port = {{ haproxy_frontend_port }}
+define k8s_port = {{ k8s_apiserver_frontend_port }}
 define haproxy_stats_port = {{ haproxy_stats_port }}
 define haproxy_prom_metrics_port = 9101
 define keepalived_prom_metrics_port = 9650

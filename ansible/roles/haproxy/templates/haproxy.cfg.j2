@@ -15,7 +15,7 @@ defaults
   timeout server  50000
 
 frontend k8s_front
-  bind {{ private_vip }}:{{ haproxy_frontend_port }}
+  bind {{ private_vip }}:{{ k8s_apiserver_frontend_port }}
   mode tcp
   log global
   option tcplog
@@ -62,7 +62,7 @@ backend k8s_back
   timeout server {{ haproxy_timeout_server }}
 
   {% for host in groups['masters'] %}
-  server {{ host }} {{ hostvars[host]['local_ipv4_address'] }}:{{ haproxy_backend_port }} check check-ssl verify none
+  server {{ host }} {{ hostvars[host]['local_ipv4_address'] }}:{{ k8s_apiserver_backend_port }} check check-ssl verify none
   {% endfor %}
 
 {% for port in lb_ports %}
