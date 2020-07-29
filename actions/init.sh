@@ -1,6 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 actions_dir="$(dirname "$0")"
+
+# this is workaround as it's required for lib.sh
+# we don't need these variables for that script
+export wg_conf_name=
+export wg_user=
+
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
