@@ -8,7 +8,7 @@ local commonConfig = {
   config+:: {
     local cfg = self,
     namespace: '{{ monitoring_namespace }}',
-    version: 'v0.10.1',
+    version: '{{ monitoring_thanos_version }}',
     image: 'quay.io/thanos/thanos:' + cfg.version,
     objectStorageConfig: {
       name: 'thanos-objectstorage',
