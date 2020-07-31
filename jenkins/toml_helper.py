@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import collections
 import ipaddress
 import itertools
