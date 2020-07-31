@@ -26,4 +26,7 @@ export TF_VAR_keypair
 KUBECONFIG="$(pwd)/inventory/.etc/admin.conf"
 export KUBECONFIG
 
+# Optional: activate the virtual env for managed-k8s
+source_env ~/.venv/managed-k8s/bin/activate
+
 # Optional: You can also source your openrc from here.
