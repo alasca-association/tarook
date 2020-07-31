@@ -68,7 +68,7 @@ variable "default_worker_image_name" {
 
 variable "gateway_image_name" {
   type = string
-  default = "debian10"
+  default = "Debian 10 (buster)"
 }
 
 variable "vip_port_name" {
