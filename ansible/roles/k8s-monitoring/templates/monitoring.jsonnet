@@ -663,8 +663,7 @@ local kp_with_patched_ksm = kp + {
   }
 };
 
-local kp_with_customer_dashboards = kp + {
-{% if monitoring_grafana_customer_dashboards %}
+local kp_with_patched_grafana = kp + {
   grafana+: {
     deployment+: {
       spec+: {
@@ -672,12 +671,16 @@ local kp_with_customer_dashboards = kp + {
           spec+: {
             containers: [
                 container + {
+                  "image" : "grafana/grafana:{{ monitoring_grafana_version }}",
+                {% if monitoring_grafana_customer_dashboards %}
                   volumeMounts+: [
                     {
                       "mountPath": "/grafana-dashboard-definitions/0/customer-dashboards",
                       "name" : "grafana-customer-dashboards",
                       "readOnly" : false
                     }
+
+                {% endif %}
                   ]
                 }
                 for container in kp.grafana.deployment.spec.template.spec.containers
@@ -687,7 +690,6 @@ local kp_with_customer_dashboards = kp + {
       }
     }
   }
-{% endif %}
 };
 
 { ['00-namespace-' + name]: kp.kubePrometheus[name] for name in std.objectFields(kp.kubePrometheus) } +
@@ -702,4 +704,4 @@ local kp_with_customer_dashboards = kp + {
 { ['20-alertmanager-' + name]: kp.alertmanager[name] for name in std.objectFields(kp.alertmanager) } +
 { ['20-prometheus-' + name]: kp.prometheus[name] for name in std.objectFields(kp.prometheus) } +
 { ['20-prometheus-adapter-' + name]: kp.prometheusAdapter[name] for name in std.objectFields(kp.prometheusAdapter) } +
-{ ['20-grafana-' + name]: kp_with_customer_dashboards.grafana[name] for name in std.objectFields(kp_with_customer_dashboards.grafana) }
+{ ['20-grafana-' + name]: kp_with_patched_grafana.grafana[name] for name in std.objectFields(kp_with_patched_grafana.grafana) }
