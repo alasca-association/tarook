@@ -665,6 +665,21 @@ local kp_with_patched_ksm = kp + {
 
 local kp_with_patched_grafana = kp + {
   grafana+: {
+    // This is an ugly hack because it completely overwrites the dashboardSources
+    // It's necessary to pass the 'foldersFromFileStructure' parameter to the provider
+    {% if monitoring_grafana_customer_dashboards %}
+        dashboardSources: {
+           "apiVersion": "v1",
+           "data": {
+              "dashboards.yaml": "{\n    \"apiVersion\": 1,\n    \"providers\": [\n        {\n            \"folder\": \"Default\",\n            \"name\": \"0\",\n            \"options\": {\n                \"path\": \"/grafana-dashboard-definitions/0\"\n            },\n            \"orgId\": 1,\n            \"type\": \"file\"\n        },\n        {\n            \"folder\": \"Customer-Dashboards\",\n            \"name\": \"Customer-Dashboards\",\n            \"options\": {\n                \"path\": \"/grafana-dashboard-definitions/Customer-Dashboards\"\n            },\n            \"orgId\": 1,\n            \"type\": \"file\",\n\"foldersFromFileStructure\": true\n        }\n    ]\n}"
+           },
+           "kind": "ConfigMap",
+           "metadata": {
+              "name": "grafana-dashboards",
+              "namespace": "monitoring"
+           }
+         },
+    {% endif %}
     deployment+: {
       spec+: {
         template+: {
@@ -675,7 +690,7 @@ local kp_with_patched_grafana = kp + {
                 {% if monitoring_grafana_customer_dashboards %}
                   volumeMounts+: [
                     {
-                      "mountPath": "/grafana-dashboard-definitions/0/customer-dashboards",
+                      "mountPath": "/grafana-dashboard-definitions/Customer-Dashboards",
                       "name" : "grafana-customer-dashboards",
                       "readOnly" : false
                     }
