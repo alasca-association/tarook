@@ -663,21 +663,39 @@ local kp_with_patched_ksm = kp + {
   }
 };
 
-local kp_with_customer_dashboards = kp + {
-{% if monitoring_grafana_customer_dashboards %}
+local kp_with_patched_grafana = kp + {
   grafana+: {
+    // This is an ugly hack because it completely overwrites the dashboardSources
+    // It's necessary to pass the 'foldersFromFileStructure' parameter to the provider
+    {% if monitoring_grafana_customer_dashboards %}
+        dashboardSources: {
+           "apiVersion": "v1",
+           "data": {
+              "dashboards.yaml": "{\n    \"apiVersion\": 1,\n    \"providers\": [\n        {\n            \"folder\": \"Default\",\n            \"name\": \"0\",\n            \"options\": {\n                \"path\": \"/grafana-dashboard-definitions/0\"\n            },\n            \"orgId\": 1,\n            \"type\": \"file\"\n        },\n        {\n            \"folder\": \"Customer-Dashboards\",\n            \"name\": \"Customer-Dashboards\",\n            \"options\": {\n                \"path\": \"/grafana-dashboard-definitions/Customer-Dashboards\"\n            },\n            \"orgId\": 1,\n            \"type\": \"file\",\n\"foldersFromFileStructure\": true\n        }\n    ]\n}"
+           },
+           "kind": "ConfigMap",
+           "metadata": {
+              "name": "grafana-dashboards",
+              "namespace": "monitoring"
+           }
+         },
+    {% endif %}
     deployment+: {
       spec+: {
         template+: {
           spec+: {
             containers: [
                 container + {
+                  "image" : "grafana/grafana:{{ monitoring_grafana_version }}",
+                {% if monitoring_grafana_customer_dashboards %}
                   volumeMounts+: [
                     {
-                      "mountPath": "/grafana-dashboard-definitions/0/customer-dashboards",
+                      "mountPath": "/grafana-dashboard-definitions/Customer-Dashboards",
                       "name" : "grafana-customer-dashboards",
                       "readOnly" : false
                     }
+
+                {% endif %}
                   ]
                 }
                 for container in kp.grafana.deployment.spec.template.spec.containers
@@ -687,7 +705,6 @@ local kp_with_customer_dashboards = kp + {
       }
     }
   }
-{% endif %}
 };
 
 { ['00-namespace-' + name]: kp.kubePrometheus[name] for name in std.objectFields(kp.kubePrometheus) } +
@@ -702,4 +719,4 @@ local kp_with_customer_dashboards = kp + {
 { ['20-alertmanager-' + name]: kp.alertmanager[name] for name in std.objectFields(kp.alertmanager) } +
 { ['20-prometheus-' + name]: kp.prometheus[name] for name in std.objectFields(kp.prometheus) } +
 { ['20-prometheus-adapter-' + name]: kp.prometheusAdapter[name] for name in std.objectFields(kp.prometheusAdapter) } +
-{ ['20-grafana-' + name]: kp_with_customer_dashboards.grafana[name] for name in std.objectFields(kp_with_customer_dashboards.grafana) }
+{ ['20-grafana-' + name]: kp_with_patched_grafana.grafana[name] for name in std.objectFields(kp_with_patched_grafana.grafana) }
