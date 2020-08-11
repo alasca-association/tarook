@@ -6,7 +6,7 @@ flush ruleset
 define wan = eth0
 define wg = wg0
 define wg_port = {{ vpn_port }}
-define k8s_port = 6443
+define k8s_port = {{ k8s_apiserver_frontend_port }}
 define haproxy_stats_port = {{ haproxy_stats_port }}
 define haproxy_prom_metrics_port = 9101
 define keepalived_prom_metrics_port = 9650
@@ -16,23 +16,32 @@ define ch_global_monitoring_port = {{ monitoring_ch_global_monitoring_nodeport }
 {% endif %}
 
 table inet filter {
-    set tcp_accepted {
+    set tcp_internal_accepted {
         type inet_service; flags interval;
         elements = {
-            ssh,
 {% if monitoring_ch_global_monitoring %}
             $ch_global_monitoring_port,
 {% endif %}
-            {{ haproxy_frontend_port }},
-{% for port in lb_ports %}
-    {% if port is mapping %}
-            {{ port.external }},
-    {% else %}
-            {{ port }},
-    {% endif %}
-{% endfor %}
-            $k8s_port
+            $k8s_port,
+            $haproxy_prom_metrics_port,
+            $haproxy_stats_port,
+            $keepalived_prom_metrics_port
         }
+    }
+
+    set tcp_mapped_accepted {
+        type inet_service; flags interval;
+        {% if lb_ports %}
+        elements = {
+            {% for port in lb_ports %}
+                {% if port is mapping %}
+                        {{ port.external }},
+                {% else %}
+                        {{ port }},
+                {% endif %}
+            {% endfor %}
+        }
+        {% endif %}
     }
 
     set udp_accepted {
@@ -53,17 +62,13 @@ table inet filter {
 
         jump base_checks
 
-        tcp dport @tcp_accepted accept
-        udp dport @udp_accepted accept
+        tcp dport ssh accept comment "Accept SSH connections from anywhere"
 
-        tcp dport $haproxy_prom_metrics_port ip saddr {{ priv_ip_cidr }} accept comment "Accept connections to Prometheus /metrics endpoint from private subnet"
-        tcp dport $haproxy_prom_metrics_port ip saddr {{ wg_ip_cidr }} accept comment "Accept connections to Prometheus /metrics endpoint from wireguard subnet"
+        tcp dport @tcp_internal_accepted ip saddr { {{ priv_ip_cidr }}, {{ wg_ip_cidr }} }  accept comment "Accept connections to internal services from private subnet"
 
-        tcp dport $haproxy_prom_metrics_port ip saddr {{ priv_ip_cidr }} accept comment "Accept connections to prometheus-haproxy-exporter endpoint from private subnet"
-        tcp dport $haproxy_prom_metrics_port ip saddr {{ wg_ip_cidr }} accept comment "Accept connections to prometheus-haproxy-exporter endpoint from wireguard subnet"
+        tcp dport @tcp_mapped_accepted accept comment "Accept connections to nodeport mapped services from anywhere"
 
-        tcp dport $keepalived_prom_metrics_port ip saddr {{ priv_ip_cidr }} accept comment "Accept connections to prometheus-keepalived-exporter metrics endpoint from private subnet"
-        tcp dport $keepalived_prom_metrics_port ip saddr {{ wg_ip_cidr }} accept comment "Accept connections to prometheus-keepalived-exporter endpoint from wireguard subnet"
+        udp dport @udp_accepted accept comment "Accept wireguard traffic from anywhere"
 
         ip protocol icmp counter accept
         ip protocol vrrp counter accept

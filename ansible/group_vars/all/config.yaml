@@ -7,9 +7,9 @@ ansible_ssh_extra_args: "-o UserKnownHostsFile={{ ssh_known_hosts_file }}"
 vpn_port: 7777
 
 # These variables are needed by stage 02 and stage 03
-haproxy_frontend_port: 8888
+k8s_apiserver_frontend_port: 8888
 haproxy_health_url: 127.0.0.1:6669
-haproxy_backend_port: 6443
+k8s_apiserver_backend_port: 6443
 haproxy_stats_port: 48981
 
 ch_k8s_lbaas_agent_port: 15203

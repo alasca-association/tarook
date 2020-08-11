@@ -22,7 +22,7 @@
   when: local_kube_apiserver_status is failed
   vars:
     gateway: "{{ groups['gateways'] | first }}"
-    host: "{{ private_vip }}:{{ hostvars[gateway]['haproxy_frontend_port'] }}"
+    host: "{{ private_vip }}:{{ hostvars[gateway]['k8s_apiserver_frontend_port'] }}"
   uri:
     url: "https://{{ host }}"
     status_code: 403
