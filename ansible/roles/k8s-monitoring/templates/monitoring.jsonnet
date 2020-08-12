@@ -72,6 +72,8 @@ local kp =
       },
 
       grafana+:: {
+
+        plugins+: {{ monitoring_grafana_plugins | default([]) }},
         datasources+:: [
 {% if monitoring_use_thanos %}
           {
