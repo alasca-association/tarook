@@ -1,10 +1,13 @@
 ### Pre-requisites
 
- - openstack project&user is created
+ - openstack project&user is created and ssh keypair is present
+   - `TF_VAR_keypair` in `.envrc` must match the keypair name)
  - openrc is loaded
  - gitlab ssh access
 - Python 3 and pip
   - `apt install python3-pip`
+- venv (Included in the Python standard library, but apparently split into an extra package on Debian based distros)
+  - `apt install python3-venv`
 - Ansible 2.9+ (you can use requirements.txt to install it)
 - Python OpenStack client (you can use requirements.txt to install it)
 - GNU Make
@@ -15,9 +18,12 @@
 - terraform: https://www.terraform.io/downloads.html
   - move binary file to /usr/local/bin
   - sudo chmod +x if necessary
-- sponge (apt install moreutils)
+- sponge
+  - `apt install moreutils`
 - toml
   - `apt install python3-toml`
+- jq
+  - `apt install jq`
 - wireguard
   - `apt install wireguard`
 - current kernel headers:
