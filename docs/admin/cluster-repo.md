@@ -61,7 +61,15 @@ Detailed explanation:
   holds the WireGuard public keys of all our (CLOUD&HEAT) users.
 
 
+
+
 ## Creating a new cluster repository
+
+### Prepare your direnv
+
+Even though not a hard requirement it's strongly recommended to use direnv to
+properly setup your environment varibles.
+Check the top of [Environment variables](#environment-variables)
 
 ### Empty git repository
 
@@ -106,6 +114,8 @@ The `init.sh` script will:
 - Copy a config.toml template if no config exists in the cluster repository yet
 - Update the .gitignore to current standards
 
+- create the dir env, check the top of
+  [Environment variables](#environment-variables)
 
 ## Using the cluster repository
 
@@ -114,6 +124,10 @@ cluster repository. All paths are relative to the cluster repository.
 
 The scripts extensively rely on environment variables. See below for a
 description of which environment variables exist and what they do.
+
+- on changes: `run python3 managed-k8s/jenkins/toml_helper.py`
+- run `python3 <path-to-managed-k8s>/jenkins/toml_helper.py`
+- alternatively, run `<path-to-managed-k8s>/actions/apply.sh` to use own changes
 
 - `managed-k8s/actions/apply.sh`: Runs terraform, stage2, stage3 and test in
   that order.
@@ -266,3 +280,15 @@ disable safety checks or give consent to potentially dangerous operations.
   If you know what you’re doing (I certainly don’t), you can set
   `MANAGED_K8S_IGNORE_WIREGUARD_ROUTE` to any non-empty value to override this
   check.
+
+## Hints:
+
+- k8s gateways: `debian@<ip>`
+   k8s master/worker: `ubuntu@<ip>`, only reachable via wireguard
+- to add more ssh user, you have to add these lines in the config.toml
+   ```
+   [ansible.02_trampoline.group_vars.gateways]
+    cah_users_include_users = ["<user>", "<user>"]
+
+   [ansible.03_final.group_vars.all]
+    cah_users_include_users = ["<user>", "<user>"]
