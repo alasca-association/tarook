@@ -290,6 +290,12 @@ local kp =
         },
       },
 
+      '0probeCustomResourceDefinition'+: {
+        metadata+: {
+          creationTimestamp:: null
+        },
+      },
+
       deployment+: {
         spec+: {
           template+: {
