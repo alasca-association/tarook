@@ -1,4 +1,5 @@
 - name: configure jsonnet
+  become: no
   connection: local
   tags:
     - k8s-monitoring-build
@@ -7,6 +8,7 @@
     dest: "{{ monitoring_jsonnet_dir_thanos }}/config.jsonnet"
 
 - name: rebuild
+  become: no
   connection: local
   tags:
     - k8s-monitoring-build
@@ -21,6 +23,9 @@
   changed_when: false
 
 - name: apply manifests
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:
     state: present
     apply: yes
