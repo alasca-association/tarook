@@ -73,6 +73,7 @@
     definition: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/' + item) }}"
     validate:
       fail_on_error: yes
+      strict: yes
   loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json' ) | from_json }}"
 
 - name: create rook service monitor
