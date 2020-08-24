@@ -10,3 +10,10 @@ apiServer:
     extraArgs:
         enable-admission-plugins: NodeRestriction{% if k8s_use_podsecuritypolicies %},PodSecurityPolicy{% endif %}
 
+controllerManager:
+    extraArgs:
+        "bind-address" : "0.0.0.0"
+
+scheduler:
+    extraArgs:
+        "bind-address" : "0.0.0.0"
