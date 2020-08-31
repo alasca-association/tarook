@@ -29,7 +29,7 @@ def main():
     tests = [test_for_deletion, test_for_flavor_upgrade]
     plan = json.load(sys.stdin)
     for change in plan["resource_changes"]:
-        if change["provider_name"] == "local":
+        if change["type"] == "local_file":
             continue
         for test in tests:
             if test(change):
