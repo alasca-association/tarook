@@ -1,0 +1,4 @@
+skip_list:
+  # lcm/managed-k8s#183
+ - '106'
+ - '208'
