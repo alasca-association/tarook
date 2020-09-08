@@ -48,7 +48,7 @@ flake8:
   - docker
 
 cluster-spawn:
-  image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker:0.3.0
+  image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
   rules:
   - if: '$CI_COMMIT_REF_NAME =~ /^(master|stable)$/'
     when: on_success
