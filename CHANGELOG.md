@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+* **Upgrade to Terraform 0.13**
+
+  From now on you have to use at least Terraform 0.13
+
 ## 2020-09-04
 
 * **Unknown**
