@@ -3,7 +3,7 @@
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
 
 local tolerations = {
-{% if monitoring_placement_taint %}
+{% if monitoring_placement_taint | bool %}
   tolerations+: [{
     key: '{{ monitoring_placement_taint.key }}',
     operator: 'Equal',
@@ -15,7 +15,7 @@ local tolerations = {
 
 local affinity = {
   affinity+: {
-{% if monitoring_placement_label %}
+{% if monitoring_placement_label | bool %}
     nodeAffinity+: {
       requiredDuringSchedulingIgnoredDuringExecution+: {
         nodeSelectorTerms+: [
@@ -53,10 +53,10 @@ local kp =
   // (import 'kube-prometheus/kube-prometheus-managed-cluster.libsonnet') +
   // (import 'kube-prometheus/kube-prometheus-node-ports.libsonnet') +
   // (import 'kube-prometheus/kube-prometheus-static-etcd.libsonnet') +
-{% if monitoring_use_thanos %}
+{% if monitoring_use_thanos | bool %}
   (import 'kube-prometheus/kube-prometheus-thanos-sidecar.libsonnet') +
 {% endif %}
-{% if monitoring_prometheus_monitor_all_namespaces %}
+{% if monitoring_prometheus_monitor_all_namespaces | bool %}
   (import 'kube-prometheus/kube-prometheus-all-namespaces.libsonnet') +
 {% endif %}
   {
@@ -65,7 +65,7 @@ local kp =
 
       prometheus+:: {
         namespaces+: [
-{% if rook %}
+{% if rook | bool %}
             '{{ rook_namespace }}',
 {% endif %}
         ],
@@ -75,7 +75,7 @@ local kp =
 
         plugins+: {{ monitoring_grafana_plugins | default([]) }},
         datasources+:: [
-{% if monitoring_use_thanos %}
+{% if monitoring_use_thanos | bool %}
           {
             name: 'thanos',
             type: 'prometheus',
@@ -97,18 +97,18 @@ local kp =
       },
     },
     grafanaDashboards+:: {
-{% if rook %}
+{% if rook | bool %}
       'ceph-cluster.json': (import 'dashboards/ceph-cluster.json'),
       'ceph-osd.json': (import 'dashboards/ceph-osd.json'),
       'ceph-pools.json': (import 'dashboards/ceph-pools.json'),
 {% endif %}
-{% if monitoring_use_thanos %}
+{% if monitoring_use_thanos | bool %}
       'thanos-overview.json': (import 'dashboards/thanos-overview.json'),
 {% endif %}
     },
 
     nodeExporter+:: {
-{% if generate_psp %}
+{% if generate_psp | bool %}
       "00-podSecurityPolicy":
         local podSecurityPolicy = k.policy.v1beta1.podSecurityPolicy;
 
@@ -199,7 +199,7 @@ local kp =
     },
 
     prometheusOperator+:: {
-{% if generate_psp %}
+{% if generate_psp | bool %}
       "00-podSecurityPolicy":
         local podSecurityPolicy = k.policy.v1beta1.podSecurityPolicy;
 
@@ -306,7 +306,7 @@ local kp =
     },
 
     prometheusAdapter+:: {
-{% if generate_psp %}
+{% if generate_psp | bool %}
       "00-podSecurityPolicy":
         local podSecurityPolicy = k.policy.v1beta1.podSecurityPolicy;
 
@@ -367,7 +367,7 @@ local kp =
     },
 
     prometheus+:: {
-{% if generate_psp %}
+{% if generate_psp | bool %}
       "00-podSecurityPolicy":
         local podSecurityPolicy = k.policy.v1beta1.podSecurityPolicy;
 
@@ -427,7 +427,7 @@ local kp =
   monitoring_prometheus_memory_limit,
   monitoring_prometheus_cpu_limit) %}{% endcall %}
           },
-{% if monitoring_use_thanos %}
+{% if monitoring_use_thanos | bool %}
           thanos+: {
             resources: {
 {% call resource_constraints(
@@ -445,7 +445,7 @@ local kp =
     },
 
     kubeStateMetrics+:: {
-{% if generate_psp %}
+{% if generate_psp | bool %}
       "00-podSecurityPolicy":
         local podSecurityPolicy = k.policy.v1beta1.podSecurityPolicy;
 
@@ -506,7 +506,7 @@ local kp =
     },
 
     alertmanager+:: {
-{% if generate_psp %}
+{% if generate_psp | bool %}
       "00-podSecurityPolicy":
         local podSecurityPolicy = k.policy.v1beta1.podSecurityPolicy;
 
@@ -571,7 +571,7 @@ local kp =
     },
 
     grafana+:: {
-{% if generate_psp %}
+{% if generate_psp | bool %}
       "00-podSecurityPolicy":
         local podSecurityPolicy = k.policy.v1beta1.podSecurityPolicy;
 
@@ -675,7 +675,7 @@ local kp_with_patched_grafana = kp + {
   grafana+: {
     // This is an ugly hack because it completely overwrites the dashboardSources
     // It's necessary to pass the 'foldersFromFileStructure' parameter to the provider
-    {% if monitoring_grafana_customer_dashboards %}
+    {% if monitoring_grafana_customer_dashboards | bool %}
         dashboardSources: {
            "apiVersion": "v1",
            "data": {
@@ -695,7 +695,7 @@ local kp_with_patched_grafana = kp + {
             containers: [
                 container + {
                   "image" : "grafana/grafana:{{ monitoring_grafana_version }}",
-                {% if monitoring_grafana_customer_dashboards %}
+                {% if monitoring_grafana_customer_dashboards | bool %}
                   volumeMounts+: [
                     {
                       "mountPath": "/grafana-dashboard-definitions/Customer-Dashboards",
