@@ -3,7 +3,7 @@
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
 
 local tolerations = {
-{% if monitoring_placement_taint | bool %}
+{% if monitoring_placement_taint %}
   tolerations+: [{
     key: '{{ monitoring_placement_taint.key }}',
     operator: 'Equal',
@@ -15,7 +15,7 @@ local tolerations = {
 
 local affinity = {
   affinity+: {
-{% if monitoring_placement_label | bool %}
+{% if monitoring_placement_label %}
     nodeAffinity+: {
       requiredDuringSchedulingIgnoredDuringExecution+: {
         nodeSelectorTerms+: [
