@@ -64,12 +64,12 @@
         block_storage_class: csi-sc-cinderplugin
     - role: check-block-storage
       tags: test-ceph-block-storage
-      when: "rook | default(False)"
+      when: "(rook | default(False)) | bool"
       vars:
         block_storage_class: rook-ceph-data
     - role: check-shared-fs
       tags: test-ceph-shared-filesystem
-      when: "(rook | default(False)) and (rook_fs | default(False))"
+      when: "((rook | default(False)) | bool)  and ((rook_fs | default(False)) | bool)"
       vars:
         fs_storage_class: rook-ceph-cephfs
     - role: check-loadbalancer-service
