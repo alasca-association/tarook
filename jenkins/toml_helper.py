@@ -27,14 +27,22 @@ class WireGuardUser(collections.namedtuple(
         ["public_key", "name", "address"])):
 
     @classmethod
-    def fromdict(cls, d, *, with_address=True):
+    def fromdict(cls, d, *, with_address=True, address_optional=False):
         if with_address:
-            address = ipaddress.ip_interface(d["ip"])
-            if address.network.prefixlen != 32:
-                raise ValueError(
-                    "incorrect prefix length in IP address config: {} "
-                    "(from: {!r}".format(address, d)
-                )
+            try:
+                address = ipaddress.ip_interface(d["ip"])
+            except KeyError:
+                if not address_optional:
+                    raise ValueError(
+                        "ip address missing on user {!r}".format(d)
+                    ) from None
+                address = None
+            else:
+                if address.network.prefixlen != 32:
+                    raise ValueError(
+                        "incorrect prefix length in IP address config: {} "
+                        "(from: {!r}".format(address, d)
+                    )
         else:
             address = None
 
@@ -246,7 +254,7 @@ def main():
             "wg_peers", []
         )
     cluster_users = [
-        WireGuardUser.fromdict(item, with_address=True)
+        WireGuardUser.fromdict(item, with_address=True, address_optional=True)
         for item in cluster_wg_config
     ]
 
