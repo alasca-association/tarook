@@ -41,11 +41,6 @@
       - device-mapper-persistent-data
       - lvm2
 
-  # This ugly workaround is required as docker-ce as not been packaged for CentOS 8 yet.
-  - name: Install containerd
-    yum:
-      name: https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
-
   - name: Add Docker repo
     get_url:
       url: https://download.docker.com/linux/centos/docker-ce.repo
