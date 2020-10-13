@@ -35,6 +35,8 @@ monitoring_alertmanager_memory_request: "{{ monitoring_alertmanager_memory_limit
 monitoring_alertmanager_cpu_limit: "100m"
 monitoring_alertmanager_cpu_request: "{{ monitoring_alertmanager_cpu_limit }}"
 
+monitoring_alertmanager_config_secret: alertmanager-main
+
 monitoring_prometheus_memory_limit: "3Gi"
 monitoring_prometheus_memory_request: "{{ monitoring_prometheus_memory_limit }}"
 monitoring_prometheus_cpu_limit: "1"
