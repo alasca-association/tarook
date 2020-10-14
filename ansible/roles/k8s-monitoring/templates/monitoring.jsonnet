@@ -566,8 +566,23 @@ local kp =
   monitoring_alertmanager_memory_limit,
   monitoring_alertmanager_cpu_limit) %}{% endcall %}
           },
+          // Make the name of the secret that is loaded by alertmanager as its configuration customizable from the outside.
+          // This ensures that changes to the config made by the customer aren't overwritten.
+          // TODO: Once AlertmanagerConfig is available as CRD we don't need this hack any longer.
+          // (https://github.com/prometheus-operator/prometheus-operator/pull/3451)
+          configSecret: {{ monitoring_alertmanager_config_secret | to_json }},
         },
       },
+      // kube-prometheus auto generates a default "alertmanager-secret" manifest. Our deployer is dumb and applies every
+      // manifest that it can find to the cluster. If we're using a different secret than the default one it would be
+      // applied nevertheless. Hence two alertmanager secrets would appear in the cluster although only one is used. The
+      // customer would have to check which secret is actually mounted to edit the right one. By setting the secret to ""
+      // if we're using a custom one, it is not (re-) added to the cluster.
+      // NOTE: we're basically working against kube-prometheus. The AlertmanagerConfig CRD will also make this snippet
+      // obsolete.
+      {% if monitoring_alertmanager_config_secret != "alertmanager-main" %}
+      secret: ""
+      {% endif %}
     },
 
     grafana+:: {
