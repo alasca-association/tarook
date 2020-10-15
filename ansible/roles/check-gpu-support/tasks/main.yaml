@@ -31,6 +31,8 @@
         name: cuda-vector-add
         namespace: "{{ check_gpu_support_namespace }}"
       register: cuda_state
+      retries: 20
+      delay: 10
       until: "cuda_state.resources and (cuda_state.resources[0].status | default(False)) and (cuda_state.resources[0].status.phase | default('') in ['Completed', 'Succeeded', 'Failed'])"
 
     - name: Check cuda test pod success
