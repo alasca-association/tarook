@@ -63,12 +63,53 @@ local affinity = {
 //  },
 //};
 //
-//local c = t.compact + t.compact.withVolumeClaimTemplate + t.compact.withServiceMonitor + commonConfig + {
-//  config+:: {
-//    name: 'thanos-compact',
-//    replicas: 1,
-//  },
-//};
+local c = t.compact + t.compact.withVolumeClaimTemplate + t.compact.withServiceMonitor + t.compact.withRetention + t.compact.withResources + commonConfig + {
+  config+:: {
+    name: 'thanos-compact',
+    replicas: 1,
+    retentionResolutionRaw: '{{ monitoring_thanos_retention_resolution_raw }}',
+    retentionResolution5m: '{{ monitoring_thanos_retention_resolution_5m }}',
+    retentionResolution1h: '{{ monitoring_thanos_retention_resolution_1h }}',
+    resources: {
+      {% call resource_constraints(
+        monitoring_thanos_compact_memory_request,
+        monitoring_thanos_compact_cpu_request,
+        monitoring_thanos_compact_memory_limit,
+        monitoring_thanos_compact_cpu_limit) %}{% endcall %}
+    },
+  },
+  statefulSet+: {
+    spec+: {
+      template+: {
+        spec+: affinity {
+          volumes: [],  // Added to pass the Kubernetes validation
+        }
+      }
+    }
+  },
+};
+
+local patched_compact = c + {
+  statefulSet+: {
+    spec+: {
+      template+: {
+        spec+: affinity {
+          containers: [
+            container + {"args" :
+              container["args"] + (
+                if container.name == "thanos-compact" then [
+                  "--delete-delay=2h"
+                ] else []
+              )
+            }
+            for container in c.statefulSet.spec.template.spec.containers
+          ]
+        }
+      }
+    }
+  },
+};
+
 //
 //local re = t.receive + t.receive.withVolumeClaimTemplate + t.receive.withServiceMonitor + commonConfig + {
 //  config+:: {
@@ -145,7 +186,7 @@ local q = t.query + t.query.withServiceMonitor + t.query.withResources + commonC
 //};
 
 //{ ['thanos-bucket-' + name]: b[name] for name in std.objectFields(b) } +
-//{ ['thanos-compact-' + name]: c[name] for name in std.objectFields(c) } +
+{ ['thanos-compact-' + name]: patched_compact[name] for name in std.objectFields(c) } +
 //{ ['thanos-receive-' + name]: re[name] for name in std.objectFields(re) } +
 //{ ['thanos-rule-' + name]: finalRu[name] for name in std.objectFields(finalRu) } +
 { ['thanos-store-' + name]: s[name] for name in std.objectFields(s) } +
