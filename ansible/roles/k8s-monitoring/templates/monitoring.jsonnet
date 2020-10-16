@@ -420,6 +420,8 @@ local kp =
 {% endif %}
       prometheus+: {
         spec+: affinity + {
+          probeSelector: {},
+          probeNamespaceSelector: {},
           resources: {
 {% call resource_constraints(
   monitoring_prometheus_memory_request,

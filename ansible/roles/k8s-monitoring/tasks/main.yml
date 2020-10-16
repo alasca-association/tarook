@@ -48,6 +48,13 @@
   tags:
   - thanos
 
+- import_tasks: internet_probe.yaml
+  when: monitoring and monitoring_internet_probe
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  tags:
+    - internet_probe
+
 - name: Expose Prometheus with a NodePort
   when: monitoring and monitoring_ch_global_monitoring
   become: no

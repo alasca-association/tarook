@@ -75,3 +75,8 @@ monitoring_thanos_store_memory_limit: "2Gi"
 monitoring_thanos_store_memory_request: "256Mi"
 monitoring_thanos_store_cpu_limit: "1"
 monitoring_thanos_store_cpu_request: "100m"
+
+# If true, add blackbox-exporter to test basic internet connectivity
+monitoring_internet_probe: false
+# List of hosts to probe. Override in config.toml
+monitoring_internet_probe_targets: []
