@@ -420,6 +420,8 @@ local kp =
 {% endif %}
       prometheus+: {
         spec+: affinity + {
+          probeSelector: {},
+          probeNamespaceSelector: {},
           resources: {
 {% call resource_constraints(
   monitoring_prometheus_memory_request,
@@ -599,7 +601,7 @@ local kp =
         podSecurityPolicy.mixin.spec.withHostPid(false) +
         podSecurityPolicy.mixin.spec.withHostIpc(false) +
         podSecurityPolicy.mixin.spec.withHostNetwork(false) +
-        podSecurityPolicy.mixin.spec.fsGroup.withRule("MayRunAs").withRanges({"min": 2000, "max": 2000}) +
+        podSecurityPolicy.mixin.spec.fsGroup.withRule("RunAsAny").withRanges({"min": 1, "max": 65535}) +
         podSecurityPolicy.mixin.spec.runAsUser.withRule("MustRunAsNonRoot") +
         podSecurityPolicy.mixin.spec.supplementalGroups.withRule("MayRunAs").withRanges({"min": 1, "max": 65535}) +
         podSecurityPolicy.mixin.spec.runAsGroup.withRule("MustRunAs").withRanges({"min": 1, "max": 65535}) +

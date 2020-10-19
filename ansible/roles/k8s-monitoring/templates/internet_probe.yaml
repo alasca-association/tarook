@@ -1,0 +1,246 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: blackbox-exporter
+  namespace: {{ monitoring_namespace | to_json }}
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: blackbox-exporter
+    app.kubernetes.io/version: v0.18.0
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: blackbox-exporter-psp
+  namespace: {{ monitoring_namespace | to_json }}
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: blackbox-exporter
+    app.kubernetes.io/version: v0.18.0
+rules:
+  - apiGroups:
+      - policy
+    resourceNames:
+      - blackbox-exporter
+    resources:
+      - podsecuritypolicies
+    verbs:
+      - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: blackbox-exporter-psp
+  namespace: {{ monitoring_namespace | to_json }}
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: blackbox-exporter
+    app.kubernetes.io/version: v0.18.0
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: blackbox-exporter-psp
+subjects:
+  - kind: ServiceAccount
+    name: blackbox-exporter
+    namespace: {{ monitoring_namespace | to_json }}
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: blackbox-exporter
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: blackbox-exporter
+    app.kubernetes.io/version: v0.18.0
+spec:
+  allowPrivilegeEscalation: false
+  fsGroup:
+    rule: RunAsAny
+  hostPorts:
+    - min: 9115
+      max: 9115
+  runAsGroup:
+    ranges:
+      - max: 65535
+        min: 1
+    rule: MustRunAs
+  runAsUser:
+    rule: MustRunAsNonRoot
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    ranges:
+      - max: 65535
+        min: 1
+    rule: MayRunAs
+  volumes:
+    - configMap
+    - secret
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blackbox-exporter-config
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: blackbox-exporter
+    app.kubernetes.io/version: v0.18.0
+  namespace: {{ monitoring_namespace | to_json }}
+data:
+  blackbox.yml: |
+    modules:
+      http_2xx:
+        prober: http
+        timeout: 5s
+        http:
+          valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+          valid_status_codes: []  # Defaults to 2xx
+          method: GET
+          no_follow_redirects: false
+          fail_if_ssl: false
+          fail_if_not_ssl: false
+          tls_config:
+            insecure_skip_verify: false
+          preferred_ip_protocol: "ip4" # defaults to "ip6"
+          ip_protocol_fallback: false  # no fallback to "ip6"
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/version: v0.18.0
+    app.kubernetes.io/instance: blackbox-exporter
+  name: blackbox-exporter
+  namespace: {{ monitoring_namespace | to_json }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: blackbox-exporter
+      app.kubernetes.io/version: v0.18.0
+      app.kubernetes.io/instance: blackbox-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: blackbox-exporter
+        app.kubernetes.io/version: v0.18.0
+        app.kubernetes.io/instance: blackbox-exporter
+    spec:
+      containers:
+        - image: prom/blackbox-exporter:v0.18.0
+          name: blackbox-exporter
+          volumeMounts:
+            - name: blackbox-exporter-config
+              mountPath: /config
+          command: ["blackbox_exporter", "--config.file", "/config/blackbox.yml"]
+          resources:
+            limits:
+              cpu: 50m
+              memory: 100Mi
+            requests:
+              cpu: 10m
+              memory: 50Mi
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      serviceAccount: blackbox-exporter
+      volumes:
+        - configMap:
+            name: blackbox-exporter-config
+          name: blackbox-exporter-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blackbox-exporter
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: blackbox-exporter
+    app.kubernetes.io/version: v0.18.0
+  namespace: {{ monitoring_namespace | to_json }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: blackbox-exporter
+    app.kubernetes.io/version: v0.18.0
+  ports:
+    - name: metrics
+      port: 9115
+      protocol: TCP
+      targetPort: 9115
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: blackbox-exporter
+  namespace: {{ monitoring_namespace | to_json }}
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: blackbox-exporter
+    app.kubernetes.io/version: v0.18.0
+spec:
+  endpoints:
+    - interval: 5s
+      path: /metrics
+      port: metrics
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: blackbox-exporter
+      app.kubernetes.io/instance: blackbox-exporter
+      app.kubernetes.io/version: v0.18.0
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: reference-targets
+  namespace: {{ monitoring_namespace | to_json }}
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: blackbox-exporter
+    app.kubernetes.io/version: v0.18.0
+    prometheus: k8s
+    role: alert-rules
+spec:
+  jobName: blackbox:reference-targets
+  module: http_2xx
+  prober:
+    url: blackbox-exporter:9115
+    scheme: http
+  targets:
+    staticConfig:
+      static:
+        {% for t in monitoring_internet_probe_targets %}
+        - {{ t }}
+        {% endfor %}
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: internet-probe
+  namespace: {{ monitoring_namespace | to_json }}
+  labels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: blackbox-exporter
+    app.kubernetes.io/version: v0.18.0
+    prometheus: k8s
+    role: alert-rules
+spec:
+  groups:
+    - name: internet-probe.rules
+      rules:
+        - alert: mk8s:internet-probe:target-unreachable
+          expr: probe_success < 1
+          annotations:
+            summary:
+              One of the internet probe targets could not be reached.
+            description:
+              The blackbox exporter could not reach one or more of its targets.
+              That means that either the target is actually down or the egress
+              traffic is disrupted.
+          for: 1m
+          labels:
+            severity: warning
