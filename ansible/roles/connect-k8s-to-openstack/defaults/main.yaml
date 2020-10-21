@@ -1,2 +1,5 @@
 openstack_lbaas: false
 openstack_lbaas_ingress: false
+# Create the StorageClass `csi-sc-cinderplugin-nvme` in k8s. Note that you have
+# to add the volume type `three_times_replicated_nvme` to your OpenStack project.
+openstack_cinder_nvme: false
