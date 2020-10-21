@@ -93,6 +93,7 @@
       argv:
         - kubeadm
         - init
+        - "--node-name={{ inventory_hostname }}"
         - --config=/tmp/kubeadm-config.yaml
 
   - name: Configure bridge-nf-call-iptables
