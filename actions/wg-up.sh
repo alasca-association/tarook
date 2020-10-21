@@ -27,9 +27,12 @@ fi
 old_umask="$(umask)"
 # prevent private key from leaking to the public
 umask 0077
+if [ -z ${wg_private_key+x} ]; then
+    wg_private_key=$(cat "$wg_private_key_file")
+fi
 # TODO: invoking sed with the private key in the argument is meh, because that
 # may be visible to other users
-sed "s#REPLACEME#$(cat "$wg_private_key_file")#" "$ansible_wg_template" > "$wg_conf"
+sed "s#REPLACEME#$wg_private_key#" "$ansible_wg_template" > "$wg_conf"
 umask "$old_umask"
 if ip link show "$wg_interface" 2>/dev/null >/dev/null; then
     if [ "$(id -u)" = '0' ]; then
