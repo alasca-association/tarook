@@ -10,6 +10,7 @@ define k8s_port = {{ k8s_apiserver_frontend_port }}
 define haproxy_stats_port = {{ haproxy_stats_port }}
 define haproxy_prom_metrics_port = 9101
 define keepalived_prom_metrics_port = 9650
+define node_exporter_metrics_port = 9100
 
 {% if monitoring_ch_global_monitoring %}
 define ch_global_monitoring_port = {{ monitoring_ch_global_monitoring_nodeport }}
@@ -25,7 +26,8 @@ table inet filter {
             $k8s_port,
             $haproxy_prom_metrics_port,
             $haproxy_stats_port,
-            $keepalived_prom_metrics_port
+            $keepalived_prom_metrics_port,
+            $node_exporter_metrics_port
         }
     }
 

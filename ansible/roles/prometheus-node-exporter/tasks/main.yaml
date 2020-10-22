@@ -1,0 +1,22 @@
+- name: Install node-exporter
+  become: yes
+  apt:
+    update_cache: yes
+    state: present
+    install_recommends: false
+    name:
+      - prometheus-node-exporter
+
+- name: Configure node-exporter
+  become: yes
+  template:
+    src: prometheus-node-exporter.j2
+    dest: /etc/default/prometheus-node-exporter
+
+- name: Restart node-exporter
+  become: yes
+  systemd:
+    name: prometheus-node-exporter
+    state: restarted
+    enabled: yes
+    daemon-reload: yes

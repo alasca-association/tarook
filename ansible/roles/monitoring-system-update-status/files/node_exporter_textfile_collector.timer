@@ -1,0 +1,8 @@
+[Unit]
+Description=Run node_exporter_textfile_collector every two hours
+
+[Timer]
+OnCalendar=0/2:00:00
+
+[Install]
+WantedBy=timers.target

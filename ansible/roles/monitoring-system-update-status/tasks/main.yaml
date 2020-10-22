@@ -1,0 +1,45 @@
+- name: Add node-exporter collector resources
+  become: yes
+  block:
+  - name: Create node-exporter group
+    group:
+      name: node-exporter
+      state: present
+
+  - name: Add node-exporter user
+    user:
+      name: node-exporter
+      create_home: no
+      groups: node-exporter
+
+  - name: Copy the collector script
+    template:
+      src: system_update_status.sh.j2
+      dest: /usr/local/bin/system_update_status.sh
+
+  - name: Create the node-exporter run directory
+    file:
+      path: "{{ monitoring_node_exporter_textfile_collector_path }}"
+      state: directory
+      owner: node-exporter
+      group: node-exporter
+
+  - name: Create the node-exporter service unit
+    copy:
+      src: node_exporter_textfile_collector.service
+      dest: /etc/systemd/system/node_exporter_textfile_collector.service
+
+  - name: Create the node-exporter timer unit
+    copy:
+      src: node_exporter_textfile_collector.timer
+      dest: /etc/systemd/system/node_exporter_textfile_collector.timer
+
+  - name: Enable the service units
+    systemd:
+      name: "{{ item }}"
+      state: restarted
+      enabled: yes
+      daemon_reload: yes
+    loop:
+      - node_exporter_textfile_collector.timer
+      - node_exporter_textfile_collector.service

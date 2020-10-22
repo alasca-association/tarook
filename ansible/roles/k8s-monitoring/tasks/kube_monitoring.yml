@@ -108,6 +108,17 @@
   tags:
     - keepalived-service-monitor
 
+- name: create node-exporter service monitor (gateway)
+  k8s:
+    state: present
+    apply: yes
+    definition: "{{ lookup('template', 'node-exporter-service-monitor.yaml') }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+  tags:
+    - node-exporter-service-monitor
+
 - name: create LBaaS component service monitors (gateway)
   k8s:
     definition: "{{ lookup('template', item) }}"

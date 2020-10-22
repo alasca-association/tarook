@@ -191,7 +191,7 @@ local kp =
                   operator: 'Exists',
                   effect: 'NoSchedule',
                 }
-              ]
+              ],
             }
           },
         },
@@ -732,6 +732,34 @@ local kp_with_patched_grafana = kp + {
   }
 };
 
+{% if monitoring_node_exporter_textfile_collector %}
+local kp_with_patched_node_exporter = kp + {
+  nodeExporter+: {
+    daemonset+: {
+      spec+: {
+        template+: {
+          spec+: {
+            containers: [
+              container + {"args" :
+                container["args"] + (
+                  if container.name == "node-exporter" then
+                    [
+                      "--collector.textfile.directory=/host/root/{{ monitoring_node_exporter_textfile_collector_path }}",
+                      "--collector.textfile"
+                    ]
+                  else []
+                )
+              }
+              for container in kp.nodeExporter.daemonset.spec.template.spec.containers
+            ],
+          }
+        }
+      }
+    }
+  }
+};
+{% endif %}
+
 { ['00-namespace-' + name]: kp.kubePrometheus[name] for name in std.objectFields(kp.kubePrometheus) } +
 {
   ['01-prometheus-operator-' + name]: kp.prometheusOperator[name]
@@ -739,7 +767,7 @@ local kp_with_patched_grafana = kp + {
 } +
 // serviceMonitor is separated so that it can be created after the CRDs are ready
 { '10-prometheus-operator-serviceMonitor': kp.prometheusOperator.serviceMonitor } +
-{ ['20-node-exporter-' + name]: kp.nodeExporter[name] for name in std.objectFields(kp.nodeExporter) } +
+{ ['20-node-exporter-' + name]: kp_with_patched_node_exporter.nodeExporter[name] for name in std.objectFields(kp_with_patched_node_exporter.nodeExporter) } +
 { ['20-kube-state-metrics-' + name]: kp_with_patched_ksm.kubeStateMetrics[name] for name in std.objectFields(kp.kubeStateMetrics) } +
 { ['20-alertmanager-' + name]: kp.alertmanager[name] for name in std.objectFields(kp.alertmanager) } +
 { ['20-prometheus-' + name]: kp.prometheus[name] for name in std.objectFields(kp.prometheus) } +
