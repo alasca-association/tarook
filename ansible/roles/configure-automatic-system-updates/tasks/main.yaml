@@ -1,0 +1,7 @@
+# unattended-upgrades is a useful feature but untested upgrades at the wrong time
+# can cause a lot of pain
+- name: Remove unattended-upgrades
+  become: yes
+  package:
+    name: unattended-upgrades
+    state: absent
