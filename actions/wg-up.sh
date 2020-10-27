@@ -24,16 +24,11 @@ if python3 -c "import toml, sys; sys.exit(any(user['ident'] == '$wg_user' for us
 fi
 
 #set up wireguard
-old_umask="$(umask)"
-# prevent private key from leaking to the public
-umask 0077
 if [ -z ${wg_private_key+x} ]; then
     wg_private_key=$(cat "$wg_private_key_file")
 fi
-# TODO: invoking sed with the private key in the argument is meh, because that
-# may be visible to other users
-sed "s#REPLACEME#$wg_private_key#" "$ansible_wg_template" > "$wg_conf"
-umask "$old_umask"
+# Creating the conf file with a dummy key. The actual private key is going to be injected via `wg set`
+sed "s#REPLACEME#$(wg genkey)#" "$ansible_wg_template" > "$wg_conf"
 if ip link show "$wg_interface" 2>/dev/null >/dev/null; then
     if [ "$(id -u)" = '0' ]; then
         run ip link delete "$wg_interface" || true
@@ -42,3 +37,5 @@ if ip link show "$wg_interface" 2>/dev/null >/dev/null; then
     fi
 fi
 run wg-quick up "$wg_conf"
+rm "$wg_conf"
+sudo wg set "$wg_conf_name" private-key /dev/stdin <<< "$wg_private_key"
