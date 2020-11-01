@@ -43,3 +43,5 @@
     tags: prometheus-keepalived-exporter
   - role: journald
     tags: journald
+  - role: configure-automatic-system-updates
+    tags: configure-automatic-system-updates
