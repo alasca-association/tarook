@@ -1,0 +1,5 @@
+{% if monitoring_node_exporter_textfile_collector %}
+ARGS="--collector.textfile --collector.textfile.directory={{ monitoring_node_exporter_textfile_collector_path }}"
+{% else %}
+ARGS=""
+{% endif %}

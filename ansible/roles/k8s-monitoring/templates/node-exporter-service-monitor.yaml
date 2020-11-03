@@ -1,0 +1,49 @@
+
+#jinja2:lstrip_blocks: True
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: gw-node-exporter
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames:
+      - monitoring
+  selector:
+    matchLabels:
+      app: gw-node-exporter
+  endpoints:
+    - interval: 30s
+      port: metrics
+      path: /metrics
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: gw-node-exporter
+  namespace: monitoring
+  labels:
+    app: gw-node-exporter
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 9100
+      targetPort: 9100
+
+---
+
+kind: Endpoints
+metadata:
+  name: gw-node-exporter
+  namespace: monitoring
+subsets:
+  - addresses:
+{% for gw in groups["gateways"] %}
+    - ip: {{ hostvars[gw]["ansible_host"] }}
+{% endfor %}
+    ports:
+      - name: metrics
+        port: 9100

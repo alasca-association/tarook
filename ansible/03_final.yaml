@@ -137,6 +137,7 @@
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
+  - vars/monitor_node_status.yaml
   roles:
   - role: k8s-rook
     tags: rook
@@ -144,3 +145,6 @@
     tags: k8s-monitoring
   - role: device-plugin
     tags: device-plugin
+  - role: monitoring-system-update-status
+    tags: monitoring-system-update-status
+
