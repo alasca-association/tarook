@@ -19,7 +19,7 @@ if [ -n "$wg_existing_route" ] && [ -z "${MANAGED_K8S_IGNORE_WIREGUARD_ROUTE:-}"
 fi
 
 ipam_path="$cluster_repository/config/wireguard_ipam.toml"
-if python -c "import toml, sys; sys.exit(any(user['ident'] == '$wg_user' for user in toml.load('$ipam_path')['users']))" ; then
+if python3 -c "import toml, sys; sys.exit(any(user['ident'] == '$wg_user' for user in toml.load('$ipam_path')['users']))" ; then
     warningf 'failed to find wireguard user %s in trampoline configuration' "$wg_user" >&2
 fi
 
