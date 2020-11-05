@@ -29,15 +29,6 @@
         - linux-headers-cloud-amd64
         - bc
 
-- name: Prepare wireguard install on Ubuntu
-  become: yes
-  when: 'ansible_distribution == "Ubuntu"'
-
-  block:
-  - name: Enable wireguard PPA
-    apt_repository:
-      repo: ppa:wireguard/wireguard
-
 - name: Install wireguard
   become: yes
   apt:
