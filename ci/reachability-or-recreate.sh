@@ -15,7 +15,7 @@ function check_reachable() {
         printf 'Waiting for %q to respond to SSH ..' "$address"
         ok=false
         # shellcheck disable=SC2034
-        for i in $(seq 1 12); do
+        for i in $(seq 1 60); do
             printf '.'
             if timeout 5 nc -z "$address" 22; then
                 ok=true
