@@ -80,11 +80,21 @@
       - cinder-csi-nodeplugin-rbac.yaml
       - cinder-csi-nodeplugin.yaml
 
-    - name: Create storage class
+    - name: Create cinder storage class (hdd)
       k8s:
         state: present
         apply: yes
-        definition: "{{ lookup('template', 'cinder_storage_class.yaml') }}"
+        definition: "{{ lookup('file', 'cinder_storage_class.yaml') }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
+
+    - name: Create cinder storage class (nvme)
+      when: openstack_cinder_nvme
+      k8s:
+        state: present
+        apply: yes
+        definition: "{{ lookup('file', 'cinder_nvme_storage_class.yaml') }}"
         validate:
           fail_on_error: yes
           strict: yes
