@@ -18,7 +18,7 @@
   hosts: "{{ (groups['masters'] | sort)[0] }}"
   gather_facts: false
   any_errors_fatal: true
-  vars_file:
+  vars_files:
     - vars/disruption.yaml
   tags:
     - kubeadm-first-master
@@ -37,7 +37,7 @@
   gather_facts: false
   serial: 1
   any_errors_fatal: true
-  vars_file:
+  vars_files:
     - vars/disruption.yaml
   tags:
     - kubeadm-other-masters
@@ -66,7 +66,7 @@
   hosts: workers
   gather_facts: false
   any_errors_fatal: true
-  vars_file:
+  vars_files:
     - vars/disruption.yaml
   tags:
     - workers
