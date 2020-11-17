@@ -25,7 +25,7 @@ spec:
 {% endif %}
       containers:
         - name: node-driver-registrar
-          image: quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
+          image: "quay.io/k8scsi/csi-node-driver-registrar:{{ image_versions.openstack.csi_node_driver_registrar }}"
           args:
             - "--csi-address=$(ADDRESS)"
             - "--kubelet-registration-path=$(DRIVER_REG_SOCK_PATH)"
@@ -54,7 +54,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: docker.io/k8scloudprovider/cinder-csi-plugin:latest
+          image: "docker.io/k8scloudprovider/cinder-csi-plugin:{{ image_versions.openstack.cinder_csi_plugin }}"
           args :
             - /bin/cinder-csi-plugin
             - "--nodeid=$(NODE_ID)"

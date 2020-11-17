@@ -34,8 +34,8 @@ vrrp_priority = 80
 [ansible.03_final.group_vars.all]
 # KUBERNETES CLUSTER CONFIGURATION
 #
-# Kubernetes version. Currently, we only support 1.17.x.
-k8s_version = "1.17.3"
+# Kubernetes version. Currently, we support 1.17.* and 1.18.*.
+k8s_version = "1.18.9"
 
 # Pick a networking plugin:
 #
