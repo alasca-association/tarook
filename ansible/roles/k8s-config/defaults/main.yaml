@@ -3,3 +3,35 @@ k8s_use_podsecuritypolicies: false
 managed_k8s_control_plane_key: "node-restriction.kubernetes.io/cah-managed-k8s-role"
 k8s_network_pod_subnet: 10.244.0.0/16
 k8s_network_service_subnet: 10.96.0.0/12
+
+# Minor version of k8s, e.g., '1.18.9' becomes '1.18'.
+k8s_version_minor: '{{ k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") }}'
+
+# Default image tags for 'our' services, separated by minor k8s release.
+# To overwrite any of the tags you probably will have to copy the whole dict
+# to your `config.toml` and make the necessary adjustments. Monitoring is
+# is not included here because `kube-prometheus` comes with its own type
+# of versioning.
+image_version_map:
+  "1.18":
+    ch_k8s_lbaas: "0.3.0"
+    local_volume:
+      local_volume_provisioner: "v2.3.4"
+    kube_router:
+      kube_router: "v1.1.0"
+    openstack:
+      cinder_csi_plugin: "v1.19.0"
+      csi_attacher: "v2.0.0"
+      csi_attacher: "v2.0.0"
+      csi_node_driver_registrar: "v1.1.0"
+      csi_provisioner: "v1.4.0"
+      csi_resizer: "v0.3.0"
+      csi_snapshotter: "v1.2.2"
+      local_volume_provisioner: "v2.3.4"
+      openstack_cloud_controller_manager: "v1.19.1"
+    rook:
+      ceph: "v14.2.6"
+      operator: "v1.2.3"
+      toolbox: "v1.2.3"
+
+image_versions: "{{ image_version_map[k8s_version_minor] }}"
