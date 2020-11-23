@@ -260,6 +260,13 @@ k8s_network_plugin = "kube-router"
 # so that in can be used from within Pods.
 #wireguard_on_workers = true
 
+# Uncomment if this cluster contains a worker with GPU access so that the driver
+# and surrounding framework is deployed.
+#is_gpu_cluster = true
+
+# Enforce the use of pod security policies inside the cluster.
+#k8s_use_podsecuritypolicies = true
+
 cah_users_include_users = ["<user>", "<user>"]
 
 [ansible.03_final.host_vars.managed-k8s-gw-az1]
