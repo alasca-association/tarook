@@ -12,7 +12,7 @@ monitoring_thanos_objectstorage_password: "{{ lookup('env', 'OS_PASSWORD') }}"
 monitoring_thanos_objectstorage_region_name: "{{ lookup('env', 'OS_REGION_NAME') }}"
 
 monitoring_thanos_metadata_volume_size: 10Gi
-monitoring_thanos_metadata_volume_storage_class: rook-ceph-data
+monitoring_thanos_metadata_volume_storage_class: csi-sc-cinderplugin
 
 monitoring_thanos_version: v0.15.0
 
@@ -75,6 +75,15 @@ monitoring_thanos_store_memory_limit: "2Gi"
 monitoring_thanos_store_memory_request: "256Mi"
 monitoring_thanos_store_cpu_limit: "1"
 monitoring_thanos_store_cpu_request: "100m"
+
+monitoring_thanos_compact_memory_limit: "200Mi"
+monitoring_thanos_compact_memory_request: "75Mi"
+monitoring_thanos_compact_cpu_limit: "250m"
+monitoring_thanos_compact_cpu_request: "100m"
+
+monitoring_thanos_retention_resolution_raw: "30d"
+monitoring_thanos_retention_resolution_5m: "60d"
+monitoring_thanos_retention_resolution_1h: "180d"
 
 # If true, add blackbox-exporter to test basic internet connectivity
 monitoring_internet_probe: false
