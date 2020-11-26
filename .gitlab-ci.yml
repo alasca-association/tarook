@@ -66,9 +66,6 @@ cluster-spawn-without-rook:
   # id_rsa must be set as `File` input in the GitLab CI/CD variables of the
   # repository.
   - 'cp "$id_rsa" /root/.ssh/id_rsa && chmod go-rwx -R /root/.ssh'
-  # wg_private_key must be set as `File` input in the GitLab CI/CD variables of
-  # the repository.
-  - 'cp "$wg_private_key" "$wg_private_key_file"'
   # OS_PASSWORD must be set as `Variable` input in the GitLab CI/CD variables of
   # the repository.
   - . /root/openrc.sh
@@ -113,9 +110,6 @@ cluster-spawn-with-rook:
   # id_rsa must be set as `File` input in the GitLab CI/CD variables of the
   # repository.
   - 'cp "$id_rsa" /root/.ssh/id_rsa && chmod go-rwx -R /root/.ssh'
-  # wg_private_key must be set as `File` input in the GitLab CI/CD variables of
-  # the repository.
-  - 'cp "$wg_private_key" "$wg_private_key_file"'
   # OS_PASSWORD must be set as `Variable` input in the GitLab CI/CD variables of
   # the repository.
   - . /root/openrc.sh
