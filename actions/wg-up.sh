@@ -38,4 +38,8 @@ if ip link show "$wg_interface" 2>/dev/null >/dev/null; then
 fi
 run wg-quick up "$wg_conf"
 rm "$wg_conf"
-sudo wg set "$wg_conf_name" private-key /dev/stdin <<< "$wg_private_key"
+if [ "$(id -u)" = '0' ]; then
+    wg set "$wg_conf_name" private-key /dev/stdin <<< "$wg_private_key"
+else
+    sudo wg set "$wg_conf_name" private-key /dev/stdin <<< "$wg_private_key"
+fi
