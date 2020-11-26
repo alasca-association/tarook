@@ -6,6 +6,7 @@ import itertools
 import json
 import pathlib
 import typing
+import random
 
 import toml
 
@@ -24,7 +25,7 @@ IPAM_ANSIBLE_FILE = (
 
 class WireGuardUser(collections.namedtuple(
         "WireGuardUser",
-        ["public_key", "name", "address"])):
+        ["public_key", "name", "address_v4", "address_v6"])):
 
     @classmethod
     def fromdict(cls, d, *, with_address=True, address_optional=False):
@@ -32,10 +33,6 @@ class WireGuardUser(collections.namedtuple(
             try:
                 address = ipaddress.ip_interface(d["ip"])
             except KeyError:
-                if not address_optional:
-                    raise ValueError(
-                        "ip address missing on user {!r}".format(d)
-                    ) from None
                 address = None
             else:
                 if address.network.prefixlen != 32:
@@ -43,13 +40,31 @@ class WireGuardUser(collections.namedtuple(
                         "incorrect prefix length in IP address config: {} "
                         "(from: {!r}".format(address, d)
                     )
+
+            try:
+                addressv6 = ipaddress.ip_interface(d["ipv6"])
+            except KeyError:
+                addressv6 = None
+            else:
+                if addressv6.network.prefixlen != 128:
+                    raise ValueError(
+                        "incorrect prefix lenght in IP address config: {} "
+                        "(from: {!r}".format(address, d)
+                    )
+
+            if address is None and addressv6 is None and not address_optional:
+                raise ValueError(
+                    "ip address missing on user {!r}".format(d)
+                ) from None
         else:
             address = None
+            addressv6 = None
 
         return cls(
             public_key=d["pub_key"],
             name=d["ident"],
-            address=address,
+            address_v4=address,
+            address_v6=addressv6,
         )
 
     def todict(self) -> typing.Mapping[str, str]:
@@ -57,8 +72,10 @@ class WireGuardUser(collections.namedtuple(
             "pub_key": self.public_key,
             "ident": self.name,
         }
-        if self.address is not None:
-            result["ip"] = str(self.address)
+        if self.address_v4 is not None:
+            result["ip"] = str(self.address_v4)
+        if self.address_v6 is not None:
+            result["ipv6"] = str(self.address_v6)
         return result
 
 
@@ -142,18 +159,27 @@ def require_unique_names(users: typing.Iterable[WireGuardUser]):
         seen_names[user.name] = user
 
 
-def assign_ip_addresses(
+def generate_ipaddress(
+        subnet: typing.Union[ipaddress.IPv4Network, ipaddress.IPv6Network]
+        ):
+    random.seed()
+    return subnet.network_address + random.getrandbits(
+            subnet.max_prefixlen - subnet.prefixlen
+            )
+
+
+def assign_ipv4_addresses(
         users: typing.Iterable[WireGuardUser],
         existing_assignment: typing.Mapping[str, WireGuardUser],
         subnet: ipaddress.IPv4Network,
-        reserved_addresses: typing.Set[ipaddress.IPv4Address],
+        reserved_addresses: typing.Set[ipaddress.IPv4Address]
         ) -> typing.Mapping[str, WireGuardUser]:
     """
     Assign IP addresses to users, taking the existing assignment into account.
 
     :param users: An iterable of WireGuardUser objects for which to allocate
         addresses.
-    :param subnet: The IPv4 subnet to allocate addresses from.
+    :param subnet: The IPv4 or IPv6 subnet to allocate addresses from.
     :param reserved_addresses: A set of addresess which will never be assigned
         to a client.
     :raises RuntimeError: If the subnet is too large.
@@ -168,28 +194,25 @@ def assign_ip_addresses(
     if subnet.num_addresses > 65536:
         raise RuntimeError(
             "this is a safety net: the subnet you chose has more than 2**16 "
-            "addresses. we don't know if this code will eat your machine if "
-            "you try to use it, so remove this safeguard at your own risk."
+            "addresses. we don't know if this code will eat your "
+            "machine if you try to use it, so remove this safeguard at your "
+            "own risk."
         )
 
-    free_addresses = set(subnet) - reserved_addresses
-    free_addresses.discard(subnet.network_address)
-    free_addresses.discard(subnet.broadcast_address)
     result = {}
-    for user in sorted(users, key=lambda x: x.address is None):
+    for user in sorted(users, key=lambda x: x.address_v4 is None):
         new_user = user
 
         assert new_user.public_key not in result
 
         try:
-            existing_address = existing_assignment[new_user.public_key].address
+            existing_address = existing_assignment[
+                                new_user.public_key].address_v4
         except KeyError:
-            existing_address = new_user.address
+            existing_address = new_user.address_v4
 
         if existing_address is not None:
-            try:
-                free_addresses.remove(existing_address.ip)
-            except KeyError:
+            if existing_address in reserved_addresses:
                 raise ValueError(
                     "user {!r} has the address {!s} assigned which is not "
                     "in the subnet {!s} or already in use by a different "
@@ -199,25 +222,121 @@ def assign_ip_addresses(
                         subnet,
                     )
                 )
-
-            new_user = new_user._replace(address=existing_address)
+            reserved_addresses.add(existing_address)
+            new_user = new_user._replace(address_v4=existing_address)
         else:
-            try:
-                address = free_addresses.pop()
-            except KeyError:
-                raise ValueError(
-                    "failed to allocate address for {!r}: no more addresses "
-                    "left".format(new_user.name)
-                )
+            # a new address is randomly generated, in a case of a collision
+            # it is checked if the set of reserved_addresses is full
+            # if not the random IP address generation is repeated
+            while True:
+                address = generate_ipaddress(subnet)
+                if address in reserved_addresses:
+                    if len(reserved_addresses) == subnet.num_addresses:
+                        raise ValueError(
+                            "failed to allocate address for {!r}: "
+                            "no more addresses left".format(new_user.name)
+                        )
+                else:
+                    reserved_addresses.add(address)
+                    break
 
-            # not allocated yet, use next free address
             new_user = new_user._replace(
-                address=ipaddress.ip_interface(address)
+                address_v4=address
             )
 
         result[new_user.public_key] = new_user
 
     return result
+
+
+def assign_ipv6_addresses(
+        users: typing.Iterable[WireGuardUser],
+        existing_assignment: typing.Mapping[str, WireGuardUser],
+        subnet: ipaddress.IPv6Network,
+        reserved_addresses: typing.Set[ipaddress.IPv6Address]
+        ) -> typing.Mapping[str, WireGuardUser]:
+    """
+    Assign IP addresses to users, taking the existing assignment into account.
+
+    :param users: An iterable of WireGuardUser objects for which to allocate
+        addresses.
+    :param subnet: The IPv4 or IPv6 subnet to allocate addresses from.
+    :param reserved_addresses: A set of addresess which will never be assigned
+        to a client.
+    :raises RuntimeError: If the subnet is too large.
+    :raises ValueError: If an address conflict arises.
+    :raises ValueError: If there are not enough addresses in the subnet to
+        serve all users.
+
+    Users which already have an address assigned are preferred. Other users
+    will get addresses from the given subnet as necessary.
+    """
+
+    if subnet.num_addresses > 2**64:
+        raise RuntimeError(
+            "this is a safety net: the subnet you chose has more than 2**64 "
+            "addresses. we don't know if this code will eat your "
+            "machine if you try to use it, so remove this safeguard at your "
+            "own risk."
+        )
+
+    result = {}
+    for user in sorted(users, key=lambda x: x.address_v4 is None):
+        new_user = user
+
+        assert new_user.public_key not in result
+
+        try:
+            existing_address = existing_assignment[
+                                new_user.public_key].address_v6
+        except KeyError:
+            existing_address = new_user.address_v4
+
+        if existing_address is not None:
+            if existing_address in reserved_addresses:
+                raise ValueError(
+                    "user {!r} has the address {!s} assigned which is not "
+                    "in the subnet {!s} or already in use by a different "
+                    "user".format(
+                        new_user.name,
+                        existing_address,
+                        subnet,
+                    )
+                )
+            reserved_addresses.add(existing_address)
+            new_user = new_user._replace(address_v6=existing_address)
+        else:
+            # a new address is randomly generated, in a case of a collision
+            # it is checked if the set of reserved_addresses is full
+            # if not the random IP address generation is repeated
+            while True:
+                address = generate_ipaddress(subnet)
+                if address in reserved_addresses:
+                    if len(reserved_addresses) == subnet.num_addresses:
+                        raise ValueError(
+                            "failed to allocate address for {!r}: "
+                            "no more addresses left".format(new_user.name)
+                        )
+                else:
+                    reserved_addresses.add(address)
+                    break
+
+            new_user = new_user._replace(
+                address_v6=address
+            )
+
+        result[new_user.public_key] = new_user
+
+    return result
+
+
+def merge_user_ipaddress(users_a: typing.Iterable[WireGuardUser],
+                         users_b: typing.Iterable[WireGuardUser],
+                         ) -> typing.Iterable[WireGuardUser]:
+    for user in users_a:
+        users_a[user] = users_a[user]._replace(
+                address_v6=users_b[user].address_v6)
+    return users_a
 
 
 def main():
@@ -229,12 +348,17 @@ def main():
     except FileNotFoundError:
         ipam = {}
 
-    try:
+    subnet = None
+    subnetv6 = None
+    if "wg_ip_cidr" in \
+            config["ansible"]["02_trampoline"]["group_vars"]["gateways"]:
         subnet = ipaddress.IPv4Network(config["ansible"]["02_trampoline"]["group_vars"]["gateways"]["wg_ip_cidr"])  # NOQA
-    except (ValueError, TypeError, KeyError):
+    if "wg_ipv6_cidr" in \
+            config["ansible"]["02_trampoline"]["group_vars"]["gateways"]:
+        subnetv6 = ipaddress.IPv6Network(config["ansible"]["02_trampoline"]["group_vars"]["gateways"]["wg_ipv6_cidr"])  # NOQA
+    if not subnet and not subnetv6:
         raise ValueError(
-            "ansible.02_trampoline.group_vars.gateways.wg_ip_cidr is not set "
-            "or not an IPv4 network",
+            "ansible.02_trampoline.group_vars.gateways.wg_ip_cidr is not set ",
         )
 
     TFVARS_DIR.mkdir(exist_ok=True)
@@ -269,19 +393,36 @@ def main():
         for item in ipam.get("users", [])
     ])
 
-    assigned_users = assign_ip_addresses(
-        configured_users.values(),
-        ipam_users,
-        subnet,
-        {subnet[1]},
-    )
+    if subnet:
+        assigned_v4_users = assign_ipv4_addresses(
+            configured_users.values(),
+            ipam_users,
+            subnet,
+            {subnet[1], subnet.broadcast_address},
+        )
+        if not subnetv6:
+            assigned_users = assigned_v4_users
+    if subnetv6:
+        assigned_v6_users = assign_ipv6_addresses(
+            configured_users.values(),
+            ipam_users,
+            subnetv6,
+            {subnetv6[1]},
+        )
+        if not subnet:
+            assigned_users = assigned_v6_users
+    if subnet and subnetv6:
+        assigned_users = merge_user_ipaddress(
+                        assigned_v4_users,
+                        assigned_v6_users
+                        )
 
     with IPAM_PATH.open("w") as fout:
         toml.dump({
             "users": [
                 user.todict()
                 for user in sorted(assigned_users.values(),
-                                   key=lambda x: x.address)
+                                   key=lambda x: x.name)
             ]
         }, fout)
 
