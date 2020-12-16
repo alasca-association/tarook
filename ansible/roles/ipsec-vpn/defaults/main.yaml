@@ -1,0 +1,4 @@
+# TODO: do not hardcode the IP
+remote_addr: 185.128.119.223
+vip: 172.30.194.25
+ipsec_subnet: 172.30.194.0/24

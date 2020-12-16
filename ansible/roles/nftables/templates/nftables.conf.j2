@@ -8,6 +8,8 @@ define wg = wg0
 define wg_port = {{ vpn_port }}
 define k8s_port = {{ k8s_apiserver_frontend_port }}
 define haproxy_stats_port = {{ haproxy_stats_port }}
+define ipsec_port = 500
+define ipsec_nat_port = 4500
 define haproxy_prom_metrics_port = 9101
 define keepalived_prom_metrics_port = 9650
 define node_exporter_metrics_port = 9100
@@ -49,7 +51,9 @@ table inet filter {
     set udp_accepted {
         type inet_service; flags interval;
         elements = {
-            $wg_port
+            $wg_port,
+            $ipsec_port,
+            $ipsec_nat_port
         }
     }
 
@@ -81,7 +85,11 @@ table inet filter {
 
         jump base_checks
 
-        iifname $wg oifname $wan ct state new counter accept
+        iifname $wg oifname $wan ct state new counter accept;
+
+        # Note sure if we want to limit the subnet here
+        meta secpath exists iifname $wan oifname $wan ip saddr {{ ipsec_virtual_subnet_pool }} ct state new counter accept;
+
     }
 
     chain output {

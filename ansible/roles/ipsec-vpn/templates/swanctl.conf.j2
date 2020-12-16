@@ -1,0 +1,39 @@
+connections {
+
+    rw-eap {
+        local {
+            auth = pubkey
+            certs = server-cert.pem
+            id = {{ remote_addr }}
+        }
+        remote {
+            auth = eap-mschapv2
+            eap_id = %any
+        }
+        children {
+            net {
+                local_ts = {{ ipsec_subnet }}
+                #remote_ts = dynamic
+                esp_proposals = aes128gcm128-x25519
+            }
+        }
+        pools = home
+        version = 2
+        send_certreq = no
+        proposals = aes128-sha256-x25519
+    }
+}
+
+pools {
+    home {
+        addrs = {{ ipsec_virtual_subnet_pool }}
+    }
+}
+
+secrets {
+
+    eap-ya {
+        id = ya
+        secret = ooSh6xai
+    }
+}

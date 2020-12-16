@@ -21,3 +21,6 @@ network_interface: "{{ ansible_default_ipv4.interface }}"
 
 monitoring_ch_global_monitoring_nodeport: 31911
 monitoring_ch_global_monitoring: True
+
+# IPsec stuff that's used by >= 1 role
+ipsec_virtual_subnet_pool: 10.3.0.0/24

@@ -1,0 +1,89 @@
+- name: Install strongswan and tools
+  become: yes
+  apt:
+    update_cache: yes
+    name:
+      - strongswan
+      - strongswan-swanctl
+      - charon-systemd
+      - strongswan-pki
+      - libcharon-extra-plugins
+      - libstrongswan-extra-plugins 
+
+- name: Setup CA
+  # TODO: use openssl instead of `pki`?
+  become: yes
+  when: yes
+  block:
+    - name: Create CA key
+      # Note sure if /etc/swanctl/private/ or /etc/swanctl/rsa
+      shell: pki --gen --type rsa --size 4096 --outform pem > /etc/swanctl/private/ca-key.pem
+
+    - name: Create CA cert
+      shell: >
+        pki --self --ca --lifetime 3650 --in /etc/swanctl/private/ca-key.pem 
+        --type rsa --dn "CN=C&H VPN root CA" --outform pem > /etc/swanctl/x509ca/ca-cert.pem
+
+- name: Setup Server Certificate
+  become: yes
+  when: yes
+  block:
+    - name: Create Server key
+      # Note sure if /etc/swanctl/private/ or /etc/swanctl/rsa
+      shell: pki --gen --type rsa --size 4096 --outform pem > /etc/swanctl/private/server-key.pem
+    - name: Create Server cert
+      shell: >
+        pki --pub --in /etc/swanctl/private/server-key.pem --type rsa |
+        pki --issue --lifetime 1825
+        --cacert /etc/swanctl/x509ca/ca-cert.pem --cakey /etc/swanctl/private/ca-key.pem
+        --dn "CN={{ remote_addr }}" --san @{{ remote_addr }} --san {{ remote_addr }}
+        --flag serverAuth --flag ikeIntermediate --outform pem > /etc/swanctl/x509/server-cert.pem
+
+- name: Copy swanctl.conf
+  become: yes
+  template:
+    src: swanctl.conf.j2
+    dest: /etc/swanctl/swanctl.conf
+
+- name: Copy charon-systemd.conf
+  become: yes
+  copy:
+    src: charon-systemd.conf
+    dest: /etc/strongswan.d/charon-systemd.conf
+
+- name: Prepare workstation as client
+  become: no
+  run_once: yes
+  block:
+    - name: Create inventory/.etc/ipsec/
+      delegate_to: localhost
+      file:
+        path: "{{ etc_dir }}/ipsec/"
+        state: directory
+    - name: Copy ca-cert.pem
+      fetch:
+        flat: yes
+        src: /etc/swanctl/x509ca/ca-cert.pem
+        dest: "{{ etc_dir }}/ipsec/ca-cert.pem"
+    - name: Copy server-cert.pem
+      fetch:
+        flat: yes
+        src: /etc/swanctl/x509/server-cert.pem
+        dest: "{{ etc_dir }}/ipsec/server-cert.pem"
+    - name: Create swanctl.conf
+      delegate_to: localhost
+      template:
+        src: swanctl.conf.client.j2
+        dest: "{{ etc_dir }}/ipsec/swanctl.conf"
+    - name: Create charon-systemd.conf
+      delegate_to: localhost
+      copy:
+        src: charon-systemd.conf
+        dest: "{{ etc_dir }}/ipsec/charon-systemd.conf"
+
+- name: Start strongswan
+  become: yes
+  systemd:
+    name: strongswan-swanctl
+    state: restarted
+    enabled: yes

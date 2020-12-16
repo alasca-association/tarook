@@ -60,3 +60,5 @@
     tags: journald
   - role: configure-automatic-system-updates
     tags: configure-automatic-system-updates
+  - role: ipsec-vpn
+    tags: ipsec-vpn

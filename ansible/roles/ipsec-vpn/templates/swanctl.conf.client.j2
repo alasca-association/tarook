@@ -1,0 +1,33 @@
+connections {
+
+    home {
+        remote_addrs = {{ remote_addr }}
+        # Request an arbitrary virtual IP from the responder
+        vips = 0.0.0.0
+        local {
+            auth = eap
+            eap_id = ya
+        }
+        remote {
+            auth = pubkey
+            id = {{ remote_addr }}
+        }
+        children {
+            home {
+                remote_ts = {{ ipsec_subnet }}
+                #local_ts = dynamic
+                esp_proposals = aes128gcm128-x25519
+            }
+        }
+        version = 2
+        proposals = aes128-sha256-x25519
+    }
+}
+
+secrets {
+
+    eap-ya {
+        id = ya
+        secret = ooSh6xai
+    }
+}
