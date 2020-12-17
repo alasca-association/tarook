@@ -72,6 +72,8 @@ table inet filter {
 
         tcp dport @tcp_internal_accepted ip saddr { {{ priv_ip_cidr }}, {{ wg_ip_cidr }} }  accept comment "Accept connections to internal services from private subnet"
 
+        meta secpath exists tcp dport @tcp_internal_accepted ip saddr {{ ipsec_virtual_subnet_pool }} accept comment "Accept connections to internal services from ipsec peers"
+
         tcp dport @tcp_mapped_accepted accept comment "Accept connections to nodeport mapped services from anywhere"
 
         udp dport @udp_accepted accept comment "Accept wireguard traffic from anywhere"

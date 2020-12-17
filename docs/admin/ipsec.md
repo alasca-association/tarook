@@ -102,3 +102,15 @@ Bird should import routes from routing table `220` (ipsecs) into its internal ro
 FIB is short for Forwarding Information Base.
 
 Kernel protocol is to exchange routes between a BIRD routing table and a kernel routing table (FIB). Instances of kernel protocol cannot share BIRD routing tables or FIBs. Use Pipe for that purpose.
+
+Example:
+
+```
+# Table to collect all IPv4 routes
+ipv4 table bgp_v4tab;
+
+# In bgp_v4tab, import all routes from master4
+protocol pipe {
+    table bgp_v4tab;
+    peer table master4;
+```
