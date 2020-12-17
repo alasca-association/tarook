@@ -89,6 +89,7 @@ table inet filter {
 
         # Note sure if we want to limit the subnet here
         meta secpath exists iifname $wan oifname $wan ip saddr {{ ipsec_virtual_subnet_pool }} ct state new counter accept;
+        iifname $wan oifname $wan ip saddr {{ priv_ip_cidr }} ct state new counter accept;
 
     }
 

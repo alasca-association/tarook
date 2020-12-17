@@ -1,4 +1,4 @@
-# Notes
+# Notes on IPsec/strongswan
 
 This document should become a comprehensive documentation on the ipsec setup. I will feed it my notes and experiences along the way.
 I created the role `ipsec-vpn` that is part of stage2, i.e., strongswan will be rolled out on the gateway nodes. This setup ought to be pretty similar to wireguard. I am not sure yet what of the settings around wireguard will be helpful / sufficient for ipsec (forwarding, mtu). Also I don't know yet if there will be a conflict between ipsec and wireguard. wireguard should remain the default VPN solution.
@@ -92,3 +92,13 @@ Open questions:
 - does strongswan create an overlay network and configure ips/routes automatically?
 - Does strongswan/ipsec know roles s.a. server/client? If so, how is the role determined?
 - route based vs policy based vpns
+
+# BGP
+
+The problem statement: With the current setup a roadwarrior can reach the gateway and all nodes beyond the gateway in their private net. The gateway can contact the roadwarrior. But what if a node or a pod in the private network wants to reach the roadwarrior (probably more interesting in a site-to-site scenario)?
+
+Bird should import routes from routing table `220` (ipsecs) into its internal routing table. It should export those routes via BGP. `gobgp`, `kube-router's` BGP server, should import them and expose them on the nodes.
+
+FIB is short for Forwarding Information Base.
+
+Kernel protocol is to exchange routes between a BIRD routing table and a kernel routing table (FIB). Instances of kernel protocol cannot share BIRD routing tables or FIBs. Use Pipe for that purpose.

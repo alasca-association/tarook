@@ -1,5 +1,6 @@
 ---
 - name: install bird
+  become: yes
   apt:
     name: bird
     state: present
@@ -7,6 +8,7 @@
   - bird
 
 - name: configure bird
+  become: yes
   template:
     src: bird.conf
     dest: /etc/bird/bird.conf
@@ -17,7 +19,14 @@
   tags:
   - bird
 
+# Remove me
+- name: Restart bird
+  service:
+    name: bird
+    state: restarted
+
 - name: disable bird6
+  become: yes
   service:
     name: bird6
     enabled: no

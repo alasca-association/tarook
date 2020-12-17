@@ -16,6 +16,13 @@
   - role: configure-automatic-system-updates
     tags: configure-automatic-system-updates
 
+- name: Configure bird on the gateways
+  hosts: gateways
+  become: yes
+  roles:
+  - role: bird
+    tags: bird
+
 - name: Upgrade the system
   hosts: node_with_k8s_installed
   gather_facts: false
