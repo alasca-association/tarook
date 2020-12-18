@@ -4,7 +4,7 @@ connections {
         local {
             auth = pubkey
             certs = server-cert.pem
-            id = {{ remote_addr }}
+            id = {{ networking_floating_ip }}
         }
         remote {
             auth = eap-mschapv2

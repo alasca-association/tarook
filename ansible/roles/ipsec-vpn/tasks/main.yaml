@@ -36,7 +36,7 @@
         pki --pub --in /etc/swanctl/private/server-key.pem --type rsa |
         pki --issue --lifetime 1825
         --cacert /etc/swanctl/x509ca/ca-cert.pem --cakey /etc/swanctl/private/ca-key.pem
-        --dn "CN={{ remote_addr }}" --san @{{ remote_addr }} --san {{ remote_addr }}
+        --dn "CN={{ networking_floating_ip }}" --san @{{ networking_floating_ip }} --san {{ networking_floating_ip }}
         --flag serverAuth --flag ikeIntermediate --outform pem > /etc/swanctl/x509/server-cert.pem
 
 - name: Copy swanctl.conf

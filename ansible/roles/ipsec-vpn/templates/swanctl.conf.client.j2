@@ -1,7 +1,7 @@
 connections {
 
     home {
-        remote_addrs = {{ remote_addr }}
+        remote_addrs = {{ networking_floating_ip }}
         # Request an arbitrary virtual IP from the responder
         vips = 0.0.0.0
         local {
@@ -10,7 +10,7 @@ connections {
         }
         remote {
             auth = pubkey
-            id = {{ remote_addr }}
+            id = {{ networking_floating_ip }}
         }
         children {
             home {
