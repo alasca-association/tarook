@@ -13,10 +13,11 @@ connections {
         children {
             net {
                 local_ts = {{ ipsec_subnet }}
-                #remote_ts = dynamic
                 esp_proposals = aes128gcm128-x25519
+                dpd_action = restart
             }
         }
+        dpd_delay = 1
         pools = home
         version = 2
         send_certreq = no

@@ -66,6 +66,14 @@ nft >= 0.9.1 knows `meta ipsec exists`, nft >= 0.8.2 knows `meta secpath exists`
 
 `meta secpath exists iifname $wan ip saddr 10.3.0.0/24 oifname $wan ct state new counter accept;`
 
+## Failover
+
+Disclaimer: I have no idea about the details here and if what I'm doing is sensible.
+
+strongswan comes with builtin feature for load-balancing and failover. However, they sounded a bit limiting so we try to stick to our established keepalived/gateway setup. Note: DPD means "Dead Peer Detection". strongswan offers the actions `clear`, `restart` and `trap` for `dpd_action`. `restart`, well, restarts the connection for the CHILD_SA on a timeout. `dpd_delay` must not be equal to 0 to trigger the sending of "Informational" packets that check the reachability of the peer.
+
+The test scenario was as follows: the roadwarrior continuosly pings a node in the private network. By starting or stopping keepalived (depending on the node and its priority) we simulate the loss of a gateway. It as expected that the pings stop reaching their targets for a period of time. The failover is considered to be successful if the IPsec tunnel is re-established automatically and traffic passes again between roadwarrior and the node. After the first failover, there should be another failover to the "original" gateway.
+
 
 ## Debugging
 
