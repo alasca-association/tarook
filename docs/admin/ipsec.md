@@ -122,3 +122,11 @@ protocol pipe {
     table bgp_v4tab;
     peer table master4;
 ```
+
+
+# Random notes from Jonas
+
+- On debian, I had to install `strongswan-pki` and `strongswan-swanctl`.
+- You can use `swanctl --load-all` to (re-)load config etc
+- `EAP_IDENTITY not supported, sending EAP_NAK` -> You also need lib{charon,strongswan}-extra-plugins installed, may need restart of strongswan-starter to apply
+- `ipsec_subnet` should be set to the k8s subnet methinks?? or at least not defaulted to some strange range...
