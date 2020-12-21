@@ -118,3 +118,13 @@
     group: bird
     mode: "u=rw,g=r,o-rwx"
   notify: restart bird
+
+- name: Configure nftables
+  become: yes
+  template:
+    src: nftables.conf
+    dest: /etc/nft.d/10-ipsec-vpn.conf
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o-rwx"
+  notify: reload nftables

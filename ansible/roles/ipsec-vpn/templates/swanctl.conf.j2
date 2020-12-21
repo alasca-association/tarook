@@ -12,7 +12,10 @@ connections {
         }
         children {
             net {
-                local_ts = {{ ipsec_subnet }}
+                local_ts = {{ ipsec_local_networks | join(", ") }}
+{% if ipsec_peer_networks %}
+                remote_ts = {{ ipsec_peer_networks | join(", ") }}
+{% endif %}
                 esp_proposals = aes256-sha1-modp2048
                 dpd_action = restart
             }
