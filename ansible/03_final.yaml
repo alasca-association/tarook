@@ -16,13 +16,6 @@
   - role: configure-automatic-system-updates
     tags: configure-automatic-system-updates
 
-- name: Configure bird on the gateways
-  hosts: gateways
-  become: yes
-  roles:
-  - role: bird
-    tags: bird
-
 - name: Upgrade the system
   hosts: node_with_k8s_installed
   gather_facts: false
@@ -121,11 +114,14 @@
       - ch-k8s-lbaas
       - ch-k8s-lbaas-controller
 
-- name: Configure LBaaS on the gateways
+- name: Configure BGP and LBaaS on the gateways
   hosts: gateways
   become: yes
   gather_facts: true
   roles:
+  - role: k8s-bgp
+    tags:
+    - k8s-bgp
   - role: ch-k8s-lbaas-agent
     tags:
     - ch-k8s-lbaas

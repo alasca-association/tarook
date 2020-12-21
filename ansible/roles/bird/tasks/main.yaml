@@ -19,11 +19,16 @@
   tags:
   - bird
 
-# Remove me
-- name: Restart bird
-  service:
-    name: bird
-    state: restarted
+- name: drop-in directory for bird config
+  become: yes
+  file:
+    state: directory
+    path: /etc/bird.d/
+    owner: root
+    group: bird
+    mode: "u=rwx,g=rx,o-rwx"
+  tags:
+  - bird
 
 - name: disable bird6
   become: yes

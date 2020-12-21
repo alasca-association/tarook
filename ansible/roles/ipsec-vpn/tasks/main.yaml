@@ -108,3 +108,13 @@
     name: strongswan-swanctl
     state: restarted
     enabled: yes
+
+- name: Configure bird
+  become: yes
+  template:
+    src: bird.conf
+    dest: /etc/bird.d/10-ipsec-vpn.conf
+    owner: root
+    group: bird
+    mode: "u=rw,g=r,o-rwx"
+  notify: restart bird

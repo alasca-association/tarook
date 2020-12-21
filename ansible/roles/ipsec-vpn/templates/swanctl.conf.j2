@@ -13,7 +13,7 @@ connections {
         children {
             net {
                 local_ts = {{ ipsec_subnet }}
-                esp_proposals = aes128gcm128-x25519
+                esp_proposals = aes256-sha1-modp2048
                 dpd_action = restart
             }
         }
@@ -21,7 +21,7 @@ connections {
         pools = home
         version = 2
         send_certreq = no
-        proposals = aes128-sha256-x25519
+        proposals = aes256-sha1-modp2048
     }
 }
 

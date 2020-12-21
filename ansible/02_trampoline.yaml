@@ -60,5 +60,7 @@
     tags: journald
   - role: configure-automatic-system-updates
     tags: configure-automatic-system-updates
+  - role: bird
+    tags: bird
   - role: ipsec-vpn
     tags: ipsec-vpn
