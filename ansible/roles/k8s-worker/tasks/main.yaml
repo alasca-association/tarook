@@ -15,21 +15,6 @@
   register: kubectl_output
   changed_when: false
 
-#- name: Create sysconfig directory
-#  become: yes
-#  file:
-#    path: /etc/sysconfig
-#    state: directory
-#
-#- name: 'Create sysconfig/kubelet'
-#  become: yes
-#  template:
-#    src: kubelet-sysconfig.j2
-#    dest: /etc/sysconfig/kubelet
-#    owner: root
-#    group: root
-#    mode: '0644'
-
 - name: Join the K8s cluster
   become: yes
   vars:
