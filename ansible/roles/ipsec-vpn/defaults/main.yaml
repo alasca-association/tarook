@@ -1,8 +1,11 @@
 vip: 172.30.194.25
+ipsec_enabled: false
 ipsec_local_networks:
 - "{{ subnet_cidr }}"
 # add the following for a working NAT-free setup
 # - "{{ k8s_network_pod_subnet }}"
 # - "{{ k8s_network_service_subnet }}"
 ipsec_peer_networks: null
-ipsec_virtual_subnet_pool: "10.3.0.0/24"
+ipsec_virtual_subnet_pool: null
+ipsec_remote_addrs: false
+ipsec_esp_proposals: "{{ ipsec_proposals }}"

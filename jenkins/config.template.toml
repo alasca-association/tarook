@@ -13,6 +13,35 @@ cah_users_include_users = ["<user>", "<user>"]
 wg_ip_cidr = "172.30.153.64/26"
 wg_ip_gw = "172.30.153.65/26"
 
+# IPSec tunnels
+ipsec_enabled = false
+
+# Must be a list of parent SA proposals to offer to the client.
+# Must be explicitly set if ipsec_enabled is set to true.
+#ipsec_proposals =
+
+# Must be a list of ESP proposals to offer to the client.
+# Defaults to ipsec_proposals
+#ipsec_esp_proposals = "{{ ipsec_proposals }}"
+
+# List of CIDRs to route to the peer. If not set, only dynamic IP
+# assignments will be routed.
+# Defaults to null to disable.
+#ipsec_peer_networks = []
+
+# List of CIDRs to offer to the peer. Defaults to a list with only the
+# `subnet_cidr` in it.
+#ipsec_local_networks = ["{{ subnet_cidr }}"]
+
+# Pool to source virtual IP addresses from. Those are the IP addresses assigned
+# to clients which do not have remote networks. Disabled by default.
+#ipsec_virtual_subnet_pool = false
+
+# List of addresses to accept as remote. When initiating, the first single IP
+# address is used.
+# Default is false, disabling the filter altogether.
+#ipsec_remote_addrs = false
+
 # To add WireGuard keys for customers, create blocks like the following:
 #
 #[[ansible.02_trampoline.group_vars.gateways.wg_peers]]

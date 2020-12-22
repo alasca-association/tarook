@@ -1,0 +1,42 @@
+---
+- name: Remove BIRD configuration
+  become: yes
+  file:
+    state: absent
+    path: /etc/bird.d/10-ipsec-vpn.conf
+  notify: restart bird
+
+- name: Remove nftables configuration
+  become: yes
+  file:
+    state: absent
+    path: /etc/nft.d/10-ipsec-vpn.conf
+  notify: reload nftables
+
+- name: Remove keepalived configuration
+  become: yes
+  file:
+    state: absent
+    path: /etc/keepalived/scripts/10-swanctl-notify.sh
+  notify: restart keepalived
+
+- name: Populate service facts
+  service_facts:
+
+- name: Disable strongswan
+  become: yes
+  systemd:
+    name: strongswan-swanctl
+    state: stopped
+    enabled: no
+  when: ansible_facts.services['strongswan-swanctl.service'] is defined
+
+- name: Purge the IPsec setup
+  become: yes
+  when: ipsec_purge_installation | default(false)
+  apt:
+    name: "{{ ipsec_packages }}"
+    state: absent
+    purge: yes
+    autoremove: yes
+>>>>>>> aa10c11 (fixup! Make IPSec configurable)

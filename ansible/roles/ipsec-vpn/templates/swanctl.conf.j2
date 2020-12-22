@@ -1,6 +1,9 @@
 connections {
 
     rw-eap {
+{% if ipsec_remote_addrs %}
+        remote_addrs = {{ ipsec_remote_addrs | join(", ") }}
+{% endif %}
         local {
             auth = pubkey
             certs = server-cert.pem
@@ -16,23 +19,27 @@ connections {
 {% if ipsec_peer_networks %}
                 remote_ts = {{ ipsec_peer_networks | join(", ") }}
 {% endif %}
-                esp_proposals = aes256-sha1-modp2048
+                esp_proposals = {{ ipsec_esp_proposals | join(", ") }}
                 dpd_action = restart
             }
         }
         dpd_delay = 1
+{% if ipsec_virtual_subnet_pool %}
         pools = home
+{% endif %}
         version = 2
         send_certreq = no
-        proposals = aes256-sha1-modp2048
+        proposals = {{ ipsec_proposals | join(", ") }}
     }
 }
 
+{% if ipsec_virtual_subnet_pool %}
 pools {
     home {
         addrs = {{ ipsec_virtual_subnet_pool }}
     }
 }
+{% endif %}
 
 secrets {
 

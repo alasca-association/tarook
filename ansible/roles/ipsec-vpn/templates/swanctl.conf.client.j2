@@ -18,7 +18,7 @@ connections {
 {% if ipsec_peer_networks %}
                 local_ts = {{ ipsec_peer_networks | join(", ") }}
 {% endif %}
-                esp_proposals = aes256-sha1-modp2048
+                esp_proposals = {{ ipsec_esp_proposals | join(", ") }}
                 start_action = trap
                 dpd_action = restart
                 life_time = 8h
@@ -26,7 +26,7 @@ connections {
         }
         dpd_delay = 10
         version = 2
-        proposals = aes256-sha1-modp2048
+        proposals = {{ ipsec_proposals | join(", ") }}
     }
 }
 
