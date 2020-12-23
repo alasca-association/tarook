@@ -30,7 +30,7 @@
       - test-ccm
 
 - name: Test Calico Network
-  hosts: "{{ groups['k8s_nodes'] }}"
+  hosts: masters[0]
   gather_facts: no
   roles:
   - role: check-calico

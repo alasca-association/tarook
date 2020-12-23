@@ -1,0 +1,20 @@
+---
+- name: Define Environment
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+
+  block:
+  - name: Lookup Calico IPPool
+    shell: >
+      calicoctl get ippools -o json
+    register: calico_stdout
+
+  - name: Lookup Kubernetes IPPool and compare it Calico IPPool
+    shell: >
+      kubectl describe -n kube-system configmap kube-proxy | grep clusterCIDR | cut -d ' ' -f2
+    register: k8s_configmap
+    failed_when: >
+      k8s_configmap.stdout_lines != calico_stdout.stdout | from_json | json_query('items[*].spec.cidr')
