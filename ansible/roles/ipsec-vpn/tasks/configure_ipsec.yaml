@@ -35,12 +35,12 @@
   when: not ca.stat.exists
   block:
     - name: Create CA key
-      shell: "pki --gen --type rsa --size 4096 --outform pem > {{ etc_dir }}/ipsec/ca-key.pem"
+      shell: "pki --gen --type rsa --size 4096 --outform pem > {{ etc_dir | to_json }}/ipsec/ca-key.pem"
 
     - name: Create CA cert
       shell: >
-        pki --self --ca --lifetime 3650 --in {{ etc_dir }}/ipsec/ca-key.pem
-        --type rsa --dn "CN=C&H VPN root CA" --outform pem > {{ etc_dir }}/ipsec/ca-cert.pem
+        pki --self --ca --lifetime 3650 --in {{ etc_dir | to_json }}/ipsec/ca-key.pem
+        --type rsa --dn "CN=C&H VPN root CA" --outform pem > {{ etc_dir | to_json }}/ipsec/ca-cert.pem
 
 - name: Setup Server Certificate
   become: no
@@ -49,15 +49,15 @@
   when: not ca.stat.exists
   block:
     - name: Create Server key
-      shell: "pki --gen --type rsa --size 4096 --outform pem > {{ etc_dir }}/ipsec/server-key.pem"
+      shell: "pki --gen --type rsa --size 4096 --outform pem > {{ etc_dir | to_json }}/ipsec/server-key.pem"
 
     - name: Create Server cert
       shell: >
-        pki --pub --in {{ etc_dir }}/ipsec/server-key.pem --type rsa |
+        pki --pub --in {{ etc_dir | to_json }}/ipsec/server-key.pem --type rsa |
         pki --issue --lifetime 1825
-        --cacert {{ etc_dir }}/ipsec/ca-cert.pem --cakey {{ etc_dir }}/ipsec/ca-key.pem
+        --cacert {{ etc_dir | to_json }}/ipsec/ca-cert.pem --cakey {{ etc_dir | to_json }}/ipsec/ca-key.pem
         --dn "CN={{ networking_floating_ip }}" --san @{{ networking_floating_ip }} --san {{ networking_floating_ip }}
-        --flag serverAuth --flag ikeIntermediate --outform pem > {{ etc_dir }}/ipsec/server-cert.pem
+        --flag serverAuth --flag ikeIntermediate --outform pem > {{ etc_dir | to_json }}/ipsec/server-cert.pem
 
 - name: Copy certificate material to the gateways
   become: yes
