@@ -54,9 +54,11 @@ Connections and CHILD_SAs defined in swanctl.conf can be started on three differ
 - on startup (if start_action=start). The CHILD_SAs will not be restarted automatically when they go down. Other configuration settings are needed. This is not recommended. The user is encouraged to use trap policies instead (see above)
 - Manually (no start_action is provided). Use swanctl --initiate --child <name> to start a connection
 
+Possible values for (CHILD) SA proposals can be found here: https://wiki.strongswan.org/projects/strongswan/wiki/IKEv2CipherSuites
+
 ## Forward traffic
 
-`remote_ts` on Initiator sides basically claims which subnet ranges can be reached via this wireguard connection. The gateway is already configured to forward wireguard traffic (NAT). Wireguard traffic arrives over the `wg` interface which makes it easy to identify. A quickfix to also forward IPsec traffic is to add a rule that looks something like this:
+`remote_ts` on Initiator sides basically claims which subnet ranges can be reached via this IPsec connection. The gateway is already configured to forward wireguard traffic (NAT). Wireguard traffic arrives over the `wg` interface which makes it easy to identify. A quickfix to also forward IPsec traffic is to add a rule that looks something like this:
 
 `iifname $wan ip saddr 10.3.0.0/24 oifname $wan ct state new counter accept;`
 
@@ -73,7 +75,6 @@ Disclaimer: I have no idea about the details here and if what I'm doing is sensi
 strongswan comes with builtin feature for load-balancing and failover. However, they sounded a bit limiting so we try to stick to our established keepalived/gateway setup. Note: DPD means "Dead Peer Detection". strongswan offers the actions `clear`, `restart` and `trap` for `dpd_action`. `restart`, well, restarts the connection for the CHILD_SA on a timeout. `dpd_delay` must not be equal to 0 to trigger the sending of "Informational" packets that check the reachability of the peer.
 
 The test scenario was as follows: the roadwarrior continuosly pings a node in the private network. By starting or stopping keepalived (depending on the node and its priority) we simulate the loss of a gateway. It as expected that the pings stop reaching their targets for a period of time. The failover is considered to be successful if the IPsec tunnel is re-established automatically and traffic passes again between roadwarrior and the node. After the first failover, there should be another failover to the "original" gateway.
-
 
 ## Debugging
 
@@ -94,12 +95,6 @@ error writing to socket: Network is unreachable
 `tcpdump -venni any udp port 500 or port 4500` does not show any packets.
 
 -> Issue was that 39 != 139. The whole thing was avoidable from the start by not setting `local_addrs` to a fixed value (it defaults to `%any`)
-
-Open questions:
-
-- does strongswan create an overlay network and configure ips/routes automatically?
-- Does strongswan/ipsec know roles s.a. server/client? If so, how is the role determined?
-- route based vs policy based vpns
 
 # BGP
 
