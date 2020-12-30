@@ -42,6 +42,9 @@ ipsec_enabled = false
 # Default is false, disabling the filter altogether.
 #ipsec_remote_addrs = false
 
+# The PSK for EAP. Must be set.
+#ipsec_eap_psk =
+
 # To add WireGuard keys for customers, create blocks like the following:
 #
 #[[ansible.02_trampoline.group_vars.gateways.wg_peers]]
