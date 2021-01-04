@@ -1,0 +1,12 @@
+- name: Gather status of services
+  service_facts:
+
+- name: Gather node installation state
+  set_fact:
+    install_status: "{{ ('keepalived.service' in ansible_facts.services or 'haproxy.service' in ansible_facts.services or 'wg-quick@.service' in ansible_facts.services) | ternary('initialized', 'uninitialized', 'initialized') }}"  # noqa 204
+
+- name: Group gateways
+  group_by:
+    key: "{{ install_status }}_gateways"
+
+

@@ -8,16 +8,26 @@
   - detect_user
   - role: ssh-known-hosts
     tags: ssh-known-hosts
+  - role: is-gateway-initialized
+    tags: update_system
 
-- name: Upgrade node system
-  hosts: gateways
-  gather_facts: false
+- name: Upgrade uninitialized nodes
+  hosts: uninitialized_gateways
   vars_files:
   - vars/disruption.yaml
-  serial: "{{ _allow_disruption | ternary(3, 1) }}"
   roles:
   - role: update_system
     tags: update_system
+
+- name: Upgrade initialized nodes
+  hosts: initialized_gateways
+  vars_files:
+  - vars/disruption.yaml
+  serial: 1
+  roles:
+  - role: update_system
+    tags: update_system
+    when: _allow_disruption
 
 - name: Configure load balancer and VPN gateway
   hosts: gateways
