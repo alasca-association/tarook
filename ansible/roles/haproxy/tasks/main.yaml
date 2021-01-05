@@ -16,6 +16,7 @@
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
     validate: haproxy -f %s -c
+  register: haproxy
 
 - name: Start the haproxy service
   become: yes
@@ -24,4 +25,4 @@
     enabled: yes
     state: restarted
     name: haproxy
-
+  when: haproxy is changed
