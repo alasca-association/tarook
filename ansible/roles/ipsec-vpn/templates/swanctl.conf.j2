@@ -5,13 +5,12 @@ connections {
         remote_addrs = {{ ipsec_remote_addrs | join(", ") }}
 {% endif %}
         local {
-            auth = pubkey
-            certs = server-cert.pem
+            auth = psk
             id = {{ networking_floating_ip }}
         }
         remote {
-            auth = eap-mschapv2
-            eap_id = %any
+            auth = psk
+            id = {{ ipsec_remote_addrs | first }}
         }
         children {
             net {
@@ -43,9 +42,9 @@ pools {
 {% endif %}
 
 secrets {
-
-    eap-ya {
-        id = ya
+    ike-1 {
+        id-1 = {{ networking_floating_ip }}
+        id-2 = {{ ipsec_remote_addrs | first }}
         secret = {{ ipsec_eap_psk }}
     }
 }
