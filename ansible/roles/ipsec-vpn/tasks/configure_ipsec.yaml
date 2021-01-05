@@ -50,13 +50,18 @@
   block:
     - name: Create Server key
       shell: "pki --gen --type rsa --size 4096 --outform pem > {{ etc_dir | to_json }}/ipsec/server-key.pem"
-
+    # Include all public IPs (the own address of the gateway and the VIP) an the subject alternative name (SAN)
+    - set_fact:
+        san_args_list: "{{ san_args_list | default([]) + ['--san @%s --san %s' % (hostvars[item]['ansible_host'], hostvars[item]['ansible_host'])] }}"
+      loop: "{{ groups['gateways'] }}"
+    - set_fact:
+        san_args: "{{ san_args_list | join(' ') }}"
     - name: Create Server cert
       shell: >
         pki --pub --in {{ etc_dir | to_json }}/ipsec/server-key.pem --type rsa |
         pki --issue --lifetime 1825
         --cacert {{ etc_dir | to_json }}/ipsec/ca-cert.pem --cakey {{ etc_dir | to_json }}/ipsec/ca-key.pem
-        --dn "CN={{ networking_floating_ip }}" --san @{{ networking_floating_ip }} --san {{ networking_floating_ip }}
+        --dn "CN={{ networking_floating_ip }}" {{ san_args }} --san @{{ networking_floating_ip }} --san {{ networking_floating_ip }}
         --flag serverAuth --flag ikeIntermediate --outform pem > {{ etc_dir | to_json }}/ipsec/server-cert.pem
 
 - name: Copy certificate material to the gateways

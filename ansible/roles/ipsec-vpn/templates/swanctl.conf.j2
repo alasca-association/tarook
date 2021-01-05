@@ -21,6 +21,7 @@ connections {
 {% endif %}
                 esp_proposals = {{ ipsec_esp_proposals | join(", ") }}
                 dpd_action = restart
+                start_action = trap
             }
         }
         dpd_delay = 1
