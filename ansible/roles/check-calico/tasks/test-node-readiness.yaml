@@ -1,0 +1,14 @@
+---
+- name: Define Environment
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  
+  block:
+  - name: k8s_info
+    delegate_to: "{{ groups['masters'] | first }}"
+    k8s_info:
+      api_version: v1
+      kind: Node
+    register: k8sinfo
+    failed_when: "(k8sinfo.resources[0].status.conditions[-1].type and k8sinfo.resources[0].status.conditions[-1].reason) != 'KubeletReady'"
