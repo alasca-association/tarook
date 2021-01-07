@@ -1,0 +1,25 @@
+---
+- name: Define Environment
+  delegate_to: "{{ groups['masters'] | first }}"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+
+  block:
+  - name: Check running and readiness status of calico-node pods
+    delegate_to: "{{ groups['masters'] | first }}"
+    k8s_info:
+      kind: Pod
+      label_selectors: 
+      - k8s-app = calico-node
+    register: pod_calico_node
+    failed_when: ( pod_calico_node.resources[0].status.phase != "Running" ) and ( pod_calico_node.resources[0].status.containerStatuses[0].ready != true )
+
+  - name: Check running and readiness status of calico-typha pods
+    delegate_to: "{{ groups['masters'] | first }}"
+    k8s_info:
+      kind: Pod
+      label_selectors: 
+      - k8s-app = calico-typha
+    register: pod_calico_tpyha
+    failed_when: ( pod_calico_node.resources[0].status.phase != "Running" ) and ( pod_calico_node.resources[0].status.containerStatuses[0].ready != true )
