@@ -1,6 +1,5 @@
 ---
 - name: Define Environment
-  #delegate_to: "{{ groups['k8s_nodes'] }}"
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes
