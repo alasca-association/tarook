@@ -74,7 +74,7 @@
     validate:
       fail_on_error: yes
       strict: yes
-  loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json' ) | from_json }}"
+  loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json', errors='strict' if monitoring else 'warn') | default(' [] ', true) | from_json }}" # noqa 204
 
 - name: create rook service monitor
   k8s:
