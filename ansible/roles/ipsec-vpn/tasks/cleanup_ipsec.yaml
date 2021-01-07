@@ -39,4 +39,3 @@
     state: absent
     purge: yes
     autoremove: yes
->>>>>>> aa10c11 (fixup! Make IPSec configurable)
