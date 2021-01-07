@@ -1,3 +1,5 @@
 # why that? Simple: VRRP "passwords" are broadcast in plaintext over the layer
 # 2 network. They’re even deprecated in VRRPv3. They’re 100% pointless.
 vrrp_password: "hahalol"
+
+vrrp_scripts_dir: /etc/keepalived/scripts/

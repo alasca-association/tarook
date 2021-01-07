@@ -40,12 +40,12 @@
         src: charon-systemd.conf
         dest: "{{ etc_dir }}/ipsec/charon-systemd.conf"
 
-- name: Start strongswan
+- name: Ensure swanctl is not automatically started
   become: yes
   systemd:
     name: strongswan-swanctl
-    state: restarted
-    enabled: yes
+    enabled: no
+    state: stopped
 
 - name: Configure bird
   become: yes
@@ -66,3 +66,10 @@
     group: root
     mode: "u=rw,g=r,o-rwx"
   notify: reload nftables
+
+# Trigger a restart of keepalived so it can start strongswan on the VRRP Master
+- name: Restart keepalived
+  become: yes
+  service:
+    name: keepalived
+    state: restarted

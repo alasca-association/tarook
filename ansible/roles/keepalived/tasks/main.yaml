@@ -16,12 +16,25 @@
     src: keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf
 
+- name: Create keepalived/scripts/ sub directory
+  become: yes
+  file:
+    path: "{{ vrrp_scripts_dir }}"
+    state: directory
+
 - name: Copy chk_haproxy.sh
   become: yes
   template:
     src: chk_haproxy.sh.j2
-    dest: /usr/local/bin/chk_haproxy.sh
+    dest: "{{ vrrp_scripts_dir }}/chk_haproxy.sh"
     mode: preserve
+
+- name: Copy notified_by_keepalived.sh
+  become: yes
+  template:
+    src: notified_by_keepalived.sh.j2
+    dest: "{{ vrrp_scripts_dir }}/notified_by_keepalived.sh"
+    mode: u=rx,g=rx,o=
 
 - name: Enable ipv4.ip_nonlocal_bind
   become: yes
