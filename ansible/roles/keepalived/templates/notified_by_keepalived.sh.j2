@@ -10,8 +10,13 @@ TYPE=$1
 NAME=$2
 STATE=$3
 
+# Invoke `ip xfrm policy flush` to get rid off any IPsec residuals inside the kernel
+# from a previous call.
+
 case $STATE in
-    "MASTER") /usr/bin/systemctl start strongswan-swanctl
+    "MASTER")
+        ip xfrm policy flush
+        /usr/bin/systemctl start strongswan-swanctl
         exit 0
         ;;
     "BACKUP" | "FAULT")
