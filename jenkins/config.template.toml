@@ -2,7 +2,26 @@
 lb_ports = [
   30060
 ]
-cah_users_include_users = ["<user>", "<user>"]
+
+# Include and exclude C&H users from rollout
+# C&H users refers to items in the ch-users-databag repository
+# For additional information refer the ch-role-users repository
+# The users have to be provided as List<String>
+# Possible Configurations:
+# - cah_users_roll_out_users_from
+#   - include specific user group
+#   - Default: ["opsi", "it-operations", "head"]
+# - cah_users_exclude_users_from
+#   - exclude specific user group
+#   - Default: ["students", "service"]
+# - cah_users_include_users
+#   - include specific user(s)
+#   - Default: []
+# - cah_users_exclude_users
+#   - exclude specific user(s)
+#   - Default: ["deployer"]
+# Example Usage:
+# cah_users_include_users = ["<user>", "<user>"]
 
 # IP address range to use for WireGuard clients. Must be set to a CIDR and must
 # not conflict with the terraform.subnet_cidr.
@@ -335,7 +354,25 @@ k8s_network_plugin = "kube-router"
 # because there might be situations where the CCM should not pick the managed network.
 #openstack_network_name = "managed-k8s-network"
 
-cah_users_include_users = ["<user>", "<user>"]
+# Include and exclude C&H users from rollout
+# C&H users refers to items in the ch-users-databag repository
+# For additional information refer the ch-role-users repository
+# The users have to be provided as List<String>
+# Possible Configurations:
+# - cah_users_roll_out_users_from
+#   - include specific user group
+#   - Default: ["opsi", "it-operations", "head"]
+# - cah_users_exclude_users_from
+#   - exclude specific user group
+#   - Default: ["students", "service"]
+# - cah_users_include_users
+#   - include specific user(s)
+#   - Default: []
+# - cah_users_exclude_users
+#   - exclude specific user(s)
+#   - Default: ["deployer"]
+# Example Usage:
+# cah_users_include_users = ["<user>", "<user>"]
 
 [ansible.03_final.host_vars.managed-k8s-gw-az1]
 vrrp_priority = 150
