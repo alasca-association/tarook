@@ -1,6 +1,9 @@
 connections {
 
     rw-eap {
+        {# Use the public VIP to communicate with the remote endpoint instead
+           of exposing our own public ip -#}
+        local_addrs = {{ networking_fixed_ip }}
 {% if ipsec_remote_addrs %}
         remote_addrs = {{ ipsec_remote_addrs | join(", ") }}
 {% endif %}
@@ -10,7 +13,7 @@ connections {
         }
         remote {
             auth = psk
-            id = {{ ipsec_remote_addrs | first }}
+            id = {{ ipsec_remote_name }}
         }
         children {
             net {
@@ -44,7 +47,7 @@ pools {
 secrets {
     ike-1 {
         id-1 = {{ networking_floating_ip }}
-        id-2 = {{ ipsec_remote_addrs | first }}
+        id-2 = {{ ipsec_remote_name }}
         secret = {{ ipsec_eap_psk }}
     }
 }

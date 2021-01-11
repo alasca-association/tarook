@@ -5,11 +5,11 @@ connections {
         # Request an arbitrary virtual IP from the responder
         vips = 0.0.0.0
         local {
-            auth = eap
-            eap_id = ya
+            auth = psk
+            id = {{ ipsec_remote_name }}
         }
         remote {
-            auth = pubkey
+            auth = psk
             id = {{ networking_floating_ip }}
         }
         children {
@@ -32,8 +32,9 @@ connections {
 
 secrets {
 
-    eap-ya {
-        id = ya
+    ike-1 {
+        id-1 = {{ ipsec_remote_name }}
+        id-2 = {{ networking_floating_ip }}
         secret = {{ ipsec_eap_psk }}
     }
 }
