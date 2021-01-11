@@ -135,3 +135,49 @@ cluster-spawn-with-rook:
   - docker
   - wireguard-ready
   resource_group: ch-k8s-ci-environment-f1a-1
+
+# Spawn a cluster with default values, but calico as CNI plugin
+cluster-spawn-with-calico-as-cni-plugin:
+  image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
+  rules:
+  - if: '$CI_COMMIT_REF_NAME =~ /^(master|stable)$/'
+    when: on_success
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    when: manual
+  - when: never
+  allow_failure: false
+  stage: test
+  variables:
+    ANSIBLE_ANY_ERRORS_FATAL: "true"
+    ANSIBLE_FORCE_COLOR: "true"
+    AFLAGS: "--diff -e k8s_network_plugin=calico"
+  before_script:
+  - 'export wg_conf_name=wg0'
+  # id_rsa must be set as `File` input in the GitLab CI/CD variables of the
+  # repository.
+  - 'cp "$id_rsa" /root/.ssh/id_rsa && chmod go-rwx -R /root/.ssh'
+  # OS_PASSWORD must be set as `Variable` input in the GitLab CI/CD variables of
+  # the repository.
+  - . /root/openrc.sh
+  - git clean -f .
+  - git submodule update --init --recursive
+  - 'chmod o-w *'
+  - cd ci
+  - git submodule add --force --branch master git@gitlab.cloudandheat.com:lcm/wg_user
+  script:
+  - pip3 install -r managed-k8s/requirements.txt
+  - python3 managed-k8s/jenkins/toml_helper.py
+  - ./managed-k8s/actions/apply-terraform.sh
+  - ./reachability-or-recreate.sh
+  - timeout 40m ./managed-k8s/actions/apply-stage2.sh
+  - timeout 80m ./managed-k8s/actions/apply-stage3.sh
+  - timeout 30m ./managed-k8s/actions/test.sh
+  after_script:
+  - 'export wg_conf_name=wg0'
+  - cd ci
+  - . /root/openrc.sh
+  - 'MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh'
+  tags:
+  - docker
+  - wireguard-ready
+  resource_group: ch-k8s-ci-environment-f1a-1
