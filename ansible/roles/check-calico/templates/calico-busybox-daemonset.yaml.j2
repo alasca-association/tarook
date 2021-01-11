@@ -1,0 +1,24 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: calico-busybox
+  namespace: kube-system
+  labels:
+    k8s-app: calico-busybox
+spec:
+  selector:
+    matchLabels:
+      k8s-app: calico-busybox
+  template: 
+    metadata:
+      labels:
+        k8s-app: calico-busybox
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: calico-busybox
+        image: busybox
+        command: ["sleep", "infinity"]

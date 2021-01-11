@@ -4,7 +4,7 @@
 - name: Compare podSubnet with Calico IPPool
   include_tasks: test-pod-ippool.yaml
 
-- name: Check that calico CNI plugin binaries do exist
+- name: Check CNI Plugins
   include_tasks: test-calico-cni-plugins.yaml
 
 - name: Check that all k8s-nodes are ready
