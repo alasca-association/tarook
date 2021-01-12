@@ -1,5 +1,5 @@
 vrrp_script chk_haproxy {
-    script "{{ vrrp_scripts_dir }}/chk_haproxy.sh"
+    script "/etc/keepalived/chk_haproxy.sh"
     interval 2
     fall 2
     rise 2
@@ -19,12 +19,10 @@ vrrp_instance VIP_1 {
     virtual_ipaddress {
         {{ private_vip }}
     }
-
     track_script {
         chk_haproxy
     }
-
-    notify {{ vrrp_scripts_dir }}/notified_by_keepalived.sh
+    notify /etc/keepalived/notifier.sh
 }
 
 include /var/lib/ch-k8s-lbaas-agent/keepalived/*.conf

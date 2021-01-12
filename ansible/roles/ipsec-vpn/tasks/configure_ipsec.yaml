@@ -67,9 +67,13 @@
     mode: "u=rw,g=r,o-rwx"
   notify: reload nftables
 
-# Trigger a restart of keepalived so it can start strongswan on the VRRP Master
-- name: Restart keepalived
+- name: Configure keepalived
   become: yes
-  service:
-    name: keepalived
-    state: restarted
+  copy:
+    src: 10-swanctl-notify.sh
+    dest: /etc/keepalived/scripts/
+    owner: root
+    group: root
+    mode: "u=rwx,g=rx,o-rwx"
+  # Trigger a restart of keepalived so it can start strongswan on the VRRP Master
+  notify: restart keepalived
