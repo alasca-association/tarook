@@ -107,6 +107,6 @@ include "/var/lib/ch-k8s-lbaas-agent/nftables/*.conf"
 
 table ip nat {
     chain postrouting {
-        masquerade;
+        fib saddr type != local masquerade;
     }
 }
