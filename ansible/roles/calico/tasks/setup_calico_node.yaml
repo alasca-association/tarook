@@ -76,6 +76,20 @@
       KUBECONFIG: /etc/kubernetes/admin.conf
     command: kubectl create serviceaccount -n kube-system calico-node
 
+  - name: Create calico/node Pod-Security-Policy
+    delegate_to: "{{ groups['masters'] | first }}"
+    run_once: true
+    become: yes
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s:
+      definition: "{{ lookup('file', 'calico-node-psp.yaml') }}"
+      apply: yes
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
   - name: Configure Calico node RBAC
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf

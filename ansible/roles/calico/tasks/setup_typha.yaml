@@ -133,6 +133,20 @@
         KUBECONFIG: /etc/kubernetes/admin.conf
       command: kubectl create serviceaccount -n kube-system calico-typha
 
+    - name: Create Typha Pod-Security-Policy
+      delegate_to: "{{ groups['masters'] | first }}"
+      run_once: true
+      become: yes
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      k8s:
+        definition: "{{ lookup('file', 'typha-psp.yaml') }}"
+        apply: yes
+        state: present
+        validate:
+          fail_on_error: yes
+          strict: yes
+
     - name: Configure Typha RBAC
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
