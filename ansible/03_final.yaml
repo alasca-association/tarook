@@ -114,11 +114,14 @@
       - ch-k8s-lbaas
       - ch-k8s-lbaas-controller
 
-- name: Configure LBaaS on the gateways
+- name: Configure BGP and LBaaS on the gateways
   hosts: gateways
   become: yes
   gather_facts: true
   roles:
+  - role: k8s-bgp
+    tags:
+    - k8s-bgp
   - role: ch-k8s-lbaas-agent
     tags:
     - ch-k8s-lbaas

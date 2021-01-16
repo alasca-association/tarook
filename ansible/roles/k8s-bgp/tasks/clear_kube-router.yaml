@@ -1,0 +1,6 @@
+---
+- name: De-configure BIRD
+  file:
+    state: absent
+    path: /etc/bird.d/10-k8s-kube-router.conf
+  notify: restart bird

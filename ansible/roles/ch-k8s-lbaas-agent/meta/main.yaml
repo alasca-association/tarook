@@ -1,4 +1,4 @@
 ---
 dependencies:
 - ch-k8s-lbaas-common
-- bird
+- k8s-bgp

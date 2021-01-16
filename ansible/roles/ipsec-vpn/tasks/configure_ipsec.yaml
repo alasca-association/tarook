@@ -1,0 +1,79 @@
+---
+- name: Install strongswan and tools
+  become: yes
+  apt:
+    update_cache: yes
+    name: "{{ ipsec_packages }}"
+
+- name: Create ipsec subdirectory in the inventory
+  become: no
+  delegate_to: localhost
+  run_once: yes
+  file:
+    path: "{{ etc_dir }}/ipsec/"
+    state: directory
+
+- name: Copy swanctl.conf
+  become: yes
+  template:
+    src: swanctl.conf.j2
+    dest: /etc/swanctl/swanctl.conf
+
+- name: Copy charon-systemd.conf
+  become: yes
+  copy:
+    src: charon-systemd.conf
+    dest: /etc/strongswan.d/charon-systemd.conf
+
+- name: Prepare workstation as client
+  become: no
+  run_once: yes
+  block:
+    - name: Create swanctl.conf
+      delegate_to: localhost
+      template:
+        src: swanctl.conf.client.j2
+        dest: "{{ etc_dir }}/ipsec/swanctl.conf"
+    - name: Create charon-systemd.conf
+      delegate_to: localhost
+      copy:
+        src: charon-systemd.conf
+        dest: "{{ etc_dir }}/ipsec/charon-systemd.conf"
+
+- name: Ensure swanctl is not automatically started
+  become: yes
+  systemd:
+    name: strongswan-swanctl
+    enabled: no
+    state: stopped
+
+- name: Configure bird
+  become: yes
+  template:
+    src: bird.conf
+    dest: /etc/bird.d/10-ipsec-vpn.conf
+    owner: root
+    group: bird
+    mode: "u=rw,g=r,o-rwx"
+  notify: restart bird
+
+- name: Configure nftables
+  become: yes
+  template:
+    src: nftables.conf
+    dest: /etc/nft.d/10-ipsec-vpn.conf
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o-rwx"
+  notify: reload nftables
+
+- name: Configure keepalived
+  become: yes
+  copy:
+    src: 10-swanctl-notify.sh
+    dest: /etc/keepalived/scripts/
+    owner: root
+    group: root
+    mode: "u=rwx,g=rx,o-rwx"
+  # Trigger a restart of keepalived so it can start strongswan on the VRRP Master
+  notify: restart keepalived

@@ -15,13 +15,36 @@
   template:
     src: keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf
+  notify: restart keepalived
+
+- name: Create keepalived/scripts/ sub directory
+  become: yes
+  file:
+    path: "/etc/keepalived/scripts"
+    state: directory
+    owner: root
+    group: root
+    mode: "u=rwx,g=rx,o-rwx"
 
 - name: Copy chk_haproxy.sh
   become: yes
   template:
     src: chk_haproxy.sh.j2
-    dest: /usr/local/bin/chk_haproxy.sh
-    mode: preserve
+    dest: "/etc/keepalived/chk_haproxy.sh"
+    owner: root
+    group: root
+    mode: "u=rx,g=rx,o-rwx"
+  notify: restart keepalived
+
+- name: Copy notifier.sh
+  become: yes
+  copy:
+    src: notifier.sh
+    dest: /etc/keepalived/
+    owner: root
+    group: root
+    mode: "u=rx,g=rx,o-rwx"
+  notify: restart keepalived
 
 - name: Enable ipv4.ip_nonlocal_bind
   become: yes
@@ -33,7 +56,7 @@
 - name: Start the keepalived service
   become: yes
   systemd:
-    state: restarted
+    state: started
     enabled: yes
     daemon_reload: yes
     name: keepalived

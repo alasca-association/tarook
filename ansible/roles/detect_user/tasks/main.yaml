@@ -7,6 +7,7 @@
     sleep: 5
     timeout: 300
     state: started
+  check_mode: no
   tags:
   - detect-user
 
@@ -30,6 +31,7 @@
   failed_when: false
   changed_when: false
   register: login_results
+  check_mode: no
   tags:
   - detect-user
   - always
@@ -41,6 +43,7 @@
   set_fact:
     ansible_user: "{{ valid_user }}"
     cacheable: yes
+  check_mode: no
   tags:
   - detect-user
   - always
@@ -49,6 +52,7 @@
   fail:
     msg: "failed to detect a valid login! tried: {{ detect_user_attempts }}"
   when: "not ansible_user"
+  check_mode: no
   tags:
   - detect-user
   - always
@@ -56,6 +60,7 @@
 - name: show login info
   debug:
     msg: "will henceforth use {{ ansible_user }} to connect to {{ inventory_hostname }}"
+  check_mode: no
   tags:
   - detect-user
 
@@ -64,6 +69,7 @@
   raw: whoami
   changed_when: false
   register: whoami
+  check_mode: no
   failed_when: "ansible_user not in whoami.stdout_lines"
   tags:
   - detect-user
@@ -86,6 +92,7 @@
       If this is *not* the first rollout, this indicates a problem with the
       user setup and should be investigated.
   when: "whoami.stdout in detect_user_warn"
+  check_mode: no
   tags:
   - detect-user
   - always

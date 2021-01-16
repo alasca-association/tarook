@@ -19,6 +19,15 @@
   vars:
     ip: "{{ ansible_default_ipv4.address }}/{{ ansible_default_ipv4.netmask }}"
 
+- name: Create drop-in directory for other rules
+  become: yes
+  file:
+    state: directory
+    path: /etc/nft.d
+    owner: root
+    group: root
+    mode: "u=rwx,g=rx,o-rwx"
+
 - name: Configure nftables firewall
   become: yes
   template:

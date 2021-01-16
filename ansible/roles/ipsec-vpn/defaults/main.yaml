@@ -1,0 +1,18 @@
+ipsec_enabled: false
+ipsec_local_networks:
+- "{{ subnet_cidr }}"
+# add the following for a working NAT-free setup
+# - "{{ k8s_network_pod_subnet }}"
+# - "{{ k8s_network_service_subnet }}"
+ipsec_peer_networks: null
+ipsec_virtual_subnet_pool: null
+ipsec_remote_addrs: false
+ipsec_remote_name: "peerid"
+ipsec_esp_proposals: "{{ ipsec_proposals }}"
+ipsec_packages:
+  - strongswan
+  - strongswan-swanctl
+  - charon-systemd
+  - strongswan-pki
+  - libcharon-extra-plugins
+  - libstrongswan-extra-plugins

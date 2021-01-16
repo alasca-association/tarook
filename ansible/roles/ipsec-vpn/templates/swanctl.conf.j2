@@ -1,0 +1,53 @@
+connections {
+
+    rw-eap {
+        {# Use the public VIP to communicate with the remote endpoint instead
+           of exposing our own public ip -#}
+        local_addrs = {{ networking_fixed_ip }}
+{% if ipsec_remote_addrs %}
+        remote_addrs = {{ ipsec_remote_addrs | join(", ") }}
+{% endif %}
+        local {
+            auth = psk
+            id = {{ networking_floating_ip }}
+        }
+        remote {
+            auth = psk
+            id = {{ ipsec_remote_name }}
+        }
+        children {
+            net {
+                local_ts = {{ ipsec_local_networks | join(", ") }}
+{% if ipsec_peer_networks %}
+                remote_ts = {{ ipsec_peer_networks | join(", ") }}
+{% endif %}
+                esp_proposals = {{ ipsec_esp_proposals | join(", ") }}
+                dpd_action = restart
+                start_action = trap
+            }
+        }
+        dpd_delay = 1
+{% if ipsec_virtual_subnet_pool %}
+        pools = home
+{% endif %}
+        version = 2
+        send_certreq = no
+        proposals = {{ ipsec_proposals | join(", ") }}
+    }
+}
+
+{% if ipsec_virtual_subnet_pool %}
+pools {
+    home {
+        addrs = {{ ipsec_virtual_subnet_pool }}
+    }
+}
+{% endif %}
+
+secrets {
+    ike-1 {
+        id-1 = {{ networking_floating_ip }}
+        id-2 = {{ ipsec_remote_name }}
+        secret = {{ ipsec_eap_psk }}
+    }
+}

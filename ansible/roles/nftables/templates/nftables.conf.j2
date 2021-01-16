@@ -81,7 +81,10 @@ table inet filter {
 
         jump base_checks
 
-        iifname $wg oifname $wan ct state new counter accept
+        iifname $wg oifname $wan ct state new counter accept;
+
+        iifname $wan oifname $wan ip saddr {{ priv_ip_cidr }} ct state new counter accept;
+
     }
 
     chain output {
@@ -99,10 +102,11 @@ table ip nat {
     }
 }
 
+include "/etc/nft.d/*.conf"
 include "/var/lib/ch-k8s-lbaas-agent/nftables/*.conf"
 
 table ip nat {
     chain postrouting {
-        masquerade;
+        fib saddr type != local masquerade;
     }
 }

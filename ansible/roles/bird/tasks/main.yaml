@@ -1,5 +1,6 @@
 ---
 - name: install bird
+  become: yes
   apt:
     name: bird
     state: present
@@ -7,6 +8,7 @@
   - bird
 
 - name: configure bird
+  become: yes
   template:
     src: bird.conf
     dest: /etc/bird/bird.conf
@@ -17,7 +19,19 @@
   tags:
   - bird
 
+- name: drop-in directory for bird config
+  become: yes
+  file:
+    state: directory
+    path: /etc/bird.d/
+    owner: root
+    group: bird
+    mode: "u=rwx,g=rx,o-rwx"
+  tags:
+  - bird
+
 - name: disable bird6
+  become: yes
   service:
     name: bird6
     enabled: no

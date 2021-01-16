@@ -1,0 +1,5 @@
+---
+dependencies:
+- bird
+- nftables
+- keepalived
