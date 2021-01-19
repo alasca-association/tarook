@@ -1,2 +1,5 @@
 ---
 journald_forward_to_syslog: false
+journald_storage: "persistent"
+journald_runtime_max_use: "100M"
+journald_system_max_use: "2G"
