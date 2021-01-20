@@ -48,6 +48,6 @@ secrets {
     ike-1 {
         id-1 = {{ networking_floating_ip }}
         id-2 = {{ ipsec_remote_name }}
-        secret = {{ ipsec_eap_psk }}
+        secret = "{{ ipsec_eap_psk }}"
     }
 }
