@@ -89,5 +89,3 @@
     owner: root
     group: root
     mode: "u=rwx,g=rx,o-rwx"
-  # Trigger a restart of keepalived so it can start strongswan on the VRRP Master
-  notify: restart keepalived
