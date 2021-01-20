@@ -36,6 +36,7 @@
   - role: check-calico
     tags:
     - check-calico
+    when: k8s_network_plugin == 'calico'
 
 # Ugly: assuming naming scheme here.
 - name: Annotate worker nodes

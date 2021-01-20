@@ -1,13 +1,13 @@
 ---
-- name: Define Environment
+- name: Check that calico/node and typha Pods are running
   delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes
 
   block:
   - name: Check running and readiness status of calico-node pods
-    delegate_to: "{{ groups['masters'] | first }}"
     k8s_info:
       kind: Pod
       label_selectors: 
@@ -16,7 +16,6 @@
     failed_when: ( pod_calico_node.resources[0].status.phase != "Running" ) and ( pod_calico_node.resources[0].status.containerStatuses[0].ready != true )
 
   - name: Check running and readiness status of calico-typha pods
-    delegate_to: "{{ groups['masters'] | first }}"
     k8s_info:
       kind: Pod
       label_selectors: 

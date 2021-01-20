@@ -1,5 +1,5 @@
 ---
-- name: Define Environment
+- name: Validate IPPools
   delegate_to: "{{ groups['masters'] | first }}"
   run_once: true
   environment:
@@ -16,5 +16,4 @@
     shell: >
       kubectl describe -n kube-system configmap kube-proxy | grep clusterCIDR | cut -d ' ' -f2
     register: k8s_configmap
-    failed_when: >
-      k8s_configmap.stdout_lines != calico_stdout.stdout | from_json | json_query('items[*].spec.cidr')
+    failed_when: k8s_configmap.stdout_lines != calico_stdout.stdout | from_json | json_query('items[*].spec.cidr') or k8s_configmap.rc not in [0]

@@ -5,7 +5,7 @@
     DATASTORE_TYPE: kubernetes
   
   block:
-  - name: k8s_info
+  - name: Check that k8s nodes are ready
     delegate_to: "{{ groups['masters'] | first }}"
     k8s_info:
       api_version: v1
