@@ -106,7 +106,20 @@
 
 - name: Start and enable wireguard endpoint
   become: yes
-  service:
-    name: wg-quick@wg0
-    enabled: yes
-    state: "{{ 'restarted' if wg0_conf is changed else 'started' }}"
+  block:
+    - name: Start and enable wireguard endpoint
+      service:
+        name: wg-quick@wg0
+        enabled: yes
+        state: "{{ 'restarted' if wg0_conf is changed else 'started' }}"
+  rescue:
+    - name: Collect logs of the wg-quick service
+      shell: journalctl -u wg-quick@wg0; systemctl status wg-quick@wg0
+      register: wg_logs
+      ignore_errors: yes
+    - name: Print logs
+      debug:
+        var: wg_logs.stdout_lines
+    - name: Re-raise error
+      fail:
+        msg: "{{ ansible_failed_result }}"
