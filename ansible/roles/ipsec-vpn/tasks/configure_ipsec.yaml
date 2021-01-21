@@ -13,6 +13,13 @@
     path: "{{ etc_dir }}/ipsec/"
     state: directory
 
+- name: Abort prematurely if PSK contains '"' (Bug)
+  become: no
+  run_once: yes
+  fail:
+    msg: 'PSK must not contain a quotation mark ("). We do not escape it properly yet.'
+  when: '"\"" in ipsec_eap_psk'
+
 - name: Copy swanctl.conf
   become: yes
   template:
