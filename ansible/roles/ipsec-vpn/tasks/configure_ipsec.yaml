@@ -13,17 +13,26 @@
     path: "{{ etc_dir }}/ipsec/"
     state: directory
 
+- name: Abort prematurely if PSK contains '"' (Bug)
+  become: no
+  run_once: yes
+  fail:
+    msg: 'PSK must not contain a quotation mark ("). We do not escape it properly yet.'
+  when: '"\"" in ipsec_eap_psk'
+
 - name: Copy swanctl.conf
   become: yes
   template:
     src: swanctl.conf.j2
     dest: /etc/swanctl/swanctl.conf
+  register: swanctl_config
 
 - name: Copy charon-systemd.conf
   become: yes
   copy:
     src: charon-systemd.conf
     dest: /etc/strongswan.d/charon-systemd.conf
+  register: charon_config
 
 - name: Prepare workstation as client
   become: no
@@ -40,12 +49,24 @@
         src: charon-systemd.conf
         dest: "{{ etc_dir }}/ipsec/charon-systemd.conf"
 
-- name: Ensure swanctl is not automatically started
+- name: Collect host facts
+  gather_facts:
+
+- name: Ensure swanctl is disabled on the VRRP backups
   become: yes
+  when: networking_fixed_ip not in ansible_facts.all_ipv4_addresses
   systemd:
     name: strongswan-swanctl
     enabled: no
     state: stopped
+
+- name: Start swanctl on the VRRP master
+  become: yes
+  when: networking_fixed_ip in ansible_facts.all_ipv4_addresses
+  systemd:
+    name: strongswan-swanctl
+    enabled: no
+    state: "{{ (swanctl_config.changed or charon_config.changed) | ternary('reloaded', 'started') }}"
 
 - name: Configure bird
   become: yes
@@ -75,5 +96,3 @@
     owner: root
     group: root
     mode: "u=rwx,g=rx,o-rwx"
-  # Trigger a restart of keepalived so it can start strongswan on the VRRP Master
-  notify: restart keepalived

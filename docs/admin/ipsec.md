@@ -125,3 +125,11 @@ protocol pipe {
 - You can use `swanctl --load-all` to (re-)load config etc
 - `EAP_IDENTITY not supported, sending EAP_NAK` -> You also need lib{charon,strongswan}-extra-plugins installed, may need restart of strongswan-starter to apply
 - `ipsec_subnet` should be set to the k8s subnet methinks?? or at least not defaulted to some strange range...
+
+# Additional info on the usage in the LCM
+
+- IPsec is a customer-specific solution and should remain so, i.e., we only support what was required.
+- One example of that is the authentication means. We only support PSK here
+- The PSK should not be written in plain text in the config.toml. Instead we're using ansible-vault. The encrypted PSK value is defined in the file `inventory/02_trampoline/group_vars/all.yaml`
+- Use `AFLAGS="--diff --ask-vault-pass […]` to decrypt it. If you don't know the vault password, contact the maintainer of the cluster repo (yannic.ahrens@cloudandheat.com if in doubt) or skip the task via `--skip ipsec-vpn`.
+- Note that the use of ansible-vault is (hopefully) a temporary step until we've migrated to a proper credential management
