@@ -20,19 +20,25 @@ submodule_passwordstore_users_git="${MANAGED_K8S_PASSWORDSTORE_USER_GIT:-git@git
 if [ ! -d "$submodule_managed_k8s_name" ]; then
     run git submodule add "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
 else
-    run git submodule set-url "$submodule_managed_k8s_name" "$submodule_managed_k8s_url"
+    pushd "$cluster_repository"/managed-k8s > /dev/null
+    run git remote set-url origin "$submodule_managed_k8s_url"
+    popd > /dev/null
 fi
 
 if [ ! -d "$submodule_wg_user_name" ]; then
     run git submodule add "$submodule_wg_user_git" "$submodule_wg_user_name"
 else
-    run git submodule set-url "$submodule_wg_user_name" "$submodule_wg_user_git"
+    pushd "$cluster_repository"/wg_user > /dev/null
+    run git remote set-url origin "$submodule_wg_user_git"
+    popd > /dev/null
 fi
 
 if [ ! -d "$submodule_passwordstore_users_name" ]; then
     run git submodule add "$submodule_passwordstore_users_git" "$submodule_passwordstore_users_name"
 else
-    run git submodule set-url "$submodule_passwordstore_users_name" "$submodule_passwordstore_users_git"
+    pushd "$cluster_repository"/wg_user > /dev/null
+    run git remote set-url origin "$submodule_passwordstore_users_git"
+    popd > /dev/null
 fi
 
 
