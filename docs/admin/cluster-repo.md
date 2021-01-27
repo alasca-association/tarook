@@ -84,12 +84,7 @@ $ cd my-test-cluster
 ### Initialise cluster repository
 
 To create the initial bare-minimum directory structure, a script is provided
-in the `managed-k8s` project. You have two options to make use of that script:
-
-1. Clone `managed-k8s` to a different location
-2. Add `managed-k8s` as a submodule manually and use the script from there
-
-We will use the first option in this guide, because it is well-supported.
+in the `managed-k8s` project. 
 
 Clone the `managed-k8s` repository to a location **outside** of your cluster
 repository:
