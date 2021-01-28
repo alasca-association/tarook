@@ -198,7 +198,7 @@
     name: "{{ ansible_user }}"
   when: "ansible_user | default(False)"
 
-- name: Setup Calico networking
+- name: Setup Basis for Calico networking
   include_tasks: setup_calico.yaml
   when: k8s_network_plugin == 'calico'
 

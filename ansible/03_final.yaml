@@ -101,8 +101,8 @@
       tags: k8s-worker
       gather_facts: false
 
-- name: Deploy Calico
-  hosts: k8s_nodes
+- name: Deploy and Configure the Calico-Setup
+  hosts: masters[0]
   gather_facts: false
   roles:
     - role: calico
