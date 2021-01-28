@@ -57,6 +57,10 @@
         fail_on_error: yes
         strict: yes
 
+  - name: Give the CNI plugin time to propagate changes (sleep 10s)
+    pause:
+      seconds: 10
+
   - name: fetch blocked-test pod completion state
     k8s_info:
       api_version: v1
@@ -91,6 +95,10 @@
         fail_on_error: yes
         strict: yes
 
+  - name: Give the CNI plugin time to propagate changes (sleep 10s)
+    pause:
+      seconds: 10
+
   - name: fetch unblocked-test pod completion state
     k8s_info:
       api_version: v1
@@ -115,6 +123,8 @@
       - curl
       - "-sS"
       - "-w"
+      - "--connect-timeout"
+      - "20"
       - "\\n%{http_code}\\n"
       - "http://{{ item }}"
     register: curl_result
