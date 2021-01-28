@@ -1,4 +1,4 @@
-- name: Generate Calico node secret
+- name: Deploy calico/node
   delegate_to: "{{ groups['masters'] | first }}"
   become: yes
   run_once: true
@@ -48,8 +48,18 @@
     when: not secret_calico_node_present.resources
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    command: kubectl create secret generic --namespace=kube-system calico-node-certs --from-file=/etc/kubernetes/pki/typha/calico-node.crt --from-file=/etc/kubernetes/pki/typha/calico-node.key
+    command:
+      argv:
+        - kubectl
+        - create
+        - secret
+        - generic
+        - --namespace=kube-system
+        - calico-node-certs
+        - --from-file=/etc/kubernetes/pki/typha/calico-node.crt
+        - --from-file=/etc/kubernetes/pki/typha/calico-node.key
 
+  # Provision RBAC
   - name: Check if ServiceAccount for calico-node exists
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
@@ -62,7 +72,6 @@
 
   - name: Create a ServiceAccount for calico-node
     when: not serviceaccount_calico_node.resources
-    become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     command: kubectl create serviceaccount -n kube-system calico-node
@@ -96,6 +105,10 @@
       KUBECONFIG: /etc/kubernetes/admin.conf
     command: kubectl create clusterrolebinding calico-node --clusterrole=calico-node --serviceaccount=kube-system:calico-node
 
+  # Install Daemon-Set
+  # Felix: - Calico per-node daemon
+  # BIRD: - Distribution of routing information via the BGP protocol
+  # confd: - watches Calico datastore for config changes and updates BIRDs config files
   - name: Deploy Calico node DaemonSet
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
@@ -107,3 +120,8 @@
         strict: yes
     with_items:
     - calico-node-daemonset.yaml.j2
+
+  - name: Wait for calico/node Pods
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command: kubectl wait -n kube-system -l k8s-app=calico-node --for=condition=Ready pods --timeout=120s

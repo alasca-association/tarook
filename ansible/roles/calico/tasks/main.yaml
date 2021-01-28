@@ -1,7 +1,8 @@
 - name: Setup Calico Typha
   include_tasks: setup_typha.yaml
 
-- name: Setup Calico node
+
+- name: Setup Calico/Node
   include_tasks: setup_calico_node.yaml
 
 
