@@ -1,0 +1,36 @@
+- name: Create IPPool Resource Definition File
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
+  become: yes
+  template:
+    owner: root
+    group: root
+    mode: 0644
+    src: ippools.yaml.j2
+    dest: /tmp/ippools.yaml
+
+- name: Delete all existing IPPools
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  shell: |
+    set -euo pipefail
+    calicoctl get ippools -o json | calicoctl delete --skip-empty -f -
+  register: ippool_deletion
+  args:
+    executable: /bin/bash
+  changed_when: "'Successfully deleted' and 'IPPool' in ippool_deletion.stdout"
+
+- name: Add IPPools
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  command: calicoctl create --filename=/tmp/ippools.yaml --skip-exists
+  register: ippool_creation
+  changed_when: "'Successfully created' and 'IPPool' in ippool_creation.stdout"
+
