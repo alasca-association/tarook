@@ -20,6 +20,9 @@ spec:
     spec:
       hostNetwork: true
       tolerations:
+        # This is needed cause on a fresh setup, there is no "ready" node to schedulde to schedulde the Typha pods on
+        - effect: NoSchedule
+          operator: Exists
         # Mark the pod as a critical add-on for rescheduling.
         - key: CriticalAddonsOnly
           operator: Exists

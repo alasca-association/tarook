@@ -1,7 +1,7 @@
-- name: Prepare Typha deploy
+- name: Deploy Typha
   delegate_to: "{{ groups['masters'] | first }}"
-  become: yes
   run_once: true
+  become: yes
   block:
   # TODO: we should protect this with a password and store it in a more
   # secure place
@@ -46,7 +46,15 @@
       become: yes
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
-      command: kubectl create configmap -n kube-system calico-typha-ca --from-file=/etc/kubernetes/pki/typha/typhaca.crt
+      command:
+        argv:
+          - kubectl
+          - create
+          - configmap
+          - -n
+          - kube-system
+          - calico-typha-ca
+          - --from-file=/etc/kubernetes/pki/typha/typhaca.crt
 
     - name: Generate Typha key
       openssl_privatekey:
@@ -80,6 +88,8 @@
         provider: ownca
 
     - name: Check if secret for calico-typha-certs exists
+      retries: 3 # May fail with an HTTP 500 error
+      delay: 3
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
       k8s_info:
@@ -94,7 +104,17 @@
       become: yes
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
-      command: kubectl create secret generic -n kube-system calico-typha-certs --from-file=/etc/kubernetes/pki/typha/typha.key --from-file=/etc/kubernetes/pki/typha/typha.crt
+      command:
+        argv:
+          - kubectl
+          - create
+          - secret
+          - generic
+          - -n
+          - kube-system
+          - calico-typha-certs
+          - --from-file=/etc/kubernetes/pki/typha/typha.key
+          - --from-file=/etc/kubernetes/pki/typha/typha.crt
 
     - name: Check if ServiceAccount for calico-typha exists
       environment:
@@ -141,7 +161,14 @@
       become: yes
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
-      command: kubectl create clusterrolebinding calico-typha --clusterrole=calico-typha --serviceaccount=kube-system:calico-typha
+      command:
+        argv:
+          - kubectl
+          - create
+          - clusterrolebinding
+          - calico-typha
+          - --clusterrole=calico-typha
+          - --serviceaccount=kube-system:calico-typha
 
     - name: Deploy Typha deployment
       environment:
@@ -166,3 +193,11 @@
           strict: yes
       loop:
       - typha-service.yaml
+
+    - name: Wait for Typha Pods
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      shell: kubectl wait -n kube-system -l k8s-app=calico-typha --for=condition=Ready pods --timeout=120s
+
+# TODO: Validate that Typha is using TLS?
+# https://docs.projectcalico.org/getting-started/kubernetes/hardway/install-typha#install-service
