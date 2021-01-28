@@ -1,3 +1,5 @@
+# If you plan to upgrade calico resources:
+# curl https://docs.projectcalico.org/manifests/calico.yaml -O
 - name: Configure Calico Resources
   delegate_to: "{{ groups['masters'] | first }}"
   run_once: true
