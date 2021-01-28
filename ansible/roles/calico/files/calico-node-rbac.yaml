@@ -35,7 +35,6 @@ rules:
       - bgppeers
       - globalbgpconfigs
       - bgpconfigurations
-      - endpoints
       - ippools
       - ipamblocks
       - ipamhandles

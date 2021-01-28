@@ -1,0 +1,143 @@
+- name: BGP - Create Default BGPConfiguration
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  vars:
+    bgp_conf_name: default
+  shell: |
+    set -euo pipefail
+    cat <<EOF | calicoctl apply -f -
+    apiVersion: projectcalico.org/v3
+    kind: BGPConfiguration
+    metadata:
+      name: {{ bgp_conf_name }}
+    spec:
+      nodeToNodeMeshEnabled: false
+      asNumber: {{ calico.k8s_node_asnumber }}
+    EOF
+  register: bgp_configuration_result
+  args:
+    executable: /bin/bash
+  changed_when: "'Successfully applied' and 'BGPConfiguration' in bgp_configuration_result.stdout"
+
+# Probably not necessary on a fresh setup, just to be sure
+- name: BGP - Disable the default BGP node-to-node mesh
+  delegate_to: "{{ groups['masters'] | first }}"
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  command: calicoctl patch bgpconfiguration default -p '{"spec":{"nodeToNodeMeshEnabled":false}}'
+  register: bgp_mesh_patch
+  changed_when: "'Successfully patched' and 'BGPConfiguration' in bgp_mesh_patch.stdout"
+
+# Probably not necessary, just to be sure
+- name: BGP - Change the default global AS number
+  delegate_to: "{{ groups['masters'] | first }}"
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  command: calicoctl patch bgpconfiguration default -p '{"spec":{"asNumber":"{{ calico.k8s_node_asnumber }}"} }'
+  register: bgp_as_number_patch
+  changed_when: "'Successfully patched' and 'BGPConfiguration' in bgp_as_number_patch.stdout"
+
+- name: BGP - Setup Route Reflector Cluster ID
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  command: calicoctl patch node {{ item }} -p '{"spec":{"bgp":{"routeReflectorClusterID":"{{ calico.clusterID }}" }}}'
+  register: bgp_route_reflector_cluster_id_patch
+  changed_when: "'Successfully patched' and 'Node' in bgp_route_reflector_cluster_id_patch.stdout"
+  failed_when: "'Hit error' in bgp_route_reflector_cluster_id_patch.stderr"
+  with_items: "{{ groups['masters'] }}"
+
+- name: BGP - Configure all non-reflector nodes to peer with route reflectors (master nodes)
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: True
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  shell: |
+    set -euo pipefail
+    cat <<EOF | calicoctl apply -f -
+    kind: BGPPeer
+    apiVersion: projectcalico.org/v3
+    metadata:
+      name: peer-with-route-reflectors
+    spec:
+      nodeSelector: all()
+      peerSelector: route-reflector == 'true'
+    EOF
+  register: bgp_worker_to_master_peering
+  args:
+    executable: /bin/bash
+  changed_when: "'Successfully applied' and 'BGPPeer' in bgp_worker_to_master_peering.stdout"
+
+- name: BGP - Configure all route reflectors (master nodes) to peer with all other nodes
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  shell: |
+    set -euo pipefail
+    cat <<EOF | calicoctl apply -f -
+    kind: BGPPeer
+    apiVersion: projectcalico.org/v3
+    metadata:
+      name: route-reflector-with-nodes
+    spec:
+      nodeSelector: route-reflector == 'true'
+      peerSelector: all()
+    EOF
+  register: bgp_master_to_node_peering
+  args:
+    executable: /bin/bash
+  changed_when: "'Successfully applied' and 'BGPPeer' in bgp_master_to_node_peering.stdout"
+
+# gw_as_number is set in the bird playbook
+- name: BGP - Configure route reflectors (master nodes) to peer with Gateways
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  shell: |
+    set -euo pipefail
+    cat <<EOF | calicoctl apply -f -
+    apiVersion: projectcalico.org/v3
+    kind: BGPPeer
+    metadata:
+      name: {{ item }}
+    spec:
+      peerIP: {{ hostvars[item]['local_ipv4_address'] }}
+      asNumber: {{ calico.gw_asnumber }}
+      nodeSelector: route-reflector == 'true'
+    EOF
+  register: bgp_master_to_gateways_peering
+  args:
+    executable: /bin/bash
+  changed_when: "'Successfully applied' and 'BGPPeer' in bgp_master_to_gateways_peering.stdout"
+  with_items: "{{ groups['gateways'] }}"
+
+- name: Calico - BGP - Label Master-Nodes as Route Reflectors
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  command: calicoctl label nodes {{ item }} route-reflector=true
+  register: bgp_label_masters
+  changed_when: "'Successfully updated label route-reflector on nodes' in bgp_label_masters.stdout"
+  with_items: "{{ groups['masters'] }}"
