@@ -29,8 +29,8 @@
       tags:
       - test-ccm
 
-- name: Test Calico Network
-  hosts: masters[0]
+- name: Test Calico CNI Support
+  hosts: "{{ groups['k8s_nodes'] }}"
   gather_facts: no
   roles:
   - role: check-calico
