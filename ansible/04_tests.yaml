@@ -58,10 +58,10 @@
   roles:
     - role: check-services
       tags: test-service
-#    - role: check-block-storage
-#      tags: test-cinder-block-storage
-#      vars:
-#        block_storage_class: csi-sc-cinderplugin
+    - role: check-block-storage
+      tags: test-cinder-block-storage
+      vars:
+        block_storage_class: csi-sc-cinderplugin
     - role: check-block-storage
       tags: test-ceph-block-storage
       when: "(rook | default(False)) | bool"
@@ -113,7 +113,7 @@
   - role: check-networkpolicy-enforcement
     tags:
     - test-networkpolicy-enforcement
-    when: "(k8s_network_plugin | default('flannel')) == 'kube-router'"
+    when: "(k8s_network_plugin | default('flannel')) == 'kube-router' or (k8s_network_plugin | default('flannel')) == 'calico'"
 
 - name: Test GPU support
   hosts: "{{ groups['masters'] | first }}"
