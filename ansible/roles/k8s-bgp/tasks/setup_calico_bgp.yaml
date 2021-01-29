@@ -1,0 +1,9 @@
+---
+- name: Configure BIRD for calico
+  template:
+    src: bird-calico.conf
+    dest: /etc/bird.d/10-k8s-calico.conf
+    owner: root
+    group: bird
+    mode: "u=rw,g=r,o-rwx"
+  notify: restart bird
