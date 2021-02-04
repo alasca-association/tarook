@@ -69,6 +69,7 @@ local kp =
             '{{ rook_namespace }}',
 {% endif %}
         ],
+        replicas: {{ monitoring_prometheus_replicas }}
       },
 
       grafana+:: {
