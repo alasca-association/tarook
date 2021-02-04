@@ -12,20 +12,13 @@
     DATASTORE_TYPE: kubernetes
   vars:
     bgp_conf_name: default
-  shell: |
-    set -euo pipefail
-    cat <<EOF | calicoctl apply -f -
-    apiVersion: projectcalico.org/v3
-    kind: BGPConfiguration
-    metadata:
-      name: {{ bgp_conf_name }}
-    spec:
-      nodeToNodeMeshEnabled: false
-      asNumber: {{ calico.k8s_node_asnumber }}
-    EOF
+  command:
+    argv:
+      - calicoctl
+      - apply
+      - --filename=-
+    stdin: '{{ lookup("template", "calico_bgp_conf.yaml.j2") }}'
   register: bgp_configuration_result
-  args:
-    executable: /bin/bash
   changed_when: "'Successfully applied' and 'BGPConfiguration' in bgp_configuration_result.stdout"
 
 # Probably not necessary on a fresh setup, just to be sure
