@@ -42,6 +42,8 @@ monitoring_prometheus_memory_request: "{{ monitoring_prometheus_memory_limit }}"
 monitoring_prometheus_cpu_limit: "1"
 monitoring_prometheus_cpu_request: "{{ monitoring_prometheus_cpu_limit }}"
 
+monitoring_prometheus_replicas: 1
+
 monitoring_grafana_memory_limit: "512Mi"
 monitoring_grafana_memory_request: "256Mi"
 monitoring_grafana_cpu_limit: "500m"
