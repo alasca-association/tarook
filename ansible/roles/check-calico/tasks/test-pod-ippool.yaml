@@ -6,6 +6,7 @@
 - name: Validate IPPools
   delegate_to: "{{ groups['masters'] | first }}"
   run_once: true
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes
