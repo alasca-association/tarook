@@ -12,6 +12,7 @@ ch_k8s_lbaas_agent_binary_checksums:
   "0.1.1": "sha256:a1706d4caa969cb74185567e38a2d83ca54fd5349edf9c3ca61f10fbf82652af"
   "0.2.0": "sha256:c61829076571d7f3b65f810e97337d3226eda749def85aa830343f9d148c529f"
   "0.3.0": "sha256:6272977c5173438cb543f97c3156dde485901bf930997ee39f69835962ac5078"
+  "0.3.1": "sha256:f96dbeb62e4bc9281a9bc2a8afb7b7b787b7b28a60d7604a6b88ad12ac08be62"
 
 ch_k8s_lbaas_agent_binary_checksum: "{{ ch_k8s_lbaas_agent_binary_checksums[image_versions.ch_k8s_lbaas] | default('invalid checksum') }}"
 
