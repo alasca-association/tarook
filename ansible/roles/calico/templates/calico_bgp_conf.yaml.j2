@@ -1,7 +1,7 @@
 apiVersion: projectcalico.org/v3
 kind: BGPConfiguration
 metadata:
-  name: {{ bgp_conf_name | to_json }}
+  name: default
 spec:
   nodeToNodeMeshEnabled: false
   asNumber: {{ calico.k8s_node_asnumber | to_json }}

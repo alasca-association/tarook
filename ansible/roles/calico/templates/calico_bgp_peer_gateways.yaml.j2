@@ -1,0 +1,8 @@
+apiVersion: projectcalico.org/v3
+kind: BGPPeer
+metadata:
+  name: {{ item | to_json }}
+spec:
+  peerIP: {{ hostvars[item]['local_ipv4_address'] | to_json }}
+  asNumber: {{ calico.gw_asnumber | to_json }}
+  nodeSelector: route-reflector == 'true'
