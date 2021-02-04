@@ -1,5 +1,4 @@
 - name: Deploy Typha
-  delegate_to: "{{ groups['masters'] | first }}"
   run_once: true
   become: yes
   block:
@@ -18,7 +17,7 @@
       owner: root
       group: root
       size: 4096
-      force: yes # regenerate the key even if it exists. leads to a new key on every run
+      #force: yes # regenerate the key even if it exists. leads to a new key on every run
 
   - name: Generate OpenSSL CA certificate signing request (CSR)
     openssl_csr:

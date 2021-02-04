@@ -4,8 +4,8 @@
 # https://github.com/projectcalico/calico/issues/2923
 
 - name: Apply IPPool(s)
-  delegate_to: "{{ groups['masters'] | first }}"
   run_once: true
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes

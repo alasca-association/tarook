@@ -1,3 +1,6 @@
+- name: Prepare Kubernetes Nodes
+  include_tasks: prepare_nodes.yaml
+
 - name: Setup IPPools
   include_tasks: setup_ippools.yaml
 

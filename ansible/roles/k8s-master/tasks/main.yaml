@@ -198,10 +198,6 @@
     name: "{{ ansible_user }}"
   when: "ansible_user | default(False)"
 
-- name: Setup Basis for Calico networking
-  include_tasks: setup_calico.yaml
-  when: k8s_network_plugin == 'calico'
-
 - name: Setup kube-router networking
   include_tasks: setup_kube-router.yaml
   when: k8s_network_plugin == 'kube-router'
@@ -218,4 +214,5 @@
   # This variable is set by the setup_*.yaml files included above.
   # If you reach this point, none of them was included, probably because of
   # a typo in your k8s_network_plugin variable.
-  when: not (runtime_k8s_networking_configured | default(False))
+  # If calico is chosen, the network setup will be done after setting up the k8s nodes
+  when: not (runtime_k8s_networking_configured | default(False)) and not k8s_network_plugin == 'calico'

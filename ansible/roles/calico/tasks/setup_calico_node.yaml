@@ -1,5 +1,4 @@
 - name: Deploy calico/node
-  delegate_to: "{{ groups['masters'] | first }}"
   become: yes
   run_once: true
   block:

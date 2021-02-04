@@ -4,7 +4,6 @@
 # https://github.com/projectcalico/calico/issues/2923
 
 - name: Create and patch Calico BGP Configuration
-  delegate_to: "{{ groups['masters'] | first }}"
   run_once: True
   become: yes
   environment:
