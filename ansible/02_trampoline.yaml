@@ -34,7 +34,6 @@
   gather_facts: true
   vars_files:
   - vars/disruption.yaml
-  - vars/monitor_node_status.yaml
   roles:
   - role: nftables
     tags: nftables
