@@ -24,60 +24,53 @@
 - name: Provision Kubernetes user account for the calico cni plugin
   become: yes
   run_once: yes
+  become: yes
   environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
   block:
-    - name: Generate calico-cni key
+    - name: Generate OpenSSL private key for CA certificate of calico-cni
       openssl_privatekey:
         owner: root
         group: root
         mode: 0600
-        path: /etc/kubernetes/pki/cni.key
+        path: /etc/kubernetes/pki/calico-cni.key
         size: 4096
 
-    #- name: copy calico-cni key to localhost
-    #  delegate_to: localhost
-    #  become: no
-    #  copy:
-    #    src: "/etc/kubernetes/pki/cni.key"
-    #    dest: "{{ etc_dir }}/calico-cni-key"
-
-    - name: CSR for calico-cni key
+    - name: Generate OpenSSL CA Certificate Signing Request (CSR) for calico-cni
       openssl_csr:
         owner: root
         group: root
         mode: 0600
-        path: /etc/kubernetes/pki/cni.csr
-        privatekey_path: /etc/kubernetes/pki/cni.key
+        path: /etc/kubernetes/pki/calico-cni.csr
+        privatekey_path: /etc/kubernetes/pki/calico-cni.key
         common_name: calico-cni
         subject:
           CN: calico-cni
 
-    - name: Sign the calico-cni csr
+    - name: Generate/Sign OpenSSL CA calico-cni Certificate Signing Request (CSR)
       openssl_certificate:
         owner: root
         group: root
         mode: 0600
-        path: /etc/kubernetes/pki/cni.crt
-        csr_path: /etc/kubernetes/pki/cni.csr
+        path: /etc/kubernetes/pki/calico-cni.crt
+        csr_path: /etc/kubernetes/pki/calico-cni.csr
         ownca_path: /etc/kubernetes/pki/ca.crt
         ownca_privatekey_path: /etc/kubernetes/pki/ca.key
         entrust_not_after: "+365d"
         provider: ownca
 
-    - name: Ensure that /etc/cni/net.d/ exists
-      delegate_to: "{{ item }}"
-      become: yes
-      file:
-        owner: root
-        group: root
-        mode: 0750
-        path: /etc/cni/net.d/
-        state: directory
-      loop: "{{ groups['k8s_nodes'] }}"
-
     - name: Set cluster Kubernetes
-      command: "kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/pki/ca.crt --embed-certs=true --server=https://[{{ networking_fixed_ip }}]:{{ k8s_apiserver_frontend_port }} --kubeconfig=/etc/cni/net.d/calico-kubeconfig" # noqa 204
+      command:
+        argv:
+          - kubectl
+          - config
+          - set-cluster
+          - kubernetes
+          - --certificate-authority=/etc/kubernetes/pki/ca.crt
+          - --embed-certs=true
+          - --server=https://[{{ networking_fixed_ip }}]:{{ k8s_apiserver_frontend_port | to_json }} # cannot use to_json on the ip
+          - --kubeconfig=/etc/cni/net.d/calico-kubeconfig
+
     - name: Set calico-cni credentials
       command:
         argv:
@@ -85,8 +78,8 @@
         - config
         - set-credentials
         - calico-cni
-        - --client-certificate=/etc/kubernetes/pki/cni.crt
-        - --client-key=/etc/kubernetes/pki/cni.key
+        - --client-certificate=/etc/kubernetes/pki/calico-cni.crt
+        - --client-key=/etc/kubernetes/pki/calico-cni.key
         - --embed-certs=true
         - --kubeconfig=/etc/cni/net.d/calico-kubeconfig
 
@@ -109,14 +102,38 @@
           - use-context
           - default
           - --kubeconfig=/etc/cni/net.d/calico-kubeconfig
-    
+
+    - name: Fetch calico-cni key from initial master to localhost
+      become: yes
+      fetch:
+        src: "/etc/kubernetes/pki/calico-cni.key"
+        dest: "{{ etc_dir }}/"
+        flat: yes
+
+    - name: Fetch calico-cni crt from the initial master to localhost
+      become: yes
+      fetch:
+        src: "/etc/kubernetes/pki/calico-cni.crt"
+        dest: "{{ etc_dir }}/"
+        flat: yes
+
     - name: Fetch calico-kubeconfig from the initial master to localhost
       become: yes
       fetch:
-        src: /etc/cni/net.d/calico-kubeconfig
+        src: "/etc/cni/net.d/calico-kubeconfig"
         dest: "{{ etc_dir }}/"
         flat: yes
-      run_once: yes
+
+    - name: Ensure that /etc/cni/net.d/ exists on all k8s_nodes
+      delegate_to: "{{ item }}"
+      become: yes
+      file:
+        owner: root
+        group: root
+        mode: 0750
+        path: /etc/cni/net.d/
+        state: directory
+      loop: "{{ groups['k8s_nodes'] }}"
 
     - name: Push calico-kubeconfig from localhost to k8s_nodes
       become: yes
@@ -127,8 +144,8 @@
         mode: 0400
         src: "{{ etc_dir }}/calico-kubeconfig"
         dest: /etc/cni/net.d/calico-kubeconfig
-      loop: "{{ groups['k8s_nodes'] }}" # ToDo: also store keys locally and distribute them to masters
-    
+      loop: "{{ groups['k8s_nodes'] }}"
+
     # just to be sure
     - name: Restrict access to /etc/cni/net.d/calico-kubeconfig
       delegate_to: "{{ item }}"
@@ -139,24 +156,24 @@
         mode: 0400
       loop: "{{ groups['k8s_nodes'] }}"
 
-- name: Configure Calico RBAC
-  run_once: true
+- name: Create user for calico-cni, configure RBAC and create RoleBinding
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:
     definition: "{{ lookup('file', item) }}"
     apply: yes
-    state: present
+    state: "present"
     validate:
       fail_on_error: yes
       strict: yes
   loop:
-    - calico-rbac.yaml
+    - calico-cni-user.yaml
 
 - name: Install and configure Calico CNI Plugin binaries
   become: yes
   block:
+    # ToDo: Verify checksum
     - name: Install calicoctl
       delegate_to: "{{ item }}"
       get_url:
@@ -179,6 +196,7 @@
         state: directory
       loop: "{{ groups['k8s_nodes'] }}"
 
+    # ToDo: Verify Checksum
     - name: Install calico
       delegate_to: "{{ item }}"
       get_url:
@@ -189,6 +207,7 @@
         dest: /opt/cni/bin/calico
       loop: "{{ groups['k8s_nodes'] }}"
 
+    # ToDo: Verify checksum
     - name: Install calico-ipam
       delegate_to: "{{ item }}"
       get_url:
