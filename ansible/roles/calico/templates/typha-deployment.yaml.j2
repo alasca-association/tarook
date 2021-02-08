@@ -29,7 +29,7 @@ spec:
       serviceAccountName: calico-typha
       priorityClassName: system-cluster-critical
       containers:
-      - image: calico/typha:v{{ calico.version }}
+      - image: {{ "calico/typha:v%s" | format(calico.version) | to_json }}
         name: calico-typha
         ports:
         - containerPort: 5473
