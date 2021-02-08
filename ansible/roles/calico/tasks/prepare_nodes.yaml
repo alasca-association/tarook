@@ -7,7 +7,6 @@
 # https://github.com/projectcalico/calico/issues/2923
 
 - name: Configure Calico Resources
-  run_once: true
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
@@ -22,7 +21,6 @@
     - calico-crds.yaml
 
 - name: Provision Kubernetes user account for the calico cni plugin
-  become: yes
   run_once: yes
   become: yes
   environment:
