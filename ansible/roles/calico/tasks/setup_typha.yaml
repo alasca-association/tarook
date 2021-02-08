@@ -1,0 +1,168 @@
+- name: Prepare Typha deploy
+  delegate_to: "{{ groups['masters'] | first }}"
+  become: yes
+  run_once: true
+  block:
+  # TODO: we should protect this with a password and store it in a more
+  # secure place
+  - name: Generate a fresh CA for the Typha master
+    block:
+    - name: Ensure that /etc/kubernetes/pki/typha exists
+      file:
+        path: /etc/kubernetes/pki/typha
+        state: directory
+    - name: Generate OpenSSL private key for CA certificate
+      openssl_privatekey:
+        path: /etc/kubernetes/pki/typha/typhaca.key
+    - name: Generate OpenSSL CA certificate signing request (CSR)
+      openssl_csr:
+        path: /etc/kubernetes/pki/typha/typhaca.csr
+        privatekey_path: /etc/kubernetes/pki/typha/typhaca.key
+        common_name: "Calico Typha CA"
+        subject:
+          CN: "Calico Typha CA"
+        basic_constraints:
+          - CA:TRUE
+
+    - name: Generate OpenSSL CA Typha certificate
+      openssl_certificate:
+        path: /etc/kubernetes/pki/typha/typhaca.crt
+        privatekey_path: /etc/kubernetes/pki/typha/typhaca.key
+        csr_path: /etc/kubernetes/pki/typha/typhaca.csr
+        provider: selfsigned
+
+    - name: check if configmap for calico-typha-ca exists
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      k8s_info:
+        api_version: v1
+        kind: ConfigMap
+        name: calico-typha-ca
+        namespace: kube-system
+      register: configmap_calico_typha_ca_present
+
+    - name: Store the Typha CA certificate in a ConfigMap
+      when: not configmap_calico_typha_ca_present.resources
+      become: yes
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      command: kubectl create configmap -n kube-system calico-typha-ca --from-file=/etc/kubernetes/pki/typha/typhaca.crt
+
+    - name: Generate Typha key
+      openssl_privatekey:
+        owner: root
+        group: root
+        mode: 0600
+        path: /etc/kubernetes/pki/typha/typha.key
+        size: 4096
+
+    - name: CSR for Typha key
+      openssl_csr:
+        owner: root
+        group: root
+        mode: 0600
+        path: /etc/kubernetes/pki/typha/typha.csr
+        privatekey_path: /etc/kubernetes/pki/typha/typha.key
+        common_name: calico-typha
+        subject:
+          CN: calico-typha
+
+    - name: Sign the Typha csr
+      openssl_certificate:
+        owner: root
+        group: root
+        mode: 0600
+        path: /etc/kubernetes/pki/typha/typha.crt
+        csr_path: /etc/kubernetes/pki/typha/typha.csr
+        ownca_path: /etc/kubernetes/pki/typha/typhaca.crt
+        ownca_privatekey_path: /etc/kubernetes/pki/typha/typhaca.key
+        entrust_not_after: "+365d"
+        provider: ownca
+
+    - name: Check if secret for calico-typha-certs exists
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      k8s_info:
+        api_version: v1
+        kind: Secret
+        name: calico-typha-certs
+        namespace: kube-system
+      register: secret_calico_typha_certs_present
+
+    - name: Import the signed Typha certificate
+      when: not secret_calico_typha_certs_present.resources
+      become: yes
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      command: kubectl create secret generic -n kube-system calico-typha-certs --from-file=/etc/kubernetes/pki/typha/typha.key --from-file=/etc/kubernetes/pki/typha/typha.crt
+
+    - name: Check if ServiceAccount for calico-typha exists
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      k8s_info:
+        api_version: v1
+        kind: ServiceAccount
+        name: calico-typha
+        namespace: kube-system
+      register: serviceaccount_calico_typha
+
+    - name: Create a ServiceAccount for Typha
+      when: not serviceaccount_calico_typha.resources
+      become: yes
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      command: kubectl create serviceaccount -n kube-system calico-typha
+
+    - name: Configure Typha RBAC
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      k8s:
+        definition: "{{ lookup('file', item) }}"
+        apply: yes
+        state: present
+        validate:
+          fail_on_error: yes
+          strict: yes
+      loop:
+      - typha-rbac.yaml
+
+    - name: check if the cluster role to the calico-typha ServiceAccount exists
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      k8s_info:
+        api_version: v1
+        kind: ClusterRoleBinding
+        name: calico-typha
+        namespace: kube-system
+      register: clusterrolebinding_calico_typha
+
+    - name: Bind the cluster role to the calico-typha ServiceAccount
+      when: not clusterrolebinding_calico_typha.resources
+      become: yes
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      command: kubectl create clusterrolebinding calico-typha --clusterrole=calico-typha --serviceaccount=kube-system:calico-typha
+
+    - name: Deploy Typha deployment
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      k8s:
+        definition: "{{ lookup('template', item) }}"
+        apply: yes
+        validate:
+          fail_on_error: yes
+          strict: yes
+      loop:
+      - typha-deployment.yaml.j2
+
+    - name: Deploy Typha service
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      k8s:
+        definition: "{{ lookup('file', item) }}"
+        apply: yes
+        validate:
+          fail_on_error: yes
+          strict: yes
+      loop:
+      - typha-service.yaml

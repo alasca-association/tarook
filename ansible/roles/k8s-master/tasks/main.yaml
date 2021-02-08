@@ -198,6 +198,10 @@
     name: "{{ ansible_user }}"
   when: "ansible_user | default(False)"
 
+- name: Setup Calico networking
+  include_tasks: setup_calico.yaml
+  when: k8s_network_plugin == 'calico'
+
 - name: Setup kube-router networking
   include_tasks: setup_kube-router.yaml
   when: k8s_network_plugin == 'kube-router'
@@ -210,7 +214,7 @@
   fail:
     msg: |
       You chose "{{ k8s_network_plugin }}", but that did not work.
-      Currently, we support 'kube-router' and 'flannel'.
+      Currently, we support 'kube-router', 'flannel' and 'calico'.
   # This variable is set by the setup_*.yaml files included above.
   # If you reach this point, none of them was included, probably because of
   # a typo in your k8s_network_plugin variable.

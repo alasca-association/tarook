@@ -101,6 +101,15 @@
       tags: k8s-worker
       gather_facts: false
 
+- name: Deploy Calico
+  hosts: k8s_nodes
+  gather_facts: false
+  roles:
+    - role: calico
+      tags: calico
+      gather_facts: false
+      when: k8s_network_plugin == 'calico'
+
 - name: Spawn the OpenStack k8s Control Plane
   hosts: masters
   become: yes

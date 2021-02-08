@@ -1,0 +1,109 @@
+- name: Generate Calico node secret
+  delegate_to: "{{ groups['masters'] | first }}"
+  become: yes
+  run_once: true
+  block:
+  - name: Generate calico node key
+    openssl_privatekey:
+      owner: root
+      group: root
+      mode: 0600
+      path: /etc/kubernetes/pki/typha/calico-node.key
+      size: 4096
+
+  - name: CSR for Calico node key
+    openssl_csr:
+      owner: root
+      group: root
+      mode: 0600
+      path: /etc/kubernetes/pki/typha/calico-node.csr
+      privatekey_path: /etc/kubernetes/pki/typha/calico-node.key
+      common_name: calico-node
+      subject:
+        CN: calico-node
+
+  - name: Sign the Calico node csr
+    openssl_certificate:
+      owner: root
+      group: root
+      mode: 0600
+      path: /etc/kubernetes/pki/typha/calico-node.crt
+      csr_path: /etc/kubernetes/pki/typha/calico-node.csr
+      ownca_path: /etc/kubernetes/pki/typha/typhaca.crt
+      ownca_privatekey_path: /etc/kubernetes/pki/typha/typhaca.key
+      entrust_not_after: "+365d"
+      provider: ownca
+
+  - name: check if secret for calico-node exists
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s_info:
+      api_version: v1
+      kind: Secret
+      name: calico-node-certs
+      namespace: kube-system
+    register: secret_calico_node_present
+
+  - name: Add Calico node secret
+    when: not secret_calico_node_present.resources
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command: kubectl create secret generic --namespace=kube-system calico-node-certs --from-file=/etc/kubernetes/pki/typha/calico-node.crt --from-file=/etc/kubernetes/pki/typha/calico-node.key
+
+  - name: Check if ServiceAccount for calico-node exists
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s_info:
+      api_version: v1
+      kind: ServiceAccount
+      name: calico-node
+      namespace: kube-system
+    register: serviceaccount_calico_node
+
+  - name: Create a ServiceAccount for calico-node
+    when: not serviceaccount_calico_node.resources
+    become: yes
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command: kubectl create serviceaccount -n kube-system calico-node
+
+  - name: Configure Calico node RBAC
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s:
+      definition: "{{ lookup('file', item) }}"
+      apply: yes
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+    loop:
+    - calico-node-rbac.yaml
+
+  - name: check if the cluster role to the Calico node ServiceAccount exists
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s_info:
+      api_version: v1
+      kind: ClusterRoleBinding
+      name: calico-node
+      namespace: kube-system
+    register: clusterrolebinding_calico_node
+
+  - name: Bind the cluster role to the Calico node ServiceAccount
+    when: not clusterrolebinding_calico_node.resources
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command: kubectl create clusterrolebinding calico-node --clusterrole=calico-node --serviceaccount=kube-system:calico-node
+
+  - name: Deploy Calico node DaemonSet
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s:
+      apply: yes
+      definition: "{{ lookup('template', item) }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+    with_items:
+    - calico-node-daemonset.yaml.j2

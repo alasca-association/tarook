@@ -58,10 +58,10 @@
   roles:
     - role: check-services
       tags: test-service
-    - role: check-block-storage
-      tags: test-cinder-block-storage
-      vars:
-        block_storage_class: csi-sc-cinderplugin
+#    - role: check-block-storage
+#      tags: test-cinder-block-storage
+#      vars:
+#        block_storage_class: csi-sc-cinderplugin
     - role: check-block-storage
       tags: test-ceph-block-storage
       when: "(rook | default(False)) | bool"

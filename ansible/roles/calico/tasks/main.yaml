@@ -1,0 +1,19 @@
+- name: Setup Calico Typha
+  include_tasks: setup_typha.yaml
+
+- name: Setup Calico node
+  include_tasks: setup_calico_node.yaml
+
+
+- name: Apply BGP config
+  delegate_to: "{{ groups['masters'] | first }}"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', item) }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+  with_items:
+  - calico-config.yaml.j2

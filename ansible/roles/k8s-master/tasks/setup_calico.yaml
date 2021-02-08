@@ -1,0 +1,207 @@
+- name: Configure Calico Resources
+  delegate_to: "{{ groups['masters'] | first }}"
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    definition: "{{ lookup('file', item) }}"
+    apply: yes
+    state: present
+    validate:
+      fail_on_error: yes
+      strict: yes
+  loop:
+  - calico-crds.yaml
+
+- name: Install calicoctl
+  become: yes
+  get_url:
+    owner: root
+    group: root
+    mode: 0755
+    url: "https://github.com/projectcalico/calicoctl/releases/download/v{{ calico.version }}/calicoctl-linux-amd64"
+    dest: /usr/local/bin/calicoctl
+
+- name: Ensure that /opt/cni/bin/ exists
+  become: yes
+  file:
+    owner: root
+    group: root
+    mode: 0750
+    recurse: yes
+    path: /opt/cni/bin/
+    state: directory
+
+- name: Install calico
+  become: yes
+  get_url:
+    owner: root
+    group: root
+    mode: 0755
+    url: "https://github.com/projectcalico/cni-plugin/releases/download/v{{ calico.version }}/calico-amd64"
+    dest: /opt/cni/bin/calico
+
+- name: Install calico-ipam
+  become: yes
+  get_url:
+    owner: root
+    group: root
+    mode: 0755
+    url: "https://github.com/projectcalico/cni-plugin/releases/download/v{{ calico.version }}/calico-ipam-amd64"
+    dest: /opt/cni/bin/calico-ipam
+
+- name: Create ippools.yaml
+  become: yes
+  template:
+    owner: root
+    group: root
+    mode: 0644
+    src: ippools.yaml.j2
+    dest: /tmp/ippools.yaml
+
+- name: Get all existing IPPools
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  vars:
+    get_ippools_cmd: !unsafe 'calicoctl get ippools --output go-template="{{range .}}{{range .Items}}{{.ObjectMeta.Name}} {{end}}{{end}}"'
+  command: "{{ get_ippools_cmd }}"
+  register: ippools
+
+- name: Delete all existing IPPools
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  command: calicoctl delete ippool {{ ippools }}
+
+- name: Add ippools
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  command: calicoctl create --filename=/tmp/ippools.yaml
+
+- name: Generate Calico secret
+  become: yes
+  block:
+  - name: Generate calico-cni key
+    openssl_privatekey:
+      owner: root
+      group: root
+      mode: 0600
+      path: /etc/kubernetes/pki/cni.key
+      size: 4096
+  - name: CSR for calico-cni key
+    openssl_csr:
+      owner: root
+      group: root
+      mode: 0600
+      path: /etc/kubernetes/pki/cni.csr
+      privatekey_path: /etc/kubernetes/pki/cni.key
+      common_name: calico-cni
+      subject:
+        CN: calico-cni
+  - name: Sign the calico-cni csr
+    openssl_certificate:
+      owner: root
+      group: root
+      mode: 0600
+      path: /etc/kubernetes/pki/cni.crt
+      csr_path: /etc/kubernetes/pki/cni.csr
+      ownca_path: /etc/kubernetes/pki/ca.crt
+      ownca_privatekey_path: /etc/kubernetes/pki/ca.key
+      entrust_not_after: "+365d"
+      provider: ownca
+
+- name: Create a kubeconfig file for the CNI plugin to use to access Kubernetes
+  become: yes
+  block:
+  - name: Ensure that /etc/cni/net.d/ exists
+    file:
+      owner: root
+      group: root
+      mode: 0750
+      path: /etc/cni/net.d/
+      state: directory
+  - name: Set cluster Kubernetes
+    become: yes
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command: "kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/pki/ca.crt --embed-certs=true --server=https://[{{ private_vip }}]:{{ k8s_apiserver_frontend_port }} --kubeconfig=/etc/cni/net.d/calico-kubeconfig"
+  - name: Set calico-cni credentials
+    become: yes
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command: kubectl config set-credentials calico-cni --client-certificate=/etc/kubernetes/pki/cni.crt --client-key=/etc/kubernetes/pki/cni.key --embed-certs=true --kubeconfig=/etc/cni/net.d/calico-kubeconfig
+  - name: Set calico-cni context
+    become: yes
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command: kubectl config set-context default --cluster=kubernetes --user=calico-cni --kubeconfig=/etc/cni/net.d/calico-kubeconfig
+  - name: Set use config
+    become: yes
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command: kubectl config use-context default --kubeconfig=/etc/cni/net.d/calico-kubeconfig
+  - name: Restrict access to /etc/cni/net.d/calico-kubeconfig
+    file:
+      path: /etc/cni/net.d/calico-kubeconfig
+      owner: root
+      group: root
+      mode: 0400
+
+- name: Configure Calico RBAC
+  delegate_to: "{{ groups['masters'] | first }}"
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    definition: "{{ lookup('file', item) }}"
+    apply: yes
+    state: present
+    validate:
+      fail_on_error: yes
+      strict: yes
+  loop:
+  - calico-rbac.yaml
+
+- name: Check if the role binding for calico-cni in the cluster
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s_info:
+    api_version: v1
+    kind: ClusterRoleBinding
+    name: calico-cni
+    namespace: kube-system
+  register: clusterrolebinding_calico_cni
+
+- name: Bind the cluster role to the calico-cni account
+  when: not clusterrolebinding_calico_cni.resources
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  command: kubectl create clusterrolebinding calico-cni --clusterrole=calico-cni --user=calico-cni
+
+- name: Activate k8s Calico CNI plugin
+  become: yes
+  copy:
+    owner: root
+    group: root
+    mode: 0600
+    src: 10-calico.conflist
+    dest: /etc/cni/net.d/10-calico.conflist
+
+- name: Fetch calico-kubeconfig from the initial master to localhost
+  become: yes
+  fetch:
+    src: /etc/cni/net.d/calico-kubeconfig
+    dest: "{{ etc_dir }}/"
+    flat: yes
+  run_once: yes
+
+- name: Mark networking as configured
+  set_fact:
+    runtime_k8s_networking_configured: true

@@ -1,0 +1,29 @@
+# https://docs.projectcalico.org/networking/bgp
+---
+apiVersion: crd.projectcalico.org/v1
+kind: BGPConfiguration
+metadata:
+  name: calico-config
+spec:
+  nodeToNodeMeshEnabled: false
+
+{% for hostname in groups['gateways'] %}
+{% set peer = hostvars[hostname] %}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: BGPPeer
+metadata:
+  name: peer-{{ hostname }}-ipv4
+spec:
+  peerIP: {{ peer.local_ipv4_address }}
+  asNumber: 65000
+#---
+#apiVersion: crd.projectcalico.org/v1
+#kind: BGPPeer
+#metadata:
+#  name: peer-{{ hostname }}-ipv6
+#spec:
+#  peerIP: {{ peer.local_ipv6_address }}
+#  asNumber: 65000
+{% endfor %}
+---

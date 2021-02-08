@@ -15,6 +15,21 @@
   register: kubectl_output
   changed_when: false
 
+#- name: Create sysconfig directory
+#  become: yes
+#  file:
+#    path: /etc/sysconfig
+#    state: directory
+#
+#- name: 'Create sysconfig/kubelet'
+#  become: yes
+#  template:
+#    src: kubelet-sysconfig.j2
+#    dest: /etc/sysconfig/kubelet
+#    owner: root
+#    group: root
+#    mode: '0644'
+
 - name: Join the K8s cluster
   become: yes
   vars:
@@ -23,4 +38,6 @@
   when: not our_address in kubectl_output.stdout
   command: "{{ kubeadm_out }} --node-name {{ inventory_hostname | quote }}"
 
-
+- name: Setup Calico networking
+  include_tasks: setup_calico.yaml
+  when: k8s_network_plugin == 'calico'
