@@ -4,7 +4,6 @@
 # https://github.com/projectcalico/calico/issues/2923
 
 - name: Apply IPPool(s)
-  run_once: true
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
