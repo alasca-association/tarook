@@ -8,8 +8,10 @@ spec:
   allowedCapabilities: ['NET_ADMIN']
   volumes:
     - configMap
-    - secret
     - emptyDir
+    - projected
+    - secret
+    - downwardAPI
     - hostPath
   hostNetwork: true
   hostPorts:

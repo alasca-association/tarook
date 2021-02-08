@@ -83,14 +83,16 @@
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
-      definition: "{{ lookup('file', 'calico-node-psp.yaml') }}"
+      definition: "{{ lookup('file', item) }}"
       apply: yes
-      state: present
+      state: "present"
       validate:
         fail_on_error: yes
         strict: yes
+    with_items:
+    - calico-node-serviceaccount.yaml
 
-  - name: Configure Calico node RBAC
+  - name: Create calico/node PodSecurityPolicy
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
@@ -100,8 +102,8 @@
       validate:
         fail_on_error: yes
         strict: yes
-    loop:
-    - calico-node-rbac.yaml
+    with_items:
+    - calico-node-psp.yaml
 
   - name: check if the cluster role to the Calico node ServiceAccount exists
     environment:
@@ -112,12 +114,6 @@
       name: calico-node
       namespace: kube-system
     register: clusterrolebinding_calico_node
-
-  - name: Bind the cluster role to the Calico node ServiceAccount
-    when: not clusterrolebinding_calico_node.resources
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command: kubectl create clusterrolebinding calico-node --clusterrole=calico-node --serviceaccount=kube-system:calico-node
 
   # Install Daemon-Set
   # Felix: - Calico per-node daemon
