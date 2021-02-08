@@ -196,36 +196,17 @@
     with_items:
     - typha-psp.yaml
 
-  - name: Create/Generate Cluster-Role-Binding YAML for the calico-typha ServiceAccount
-    become: yes
+  - name: Check if Typha Deployment exists
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    command:
-      argv:
-        - kubectl
-        - create
-        - clusterrolebinding
-        - calico-typha
-        - --clusterrole=calico-typha
-        - --serviceaccount=kube-system:calico-typha
-        - -o
-        - yaml
-        - --dry-run=client
-        - --save-config
-    register: clusterrolebinding_calico_typha_yaml
-  
-  - name: Apply generated Cluter-Role-Binding YAMl for the calico-typha ServiceAccount
-    become: yes
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command:
-      argv:
-        - kubectl
-        - apply
-        - --filename=-
-      stdin: "{{ clusterrolebinding_calico_typha_yaml.stdout }}"
+    k8s_info:
+      api_version: v1
+      kind: Deployment
+      name: calico-typha
+      namespace: kube-system
+    register: calico_typha_deployment_presence # check if this is a rerun. then we need to rollout restart
 
-  - name: Deploy Typha deployment
+  - name: Deploy Typha Deployment
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
@@ -234,7 +215,7 @@
       validate:
         fail_on_error: yes
         strict: yes
-    loop:
+    with_items:
     - typha-deployment.yaml.j2
 
   - name: Deploy Typha service
@@ -246,10 +227,45 @@
       validate:
         fail_on_error: yes
         strict: yes
-    loop:
+    with_items:
     - typha-service.yaml
 
-  - name: Wait for Typha Pods to get ready
+  # We need to restart the Typha Pods on a rerun, because the keys and certificates are updated
+  - name: Restart Typha Pods
+    when: calico_typha_deployment_presence.resources
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command:
+      argv:
+        - kubectl
+        - rollout
+        - restart
+        - deployment
+        - calico-typha
+        - -n
+        - kube-system
+
+  - name: Wait for Rollout Restart of Typha Pods to finish
+    when: calico_typha_deployment_presence.resources
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command:
+      argv:
+        - kubectl
+        - rollout
+        - status
+        - deployment
+        - calico-typha
+        - -n
+        - kube-system
+
+  - name: Give k8s time to terminate remaining Typha Pods
+    when: calico_typha_deployment_presence.resources
+    pause:
+      seconds: 15
+
+  - name: Wait for Typha Pods to get Ready
+    when: not calico_typha_deployment_presence.resources
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     command:

@@ -105,15 +105,15 @@
     with_items:
     - calico-node-psp.yaml
 
-  - name: check if the cluster role to the Calico node ServiceAccount exists
+  - name: Check if calico/node DaemonSet exists
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s_info:
       api_version: v1
-      kind: ClusterRoleBinding
+      kind: DaemonSet
       name: calico-node
       namespace: kube-system
-    register: clusterrolebinding_calico_node
+    register: calico_node_daemonset_presence # check if this is a rerun. then we need to rollout restart
 
   # Install Daemon-Set
   # Felix: - Calico per-node daemon
@@ -131,7 +131,52 @@
     with_items:
     - calico-node-daemonset.yaml.j2
 
-  - name: Wait for calico/node Pods
+  # We need to restart the calico/node Pods on a rerun, because the keys and certificates are updated
+  - name: Restart calico/node Pods
+    when: calico_node_daemonset_presence.resources
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    command: kubectl wait -n kube-system -l k8s-app=calico-node --for=condition=Ready pods --timeout=120s
+    command:
+      argv:
+        - kubectl
+        - rollout
+        - restart
+        - ds
+        - calico-node
+        - -n
+        - kube-system
+
+  - name: Wait for Rollout Restart of calico/node Pods to finish
+    when: calico_node_daemonset_presence.resources
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command:
+      argv:
+        - kubectl
+        - rollout
+        - status
+        - ds
+        - calico-node
+        - -n
+        - kube-system
+
+  - name: Give k8s time to terminate remaining calico/node Pods
+    when: calico_node_daemonset_presence.resources
+    pause:
+      seconds: 15
+
+  - name: Wait for calico/node Pods to get Ready
+    when: not calico_node_daemonset_presence.resources
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command:
+      argv:
+        - kubectl
+        - wait
+        - -n
+        - kube-system
+        - -l
+        - k8s-app=calico-node
+        - --for=condition=Ready
+        - pods
+        - --timeout=120s
