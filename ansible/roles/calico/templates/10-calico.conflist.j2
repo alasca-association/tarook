@@ -6,7 +6,7 @@
       "type": "calico",
       "log_level": "info",
       "datastore_type": "kubernetes",
-      "mtu": 1500,
+      "mtu": {{ calico.mtu }},
       "ipam": {
           "type": "calico-ipam"
       },
