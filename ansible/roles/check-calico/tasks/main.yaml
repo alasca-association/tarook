@@ -7,9 +7,6 @@
 - name: Check CNI Plugins
   include_tasks: test-calico-cni-plugins.yaml
 
-- name: Check that all k8s-nodes are ready
-  include_tasks: test-node-readiness.yaml
-
 - name: Check that calico/node and typha Pods are running
   include_tasks: test-pod-readiness.yaml
 
