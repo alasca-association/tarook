@@ -1,25 +1,27 @@
 - name: Deploy Typha
-  run_once: true
   become: yes
   block:
-  # TODO: we should protect this with a password and store it in a more
-  # secure place
-  # TODO: make certificate regeneration configurable
+  # TODO: we should protect this with a password and store it in a more secure place
+  # We will use mutually authenticated TLS to ensure that calico/node and Typha communicate securely
+  # We generate a certificate authority (CA) and use it to sign a certificate for Typha.
   - name: Ensure that /etc/kubernetes/pki/typha exists
     file:
       path: /etc/kubernetes/pki/typha
       state: directory
+      mode: 0600
+      owner: root
+      group: root
 
-  - name: Generate OpenSSL private key for CA certificate
+  - name: Generate OpenSSL private key for CA certificate of Typha
     openssl_privatekey:
       path: /etc/kubernetes/pki/typha/typhaca.key
       mode: 0600
       owner: root
       group: root
       size: 4096
-      #force: yes # regenerate the key even if it exists. leads to a new key on every run
+      force: yes # regenerate the key even if it exists. leads to a new key on every run
 
-  - name: Generate OpenSSL CA certificate signing request (CSR)
+  - name: Generate OpenSSL Certificate Signing Request (CSR) for CA certificate of Typha
     openssl_csr:
       path: /etc/kubernetes/pki/typha/typhaca.csr
       privatekey_path: /etc/kubernetes/pki/typha/typhaca.key
@@ -33,7 +35,7 @@
       mode: 0600
       force: yes # force regeneration of certificate signing request
 
-  - name: Generate OpenSSL CA Typha certificate
+  - name: Sign OpenSSL Certificate Signing Request (CSR) for CA certificate of Typha
     openssl_certificate:
       path: /etc/kubernetes/pki/typha/typhaca.crt
       privatekey_path: /etc/kubernetes/pki/typha/typhaca.key
@@ -44,9 +46,10 @@
       mode: 0600
       force: yes # generate the certificate even if it already exists
 
-  # kubectl apply needs a yaml and does not work out-of-the-box with configmaps
+  # Store the CA in a ConfigMap that Typha & calico/node will access
+  # kubectl apply needs a yaml and does not work out-of-the-box with configmaps in the cli
+  # because the yaml depends on the typha crt, we do create it via a dry-run
   - name: Create/Generate ConfigMap YAML for the Typha CA certificate
-    become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     command:
@@ -63,9 +66,8 @@
         - yaml
         - --save-config
     register: typha_ca_configmap_yaml
-    
+
   - name: Apply generated ConfigMap YAML for the Typha CA certificate
-    become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     command:
@@ -75,7 +77,20 @@
         - --filename=-
       stdin: "{{ typha_ca_configmap_yaml.stdout }}"
 
-  - name: Generate Typha key
+  - name: Fetch Typha CA key from initial master to localhost
+    fetch:
+      src: "/etc/kubernetes/pki/typha/typhaca.key"
+      dest: "{{ etc_dir }}/"
+      flat: yes
+
+  - name: Fetch Typha CA crt from the initial master to localhost
+    fetch:
+      src: "/etc/kubernetes/pki/typha/typhaca.crt"
+      dest: "{{ etc_dir }}/"
+      flat: yes
+
+  # Create the Typha key and certificate signing request (CSR)
+  - name: Generate OpenSSL private key for Typha
     openssl_privatekey:
       owner: root
       group: root
@@ -84,7 +99,9 @@
       size: 4096
       force: yes # force generation even if it already exists
 
-  - name: CSR for Typha key
+  # The certificate presents the Common Name (CN) as calico-typha. 
+  # calico/node will be configured to verify this name.
+  - name: Generate OpenSSL Certificate Signing Request (CSR) for Typha
     openssl_csr:
       owner: root
       group: root
@@ -94,9 +111,11 @@
       common_name: calico-typha
       subject:
         CN: calico-typha
+      basic_constraints:
+        - CA:TRUE
       force: yes # force the regeneration of the certificate signing request
 
-  - name: Sign the Typha csr
+  - name: Generate/Sign OpenSSl Certificate for Signing Request of Typha
     openssl_certificate:
       owner: root
       group: root
@@ -110,7 +129,6 @@
       force: yes # Generate the certificate even if it already exists
 
   - name: Create/Generate Secret YAML for signed Typha certificate
-    become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     command:
@@ -129,9 +147,8 @@
         - --dry-run=client
         - --save-config
     register: secret_typha_certs_yaml
-  
+
   - name: Apply generated Secret YAML for signed Typha certificate
-    become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     command:
@@ -141,34 +158,17 @@
         - --filename=-
       stdin: "{{ secret_typha_certs_yaml.stdout }}"
 
-  - name: Create/Generate ServiceAccount YAML for calico-typha
-    become: yes
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command:
-      argv:
-        - kubectl
-        - create
-        - serviceaccount
-        - -n
-        - kube-system
-        - calico-typha
-        - -o
-        - yaml
-        - --dry-run=client
-        - --save-config
-    register: serviceaccount_calico_typha_yaml
-  
-  - name: Apply generated Serviceaccount YAML for calico-typha
-    become: yes
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command:
-      argv:
-        - kubectl
-        - apply
-        - --filename=-
-      stdin: "{{ serviceaccount_calico_typha_yaml.stdout }}"
+  - name: Fetch Typha key from initial master to localhost
+    fetch:
+      src: "/etc/kubernetes/pki/typha/typha.key"
+      dest: "{{ etc_dir }}/"
+      flat: yes
+
+  - name: Fetch Typha crt from the initial master to localhost
+    fetch:
+      src: "/etc/kubernetes/pki/typha/typha.crt"
+      dest: "{{ etc_dir }}/"
+      flat: yes
 
   - name: Create Typha Pod-Security-Policy
     become: yes

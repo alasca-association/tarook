@@ -2,15 +2,16 @@
   become: yes
   run_once: true
   block:
-  - name: Generate calico node key
+  - name: Generate OpenSSL private key for calico/node
     openssl_privatekey:
       owner: root
       group: root
       mode: 0600
       path: /etc/kubernetes/pki/typha/calico-node.key
       size: 4096
+      force: yes # regenerate the key even if it exists. leads to a new key on every run
 
-  - name: CSR for Calico node key
+  - name: Generate OpenSSL Certificate Signing Request (CSR) for calico/node
     openssl_csr:
       owner: root
       group: root
@@ -20,8 +21,11 @@
       common_name: calico-node
       subject:
         CN: calico-node
+      basic_constraints:
+        - CA:TRUE
+      force: yes # force regeneration of certificate signing request
 
-  - name: Sign the Calico node csr
+  - name: Generate/Sign OpenSSL Certificate Signing Request for calico/node
     openssl_certificate:
       owner: root
       group: root
@@ -32,19 +36,9 @@
       ownca_privatekey_path: /etc/kubernetes/pki/typha/typhaca.key
       entrust_not_after: "+365d"
       provider: ownca
+      force: yes # force regeneration of certificate
 
-  - name: check if secret for calico-node exists
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s_info:
-      api_version: v1
-      kind: Secret
-      name: calico-node-certs
-      namespace: kube-system
-    register: secret_calico_node_present
-
-  - name: Add Calico node secret
-    when: not secret_calico_node_present.resources
+  - name: Create/Generate Secret YAML for calico/node certificate
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     command:
@@ -57,28 +51,35 @@
         - calico-node-certs
         - --from-file=/etc/kubernetes/pki/typha/calico-node.crt
         - --from-file=/etc/kubernetes/pki/typha/calico-node.key
+        - --dry-run=client
+        - -o
+        - yaml
+    register: calico_node_secret_yaml
+
+  - name: Apply generated Secret YAML for the calico/node certificate
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    command:
+      argv:
+        - kubectl
+        - apply
+        - --filename=-
+      stdin: "{{ calico_node_secret_yaml.stdout }}"
+
+  - name: Fetch calico/node key from initial master to localhost
+    fetch:
+      src: "/etc/kubernetes/pki/typha/calico-node.key"
+      dest: "{{ etc_dir }}/"
+      flat: yes
+
+  - name: Fetch calico/node crt from the initial master to localhost
+    fetch:
+      src: "/etc/kubernetes/pki/typha/calico-node.crt"
+      dest: "{{ etc_dir }}/"
+      flat: yes
 
   # Provision RBAC
-  - name: Check if ServiceAccount for calico-node exists
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s_info:
-      api_version: v1
-      kind: ServiceAccount
-      name: calico-node
-      namespace: kube-system
-    register: serviceaccount_calico_node
-
-  - name: Create a ServiceAccount for calico-node
-    when: not serviceaccount_calico_node.resources
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command: kubectl create serviceaccount -n kube-system calico-node
-
-  - name: Create calico/node Pod-Security-Policy
-    delegate_to: "{{ groups['masters'] | first }}"
-    run_once: true
-    become: yes
+  - name: Create ServiceAccount for calico/node, configure RBAC, ClusterRole, ClusterRoleBinding
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
