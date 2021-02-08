@@ -1,3 +1,8 @@
+# This task may also install calicoctl. calicoctl is currently necessary to configure
+# Calico specific resources as the Calico CRDs are not designed to 
+# be used directly by kubectl. Please refer to the following issue:
+# https://github.com/projectcalico/calico/issues/2923
+
 # Not sure if we need calicoctl on worker nodes in a productive environment
 # However, it is useful for testing, e.g. checking the enabled bgp routes
 #- name: Install calicoctl
