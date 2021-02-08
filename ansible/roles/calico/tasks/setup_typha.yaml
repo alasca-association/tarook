@@ -170,30 +170,31 @@
       dest: "{{ etc_dir }}/"
       flat: yes
 
-  - name: Create Typha Pod-Security-Policy
-    become: yes
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s:
-      definition: "{{ lookup('file', 'typha-psp.yaml') }}"
-      apply: yes
-      state: present
-      validate:
-        fail_on_error: yes
-        strict: yes
-
-  - name: Configure Typha RBAC
+  - name: Create ServiceAccount for calico-typha, configure RBAC, ClusterRole, ClusterRoleBinding
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
-      state: present
+      state: "present"
       validate:
         fail_on_error: yes
         strict: yes
-    loop:
-    - typha-rbac.yaml
+    with_items:
+    - typha-serviceaccount.yaml
+
+  - name: Create Typha PodSecurityPolicy
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s:
+      definition: "{{ lookup('file', item) }}"
+      apply: yes
+      state: "present"
+      validate:
+        fail_on_error: yes
+        strict: yes
+    with_items:
+    - typha-psp.yaml
 
   - name: Create/Generate Cluster-Role-Binding YAML for the calico-typha ServiceAccount
     become: yes

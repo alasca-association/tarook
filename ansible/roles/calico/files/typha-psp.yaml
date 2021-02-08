@@ -7,9 +7,11 @@ spec:
   allowPrivilegeEscalation: false
   allowedCapabilities: []
   volumes:
-    - configMap
-    - secret
-    - emptyDir
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
   hostNetwork: true
   hostPorts:
   - min: 5473
