@@ -13,8 +13,13 @@
 
   block:
   - name: Lookup Calico IPPool
-    shell: >
-      calicoctl get ippools -o json
+    command:
+      argv:
+        - calicoctl
+        - get
+        - ippools
+        - -o
+        - json
     register: calico_stdout
 
   - name: Lookup Kubernetes IPPool and compare it Calico IPPool
