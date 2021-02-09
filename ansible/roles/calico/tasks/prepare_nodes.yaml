@@ -179,7 +179,7 @@
         group: root
         mode: 0750
         # cannot use to_json on the calico.version
-        url: "https://github.com/projectcalico/calicoctl/releases/download/v{{ calico.version }}/calicoctl-linux-amd64"
+        url: "https://github.com/projectcalico/calicoctl/releases/download/v{{ image_versions.calico_version }}/calicoctl-linux-amd64"
         dest: /usr/local/bin/calicoctl
       loop: "{{ groups['masters'] }}"
 
@@ -201,7 +201,8 @@
         owner: root
         group: root
         mode: 0750
-        url: "https://github.com/projectcalico/cni-plugin/releases/download/v{{ calico.version }}/calico-amd64" # cannot use to_json on the calico.version
+        # cannot use to_json on the calico.version
+        url: "https://github.com/projectcalico/cni-plugin/releases/download/v{{ image_versions.calico_version }}/calico-amd64"
         dest: /opt/cni/bin/calico
       loop: "{{ groups['k8s_nodes'] }}"
 
@@ -212,7 +213,8 @@
         owner: root
         group: root
         mode: 0750
-        url: "https://github.com/projectcalico/cni-plugin/releases/download/v{{ calico.version }}/calico-ipam-amd64" # cannot use to_json on the calico.version
+        # cannot use to_json on the calico.version
+        url: "https://github.com/projectcalico/cni-plugin/releases/download/v{{ image_versions.calico_version }}/calico-ipam-amd64"
         dest: /opt/cni/bin/calico-ipam
       loop: "{{ groups['k8s_nodes'] }}"
 
