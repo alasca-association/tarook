@@ -1,111 +1,99 @@
----
 - name: Create a Test-Pod on each k8s-node and check that each Pod can ping each other Pod
   delegate_to: "{{ groups['masters'] | first }}"
   run_once: true
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-
   block:
-  - name: Check if the ServiceAccount calico-busybox-test exists
-    k8s_info:
-      api_version: v1
-      kind: ServiceAccount
-      name: calico-busybox-test
-      namespace: kube-system
-    register: serviceaccount_calico_busybox_test
-
-  - name: Create ServiceAccount calico-busybox-test
-    when: not serviceaccount_calico_busybox_test.resources
-    command: kubectl create serviceaccount -n kube-system calico-busybox-test
-
-  - name: Create Pod-Security-Policy for calico-busybox-test
-    k8s:
-      definition: "{{ lookup('file', 'busybox-psp.yaml') }}"
-      apply: yes
-      state: present
-      validate:
-        fail_on_error: yes
-        strict: yes
-
-  - name: Configure RBAC for ServiceAccount calico-busybox-test
+  - name: Create ServiceAccount for calico-busybox-test, configure RBAC, ClusterRole, ClusterRoleBinding, Apply PSP
     k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
-      state: present
+      state: "present"
       validate:
         fail_on_error: yes
         strict: yes
-    loop:
-    - busybox-rbac.yaml
-
-  - name: Check if the cluster role to the calico-busybox-test ServiceAccount exists
-    k8s_info:
-      api_version: v1
-      kind: ClusterRoleBinding
-      name: calico-busybox-test
-      namespace: kube-system
-    register: clusterrolebinding_calico_busybox_test
-
-  - name: Bind the cluster role to the calico-busybox-test ServiceAccount
-    when: not clusterrolebinding_calico_busybox_test.resources
-    command:
-      argv:
-      - kubectl
-      - create
-      - clusterrolebinding
-      - calico-busybox-test
-      - --clusterrole=calico-busybox-test
-      - --serviceaccount=kube-system:calico-busybox-test
+    with_items:
+    - busybox_serviceaccount.yaml
+    - busybox-psp.yaml
 
   # Using a Deamonset ensures that a Pod is created on each node
   - name: Create the (calico-)BusyBox Daemonset
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
-      definition: "{{ lookup('template', 'calico-busybox-daemonset.yaml.j2') }}"
+      definition: "{{ lookup('template', item) }}"
+      apply: yes
       state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+    with_items:
+    - calico-busybox-daemonset.yaml.j2
 
   - name: Wait for (calico-)BusyBox Pods to get created
-    command: kubectl wait -n kube-system -l k8s-app=calico-busybox-test --for=condition=Ready pods --timeout=60s
+    command:
+      argv:
+        - kubectl
+        - wait
+        - -n
+        - kube-system
+        - -l
+        - k8s-app=calico-busybox-test
+        - --for=condition=Ready
+        - pods
+        - --timeout=60s
 
-  - name: Collect (calico-)BusyBox Pod Names
-    command: kubectl get pods -n kube-system -l k8s-app=calico-busybox-test --no-headers -o custom-columns=":metadata.name"
-    register: calico_busybox_pod_names
-
-  - name: Collect (calico-)BusyBox Pod IPs
-    command: kubectl get pods -n kube-system -l k8s-app=calico-busybox-test --no-headers -o wid -o custom-columns=":status.podIP"
-    register: calico_busybox_pod_ips
+  - name: Collect (calico-)BusyBox Pod Resource Information
+    k8s_info:
+      kind: Pod
+      label_selectors:
+      - k8s-app=calico-busybox-test
+    register: calico_busybox_pod_information
 
   # ping each Pod from each Pod with a nested loop
   - name: ping each BusyBox Pod from every BusyBox Pod
-    command: kubectl -n kube-system exec --stdin --tty {{ item[0] }} -- ping {{ item[1] }} -q -c 5 -w 10
+    command:
+      argv:
+        - kubectl
+        - -n
+        - kube-system
+        - exec
+        - --stdin
+        - --tty
+        - "{{ item[0].metadata.name }}"
+        - --
+        - ping
+        - "{{ item[1].status.podIP }}"
+        - -q
+        - -c
+        - 5
+        - -w
+        - 10
     with_nested:
-      - "{{ calico_busybox_pod_names.stdout_lines }}"
-      - "{{ calico_busybox_pod_ips.stdout_lines }}"
+      - "{{ calico_busybox_pod_information.resources }}"
+      - "{{ calico_busybox_pod_information.resources }}"
+    loop_control:
+      label: "{{ item[0].metadata.name }} --> {{item[1].metadata.name }} ({{ item[1].status.podIP }})"
 
-  # Cleanup
+  # Using a Deamonset ensures that a Pod is created on each node
   - name: Delete the (calico-)BusyBox Daemonset
     k8s:
-      api_version: v1
-      kind: DaemonSet
-      namespace: kube-system
-      name: calico-busybox-test
+      definition: "{{ lookup('template', item) }}"
+      apply: yes
       state: absent
+      validate:
+        fail_on_error: yes
+        strict: yes
+    with_items:
+    - calico-busybox-daemonset.yaml.j2
 
-  - name: Wait for (calico-)BusyBox Pods to get removed
-    command: kubectl wait -n kube-system -l k8s-app=calico-busybox-test --for=delete pods --timeout=120s
-  
-  - name: Remove calico-busybox-test related RBAC and PSP
+  - name: Delete ServiceAccount for calico-busybox-test, configure RBAC, ClusterRole, ClusterRoleBinding, Apply PSP
     k8s:
       definition: "{{ lookup('file', item) }}"
-      state: absent
-      wait: yes
-    loop:
-    - "busybox-psp.yaml"
-    - "busybox-rbac.yaml"
-    tags:
-    - test-cleanup
-  
-  - name: Remove the calico-busybox-test ServiceAccount
-    command: kubectl delete serviceaccount -n kube-system calico-busybox-test
+      apply: yes
+      state: "absent"
+      validate:
+        fail_on_error: yes
+        strict: yes
+    with_items:
+    - busybox_serviceaccount.yaml
+    - busybox-psp.yaml
