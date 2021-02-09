@@ -23,7 +23,6 @@
     register: calico_stdout
 
   - name: Lookup Kubernetes IPPool and compare it Calico IPPool
-    shell: >
-      kubectl describe -n kube-system configmap kube-proxy | grep clusterCIDR | cut -d ' ' -f2
+    shell: kubectl describe -n kube-system configmap kube-proxy | grep clusterCIDR | cut -d ' ' -f2
     register: k8s_configmap
     failed_when: k8s_configmap.stdout_lines != calico_stdout.stdout | from_json | json_query('items[*].spec.cidr') or k8s_configmap.rc not in [0]
