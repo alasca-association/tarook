@@ -181,6 +181,7 @@
         # cannot use to_json on the calico.version
         url: "https://github.com/projectcalico/calicoctl/releases/download/v{{ image_versions.calico_version }}/calicoctl-linux-amd64"
         dest: /usr/local/bin/calicoctl
+        checksum: "{{ calicoctl_binary_checksum }}"
       loop: "{{ groups['masters'] }}"
 
     - name: Ensure that /opt/cni/bin/ exists
@@ -204,6 +205,7 @@
         # cannot use to_json on the calico.version
         url: "https://github.com/projectcalico/cni-plugin/releases/download/v{{ image_versions.calico_version }}/calico-amd64"
         dest: /opt/cni/bin/calico
+        checksum: "{{ calico_binary_checksum }}"
       loop: "{{ groups['k8s_nodes'] }}"
 
     # ToDo: Verify checksum
@@ -216,6 +218,7 @@
         # cannot use to_json on the calico.version
         url: "https://github.com/projectcalico/cni-plugin/releases/download/v{{ image_versions.calico_version }}/calico-ipam-amd64"
         dest: /opt/cni/bin/calico-ipam
+        checksum: "{{ calico_ipam_binary_checksum }}"
       loop: "{{ groups['k8s_nodes'] }}"
 
 # https://docs.projectcalico.org/reference/cni-plugin/configuration#kubernetes-specific

@@ -1,1 +1,14 @@
----
+calico_binary_checksums:
+  "3.17.1": "sha256:ed23b2c5e66d7e1eba5ba4cff4b3f4a09aafdec63787903c4bec463e834d5d11"
+
+calico_binary_checksum: "{{ calico_binary_checksums[image_versions.calico_version] | default('invalid checksum') }}"
+
+calico_ipam_binary_checksums:
+  "3.17.1": "sha256:ed23b2c5e66d7e1eba5ba4cff4b3f4a09aafdec63787903c4bec463e834d5d11"
+
+calico_ipam_binary_checksum: "{{ calico_ipam_binary_checksums[image_versions.calico_version] | default('invalid checksum') }}"
+
+calicoctl_binary_checksums:
+  "3.17.1": "sha256:6fb8ed009a3c1ab49bba0be65609242b8a641ffee262da5e7dd954753054de66"
+
+calicoctl_binary_checksum: "{{ calicoctl_binary_checksums[image_versions.calico_version] | default('invalid checksum') }}"
