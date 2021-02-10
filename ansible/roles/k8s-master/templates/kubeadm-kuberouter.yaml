@@ -98,11 +98,22 @@ spec:
         - name: KUBE_ROUTER_CNI_CONF_FILE
           value: /etc/cni/net.d/10-kuberouter.conflist
         livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 20244
-          initialDelaySeconds: 10
-          periodSeconds: 3
+          exec:
+            command:
+              - sh
+              - -c
+              - |-
+                set -eu;
+                reply=$(curl -s -o /dev/null -w %{http_code} http://127.0.0.1:20244/healthz);
+                if [ "$reply" -lt 200 -o "$reply" -ge 400 ];
+                  then exit 1;
+                fi;
+                if [ "$(ip route show to root {{ k8s_network_pod_subnet | quote }} | grep -v 'kube-bridge' | wc -l)" -lt "$(gobgp neigh | grep -F {{ k8s_network_bgp_worker_as | quote }} | wc -l)" ]; then
+                  exit 1;
+                fi;
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          failureThreshold: 3
         resources:
           requests:
             cpu: 250m
