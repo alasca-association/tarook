@@ -2,7 +2,7 @@
   become: yes
   run_once: true
   block:
-  - name: Generate OpenSSL private key for calico/node
+  - name: Generate a new OpenSSL private key for calico/node
     openssl_privatekey:
       owner: root
       group: root
@@ -11,7 +11,7 @@
       size: 4096
       force: yes # regenerate the key even if it exists. leads to a new key on every run
 
-  - name: Generate OpenSSL Certificate Signing Request (CSR) for calico/node
+  - name: Generate a new OpenSSL Certificate Signing Request (CSR) for calico/node
     openssl_csr:
       owner: root
       group: root
@@ -25,7 +25,7 @@
         - CA:TRUE
       force: yes # force regeneration of certificate signing request
 
-  - name: Generate/Sign OpenSSL Certificate Signing Request for calico/node
+  - name: Generate/Sign a new OpenSSL Certificate Signing Request for calico/node
     openssl_certificate:
       owner: root
       group: root
@@ -38,34 +38,6 @@
       provider: ownca
       force: yes # force regeneration of certificate
 
-  - name: Create/Generate Secret YAML for calico/node certificate
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command:
-      argv:
-        - kubectl
-        - create
-        - secret
-        - generic
-        - --namespace=kube-system
-        - calico-node-certs
-        - --from-file=/etc/kubernetes/pki/typha/calico-node.crt
-        - --from-file=/etc/kubernetes/pki/typha/calico-node.key
-        - --dry-run=client
-        - -o
-        - yaml
-    register: calico_node_secret_yaml
-
-  - name: Apply generated Secret YAML for the calico/node certificate
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command:
-      argv:
-        - kubectl
-        - apply
-        - --filename=-
-      stdin: "{{ calico_node_secret_yaml.stdout }}"
-
   - name: Fetch calico/node key from initial master to localhost
     fetch:
       src: "/etc/kubernetes/pki/typha/calico-node.key"
@@ -77,6 +49,27 @@
       src: "/etc/kubernetes/pki/typha/calico-node.crt"
       dest: "{{ etc_dir }}/"
       flat: yes
+
+  - name: Apply new calico/node secret with calico/node private key and crt
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    vars:
+      calico_node_crt_path: "{{ etc_dir }}/calico-node.crt"
+      calico_node_key_path: "{{ etc_dir }}/calico-node.key"
+    k8s:
+      apply: yes
+      definition:
+        apiVersion: v1
+        data:
+          calico-node.crt: "{{ lookup('file', calico_node_crt_path) | b64encode }}"
+          calico-node.key: "{{ lookup('file', calico_node_key_path) | b64encode }}"
+        kind: Secret
+        metadata:
+          name: calico-node-certs
+          namespace: kube-system
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   # Provision RBAC
   - name: Create ServiceAccount for calico/node, configure RBAC, ClusterRole, ClusterRoleBinding
@@ -166,7 +159,6 @@
       seconds: 15
 
   - name: Wait for calico/node Pods to get Ready
-    when: not calico_node_daemonset_presence.resources
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     command:

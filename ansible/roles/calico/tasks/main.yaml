@@ -10,5 +10,11 @@
 - name: Setup Calico/Node
   include_tasks: setup_calico_node.yaml
 
+- name: Remove key-material of calico/node and Typha as well as Typha CA from initial master node
+  become: yes
+  file:
+    state: absent
+    path: "/etc/kubernetes/pki/typha/"
+
 - name: Setup BGP Routing Information Distribution via BIRD
   include_tasks: setup_bgp.yaml

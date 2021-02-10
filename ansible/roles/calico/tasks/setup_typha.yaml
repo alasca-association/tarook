@@ -1,10 +1,77 @@
-- name: Deploy Typha
+- name: Check local and remote presence of Typha CA
+  block:
+  - name: Check if Typha CA private key is locally present
+    delegate_to: localhost
+    stat:
+      path: "{{ etc_dir }}/typhaca.key"
+    register: typhaca_material_key_local
+
+  - name: Check if Typha CA crt is locally present
+    delegate_to: localhost
+    stat:
+      path: "{{ etc_dir }}/typhaca.crt"
+    register: typhaca_material_crt_local
+
+  - name: Check if Typha CA configmap is present
+    become: yes
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s_info:
+      api_version: v1
+      kind: ConfigMap
+      name: calico-typha-ca
+      namespace: kube-system
+    register: typhaca_configmap
+
+- name: Validate local Typha CA on expiration
+  when: typhaca_material_crt_local.stat.exists
+  block:
+  - name: Collect Expiration information of the Typha CA crt
+    vars:
+      typhaca_path: "{{ etc_dir }}/typhaca.crt"
+    community.crypto.x509_certificate_info:
+      content: "{{ lookup('file', typhaca_path) }}"
+      valid_at:
+        point_1: "+2w"
+        point_2: "+6w"
+    register: typhaca_valid
+
+  # ToDo send a notification
+  - name: Warn if the Typha CA crt expires in less than 6 weeks from now
+    debug:
+      msg: "### WARNING ###\nThe Typha CA certificate expires in less than 6 weeks from now"
+    when: not typhaca_valid.valid_at.point_1
+
+  - name: Fail if the Typha CA crt expires in less than 2 weeks from now
+    fail:
+      msg: "### ERROR ####\nThe Typha CA certificate expires in less than 2 weeks from now"
+    when: not typhaca_valid.valid_at.point_2
+
+- name: Validate local Typha CA against Typha CA in ConfigMap
+  when: typhaca_material_crt_local.stat.exists and typhaca_configmap.resources
+  block:
+  - name: Check that local Typha CA equals the one in the ConfigMap
+    vars:
+     typha_ca_local_content: "{{ lookup('file', '{{ etc_dir }}/typhaca.crt') | trim | to_json }}"
+     typha_ca_configmap_content: "{{ typhaca_configmap.resources[0].data['typhaca.crt'] | trim | to_json }}"
+    debug:
+      msg: "The local Typha CA and the one in the ConfigMap do equal!"
+    when: typha_ca_configmap_content == typha_ca_local_content
+    register: typha_ca_local_remote_equality
+
+  - name: Fail if the local Typha CA and the one in the ConfigMap do not match
+    fail:
+      msg: "The local Typha CA and the one in the ConfigMap do not equal!"
+    when: not typha_ca_local_remote_equality
+
+- name: Generate a new Typha CA
   become: yes
+  when: not typhaca_material_key_local.stat.exists or not typhaca_material_crt_local.stat.exists
   block:
   # TODO: we should protect this with a password and store it in a more secure place
   # We will use mutually authenticated TLS to ensure that calico/node and Typha communicate securely
   # We generate a certificate authority (CA) and use it to sign a certificate for Typha.
-  - name: Ensure that /etc/kubernetes/pki/typha exists
+  - name: Ensure that /etc/kubernetes/pki/typha/ exists
     file:
       path: /etc/kubernetes/pki/typha
       state: directory
@@ -46,37 +113,6 @@
       mode: 0600
       force: yes # generate the certificate even if it already exists
 
-  # Store the CA in a ConfigMap that Typha & calico/node will access
-  # kubectl apply needs a yaml and does not work out-of-the-box with configmaps in the cli
-  # because the yaml depends on the typha crt, we do create it via a dry-run
-  - name: Create/Generate ConfigMap YAML for the Typha CA certificate
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command:
-      argv:
-        - kubectl
-        - create
-        - configmap
-        - -n
-        - kube-system
-        - calico-typha-ca
-        - --from-file=/etc/kubernetes/pki/typha/typhaca.crt
-        - --dry-run=client
-        - -o
-        - yaml
-        - --save-config
-    register: typha_ca_configmap_yaml
-
-  - name: Apply generated ConfigMap YAML for the Typha CA certificate
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command:
-      argv:
-        - kubectl
-        - apply
-        - --filename=-
-      stdin: "{{ typha_ca_configmap_yaml.stdout }}"
-
   - name: Fetch Typha CA key from initial master to localhost
     fetch:
       src: "/etc/kubernetes/pki/typha/typhaca.key"
@@ -89,8 +125,56 @@
       dest: "{{ etc_dir }}/"
       flat: yes
 
+- name: Deploy Typha
+  become: yes
+  block:
+  # Store Typha CA in ConfigMap
+  - name: Apply local Typha CA certificate to ConfigMap
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    vars:
+      typhaca_path: "{{ etc_dir }}/typhaca.crt"
+    k8s:
+      apply: yes
+      definition:
+        apiVersion: v1
+        data:
+          typhaca.crt: |
+            {{ lookup('file', typhaca_path) }}
+        kind: ConfigMap
+        metadata:
+          name: calico-typha-ca
+          namespace: kube-system
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: Ensure that /etc/kubernetes/pki/typha/ exists
+    file:
+      path: /etc/kubernetes/pki/typha
+      state: directory
+      mode: 0600
+      owner: root
+      group: root
+
+  - name: Push Typha CA private key temporary from localhost to initial master
+    copy:
+      src: "{{ etc_dir }}/typhaca.key"
+      dest: "/etc/kubernetes/pki/typha/typhaca.key"
+      owner: root
+      group: root
+      mode: 0600
+
+  - name: Push Typha CA crt temporary from localhost to initial master
+    copy:
+      src: "{{ etc_dir }}/typhaca.crt"
+      dest: "/etc/kubernetes/pki/typha/typhaca.crt"
+      owner: root
+      group: root
+      mode: 0600
+
   # Create the Typha key and certificate signing request (CSR)
-  - name: Generate OpenSSL private key for Typha
+  - name: Generate a new OpenSSL private key for Typha
     openssl_privatekey:
       owner: root
       group: root
@@ -101,7 +185,7 @@
 
   # The certificate presents the Common Name (CN) as calico-typha. 
   # calico/node will be configured to verify this name.
-  - name: Generate OpenSSL Certificate Signing Request (CSR) for Typha
+  - name: Generate a new OpenSSL Certificate Signing Request (CSR) for Typha
     openssl_csr:
       owner: root
       group: root
@@ -115,7 +199,7 @@
         - CA:TRUE
       force: yes # force the regeneration of the certificate signing request
 
-  - name: Generate/Sign OpenSSl Certificate for Signing Request of Typha
+  - name: Generate/Sign a new OpenSSl Certificate for Signing Request of Typha
     openssl_certificate:
       owner: root
       group: root
@@ -128,36 +212,6 @@
       provider: ownca
       force: yes # Generate the certificate even if it already exists
 
-  - name: Create/Generate Secret YAML for signed Typha certificate
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command:
-      argv:
-        - kubectl
-        - create
-        - secret
-        - generic
-        - -n
-        - kube-system
-        - calico-typha-certs
-        - --from-file=/etc/kubernetes/pki/typha/typha.key
-        - --from-file=/etc/kubernetes/pki/typha/typha.crt
-        - -o
-        - yaml
-        - --dry-run=client
-        - --save-config
-    register: secret_typha_certs_yaml
-
-  - name: Apply generated Secret YAML for signed Typha certificate
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command:
-      argv:
-        - kubectl
-        - apply
-        - --filename=-
-      stdin: "{{ secret_typha_certs_yaml.stdout }}"
-
   - name: Fetch Typha key from initial master to localhost
     fetch:
       src: "/etc/kubernetes/pki/typha/typha.key"
@@ -169,6 +223,27 @@
       src: "/etc/kubernetes/pki/typha/typha.crt"
       dest: "{{ etc_dir }}/"
       flat: yes
+
+  - name: Apply new Typha secret with Typha private key and crt
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    vars:
+      typhacrt_path: "{{ etc_dir }}/typha.crt"
+      typhakey_path: "{{ etc_dir }}/typha.key"
+    k8s:
+      apply: yes
+      definition:
+        apiVersion: v1
+        data:
+          typha.crt: "{{ lookup('file', typhacrt_path) | b64encode }}"
+          typha.key: "{{ lookup('file', typhakey_path) | b64encode }}"
+        kind: Secret
+        metadata:
+          name: calico-typha-certs
+          namespace: kube-system
+      validate:
+        fail_on_error: yes
+        strict: yes
 
   - name: Create ServiceAccount for calico-typha, configure RBAC, ClusterRole, ClusterRoleBinding
     environment:
@@ -196,6 +271,7 @@
     with_items:
     - typha-psp.yaml
 
+  # check if this is a rerun. then we need to rollout restart
   - name: Check if Typha Deployment exists
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
@@ -204,7 +280,7 @@
       kind: Deployment
       name: calico-typha
       namespace: kube-system
-    register: calico_typha_deployment_presence # check if this is a rerun. then we need to rollout restart
+    register: calico_typha_deployment_presence
 
   - name: Deploy Typha Deployment
     environment:
@@ -265,7 +341,6 @@
       seconds: 15
 
   - name: Wait for Typha Pods to get Ready
-    when: not calico_typha_deployment_presence.resources
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     command:
