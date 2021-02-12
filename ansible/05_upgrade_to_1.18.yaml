@@ -91,7 +91,7 @@
     delegate_to: localhost
     debug:
       msg: |
-        🥳 Congratualations! 🎉
+        🥳 Congratulations! 🎉
 
           \o/  The upgrade to
            |      {{ next_k8s_version }}
