@@ -63,6 +63,6 @@ image_versions: "{{ image_version_map[k8s_version_minor] }}"
 
 # Variables for Calico-based Networking
 calico_k8s_node_asnumber: 64512 # Used AS Number for the K8s Nodes
-calico_clusterID: 244.0.0.1 # An arbitrary ID used by Calico to identify the Cluster
+calico_bgp_router_id: 244.0.0.1 # An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
 calico_gw_asnumber: 65000 # Used AS Number for the Gateways
 calico_mtu: 1450 # for OpenStack at most 1450
