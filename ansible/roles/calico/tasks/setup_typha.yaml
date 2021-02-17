@@ -32,19 +32,19 @@
     community.crypto.x509_certificate_info:
       content: "{{ lookup('file', typhaca_path) }}"
       valid_at:
-        point_1: "+2w"
-        point_2: "+6w"
+        point_1: "+52w"
+        point_2: "+104w"
     register: typhaca_valid
 
   # ToDo send a notification
-  - name: Warn if the Typha CA crt expires in less than 6 weeks from now
+  - name: Warn if the Typha CA crt expires in less than 2 years from now
     debug:
-      msg: "### WARNING ###\nThe Typha CA certificate expires in less than 6 weeks from now"
+      msg: "### WARNING ###\nThe Typha CA certificate expires in less than 2 years from now"
     when: not typhaca_valid.valid_at.point_1
 
-  - name: Fail if the Typha CA crt expires in less than 2 weeks from now
-    fail:
-      msg: "### ERROR ####\nThe Typha CA certificate expires in less than 2 weeks from now"
+  - name: Warn if the Typha CA crt expires in less than 1 year from now
+    debug:
+      msg: "### ERROR ####\nThe Typha CA certificate expires in less than 1 year from now.\nGenerating a new CA certificate now."
     when: not typhaca_valid.valid_at.point_2
 
 - name: Validate local Typha CA against Typha CA in ConfigMap
@@ -65,82 +65,67 @@
     when: not typha_ca_local_remote_equality
 
 - name: Generate a new Typha CA
-  become: yes
-  when: not typhaca_material_key_local.stat.exists or not typhaca_material_crt_local.stat.exists
+  become: no
+  when: not typhaca_material_key_local.stat.exists or not typhaca_material_crt_local.stat.exists or not typhaca_valid.valid_at.point_2
+  vars:
+    typhaca_crt_path: "{{ etc_dir }}/typhaca.crt"
+    typhaca_key_path: "{{ etc_dir }}/typhaca.key"
+    typhaca_csr_path: "{{ etc_dir }}/typhaca.csr"
   block:
   # TODO: we should protect this with a password and store it in a more secure place
   # We will use mutually authenticated TLS to ensure that calico/node and Typha communicate securely
   # We generate a certificate authority (CA) and use it to sign a certificate for Typha.
-  - name: Ensure that /etc/kubernetes/pki/typha/ exists
-    file:
-      path: /etc/kubernetes/pki/typha
-      state: directory
-      mode: 0600
-      owner: root
-      group: root
-
   - name: Generate OpenSSL private key for CA certificate of Typha
-    openssl_privatekey:
-      path: /etc/kubernetes/pki/typha/typhaca.key
+    delegate_to: localhost
+    community.crypto.openssl_privatekey:
+      path: "{{ typhaca_key_path }}"
       mode: 0600
-      owner: root
-      group: root
       size: 4096
       force: yes # regenerate the key even if it exists. leads to a new key on every run
 
   - name: Generate OpenSSL Certificate Signing Request (CSR) for CA certificate of Typha
+    delegate_to: localhost
     openssl_csr:
-      path: /etc/kubernetes/pki/typha/typhaca.csr
-      privatekey_path: /etc/kubernetes/pki/typha/typhaca.key
+      path: "{{ typhaca_csr_path }}"
+      privatekey_path: "{{ typhaca_key_path }}"
       common_name: "Calico Typha CA"
       subject:
         CN: "Calico Typha CA"
       basic_constraints:
         - CA:TRUE
-      group: root
-      owner: root
-      mode: 0600
+      mode: 0664
       force: yes # force regeneration of certificate signing request
 
   - name: Sign OpenSSL Certificate Signing Request (CSR) for CA certificate of Typha
-    openssl_certificate:
-      path: /etc/kubernetes/pki/typha/typhaca.crt
-      privatekey_path: /etc/kubernetes/pki/typha/typhaca.key
-      csr_path: /etc/kubernetes/pki/typha/typhaca.csr
+    delegate_to: localhost
+    community.crypto.x509_certificate:
+      path: "{{ typhaca_crt_path }}"
+      privatekey_path: "{{ typhaca_key_path }}"
+      csr_path: "{{ typhaca_csr_path }}"
       provider: selfsigned
-      group: root
-      owner: root
-      mode: 0600
+      mode: 0664
       force: yes # generate the certificate even if it already exists
-
-  - name: Fetch Typha CA key from initial master to localhost
-    fetch:
-      src: "/etc/kubernetes/pki/typha/typhaca.key"
-      dest: "{{ etc_dir }}/"
-      flat: yes
-
-  - name: Fetch Typha CA crt from the initial master to localhost
-    fetch:
-      src: "/etc/kubernetes/pki/typha/typhaca.crt"
-      dest: "{{ etc_dir }}/"
-      flat: yes
+      entrust_not_after: "+3653d"
 
 - name: Deploy Typha
-  become: yes
+  vars:
+    typhaca_crt_path: "{{ etc_dir }}/typhaca.crt"
+    typhaca_key_path: "{{ etc_dir }}/typhaca.key"
+    typha_crt_path: "{{ etc_dir }}/typha.crt"
+    typha_csr_path: "{{ etc_dir }}/typha.csr"
+    typha_key_path: "{{ etc_dir }}/typha.key"
   block:
   # Store Typha CA in ConfigMap
   - name: Apply local Typha CA certificate to ConfigMap
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    vars:
-      typhaca_path: "{{ etc_dir }}/typhaca.crt"
     k8s:
       apply: yes
       definition:
         apiVersion: v1
         data:
           typhaca.crt: |
-            {{ lookup('file', typhaca_path) }}
+            {{ lookup('file', typhaca_crt_path) }}
         kind: ConfigMap
         metadata:
           name: calico-typha-ca
@@ -149,49 +134,23 @@
         fail_on_error: yes
         strict: yes
 
-  - name: Ensure that /etc/kubernetes/pki/typha/ exists
-    file:
-      path: /etc/kubernetes/pki/typha
-      state: directory
-      mode: 0600
-      owner: root
-      group: root
-
-  - name: Push Typha CA private key temporary from localhost to initial master
-    copy:
-      src: "{{ etc_dir }}/typhaca.key"
-      dest: "/etc/kubernetes/pki/typha/typhaca.key"
-      owner: root
-      group: root
-      mode: 0600
-
-  - name: Push Typha CA crt temporary from localhost to initial master
-    copy:
-      src: "{{ etc_dir }}/typhaca.crt"
-      dest: "/etc/kubernetes/pki/typha/typhaca.crt"
-      owner: root
-      group: root
-      mode: 0600
-
   # Create the Typha key and certificate signing request (CSR)
   - name: Generate a new OpenSSL private key for Typha
-    openssl_privatekey:
-      owner: root
-      group: root
+    delegate_to: localhost
+    community.crypto.openssl_privatekey:
       mode: 0600
-      path: /etc/kubernetes/pki/typha/typha.key
+      path: "{{ typha_key_path }}"
       size: 4096
       force: yes # force generation even if it already exists
 
   # The certificate presents the Common Name (CN) as calico-typha. 
   # calico/node will be configured to verify this name.
   - name: Generate a new OpenSSL Certificate Signing Request (CSR) for Typha
-    openssl_csr:
-      owner: root
-      group: root
-      mode: 0600
-      path: /etc/kubernetes/pki/typha/typha.csr
-      privatekey_path: /etc/kubernetes/pki/typha/typha.key
+    delegate_to: localhost
+    community.crypto.openssl_csr:
+      mode: 0664
+      path: "{{ typha_csr_path }}"
+      privatekey_path: "{{ typha_key_path }}"
       common_name: calico-typha
       subject:
         CN: calico-typha
@@ -200,43 +159,27 @@
       force: yes # force the regeneration of the certificate signing request
 
   - name: Generate/Sign a new OpenSSl Certificate for Signing Request of Typha
-    openssl_certificate:
-      owner: root
-      group: root
-      mode: 0600
-      path: /etc/kubernetes/pki/typha/typha.crt
-      csr_path: /etc/kubernetes/pki/typha/typha.csr
-      ownca_path: /etc/kubernetes/pki/typha/typhaca.crt
-      ownca_privatekey_path: /etc/kubernetes/pki/typha/typhaca.key
+    delegate_to: localhost
+    community.crypto.x509_certificate:
+      mode: 0664
+      path: "{{ typha_crt_path }}"
+      csr_path: "{{ typha_csr_path }}"
+      ownca_path: "{{ typhaca_crt_path }}"
+      ownca_privatekey_path: "{{ typhaca_key_path }}"
       entrust_not_after: "+365d"
       provider: ownca
       force: yes # Generate the certificate even if it already exists
 
-  - name: Fetch Typha key from initial master to localhost
-    fetch:
-      src: "/etc/kubernetes/pki/typha/typha.key"
-      dest: "{{ etc_dir }}/"
-      flat: yes
-
-  - name: Fetch Typha crt from the initial master to localhost
-    fetch:
-      src: "/etc/kubernetes/pki/typha/typha.crt"
-      dest: "{{ etc_dir }}/"
-      flat: yes
-
   - name: Apply new Typha secret with Typha private key and crt
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    vars:
-      typhacrt_path: "{{ etc_dir }}/typha.crt"
-      typhakey_path: "{{ etc_dir }}/typha.key"
     k8s:
       apply: yes
       definition:
         apiVersion: v1
         data:
-          typha.crt: "{{ lookup('file', typhacrt_path) | b64encode }}"
-          typha.key: "{{ lookup('file', typhakey_path) | b64encode }}"
+          typha.crt: "{{ lookup('file', typha_crt_path) | b64encode }}"
+          typha.key: "{{ lookup('file', typha_key_path) | b64encode }}"
         kind: Secret
         metadata:
           name: calico-typha-certs
