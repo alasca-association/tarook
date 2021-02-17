@@ -4,17 +4,26 @@ metadata:
   name: calico-typha
   namespace: kube-system
   labels:
-    k8s-app: calico-typha
+    app.kubernetes.io/name: calico
+    app.kubernetes.io/component: calico-typha
+    app.kubernetes.io/version: {{ image_versions.calico_version | string | to_json }}
+    app.kubernetes.io/part-of: calico-cni-plugin
 spec:
   replicas: 3
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      k8s-app: calico-typha
+      app.kubernetes.io/name: calico
+      app.kubernetes.io/component: calico-typha
+      app.kubernetes.io/version: {{ image_versions.calico_version | string | to_json }}
+      app.kubernetes.io/part-of: calico-cni-plugin
   template:
     metadata:
       labels:
-        k8s-app: calico-typha
+        app.kubernetes.io/name: calico
+        app.kubernetes.io/component: calico-typha
+        app.kubernetes.io/version: {{ image_versions.calico_version | string | to_json }}
+        app.kubernetes.io/part-of: calico-cni-plugin
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
     spec:

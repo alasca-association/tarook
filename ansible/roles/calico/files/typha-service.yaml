@@ -6,7 +6,8 @@ metadata:
   name: calico-typha
   namespace: kube-system
   labels:
-    k8s-app: calico-typha
+    app.kubernetes.io/name: calico
+    app.kubernetes.io/component: calico-typha
 spec:
   ports:
     - port: 5473
@@ -14,4 +15,5 @@ spec:
       targetPort: calico-typha
       name: calico-typha
   selector:
-    k8s-app: calico-typha
+    app.kubernetes.io/name: calico
+    app.kubernetes.io/component: calico-typha

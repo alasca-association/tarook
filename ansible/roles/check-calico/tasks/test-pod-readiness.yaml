@@ -11,7 +11,8 @@
     k8s_info:
       kind: Pod
       label_selectors: 
-      - k8s-app = calico-node
+      - app.kubernetes.io/name=calico
+      - app.kubernetes.io/component=calico-node
     register: pod_calico_node
     failed_when: ( pod_calico_node.resources[0].status.phase != "Running" ) and ( pod_calico_node.resources[0].status.containerStatuses[0].ready != true )
 
@@ -19,6 +20,7 @@
     k8s_info:
       kind: Pod
       label_selectors: 
-      - k8s-app = calico-typha
+      - app.kubernetes.io/name=calico
+      - app.kubernetes.io/component=calico-typha
     register: pod_calico_tpyha
     failed_when: ( pod_calico_node.resources[0].status.phase != "Running" ) and ( pod_calico_node.resources[0].status.containerStatuses[0].ready != true )

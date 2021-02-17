@@ -168,7 +168,7 @@
         - -n
         - kube-system
         - -l
-        - k8s-app=calico-node
+        - app.kubernetes.io/name=calico,app.kubernetes.io/component=calico-node
         - --for=condition=Ready
         - pods
         - --timeout=120s

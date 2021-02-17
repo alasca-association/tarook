@@ -350,7 +350,7 @@
         - -n
         - kube-system
         - -l
-        - k8s-app=calico-typha
+        - app.kubernetes.io/name=calico,app.kubernetes.io/component=calico-typha
         - --for=condition=Ready
         - pods
         - --timeout=120s

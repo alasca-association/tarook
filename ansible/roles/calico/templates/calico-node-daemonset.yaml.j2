@@ -5,11 +5,17 @@ metadata:
   name: calico-node
   namespace: kube-system
   labels:
-    k8s-app: calico-node
+    app.kubernetes.io/name: calico
+    app.kubernetes.io/component: calico-node
+    app.kubernetes.io/version: {{ image_versions.calico_version | string | to_json }}
+    app.kubernetes.io/part-of: calico-cni-plugin
 spec:
   selector:
     matchLabels:
-      k8s-app: calico-node
+      app.kubernetes.io/name: calico
+      app.kubernetes.io/component: calico-node
+      app.kubernetes.io/version: {{ image_versions.calico_version | string | to_json }}
+      app.kubernetes.io/part-of: calico-cni-plugin
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
@@ -17,7 +23,10 @@ spec:
   template:
     metadata:
       labels:
-        k8s-app: calico-node
+        app.kubernetes.io/name: calico
+        app.kubernetes.io/component: calico-node
+        app.kubernetes.io/version: {{ image_versions.calico_version | string | to_json }}
+        app.kubernetes.io/part-of: calico-cni-plugin
     spec:
       nodeSelector:
         kubernetes.io/os: linux
