@@ -160,6 +160,10 @@ spec:
           hostPath:
             path: /run/xtables.lock
             type: FileOrCreate
+        - name: sysfs
+          hostPath:
+            path: /sys/fs/
+            type: DirectoryOrCreate
         # Used to create per-pod Unix Domain Sockets
         - name: policysync
           hostPath:

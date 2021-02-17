@@ -1,8 +1,34 @@
+- name: Create Custom Calico Resource Definitions
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    definition: "{{ lookup('file', item) }}"
+    apply: yes
+    state: present
+    validate:
+      fail_on_error: yes
+      strict: yes
+  loop:
+  - calico-crds.yaml
+
 - name: Prepare Kubernetes Nodes
   include_tasks: prepare_nodes.yaml
 
 - name: Setup IPPools
   include_tasks: setup_ippools.yaml
+
+- name: Apply calico-kube-controller
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    definition: "{{ lookup('template', item) }}"
+    apply: yes
+    validate:
+      fail_on_error: yes
+      strict: yes
+  with_items:
+  - calico-kube-controller.yaml.j2
 
 - name: Setup Calico Typha
   include_tasks: setup_typha.yaml

@@ -6,20 +6,6 @@
 # be used directly by kubectl. Please refer to the following issue:
 # https://github.com/projectcalico/calico/issues/2923
 
-- name: Configure Calico Resources
-  become: yes
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
-    definition: "{{ lookup('file', item) }}"
-    apply: yes
-    state: present
-    validate:
-      fail_on_error: yes
-      strict: yes
-  loop:
-    - calico-crds.yaml
-
 - name: Provision Kubernetes user account for the calico cni plugin
   run_once: yes
   become: yes
