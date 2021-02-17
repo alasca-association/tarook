@@ -1,0 +1,96 @@
+# If you plan to upgrade calico resources:
+# curl https://docs.projectcalico.org/manifests/calico.yaml -O
+# Make sure to only apply the CustomResourceDefinitions
+
+- name: Create Custom Calico Resource Definitions
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    definition: "{{ lookup('file', item) }}"
+    apply: yes
+    state: present
+    validate:
+      fail_on_error: yes
+      strict: yes
+  loop:
+  - calico-crds.yaml
+
+- name: Create calico-kubeconfig and push it to all nodes
+  become: no
+  environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+  vars:
+    local_calico_cni_key_path: "{{ etc_dir }}/calico-cni.key"
+    local_calico_cni_csr_path: "{{ etc_dir }}/calico-cni.csr"
+    local_calico_cni_crt_path: "{{ etc_dir }}/calico-cni.crt"
+    local_own_ca_crt_path: "{{ etc_dir }}/ca.crt"
+    local_own_ca_key_path: "{{ etc_dir }}/ca.key"
+  block:
+    - name: Generate OpenSSL private key for CA certificate of calico-cni
+      delegate_to: localhost
+      community.crypto.openssl_privatekey:
+        owner: "{{ lookup('env', 'USER') }}"
+        group: "{{ lookup('env', 'USER') }}"
+        mode: 0664
+        path: "{{ local_calico_cni_key_path }}"
+        size: 4096
+
+    - name: Generate OpenSSL CA Certificate Signing Request (CSR) for calico-cni
+      delegate_to: localhost
+      community.crypto.openssl_csr:
+        owner: "{{ lookup('env', 'USER') }}"
+        group: "{{ lookup('env', 'USER') }}"
+        mode: 0664
+        path: "{{ local_calico_cni_csr_path }}"
+        privatekey_path: "{{ local_calico_cni_key_path }}"
+        common_name: calico-cni
+        subject:
+          CN: calico-cni
+
+    - name: Generate/Sign OpenSSL CA calico-cni Certificate Signing Request (CSR)
+      delegate_to: localhost
+      community.crypto.x509_certificate:
+        owner: "{{ lookup('env', 'USER') }}"
+        group: "{{ lookup('env', 'USER') }}"
+        mode: 0664
+        path: "{{ local_calico_cni_crt_path }}"
+        csr_path: "{{ local_calico_cni_csr_path }}"
+        ownca_path: "{{ local_own_ca_crt_path }}"
+        ownca_privatekey_path: "{{ local_own_ca_key_path }}"
+        entrust_not_after: "+3653d"
+        provider: ownca
+
+    - name: Ensure that /etc/cni/net.d/ exists on all k8s_nodes
+      become: yes
+      delegate_to: "{{ item }}"
+      file:
+        owner: root
+        group: root
+        mode: 0640
+        path: /etc/cni/net.d/
+        state: directory
+      loop: "{{ groups['k8s_nodes'] }}"
+
+    - name: Push calico-kubeconfig from localhost to k8s_nodes
+      become: yes
+      delegate_to: "{{ item }}"
+      template:
+        owner: root
+        group: root
+        mode: 0400
+        src: "calico-kubeconfig.j2"
+        dest: /etc/cni/net.d/calico-kubeconfig
+      loop: "{{ groups['k8s_nodes'] }}"
+
+- name: Create user for calico-cni, configure RBAC and create RoleBinding
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    definition: "{{ lookup('file', item) }}"
+    apply: yes
+    state: "present"
+    validate:
+      fail_on_error: yes
+      strict: yes
+  loop:
+    - calico-cni-user.yaml

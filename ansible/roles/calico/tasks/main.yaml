@@ -1,16 +1,5 @@
-- name: Create Custom Calico Resource Definitions
-  become: yes
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
-    definition: "{{ lookup('file', item) }}"
-    apply: yes
-    state: present
-    validate:
-      fail_on_error: yes
-      strict: yes
-  loop:
-  - calico-crds.yaml
+- name: Setup Preliminaries
+  include_tasks: setup_preliminaries.yaml
 
 - name: Prepare Kubernetes Nodes
   include_tasks: prepare_nodes.yaml
