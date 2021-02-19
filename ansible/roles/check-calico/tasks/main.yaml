@@ -1,9 +1,6 @@
 - name: Check that calicoctl is installed on all master nodes
   include_tasks: test-calicoctl.yaml
 
-- name: Compare podSubnet with Calico IPPool
-  include_tasks: test-pod-ippool.yaml
-
 - name: Check CNI Plugins
   include_tasks: test-calico-cni-plugins.yaml
 

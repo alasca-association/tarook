@@ -3,7 +3,7 @@ kind: IPPool
 metadata:
   name: calico-ippool
 spec:
-  cidr: 10.244.0.0/16
+  cidr: "{{ k8s_network_pod_subnet }}"
   ipipMode: Never
   natOutgoing: true
   disabled: false

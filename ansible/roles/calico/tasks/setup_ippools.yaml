@@ -13,6 +13,6 @@
       - calicoctl
       - apply
       - --filename=-
-    stdin: '{{ lookup("file", "ippools.yaml") }}'
+    stdin: '{{ lookup("template", "ippools.yaml.j2") }}'
   register: ippool_creation
   changed_when: "'Successfully created' and 'IPPool' in ippool_creation.stdout"
