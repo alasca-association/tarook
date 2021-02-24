@@ -5,28 +5,31 @@
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
-  - name: Create ServiceAccount for calico-busybox-test, configure RBAC, ClusterRole, ClusterRoleBinding, Apply PSP
+  - name: Create Namespace for calico Pod-to-Pod Connectivity-Check
     k8s:
-      definition: "{{ lookup('file', item) }}"
+      definition:
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: "{{ check_calico_namespace }}"
+          labels:
+            calico-test: "{{ check_calico_namespace }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+      state: present
+
+  - name: Create ServiceAccount, RBAC, PSP, and DaemonSet for calico-busybox-test
+    k8s:
+      definition: "{{ lookup('template', item) }}"
       apply: yes
       state: "present"
       validate:
         fail_on_error: yes
         strict: yes
     with_items:
-    - busybox_serviceaccount.yaml
-    - busybox-psp.yaml
-
-  # Using a Deamonset ensures that a Pod is created on each node
-  - name: Create the (calico-)BusyBox Daemonset
-    k8s:
-      definition: "{{ lookup('template', item) }}"
-      apply: yes
-      state: present
-      validate:
-        fail_on_error: yes
-        strict: yes
-    with_items:
+    - busybox_serviceaccount.yaml.j2
+    - busybox-psp.yaml.j2
     - calico-busybox-daemonset.yaml.j2
 
   - name: Wait for (calico-)BusyBox Pods to get created
@@ -35,7 +38,7 @@
         - kubectl
         - wait
         - -n
-        - kube-system
+        - '{{ check_calico_namespace }}'
         - -l
         - k8s-app=calico-busybox-test
         - --for=condition=Ready
@@ -55,7 +58,7 @@
       argv:
         - kubectl
         - -n
-        - kube-system
+        - '{{ check_calico_namespace }}'
         - exec
         - --stdin
         - --tty
@@ -75,7 +78,7 @@
       label: "{{ item[0].metadata.name }} --> {{item[1].metadata.name }} ({{ item[1].status.podIP }})"
 
   # Using a Deamonset ensures that a Pod is created on each node
-  - name: Delete the (calico-)BusyBox Daemonset
+  - name: Delete the (calico-)BusyBox DaemonSet, ServiceAccount and PSP
     k8s:
       definition: "{{ lookup('template', item) }}"
       apply: yes
@@ -85,15 +88,16 @@
         strict: yes
     with_items:
     - calico-busybox-daemonset.yaml.j2
+    - busybox_serviceaccount.yaml.j2
+    - busybox-psp.yaml.j2
 
-  - name: Delete ServiceAccount for calico-busybox-test, configure RBAC, ClusterRole, ClusterRoleBinding, Apply PSP
+  - name: Delete Namespace for calico Pod-to-Pod Connectivity-Check
     k8s:
-      definition: "{{ lookup('file', item) }}"
-      apply: yes
-      state: "absent"
+      api_version: v1
+      name: "{{ check_calico_namespace }}"
+      kind: Namespace
+      state: absent
+      wait: yes
       validate:
         fail_on_error: yes
         strict: yes
-    with_items:
-    - busybox_serviceaccount.yaml
-    - busybox-psp.yaml

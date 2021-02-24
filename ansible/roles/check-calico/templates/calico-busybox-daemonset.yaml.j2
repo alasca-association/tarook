@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: calico-busybox-test
-  namespace: kube-system
+  namespace: "{{ check_calico_namespace }}"
   labels:
     k8s-app: calico-busybox-test
 spec:
