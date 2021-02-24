@@ -15,6 +15,8 @@
     tags: update_system
   - role: configure-automatic-system-updates
     tags: configure-automatic-system-updates
+  - role: monitoring-system-update-status
+    tags: monitoring-system-update-status
 
 - name: Upgrade the system
   hosts: node_with_k8s_installed
@@ -140,7 +142,6 @@
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
-  - vars/monitor_node_status.yaml
   roles:
   - role: k8s-rook
     tags: rook
@@ -148,6 +149,3 @@
     tags: k8s-monitoring
   - role: device-plugin
     tags: device-plugin
-  - role: monitoring-system-update-status
-    tags: monitoring-system-update-status
-
