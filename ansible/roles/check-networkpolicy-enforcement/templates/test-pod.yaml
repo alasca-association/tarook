@@ -16,7 +16,7 @@ spec:
       set -e
       # we need to give kube-router a moment to push the changes to all
       # nodes.
-      sleep 5
-      curl -sS -o/dev/null{% for ip in service_pod_ips %} {{ "http://%s" | format(ip) | quote }}{% endfor %}
+      sleep 10
+      curl -sS -o /dev/null --connect-timeout 20 {% for ip in service_pod_ips %} {{ "http://%s" | format(ip) | quote }}{% endfor %}
 
   restartPolicy: Never

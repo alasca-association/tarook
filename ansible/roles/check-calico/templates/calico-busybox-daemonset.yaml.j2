@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: calico-busybox-test
+  namespace: "{{ check_calico_namespace }}"
+  labels:
+    k8s-app: calico-busybox-test
+spec:
+  selector:
+    matchLabels:
+      k8s-app: calico-busybox-test
+  template: 
+    metadata:
+      labels:
+        k8s-app: calico-busybox-test
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: calico-busybox-test
+        image: busybox
+        command: ["sleep", "infinity"]
+      serviceAccountName: calico-busybox-test

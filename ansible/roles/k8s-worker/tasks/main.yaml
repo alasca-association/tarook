@@ -22,5 +22,3 @@
     kubeadm_out: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
   when: not our_address in kubectl_output.stdout
   command: "{{ kubeadm_out }} --node-name {{ inventory_hostname | quote }}"
-
-

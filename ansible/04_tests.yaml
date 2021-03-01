@@ -29,6 +29,15 @@
       tags:
       - test-ccm
 
+- name: Test Calico CNI Support
+  hosts: "{{ groups['k8s_nodes'] }}"
+  gather_facts: no
+  roles:
+  - role: check-calico
+    tags:
+    - check-calico
+    when: k8s_network_plugin == 'calico'
+
 # Ugly: assuming naming scheme here.
 - name: Annotate worker nodes
   hosts: "{{ groups['masters'] | first }}"
@@ -113,7 +122,7 @@
   - role: check-networkpolicy-enforcement
     tags:
     - test-networkpolicy-enforcement
-    when: "(k8s_network_plugin | default('flannel')) == 'kube-router'"
+    when: "(k8s_network_plugin | default('flannel')) in ['kube-router', 'calico']"
 
 - name: Test GPU support
   hosts: "{{ groups['masters'] | first }}"

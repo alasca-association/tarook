@@ -1,0 +1,17 @@
+# This task checks calicoctl. calicoctl is currently necessary to configure
+# Calico specific resources as the Calico CRDs are not designed to 
+# be used directly by kubectl. Please refer to the following issue:
+# https://github.com/projectcalico/calico/issues/2923
+
+- name: Check that calicoctl is installed on master nodes
+  run_once: true
+  become: yes
+
+  block:
+  - name: Check /usr/local/bin/calicoctl
+    delegate_to: "{{ item }}"
+    stat:
+      path: /usr/local/bin/calicoctl
+    register: calicoctl_stat_result
+    failed_when: "( calicoctl_stat_result.stat.exists != true ) or ( calicoctl_stat_result.stat.mode != '0750' )"
+    loop: "{{ groups['masters'] }}"

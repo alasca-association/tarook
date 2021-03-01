@@ -6,3 +6,11 @@
 - name: Remove BGP configuration for kube-router
   include_tasks: clear_kube-router.yaml
   when: k8s_network_plugin != 'kube-router'
+
+- name: Setup BGP configuration for calico
+  include_tasks: setup_calico_bgp.yaml
+  when: k8s_network_plugin == 'calico'
+
+- name: Remove BGP configuration for calico
+  include_tasks: clear_calico_bgp.yaml
+  when: k8s_network_plugin != 'calico'

@@ -1,0 +1,18 @@
+# This task uses calicoctl. This is currently necessary to configure
+# Calico specific resources as the Calico CRDs are not designed to 
+# be used directly by kubectl. Please refer to the following issue:
+# https://github.com/projectcalico/calico/issues/2923
+
+- name: Apply IPPool(s)
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  command:
+    argv:
+      - calicoctl
+      - apply
+      - --filename=-
+    stdin: '{{ lookup("template", "ippools.yaml.j2") }}'
+  register: ippool_creation
+  changed_when: "'Successfully created' and 'IPPool' in ippool_creation.stdout"

@@ -35,6 +35,7 @@ image_version_map:
       ceph: "v14.2.6"
       operator: "v1.2.3"
       toolbox: "v1.2.3"
+    calico_version: 3.17.1 # Version of Calico binaries and images to be deployed
 
   "1.18":
     ch_k8s_lbaas: "0.3.2"
@@ -56,5 +57,12 @@ image_version_map:
       ceph: "v14.2.6"
       operator: "v1.2.3"
       toolbox: "v1.2.3"
+    calico_version: "3.17.1" # Version of Calico binaries and images to be deployed
 
 image_versions: "{{ image_version_map[k8s_version_minor] }}"
+
+# Variables for Calico-based Networking
+calico_k8s_node_asnumber: 64512 # Used AS Number for the K8s Nodes
+calico_bgp_router_id: 244.0.0.1 # An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
+calico_gw_asnumber: 65000 # Used AS Number for the Gateways
+calico_mtu: 1450 # for OpenStack at most 1450

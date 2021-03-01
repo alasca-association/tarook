@@ -1,0 +1,103 @@
+- name: Create a Test-Pod on each k8s-node and check that each Pod can ping each other Pod
+  delegate_to: "{{ groups['masters'] | first }}"
+  run_once: true
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name: Create Namespace for calico Pod-to-Pod Connectivity-Check
+    k8s:
+      definition:
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: "{{ check_calico_namespace }}"
+          labels:
+            calico-test: "{{ check_calico_namespace }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+      state: present
+
+  - name: Create ServiceAccount, RBAC, PSP, and DaemonSet for calico-busybox-test
+    k8s:
+      definition: "{{ lookup('template', item) }}"
+      apply: yes
+      state: "present"
+      validate:
+        fail_on_error: yes
+        strict: yes
+    with_items:
+    - busybox_serviceaccount.yaml.j2
+    - busybox-psp.yaml.j2
+    - calico-busybox-daemonset.yaml.j2
+
+  - name: Wait for (calico-)BusyBox Pods to get created
+    command:
+      argv:
+        - kubectl
+        - wait
+        - -n
+        - '{{ check_calico_namespace }}'
+        - -l
+        - k8s-app=calico-busybox-test
+        - --for=condition=Ready
+        - pods
+        - --timeout=60s
+
+  - name: Collect (calico-)BusyBox Pod Resource Information
+    k8s_info:
+      kind: Pod
+      label_selectors:
+      - k8s-app=calico-busybox-test
+    register: calico_busybox_pod_information
+
+  # ping each Pod from each Pod with a nested loop
+  - name: ping each BusyBox Pod from every BusyBox Pod
+    command:
+      argv:
+        - kubectl
+        - -n
+        - '{{ check_calico_namespace }}'
+        - exec
+        - --stdin
+        - --tty
+        - "{{ item[0].metadata.name }}"
+        - --
+        - ping
+        - "{{ item[1].status.podIP }}"
+        - -q
+        - -c
+        - 5
+        - -w
+        - 10
+    with_nested:
+      - "{{ calico_busybox_pod_information.resources }}"
+      - "{{ calico_busybox_pod_information.resources }}"
+    loop_control:
+      label: "{{ item[0].metadata.name }} --> {{item[1].metadata.name }} ({{ item[1].status.podIP }})"
+
+  # Using a Deamonset ensures that a Pod is created on each node
+  - name: Delete the (calico-)BusyBox DaemonSet, ServiceAccount and PSP
+    k8s:
+      definition: "{{ lookup('template', item) }}"
+      apply: yes
+      state: absent
+      validate:
+        fail_on_error: yes
+        strict: yes
+    with_items:
+    - calico-busybox-daemonset.yaml.j2
+    - busybox_serviceaccount.yaml.j2
+    - busybox-psp.yaml.j2
+
+  - name: Delete Namespace for calico Pod-to-Pod Connectivity-Check
+    k8s:
+      api_version: v1
+      name: "{{ check_calico_namespace }}"
+      kind: Namespace
+      state: absent
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes

@@ -210,8 +210,9 @@
   fail:
     msg: |
       You chose "{{ k8s_network_plugin }}", but that did not work.
-      Currently, we support 'kube-router' and 'flannel'.
+      Currently, we support 'kube-router', 'flannel' and 'calico'.
   # This variable is set by the setup_*.yaml files included above.
   # If you reach this point, none of them was included, probably because of
   # a typo in your k8s_network_plugin variable.
-  when: not (runtime_k8s_networking_configured | default(False))
+  # If calico is chosen, the network setup will be done after setting up the k8s nodes
+  when: not (runtime_k8s_networking_configured | default(False)) and not k8s_network_plugin == 'calico'

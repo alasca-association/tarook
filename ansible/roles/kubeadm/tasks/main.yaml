@@ -6,6 +6,7 @@
     name:
       - curl
       - apt-transport-https
+      - gnupg
   when: ansible_pkg_mgr == 'apt'
 
 - name: Add Google's K8s repository (apt)
