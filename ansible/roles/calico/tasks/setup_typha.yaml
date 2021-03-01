@@ -29,8 +29,9 @@
   - name: Collect Expiration information of the Typha CA crt
     vars:
       typhaca_path: "{{ etc_dir }}/typhaca.crt"
-    community.crypto.x509_certificate_info:
-      content: "{{ lookup('file', typhaca_path) }}"
+    delegate_to: localhost
+    openssl_certificate_info:
+      path: "{{ typhaca_path }}"
       valid_at:
         point_1: "+52w"
         point_2: "+104w"
@@ -77,7 +78,7 @@
   # We generate a certificate authority (CA) and use it to sign a certificate for Typha.
   - name: Generate OpenSSL private key for CA certificate of Typha
     delegate_to: localhost
-    community.crypto.openssl_privatekey:
+    openssl_privatekey:
       path: "{{ typhaca_key_path }}"
       mode: 0600
       size: 4096
@@ -98,7 +99,7 @@
 
   - name: Sign OpenSSL Certificate Signing Request (CSR) for CA certificate of Typha
     delegate_to: localhost
-    community.crypto.x509_certificate:
+    openssl_certificate:
       path: "{{ typhaca_crt_path }}"
       privatekey_path: "{{ typhaca_key_path }}"
       csr_path: "{{ typhaca_csr_path }}"
@@ -137,7 +138,7 @@
   # Create the Typha key and certificate signing request (CSR)
   - name: Generate a new OpenSSL private key for Typha
     delegate_to: localhost
-    community.crypto.openssl_privatekey:
+    openssl_privatekey:
       mode: 0600
       path: "{{ typha_key_path }}"
       size: 4096
@@ -147,7 +148,7 @@
   # calico/node will be configured to verify this name.
   - name: Generate a new OpenSSL Certificate Signing Request (CSR) for Typha
     delegate_to: localhost
-    community.crypto.openssl_csr:
+    openssl_csr:
       mode: 0664
       path: "{{ typha_csr_path }}"
       privatekey_path: "{{ typha_key_path }}"
@@ -160,7 +161,7 @@
 
   - name: Generate/Sign a new OpenSSl Certificate for Signing Request of Typha
     delegate_to: localhost
-    community.crypto.x509_certificate:
+    openssl_certificate:
       mode: 0664
       path: "{{ typha_crt_path }}"
       csr_path: "{{ typha_csr_path }}"

@@ -28,14 +28,14 @@
   block:
     - name: Generate OpenSSL private key for CA certificate of calico-cni
       delegate_to: localhost
-      community.crypto.openssl_privatekey:
+      openssl_privatekey:
         mode: 0600
         path: "{{ local_calico_cni_key_path }}"
         size: 4096
 
     - name: Generate OpenSSL CA Certificate Signing Request (CSR) for calico-cni
       delegate_to: localhost
-      community.crypto.openssl_csr:
+      openssl_csr:
         mode: 0664
         path: "{{ local_calico_cni_csr_path }}"
         privatekey_path: "{{ local_calico_cni_key_path }}"
@@ -45,7 +45,7 @@
 
     - name: Generate/Sign OpenSSL CA calico-cni Certificate Signing Request (CSR)
       delegate_to: localhost
-      community.crypto.x509_certificate:
+      openssl_certificate:
         mode: 0664
         path: "{{ local_calico_cni_crt_path }}"
         csr_path: "{{ local_calico_cni_csr_path }}"
