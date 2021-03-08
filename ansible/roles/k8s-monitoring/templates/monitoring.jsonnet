@@ -71,6 +71,10 @@ local kp =
         ],
         replicas: {{ monitoring_prometheus_replicas }}
       },
+      versions+:: {
+        prometheusAdapter: '{{ monitoring_prometheus_adapter_version }}',
+        grafana: '{{ monitoring_grafana_version }}',
+      },
 
       grafana+:: {
 
@@ -712,7 +716,6 @@ local kp_with_patched_grafana = kp + {
           spec+: {
             containers: [
                 container + {
-                  "image" : "grafana/grafana:{{ monitoring_grafana_version }}",
                 {% if monitoring_grafana_customer_dashboards | bool %}
                   volumeMounts+: [
                     {
