@@ -71,6 +71,9 @@ local kp =
         ],
         replicas: {{ monitoring_prometheus_replicas }}
       },
+      versions+:: {
+        prometheusAdapter: '{{ monitoring_prometheus_adapter_version }}'
+      },
 
       grafana+:: {
 

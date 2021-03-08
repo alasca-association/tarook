@@ -91,3 +91,5 @@ monitoring_thanos_retention_resolution_1h: "180d"
 monitoring_internet_probe: false
 # List of hosts to probe. Override in config.toml
 monitoring_internet_probe_targets: []
+
+monitoring_prometheus_adapter_version: "v0.8.2"
