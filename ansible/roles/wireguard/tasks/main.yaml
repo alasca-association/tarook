@@ -146,6 +146,14 @@
     group: root
     mode: 0640
 
+- name: Enable IPv6 forwarding in wireguard.conf
+  become: yes
+  lineinfile:
+    path: /etc/sysctl.d/wireguard.conf
+    state: present
+    line: net.ipv6.conf.all.forwarding=1
+  when: dualstack_support
+
 - name: Load /etc/sysctl.d/wireguard.conf on the wireguard VPN server
   become: yes
   command: sysctl -p /etc/sysctl.d/wireguard.conf
