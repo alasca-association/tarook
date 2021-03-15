@@ -12,6 +12,10 @@ subnet_cidr = "172.30.154.0/24"
 #workers = 3
 #worker_flavors = ["L", "M", "L"]
 #enable_az_management = false
+# Enable DualStack support by setting this variable to true (default: false)
+#dualstack_support = false
+# You need to specify a proper subnet for the cluster
+#subnet_v6_cidr = "fd00::/120"
 
 # If true, create block volume for each instance and boot from there.
 # Equivalent to `openstack server create --boot-from-volume […]. (`false` by default)

@@ -12,6 +12,16 @@ variable "subnet_cidr" {
   type = string
 }
 
+variable "subnet_v6_cidr" {
+  type = string
+}
+
+variable "dualstack_support" {
+  description = "If set to true, dualstack support related resources will be (re-)created"
+  type = bool
+  default = false
+}
+
 variable "ssh_cidrs" {
   type    = list(string)
   default = ["0.0.0.0/0"]

@@ -8,6 +8,13 @@ resource "openstack_networking_port_v2" "worker" {
     subnet_id = openstack_networking_subnet_v2.cluster_subnet.id
   }
 
+  dynamic "fixed_ip" {
+    for_each = var.dualstack_support ? [1] : []
+    content {
+        subnet_id = openstack_networking_subnet_v2.cluster_v6_subnet[0].id
+    }
+  }
+
   port_security_enabled = false
 }
 
