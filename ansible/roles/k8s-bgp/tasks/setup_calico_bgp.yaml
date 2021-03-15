@@ -1,5 +1,5 @@
 ---
-- name: Configure BIRD for calico
+- name: Configure BIRD for calico (IPv4)
   template:
     src: bird-calico.conf
     dest: /etc/bird.d/10-k8s-calico.conf
@@ -7,3 +7,13 @@
     group: bird
     mode: "u=rw,g=r,o-rwx"
   notify: restart bird
+
+- name: Configure BIRD for calico (IPv6)
+  template:
+    src: bird-calico-v6.conf
+    dest: /etc/birdv6.d/10-k8s-calico-ipv6.conf
+    owner: root
+    group: bird
+    mode: "u=rw,g=r,o-rwx"
+  notify: restart bird6
+  when: dualstack_support

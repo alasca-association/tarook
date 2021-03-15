@@ -36,5 +36,35 @@
     name: bird6
     enabled: no
     state: stopped
+  when: not dualstack_support
   tags:
   - bird
+
+- name: Initialize config of bird6 for IPv6 support
+  become: yes
+  when: dualstack_support
+  tags:
+  - bird6
+  block:
+  - name: Create config for bird6 in /etc/bird/
+    template:
+      src: bird6.conf
+      dest: /etc/bird/bird6.conf
+      owner: bird
+      group: bird
+      mode: 0640
+    notify: restart bird
+
+  - name: Create drop-in directory for bird6 configs
+    file:
+      state: directory
+      path: /etc/birdv6.d/
+      owner: root
+      group: bird
+      mode: "u=rwx,g=rx,o-rwx"
+
+  - name: enable bird6
+    service:
+      name: bird6
+      enabled: yes
+      state: started
