@@ -1,0 +1,17 @@
+[Unit]
+Description=Prometheus exporter for HAProxy
+Documentation=https://github.com/prometheus/haproxy_exporter
+
+[Service]
+Restart=always
+User={{ phe_user }}
+Group={{ phe_user }}
+ExecStart=/usr/local/bin/prometheus-haproxy-exporter --haproxy.scrape-uri=unix:"{{ haproxy_admin_sock }}"
+TimeoutStopSec=10s
+NoNewPrivileges=true
+RestrictSUIDSGID=true
+ProtectSystem=strict
+ProtectHome=tmpfs
+
+[Install]
+WantedBy=multi-user.target
