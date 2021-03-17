@@ -78,6 +78,9 @@
     tags: journald
   - role: configure-automatic-system-updates
     tags: configure-automatic-system-updates
+  - role: radvd
+    tags: radvd
+    when: dualstack_support
   - role: bird
     tags: bird
   - role: ipsec-vpn

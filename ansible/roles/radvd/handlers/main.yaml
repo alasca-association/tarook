@@ -1,0 +1,5 @@
+- name: restart radvd
+  become: yes
+  service:
+    name: radvd
+    state: restarted
