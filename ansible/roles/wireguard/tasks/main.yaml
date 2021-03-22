@@ -83,6 +83,11 @@
       command: "wg pubkey"
       args:
         stdin: "{{ wg_gw_priv_key }}"
+      register: wg_pubkey
+    - name: Write public key to disk
+      copy:
+        content: "{{ wg_pubkey.stdout }}"
+        dest: "{{ wg_local_pub_path }}"
 
 - name: Create /etc/wireguard/wg0.conf on gateway side
   become: yes
