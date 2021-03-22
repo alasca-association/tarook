@@ -48,8 +48,6 @@
         - -n
         - '{{ check_calico_namespace }}'
         - exec
-        - --stdin
-        - --tty
         - "{{ item[0].metadata.name }}"
         - --
         - ping
