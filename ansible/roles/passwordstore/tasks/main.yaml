@@ -1,0 +1,24 @@
+- name: Create passwordstore directory
+  become: no
+  delegate_to: localhost
+  run_once: yes
+  file:
+    path: "{{ etc_dir }}/passwordstore"
+    state: directory
+
+- name: Initialize passwordstore # noqa 301
+  become: no
+  delegate_to: localhost
+  run_once: yes
+  # Ignoring the linter here because there's no easy way to check if
+  # `pass init` actually changed anything.
+  command:
+  args:
+    argv: >
+      {%- set pass_cmd = ["pass", "init"] %}
+      {%- for _id in passwordstore_gpg_ids %}
+        {%- set _ = pass_cmd.append(_id) %}
+      {%- endfor %}
+      {{- pass_cmd -}}
+  environment:
+    PASSWORD_STORE_DIR: "{{ etc_dir }}/passwordstore"

@@ -35,6 +35,8 @@
   vars_files:
   - vars/disruption.yaml
   roles:
+  - role: passwordstore
+    tags: passwordstore
   - role: nftables
     tags: nftables
   - role: ntp

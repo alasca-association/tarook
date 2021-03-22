@@ -18,6 +18,7 @@ enable_az_management = false
 lb_ports = [30060]
 wg_ip_cidr = "172.30.153.0/24"
 wg_ip_gw = "172.30.153.1/24"
+passwordstore_gpg_ids = ["mk8s-ci@gitlab"]
 
 [[ansible.02_trampoline.group_vars.gateways.wg_peers]]
 pub_key = "/0VYI+LK2VYUX3E7QDUCfp7p+0vU2tocsqGFjsKoJVs="
@@ -59,6 +60,7 @@ rook_mon_volume_storage_class = "local-storage"
 k8s_use_podsecuritypolicies = true
 k8s_network_plugin = "kube-router"
 monitoring_thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
+passwordstore_gpg_ids = ["mk8s-ci@gitlab"]
 
 rook_placement_label = { key = "{{ managed_k8s_control_plane_key }}", value = "storage" }
 

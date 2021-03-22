@@ -63,6 +63,11 @@ vrrp_priority = 100
 [ansible.02_trampoline.host_vars.managed-k8s-gw-az3]
 vrrp_priority = 80
 
+# Configure GPG-IDs that should have access to the cluster-repo specific passwordstore.
+# Obviously you should add your ID here as well. The default one belongs to yannic.ahrens@cloudandheat.com
+# IMPORTANT: This variable has to be defined both for stage-2 and stage-3 because of internal limitations.
+#password_store_gpg_ids = ["68AA582E81AD111C127F01273370EBE296354805"]
+
 [ansible.03_final.group_vars.all]
 # KUBERNETES CLUSTER CONFIGURATION
 #
@@ -300,6 +305,11 @@ k8s_network_plugin = "kube-router"
 #k8s_use_podsecuritypolicies = true
 
 cah_users_include_users = ["<user>", "<user>"]
+
+# Configure GPG-IDs that should have access to the cluster-repo specific passwordstore.
+# Obviously you should add your ID here as well. The default one belongs to yannic.ahrens@cloudandheat.com
+# IMPORTANT: This variable has to be defined both for stage-2 and stage-3 because of internal limitations.
+#password_store_gpg_ids = ["68AA582E81AD111C127F01273370EBE296354805"]
 
 [ansible.03_final.host_vars.managed-k8s-gw-az1]
 vrrp_priority = 150
