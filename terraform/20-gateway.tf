@@ -54,15 +54,29 @@ resource "openstack_networking_port_v2" "gateway" {
   port_security_enabled = false
 }
 
+resource "openstack_blockstorage_volume_v3" "gateway-volume" {
+  count = length(var.azs)
+  name     = "managed-k8s-gw-volume-${try(var.azs[count.index], count.index)}"
+  size     = data.openstack_compute_flavor_v2.gateway.disk
+  image_id = data.openstack_images_image_v2.gateway.id
+}
+
 resource "openstack_compute_instance_v2" "gateway" {
   count = length(openstack_networking_port_v2.gateway)
 
   name              = openstack_networking_port_v2.gateway[count.index].name
-  image_id          = data.openstack_images_image_v2.gateway.id
   flavor_id         = data.openstack_compute_flavor_v2.gateway.id
   key_pair          = var.keypair
   availability_zone = var.enable_az_management ? var.azs[count.index] : null
   config_drive      = true
+
+  block_device {
+    uuid                  = "${openstack_blockstorage_volume_v3.gateway-volume[count.index].id}"
+    source_type           = "volume"
+    boot_index            = 0
+    destination_type      = "volume"
+    delete_on_termination = true
+  }
 
   network {
     port = openstack_networking_port_v2.gateway[count.index].id
