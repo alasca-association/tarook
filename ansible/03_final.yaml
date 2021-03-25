@@ -1,3 +1,9 @@
+- name: Initial sanity checks
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - validate_configuration
+
 - name: Initial node bootstrap
   hosts: k8s_nodes
   gather_facts: false

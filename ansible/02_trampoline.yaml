@@ -1,3 +1,9 @@
+- name: Initial sanity checks
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - validate_configuration
+
 - name: Establish connectivity to the nodes
   hosts: gateways
   gather_facts: false
