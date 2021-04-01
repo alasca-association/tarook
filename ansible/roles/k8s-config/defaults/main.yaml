@@ -24,7 +24,6 @@ image_version_map:
     openstack:
       cinder_csi_plugin: "v1.19.0"
       csi_attacher: "v2.0.0"
-      csi_attacher: "v2.0.0"
       csi_node_driver_registrar: "v1.1.0"
       csi_provisioner: "v1.4.0"
       csi_resizer: "v0.3.0"
@@ -45,7 +44,6 @@ image_version_map:
       kube_router: "v1.1.0"
     openstack:
       cinder_csi_plugin: "v1.19.0"
-      csi_attacher: "v2.0.0"
       csi_attacher: "v2.0.0"
       csi_node_driver_registrar: "v1.1.0"
       csi_provisioner: "v1.4.0"
