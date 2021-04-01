@@ -72,10 +72,14 @@ spec:
             # Auto-detect the BGP IP address.
             - name: IP
               value: "autodetect"
-            #- name: IP_AUTODETECTION_METHOD
-            #  value: "interface=ens3"
-            #- name: IP6
-            #  value: "autodetect"
+            - name: IP_AUTODETECTION_METHOD
+              value: "first-found"
+            {% if dualstack_support -%}
+            - name: IP6
+              value: "autodetect"
+            - name: IP6_AUTODETECTION_METHOD
+              value: "first-found"
+            {% endif -%}
             # Disable file logging so kubectl logs works.
             - name: CALICO_DISABLE_FILE_LOGGING
               value: "true"
@@ -84,7 +88,11 @@ spec:
               value: "ACCEPT"
             # Disable IPv6 on Kubernetes.
             - name: FELIX_IPV6SUPPORT
+              {% if dualstack_support -%}
+              value: "true"
+              {% else -%}
               value: "false"
+              {% endif %}
             # Set Felix logging to "info"
             - name: FELIX_LOGSEVERITYSCREEN
               value: "info"

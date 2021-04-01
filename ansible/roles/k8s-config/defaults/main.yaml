@@ -2,6 +2,8 @@
 k8s_use_podsecuritypolicies: false
 k8s_network_pod_subnet: 10.244.0.0/16
 k8s_network_service_subnet: 10.96.0.0/12
+k8s_network_pod_subnet_v6: fdff:0:0:2::/64
+k8s_network_service_subnet_v6: fdff:0:0:3::/64
 k8s_network_bgp_worker_as: 64512
 k8s_network_bgp_gateway_as: 65000
 

@@ -8,7 +8,13 @@
       "datastore_type": "kubernetes",
       "mtu": {{ calico_mtu | to_json }},
       "ipam": {
-          "type": "calico-ipam"
+          "type": "calico-ipam",
+{% if dualstack_support %}
+          "assign_ipv4": "true",
+          "assign_ipv6": "true"
+{% else %}
+          "assign_ipv4": "true"
+{% endif %}
       },
       "policy": {
           "type": "k8s"

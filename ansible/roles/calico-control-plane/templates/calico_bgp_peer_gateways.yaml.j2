@@ -6,3 +6,15 @@ spec:
   peerIP: {{ hostvars[item]['local_ipv4_address'] | to_json }}
   asNumber: {{ k8s_network_bgp_gateway_as | to_json }}
   nodeSelector: route-reflector == 'true'
+
+{% if dualstack_support %}
+---
+apiVersion: projectcalico.org/v3
+kind: BGPPeer
+metadata:
+  name: {{ "%s-v6" | format(item) | to_json }}
+spec:
+  peerIP: {{ hostvars[item]['local_ipv6_address'] | to_json }}
+  asNumber: {{ k8s_network_bgp_gateway_as | to_json }}
+  nodeSelector: route-reflector == 'true'
+{% endif %}
