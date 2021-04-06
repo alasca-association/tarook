@@ -7,7 +7,6 @@ import json
 import pathlib
 import typing
 import random
-
 import toml
 import yaml
 
@@ -396,11 +395,17 @@ def main():
     ansible_cfg = config["ansible"]
     secrets_cfg = config["secrets"]
 
-    company_users = load_wg_users(USERS_PATH)
     if secrets_cfg.pop("passwordstore_rollout_company_users", True):
-        passwordstore_company_users = load_passwordstore_users(PASSWORDSTORE_USERS_FILE) # NOQA
+        passwordstore_company_users = \
+            load_passwordstore_users(PASSWORDSTORE_USERS_FILE)
     else:
         passwordstore_company_users = []
+
+    passwordstore_cluster_users = [PasswordstoreUser.fromdict(u)
+            for u in secrets_cfg.pop("passwordstore_additional_users", [])] # NOQA
+
+    passwordstore_users = passwordstore_company_users + \
+        passwordstore_cluster_users
 
     # note that we explicitly remove the wg_peers config here since we write
     # the wg_peers in a separate file later on.
@@ -413,55 +418,61 @@ def main():
         for item in cluster_wg_config
     ]
 
-    passwordstore_cluster_users = [PasswordstoreUser.fromdict(u)
-            for u in secrets_cfg.pop("passwordstore_additional_users", [])] # NOQA
+    if USERS_PATH.exists():
+        company_users = load_wg_users(USERS_PATH)
 
-    # merge wg users while rejecting duplicates, since a company and a
-    # cluster-specific user should never share private keys
-    configured_users = merge_wg_users(company_users.values(), cluster_users)
+        # merge wg users while rejecting duplicates, since a company and a
+        # cluster-specific user should never share private keys
+        configured_users = merge_wg_users(company_users.values(),
+                                          cluster_users)
 
-    passwordstore_users = passwordstore_company_users + \
-        passwordstore_cluster_users
+        require_unique_names(configured_users.values())
 
-    require_unique_names(configured_users.values())
+        ipam_users = index_wg_users([
+            WireGuardUser.fromdict(item, with_address=True)
+            for item in ipam.get("users", [])
+        ])
 
-    ipam_users = index_wg_users([
-        WireGuardUser.fromdict(item, with_address=True)
-        for item in ipam.get("users", [])
-    ])
+        if subnet:
+            assigned_v4_users = assign_ipv4_addresses(
+                configured_users.values(),
+                ipam_users,
+                subnet,
+                {subnet[1], subnet.broadcast_address},
+            )
+            if not subnetv6:
+                assigned_users = assigned_v4_users
+        if subnetv6:
+            assigned_v6_users = assign_ipv6_addresses(
+                configured_users.values(),
+                ipam_users,
+                subnetv6,
+                {subnetv6[1]},
+            )
+            if not subnet:
+                assigned_users = assigned_v6_users
+        if subnet and subnetv6:
+            assigned_users = merge_user_ipaddress(
+                            assigned_v4_users,
+                            assigned_v6_users
+                            )
 
-    if subnet:
-        assigned_v4_users = assign_ipv4_addresses(
-            configured_users.values(),
-            ipam_users,
-            subnet,
-            {subnet[1], subnet.broadcast_address},
-        )
-        if not subnetv6:
-            assigned_users = assigned_v4_users
-    if subnetv6:
-        assigned_v6_users = assign_ipv6_addresses(
-            configured_users.values(),
-            ipam_users,
-            subnetv6,
-            {subnetv6[1]},
-        )
-        if not subnet:
-            assigned_users = assigned_v6_users
-    if subnet and subnetv6:
-        assigned_users = merge_user_ipaddress(
-                        assigned_v4_users,
-                        assigned_v6_users
-                        )
+        with IPAM_PATH.open("w") as fout:
+            toml.dump({
+                "users": [
+                    user.todict()
+                    for user in sorted(assigned_users.values(),
+                                       key=lambda x: x.name)
+                ]
+            }, fout)
 
-    with IPAM_PATH.open("w") as fout:
-        toml.dump({
-            "users": [
-                user.todict()
-                for user in sorted(assigned_users.values(),
-                                   key=lambda x: x.name)
-            ]
-        }, fout)
+        with IPAM_ANSIBLE_FILE.open("w") as fout:
+            json.dump({
+                "wg_peers": [
+                    user.todict()
+                    for user in assigned_users.values()
+                ]
+            }, fout)
 
     for stage, stage_cfg in ansible_cfg.items():
         for var_type, vars_cfg in stage_cfg.items():
@@ -483,18 +494,11 @@ def main():
             ANSIBLE_INVENTORY_BASEPATH / stage / "group_vars" /
             "all" / "all.yaml"
         )
+
         cfg_path.parent.mkdir(exist_ok=True, mode=0o750, parents=True)
         with cfg_path.open("w") as f:
             yaml.dump({"passwordstore_users": [
                 u.todict() for u in passwordstore_users]}, f)
-
-    with IPAM_ANSIBLE_FILE.open("w") as fout:
-        json.dump({
-            "wg_peers": [
-                user.todict()
-                for user in assigned_users.values()
-            ]
-        }, fout)
 
 
 if __name__ == "__main__":

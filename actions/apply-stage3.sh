@@ -4,11 +4,17 @@ actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
-"$actions_dir/wg-up.sh"
+if [ -d "$wg_user_dir" ]; then
+    "$actions_dir/wg-up.sh"
+fi
+
+if [ -f "$ansible_inventory_group_vars_dir_02/all/config.json" ]; then
+    cp --no-clobber "$ansible_inventory_group_vars_dir_02/all/config.json" "$ansible_inventory_group_vars_dir_03/all/config_02_all.json"
+fi
 
 cd "$ansible_playbook"
 ansible-galaxy install -r requirements.yaml
-ansible_playbook -i "$ansible_inventoryfile_03" 03_final.yaml
+ansible_playbook -i "$ansible_inventoryfile_03" 03_final.yaml "$@"
 ansible_playbook -i "$ansible_inventoryfile_03" -t ksl-config -t kms-config 03_z_export_config.yaml
 export KUBECONFIG="$cluster_repository/inventory/.etc/admin.conf"
 pushd "$ansible_k8s_sl_playbook"

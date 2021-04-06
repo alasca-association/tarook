@@ -11,13 +11,20 @@ ansible_k8s_sl_playbook="$code_repository/k8s-service-layer"
 ansible_k8s_ms_playbook="$code_repository/k8s-managed-services"
 ansible_inventory_template="$ansible_playbook/inventories/terraform"
 ansible_inventory_base="$cluster_repository/inventory"
+ansible_inventory_dir_03="$ansible_inventory_base/03_final"
 ansible_inventoryfile_02="$ansible_inventory_base/02_trampoline/hosts"
 ansible_inventoryfile_03="$ansible_inventory_base/03_final/hosts"
+ansible_inventory_host_vars_dir_02="$ansible_inventory_base/02_trampoline/host_vars"
+ansible_inventory_host_vars_dir_03="$ansible_inventory_base/03_final/host_vars"
+ansible_inventory_group_vars_dir_02="$ansible_inventory_base/02_trampoline/group_vars"
+ansible_inventory_group_vars_dir_03="$ansible_inventory_base/03_final/group_vars"
+wg_user_dir="$cluster_repository/wg_user"
 
-wg_conf="${wg_conf:-$cluster_repository/$wg_conf_name.conf}"
-wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
-ansible_wg_template="$ansible_inventory_base/.etc/wg_${wg_user}.conf"
-
+if [ -d "$wg_user_dir" ]; then
+    wg_conf="${wg_conf:-$cluster_repository/$wg_conf_name.conf}"
+    wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
+    ansible_wg_template="$ansible_inventory_base/.etc/wg_${wg_user}.conf"
+fi
 
 if [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'true' ]; then
     use_color='true'
@@ -107,6 +114,12 @@ function validate_wireguard() {
         errorf 'Either $wg_private_key or $wg_private_key_file must be set' >&2
         exit 2
     fi
+}
+
+function test_repo_access() {
+    set +e
+    git ls-remote "$1" master &> /dev/null; EXITCODE=$?
+    set -e
 }
 
 function ansible_playbook() {
