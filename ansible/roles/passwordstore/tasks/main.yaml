@@ -6,18 +6,18 @@
     path: "{{ etc_dir }}/passwordstore"
     state: directory
 
-- name: Initialize passwordstore # noqa 301
+- name: Initialize passwordstore
   become: no
   delegate_to: localhost
   run_once: yes
-  # Ignoring the linter here because there's no easy way to check if
-  # `pass init` actually changed anything.
+  # Technically `pass init` might change something but this change isn't relevant for us.
+  changed_when: False
   command:
   args:
     argv: >
       {%- set pass_cmd = ["pass", "init"] %}
-      {%- for _id in passwordstore_gpg_ids %}
-        {%- set _ = pass_cmd.append(_id) %}
+      {%- for u in passwordstore_users %}
+        {%- set _ = pass_cmd.append(u.gpg_id) %}
       {%- endfor %}
       {{- pass_cmd -}}
   environment:

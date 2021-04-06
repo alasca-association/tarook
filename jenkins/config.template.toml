@@ -63,11 +63,6 @@ vrrp_priority = 100
 [ansible.02_trampoline.host_vars.managed-k8s-gw-az3]
 vrrp_priority = 80
 
-# Configure GPG-IDs that should have access to the cluster-repo specific passwordstore.
-# Obviously you should add your ID here as well. The default one belongs to yannic.ahrens@cloudandheat.com
-# IMPORTANT: This variable has to be defined both for stage-2 and stage-3 because of internal limitations.
-#password_store_gpg_ids = ["68AA582E81AD111C127F01273370EBE296354805"]
-
 [ansible.03_final.group_vars.all]
 # KUBERNETES CLUSTER CONFIGURATION
 #
@@ -306,11 +301,6 @@ k8s_network_plugin = "kube-router"
 
 cah_users_include_users = ["<user>", "<user>"]
 
-# Configure GPG-IDs that should have access to the cluster-repo specific passwordstore.
-# Obviously you should add your ID here as well. The default one belongs to yannic.ahrens@cloudandheat.com
-# IMPORTANT: This variable has to be defined both for stage-2 and stage-3 because of internal limitations.
-#password_store_gpg_ids = ["68AA582E81AD111C127F01273370EBE296354805"]
-
 [ansible.03_final.host_vars.managed-k8s-gw-az1]
 vrrp_priority = 150
 
@@ -331,6 +321,24 @@ name = "worker1"
 [[ansible.03_final.group_vars.all.test_worker_nodes]]
 worker = "managed-k8s-worker-2"
 name = "worker2"
+
+# Entries in this section are added to the inventory of all stages. Because
+# some magic is involved you cannot set arbitrary variables here yet.
+[ansible_common]
+# Set this field to `false` if the "company" users should not be rolled out.
+# passwordstore_rollout_company_users = true
+
+# Configure Additional GPG-IDs that should have access to the cluster-repo specific passwordstore.
+# If you're not member of the "company-wide" list, e.g., because you're a student you must add yourself here.
+# yannic.ahrens@cloudandheat.com serves as an example here because the author is incredibly vain and likes
+# to see his name written down everywhere.
+# Parameters:
+#   - 'ident': easy to read identification string, not used anywhere yet
+#   - 'gpg_id': ID of your public GPG key, ideally in long-form
+
+[[ansible_common.passwordstore_additional_users]]
+ident = "yannic.ahrens@cloudandheat.com"
+gpg_id = "68AA582E81AD111C127F01273370EBE296354805"
 
 [terraform]
 subnet_cidr = "172.30.154.0/24"

@@ -74,6 +74,7 @@ cluster-spawn-without-rook:
   - 'chmod o-w *'
   - cd ci
   - git submodule add --force --branch master git@gitlab.cloudandheat.com:lcm/wg_user
+  - git submodule add --force --branch master git@gitlab.cloudandheat.com:lcm/mk8s-passwordstore-users.git passwordstore-users/
   script:
   - pip3 install -r managed-k8s/requirements.txt
   - python3 managed-k8s/jenkins/toml_helper.py

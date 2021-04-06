@@ -53,9 +53,9 @@
             - inventory/.etc/wg_gw_priv.key
             - /etc/wireguard/wg0.conf (on the gateways)
           2.) If you haven't done so already, install `pass` on your workstation. (https://www.passwordstore.org/)
-          3.) Tell pass where to look for the password database: `export PASSWORD_STORE_DIR="$(pwd)/inventory/.etc/passwordstore"`
-          4.) Insert the key into the database: `pass insert wg_gw_key`
-          5.) Compare the output of `pass show wg_gw_key` with the current wireguard private key of the gateway and make sure that they match.
+          3.) Insert the key into the database: `PASSWORD_STORE_DIR="$(pwd)/inventory/.etc/passwordstore" pass insert wg_gw_key`
+          4.) Compare the output of `PASSWORD_STORE_DIR="$(pwd)/inventory/.etc/passwordstore" pass show wg_gw_key`
+              with the current wireguard private key of the gateway and make sure that they match.
       when: "wg0_conf.stat.exists and (wg_gw_key is not defined)"
 
     - name: Create new wireguard private key of the gateway
@@ -63,10 +63,17 @@
       register: wg_genkey
       when: "not wg0_conf.stat.exists and (wg_gw_key is not defined)"
 
+    - name: Ensure that the output of `wg genkey` contains no whitespace
+      fail:
+        msg: |
+          The output of `wg genkey` contains whitespace for an unknown reason. The passwordstore lookup plugin cannot cope with that so
+          please check what went wrong.
+      when: "wg_genkey.changed and (wg_genkey.stdout | regex_search('\\s'))"
+
     - name: Insert key into the passwordstore # noqa 207
       # Ignoring the linter here because without nesting jinja we'd have to concat strings which is even uglier.
       set_fact:
-        _: "{{ lookup('passwordstore', 'wg_gw_key userpass={{ wg_genkey.stdout }} directory={{ password_store_dir }} create=True') }}"
+        _: "{{ lookup('passwordstore', '{{ wg_gw_priv_path }} userpass={{ wg_genkey.stdout }} directory={{ password_store_dir }} create=True') }}"
       when: "not wg0_conf.stat.exists and (wg_gw_key is not defined)"
 
 - name: Load shared keypair
@@ -78,7 +85,7 @@
   block:
     - name: Load private key # noqa 207
       set_fact:
-        wg_gw_priv_key: "{{ lookup('passwordstore', 'wg_gw_key directory={{ password_store_dir }}') }}"
+        wg_gw_priv_key: "{{ lookup('passwordstore', '{{ wg_gw_priv_path }} directory={{ password_store_dir }}') }}"
     - name: Derive public key
       command: "wg pubkey"
       args:

@@ -9,9 +9,10 @@ import typing
 import random
 
 import toml
-
+import yaml
 
 USERS_PATH = pathlib.Path("wg_user")
+PASSWORDSTORE_USERS_FILE = pathlib.Path("passwordstore-users") / "main.toml"
 CONFIG_PATH = pathlib.Path("config/config.toml")
 IPAM_PATH = pathlib.Path("config/wireguard_ipam.toml")
 TFVARS_DIR = pathlib.Path("terraform")
@@ -21,6 +22,25 @@ IPAM_ANSIBLE_FILE = (
     ANSIBLE_INVENTORY_BASEPATH / "02_trampoline" / "group_vars" /
     "gateways" / "wireguard.json"
 )
+
+
+class PasswordstoreUser(collections.namedtuple(
+        "PasswordstoreUser", ["ident", "gpg_id"])):
+
+    @classmethod
+    def fromdict(cls, d):
+        return cls(ident=d["ident"], gpg_id=d["gpg_id"])
+
+    def todict(self) -> typing.Mapping[str, str]:
+        return {"ident": self.ident,
+                "gpg_id": self.gpg_id}
+
+
+def load_passwordstore_users(
+        config_path: pathlib.Path
+        ) -> typing.List[PasswordstoreUser]:
+    with config_path.open("r") as f:
+        return [PasswordstoreUser.fromdict(u) for u in toml.load(f)["users"]]
 
 
 class WireGuardUser(collections.namedtuple(
@@ -369,7 +389,13 @@ def main():
 
     ansible_cfg = config["ansible"]
 
+    ansible_common_cfg = config["ansible_common"]
+
     company_users = load_wg_users(USERS_PATH)
+    if ansible_common_cfg.pop("passwordstore_rollout_company_users", True):
+        passwordstore_company_users = load_passwordstore_users(PASSWORDSTORE_USERS_FILE) # NOQA
+    else:
+        passwordstore_company_users = []
 
     # note that we explicitly remove the wg_peers config here since we write
     # the wg_peers in a separate file later on.
@@ -382,9 +408,15 @@ def main():
         for item in cluster_wg_config
     ]
 
+    passwordstore_cluster_users = [PasswordstoreUser.fromdict(u)
+            for u in ansible_common_cfg.pop("passwordstore_additional_users", [])] # NOQA
+
     # merge wg users while rejecting duplicates, since a company and a
     # cluster-specific user should never share private keys
     configured_users = merge_wg_users(company_users.values(), cluster_users)
+
+    passwordstore_users = passwordstore_company_users + \
+        passwordstore_cluster_users
 
     require_unique_names(configured_users.values())
 
@@ -437,6 +469,19 @@ def main():
                                       parents=True)
                 with cfg_path.open("w") as f:
                     json.dump(entity_cfg, f)
+
+    # Write the contents of `ansible_common`, i.e., passwordstore_users
+    # to `group_vars/all/all.yaml`. Needs additional work to support other
+    # kinds of entries.
+    for stage in ansible_cfg.keys():
+        cfg_path = (
+            ANSIBLE_INVENTORY_BASEPATH / stage / "group_vars" /
+            "all" / "all.yaml"
+        )
+        cfg_path.parent.mkdir(exist_ok=True, mode=0o750, parents=True)
+        with cfg_path.open("w") as f:
+            yaml.dump({"passwordstore_users": [
+                u.todict() for u in passwordstore_users]}, f)
 
     with IPAM_ANSIBLE_FILE.open("w") as fout:
         json.dump({
