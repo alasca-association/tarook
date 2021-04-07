@@ -29,7 +29,7 @@
         - bgpconfiguration
         - default
         - -p
-        - '{"spec":{"nodeToNodeMeshEnabled":false}}'
+        - '{"spec":{"nodeToNodeMeshEnabled":false} }'
     register: bgp_mesh_patch
     changed_when: "'Successfully patched' and 'BGPConfiguration' in bgp_mesh_patch.stdout"
 
