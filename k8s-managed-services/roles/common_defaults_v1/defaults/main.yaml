@@ -1,0 +1,6 @@
+---
+rook_namespace: "rook-ceph"
+rook_cluster_name: "rook-ceph"
+managed_k8s_control_plane_key: "node-restriction.kubernetes.io/cah-managed-k8s-role"
+monitoring_node_exporter_textfile_collector: true
+monitoring_node_exporter_textfile_collector_path: /var/lib/node_exporter/textfile_collector

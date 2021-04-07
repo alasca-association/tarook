@@ -92,26 +92,6 @@
     - test-networkpolicy-enforcement
     when: "(k8s_network_plugin | default('flannel')) in ['kube-router', 'calico']"
 
-- name: Test GPU support
-  hosts: "{{ groups['masters'] | first }}"
-  become: no
-  gather_facts: no
-  roles:
-  - role: check-gpu-support
-    tags:
-    - test-gpu-support
-    when: "is_gpu_cluster | default(False)"
-
-# We test the monitoring down here because we need to give Prometheus a bit of
-# time to boot and collect the first bits of data.
-- name: Check monitoring
-  hosts: "{{ groups['masters'] | first }}"
-  gather_facts: no
-  roles:
-  - role: check-monitoring
-    tags: test-monitoring
-    when: "monitoring | default(False)"
-
 # Same line for argumentation: especially rook is known to take a bit more time to boot up
 - name: Check storage services
   hosts: "{{ groups['masters'] | first }}"

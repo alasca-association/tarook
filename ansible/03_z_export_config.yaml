@@ -1,0 +1,48 @@
+# Why the odd name? I want it to sort after 03_final, but I also want it to
+# sort before 04_tests.
+
+- name: Write configuration file for Kubernetes Service Layer
+  hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+
+  tasks:
+  - name: Create Kubernetes Service Layer configuration
+    copy:
+      content: |
+        {
+          "_": "" {# just to make JSON syntax easier #}
+          {% for kv in vars | dict2items %}
+          {% set name = kv.key %}
+          {% if name.startswith("monitoring")
+                or name in ["k8s_use_podsecuritypolicies",
+                            "k8s_node_labels",
+                            "k8s_node_taints"] %}
+          , {{ name | to_json }}: {{ lookup('vars', name) | to_json }}
+          {% endif %}
+          {% endfor %}
+        }
+      dest: "{{ etc_dir }}/ksl.json"
+    tags:
+    - ksl-config
+
+  - name: Create Kubernetes Managed Services configuration
+    copy:
+      content: |
+        {
+          "_": "" {# just to make JSON syntax easier #}
+          {% for name, value in vars.items() %}
+          {% if name.startswith("monitoring")
+                or name.startswith("rook")
+                or name.startswith("managed_k8s")
+                or name.startswith("device_plugin")
+                or name in ["k8s_use_podsecuritypolicies",
+                            "ch_k8s_lbaas_agent_port"] %}
+          , {{ name | to_json }}: {{ value | to_json }}
+          {% endif %}
+          {% endfor %}
+        }
+      dest: "{{ etc_dir }}/kms.json"
+    tags:
+    - kms-config

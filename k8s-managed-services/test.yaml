@@ -1,0 +1,26 @@
+---
+- name: Detect user
+  hosts: "{{ groups['masters'] | first }}"
+  gather_facts: false
+  roles:
+  - detect_user
+
+# We test the monitoring down here because we need to give Prometheus a bit of
+# time to boot and collect the first bits of data.
+- name: Check monitoring
+  hosts: "{{ groups['masters'] | first }}"
+  gather_facts: no
+  roles:
+  - role: monitoring_v1_test
+    tags: test-monitoring
+    when: "monitoring | default(False)"
+
+- name: Test GPU support
+  hosts: "{{ groups['masters'] | first }}"
+  become: no
+  gather_facts: no
+  roles:
+  - role: device_plugin_v1_test
+    tags:
+    - test-gpu-support
+    when: "is_gpu_cluster | default(False)"

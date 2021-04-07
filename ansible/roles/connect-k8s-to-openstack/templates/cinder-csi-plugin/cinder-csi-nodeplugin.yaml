@@ -17,11 +17,12 @@ spec:
     spec:
       serviceAccount: csi-cinder-node-sa
       hostNetwork: true
-{% if managed_k8s_control_plane_key %}
+{% if cinder_storage_nodeplugin_toleration %}
       tolerations:
-      - key: "{{ managed_k8s_control_plane_key }}"
-        operator: Exists
-        effect: "NoSchedule"
+      - operator: Exists
+{% if cinder_storage_nodeplugin_toleration != True %}
+        key: {{ cinder_storage_nodeplugin_toleration | to_json }}
+{% endif %}
 {% endif %}
       containers:
         - name: node-driver-registrar

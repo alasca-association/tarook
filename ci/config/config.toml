@@ -60,11 +60,12 @@ k8s_use_podsecuritypolicies = true
 k8s_network_plugin = "kube-router"
 monitoring_thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
 
-rook_placement_label = { key = "{{ managed_k8s_control_plane_key }}", value = "storage" }
+scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 
-rook_placement_taint = { key = "{{ managed_k8s_control_plane_key }}", value = "storage" }
-
-monitoring_placement_label = { key = "{{ managed_k8s_control_plane_key }}", value = "monitoring" }
+storage_nodeplugin_toleration = true
+rook_scheduling_key = "{{ scheduling_key_prefix }}/storage"
+rook_nodeplugin_toleration = "{{ storage_nodeplugin_toleration }}"
+monitoring_scheduling_key = "{{ scheduling_key_prefix }}/monitoring"
 
 # To prevent the CI running in CPU limits here and failing because of that
 rook_mon_cpu_limit = "500m"
@@ -90,26 +91,32 @@ name = "worker1"
 worker = "managed-k8s-worker-5"
 name = "worker2"
 
-[ansible.03_final.host_vars.managed-k8s-worker-0]
-k8s_node_labels = [ "{{ managed_k8s_control_plane_key }}=storage" ]
-k8s_node_taints = [ "{{ managed_k8s_control_plane_key }}=storage:NoSchedule",]
+[ansible.03_final.host_vars.managed-k8s-worker-0.k8s_node_labels]
+"scheduling.mk8s.cloudandheat.com/storage"="true"
 
-[ansible.03_final.host_vars.managed-k8s-worker-1]
-k8s_node_labels = [ "{{ managed_k8s_control_plane_key }}=monitoring" ]
+[ansible.03_final.host_vars.managed-k8s-worker-0.k8s_node_taints]
+"scheduling.mk8s.cloudandheat.com/storage"="true:NoSchedule"
 
-[ansible.03_final.host_vars.managed-k8s-worker-2]
-k8s_node_labels = [ "{{ managed_k8s_control_plane_key }}=storage" ]
-k8s_node_taints = [ "{{ managed_k8s_control_plane_key }}=storage:NoSchedule",]
+[ansible.03_final.host_vars.managed-k8s-worker-1.k8s_node_labels]
+"scheduling.mk8s.cloudandheat.com/monitoring"="true"
 
-[ansible.03_final.host_vars.managed-k8s-worker-3]
-k8s_node_labels = [ "{{ managed_k8s_control_plane_key }}=monitoring" ]
+[ansible.03_final.host_vars.managed-k8s-worker-2.k8s_node_labels]
+"scheduling.mk8s.cloudandheat.com/storage"="true"
 
-[ansible.03_final.host_vars.managed-k8s-worker-4]
-k8s_node_labels = [ "{{ managed_k8s_control_plane_key }}=storage" ]
-k8s_node_taints = [ "{{ managed_k8s_control_plane_key }}=storage:NoSchedule",]
+[ansible.03_final.host_vars.managed-k8s-worker-2.k8s_node_taints]
+"scheduling.mk8s.cloudandheat.com/storage"="true:NoSchedule"
 
-[ansible.03_final.host_vars.managed-k8s-worker-5]
-k8s_node_labels = [ "{{ managed_k8s_control_plane_key }}=monitoring" ]
+[ansible.03_final.host_vars.managed-k8s-worker-3.k8s_node_labels]
+"scheduling.mk8s.cloudandheat.com/monitoring"="true"
+
+[ansible.03_final.host_vars.managed-k8s-worker-4.k8s_node_labels]
+"scheduling.mk8s.cloudandheat.com/storage"="true"
+
+[ansible.03_final.host_vars.managed-k8s-worker-4.k8s_node_taints]
+"scheduling.mk8s.cloudandheat.com/storage"="true:NoSchedule"
+
+[ansible.03_final.host_vars.managed-k8s-worker-5.k8s_node_labels]
+"scheduling.mk8s.cloudandheat.com/monitoring"="true"
 
 [secrets]
 passwordstore_rollout_company_users = false # False because we don't have the keys

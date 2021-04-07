@@ -1,5 +1,0 @@
----
-is_gpu_cluster: no
-device_plugin_service_account_name: nvidia-device-plugin
-device_plugin_psp_name: nvidia-device-plugin
-

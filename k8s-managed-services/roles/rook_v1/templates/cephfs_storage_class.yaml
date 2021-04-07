@@ -1,0 +1,22 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ "%s-cephfs" | format(rook_cluster_name) | to_json }}
+provisioner: {{ "%s.cephfs.csi.ceph.com" | format(rook_namespace) | to_json }}
+parameters:
+  clusterID: {{ rook_cluster_name | to_json }}
+  fsName: {{ rook_fs_name | to_json }}
+  pool: {{ "%s-data0" | format(rook_fs_name) | to_json }}
+  provisionVolume: "true"
+
+  # The secrets contain Ceph admin credentials.
+  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+  csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+  csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+
+# Delete the rbd volume when a PVC is deleted
+reclaimPolicy: Delete
+allowVolumeExpansion: true

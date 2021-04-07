@@ -1,0 +1,113 @@
+{% from "utils.j2" import resource_constraints %}
+apiVersion: "ceph.rook.io/v1"
+kind: "CephCluster"
+metadata:
+  name: {{ rook_cluster_name | to_json }}
+  namespace: {{ rook_namespace | to_json }}
+spec:
+  cephVersion:
+    # see the "Cluster Settings" section below for more details on which image of ceph to run
+    image: {{ "ceph/ceph:%s" | format(rook_image_versions.ceph) | to_json }}
+  dataDirHostPath: /var/lib/rook
+  mon:
+    count: 3
+    allowMultiplePerNode: {{ rook_mon_allow_multiple_per_node | to_json }}
+{% if rook_mon_volume %}
+    volumeClaimTemplate:
+      spec:
+        storageClassName: {{ rook_mon_volume_storage_class | to_json }}
+        resources:
+          requests:
+            storage: {{ rook_mon_volume_size | to_json }}
+{% endif %}
+  mgr:
+{% if rook_mgr_use_pg_autoscaler %}
+    modules:
+    - name: pg_autoscaler
+      enabled: true
+{% endif %}
+  storage:
+   storageClassDeviceSets:
+    - name: cinder
+      count: {{ rook_nosds | to_json }}
+      portable: true
+{% if rook_osd_anti_affinity or rook_scheduling_key %}
+      placement:
+{% if rook_osd_anti_affinity %}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - rook-ceph-osd
+                - key: app
+                  operator: In
+                  values:
+                  - rook-ceph-osd-prepare
+              topologyKey: kubernetes.io/hostname
+{% endif %}
+{% if rook_scheduling_key %}
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: {{ rook_scheduling_key | to_json }}
+                operator: Exists
+        tolerations:
+        - key: {{ rook_scheduling_key | to_json }}
+          operator: Exists
+{% endif %}
+{% endif %}
+      resources: {
+{% call resource_constraints(
+  rook_osd_memory_request,
+  rook_osd_cpu_request,
+  rook_osd_memory_limit,
+  rook_osd_cpu_limit) %}{% endcall %}
+      }
+      volumeClaimTemplates:
+      - metadata:
+          creationTimestamp: null
+          name: ceph-data
+        spec:
+          resources:
+            requests:
+              storage: {{ rook_osd_volume_size | to_json }}
+          storageClassName: {{ rook_osd_storage_class | to_json }}
+          volumeMode: Block
+          accessModes:
+          - ReadWriteOnce
+        status: {}
+  removeOSDsIfOutAndSafeToRemove: {{ rook_osd_autodestroy_safe | to_json }}
+{% if rook_scheduling_key %}
+  placement:
+    all:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: {{ rook_scheduling_key | to_json }}
+              operator: Exists
+      tolerations:
+      - key: {{ rook_scheduling_key | to_json }}
+        operator: Exists
+{% endif %}
+  resources:
+    mon: {
+{% call resource_constraints(
+  rook_mon_memory_request,
+  rook_mon_cpu_request,
+  rook_mon_memory_limit,
+  rook_mon_cpu_limit) %}{% endcall %}
+    }
+    mgr: {
+{% call resource_constraints(
+  rook_mgr_memory_request,
+  rook_mgr_cpu_request,
+  rook_mgr_memory_limit,
+  rook_mgr_cpu_limit) %}{% endcall %}
+    }

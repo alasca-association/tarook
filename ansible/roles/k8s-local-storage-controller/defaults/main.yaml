@@ -3,3 +3,4 @@ local_storage_namespace: kube-system
 local_storage_discovery_directory: /mnt/mk8s-disks
 local_storage_data_directory: /mnt/data
 local_storage_version: v2.3.4
+local_storage_nodeplugin_toleration: "{{ storage_nodeplugin_toleration | default(False) }}"

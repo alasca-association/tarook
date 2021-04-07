@@ -1,3 +1,7 @@
-ansible~=2.9
+ansible~=2.10
+# the ansible stuff does not work with kubernetes >= 12.0
+kubernetes~=11.0
+openshift~=0.11
 toml~=0.10.0
+kubernetes-validate
 python-openstackclient
