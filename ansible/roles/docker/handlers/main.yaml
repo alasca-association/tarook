@@ -1,0 +1,13 @@
+- name: Create docker daemon configuration
+  become: yes
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+
+- name: Restart docker
+  become: yes
+  systemd:
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
+    name: docker
