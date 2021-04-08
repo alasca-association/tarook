@@ -368,6 +368,12 @@ def main():
     except FileNotFoundError:
         ipam = {}
 
+    allowed_sections = ("ansible", "secrets", "terraform")
+    for s in config.keys():
+        if s not in allowed_sections:
+            raise ValueError(
+                "'{}' is an unknown section. Currently supported are {}".format(s, allowed_sections) # NOQA
+            )
     subnet = None
     subnetv6 = None
     if "wg_ip_cidr" in \
@@ -388,11 +394,10 @@ def main():
         json.dump(terraform_cfg, fout)
 
     ansible_cfg = config["ansible"]
-
-    ansible_common_cfg = config["ansible_common"]
+    secrets_cfg = config["secrets"]
 
     company_users = load_wg_users(USERS_PATH)
-    if ansible_common_cfg.pop("passwordstore_rollout_company_users", True):
+    if secrets_cfg.pop("passwordstore_rollout_company_users", True):
         passwordstore_company_users = load_passwordstore_users(PASSWORDSTORE_USERS_FILE) # NOQA
     else:
         passwordstore_company_users = []
@@ -409,7 +414,7 @@ def main():
     ]
 
     passwordstore_cluster_users = [PasswordstoreUser.fromdict(u)
-            for u in ansible_common_cfg.pop("passwordstore_additional_users", [])] # NOQA
+            for u in secrets_cfg.pop("passwordstore_additional_users", [])] # NOQA
 
     # merge wg users while rejecting duplicates, since a company and a
     # cluster-specific user should never share private keys

@@ -322,9 +322,8 @@ name = "worker1"
 worker = "managed-k8s-worker-2"
 name = "worker2"
 
-# Entries in this section are added to the inventory of all stages. Because
-# some magic is involved you cannot set arbitrary variables here yet.
-[ansible_common]
+# A special section that does not directly map to an ansible-stage.
+[secrets]
 # Set this field to `false` if the "company" users should not be rolled out.
 # passwordstore_rollout_company_users = true
 
@@ -336,7 +335,7 @@ name = "worker2"
 #   - 'ident': easy to read identification string, not used anywhere yet
 #   - 'gpg_id': ID of your public GPG key, ideally in long-form
 
-[[ansible_common.passwordstore_additional_users]]
+[[secrets.passwordstore_additional_users]]
 ident = "yannic.ahrens@cloudandheat.com"
 gpg_id = "68AA582E81AD111C127F01273370EBE296354805"
 
