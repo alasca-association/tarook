@@ -1,0 +1,8 @@
+- name: Restart kubelet
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['k8s_nodes'] }}"
+  become: yes
+  run_once: yes
+  service:
+    name: kubelet
+    state: restarted
