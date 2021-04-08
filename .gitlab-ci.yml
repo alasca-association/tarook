@@ -62,6 +62,8 @@ flake8:
   - cd ci
   - git submodule add --force --branch master git@gitlab.cloudandheat.com:lcm/wg_user
   - git submodule add --force --branch master git@gitlab.cloudandheat.com:lcm/mk8s-passwordstore-users.git passwordstore-users/
+    # Note that this is basically a dummy keypair that is not used to protect any significant data
+  - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
   script:
   - pip3 install -r managed-k8s/requirements.txt
   - python3 managed-k8s/jenkins/toml_helper.py
