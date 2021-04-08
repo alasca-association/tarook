@@ -34,7 +34,7 @@ ansible-lint:
   - when: always
   stage: lint
   script:
-  - 'cd ansible && ansible-lint -x 701 02_trampoline.yaml 03_final.yaml'
+  - 'cd ansible && ansible-lint 02_trampoline.yaml 03_final.yaml'
   tags:
   - docker
 
