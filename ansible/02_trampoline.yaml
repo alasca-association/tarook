@@ -1,3 +1,9 @@
+- name: Initial sanity checks
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - validate_configuration
+
 - name: Establish connectivity to the nodes
   hosts: gateways
   gather_facts: false
@@ -35,6 +41,8 @@
   vars_files:
   - vars/disruption.yaml
   roles:
+  - role: passwordstore
+    tags: passwordstore
   - role: nftables
     tags: nftables
   - role: ntp

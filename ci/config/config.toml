@@ -101,3 +101,9 @@ k8s_node_taints = [ "{{ managed_k8s_control_plane_key }}=storage:NoSchedule",]
 
 [ansible.03_final.host_vars.managed-k8s-worker-5]
 k8s_node_labels = [ "{{ managed_k8s_control_plane_key }}=monitoring" ]
+
+[secrets]
+passwordstore_rollout_company_users = false # False because we don't have the keys
+[[secrets.passwordstore_additional_users]]
+ident = "mk8s-ci@gitlab"
+gpg_id = "mk8s-ci@gitlab"

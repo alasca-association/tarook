@@ -18,20 +18,83 @@
           This task is only relevant for existing clusters.
       when: "wg_gw.stat.exists"
 
-- name: Create shared private wireguard key of the gateways
-  become: no
-  delegate_to: localhost
-  run_once: yes
-  shell: "umask 0077 && wg genkey > {{ wg_local_priv_path | quote }}"
-  args:
-    creates: "{{ wg_local_priv_path }}"
+- name: Check existence of wg0.conf
+  become: yes
+  stat:
+    path: /etc/wireguard/wg0.conf
+  register: wg0_conf
 
-- name: Load shared public key
+- name: Lookup private wireguard key of the gateway
+  # Currently the passwordstore lookup plugin cannot deal with whitespaces in the passwordstore directory. [0]
+  # We're mitigating this issue by checking that `etc_dir` does not contain a whitespace + hardcoding the path
+  # to the cluster local password store.
+  #
+  # [0] https://github.com/ansible-collections/community.general/blob/de8e2a83e2948eabb0b8b1d9c1a533a18fc65214/plugins/lookup/passwordstore.py#L161
   become: no
   delegate_to: localhost
   run_once: yes
-  shell: "wg pubkey > {{ wg_local_pub_path | quote }} < {{ wg_local_priv_path | quote }}"
-  changed_when: false
+  vars:
+    password_store_dir: "{{ etc_dir }}/passwordstore"
+  block:
+    - name: Lookup key in passwordstore # noqa 207
+      ignore_errors: yes
+      # Check if the key exists
+      set_fact:
+        wg_gw_key: "{{ lookup('passwordstore', 'wg_gw_key directory={{ password_store_dir }}') }}"
+
+    - name: Fail if wg0.conf exists but key is not in passwordstore
+      fail:
+        msg: |
+          This task fails because the private wireguard key of the gateway should no longer be stored in plain text in the file system of the workstation.
+          Previously the key was not included in the git repository to mitigate the risk of leaking sensitive credentials.
+          The role didn't warn you about a missing key, however, but overwrote it happily. Mercy on those who do not use '--diff'.
+          We're using pass to store the credentials from now on. Here is what to do:
+          1.) Fetch the current wireguard private key of the gateways. Likely spots are:
+            - inventory/.etc/wg_gw_priv.key
+            - /etc/wireguard/wg0.conf (on the gateways)
+          2.) If you haven't done so already, install `pass` on your workstation. (https://www.passwordstore.org/)
+          3.) Insert the key into the database: `PASSWORD_STORE_DIR="$(pwd)/inventory/.etc/passwordstore" pass insert wg_gw_key`
+          4.) Compare the output of `PASSWORD_STORE_DIR="$(pwd)/inventory/.etc/passwordstore" pass show wg_gw_key`
+              with the current wireguard private key of the gateway and make sure that they match.
+      when: "wg0_conf.stat.exists and (wg_gw_key is not defined)"
+
+    - name: Create new wireguard private key of the gateway
+      command: wg genkey
+      register: wg_genkey
+      when: "not wg0_conf.stat.exists and (wg_gw_key is not defined)"
+
+    - name: Ensure that the output of `wg genkey` contains no whitespace
+      fail:
+        msg: |
+          The output of `wg genkey` contains whitespace for an unknown reason. The passwordstore lookup plugin cannot cope with that so
+          please check what went wrong.
+      when: "wg_genkey.changed and (wg_genkey.stdout | regex_search('\\s'))"
+
+    - name: Insert key into the passwordstore # noqa 207
+      # Ignoring the linter here because without nesting jinja we'd have to concat strings which is even uglier.
+      set_fact:
+        _: "{{ lookup('passwordstore', '{{ wg_gw_priv_path }} userpass={{ wg_genkey.stdout }} directory={{ password_store_dir }} create=True') }}"
+      when: "not wg0_conf.stat.exists and (wg_gw_key is not defined)"
+
+- name: Load shared keypair
+  become: no
+  delegate_to: localhost
+  run_once: yes
+  vars:
+    password_store_dir: "{{ etc_dir }}/passwordstore"
+  block:
+    - name: Load private key # noqa 207
+      set_fact:
+        wg_gw_priv_key: "{{ lookup('passwordstore', '{{ wg_gw_priv_path }} directory={{ password_store_dir }}') }}"
+    - name: Derive public key
+      command: "wg pubkey"
+      args:
+        stdin: "{{ wg_gw_priv_key }}"
+      register: wg_pubkey
+    - name: Write public key to disk
+      copy:
+        content: "{{ wg_pubkey.stdout }}"
+        dest: "{{ wg_local_pub_path }}"
 
 - name: Create /etc/wireguard/wg0.conf on gateway side
   become: yes

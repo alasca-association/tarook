@@ -1,7 +1,7 @@
 [Interface]
 Address = {{ wg_ip_gw }}
 ListenPort = {{ vpn_port }}
-PrivateKey = {{ lookup('file', wg_local_priv_path) }}
+PrivateKey = {{ wg_gw_priv_key }}
 
 {% for peer in wg_peers %}
 # {{ peer["ident"] }}

@@ -14,6 +14,8 @@ submodule_managed_k8s_name="managed-k8s"
 submodule_managed_k8s_url="${MANAGED_K8S_GIT:-git@gitlab.cloudandheat.com:lcm/managed-k8s}"
 submodule_wg_user_name="wg_user"
 submodule_wg_user_git="${MANAGED_K8S_WG_USER_GIT:-git@gitlab.cloudandheat.com:lcm/wg_user}"
+submodule_passwordstore_users_name="passwordstore-users"
+submodule_passwordstore_users_git="${MANAGED_K8S_PASSWORDSTORE_USER_GIT:-git@gitlab.cloudandheat.com:lcm/mk8s-passwordstore-users}"
 
 if [ ! -d "$submodule_managed_k8s_name" ]; then
     run git submodule add "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
@@ -26,6 +28,13 @@ if [ ! -d "$submodule_wg_user_name" ]; then
 else
     run git submodule set-url "$submodule_wg_user_name" "$submodule_wg_user_git"
 fi
+
+if [ ! -d "$submodule_passwordstore_users_name" ]; then
+    run git submodule add "$submodule_passwordstore_users_git" "$submodule_passwordstore_users_name"
+else
+    run git submodule set-url "$submodule_passwordstore_users_name" "$submodule_passwordstore_users_git"
+fi
+
 
 run git submodule update --init --recursive
 
