@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: True
 {{ _auto_generated_preamble }}
 
 vrrp_script chk_haproxy {
@@ -26,5 +27,36 @@ vrrp_instance VIP_1 {
     }
     notify /etc/keepalived/notifier.sh
 }
+
+{% if dualstack_support %}
+vrrp_instance WG_GW_V6 {
+    state MASTER
+    interface {{ network_interface }}
+    virtual_router_id 47
+    priority {{ vrrp_priority }}
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass {{ vrrp_password }}
+    }
+    virtual_ipaddress {
+        fe80::1:1
+        {{ private_wg_vip_v6 }}
+    }
+    unicast_peer {
+        {% for hostname in groups['gateways'] %}
+        {% set peer = hostvars[hostname] %}
+        {% if not peer.local_ipv6_address == local_ipv6_address %}
+        {{ peer.local_ipv6_address | ipaddr }}
+        {% endif %}
+        {% endfor %}
+    }
+    nopreempt
+    track_script {
+        chk_haproxy
+    }
+    notify /etc/keepalived/notifier.sh
+}
+{% endif %}
 
 include /var/lib/ch-k8s-lbaas-agent/keepalived/*.conf
