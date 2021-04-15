@@ -162,3 +162,13 @@ variable "enable_az_management" {
   type    = bool
   default = true
 }
+
+variable "boot_from_volume" {
+  type = bool
+  default = false
+}
+
+variable "timeout_time" {
+  type = string
+  default = "30m"
+}
