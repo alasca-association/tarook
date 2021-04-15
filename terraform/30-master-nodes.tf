@@ -23,7 +23,7 @@ data "openstack_images_image_v2" "master" {
 }
 
 resource "openstack_blockstorage_volume_v2" "master-volume" {
-  count = "${var.boot_from_volume == true ? var.masters : 0}"
+  count = var.boot_from_volume == true ? var.masters : null
   name     = "managed-k8s-master-volume-${try(var.master_names[count.index], count.index)}"
   size     = data.openstack_compute_flavor_v2.master[count.index].disk
   image_id = data.openstack_images_image_v2.master[count.index].id
@@ -35,7 +35,7 @@ resource "openstack_blockstorage_volume_v2" "master-volume" {
 }
 
 resource "openstack_compute_instance_v2" "master" {
-  count = "${var.boot_from_volume == false ? var.masters : 0}"
+  count = var.boot_from_volume == false ? var.masters : null
   name  = openstack_networking_port_v2.master[count.index].name
 
   availability_zone = var.enable_az_management ? try(var.master_azs[count.index], var.azs[count.index % length(var.azs)]) : null
@@ -58,7 +58,7 @@ resource "openstack_compute_instance_v2" "master" {
 }
 
 resource "openstack_compute_instance_v2" "boot-master" {
-  count = "${var.boot_from_volume == true ? var.masters : 0}"
+  count = var.boot_from_volume == true ? var.masters : null
   name  = openstack_networking_port_v2.master[count.index].name
 
   availability_zone = var.enable_az_management ? try(var.master_azs[count.index], var.azs[count.index % length(var.azs)]) : null
@@ -67,7 +67,7 @@ resource "openstack_compute_instance_v2" "boot-master" {
   key_pair          = var.keypair
 
   block_device {
-    uuid                  = "${openstack_blockstorage_volume_v2.master-volume[count.index].id}"
+    uuid                  = openstack_blockstorage_volume_v2.master-volume[count.index].id
     source_type           = "volume"
     boot_index            = 0
     destination_type      = "volume"
