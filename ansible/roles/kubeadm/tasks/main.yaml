@@ -22,6 +22,7 @@
     copy:
       dest: /etc/apt/sources.list.d/kubernetes.list
       content: |
+        {{ _auto_generated_preamble }}
         deb https://apt.kubernetes.io/ kubernetes-xenial main
       owner: root
       group: root
@@ -35,7 +36,7 @@
 
 - name: Add Google's K8s repository (yum/dnf)
   become: yes
-  copy:
+  template:
     src: kubernetes.repo
     dest: /etc/yum.repos.d/kubernetes.repo
     owner: root
@@ -107,6 +108,7 @@
   copy:
     dest: /etc/default/kubelet
     content: |
+      {{ _auto_generated_preamble }}
       KUBELET_EXTRA_ARGS=--cloud-provider=external
     owner: root
     group: root

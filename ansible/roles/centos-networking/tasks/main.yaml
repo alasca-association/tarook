@@ -3,6 +3,7 @@
   copy:
     dest: /etc/modules-load.d/custom-network-conf.conf
     content: |
+      {{ _auto_generated_preamble }}
       ip_tables
       ip_vs_sh
       ip_vs_wrr

@@ -1,3 +1,5 @@
+{{ _auto_generated_preamble }}
+
 [Unit]
 Description=CLOUD&HEAT Kubernetes Loadbalancer-as-a-Service Agent
 

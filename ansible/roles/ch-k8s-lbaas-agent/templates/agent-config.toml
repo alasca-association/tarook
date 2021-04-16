@@ -1,3 +1,5 @@
+{{ _auto_generated_preamble }}
+
 shared-secret={{ ch_k8s_lbaas_shared_secret | to_json }}
 bind-address="0.0.0.0"
 bind-port={{ ch_k8s_lbaas_agent_port | to_json }}

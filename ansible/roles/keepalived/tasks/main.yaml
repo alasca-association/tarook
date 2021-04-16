@@ -41,8 +41,8 @@
 
 - name: Copy notifier.sh
   become: yes
-  copy:
-    src: notifier.sh
+  template:
+    src: notifier.sh.j2
     dest: /etc/keepalived/
     owner: root
     group: root

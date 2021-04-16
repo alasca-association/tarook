@@ -1,4 +1,5 @@
 # shellcheck shell=sh
+{{ _auto_generated_preamble }}
 if [ -r /etc/kubernetes/admin.conf ] && [ "${KUBECONFIG:-}" = '' ]; then
         export KUBECONFIG=/etc/kubernetes/admin.conf
 fi

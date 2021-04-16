@@ -1,6 +1,8 @@
 #jinja2:lstrip_blocks: True
 #!/usr/sbin/nft -f
 
+{{ _auto_generated_preamble }}
+
 flush ruleset
 
 define wan = eth0
