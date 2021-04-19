@@ -342,3 +342,8 @@ gpg_id = "68AA582E81AD111C127F01273370EBE296354805"
 [terraform]
 subnet_cidr = "172.30.154.0/24"
 workers = 3
+
+# Install all instances based on a blockstorage device.
+# There for it will be created a volume for any instance. (disabled by default)
+#boot_from_volume = true
+

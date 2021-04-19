@@ -172,3 +172,8 @@ variable "timeout_time" {
   type = string
   default = "30m"
 }
+
+variable "volume_type" {
+  type = string
+  default = "ceph"
+}

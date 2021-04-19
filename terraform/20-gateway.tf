@@ -55,10 +55,12 @@ resource "openstack_networking_port_v2" "gateway" {
 }
 
 resource "openstack_blockstorage_volume_v2" "gateway-volume" {
-  count = var.boot_from_volume == true ? length(var.azs) : null
-  name     = "managed-k8s-gw-volume-${try(var.azs[count.index], count.index)}"
-  size     = data.openstack_compute_flavor_v2.gateway.disk
-  image_id = data.openstack_images_image_v2.gateway.id
+  count = var.boot_from_volume == true ? length(var.azs) : 0
+
+  name        = "managed-k8s-gw-volume-${try(var.azs[count.index], count.index)}"
+  size        = data.openstack_compute_flavor_v2.gateway.disk
+  image_id    = data.openstack_images_image_v2.gateway.id
+  volume_type = var.volume_type
 
   timeouts {
     create = var.timeout_time
@@ -67,38 +69,24 @@ resource "openstack_blockstorage_volume_v2" "gateway-volume" {
 }
 
 resource "openstack_compute_instance_v2" "gateway" {
-  count = var.boot_from_volume == false ? length(openstack_networking_port_v2.gateway) : null
+  count = length(openstack_networking_port_v2.gateway)
 
   name              = openstack_networking_port_v2.gateway[count.index].name
-  image_id          = data.openstack_images_image_v2.gateway.id
   flavor_id         = data.openstack_compute_flavor_v2.gateway.id
+  image_id          = var.boot_from_volume == false ? data.openstack_images_image_v2.gateway.id : null
   key_pair          = var.keypair
   availability_zone = var.enable_az_management ? var.azs[count.index] : null
   config_drive      = true
 
-  network {
-    port = openstack_networking_port_v2.gateway[count.index].id
-  }
-  lifecycle {
-    ignore_changes = [key_pair, image_id]
-  }
-}
-
-resource "openstack_compute_instance_v2" "boot-gateway" {
-  count = var.boot_from_volume == true ? length(openstack_networking_port_v2.gateway) : null
-
-  name              = openstack_networking_port_v2.gateway[count.index].name
-  flavor_id         = data.openstack_compute_flavor_v2.gateway.id
-  key_pair          = var.keypair
-  availability_zone = var.enable_az_management ? var.azs[count.index] : null
-  config_drive      = true
-
-  block_device {
-    uuid                  = openstack_blockstorage_volume_v2.gateway-volume[count.index].id
-    source_type           = "volume"
-    boot_index            = 0
-    destination_type      = "volume"
-    delete_on_termination = true
+  dynamic block_device {
+    for_each = var.boot_from_volume == true ? [length(openstack_networking_port_v2.gateway)] : []
+      content {
+      uuid                  = openstack_blockstorage_volume_v2.gateway-volume[count.index].id
+      source_type           = "volume"
+      boot_index            = 0
+      destination_type      = "volume"
+      delete_on_termination = true
+      }
   }
 
   network {
