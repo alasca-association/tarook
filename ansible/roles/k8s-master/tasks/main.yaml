@@ -96,6 +96,11 @@
         - "--node-name={{ inventory_hostname }}"
         - --config=/tmp/kubeadm-config.yaml
 
+  - name: Remove kubeadm-config.yaml
+    file:
+      path: /tmp/kubeadm-config.yaml
+      state: absent
+
   - name: Configure bridge-nf-call-iptables
     sysctl:
       name: net.bridge.bridge-nf-call-iptables
