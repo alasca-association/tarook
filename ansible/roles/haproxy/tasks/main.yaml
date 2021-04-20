@@ -21,7 +21,7 @@
     group: root
   register: haproxy
 
-- name: Start the haproxy service
+- name: Start the haproxy service # noqa no-handler
   become: yes
   systemd:
     daemon_reload: yes
