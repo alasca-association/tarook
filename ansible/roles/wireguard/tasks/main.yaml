@@ -150,7 +150,7 @@
     state: absent
   register: old_wg_service
 
-- name: Stop and disable old wireguard service
+- name: Stop and disable old wireguard service # noqa no-handler
   become: yes
   service:
     name: wireguard.service
@@ -158,13 +158,13 @@
     enabled: no
   when: old_wg_service is changed
 
-- name: Reload systemd to drop old wireguard service
+- name: Reload systemd to drop old wireguard service # noqa no-handler
   become: yes
   systemd:
     daemon_reload: yes
   when: old_wg_service is changed
 
-- name: Stop wg0 after removal of legacy service so that the new service can take over
+- name: Stop wg0 after removal of legacy service so that the new service can take over # noqa no-handler
   become: yes
   command:
   args:
