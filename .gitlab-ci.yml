@@ -15,7 +15,7 @@ tflint:
   - docker
 
 shellcheck:
-  image: koalaman/shellcheck-alpine:stable
+  image: koalaman/shellcheck-alpine:v0.7.1
   rules:
   - when: always
   stage: lint
