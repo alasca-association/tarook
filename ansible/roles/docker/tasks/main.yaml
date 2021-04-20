@@ -74,6 +74,7 @@
   file:
     path: /etc/docker
     state: directory
+    mode: 0755
 
 # If the docker daemon is freshly installed or updated,
 # we want to configure and restart it immediately

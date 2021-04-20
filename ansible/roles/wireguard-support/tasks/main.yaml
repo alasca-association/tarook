@@ -10,6 +10,9 @@
         Package: *
         Pin: release a=unstable
         Pin-Priority: 90
+      owner: root
+      group: root
+      mode: 0644
 
   - name: Add 'unstable' repo to sources.list.d
     lineinfile:
@@ -17,6 +20,9 @@
       create: yes
       state: present
       line: deb http://deb.debian.org/debian/ unstable main
+      owner: root
+      group: root
+      mode: 0644
 
   # This is an extra task because I'm not sure about the order packages are installed.
   # The header files must be available when DKMS wants to build the module

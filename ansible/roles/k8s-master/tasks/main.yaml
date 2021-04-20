@@ -39,6 +39,7 @@
   file:
     path: "{{ etc_dir }}"
     state: directory
+    mode: 0755
 
 - name: Spawn K8s cluster with 'kubeadm init'
   when: "local_kube_apiserver_status is failed and lb_kube_apiserver_status is failed"
@@ -87,6 +88,9 @@
     template:
       src: kubeadm-config.yaml.j2
       dest: /tmp/kubeadm-config.yaml
+      owner: root
+      group: root
+      mode: 0600
 
   - name: Run kubeadm init
     command:
@@ -162,6 +166,7 @@
     copy:
       content: " {{ kubeadm_token_out.stdout }}"
       dest: "{{ etc_dir }}/kubeadm_token"
+      mode: 0664
 
 - name: Join the K8s control plane
   when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed"

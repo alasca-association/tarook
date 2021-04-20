@@ -5,6 +5,7 @@
   file:
     path: "{{ etc_dir }}"
     state: directory
+    mode: 0755
 
 # TODO: do not use shell but proper ansible
 # TODO: ssh-keygen -F might be preferable in case the entry is hashed

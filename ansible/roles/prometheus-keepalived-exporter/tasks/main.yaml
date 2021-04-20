@@ -88,6 +88,9 @@
   copy:
     src: "{{ role_path }}/files/prometheus-keepalived-exporter.service"
     dest: /etc/systemd/system/
+    owner: root
+    group: root
+    mode: 0640
   register: pke_unit
 
 - name: Start & enable the systemd unit

@@ -23,6 +23,9 @@
       dest: /etc/apt/sources.list.d/kubernetes.list
       content: |
         deb https://apt.kubernetes.io/ kubernetes-xenial main
+      owner: root
+      group: root
+      mode: 0640
 
   - name: Install kubelet, kubeadm and kubectl
     # Note: check available version with `apt-cache policy <package name>`
@@ -35,6 +38,9 @@
   copy:
     src: kubernetes.repo
     dest: /etc/yum.repos.d/kubernetes.repo
+    owner: root
+    group: root
+    mode: 0640
   when: ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum'
 
 - name: Install kubelet, kubeadm and kubectl
@@ -102,6 +108,9 @@
     dest: /etc/default/kubelet
     content: |
       KUBELET_EXTRA_ARGS=--cloud-provider=external
+    owner: root
+    group: root
+    mode: 0640
   notify: Restart kubelet
 
 # kubelet should be restarted immediately

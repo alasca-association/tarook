@@ -95,6 +95,7 @@
       copy:
         content: "{{ wg_pubkey.stdout }}"
         dest: "{{ wg_local_pub_path }}"
+        mode: 0644
 
 - name: Create /etc/wireguard/wg0.conf on gateway side
   become: yes
@@ -133,6 +134,9 @@
     dest: /etc/sysctl.d/wireguard.conf
     content: |
       net.ipv4.ip_forward=1
+    owner: root
+    group: root
+    mode: 0640
 
 - name: Load /etc/sysctl.d/wireguard.conf on the wireguard VPN server
   become: yes

@@ -14,6 +14,9 @@
     content: |
       ARGS=--haproxy.scrape-uri=unix:{{ haproxy_admin_sock }}
     dest: "/etc/default/prometheus-haproxy-exporter"
+    owner: root
+    group: root
+    mode: 0640
 
 - name: Add user prometheus to group haproxy to access admin sock
   become: yes
