@@ -15,7 +15,9 @@ tflint:
   - docker
 
 shellcheck:
-  image: koalaman/shellcheck-alpine:v0.7.1
+  variables:
+    SHELLCHECK_IMAGE_TAG: v0.7.2
+  image: koalaman/shellcheck-alpine:$SHELLCHECK_IMAGE_TAG
   rules:
   - when: always
   stage: lint
