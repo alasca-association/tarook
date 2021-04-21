@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-if [ "x${CI:-}" == 'x' ]; then
+if [ "${CI:-}" == '' ]; then
     # You do not want to run this against your production cluster.
     echo 'This script can only be run in a CI context for safety reasons.' >&2
     exit 2

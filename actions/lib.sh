@@ -16,9 +16,9 @@ wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
 ansible_wg_template="$ansible_inventory_base/.etc/wg_${wg_user}.conf"
 
 
-if [ "x${MANAGED_K8S_COLOR_OUTPUT:-}" = 'xtrue' ]; then
+if [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'true' ]; then
     use_color='true'
-elif [ "x${MANAGED_K8S_COLOR_OUTPUT:-}" = 'xfalse' ]; then
+elif [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'false' ]; then
     use_color='false'
 elif [ -t 1 ] || [ -t 2 ]; then
     use_color='true'
@@ -27,11 +27,11 @@ else
 fi
 
 function color_enabled() {
-    [ "x$use_color" = 'xtrue' ]
+    [ "$use_color" = 'true' ]
 }
 
 function disruption_allowed() {
-    [ "x${MANAGED_K8S_RELEASE_THE_KRAKEN:-}" = 'xtrue' ]
+    [ "${MANAGED_K8S_RELEASE_THE_KRAKEN:-}" = 'true' ]
 }
 
 function require_disruption() {
