@@ -343,10 +343,9 @@ gpg_id = "68AA582E81AD111C127F01273370EBE296354805"
 subnet_cidr = "172.30.154.0/24"
 workers = 3
 
-# Install all instances based on a blockstorage device.
-# There for it will be created a volume for any instance. (disabled by default)
+# If true, create block volume for each instance and boot from there.
+# Equivalent to `openstack server create --boot-from-volume […]. (`false` by default)
 #create_root_disk_on_volume = true
 
-# There for it will be used the volume type ("ceph" by default)
+# Volume type that is used if `create_root_disk_on_volume` is true. ("ceph" by default)
 #root_disk_volume_type = "ceph"
-
