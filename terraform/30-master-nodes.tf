@@ -23,12 +23,12 @@ data "openstack_images_image_v2" "master" {
 }
 
 resource "openstack_blockstorage_volume_v2" "master-volume" {
-  count = var.boot_from_volume == true ? var.masters : 0
+  count = var.create_root_disk_on_volume == true ? var.masters : 0
 
   name        = "managed-k8s-master-volume-${try(var.master_names[count.index], count.index)}"
   size        = data.openstack_compute_flavor_v2.master[count.index].disk
   image_id    = data.openstack_images_image_v2.master[count.index].id
-  volume_type = var.volume_type
+  volume_type = var.root_disk_volume_type
 
   timeouts {
     create = var.timeout_time
@@ -43,11 +43,12 @@ resource "openstack_compute_instance_v2" "master" {
   availability_zone = var.enable_az_management ? try(var.master_azs[count.index], var.azs[count.index % length(var.azs)]) : null
   config_drive      = true
   flavor_id         = data.openstack_compute_flavor_v2.master[count.index].id
-  image_id          = var.boot_from_volume == false ? data.openstack_images_image_v2.master[count.index].id : null
+  image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.master[count.index].id : null
   key_pair          = var.keypair
 
   dynamic block_device {
-    for_each = var.boot_from_volume == true ? [var.masters] : []
+    # Using "for_each" for check the conditional "create_root_disk_on_volume". It's not working as a loop. "dummy" should make this just more visible.
+    for_each = var.create_root_disk_on_volume == true ? ["dummy"] : []
       content {
         uuid                  = openstack_blockstorage_volume_v2.master-volume[count.index].id
         source_type           = "volume"

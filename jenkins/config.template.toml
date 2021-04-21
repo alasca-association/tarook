@@ -345,5 +345,8 @@ workers = 3
 
 # Install all instances based on a blockstorage device.
 # There for it will be created a volume for any instance. (disabled by default)
-#boot_from_volume = true
+#create_root_disk_on_volume = true
+
+# There for it will be used the volume type ("ceph" by default)
+#root_disk_volume_type = "ceph"
 

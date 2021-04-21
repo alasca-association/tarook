@@ -163,7 +163,7 @@ variable "enable_az_management" {
   default = true
 }
 
-variable "boot_from_volume" {
+variable "create_root_disk_on_volume" {
   type = bool
   default = false
 }
@@ -173,7 +173,7 @@ variable "timeout_time" {
   default = "30m"
 }
 
-variable "volume_type" {
+variable "root_disk_volume_type" {
   type = string
   default = "ceph"
 }
