@@ -7,7 +7,7 @@ actions_dir="$(dirname "$0")"
 require_disruption
 
 IFS=$'\n'
-if [ "x${MANAGED_K8S_NUKE_FROM_ORBIT:-}" = 'xtrue' ]; then
+if [ "${MANAGED_K8S_NUKE_FROM_ORBIT:-}" = 'true' ]; then
     container_id="$(jq -r '((.resources | map(select(.name == "thanos_data" and .type == "openstack_objectstorage_container_v1")) | first).instances | first).attributes.id' "$terraform_state_dir/terraform.tfstate")"
     if [ "x$container_id" != 'xnull' ]; then
         printf 'Deleting object storage container contents of %q ...' "$container_id"
