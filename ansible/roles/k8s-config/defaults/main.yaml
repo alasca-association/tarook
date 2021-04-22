@@ -55,7 +55,7 @@ image_version_map:
       operator: "v1.2.3"
       toolbox: "v1.2.3"
     calico_version: "3.17.1" # Version of Calico binaries and images to be deployed
-    
+
   "1.19":
     ch_k8s_lbaas: "0.3.3"
     local_volume:

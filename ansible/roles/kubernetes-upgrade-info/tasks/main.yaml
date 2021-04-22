@@ -61,24 +61,27 @@
     fail:
       msg: |
         Installed version is {{ k8s_installed_version }}, which differs from
-        the configured version {{ k8s_version }} and the target version
-        {{ next_k8s_version }}.
+        the configured version {{ k8s_version }} and the target version {{ next_k8s_version }}.
     when: "k8s_installed_version != k8s_version and k8s_installed_version != next_k8s_version"
 
-  - name: Require upgrade to 1.18.x
+  - name: Require upgrade to {{ next_k8s_version }}
     fail:
       msg: |
         The target version was set to {{ next_k8s_version | default('') | to_json }}.
-        This is not a patch version of 1.18. You need to set the version via
+        This is not a patch version of {{ next_minor_version }} You need to set the version via
         the ansible variable next_k8s_version.
-    when: "next_k8s_version is not defined or not next_k8s_version.startswith('1.18.')"
+    when: "next_k8s_version is not defined or not next_k8s_version.startswith(next_minor_version)"
 
-  - name: Require upgrade from 1.17.x
+  - name: Require upgrade from {{ k8s_installed_version }}
     fail:
       msg: |
-        The target version is 1.18.x, so the upgrade can only start with a
-        cluster on 1.17.x or 1.18.x.
-    when: "not (k8s_version.startswith('1.17.') or k8s_version.startswith('1.18.'))"
+        The target version is {{ next_minor_version }}.x, so the upgrade can only start with a
+        cluster on 1.17.x to 1.19.x and has to be higher than the version {{ k8s_installed_version }}.
+    when: |
+      not (k8s_version.startswith('1.17.') or
+           k8s_version.startswith('1.18.') or
+           k8s_version.startswith('1.19.')
+          )
 
 - name: Detect if upgrade is already done
   set_fact:
