@@ -342,3 +342,10 @@ gpg_id = "68AA582E81AD111C127F01273370EBE296354805"
 [terraform]
 subnet_cidr = "172.30.154.0/24"
 workers = 3
+
+# If true, create block volume for each instance and boot from there.
+# Equivalent to `openstack server create --boot-from-volume […]. (`false` by default)
+#create_root_disk_on_volume = true
+
+# Volume type that is used if `create_root_disk_on_volume` is true. ("three_times_replicated" by default)
+#root_disk_volume_type = "three_times_replicated"

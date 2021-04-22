@@ -162,3 +162,18 @@ variable "enable_az_management" {
   type    = bool
   default = true
 }
+
+variable "create_root_disk_on_volume" {
+  type = bool
+  default = false
+}
+
+variable "timeout_time" {
+  type = string
+  default = "30m"
+}
+
+variable "root_disk_volume_type" {
+  type = string
+  default = "three_times_replicated"
+}
