@@ -175,5 +175,5 @@ variable "timeout_time" {
 
 variable "root_disk_volume_type" {
   type = string
-  default = "ceph"
+  default = "three_times_replicated"
 }

@@ -347,5 +347,5 @@ workers = 3
 # Equivalent to `openstack server create --boot-from-volume […]. (`false` by default)
 #create_root_disk_on_volume = true
 
-# Volume type that is used if `create_root_disk_on_volume` is true. ("ceph" by default)
-#root_disk_volume_type = "ceph"
+# Volume type that is used if `create_root_disk_on_volume` is true. ("three_times_replicated" by default)
+#root_disk_volume_type = "three_times_replicated"
