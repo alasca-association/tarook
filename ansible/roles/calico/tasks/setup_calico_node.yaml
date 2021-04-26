@@ -1,20 +1,108 @@
-- name: Deploy calico/node
+# ------------------------------------------------------ #
+# The following part checks the calico/node certificate. #
+# ------------------------------------------------------ #
+
+- name: Check local and remote presence of calico/node certificate
+  vars:
+    calico_node_crt_path: "{{ etc_dir }}/calico-node.crt"
+    calico_node_key_path: "{{ etc_dir }}/calico-node.key"
+  block:
+  - name: Check if calico/node private key is locally present
+    delegate_to: localhost
+    stat:
+      path: "{{ calico_node_key_path }}"
+    register: calico_node_key_local
+
+  - name: Check if calico/node signed certificate is locally present
+    delegate_to: localhost
+    stat:
+      path: "{{ calico_node_crt_path }}"
+    register: calico_node_crt_local
+
+  - name: Fetch calico/node Secret from k8s cluster
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s_info:
+      api_version: v1
+      kind: Secret
+      name: calico-node-certs
+      namespace: kube-system
+    register: calico_node_crt_secret
+
+- name: Validate local calico/node crt on expiration
+  when: calico_node_crt_local.stat.exists
+  block:
+  - name: Collect expiration information of the calico/node crt
+    delegate_to: localhost
+    vars:
+      calico_node_crt_path: "{{ etc_dir }}/calico-node.crt"
+    openssl_certificate_info:
+      path: "{{ calico_node_crt_path }}"
+      valid_at:
+        point_1: "+35w"
+        point_2: "+26w"
+    register: calico_node_crt_valid
+
+  # ToDo send a notification
+  - name: Warn if the calico/node crt expires in less than 8 months from now
+    debug:
+      msg: "### WARNING ###\nThe calico/node certificate expires in less than 8 months from now"
+    when: not calico_node_crt_valid.valid_at.point_1
+  
+  - name: Warn if the calico/node crt expires in less than 6 months from now
+    debug:
+      msg: "### WARNING ###\nThe calico/node certificate expires in less than 6 months from now. It will be regenerated."
+    when: not calico_node_crt_valid.valid_at.point_2
+
+- name: Validate local calico/node crt against the remote one (Secret)
+  when: calico_node_crt_local.stat.exists and calico_node_crt_secret.resources
+  block:
+  - name: Check that local calico/node crt equals the one stored in the Secret
+    vars:
+      calico_node_crt_local_content: "{{ lookup('file', '{{ etc_dir }}/calico-node.crt') | trim | to_json }}"
+      calico_node_crt_remote_content: "{{ calico_node_crt_secret.resources[0].data['calico-node.crt'] | trim | to_json }}"
+    debug:
+      msg: "The local calico/node certificate and the remote one (Secret) do equal!"
+    when: calico_node_crt_local_content == calico_node_crt_remote_content
+    register: calico_node_crt_local_remote_equality
+  
+  - name: Fail if the local calico/node crt and the remote one do not match
+    fail:
+      msg: "The local calico/node and the one stored in the Secret do not equal!\nSomething is weird."
+    when: not calico_node_crt_local_remote_equality
+
+# Generate and upload a new certificate if
+# - first run (does not exist)
+# - certificate expires soon
+- name: Generate calico/node certificate and create the Secret on k8s
   vars:
     typhaca_crt_path: "{{ etc_dir }}/typhaca.crt"
     typhaca_key_path: "{{ etc_dir }}/typhaca.key"
     calico_node_crt_path: "{{ etc_dir }}/calico-node.crt"
-    calico_node_csr_path: "{{ etc_dir }}/calico-node.csr"
     calico_node_key_path: "{{ etc_dir }}/calico-node.key"
+    calico_node_csr_path: "{{ etc_dir }}/calico-node.csr"
   block:
-  - name: Generate a new OpenSSL private key for calico/node
+  # The calico/node private key is regenerated, if the calico/node certificate is short to expire. 
+  # This will also lead to the recreation of the calico/node certificate. The certificate is also
+  # recreated if the Typha CA certificate has changed.
+  - name: Regenerate (force) private key of calico/node certificate if it is short to expire
+    when: not (calico_node_crt_valid.valid_at.point_2  | default('false'))
     delegate_to: localhost
     openssl_privatekey:
-      mode: 0600
       path: "{{ calico_node_key_path }}"
+      mode: 0600
       size: 4096
-      force: yes # regenerate the key even if it exists. leads to a new key on every run
+      force: yes
 
-  - name: Generate a new OpenSSL Certificate Signing Request (CSR) for calico/node
+  # TODO: we should protect this with a password and store it in a more secure place
+  - name: Generate private key for calico/node certificate
+    delegate_to: localhost
+    openssl_privatekey:
+      path: "{{ calico_node_key_path }}"
+      mode: 0600
+      size: 4096
+
+  - name: Generate Certificate Signing Request for calico/node certificate
     delegate_to: localhost
     openssl_csr:
       mode: 0664
@@ -25,9 +113,8 @@
         CN: calico-node
       basic_constraints:
         - CA:TRUE
-      force: yes # force regeneration of certificate signing request
 
-  - name: Generate/Sign a new OpenSSL Certificate Signing Request for calico/node
+  - name: Sign the Certificate Signing Request of calico/node
     delegate_to: localhost
     openssl_certificate:
       mode: 0664
@@ -37,9 +124,10 @@
       ownca_privatekey_path: "{{ typhaca_key_path }}"
       entrust_not_after: "+365d"
       provider: ownca
-      force: yes # force regeneration of certificate
+    register: calico_node_crt_changed
 
-  - name: Apply new calico/node secret with calico/node private key and crt
+  # The Secret should always be up-to-date
+  - name: Apply calico/node private key and certificate to Secret
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
@@ -57,10 +145,15 @@
         fail_on_error: yes
         strict: yes
 
-  # Provision RBAC
+# --------------------------------------- #
+# The following part deploys calico/node. #
+# --------------------------------------- #
+
+- name: Apply calico/node resources
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
   - name: Create ServiceAccount for calico/node, configure RBAC, ClusterRole, ClusterRoleBinding
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
@@ -72,8 +165,6 @@
     - calico-node-serviceaccount.yaml
 
   - name: Create calico/node PodSecurityPolicy
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
@@ -84,23 +175,11 @@
     with_items:
     - calico-node-psp.yaml
 
-  - name: Check if calico/node DaemonSet exists
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s_info:
-      api_version: v1
-      kind: DaemonSet
-      name: calico-node
-      namespace: kube-system
-    register: calico_node_daemonset_presence # check if this is a rerun. then we need to rollout restart
-
-  # Install Daemon-Set
+  # Install calico/node Daemon-Set
   # Felix: - Calico per-node daemon
   # BIRD: - Distribution of routing information via the BGP protocol
   # confd: - watches Calico datastore for config changes and updates BIRDs config files
   - name: Deploy Calico node DaemonSet
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
       apply: yes
       definition: "{{ lookup('template', item) }}"
@@ -110,11 +189,12 @@
     with_items:
     - calico-node-daemonset.yaml.j2
 
-  # We need to restart the calico/node Pods on a rerun, because the keys and certificates are updated
+- name: Restart calico/node Pods on certificate renewal
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  when: calico_node_crt_changed.changed
+  block:
   - name: Restart calico/node Pods
-    when: calico_node_daemonset_presence.resources
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
     command:
       argv:
         - kubectl
@@ -126,9 +206,6 @@
         - kube-system
 
   - name: Wait for Rollout Restart of calico/node Pods to finish
-    when: calico_node_daemonset_presence.resources
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
     command:
       argv:
         - kubectl
@@ -139,22 +216,21 @@
         - -n
         - kube-system
 
-  - name: Give k8s time to terminate remaining calico/node Pods
-    when: calico_node_daemonset_presence.resources
+  - name: Give k8s time (15s) to terminate remaining calico/node Pods
     pause:
       seconds: 15
 
-  - name: Wait for calico/node Pods to get Ready
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command:
-      argv:
-        - kubectl
-        - wait
-        - -n
-        - kube-system
-        - -l
-        - app.kubernetes.io/name=calico,app.kubernetes.io/component=calico-node
-        - --for=condition=Ready
-        - pods
-        - --timeout=120s
+- name: Wait for calico/node Pods to get Ready
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  command:
+    argv:
+      - kubectl
+      - wait
+      - -n
+      - kube-system
+      - -l
+      - app.kubernetes.io/name=calico,app.kubernetes.io/component=calico-node
+      - --for=condition=Ready
+      - pods
+      - --timeout=120s
