@@ -4,11 +4,11 @@ terraform {
       source = "hashicorp/local"
     }
     openstack = {
-      source = "terraform-providers/openstack"
+      source = "terraform-provider-openstack/openstack"
     }
     template = {
       source = "hashicorp/template"
     }
   }
-  required_version = ">= 0.13"
+  required_version = ">= 0.14"
 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-actions_dir="$(dirname "$0")"
+actions_dir="$(realpath "$(dirname "$0")")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
@@ -11,11 +11,12 @@ if [ "$(terraform -v -json | jq -r '.terraform_version' | cut -d'.' -f2)" -lt "$
 fi
 
 cd "$terraform_state_dir"
-run terraform init "$terraform_module"
-run terraform plan --var-file=./config.tfvars.json --out "$terraform_plan" "$terraform_module"
+export TF_DATA_DIR="$terraform_state_dir/.terraform" 
+run terraform -chdir="$terraform_module" init
+run terraform -chdir="$terraform_module" plan --var-file="$terraform_state_dir/config.tfvars.json" --out "$terraform_plan"
 # strict mode terminates the execution of this script immediately
 set +e
-terraform show --json "$terraform_plan" | python3 ../"$actions_dir/check_plan.py"
+terraform -chdir="$terraform_module" show -json "$terraform_plan" | python3 "$actions_dir/check_plan.py"
 rc=$?
 set -e
 RC_DISRUPTION=47
@@ -34,4 +35,4 @@ elif [ $rc != $RC_NO_DISRUPTION ] && [ $rc != $RC_DISRUPTION ]; then
     errorf 'error during execution of check_plan.py. Aborting' >&2
     exit 4
 fi
-run terraform apply "$terraform_plan"
+run terraform -chdir="$terraform_module" apply "$terraform_plan"

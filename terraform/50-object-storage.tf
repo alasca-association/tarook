@@ -12,6 +12,6 @@ data "template_file" "final_all" {
 
 resource "local_file" "final_all" {
   content         = data.template_file.final_all.rendered
-  filename        = "./../inventory/03_final/group_vars/all/rendered.yaml"
+  filename        = "${path.cwd}/../inventory/03_final/group_vars/all/rendered.yaml"
   file_permission = 0640
 }
