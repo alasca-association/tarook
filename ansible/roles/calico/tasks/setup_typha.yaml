@@ -146,18 +146,113 @@
         fail_on_error: yes
         strict: yes
 
-  # Create the Typha key and certificate signing request (CSR)
-  - name: Generate a new OpenSSL private key for Typha
+# ------------------------------------------------ #
+# The following part checks the Typha certificate. #
+# ------------------------------------------------ #
+
+- name: Check local and remote presence of Typha certificate
+  vars:
+    typha_crt_path: "{{ etc_dir }}/typha.crt"
+    typha_key_path: "{{ etc_dir }}/typha.key"
+  block:
+  - name: Check if Typha private key is locally present
+    delegate_to: localhost
+    stat:
+      path: "{{ typha_key_path }}"
+    register: typha_key_local
+
+  - name: Check if Typha signed certificate is locally present
+    delegate_to: localhost
+    stat:
+      path: "{{ typha_crt_path }}"
+    register: typha_crt_local
+
+  - name: Fetch Typha Secret from k8s cluster
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s_info:
+      api_version: v1
+      kind: Secret
+      name: calico-typha-certs
+      namespace: kube-system
+    register: typha_crt_secret
+
+- name: Validate local Typha crt on expiration
+  when: typha_crt_local.stat.exists
+  block:
+  - name: Collect expiration information of the Typha crt
+    delegate_to: localhost
+    vars:
+      typha_crt_path: "{{ etc_dir }}/typha.crt"
+    openssl_certificate_info:
+      path: "{{ typha_crt_path }}"
+      valid_at:
+        point_1: "+35w"
+        point_2: "+26w"
+    register: typha_crt_valid
+
+  # ToDo send a notification
+  - name: Warn if the Typha crt expires in less than 8 months from now
+    debug:
+      msg: "### WARNING ###\nThe Typha certificate expires in less than 8 months from now"
+    when: not typha_crt_valid.valid_at.point_1
+
+  - name: Warn if the Typha crt expires in less than 6 months from now
+    debug:
+      msg: "### WARNING ###\nThe Typha certificate expires in less than 6 months from now. It will be regenerated."
+    when: not typha_crt_valid.valid_at.point_2
+
+- name: Validate local Typha crt against the remote (Secret)
+  when: typha_crt_local.stat.exists and typha_crt_secret.resources
+  block:
+  - name: Check that local Typha crt equals the one stored in the Secret
+    vars:
+      typha_crt_local_content: "{{ lookup('file', '{{ etc_dir }}/typha.crt') | trim | to_json }}"
+      typha_crt_remote_content: "{{ typha_crt_secret.resources[0].data['typha.crt'] | b64decode | trim | to_json }}"
+    debug:
+      msg: "The local Typha certificate and the remote one do equal!"
+    when: typha_crt_local_content == typha_crt_remote_content
+    register: typha_crt_local_remote_equality
+
+  - name: Fail if the local Typha crt and the remote one do not match
+    fail:
+      msg: "The local Typha and the one stored in the Secret do not equal!\nSomething is weird."
+    when: not typha_crt_local_remote_equality
+
+# Generate and upload a new certificate if
+# - first run (does not exist)
+# - certificate expires soon
+- name: Generate Typha certificate and create the Secret on k8s
+  vars:
+    typhaca_crt_path: "{{ etc_dir }}/typhaca.crt"
+    typhaca_key_path: "{{ etc_dir }}/typhaca.key"
+    typha_crt_path: "{{ etc_dir }}/typha.crt"
+    typha_csr_path: "{{ etc_dir }}/typha.csr"
+    typha_key_path: "{{ etc_dir }}/typha.key"
+  block:
+  # The Typha private key is regenerated, if the Typha certificate is short to expire. This will
+  # also lead to the recreation of the Typha certificate. The certificate is also recreated, if the
+  # Typha CA certificate has changed.
+  - name: Regenerate (force) private key of Typha certificate if crt is short to expire
+    when: not (typha_crt_valid.valid_at.point_2  | default('false'))
     delegate_to: localhost
     openssl_privatekey:
       mode: 0600
       path: "{{ typha_key_path }}"
       size: 4096
-      force: yes # force generation even if it already exists
+      force: yes
+  
+  # TODO: we should protect this with a password and store it in a more secure place
+  - name: Generate private key for Typha certificate
+    delegate_to: localhost
+    openssl_privatekey:
+      mode: 0600
+      path: "{{ typha_key_path }}"
+      size: 4096
 
   # The certificate presents the Common Name (CN) as calico-typha. 
   # calico/node will be configured to verify this name.
-  - name: Generate a new OpenSSL Certificate Signing Request (CSR) for Typha
+  - name: Generate Certificate Signing Request for Typha certificate
     delegate_to: localhost
     openssl_csr:
       mode: 0664
@@ -168,9 +263,8 @@
         CN: calico-typha
       basic_constraints:
         - CA:TRUE
-      force: yes # force the regeneration of the certificate signing request
 
-  - name: Generate/Sign a new OpenSSl Certificate for Signing Request of Typha
+  - name: Sign the Certificate Signing Request of Typha
     delegate_to: localhost
     openssl_certificate:
       mode: 0664
@@ -180,9 +274,10 @@
       ownca_privatekey_path: "{{ typhaca_key_path }}"
       entrust_not_after: "+365d"
       provider: ownca
-      force: yes # Generate the certificate even if it already exists
+    register: typha_crt_changed
 
-  - name: Apply new Typha secret with Typha private key and crt
+  # The Secret should always be up-to-date
+  - name: Apply Typha private key and certificate to Secret
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
@@ -200,9 +295,15 @@
         fail_on_error: yes
         strict: yes
 
+# --------------------------------- #
+# The following part deploys Typha. #
+# --------------------------------- #
+
+- name: Apply Typha resources
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
   - name: Create ServiceAccount for calico-typha, configure RBAC, ClusterRole, ClusterRoleBinding
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
@@ -214,8 +315,6 @@
     - typha-serviceaccount.yaml
 
   - name: Create Typha PodSecurityPolicy
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
@@ -226,20 +325,7 @@
     with_items:
     - typha-psp.yaml
 
-  # check if this is a rerun. then we need to rollout restart
-  - name: Check if Typha Deployment exists
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s_info:
-      api_version: v1
-      kind: Deployment
-      name: calico-typha
-      namespace: kube-system
-    register: calico_typha_deployment_presence
-
   - name: Deploy Typha Deployment
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
       definition: "{{ lookup('template', item) }}"
       apply: yes
@@ -261,11 +347,12 @@
     with_items:
     - typha-service.yaml
 
-  # We need to restart the Typha Pods on a rerun, because the keys and certificates are updated
+- name: Restart Typha Pods on certificate_renewal
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  when: typha_crt_changed.changed
+  block:
   - name: Restart Typha Pods
-    when: calico_typha_deployment_presence.resources
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
     command:
       argv:
         - kubectl
@@ -277,9 +364,6 @@
         - kube-system
 
   - name: Wait for Rollout Restart of Typha Pods to finish
-    when: calico_typha_deployment_presence.resources
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
     command:
       argv:
         - kubectl
@@ -290,25 +374,24 @@
         - -n
         - kube-system
 
-  - name: Give k8s time to terminate remaining Typha Pods
-    when: calico_typha_deployment_presence.resources
+  - name: Give k8s time (15s) to terminate remaining Typha Pods
     pause:
       seconds: 15
 
-  - name: Wait for Typha Pods to get Ready
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    command:
-      argv:
-        - kubectl
-        - wait
-        - -n
-        - kube-system
-        - -l
-        - app.kubernetes.io/name=calico,app.kubernetes.io/component=calico-typha
-        - --for=condition=Ready
-        - pods
-        - --timeout=120s
+- name: Wait for Typha Pods to get Ready
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  command:
+    argv:
+      - kubectl
+      - wait
+      - -n
+      - kube-system
+      - -l
+      - app.kubernetes.io/name=calico,app.kubernetes.io/component=calico-typha
+      - --for=condition=Ready
+      - pods
+      - --timeout=120s
 
 # TODO: Validate that Typha is using TLS?
 # https://docs.projectcalico.org/getting-started/kubernetes/hardway/install-typha#install-service

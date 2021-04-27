@@ -48,7 +48,7 @@
     debug:
       msg: "### WARNING ###\nThe calico/node certificate expires in less than 8 months from now"
     when: not calico_node_crt_valid.valid_at.point_1
-  
+
   - name: Warn if the calico/node crt expires in less than 6 months from now
     debug:
       msg: "### WARNING ###\nThe calico/node certificate expires in less than 6 months from now. It will be regenerated."
@@ -65,7 +65,7 @@
       msg: "The local calico/node certificate and the remote one (Secret) do equal!"
     when: calico_node_crt_local_content == calico_node_crt_remote_content
     register: calico_node_crt_local_remote_equality
-  
+
   - name: Fail if the local calico/node crt and the remote one do not match
     fail:
       msg: "The local calico/node and the one stored in the Secret do not equal!\nSomething is weird."
