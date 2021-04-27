@@ -186,6 +186,7 @@
       validate:
         fail_on_error: yes
         strict: yes
+      wait: yes
     with_items:
     - calico-node-daemonset.yaml.j2
 
@@ -215,22 +216,3 @@
         - calico-node
         - -n
         - kube-system
-
-  - name: Give k8s time (15s) to terminate remaining calico/node Pods
-    pause:
-      seconds: 15
-
-- name: Wait for calico/node Pods to get Ready
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  command:
-    argv:
-      - kubectl
-      - wait
-      - -n
-      - kube-system
-      - -l
-      - app.kubernetes.io/name=calico,app.kubernetes.io/component=calico-node
-      - --for=condition=Ready
-      - pods
-      - --timeout=120s

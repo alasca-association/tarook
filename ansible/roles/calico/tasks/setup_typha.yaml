@@ -241,7 +241,7 @@
       path: "{{ typha_key_path }}"
       size: 4096
       force: yes
-  
+
   # TODO: we should protect this with a password and store it in a more secure place
   - name: Generate private key for Typha certificate
     delegate_to: localhost
@@ -344,6 +344,7 @@
       validate:
         fail_on_error: yes
         strict: yes
+      wait: yes
     with_items:
     - typha-service.yaml
 
@@ -373,25 +374,6 @@
         - calico-typha
         - -n
         - kube-system
-
-  - name: Give k8s time (15s) to terminate remaining Typha Pods
-    pause:
-      seconds: 15
-
-- name: Wait for Typha Pods to get Ready
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  command:
-    argv:
-      - kubectl
-      - wait
-      - -n
-      - kube-system
-      - -l
-      - app.kubernetes.io/name=calico,app.kubernetes.io/component=calico-typha
-      - --for=condition=Ready
-      - pods
-      - --timeout=120s
 
 # TODO: Validate that Typha is using TLS?
 # https://docs.projectcalico.org/getting-started/kubernetes/hardway/install-typha#install-service
