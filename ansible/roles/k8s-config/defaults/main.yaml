@@ -25,7 +25,7 @@ k8s_version_minor: '{{ k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1")
 # of versioning.
 image_version_map:
   "1.17":
-    ch_k8s_lbaas: "0.3.2"
+    ch_k8s_lbaas: "0.3.3"
     local_volume:
       local_volume_provisioner: "v2.3.4"
     kube_router:
