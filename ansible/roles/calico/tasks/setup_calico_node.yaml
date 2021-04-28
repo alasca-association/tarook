@@ -16,6 +16,11 @@
       path: "{{ calico_node_crt_path }}"
     register: calico_node_crt_local
 
+  - name: Fail if certificate but private key does not exist for calico/node
+    fail:
+      msg: "### WARNING ###\nThe certificate of calico/node is locally present, but not the private key!"
+    when: calico_node_crt_local.stat.exists and not calico_node_key_local.stat.exists
+
   - name: Fetch calico/node Secret from k8s cluster
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf

@@ -16,6 +16,11 @@
       path: "{{ typhaca_crt_path }}"
     register: typhaca_crt_local
 
+  - name: Fail if certificate but private key does not exist for the Typha CA
+    fail:
+      msg: "### WARNING ###\nThe certificate of the Typha CA is locally present, but not the private key!"
+    when: typhaca_crt_local.stat.exists and not typhaca_key_local.stat.exists
+
   - name: Fetch Typha CA ConfigMap from k8s cluster
     become: yes
     environment:
@@ -154,6 +159,11 @@
     stat:
       path: "{{ typha_crt_path }}"
     register: typha_crt_local
+
+  - name: Fail if certificate but private key does not exist for Typha
+    fail:
+      msg: "### WARNING ###\nThe certificate of Typha is locally present, but not the private key!"
+    when: typha_crt_local.stat.exists and not typha_key_local.stat.exists
 
   - name: Fetch Typha Secret from k8s cluster
     environment:
