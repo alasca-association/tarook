@@ -12,3 +12,18 @@ calicoctl_binary_checksums:
   "3.17.1": "sha256:6fb8ed009a3c1ab49bba0be65609242b8a641ffee262da5e7dd954753054de66"
 
 calicoctl_binary_checksum: "{{ calicoctl_binary_checksums[image_versions.calico_version] | default('invalid checksum') }}"
+
+own_ca_crt_path: "{{ etc_dir }}/ca.crt"
+own_ca_key_path: "{{ etc_dir }}/ca.key"
+calico_cni_key_path: "{{ etc_dir }}/calico/calico-cni.key"
+calico_cni_csr_path: "{{ etc_dir }}/calico/calico-cni.csr"
+calico_cni_crt_path: "{{ etc_dir }}/calico/calico-cni.crt"
+typhaca_crt_path: "{{ etc_dir }}/calico/typhaca.crt"
+typhaca_csr_path: "{{ etc_dir }}/calico/typhaca.csr"
+typhaca_key_path: "{{ etc_dir }}/calico/typhaca.key"
+typha_crt_path: "{{ etc_dir }}/calico/typha.crt"
+typha_csr_path: "{{ etc_dir }}/calico/typha.csr"
+typha_key_path: "{{ etc_dir }}/calico/typha.key"
+calico_node_crt_path: "{{ etc_dir }}/calico/calico-node.crt"
+calico_node_csr_path: "{{ etc_dir }}/calico/calico-node.csr"
+calico_node_key_path: "{{ etc_dir }}/calico/calico-node.key"

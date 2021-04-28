@@ -3,9 +3,6 @@
 # ------------------------------------------------------ #
 
 - name: Check local and remote presence of calico/node certificate
-  vars:
-    calico_node_crt_path: "{{ etc_dir }}/calico/calico-node.crt"
-    calico_node_key_path: "{{ etc_dir }}/calico/calico-node.key"
   block:
   - name: Check if calico/node private key is locally present
     delegate_to: localhost
@@ -34,8 +31,6 @@
   block:
   - name: Collect expiration information of the calico/node crt
     delegate_to: localhost
-    vars:
-      calico_node_crt_path: "{{ etc_dir }}/calico/calico-node.crt"
     openssl_certificate_info:
       path: "{{ calico_node_crt_path }}"
       valid_at:
@@ -75,12 +70,6 @@
 # - first run (does not exist)
 # - certificate expires soon
 - name: Generate calico/node certificate and create the Secret on k8s
-  vars:
-    typhaca_crt_path: "{{ etc_dir }}/calico/typhaca.crt"
-    typhaca_key_path: "{{ etc_dir }}/calico/typhaca.key"
-    calico_node_crt_path: "{{ etc_dir }}/calico/calico-node.crt"
-    calico_node_key_path: "{{ etc_dir }}/calico/calico-node.key"
-    calico_node_csr_path: "{{ etc_dir }}/calico/calico-node.csr"
   block:
   # The calico/node private key is regenerated, if the calico/node certificate is short to expire. 
   # This will also lead to the recreation of the calico/node certificate. The certificate is also

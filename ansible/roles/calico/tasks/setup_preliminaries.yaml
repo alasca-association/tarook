@@ -16,9 +16,6 @@
   - calico-crds.yaml
 
 - name: Check local presence of calico-kubeconfig certificate
-  vars:
-    calico_cni_key_path: "{{ etc_dir }}/calico/calico-cni.key"
-    calico_cni_crt_path: "{{ etc_dir }}/calico/calico-cni.crt"
   block:
   - name: Check if calico-kubeconfig private key is locally present
     delegate_to: localhost
@@ -37,8 +34,6 @@
   block:
   - name: Collect expiration information of the calico-kubeconfig crt
     delegate_to: localhost
-    vars:
-      calico_cni_crt_path: "{{ etc_dir }}/calico/calico-cni.crt"
     openssl_certificate_info:
       path: "{{ calico_cni_crt_path }}"
       valid_at:
@@ -61,12 +56,6 @@
   become: no
   environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
-  vars:
-    calico_cni_key_path: "{{ etc_dir }}/calico/calico-cni.key"
-    calico_cni_csr_path: "{{ etc_dir }}/calico/calico-cni.csr"
-    calico_cni_crt_path: "{{ etc_dir }}/calico/calico-cni.crt"
-    own_ca_crt_path: "{{ etc_dir }}/ca.crt"
-    own_ca_key_path: "{{ etc_dir }}/ca.key"
   block:
     - name: Regenerate (force) private key of calico-kubeconfig if it is short to expire
       when: not (calico_cni_crt_valid.valid_at.point_2 | default('false'))
