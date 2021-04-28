@@ -20,9 +20,9 @@
   environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
   vars:
-    local_calico_cni_key_path: "{{ etc_dir }}/calico-cni.key"
-    local_calico_cni_csr_path: "{{ etc_dir }}/calico-cni.csr"
-    local_calico_cni_crt_path: "{{ etc_dir }}/calico-cni.crt"
+    local_calico_cni_key_path: "{{ etc_dir }}/calico/calico-cni.key"
+    local_calico_cni_csr_path: "{{ etc_dir }}/calico/calico-cni.csr"
+    local_calico_cni_crt_path: "{{ etc_dir }}/calico/calico-cni.crt"
     local_own_ca_crt_path: "{{ etc_dir }}/ca.crt"
     local_own_ca_key_path: "{{ etc_dir }}/ca.key"
   block:

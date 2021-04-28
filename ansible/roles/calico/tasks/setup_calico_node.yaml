@@ -4,8 +4,8 @@
 
 - name: Check local and remote presence of calico/node certificate
   vars:
-    calico_node_crt_path: "{{ etc_dir }}/calico-node.crt"
-    calico_node_key_path: "{{ etc_dir }}/calico-node.key"
+    calico_node_crt_path: "{{ etc_dir }}/calico/calico-node.crt"
+    calico_node_key_path: "{{ etc_dir }}/calico/calico-node.key"
   block:
   - name: Check if calico/node private key is locally present
     delegate_to: localhost
@@ -35,7 +35,7 @@
   - name: Collect expiration information of the calico/node crt
     delegate_to: localhost
     vars:
-      calico_node_crt_path: "{{ etc_dir }}/calico-node.crt"
+      calico_node_crt_path: "{{ etc_dir }}/calico/calico-node.crt"
     openssl_certificate_info:
       path: "{{ calico_node_crt_path }}"
       valid_at:
@@ -59,7 +59,7 @@
   block:
   - name: Check that local calico/node crt equals the one stored in the Secret
     vars:
-      calico_node_crt_local_content: "{{ lookup('file', '{{ etc_dir }}/calico-node.crt') | trim | to_json }}"
+      calico_node_crt_local_content: "{{ lookup('file', '{{ etc_dir }}/calico/calico-node.crt') | trim | to_json }}"
       calico_node_crt_remote_content: "{{ calico_node_crt_secret.resources[0].data['calico-node.crt'] | trim | to_json }}"
     debug:
       msg: "The local calico/node certificate and the remote one (Secret) do equal!"
@@ -76,11 +76,11 @@
 # - certificate expires soon
 - name: Generate calico/node certificate and create the Secret on k8s
   vars:
-    typhaca_crt_path: "{{ etc_dir }}/typhaca.crt"
-    typhaca_key_path: "{{ etc_dir }}/typhaca.key"
-    calico_node_crt_path: "{{ etc_dir }}/calico-node.crt"
-    calico_node_key_path: "{{ etc_dir }}/calico-node.key"
-    calico_node_csr_path: "{{ etc_dir }}/calico-node.csr"
+    typhaca_crt_path: "{{ etc_dir }}/calico/typhaca.crt"
+    typhaca_key_path: "{{ etc_dir }}/calico/typhaca.key"
+    calico_node_crt_path: "{{ etc_dir }}/calico/calico-node.crt"
+    calico_node_key_path: "{{ etc_dir }}/calico/calico-node.key"
+    calico_node_csr_path: "{{ etc_dir }}/calico/calico-node.csr"
   block:
   # The calico/node private key is regenerated, if the calico/node certificate is short to expire. 
   # This will also lead to the recreation of the calico/node certificate. The certificate is also

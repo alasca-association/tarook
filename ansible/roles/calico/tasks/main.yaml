@@ -1,3 +1,11 @@
+- name: Make sure the calico directory exists in the 'etc_dir'
+  delegate_to: localhost
+  become: no
+  file:
+    path: "{{ etc_dir }}/calico"
+    state: directory
+    mode: 0755
+
 - name: Setup Preliminaries
   include_tasks: setup_preliminaries.yaml
 

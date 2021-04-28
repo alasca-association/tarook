@@ -4,8 +4,8 @@
 
 - name: Check local and remote presence of Typha CA certificate
   vars:
-    typhaca_crt_path: "{{ etc_dir }}/typhaca.crt"
-    typhaca_key_path: "{{ etc_dir }}/typhaca.key"
+    typhaca_crt_path: "{{ etc_dir }}/calico/typhaca.crt"
+    typhaca_key_path: "{{ etc_dir }}/calico/typhaca.key"
   block:
   - name: Check if Typha CA private key is locally present
     delegate_to: localhost
@@ -35,7 +35,7 @@
   block:
   - name: Collect Expiration information of the Typha CA crt
     vars:
-      typhaca_path: "{{ etc_dir }}/typhaca.crt"
+      typhaca_path: "{{ etc_dir }}/calico/typhaca.crt"
     delegate_to: localhost
     openssl_certificate_info:
       path: "{{ typhaca_path }}"
@@ -60,7 +60,7 @@
   block:
   - name: Check that local Typha CA equals the one in the ConfigMap
     vars:
-     typha_ca_local_content: "{{ lookup('file', '{{ etc_dir }}/typhaca.crt') | trim | to_json }}"
+     typha_ca_local_content: "{{ lookup('file', '{{ etc_dir }}/calico/typhaca.crt') | trim | to_json }}"
      typha_ca_configmap_content: "{{ typhaca_crt_configmap.resources[0].data['typhaca.crt'] | trim | to_json }}"
     debug:
       msg: "The local Typha CA and the one remote one (ConfigMap) do equal!"
@@ -77,9 +77,9 @@
 # - certificate expires soon
 - name: Generate Typha CA certificate and create ConfigMap on k8s
   vars:
-    typhaca_crt_path: "{{ etc_dir }}/typhaca.crt"
-    typhaca_key_path: "{{ etc_dir }}/typhaca.key"
-    typhaca_csr_path: "{{ etc_dir }}/typhaca.csr"
+    typhaca_crt_path: "{{ etc_dir }}/calico/typhaca.crt"
+    typhaca_key_path: "{{ etc_dir }}/calico/typhaca.key"
+    typhaca_csr_path: "{{ etc_dir }}/calico/typhaca.csr"
   block:
   # We will use mutually authenticated TLS to ensure that calico/node and Typha communicate securely
   # We generate a certificate authority (CA), put it in a ConfigMap, and use it to sign the certificate
@@ -152,8 +152,8 @@
 
 - name: Check local and remote presence of Typha certificate
   vars:
-    typha_crt_path: "{{ etc_dir }}/typha.crt"
-    typha_key_path: "{{ etc_dir }}/typha.key"
+    typha_crt_path: "{{ etc_dir }}/calico/typha.crt"
+    typha_key_path: "{{ etc_dir }}/calico/typha.key"
   block:
   - name: Check if Typha private key is locally present
     delegate_to: localhost
@@ -183,7 +183,7 @@
   - name: Collect expiration information of the Typha crt
     delegate_to: localhost
     vars:
-      typha_crt_path: "{{ etc_dir }}/typha.crt"
+      typha_crt_path: "{{ etc_dir }}/calico/typha.crt"
     openssl_certificate_info:
       path: "{{ typha_crt_path }}"
       valid_at:
@@ -207,7 +207,7 @@
   block:
   - name: Check that local Typha crt equals the one stored in the Secret
     vars:
-      typha_crt_local_content: "{{ lookup('file', '{{ etc_dir }}/typha.crt') | trim | to_json }}"
+      typha_crt_local_content: "{{ lookup('file', '{{ etc_dir }}/calico/typha.crt') | trim | to_json }}"
       typha_crt_remote_content: "{{ typha_crt_secret.resources[0].data['typha.crt'] | b64decode | trim | to_json }}"
     debug:
       msg: "The local Typha certificate and the remote one do equal!"
@@ -224,11 +224,11 @@
 # - certificate expires soon
 - name: Generate Typha certificate and create the Secret on k8s
   vars:
-    typhaca_crt_path: "{{ etc_dir }}/typhaca.crt"
-    typhaca_key_path: "{{ etc_dir }}/typhaca.key"
-    typha_crt_path: "{{ etc_dir }}/typha.crt"
-    typha_csr_path: "{{ etc_dir }}/typha.csr"
-    typha_key_path: "{{ etc_dir }}/typha.key"
+    typhaca_crt_path: "{{ etc_dir }}/calico/typhaca.crt"
+    typhaca_key_path: "{{ etc_dir }}/calico/typhaca.key"
+    typha_crt_path: "{{ etc_dir }}/calico/typha.crt"
+    typha_csr_path: "{{ etc_dir }}/calico/typha.csr"
+    typha_key_path: "{{ etc_dir }}/calico/typha.key"
   block:
   # The Typha private key is regenerated, if the Typha certificate is short to expire. This will
   # also lead to the recreation of the Typha certificate. The certificate is also recreated, if the
