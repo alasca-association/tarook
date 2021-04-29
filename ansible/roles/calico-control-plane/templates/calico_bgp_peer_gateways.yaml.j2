@@ -6,6 +6,7 @@ spec:
   peerIP: {{ hostvars[item]['local_ipv4_address'] | to_json }}
   asNumber: {{ k8s_network_bgp_gateway_as | to_json }}
   nodeSelector: route-reflector == 'true'
+  keepOriginalNextHop: true
 
 {% if dualstack_support %}
 ---
@@ -17,4 +18,5 @@ spec:
   peerIP: {{ hostvars[item]['local_ipv6_address'] | to_json }}
   asNumber: {{ k8s_network_bgp_gateway_as | to_json }}
   nodeSelector: route-reflector == 'true'
+  keepOriginalNextHop: true
 {% endif %}
