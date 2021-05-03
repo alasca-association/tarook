@@ -4,8 +4,13 @@ kind: ClusterConfiguration
 kubernetesVersion: "v{{ k8s_version }}"
 controlPlaneEndpoint: "{{ private_vip }}:{{ hostvars[available_frontend]['k8s_apiserver_frontend_port'] }}"
 networking:
+{% if dualstack_support %}
+    podSubnet: "{{ k8s_network_pod_subnet }},{{ k8s_network_pod_subnet_v6 }}"
+    serviceSubnet: "{{ k8s_network_service_subnet }},{{ k8s_network_service_subnet_v6 }}"
+{% else %}
     podSubnet: {{ k8s_network_pod_subnet | to_json }}
     serviceSubnet: {{ k8s_network_service_subnet | to_json }}
+{% endif %}
 
 apiServer:
     extraArgs:
