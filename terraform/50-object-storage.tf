@@ -6,7 +6,7 @@ resource "openstack_objectstorage_container_v1" "thanos_data" {
 data "template_file" "final_all" {
   template = file("${path.module}/templates/final_all.tpl")
   vars = {
-    monitoring_thanos_objectstorage_container_name = "${openstack_objectstorage_container_v1.thanos_data.name}"
+    monitoring_thanos_objectstorage_container_name = openstack_objectstorage_container_v1.thanos_data.name
   }
 }
 
