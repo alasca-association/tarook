@@ -28,6 +28,8 @@
   - `apt install wireguard`
 - current kernel headers:
   - `apt-get install linux-headers-$(uname -r)`
+- passwordstore
+  - `apt install pass`
 
 ## Prepare some dependencies
 
@@ -54,7 +56,7 @@ python3 -m venv ~/.venv/managed-k8s/
 
 ## Documentation
 
-The documentation is created with mkdocs [0] and located under docs/. 
+The documentation is created with mkdocs [0] and located under docs/.
  - To start the built-in dev-server, run `mkdocs serve -f mkdocs_<client|admin>.yml`
  - To compile the documentation to html, run `mkdocs build -f mkdocs_<client|admin>.yml`
 
