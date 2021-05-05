@@ -130,6 +130,4 @@ protocol pipe {
 
 - IPsec is a customer-specific solution and should remain so, i.e., we only support what was required.
 - One example of that is the authentication means. We only support PSK here
-- The PSK should not be written in plain text in the config.toml. Instead we're using ansible-vault. The encrypted PSK value is defined in the file `inventory/02_trampoline/group_vars/all.yaml`
-- Use `AFLAGS="--diff --ask-vault-pass […]` to decrypt it. If you don't know the vault password, contact the maintainer of the cluster repo (yannic.ahrens@cloudandheat.com if in doubt) or skip the task via `--skip ipsec-vpn`.
-- Note that the use of ansible-vault is (hopefully) a temporary step until we've migrated to a proper credential management
+- The PSK is looked up from the passwordstore and resides, by default, in `inventory/.etc/passwordstore/ipsec_eap_psk`. Note: If you're bootstrapping a fresh cluster the passwordstore does not exist when the playbook is executed for the first time. Therefore either create the store in advance or re-run the playbook when you inserted the secret.

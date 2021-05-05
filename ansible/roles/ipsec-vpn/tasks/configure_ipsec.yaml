@@ -14,6 +14,15 @@
     state: directory
     mode: 0640
 
+- name: Lookup ipsec_eap_psk # noqa 207
+  become: no
+  delegate_to: localhost
+  run_once: yes
+  vars:
+    password_store_dir: "{{ etc_dir }}/passwordstore"
+  set_fact:
+    ipsec_eap_psk: "{{ lookup('passwordstore', 'ipsec_eap_psk directory={{ password_store_dir }}') }}"
+
 - name: Abort prematurely if PSK contains '"' (Bug)
   become: no
   run_once: yes
