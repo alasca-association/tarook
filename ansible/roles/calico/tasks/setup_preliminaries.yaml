@@ -5,15 +5,15 @@
 - name: Create Custom Calico Resource Definitions
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
+  vars:
+    crd_file: "{{ 'crds/calico-crds-v%s.yaml' | format(image_versions.calico_version) }}"
   k8s:
-    definition: "{{ lookup('file', item) }}"
+    definition: "{{ lookup('file', crd_file) }}"
     apply: yes
     state: present
     validate:
       fail_on_error: yes
       strict: yes
-  loop:
-  - calico-crds.yaml
 
 - name: Check local presence of calico-kubeconfig certificate
   block:
