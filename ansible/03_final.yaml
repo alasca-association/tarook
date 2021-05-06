@@ -116,6 +116,7 @@
   gather_facts: false
   vars_files:
   - vars/auto_generated_preamble.yaml
+  - vars/disruption.yaml
   roles:
     - role: calico
       tags: calico

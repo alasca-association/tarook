@@ -10,6 +10,45 @@
     state: directory
     mode: 0755
 
+- name: Get deployed calico version
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  command:
+    argv:
+      - calicoctl
+      - version
+  register: calicoctl_version
+  ignore_errors: yes
+  changed_when: calicoctl_version.stderr | length == 0
+
+- name: Compare deployed and configured version if calico is already present
+  when: calicoctl_version is not failed
+  block:
+  - name: Fail if version differs but disruption is forbidden
+    vars:
+      calico_cluster_version: "{{ (calicoctl_version.stdout | from_yaml)['Cluster Version'] }}"
+      calico_conf_version: "{{ 'v%s' | format(image_versions.calico_version) }}"
+    fail:
+      msg: |
+        Another calico version than the one currently rolled out has been configured.
+        This is probably because you upgraded Kubernetes in advance. This will cause
+        the calico components to be updated which is disruptive. However, disruption
+        is not allowed. Allow disruption if you know what you do and retry.
+    when: calico_cluster_version is version(calico_conf_version, operator='ne') and not _allow_disruption
+
+  # Downgrading calico is theoretically possibly, but we do not want to cover it
+  - name: Fail if configured version is too old
+    vars:
+      calico_cluster_version: "{{ (calicoctl_version.stdout | from_yaml)['Cluster Version'] }}"
+      calico_conf_version: "{{ 'v%s' | format(image_versions.calico_version) }}"
+    fail:
+      msg: |
+        Your configured calico version is older than the currently deployed one.
+        Please adjust your configuration to meet the deployed version, or a newer
+        one if you want to update calico.
+    when: calico_custer_version is version(calico_conf_version, operator='lt')
+
 - name: Setup Preliminaries
   run_once: yes
   include_tasks: setup_preliminaries.yaml
