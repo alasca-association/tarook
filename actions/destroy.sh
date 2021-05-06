@@ -6,6 +6,12 @@ actions_dir="$(dirname "$0")"
 
 require_disruption
 
+tf_min_version=14
+if [ "$(terraform -v -json | jq -r '.terraform_version' | cut -d'.' -f2)" -lt "$tf_min_version" ]; then
+    errorf 'Terraform outdated. Please upgrade to at least v0.'"$tf_min_version"'.0'
+    exit 5
+fi
+
 IFS=$'\n'
 if [ "${MANAGED_K8S_NUKE_FROM_ORBIT:-}" = 'true' ]; then
     container_id="$(jq -r '((.resources | map(select(.name == "thanos_data" and .type == "openstack_objectstorage_container_v1")) | first).instances | first).attributes.id' "$terraform_state_dir/terraform.tfstate")"

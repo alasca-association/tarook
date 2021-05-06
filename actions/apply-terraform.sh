@@ -4,6 +4,12 @@ actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
+tf_min_version=14
+if [ "$(terraform -v -json | jq -r '.terraform_version' | cut -d'.' -f2)" -lt "$tf_min_version" ]; then
+    errorf 'Please upgrade Terraform to at least v0.'"$tf_min_version"'.0'
+    exit 5
+fi
+
 cd "$terraform_state_dir"
 run terraform init "$terraform_module"
 run terraform plan --var-file=./config.tfvars.json --out "$terraform_plan" "$terraform_module"
