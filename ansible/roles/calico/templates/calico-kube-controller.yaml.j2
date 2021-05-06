@@ -126,7 +126,6 @@ metadata:
   labels:
     app.kubernetes.io/name: calico
     app.kubernetes.io/component: calico-kube-controllers
-    app.kubernetes.io/version: {{ image_versions.calico_version | string | to_json }}
     app.kubernetes.io/part-of: calico-cni-plugin
 spec:
   # The controllers can only have a single active instance.
@@ -135,7 +134,6 @@ spec:
     matchLabels:
       app.kubernetes.io/name: calico
       app.kubernetes.io/component: calico-kube-controllers
-      app.kubernetes.io/version: {{ image_versions.calico_version | string | to_json }}
       app.kubernetes.io/part-of: calico-cni-plugin
   strategy:
     type: Recreate
