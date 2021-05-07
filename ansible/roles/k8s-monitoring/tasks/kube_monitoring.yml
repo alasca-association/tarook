@@ -84,7 +84,7 @@
     validate:
       fail_on_error: yes
       strict: yes
-  when: rook
+  when: rook | bool
 
 - name: create haproxy service monitor (gateway)
   k8s:
