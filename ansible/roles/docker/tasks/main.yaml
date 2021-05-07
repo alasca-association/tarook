@@ -10,7 +10,6 @@
   failed_when: false
   changed_when: docker_check.rc != 0
 
-
 - name: Install docker CE (apt)
   become: yes
   apt:
@@ -18,12 +17,14 @@
     state: present
     name:
       - docker.io
-  register: install_docker_apt
   when:
   - ansible_pkg_mgr == 'apt'
   # if docker is not installed, installing and configuring it does not create
   # a disruption
   - _allow_disruption or docker_check is changed
+  notify:
+    - Create docker daemon configuration
+    - Restart docker
 
 - name: Install docker CE (yum/dnf)
   become: yes
@@ -52,49 +53,30 @@
       - docker-ce
       - docker-ce-cli
       - containerd.io
-    register: install_docker_dnf
+    notify:
+      - Create docker daemon configuration
+      - Restart docker
 
-  - name: Install nvidia-docker2
-    when: has_gpu is defined
-    block:
-    - name: Get distribution
-      shell: ". /etc/os-release;echo $ID$VERSION_ID"
-      register: DISTRIBUTION
+- name: Check for nvidia-docker2 support
+  include_tasks: install_nvidia-docker2.yaml
+  when: has_gpu is defined
 
-    - name: Install nvidia-docker2 repo
-      get_url:
-        url: "https://nvidia.github.io/nvidia-docker/{{ DISTRIBUTION.stdout }}/nvidia-docker.repo"
-        dest: /etc/yum.repos.d/nvidia-docker.repo
-      environment:
-        distribution: "$(. /etc/os-release;echo $ID$VERSION_ID)"
-
-    - name: Install nvidia-docker2 packages
-      yum:
-        name: "{{ packages }}"
-      vars:
-        packages:
-        - nvidia-docker2
-
+- name: Update configuration for docker daemon if disruption is allowed
+  debug:
+    msg: "Updating configuration for docker daemon because disruption is allowed"
+  when: _allow_disruption
+  notify:
+    - Create docker daemon configuration
+    - Restart docker
 
 - name: Ensure /etc/docker directory is present
   become: yes
   file:
     path: /etc/docker
     state: directory
+    mode: 0755
 
-- name: Create configuration for docker daemon
-  become: yes
-  template:
-    src: daemon.json.j2
-    dest: /etc/docker/daemon.json
-  when: _allow_disruption or docker_check is changed
-  register: config_docker
-
-- name: Restart docker
-  become: yes
-  systemd:
-    enabled: yes
-    state: restarted
-    daemon_reload: yes
-    name: docker
-  when: config_docker is changed or install_docker_apt is changed or install_docker_dnf is changed
+# If the docker daemon is freshly installed or updated,
+# we want to configure and restart it immediately
+- name: Force restart of docker at this point
+  meta: flush_handlers

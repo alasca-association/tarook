@@ -16,6 +16,9 @@
     template:
       src: system_update_status.sh.j2
       dest: /usr/local/bin/system_update_status.sh
+      owner: root
+      group: root
+      mode: 0640
 
   - name: Create the node-exporter run directory
     file:
@@ -23,16 +26,23 @@
       state: directory
       owner: node-exporter
       group: node-exporter
+      mode:  0755
 
   - name: Create the node-exporter service unit
     copy:
       src: node_exporter_textfile_collector.service
       dest: /etc/systemd/system/node_exporter_textfile_collector.service
+      owner: root
+      group: root
+      mode: 0640
 
   - name: Create the node-exporter timer unit
     copy:
       src: node_exporter_textfile_collector.timer
       dest: /etc/systemd/system/node_exporter_textfile_collector.timer
+      owner: root
+      group: root
+      mode: 0640
 
   - name: Enable the service units
     systemd:

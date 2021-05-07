@@ -16,9 +16,12 @@
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
     validate: haproxy -f %s -c
+    mode: 0600
+    owner: root
+    group: root
   register: haproxy
 
-- name: Start the haproxy service
+- name: Start the haproxy service # noqa no-handler
   become: yes
   systemd:
     daemon_reload: yes

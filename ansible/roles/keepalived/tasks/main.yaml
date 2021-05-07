@@ -15,6 +15,9 @@
   template:
     src: keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf
+    owner: root
+    group: root
+    mode: 0600
   notify: restart keepalived
 
 - name: Create keepalived/scripts/ sub directory

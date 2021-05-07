@@ -33,6 +33,9 @@
   template:
     src: "{{ role_path }}/templates/nftables.conf.j2"
     dest: /etc/nftables.conf
+    owner: root
+    group: root
+    mode: 0600
 
 - name: Start&enable nftables systemd service
   become: yes

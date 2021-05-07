@@ -12,6 +12,9 @@
       ip6table_filter
       overlay
       br_netfilter
+    owner: root
+    group: root
+    mode: 0600
 
 - name: Reload kernel modules
   become: yes

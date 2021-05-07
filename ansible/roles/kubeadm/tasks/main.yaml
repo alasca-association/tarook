@@ -23,6 +23,9 @@
       dest: /etc/apt/sources.list.d/kubernetes.list
       content: |
         deb https://apt.kubernetes.io/ kubernetes-xenial main
+      owner: root
+      group: root
+      mode: 0640
 
   - name: Install kubelet, kubeadm and kubectl
     # Note: check available version with `apt-cache policy <package name>`
@@ -35,6 +38,9 @@
   copy:
     src: kubernetes.repo
     dest: /etc/yum.repos.d/kubernetes.repo
+    owner: root
+    group: root
+    mode: 0640
   when: ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum'
 
 - name: Install kubelet, kubeadm and kubectl
@@ -47,7 +53,7 @@
         - "kubeadm={{ k8s_version }}-00"
         - "kubectl={{ k8s_version }}-00"
     when: ansible_pkg_mgr == 'apt'
-    register: kubestuff_install_apt
+    notify: Restart kubelet
 
   - name: Prepare list of packages to install (yum/dnf)
     set_fact:
@@ -56,7 +62,7 @@
         - "kubeadm-{{ k8s_version }}-00"
         - "kubectl-{{ k8s_version }}-00"
     when: ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum'
-    register: kubestuff_install_dnf
+    notify: Restart kubelet
 
   - name: Install kubelet, kubeadm and kubectl
     # Note: check available version with `apt-cache policy <package name>`
@@ -102,13 +108,11 @@
     dest: /etc/default/kubelet
     content: |
       KUBELET_EXTRA_ARGS=--cloud-provider=external
-  register: kubelet_configuration
+    owner: root
+    group: root
+    mode: 0640
+  notify: Restart kubelet
 
-- name: Restart kubelet
-  become: yes
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    enabled: yes
-    name: kubelet
-  when: kubestuff_install_apt is changed or kubestuff_install_dnf is changed or kubelet_configuration is changed
+# kubelet should be restarted immediately
+- name: Force restart of docker at this point
+  meta: flush_handlers

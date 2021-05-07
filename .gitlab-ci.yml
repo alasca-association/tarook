@@ -27,14 +27,16 @@ shellcheck:
   - docker
 
 ansible-lint:
+  variables:
+    ANSIBLE_LINT_IMAGE_TAG: 5
   image:
-    name: cytopia/ansible-lint:4
+    name: cytopia/ansible-lint:$ANSIBLE_LINT_IMAGE_TAG
     entrypoint: ["/bin/sh", "-c"]
   rules:
   - when: always
   stage: lint
   script:
-  - 'cd ansible && ansible-lint -x 701 02_trampoline.yaml 03_final.yaml'
+  - 'cd ansible && ansible-lint 02_trampoline.yaml 03_final.yaml'
   tags:
   - docker
 

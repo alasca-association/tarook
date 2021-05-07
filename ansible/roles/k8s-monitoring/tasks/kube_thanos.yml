@@ -6,6 +6,7 @@
   template:
     src: thanos.jsonnet
     dest: "{{ monitoring_jsonnet_dir_thanos }}/config.jsonnet"
+    mode: 0664
 
 - name: rebuild
   become: no

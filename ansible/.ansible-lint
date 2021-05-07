@@ -1,4 +1,3 @@
 skip_list:
-  # lcm/managed-k8s#183
- - '106'
- - '208'
+ - role-name      # Role name {} does not match ``^[a-z][a-z0-9_]+$`` pattern
+ - meta-no-info   # meta/main.yml should contain relevant info

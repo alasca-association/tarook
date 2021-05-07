@@ -5,6 +5,9 @@
     file:
       path: "{{ item }}"
       state: directory
+      owner: root
+      group: root
+      mode: 0755
     loop:
       - "{{ local_storage_data_directory }}"
       - "{{ local_storage_discovery_directory }}/disk"
@@ -65,19 +68,23 @@
       file:
         state: directory
         path: "{{ manifest_dir }}"
+        mode: 0755
 
     - name: Create provisioner manifest
       template:
         src: 'provisioner.yaml.j2'
         dest: "{{ manifest_dir }}/provisioner.yaml"
+        mode: 0664
 
     - name: Create storage class manifest
       template:
         src: 'sc.yaml.j2'
         dest: "{{ manifest_dir }}/sc.yaml"
+        mode: 0664
 
     - name: Create service manifest
       template:
         src: 'service.yaml.j2'
         dest: "{{ manifest_dir }}/service.yaml"
+        mode: 0664
 
