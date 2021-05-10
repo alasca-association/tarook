@@ -67,6 +67,7 @@
   roles:
     - role: check-services
       tags: test-service
+      when: "deprecated_nodeport_lb_test_port is defined"
     - role: check-loadbalancer-service
       tags: test-loadbalancer-service
       when: "openstack_lbaas | default(False) or ch_k8s_lbaas | default(False)"
