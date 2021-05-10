@@ -2,7 +2,7 @@
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   become: no
-  when: rook
+  when: rook | bool
 
   block:
   - name: Check that mon volume storage class exists

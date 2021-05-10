@@ -97,7 +97,7 @@ cluster-spawn-without-rook:
   variables:
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
-    AFLAGS: "--diff -e rook=false"
+    AFLAGS: "--diff -e rook=False"
   tags:
   - docker
   - wireguard-ready
