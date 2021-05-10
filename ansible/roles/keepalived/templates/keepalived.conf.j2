@@ -12,7 +12,7 @@ vrrp_instance VIP_1 {
     interface {{ network_interface }}
     # All VRRP instances belonging to the same cluster must share this id
     virtual_router_id 47 
-    priority {{ priority }}
+    priority {{ vrrp_priorities[groups['frontend'].index(inventory_hostname)] }}
     advert_int 1
     authentication {
         auth_type PASS

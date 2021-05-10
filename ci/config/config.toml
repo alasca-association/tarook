@@ -16,11 +16,6 @@ enable_az_management = false
 deprecated_nodeport_lb_test_port = 30060
 lb_ports = ["{{ deprecated_nodeport_lb_test_port }}"]
 
-[load-balancing.priorities]
-"managed-k8s-gw-az1" = 150
-"managed-k8s-gw-az2" = 100
-"managed-k8s-gw-az3" = 80
-
 [wireguard]
 ip_cidr = "172.30.153.0/24"
 ip_gw = "172.30.153.1/24"
