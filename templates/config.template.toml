@@ -89,6 +89,12 @@ rook_enabled = true # •ᴗ•
 #to run on all nodes (ignoring all taints). This is often desirable.
 nodeplugin_toleration = true # •ᴗ•
 
+# This flag enables the topology feature gate of the cinder controller plugin.
+# Its purpose is to allocate volumes from cinder which are in the same AZ as
+# the worker node to which the volume should be attached.
+# Important: Cinder must support AZs and the AZs must match the AZs used by nova!
+#cinder_enable_topology=true
+
 # --- KUBERNETES: LOCAL STORAGE CONFIGURATION ---
 # ansible prefix: "k8s_local_storage"
 [kubernetes.local_storage.static]
