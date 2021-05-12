@@ -12,7 +12,7 @@
   file:
     path: "{{ etc_dir }}/ipsec/"
     state: directory
-    mode: 0640
+    mode: 0750
 
 - name: Lookup ipsec_eap_psk # noqa 207
   become: no
