@@ -66,6 +66,12 @@ rook_placement_taint = { key = "{{ managed_k8s_control_plane_key }}", value = "s
 
 monitoring_placement_label = { key = "{{ managed_k8s_control_plane_key }}", value = "monitoring" }
 
+# To prevent the CI running in CPU limits here and failing because of that
+rook_mon_cpu_limit = "500m"
+rook_mon_cpu_request = "100m"
+rook_operator_cpu_limit = "500m"
+rook_operator_cpu_request = "100m"
+
 monitoring_prometheus_memory_limit = "1Gi"
 monitoring_prometheus_cpu_limit = "200m"
 
