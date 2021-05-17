@@ -67,7 +67,7 @@ vrrp_priority = 80
 # KUBERNETES CLUSTER CONFIGURATION
 #
 # Kubernetes version. Currently, we support 1.17.* and 1.18.*.
-k8s_version = "1.18.9"
+k8s_version = "1.18.18"
 
 # Pick a networking plugin:
 #
@@ -111,7 +111,7 @@ k8s_network_plugin = "kube-router"
 #
 #ch_k8s_lbaas = true
 #ch_k8s_lbaas_shared_secret = "..."
-#ch_k8s_lbaas_version = "0.3.0"
+#ch_k8s_lbaas_version = "0.3.3"
 
 # ROOK-BASED CEPH STORAGE CONFIGURATION
 #
