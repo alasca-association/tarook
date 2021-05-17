@@ -45,6 +45,34 @@ ipsec_enabled = false
 # The PSK for EAP. Must be set.
 #ipsec_eap_psk =
 
+## Wireguard-based site-to-site tunnel
+# If enabled, configure site to site tunnel (defaults to false)
+#wg_s2s_enabled = true
+
+# Subnet of the wireguard "transfer net" between the two endpoints
+#wg_s2s_transfer_subnet = "172.30.18.2/31"
+
+# IP which is assigned to our VRRP master in transfer network
+#wg_s2s_ip = "172.30.18.2"
+
+# IP which is assigned to our VRRP master in transfer network
+#wg_s2s_peer_ip = "172.30.18.3"
+
+# Port on which wireguard listens
+#wg_s2s_port = "16000"
+
+# Public wireguard key of the peer
+#wg_s2s_peer_pub_key = "7CuC/cSw1US+nilx0ihoA1qb2DsQI0QV2RBuLE8cnhk="
+
+# Endpoint under which the peer can be reached
+#wg_s2s_peer_public_endpoint = "<public-IP-of-your-peer>:16000"
+
+# BGP AS IDs for both parties (should differ, unless iBGP is wanted)
+#wg_s2s_bgp_as = "65010"
+#wg_s2s_peer_bgp_as = "65009"
+
+
+
 # To add WireGuard keys for customers, create blocks like the following:
 #
 #[[ansible.02_trampoline.group_vars.gateways.wg_peers]]

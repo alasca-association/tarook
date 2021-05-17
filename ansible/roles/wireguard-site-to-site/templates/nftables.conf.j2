@@ -1,0 +1,19 @@
+table inet filter {
+  chain input {
+    udp dport {{ wg_s2s_port }} accept comment "Wireguard site to site traffic";
+    ip saddr {{ wg_s2s_transfer_subnet }} iifname "wg-peer1" tcp dport 179 accept;
+  }
+  chain forward {
+    iifname "eth0" oifname "wg-peer1" ip saddr { {{ priv_ip_cidr }}  } accept;
+    iifname "wg-peer1" accept;
+  }
+}
+
+table ip nat {
+  chain postrouting {
+    # Prevent SNAT for traffic that's sent from one wg peer to another
+    # No s-/daddr is specified because only traffic for those subnets will be sent over this interface
+    iifname "wg-peer1" return;
+    oifname "wg-peer1" return;
+  }
+}
