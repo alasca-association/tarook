@@ -61,11 +61,14 @@ flake8:
   # the repository.
   - . /root/openrc.sh
   - git clean -f .
-  - git submodule update --init --recursive
   - 'chmod o-w *'
+  - rm -rf ci # make sure we're operating on a clean directory
+  - git checkout -- ci
+  - export MANAGED_K8S_GIT="$(realpath .)"
   - cd ci
-  - git submodule add --force --branch master git@gitlab.cloudandheat.com:lcm/wg_user
-  - git submodule add --force --branch master git@gitlab.cloudandheat.com:lcm/mk8s-passwordstore-users.git passwordstore-users/
+  - git init
+  - ../actions/init.sh
+  - ../actions/init.sh # A second run to check idempotency
     # Note that this is basically a dummy keypair that is not used to protect any significant data
   - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
   script:
