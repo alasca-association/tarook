@@ -36,7 +36,9 @@ ansible-lint:
   - when: always
   stage: lint
   script:
-  - 'cd ansible && ansible-lint 02_trampoline.yaml 03_final.yaml'
+  - cd ansible
+  - ansible-galaxy install -r requirements.yaml
+  - ansible-lint 02_trampoline.yaml 03_final.yaml
   tags:
   - docker
 

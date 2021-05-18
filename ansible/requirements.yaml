@@ -1,0 +1,5 @@
+---
+collections:
+  - name: 'devsec.hardening'
+    src: git+https://gitlab.cloudandheat.com/lcm/ansible-mirrors/ansible-collection-hardening.git
+    version: 7.5.0

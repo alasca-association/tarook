@@ -7,4 +7,5 @@ actions_dir="$(dirname "$0")"
 "$actions_dir/wg-up.sh"
 
 cd "$ansible_playbook"
+ansible-galaxy install -r requirements.yaml
 ansible_playbook -i "$ansible_inventoryfile_03" 03_final.yaml

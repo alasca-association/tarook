@@ -17,6 +17,15 @@
   - role: is-gateway-initialized
     tags: update_system
 
+- name: Harden SSH
+  hosts: gateways
+  become: yes
+  collections:
+  - devsec.hardening
+  roles:
+  - role: devsec.hardening.ssh_hardening
+    tags: harden-ssh
+
 - name: Upgrade uninitialized nodes
   hosts: uninitialized_gateways
   vars_files:
