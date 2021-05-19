@@ -1,10 +1,16 @@
 #!/bin/bash
 set -euo pipefail
-actions_dir="$(dirname "$0")"
+actions_dir="$(realpath "$(dirname "$0")")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
 require_disruption
+
+tf_min_version=14
+if [ "$(terraform -v -json | jq -r '.terraform_version' | cut -d'.' -f2)" -lt "$tf_min_version" ]; then
+    errorf 'Terraform outdated. Please upgrade to at least v0.'"$tf_min_version"'.0'
+    exit 5
+fi
 
 IFS=$'\n'
 if [ "${MANAGED_K8S_NUKE_FROM_ORBIT:-}" = 'true' ]; then
@@ -39,8 +45,9 @@ if [ "${#port_ids[@]}" != 0 ]; then
 fi
 
 cd "$terraform_state_dir"
-run terraform init "$terraform_module"
-run terraform destroy --var-file=./config.tfvars.json --auto-approve "$terraform_module"
+export TF_DATA_DIR="$terraform_state_dir/.terraform"
+run terraform -chdir="$terraform_module" init
+run terraform -chdir="$terraform_module" destroy --var-file="$terraform_state_dir/config.tfvars.json" --auto-approve
 
 IFS=$'\n' read -r -d '' -a volume_ids < <( openstack volume list -f value -c ID && printf '\0' )
 if [ "${#volume_ids[@]}" != 0 ]; then
