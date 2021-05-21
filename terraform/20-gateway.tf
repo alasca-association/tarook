@@ -13,6 +13,13 @@ resource "openstack_networking_port_v2" "gw_vip_port" {
         subnet_id = openstack_networking_subnet_v2.cluster_v6_subnet[0].id
     }
   }
+
+  dynamic "fixed_ip" {
+    for_each = var.dualstack_support ? [1] : []
+    content {
+        subnet_id = openstack_networking_subnet_v2.cluster_v6_subnet[0].id
+    }
+  }
 }
 
 resource "openstack_networking_floatingip_v2" "gw_vip_fip" {
@@ -112,7 +119,7 @@ data "template_file" "trampoline_gateways" {
   vars = {
     networking_fixed_ip     = openstack_networking_port_v2.gw_vip_port.all_fixed_ips[0],
     networking_fixed_ip_v6  = try(jsonencode(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[1]), "null"),
-    wireguard_gw_fixed_ip_v6  = try(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[1], null),
+    wireguard_gw_fixed_ip_v6  = try(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[2], null),
     networking_floating_ip  = openstack_networking_floatingip_v2.gw_vip_fip.address,
     subnet_cidr             = openstack_networking_subnet_v2.cluster_subnet.cidr,
     subnet_v6_cidr          = try(jsonencode(openstack_networking_subnet_v2.cluster_v6_subnet[0].cidr), "null"),
