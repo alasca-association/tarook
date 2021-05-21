@@ -211,3 +211,16 @@
   roles:
     - role: k8s-local-storage-controller
       tags: lsc
+
+# yahrens: This play resides only transitionally here.
+# See https://gitlab.com/yaook/k8s/-/issues/349 for details
+- name: Configure vm.max_map_count
+  hosts: workers
+  gather_facts: false
+  tasks:
+    - name: Configure vm.max_map_count
+      import_role:
+        name: vm-max-map-count
+      when: "vm_max_map_count is defined"
+      tags:
+        - vm-max-map-count

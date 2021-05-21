@@ -499,3 +499,8 @@ wireguard_on_workers = false
 # Note: This network name isn't fetched automagically (by terraform) on purpose
 # because there might be situations where the CCM should not pick the managed network.
 #openstack_network_name = "managed-k8s-network"
+
+# Value for the kernel parameter `vm.max_map_count` on k8s worker nodes. Modifications
+# might be required depending on the software running on the nodes (e.g., ElasticSearch).
+# If you leave the value commented out you're fine and the system's default will be kept.
+#vm_max_map_count = 262144
