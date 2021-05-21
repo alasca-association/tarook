@@ -1,6 +1,6 @@
 stages:
 - lint
-- test
+- spawn-cluster
 
 tflint:
   image:
@@ -85,8 +85,8 @@ flake8:
   - . /root/openrc.sh
   - 'MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh'
 
-
-cluster-spawn-without-rook:
+# Spawn a cluster with kube-router as CNI and rook disabled
+kuberouter:
   image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
   extends: .preparation_and_test_and_cleanup
   rules:
@@ -96,7 +96,7 @@ cluster-spawn-without-rook:
     when: manual
   - when: never
   allow_failure: false
-  stage: test
+  stage: spawn-cluster
   variables:
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
@@ -106,7 +106,8 @@ cluster-spawn-without-rook:
   - wireguard-ready
   resource_group: ch-k8s-ci-environment-f1a-1
 
-cluster-spawn-with-rook:
+# Spawn a cluster with kube-router as CNI and rook enabled
+kuberouter-rook:
   image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
   extends: .preparation_and_test_and_cleanup
   rules:
@@ -116,7 +117,7 @@ cluster-spawn-with-rook:
     when: manual
   - when: never
   allow_failure: true
-  stage: test
+  stage: spawn-cluster
   variables:
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
@@ -125,8 +126,8 @@ cluster-spawn-with-rook:
   - wireguard-ready
   resource_group: ch-k8s-ci-environment-f1a-1
 
-# Spawn a cluster with default values, but calico as CNI plugin
-cluster-spawn-with-calico-as-cni-plugin:
+# Spawn a cluster with calico as CNI and rook enabled
+calico-rook:
   image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
   extends: .preparation_and_test_and_cleanup
   rules:
@@ -136,7 +137,7 @@ cluster-spawn-with-calico-as-cni-plugin:
     when: manual
   - when: never
   allow_failure: false
-  stage: test
+  stage: spawn-cluster
   variables:
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
