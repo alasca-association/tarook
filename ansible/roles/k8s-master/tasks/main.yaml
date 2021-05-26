@@ -1,3 +1,11 @@
+- name: Enable net.ipv6.conf.all.forwarding
+  become: yes
+  sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: "1"
+    state: present
+  when: dualstack_support
+
 - name: Load admin credentials into interactive shells
   become: yes
   template:
@@ -14,15 +22,20 @@
   ignore_errors: yes
   register: local_kube_apiserver_status
 
-- name: Register facts for host availability evaluation and for private_vip
+- name: Register facts for k8s api VIPv4 and host availability evaluation
   set_fact:
-    private_vip: "{{ networking_fixed_ip }}"
+    private_k8s_api_vip_v4: "{{ networking_fixed_ip }}"
     available_frontend: "{{ groups['frontend'] | first }}"
+
+- name: Register fact for k8s api VIPv6
+  when: dualstack_support
+  set_fact:
+    private_k8s_api_vip_v6: "{{ networking_fixed_ip_v6 }}"
 
 - name: Check reachability of load-balanced kube-apiserver
   when: local_kube_apiserver_status is failed
   vars:
-    host: "{{ private_vip }}:{{ hostvars[available_frontend]['k8s_apiserver_frontend_port'] }}"
+    host: "{{ private_k8s_api_vip_v4 }}:{{ hostvars[available_frontend]['k8s_apiserver_frontend_port'] }}"
   uri:
     url: "https://{{ host }}"
     status_code: 403
@@ -82,7 +95,6 @@
           CN: "{{ inventory_hostname }}-ca"
         basic_constraints:
           - CA:TRUE
-
     - name: Generate OpenSSL CA certificate
       openssl_certificate:
         path: /etc/kubernetes/pki/ca.crt
@@ -93,23 +105,23 @@
   - name: Check if gcr.io can be reached
     command: kubeadm config images pull
 
-  - name: Create kubeadm-config.yaml
+  - name: Create kubeadm-init-config.yaml
     vars:
       gateway: "{{ groups['gateways'] | first }}"
     template:
-      src: kubeadm-config.yaml.j2
-      dest: /tmp/kubeadm-config.yaml
+      src: kubeadm-init-config.yaml.j2
+      dest: /tmp/kubeadm-init-config.yaml
       owner: root
       group: root
       mode: 0600
 
   - name: Run kubeadm init
     # XXX: ansible command module does not support setting the umask
-    shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-config.yaml
+    shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
 
-  - name: Remove kubeadm-config.yaml
+  - name: Remove kubeadm-init-config.yaml
     file:
-      path: /tmp/kubeadm-config.yaml
+      path: /tmp/kubeadm-init-config.yaml
       state: absent
 
   - name: Configure bridge-nf-call-iptables
@@ -159,19 +171,19 @@
     path: /etc/kubernetes/admin.conf
   register: kube_config
 
-- name: Generate a new join token
+- name: Create a new join token
   when: kube_config.stat.exists
   block:
   - name: Get an access token and the CA hash
     become: yes
-    command: kubeadm token create --print-join-command
+    command: kubeadm token create
     register: kubeadm_token_out
 
   - name: Save access token locally
     delegate_to: localhost
     become: no
     copy:
-      content: " {{ kubeadm_token_out.stdout }}"
+      content: "{{ kubeadm_token_out.stdout }}"
       dest: "{{ etc_dir }}/kubeadm_token"
       mode: 0664
 
@@ -195,11 +207,31 @@
           mode: u=rw,go-rwx
         loop: "{{ etcd_files }}"
 
-  - name: Join the initial control as another master
-    vars:
-      kubeadm_out: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
-    # XXX: ansible command module does not support setting the umask
-    shell: "umask 077 && {{ kubeadm_out }} --control-plane"
+      - name: Get certificate information
+        become: no
+        delegate_to: localhost
+        community.crypto.x509_certificate_info:
+          path: "{{ etc_dir }}/ca.crt"
+        register: ca_cert
+
+      - name: Create kubeadm-join-config.yaml
+        vars:
+          kubeadm_join_token: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
+        template:
+          src: kubeadm-join-config.yaml.j2
+          dest: /tmp/kubeadm-join-config.yaml
+          owner: root
+          group: root
+          mode: 0600
+
+      - name: Join the initial control as another master
+        # XXX: ansible command module does not support setting the umask
+        shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml"
+
+      - name: Remove kubeadm-join-config.yaml
+        file:
+          path: /tmp/kubeadm-join-config.yaml
+          state: absent
 
 - name: Make the kube config readable by gods
   become: yes

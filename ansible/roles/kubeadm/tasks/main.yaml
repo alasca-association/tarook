@@ -99,22 +99,6 @@
 
     when: ansible_pkg_mgr == 'dnf'
 
-- name: Configure kubelet
-  become: yes
-  # kubeadm apparently does not set --cloud-provider and --cloud-config correctly
-  # in the cluster-wide ConfigMap. There is no need for us to create a drop-in
-  # file because we can configure the environment by another file.
-  # https://github.com/kubernetes/kubernetes/issues/36213
-  copy:
-    dest: /etc/default/kubelet
-    content: |
-      {{ _auto_generated_preamble }}
-      KUBELET_EXTRA_ARGS=--cloud-provider=external
-    owner: root
-    group: root
-    mode: 0640
-  notify: Restart kubelet
-
 # kubelet should be restarted immediately
 - name: Force restart of kubelet at this point
   meta: flush_handlers

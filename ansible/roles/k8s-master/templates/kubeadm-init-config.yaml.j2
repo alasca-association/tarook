@@ -1,0 +1,59 @@
+{{ _auto_generated_preamble }}
+
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: InitConfiguration
+nodeRegistration:
+  kubeletExtraArgs:
+{% if dualstack_support %}
+    node-ip: {{ [local_ipv4_address, local_ipv6_address] | join(",") | to_json }}
+{% else %}
+    node-ip: {{ local_ipv4_address | to_json }}
+{% endif %}
+  name: {{ inventory_hostname }}
+
+localAPIEndpoint:
+  advertiseAddress: {{ local_ipv4_address | to_json }}
+  bindPort: 6443
+
+---
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+kubernetesVersion: "v{{ k8s_version }}"
+controlPlaneEndpoint: "{{ private_k8s_api_vip_v4 }}:{{ k8s_apiserver_frontend_port }}"
+networking:
+{% if dualstack_support %}
+  podSubnet: {{ [k8s_network_pod_subnet, k8s_network_pod_subnet_v6] | join(",") | to_json }}
+  serviceSubnet: {{ [k8s_network_service_subnet, k8s_network_service_subnet_v6] | join(",") | to_json }}
+{% else %}
+  podSubnet: {{ k8s_network_pod_subnet | to_json }}
+  serviceSubnet: {{ k8s_network_service_subnet | to_json }}
+{% endif %}
+
+apiServer:
+  extraArgs:
+    service-account-issuer: kubernetes.default.svc
+    service-account-signing-key-file: /etc/kubernetes/pki/sa.key
+    enable-admission-plugins: NodeRestriction{% if k8s_use_podsecuritypolicies %},PodSecurityPolicy{% endif %}
+
+controllerManager:
+    extraArgs:
+        "bind-address" : "0.0.0.0"
+
+scheduler:
+    extraArgs:
+        "bind-address" : "0.0.0.0"
+
+{% if not dualstack_support %}
+# enabled by defaul since v1.21
+featureGates:
+  IPv6DualStack: false
+
+{% else %}
+featureGates:
+  IPv6DualStack: true
+
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+mode: ipvs
+{% endif %}

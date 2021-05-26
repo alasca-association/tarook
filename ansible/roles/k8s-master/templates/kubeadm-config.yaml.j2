@@ -2,7 +2,7 @@
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 kubernetesVersion: "v{{ k8s_version }}"
-controlPlaneEndpoint: "{{ private_vip }}:{{ hostvars[available_frontend]['k8s_apiserver_frontend_port'] }}"
+controlPlaneEndpoint: "{{ private_k8s_api_vip_v4 }}:{{ hostvars[available_frontend]['k8s_apiserver_frontend_port'] }}"
 networking:
 {% if dualstack_support %}
     podSubnet: "{{ k8s_network_pod_subnet }},{{ k8s_network_pod_subnet_v6 }}"

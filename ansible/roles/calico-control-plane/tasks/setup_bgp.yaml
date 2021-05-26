@@ -47,7 +47,8 @@
     register: bgp_as_number_patch
     changed_when: "'Successfully patched' and 'BGPConfiguration' in bgp_as_number_patch.stdout"
 
-  - name: BGP - Setup Route Reflector Cluster ID
+  # By adding a routeReflectorClusterID to the node, calico/node recognizes that it is a route reflector
+  - name: BGP - Mark the k8s masters as route reflectors
     command:
       argv:
         - /usr/local/bin/calicoctl
