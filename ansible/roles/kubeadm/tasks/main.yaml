@@ -114,5 +114,5 @@
   notify: Restart kubelet
 
 # kubelet should be restarted immediately
-- name: Force restart of docker at this point
+- name: Force restart of kubelet at this point
   meta: flush_handlers
