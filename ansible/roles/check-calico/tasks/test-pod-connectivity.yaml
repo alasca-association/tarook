@@ -24,6 +24,7 @@
       definition: "{{ lookup('template', item) }}"
       apply: yes
       state: "present"
+      wait: yes
       validate:
         fail_on_error: yes
         strict: yes
@@ -31,19 +32,6 @@
     - busybox_serviceaccount.yaml.j2
     - busybox-psp.yaml.j2
     - calico-busybox-daemonset.yaml.j2
-
-  - name: Wait for (calico-)BusyBox Pods to get created
-    command:
-      argv:
-        - kubectl
-        - wait
-        - -n
-        - '{{ check_calico_namespace }}'
-        - -l
-        - k8s-app=calico-busybox-test
-        - --for=condition=Ready
-        - pods
-        - --timeout=60s
 
   - name: Collect (calico-)BusyBox Pod Resource Information
     k8s_info:
@@ -97,7 +85,6 @@
       name: "{{ check_calico_namespace }}"
       kind: Namespace
       state: absent
-      wait: yes
       validate:
         fail_on_error: yes
         strict: yes
