@@ -12,6 +12,7 @@
     haproxy_admin_sock: /tmp/haproxy_admin.sock
   copy:
     content: |
+      {{ _auto_generated_preamble }}
       ARGS=--haproxy.scrape-uri=unix:{{ haproxy_admin_sock }}
     dest: "/etc/default/prometheus-haproxy-exporter"
     owner: root

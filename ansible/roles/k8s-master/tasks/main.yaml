@@ -1,7 +1,7 @@
 - name: Load admin credentials into interactive shells
   become: yes
-  copy:
-    src: kubernetes-admin.sh
+  template:
+    src: kubernetes-admin.sh.j2
     dest: /etc/profile.d/
     owner: root
     group: root

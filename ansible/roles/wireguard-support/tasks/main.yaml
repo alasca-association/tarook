@@ -7,6 +7,7 @@
     copy:
       dest: /etc/apt/preferences.d/limit-unstable
       content: |
+        {{ _auto_generated_preamble }}
         Package: *
         Pin: release a=unstable
         Pin-Priority: 90

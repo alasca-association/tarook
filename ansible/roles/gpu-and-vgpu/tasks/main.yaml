@@ -11,8 +11,8 @@
 
 - name: Copy the gpu discovery script to the host
   become: yes
-  copy:
-    src: "{{ role_path }}/files/check_pci.sh"
+  template:
+    src: check_pci.sh.j2
     dest: "{{ nvidia_working_dir }}/check_pci.sh"
     mode: u=rwx,go=rx
     owner: root
@@ -74,6 +74,7 @@
       copy:
         dest: "{{ nvidia_gridd_conf }}"
         content: |
+          {{ _auto_generated_preamble }}
           ServerAddress={{ ServerAddress }}
           ServerPort={{ ServerPort }}
           BackupServerAddress={{ BackupServerAddress }}
@@ -109,6 +110,7 @@
       copy:
         dest: /etc/modprobe.d/blacklist_nouveau.conf
         content: |
+          {{ _auto_generated_preamble }}
           blacklist nouveau
           options nouveau modeset=0
 

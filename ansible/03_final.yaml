@@ -9,6 +9,7 @@
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
   roles:
   - detect_user
   - role: ssh-known-hosts
@@ -58,6 +59,7 @@
   gather_facts: true
   vars_files:
   - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
   roles:
     - role: ch-role-users
       tags: ch-role-users
@@ -86,6 +88,7 @@
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
   # With serial we can specify the number of hosts on which the Playbook is
   # executed in parallel.
   # https://docs.ansible.com/ansible/latest/user_guide/playbooks_delegation.html
@@ -102,6 +105,7 @@
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
   roles:
     - role: k8s-worker
       tags: k8s-worker
@@ -110,6 +114,8 @@
 - name: Deploy and Configure the Calico-Setup
   hosts: masters[0]
   gather_facts: false
+  vars_files:
+  - vars/auto_generated_preamble.yaml
   roles:
     - role: calico
       tags: calico
@@ -121,6 +127,7 @@
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
   run_once: yes
   roles:
     - role: connect-k8s-to-openstack
@@ -134,6 +141,8 @@
   hosts: gateways
   become: yes
   gather_facts: true
+  vars_files:
+  - vars/auto_generated_preamble.yaml
   roles:
   - role: k8s-bgp
     tags:
@@ -145,6 +154,8 @@
 
 - name: Configure the local-storage controller
   hosts: workers
+  vars_files:
+  - vars/auto_generated_preamble.yaml
   roles:
     - role: k8s-local-storage-controller
       tags: lsc
