@@ -38,7 +38,7 @@ version = "0.3.3"
 agent_port = 15203
 
 [kubernetes]
-version = "1.19.10"
+version = "1.21.4"
 use_podsecuritypolicies = true
 is_gpu_cluster = false
 
