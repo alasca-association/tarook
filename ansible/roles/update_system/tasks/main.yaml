@@ -61,7 +61,20 @@
   # gateways are internet-facing and highly-available
   - "_allow_disruption or not kubernetes_dir.stat.exists"
 
-- name: Reboot the system # noqa no-handler
+- name: Reboot block
   become: yes
-  reboot:
   when: upgrade_dnf is changed or upgrade_yum is changed or upgrade_apt is changed
+  block: 
+
+    - name: Reboot the system (cloud-init run)
+      command:
+        argv:
+        - reboot
+        - now
+      when: ansible_connection == 'local'
+
+    # We do not need a "when" here. ansible is killed approximately immediately
+    # anyway by the above command if it is executed; If the above command is
+    # not executed, we want to execute this one.
+    - name: Reboot the system
+      reboot:
