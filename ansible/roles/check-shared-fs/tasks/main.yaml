@@ -46,8 +46,8 @@
     register: worker_state
     loop: "{{ worker_pods.results }}"
     until: "worker_state.resources and (worker_state.resources[0].status | default(False)) and (worker_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
-    delay: 1
-    retries: 60
+    delay: 5
+    retries: 240
 
   - name: check worker pod success
     debug:

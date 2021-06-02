@@ -43,8 +43,8 @@
       namespace: "{{ check_block_storage_namespace }}"
     register: writer_state
     until: "writer_state.resources and (writer_state.resources[0].status | default(False)) and (writer_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
-    delay: 1
-    retries: 60
+    delay: 5
+    retries: 240
 
   - name: check writer pod success
     debug:
@@ -67,8 +67,8 @@
       namespace: "{{ check_block_storage_namespace }}"
     register: reader_state
     until: "reader_state.resources and (reader_state.resources[0].status | default(False)) and (reader_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
-    delay: 1
-    retries: 60
+    delay: 5
+    retries: 240
 
   - name: check writer pod success
     debug:
