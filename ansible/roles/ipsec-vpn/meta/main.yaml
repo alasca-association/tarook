@@ -3,3 +3,4 @@ dependencies:
 - bird
 - nftables
 - keepalived
+- passwordstore
