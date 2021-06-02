@@ -29,6 +29,14 @@
       tags:
       - test-ccm
 
+- name: Validate DualStack-Support
+  hosts: "{{ groups['k8s_nodes'] }}"
+  roles:
+  - role: check-dualstack
+    tags:
+    - test-dualstack
+    when: dualstack_support
+
 - name: Test Calico CNI Support
   hosts: "{{ groups['k8s_nodes'] }}"
   gather_facts: no

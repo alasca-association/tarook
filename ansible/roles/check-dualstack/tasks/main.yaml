@@ -1,0 +1,33 @@
+# https://kubernetes.io/docs/tasks/network/validate-dual-stack/
+
+- name: Get k8s node information
+  delegate_to: "{{ groups['masters'] | first }}"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s_info:
+    kind: Node
+    name: "{{ inventory_hostname }}"
+  register: k8s_node_info
+
+- name: Validate that the k8s node has an internal IPv4 and IPv6 address
+  vars:
+    k8s_node_internal_ips: "{{ k8s_node_info['resources'][0]['status']['addresses'] | map(attribute='address') | flatten }}"
+  block:
+    - name: Validate that the k8s node has an internal IPv4 address
+      with_items:
+      - "{{ k8s_node_internal_ips }}"
+      when: item | ipv4
+      set_fact:
+        node_has_internal_ipv4: True
+
+    - name: Validate that the k8s node has an internal IPv6 address
+      with_items:
+      - "{{ k8s_node_internal_ips }}"
+      when: item | ipv6
+      set_fact:
+        node_has_internal_ipv6: True
+
+    - name: Fail if the k8s node does not have an internal IPv4 and IPv6 address
+      when: not node_has_internal_ipv4 or not node_has_internal_ipv6
+      fail:
+        msg: "The k8s node does not have an Internal IPv4 and IPv6 address"
