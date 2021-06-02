@@ -31,3 +31,21 @@
       when: not node_has_internal_ipv4 or not node_has_internal_ipv6
       fail:
         msg: "The k8s node does not have an Internal IPv4 and IPv6 address"
+
+- name: Validate the k8s node PodCIDR address blocks
+  vars:
+    k8s_node_address_blocks: "{{ k8s_node_info['resources'][0]['spec']['podCIDRs'] }}"
+  block:
+    - name: Validate that the k8s node has an IPv4 PodCIDR addressing block
+      with_items:
+      - "{{ k8s_node_address_blocks }}"
+      when: item | ipv4
+      set_fact:
+        node_has_ipv4_address_block: True
+
+    - name: Validate that the k8s node has an IPv6 PodCIDR addressing block
+      with_items:
+      - "{{ k8s_node_address_blocks }}"
+      when: item | ipv6
+      set_fact:
+        node_has_ipv6_address_block: True
