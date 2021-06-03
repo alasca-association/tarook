@@ -86,6 +86,7 @@ spec:
         args:
         - --run-router=true
         - --run-firewall=true
+        - --cluster-asn={{ k8s_network_bgp_worker_as | to_json }}
         - --run-service-proxy=true
         - --kubeconfig=/var/lib/kube-router/kubeconfig
         - {{ '--peer-router-ips=%s' | format(groups['gateways'] | map('extract', hostvars, 'local_ipv4_address') | join(',')) | to_json  }}
