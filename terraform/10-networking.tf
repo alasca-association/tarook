@@ -89,6 +89,6 @@ resource "local_file" "final_networking" {
     floating_ip_network_id = data.openstack_networking_network_v2.public_network.id,
     subnet_cidr            = openstack_networking_subnet_v2.cluster_subnet.cidr,
   })
-  filename        = "${path.cwd}/../inventory/03_final/group_vars/all/networking_rendered.yaml"
+  filename        = "../../inventory/03_final/group_vars/all/networking_rendered.yaml"
   file_permission = 0640
 }
