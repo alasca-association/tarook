@@ -44,6 +44,7 @@
   - role: check-calico
     tags:
     - check-calico
+    - test-dualstack
     when: k8s_network_plugin == 'calico'
 
 # Ugly: assuming naming scheme here.

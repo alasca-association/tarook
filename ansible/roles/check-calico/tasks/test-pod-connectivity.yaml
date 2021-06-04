@@ -62,6 +62,8 @@
       - "{{ calico_busybox_pod_information.resources }}"
     loop_control:
       label: "{{ item[0].metadata.name }} --> {{item[1].metadata.name }} ({{ item[1].status.podIP }})"
+    async: 45
+    poll: 0
 
   - name: ping each BusyBox Pod from every BusyBox Pods (IPv6)
     command:
@@ -85,6 +87,8 @@
     when: dualstack_support
     loop_control:
       label: "{{ item[0].metadata.name }} --> {{item[1].metadata.name }} ({{ item[1].status.podIPs[1]['ip'] | default('not defined') }})"
+    async: 45
+    poll: 0
 
   # Using a Deamonset ensures that a Pod is created on each node
   - name: Delete the (calico-)BusyBox DaemonSet, ServiceAccount and PSP
