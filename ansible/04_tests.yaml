@@ -74,10 +74,14 @@
     gateway: "{{ groups['gateways'] | first }}"
   roles:
     - role: check-services
-      tags: test-service
       when: "deprecated_nodeport_lb_test_port is defined"
+      tags:
+      - test-service
+      - test-dualstack
     - role: check-loadbalancer-service
-      tags: test-loadbalancer-service
+      tags:
+      - test-loadbalancer-service
+      - test-dualstack
       when: (openstack_lbaas | default("False")) or ch_k8s_lbaas_enabled
 
 - name: Test enforcement of PodSecurityPolicies
