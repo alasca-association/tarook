@@ -2,6 +2,17 @@
 
 Associated [Merge Request](https://gitlab.cloudandheat.com/lcm/managed-k8s/-/merge_requests/176)
 
+---
+**NOTE**
+
+It is still possible to create an IPv4-only cluster.
+
+It is currently not possible to create an IPv6-only cluster.
+
+It is **not possible to upgrade** a single stack cluster to a dualStack cluster.
+
+---
+
 ## Motivation
 
 IPv4/IPv6 DualStack support enables the allocation of both IPv4 and IPv6 addresses to [Pods](https://kubernetes.io/docs/concepts/workloads/pods/) and [Services](https://kubernetes.io/docs/concepts/services-networking/service/).
@@ -9,39 +20,47 @@ This enables Pod off-cluster egress routing (e.g. the Internet) via both, IPv4 a
 
 ## Enabling DualStack-Support for managed-k8s
 
+This section states necessary config changes to your mk8s setup to enable DualStack-support.
+
 ### Prerequisites
 
 * Terraform `v0.12` or later
 * Kubernetes `v1.21` or later
 * Calico `v3.11` or later
+* [ch-k8s-lbaas](https://github.com/cloudandheat/ch-k8s-lbaas) `v0.3.3` or later
 
 ### Necessary changes in your config file
 
 Adjust your `config/config.toml` to meet the following statements:
 
 * set `dualstack-support=true`
-* specify `subnet_v6_cidr` for the IPv6 subnet that will be created via Terraform
+  * this variable is used across all stages to adjust setups and resources
+* specify `subnet_v6_cidr`
+  * this is the IPv6 subnet that will be created via Terraform
   * e.g.:
     * `subnet_v6_cidr = "fd00::/120"`
-* specify `wg_ipv6_cidr` for wireguard as well as `wg_ipv6_gw`
+* specify `wg_ipv6_cidr` as well as `wg_ipv6_gw`
+  * this is the IPv6 CIDR for the allowed IP addresses of wireguard as well as the server/gateway IP address
   * e.g.:
-    * `wg_ipv6_cidr = "fd00::/122"`
-    * `wg_ipv6_gw = "fd00::1/122"`
+    * `wg_ipv6_cidr = "fd01::/120"`
+    * `wg_ipv6_gw = "fd01::1/120"`
+* you have to choose calico as CNI plugin
+  * `k8s_network_plugin = calico`
 
----
-**NOTE**
+## Design / Procedure considerations
 
-It is still possible to create an IPv4-only cluster with calico as CNI plugin.
+The following section provides an overview of assumptions, requirements and design decisions for the DualStack support in managed-k8s.
 
----
-## DualStack-Support for OpenStack
+### DualStack-Support in OpenStack
 
 A Kubernetes cluster with DualStack support requires IPv4 and IPv6 connectivity between the cluster nodes.
+As we are deploying on top of OpenStack, we need to adjust Terraform to fulfill the prerequisites.
 
 For Pods to be able to connect to the outside world over IPv6, there must be IPv6 connectivity from the cluster nodes to the outside world.
+However, f1a does not support IPv6.
 Because we need IPv6 connectivity of the cluster nodes, we need to enable DualStack-Support for the underlying OpenStack nodes via Terraform.
 
-[Enabling a DualStack network](https://docs.openstack.org/neutron/latest/admin/config-ipv6.html) in OpenStack Networking requires:
+[Enabling a DualStack network](https://docs.openstack.org/neutron/latest/admin/config-ipv6.html) in OpenStack requires:
 
   * creating a subnet with the `ip_version` field set to `6`
   * set attributes of `ipv6_ra_mode` and `ipv6_address_mode`
@@ -50,82 +69,45 @@ Because we need IPv6 connectivity of the cluster nodes, we need to enable DualSt
     * `ipv6_address_mode = "dhcpv6-stateful"`
   * creating an IPv6 router interface
 
-## DualStack-Support for mk8s
-
-**Currently working**:
-* DualStack support for Pods and Services
-
-**Currently not working**:
-* DualStack support for the k8s control plane
-  * refer: https://gitlab.cloudandheat.com/lcm/managed-k8s/-/merge_requests/182
-
-Some information about the DualStack support in Kubernetes:
-
-* Introduced with `v1.16`, but not fully supported yet
-* The DualStack feature for the k8s control plane will be fully added sometime after `v1.21`
-* `PodStatus.PodIPs` can hold multiple IP addresses
-* `PodStatus.PodIP` (legacy) is required to be the same as `PodStatus.PodIPs[0]`
-* Calico routes IPv6 traffic from Pods over the nodes own IPv6 connectivity
+### DualStack-Support for mk8s
 
 ---
 **NOTE**
 
 The IPv6 addresses assigned to a Pod are unique local. Therefore, they are routable inside the network, but **cannot reach the Internet**.
-To enable egress connection, masquerading iptables rules on k8s nodes are necessary
-That may can be realized with ip-masq-agent.
-
-References:
-* [github: ip-masc-agent](https://github.com/kubernetes-sigs/ip-masq-agent)
-* [blog post: how to enable ipv6 on kubernetes](https://medium.com/@elfakharany/how-to-enable-ipv6-on-kubernetes-aka-dual-stack-cluster-ac0fe294e4cf)
 
 ---
 
-### [Create a Kubernetes cluster with DualStack-Support](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#enable-ipv4-ipv6-dual-stack)
+Some information about the general DualStack support in Kubernetes:
 
-The following points state the necessary parameters to enable the DualStack feature for Kubernetes:
+* Introduced with `v1.16`, but not fully supported yet
+* The DualStack feature for the k8s control plane has been fully added in `v1.21`
+* `PodStatus.PodIPs` can now hold multiple IP addresses
+* `PodStatus.PodIP` (legacy) is required to be the same as `PodStatus.PodIPs[0]`
+* Calico routes IPv6 traffic from Pods over the nodes own IPv6 connectivity
+* Please also refer to [Dual-stack support with kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/dual-stack-support/)
 
-* [`kube-proxy`](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/) needs to run in [IPVS](https://en.wikipedia.org/wiki/IP_Virtual_Server) mode
-* enable `IPv6DualStack` feature gate for relevant components
-* We are using [`kubeadm`](https://github.com/kubernetes/kubeadm) to init our k8s clusters
-  * Currently there is a [Pull Request](https://github.com/kubernetes/website/pull/26675) adding full DualStack support to `kubeadm`
-  * `kubeadm` takes care that the `IPv6DualStack` feature gate is enabled
-* Manual configuration
-  * kube-controller-manager options:
-    * `-- feature-gates="IPv6DualStack=true`
-    * `--cluster-cidr=<IPv4 CIDR>,<IPv6 CIDR>`
-      * we are using the default value for `<IPv6 CIDR>` (kubeadm takes care of that)
-    * `--service-cluster-ip-range=<IPv4 CIDR>,<IPv6 CIDR>`
-    * `--node-cidr-mask-size-ipv4|--node-cidr-mask-size-ipv6`
-  * kubelet options:
-    * `--feature-gates="IPv6DualStack=true`
-  * kube-proxy options:
-    * `--proxy-mode=ipvs`
-    * `--cluster-cidrs=<IPv4 CIDR>, <IPv6 CIDR>`
-    * `--feature-gates="IPv6Dualstack=true`
+### [Creating a Kubernetes cluster with DualStack-Support](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#enable-ipv4-ipv6-dual-stack)
 
 In managed-k8s, we do initialize the k8s cluster with the help of [`kubeadm`](https://kubernetes.io/docs/reference/setup-tools/kubeadm/) and the corresponding [configuration file](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/#config-file).
-However, in its current state (or rather the version we do use) `kubeadm` does not fully support the creation of a DualStack cluster.
-There is an [issue in the official GitHub repository of kubeadm](https://github.com/kubernetes/kubeadm/issues/1612) addressing the DualStack support which is about to be merged in the near future.
+Using configuration files for `kubeadm` is a hard requirement for the DualStack-support, because some flags are only supported in the config file and mixing CLI flags with the configuration file is not possible.
 
-The DualStack support for Pods and Services with Calico is working, but the k8s control plane is lacking DualStack features, especially when initialized via `kubeadm`.
-The `advertiseAddress` option does [not support multiple IPs](https://github.com/kubernetes/kubeadm/issues/1612#issuecomment-773906850).
-This feature will be added sometime after v1.21.
-The `advertiseAddress` option in the `InitConfiguration` specifies the IP address that the API-server will advertise it is listening on.
+To configure `kubelet` for the DualStack support, it is necessary to always [pass the `node-ips` as a parameter](https://github.com/kubernetes/kubernetes/pull/95239#).
+Otherwise, `kubelet` will only annotate the first matching IP which is usually the IPv4 address.
+The node IPs are checked in the `check-dualstack` role.
 
-Another problem is, that the `controlPlaneEndpoint` has to be either **one** IP address or a DNS name.
-For the `kube-apiserver` to listen on an IPv4 and and IPv6 address (VIPs) we would need to adjust our (load balancing) setup to use DNS.
-However, it is not recommended to use IP addresses directly anyway.
+### Currently not working
 
-To have `kubelet` with DualStack support, it is necessary to always [pass the `node-ips` as a parameter](https://github.com/kubernetes/kubernetes/pull/95239#).
-The kubeadm configuration template recently added support for this setting.
-This feature is supported since `v1.20`, but we are currently are using `v1.18`.
+#### DualStack support for the k8s control plane
 
-In the currently used `kubeadm` version (`v1.18`) it is not possible to specify two `podSubnet` nor two `serviceSubnet`.
-It is not possible to bind more than one address for the `controllerManager` and `scheduler`.
+The `controlPlaneEndpoint` either has to be *one* IP address or a domain name.
+Because using a domain name would lead to the DNS resolution overhead, we decided to let the control plane be IPv4-only for now.
+However, a VIPv6 is created via Terraform and configured in HAProxy such that it can be used to connect to the control plane.
 
-With the release of `v1.21`, DualStack will be **enabled by default** (when initializing a cluster via `kubeadm`).
-Enabling the DualStack feature does not mean that you need to use DualStack addressing.
-It is possible to deploy a single-stack cluster that has the DualStack networking feature enabled.
+#### IPv6 load-balanced services
+
+This is mainly because f1a does not support IPv6 and it is unclear how  we want to handle/design the IPv6 stack and handle the load-balancing in Yaook.
+Please also refer to [Issue #268](https://gitlab.cloudandheat.com/lcm/managed-k8s/-/issues/269) for more information.
 
 ### Adjust the Calico CNI for DualStack-Support
 
@@ -147,12 +129,12 @@ The environment variables for [`calico/node`](https://docs.projectcalico.org/ref
 
 ## DualStack-Support and Wireguard
 
-For the DualStack support for wireguard, `radvd` is needed on the gateways.
+For the DualStack-support for wireguard, `radvd` is needed on the gateways.
 Otherwise, when trying to connect to a node over IPv6, the node does not know a route back out of cluster.
 
 A fixed VIPv6 for the (active) wireguard gateway is created via terraform (`wireguard_gw_fixed_ip_v6`).
 This VIP is managed by `keepalived` and will be assigned to the gateway with the highest priority.
-On the gateways, `radvd` is configured in such a way, that it only sends router advertisements if the host holds the IP that is managed by `keepalived`.
+On the gateways, `radvd` is configured in such a way, that it only sends router advertisements if the host holds the IP that is managed by `keepalived` (the host gateway is in master state).
 
 From this follows, that only the gateway that really knows a way back to the wireguard client propagates the route (sends the router advertisement).
 This way, the k8s nodes know the correct route to the currently active gateway.
@@ -160,14 +142,9 @@ This way, the k8s nodes know the correct route to the currently active gateway.
 ---
 **NOTE**
 
-Because wireguard is active on all gateways, the (backup) gateways will not import the propagated route advertisement sent by the currently active gateway.
+Because wireguard is active on all gateways, the (backup/secondary) gateways will not import the propagated route advertisement sent by the currently active gateway.
 This is because, they think they already have a route to the wireguard subnet.
 From this follows, that it is **not possible** to ssh to the secondary gateways **directly**.
-You can still connect to them using the public IP address or by using the currently active gateway as jumphost.
+You can still connect to them using their public IP addresses or by using the currently active gateway as jumphost.
 
 ---
-
-* agreed on letting the control plane single stack
-  * but vipv6 is created
-  * and api is callable via it
-* not possible to upgrade a single stack cluster to a dualStack cluster
