@@ -3,9 +3,7 @@ subnet_cidr = "172.30.154.0/24"
 haproxy_ports = [30060]
 workers = 6
 default_master_image_name = "mk8s-ci-ubuntu-1804-nightly"
-master_images = ["mk8s-ci-centos-8.2-nightly"]
 default_worker_image_name = "mk8s-ci-ubuntu-1804-nightly"
-worker_images = ["mk8s-ci-centos-8.2-nightly", "mk8s-ci-centos-8.2-nightly"]
 gateway_image_name = "mk8s-ci-debian-10-nightly"
 worker_flavors = ["L", "M", "L", "M", "L", "M"]
 enable_az_management = false
@@ -65,6 +63,12 @@ rook_placement_label = { key = "{{ managed_k8s_control_plane_key }}", value = "s
 rook_placement_taint = { key = "{{ managed_k8s_control_plane_key }}", value = "storage" }
 
 monitoring_placement_label = { key = "{{ managed_k8s_control_plane_key }}", value = "monitoring" }
+
+# To prevent the CI running in CPU limits here and failing because of that
+rook_mon_cpu_limit = "500m"
+rook_mon_cpu_request = "100m"
+rook_operator_cpu_limit = "500m"
+rook_operator_cpu_request = "100m"
 
 monitoring_prometheus_memory_limit = "1Gi"
 monitoring_prometheus_cpu_limit = "200m"

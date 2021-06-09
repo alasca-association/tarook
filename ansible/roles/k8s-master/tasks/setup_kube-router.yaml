@@ -1,5 +1,6 @@
 ---
 - name: Detect presence of flannel
+  become: yes
   stat:
     path: /etc/cni/net.d/10-flannel.conflist
   register: flannel_conf

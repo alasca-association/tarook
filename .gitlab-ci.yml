@@ -76,9 +76,9 @@ flake8:
   - python3 managed-k8s/jenkins/toml_helper.py
   - ./managed-k8s/actions/apply-terraform.sh
   - ./reachability-or-recreate.sh
-  - timeout 40m ./managed-k8s/actions/apply-stage2.sh
-  - timeout 80m ./managed-k8s/actions/apply-stage3.sh
-  - timeout 30m ./managed-k8s/actions/test.sh
+  - ./retry_and_timeout.sh ./managed-k8s/actions/apply-stage2.sh 2 40m
+  - ./retry_and_timeout.sh ./managed-k8s/actions/apply-stage3.sh 2 80m
+  - ./retry_and_timeout.sh ./managed-k8s/actions/test.sh 2 30m
   after_script:
   - 'export wg_conf_name=wg0'
   - cd ci

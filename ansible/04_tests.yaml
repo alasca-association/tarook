@@ -58,7 +58,7 @@
       - test-ceph-block-storage
       - test-ceph-shared-filesystem
 
-- name: Check basic functionality
+- name: Check services
   hosts: "{{ groups['masters'] | first }}"
   become: no
   gather_facts: false
@@ -86,23 +86,6 @@
       when: "openstack_lbaas | default(False) or ch_k8s_lbaas | default(False)"
     - role: check-local-storage
       tags: test-local-storage
-
-- name: Remove worker node annotation
-  hosts: "{{ groups['masters'] | first }}"
-  become: no
-  gather_facts: false
-  tasks:
-      - name: Remove annotation of worker nodes
-        environment:
-          KUBECONFIG: /etc/kubernetes/admin.conf
-        command: "kubectl label --overwrite nodes {{ item['worker'] }} name-"
-        loop: "{{ test_worker_nodes }}"
-        tags:
-        - test-service
-        - test-cinder-block-storage
-        - test-ceph-block-storage
-        - test-ceph-shared-filesystem
-        - test-cleanup
 
 - name: Test enforcement of PodSecurityPolicies
   hosts: "{{ groups['masters'] | first }}"
@@ -144,4 +127,44 @@
     tags: test-monitoring
     when: "monitoring | default(False)"
 
+# Same line for argumentation: especially rook is known to take a bit more time to boot up
+- name: Check storage services
+  hosts: "{{ groups['masters'] | first }}"
+  become: no
+  gather_facts: false
+  vars:
+    gateway: "{{ groups['gateways'] | first }}"
+  roles:
+    - role: check-block-storage
+      tags: test-cinder-block-storage
+      vars:
+        block_storage_class: csi-sc-cinderplugin
+    - role: check-block-storage
+      tags: test-ceph-block-storage
+      when: "(rook | default(False)) | bool"
+      vars:
+        block_storage_class: rook-ceph-data
+    - role: check-shared-fs
+      tags: test-ceph-shared-filesystem
+      when: "((rook | default(False)) | bool)  and ((rook_fs | default(False)) | bool)"
+      vars:
+        fs_storage_class: rook-ceph-cephfs
+    - role: check-local-storage
+      tags: test-local-storage
 
+- name: Remove worker node annotation
+  hosts: "{{ groups['masters'] | first }}"
+  become: no
+  gather_facts: false
+  tasks:
+      - name: Remove annotation of worker nodes
+        environment:
+          KUBECONFIG: /etc/kubernetes/admin.conf
+        command: "kubectl label --overwrite nodes {{ item['worker'] }} name-"
+        loop: "{{ test_worker_nodes }}"
+        tags:
+        - test-service
+        - test-cinder-block-storage
+        - test-ceph-block-storage
+        - test-ceph-shared-filesystem
+        - test-cleanup
