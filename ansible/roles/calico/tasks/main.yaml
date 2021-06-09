@@ -1,5 +1,6 @@
 - name: Make sure the calico directory exists in the 'etc_dir'
   delegate_to: localhost
+  run_once: yes
   become: no
   file:
     path: "{{ etc_dir }}/calico"
@@ -7,15 +8,18 @@
     mode: 0755
 
 - name: Setup Preliminaries
+  run_once: yes
   include_tasks: setup_preliminaries.yaml
 
 - name: Prepare Kubernetes Nodes
   include_tasks: prepare_nodes.yaml
 
 - name: Setup IPPools
+  run_once: yes
   include_tasks: setup_ippools.yaml
 
 - name: Apply calico-kube-controller
+  run_once: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:
@@ -28,10 +32,13 @@
   - calico-kube-controller.yaml.j2
 
 - name: Setup Calico Typha
+  run_once: yes
   include_tasks: setup_typha.yaml
 
 - name: Setup Calico/Node
+  run_once: yes
   include_tasks: setup_calico_node.yaml
 
 - name: Setup BGP Routing Information Distribution via BIRD
+  run_once: yes
   include_tasks: setup_bgp.yaml
