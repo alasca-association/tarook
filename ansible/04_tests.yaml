@@ -67,25 +67,9 @@
   roles:
     - role: check-services
       tags: test-service
-    - role: check-block-storage
-      tags: test-cinder-block-storage
-      vars:
-        block_storage_class: csi-sc-cinderplugin
-    - role: check-block-storage
-      tags: test-ceph-block-storage
-      when: "(rook | default(False)) | bool"
-      vars:
-        block_storage_class: rook-ceph-data
-    - role: check-shared-fs
-      tags: test-ceph-shared-filesystem
-      when: "((rook | default(False)) | bool)  and ((rook_fs | default(False)) | bool)"
-      vars:
-        fs_storage_class: rook-ceph-cephfs
     - role: check-loadbalancer-service
       tags: test-loadbalancer-service
       when: "openstack_lbaas | default(False) or ch_k8s_lbaas | default(False)"
-    - role: check-local-storage
-      tags: test-local-storage
 
 - name: Test enforcement of PodSecurityPolicies
   hosts: "{{ groups['masters'] | first }}"
