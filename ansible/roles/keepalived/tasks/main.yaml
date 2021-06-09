@@ -43,7 +43,7 @@
   become: yes
   template:
     src: notifier.sh.j2
-    dest: /etc/keepalived/
+    dest: /etc/keepalived/notifier.sh
     owner: root
     group: root
     mode: "u=rx,g=rx,o-rwx"

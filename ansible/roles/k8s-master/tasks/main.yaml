@@ -2,7 +2,7 @@
   become: yes
   template:
     src: kubernetes-admin.sh.j2
-    dest: /etc/profile.d/
+    dest: /etc/profile.d/kubernetes-admin.sh
     owner: root
     group: root
     mode: u=rw,go=r
