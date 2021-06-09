@@ -1,3 +1,6 @@
+- name: Include sanity checks
+  include_tasks: sanity_checks.yaml
+
 - name: Make sure the calico directory exists in the 'etc_dir'
   delegate_to: localhost
   run_once: yes
