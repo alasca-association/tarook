@@ -6,7 +6,8 @@
 - name: Install and configure Calico CNI Plugin binaries
   become: yes
   block:
-    - name: Install calicoctl
+    - name: Install calicoctl on masters
+      run_once: yes
       delegate_to: "{{ item }}"
       get_url:
         owner: root
@@ -18,7 +19,6 @@
       loop: "{{ groups['masters'] }}"
 
     - name: Ensure that /opt/cni/bin/ exists
-      delegate_to: "{{ item }}"
       file:
         owner: root
         group: root
@@ -26,10 +26,8 @@
         recurse: yes
         path: /opt/cni/bin/
         state: directory
-      loop: "{{ groups['k8s_nodes'] }}"
 
     - name: Install calico
-      delegate_to: "{{ item }}"
       get_url:
         owner: root
         group: root
@@ -37,10 +35,8 @@
         url: "https://github.com/projectcalico/cni-plugin/releases/download/v{{ image_versions.calico_version }}/calico-amd64"
         dest: /opt/cni/bin/calico
         checksum: "{{ calico_binary_checksum }}"
-      loop: "{{ groups['k8s_nodes'] }}"
 
     - name: Install calico-ipam
-      delegate_to: "{{ item }}"
       get_url:
         owner: root
         group: root
@@ -48,16 +44,13 @@
         url: "https://github.com/projectcalico/cni-plugin/releases/download/v{{ image_versions.calico_version }}/calico-ipam-amd64"
         dest: /opt/cni/bin/calico-ipam
         checksum: "{{ calico_ipam_binary_checksum }}"
-      loop: "{{ groups['k8s_nodes'] }}"
 
 # https://docs.projectcalico.org/reference/cni-plugin/configuration#kubernetes-specific
 - name: Activate k8s Calico CNI plugin on all nodes
   become: yes
-  delegate_to: "{{ item }}"
   template:
     owner: root
     group: root
     mode: 0600
     src: 10-calico.conflist.j2
     dest: /etc/cni/net.d/10-calico.conflist
-  loop: "{{ groups['k8s_nodes'] }}"

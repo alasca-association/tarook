@@ -112,7 +112,7 @@
       gather_facts: false
 
 - name: Deploy and Configure the Calico-Setup
-  hosts: masters[0]
+  hosts: k8s_nodes
   gather_facts: false
   vars_files:
   - vars/auto_generated_preamble.yaml

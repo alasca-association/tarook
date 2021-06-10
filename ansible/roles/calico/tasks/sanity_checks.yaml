@@ -1,0 +1,18 @@
+- name: Check if /etc/cni/net.d/ is empty
+  find:
+    path: /etc/cni/net.d/
+    patterns: "*.*"
+  register: cni_confs
+
+- name: Validate the files found
+  when: cni_confs.matched > 0
+  block:
+  - name: Fail if more than one CNI config found
+    when: cni_confs.matched > 1
+    fail:
+      msg: "### ERROR ###\nMore than 1 CNI configuration files found in /etc/cni/net.d/"
+
+  - name: Fail if the found CNI config does not belong to calico
+    when: cni_confs.files[0]['path'] != "/etc/cni/net.d/10-calico.conflist"
+    fail:
+      msg: "### ERROR ###\nThe CNI config '{{ cni_confs.files[0]['path'] }}' does not belong to calico"
