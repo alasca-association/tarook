@@ -42,7 +42,7 @@
         - bgpconfiguration
         - default
         - -p
-        - '{"spec":{"asNumber": {{ calico_k8s_node_asnumber | to_json }} }}'
+        - '{"spec":{"asNumber": {{ k8s_network_bgp_worker_as | to_json }} }}'
     register: bgp_as_number_patch
     changed_when: "'Successfully patched' and 'BGPConfiguration' in bgp_as_number_patch.stdout"
 
