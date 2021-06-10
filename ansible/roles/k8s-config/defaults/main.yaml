@@ -56,6 +56,27 @@ image_version_map:
       operator: "v1.2.3"
       toolbox: "v1.2.3"
     calico_version: "3.17.1" # Version of Calico binaries and images to be deployed
+    
+  "1.19":
+    ch_k8s_lbaas: "0.3.2"
+    local_volume:
+      local_volume_provisioner: "v2.3.4"
+    kube_router:
+      kube_router: "v1.1.0"
+    openstack:
+      cinder_csi_plugin: "v1.19.0"
+      csi_attacher: "v2.0.0"
+      csi_node_driver_registrar: "v1.1.0"
+      csi_provisioner: "v1.4.0"
+      csi_resizer: "v0.3.0"
+      csi_snapshotter: "v1.2.2"
+      local_volume_provisioner: "v2.3.4"
+      openstack_cloud_controller_manager: "v1.19.1"
+    rook:
+      ceph: "v14.2.6"
+      operator: "v1.2.3"
+      toolbox: "v1.2.3"
+    calico_version: "3.17.1" # Version of Calico binaries and images to be deployed
 
 image_versions: "{{ image_version_map[k8s_version_minor] }}"
 
