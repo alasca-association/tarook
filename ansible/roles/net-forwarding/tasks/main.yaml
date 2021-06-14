@@ -1,0 +1,18 @@
+- name: Enable IP forwarding
+  become: yes
+  block:
+  - name: Create /etc/sysctl.d/forward.conf
+    template:
+      src: forward.conf.j2
+      dest: /etc/sysctl.d/forward.conf
+      owner: root
+      group: root
+      mode: 0640
+
+  - name: Load /etc/sysctl.d/forward.conf
+    command:
+      argv:
+        - sysctl
+        - -p
+        - /etc/sysctl.d/forward.conf
+    changed_when: false

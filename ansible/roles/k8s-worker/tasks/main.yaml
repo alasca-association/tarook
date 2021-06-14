@@ -21,29 +21,6 @@
   when: kubelet_creds.stat.exists
   register: node_check
 
-- name: Enable net.ipv6.conf.all.forwarding
-  become: yes
-  sysctl:
-    name: net.ipv6.conf.all.forwarding
-    value: "1"
-    state: present
-
-- name: Get output of 'kubectl get nodes'
-  run_once: yes
-  delegate_to: "{{ groups['masters'] | first }}"
-  become: no
-  command:
-  args:
-    argv:
-    - kubectl
-    - get
-    - node
-    - "{{ inventory_hostname }}"
-  failed_when: false
-  changed_when: false
-  when: kubelet_creds.stat.exists
-  register: node_check
-
 - name: Join the k8s cluster as worker
   vars:
     our_address_v4: "address: {{ local_ipv4_address }}"
