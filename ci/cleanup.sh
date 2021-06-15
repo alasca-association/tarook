@@ -3,8 +3,10 @@
 set -euo pipefail
 
 # No idea why I have to configure the wg tunnel again. Is the after-script executed in a different container?
+# We're accepting a failure here because I'm too lazy to check whether wireguard was already configured. Since
+# k8s-dump.sh can also fail gracefully -> no harm, no foul.
 export wg_conf_name="wg0"
-./managed-k8s/actions/wg-up.sh
+./managed-k8s/actions/wg-up.sh || true
 
 if [ -f "$PWD/inventory/.etc/admin.conf" ]; then
     export KUBECONFIG="$PWD/inventory/.etc/admin.conf"
