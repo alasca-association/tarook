@@ -1,5 +1,14 @@
 {{ _auto_generated_preamble }}
 
+# net-base hosts the default configuration that is inherited by other CHILD_SAs in the
+# 'children {}' section below.
+net-base {
+    esp_proposals = {{ ipsec_esp_proposals | join(", ") }}
+    dpd_action = restart
+    start_action = trap
+    local_ts = {{ ipsec_local_networks | join(", ") }}
+}
+
 connections {
 
     rw-eap {
@@ -18,15 +27,15 @@ connections {
             id = {{ ipsec_remote_name }}
         }
         children {
-            net {
-                local_ts = {{ ipsec_local_networks | join(", ") }}
-{% if ipsec_peer_networks %}
-                remote_ts = {{ ipsec_peer_networks | join(", ") }}
-{% endif %}
-                esp_proposals = {{ ipsec_esp_proposals | join(", ") }}
-                dpd_action = restart
-                start_action = trap
+        # Important: This is a workaround for broken peers [0]. In theory, remote_ts supports a list of subnets.
+        # In practice, it often times does not (old IKE version, missing plugins) and routes only the first
+        # subnet listed in remote_ts.
+        # [0] https://lists.strongswan.org/pipermail/users/2017-May/010996.html
+{% for ts in (ipsec_peer_networks | default([])) %}
+            net-{{ loop.index }} : net-base {
+                remote_ts = {{ ts }}
             }
+{% endfor %}
         }
         dpd_delay = 1
 {% if ipsec_virtual_subnet_pool %}
