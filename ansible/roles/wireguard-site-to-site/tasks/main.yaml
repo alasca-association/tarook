@@ -1,0 +1,8 @@
+---
+- name: Configure wireguard site to site tunnel
+  include_tasks: configure_wireguard_s2s.yaml
+  when: wg_s2s_enabled
+
+- name: Deconfigure wireguard site to site tunnel
+  include_tasks: cleanup_wireguard_s2s.yaml
+  when: not wg_s2s_enabled
