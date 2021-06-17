@@ -11,7 +11,7 @@ protocol static k8s_service_net {
     export none;
 }
 
-{% for hostname in groups['masters'] %}
+{% for hostname in groups['k8s_nodes'] %}
 {% set peer = hostvars[hostname] %}
 protocol bgp {{ "%s_v6" | format(hostname | replace('-', '_')) }} {
     table master;

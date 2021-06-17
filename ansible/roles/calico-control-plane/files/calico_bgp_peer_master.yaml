@@ -3,5 +3,5 @@ apiVersion: projectcalico.org/v3
 metadata:
   name: route-reflector-with-nodes
 spec:
-  nodeSelector: route-reflector == 'true'
-  peerSelector: all()
+  nodeSelector: has(route-reflector)
+  peerSelector: "!has(route-reflector)"

@@ -5,7 +5,6 @@ metadata:
 spec:
   peerIP: {{ networking_fixed_ip | ipaddr | to_json }}
   asNumber: {{ k8s_network_bgp_gateway_as | to_json }}
-  nodeSelector: route-reflector == 'true'
   keepOriginalNextHop: true
 
 {% if dualstack_support %}
@@ -17,6 +16,5 @@ metadata:
 spec:
   peerIP: {{ networking_fixed_ip_v6 | ipaddr | to_json }}
   asNumber: {{ k8s_network_bgp_gateway_as | to_json }}
-  nodeSelector: route-reflector == 'true'
   keepOriginalNextHop: true
 {% endif %}

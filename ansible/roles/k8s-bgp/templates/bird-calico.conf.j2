@@ -1,6 +1,6 @@
 {{ _auto_generated_preamble }}
 
-{% for hostname in groups['masters'] %}
+{% for hostname in groups['k8s_nodes'] %}
 {% set peer = hostvars[hostname] %}
 protocol bgp {{ hostname | replace('-', '_') }} {
     table master;
