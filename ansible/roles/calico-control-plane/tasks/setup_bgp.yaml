@@ -93,6 +93,16 @@
     changed_when: "'Successfully applied' and 'BGPPeer' in bgp_master_to_gateways_peering.stdout"
     with_items: "{{ groups['gateways'] }}"
 
+  - name: Peer k8s masters with LoadBalanced-Master Gateway
+    command:
+        argv:
+          - calicoctl
+          - apply
+          - --filename=-
+        stdin: '{{ lookup("template", "calico_bgp_peer_lb_master.yaml.j2") }}'
+    register: bgp_master_to_lb
+    changed_when: "'Successfully applied' and 'BGPPeer' in bgp_master_to_lb.stdout"
+
   - name: Calico - BGP - Label Master-Nodes as Route Reflectors
     command:
       argv:

@@ -1,0 +1,7 @@
+{{ _auto_generated_preamble }}
+
+filter k8s_worker {
+    if net = {{ wg_ip_cidr }} then accept;
+    if scope = SCOPE_ORGANIZATION then accept;
+    else reject;
+}

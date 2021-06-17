@@ -10,10 +10,6 @@
     private_vip: "{{ networking_fixed_ip }}"
     private_vip_v6: "{{ networking_fixed_ip_v6 }}"
 
-- name: Register fact for private IPv6 of wireguard gateway
-  set_fact:
-    private_wg_vip_v6: "{{ wireguard_gw_fixed_ip_v6 }}"
-
 - name: Create keepalived configuration
   become: yes
   template:

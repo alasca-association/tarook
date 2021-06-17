@@ -129,22 +129,21 @@ The environment variables for [`calico/node`](https://docs.projectcalico.org/ref
 
 ## DualStack-Support and Wireguard
 
-For the DualStack-support for wireguard, `radvd` is needed on the gateways.
-Otherwise, when trying to connect to a node over IPv6, the node does not know a route back out of cluster.
+The wireguard role has been extended to create an export filter for bird.
+The BGP instances using this export filter will propagate a route to the wireguard subnet.
+The k8s-bgp role has been adjusted so that only the gateway with the VIPs will peer with the k8s nodes.
+This is necessary, because otherwise when trying to connect to a node over IPv6, the node does not know a route back out of cluster.
 
-A fixed VIPv6 for the (active) wireguard gateway is created via terraform (`wireguard_gw_fixed_ip_v6`).
-This VIP is managed by `keepalived` and will be assigned to the gateway with the highest priority.
-On the gateways, `radvd` is configured in such a way, that it only sends router advertisements if the host holds the IP that is managed by `keepalived` (the host gateway is in master state).
-
-From this follows, that only the gateway that really knows a way back to the wireguard client propagates the route (sends the router advertisement).
+The BGP setup has been adjusted so that the k8s nodes peer with the currently LB-master gateway.
+All k8s nodes need to peer with the LB-master gateway, because calico/node will not forward infrastructure routes to peers.
+If the LB-master gateway dies, the next LB-master automatically connects to the k8s nodes.
 This way, the k8s nodes know the correct route to the currently active gateway.
 
 ---
 **NOTE**
 
-Because wireguard is active on all gateways, the (backup/secondary) gateways will not import the propagated route advertisement sent by the currently active gateway.
-This is because, they think they already have a route to the wireguard subnet.
-From this follows, that it is **not possible** to ssh to the secondary gateways **directly**.
-You can still connect to them using their public IP addresses or by using the currently active gateway as jumphost.
+All gateways think they have a route to the wireguard subnet, but only the current LB-master has.
+It is **not possible** to ssh to the secondary gateways **directly** using the private IP addresses.
+You can still connect to the secondary gateways using their public (floating) IP addresses or by using the currently active gateway as jumphost.
 
 ---
