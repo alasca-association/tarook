@@ -78,6 +78,8 @@
     - calico-busybox-daemonset.yaml.j2
     - busybox_serviceaccount.yaml.j2
     - busybox-psp.yaml.j2
+    tags:
+      - test-cleanup
 
   - name: Delete Namespace for calico Pod-to-Pod Connectivity-Check
     k8s:
@@ -88,3 +90,5 @@
       validate:
         fail_on_error: yes
         strict: yes
+    tags:
+      - test-cleanup
