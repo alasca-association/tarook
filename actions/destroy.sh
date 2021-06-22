@@ -6,9 +6,8 @@ actions_dir="$(realpath "$(dirname "$0")")"
 
 require_disruption
 
-tf_min_version=14
-if [ "$(terraform -v -json | jq -r '.terraform_version' | cut -d'.' -f2)" -lt "$tf_min_version" ]; then
-    errorf 'Terraform outdated. Please upgrade to at least v0.'"$tf_min_version"'.0'
+if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraform_version')" "$terraform_min_version")" -lt 0 ]; then
+    errorf 'Please upgrade Terraform to at least v'"$terraform_min_version"
     exit 5
 fi
 

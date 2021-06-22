@@ -4,9 +4,8 @@ actions_dir="$(realpath "$(dirname "$0")")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
-tf_min_version=14
-if [ "$(terraform -v -json | jq -r '.terraform_version' | cut -d'.' -f2)" -lt "$tf_min_version" ]; then
-    errorf 'Please upgrade Terraform to at least v0.'"$tf_min_version"'.0'
+if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraform_version')" "$terraform_min_version")" -lt 0 ]; then
+    errorf 'Please upgrade Terraform to at least v'"$terraform_min_version"
     exit 5
 fi
 
@@ -16,7 +15,7 @@ run terraform -chdir="$terraform_module" init
 run terraform -chdir="$terraform_module" plan --var-file="$terraform_state_dir/config.tfvars.json" --out "$terraform_plan"
 # strict mode terminates the execution of this script immediately
 set +e
-terraform -chdir="$terraform_module" show -json "$terraform_plan" | python3 "$actions_dir/check_plan.py"
+terraform -chdir="$terraform_module" show -json "$terraform_plan" | python3 "$actions_dir/helpers/check_plan.py"
 rc=$?
 set -e
 RC_DISRUPTION=47
