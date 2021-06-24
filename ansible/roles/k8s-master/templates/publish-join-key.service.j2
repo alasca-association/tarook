@@ -1,0 +1,11 @@
+{{ _auto_generated_preamble }}
+[Unit]
+Description=Publish the current k8s join key to Vault
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+User=root
+Group=root
+EnvironmentFile={{ k8s_continuous_join_key_env_path }}
+ExecStart=/usr/local/bin/publish-join-key

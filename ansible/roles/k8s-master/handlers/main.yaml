@@ -6,3 +6,8 @@
   service:
     name: kubelet
     state: restarted
+
+- name: Publish join key
+  service:
+    name: publish-join-key.service
+    state: started
