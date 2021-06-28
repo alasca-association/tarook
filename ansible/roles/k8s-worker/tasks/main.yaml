@@ -1,24 +1,13 @@
-- name: Get output of 'kubectl get nodes'
-  run_once: yes
-  delegate_to: "{{ groups['masters'] | first }}"
-  become: no
-  command:
-  args:
-    argv:
-    - "kubectl"
-    - "get"
-    - "nodes"
-    - "-o"
-    - "yaml"
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  register: kubectl_output
-  changed_when: false
+- name: Test if we are already part of a cluster
+  become: yes
+  stat:
+    path: /var/lib/kubelet/config.yaml
+  register: kubelet_config
 
 - name: Join the K8s cluster
   become: yes
   vars:
     our_address: "address: {{ ansible_host }}"
     kubeadm_out: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
-  when: not our_address in kubectl_output.stdout
+  when: not kubelet_config.stat.exists
   command: "{{ kubeadm_out }} --node-name {{ inventory_hostname | quote }}"
