@@ -3,6 +3,7 @@
 # Make sure to only apply the CustomResourceDefinitions
 
 - name: Create Custom Calico Resource Definitions
+  run_once: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   vars:
@@ -16,6 +17,7 @@
       strict: yes
 
 - name: Check local presence of calico-kubeconfig certificate
+  run_once: yes
   block:
   - name: Check if calico-kubeconfig private key is locally present
     delegate_to: localhost
@@ -35,6 +37,7 @@
     when: calico_cni_crt_local.stat.exists and not calico_cni_key_local.stat.exists
 
 - name: Validate local calico-kubeconfig crt on expiration
+  run_once: yes
   when: calico_cni_crt_local.stat.exists
   block:
   - name: Collect expiration information of the calico-kubeconfig crt
@@ -57,10 +60,9 @@
       msg: "### WARNING ###\nThe calico-kubeconfig certificate expires in less than 1 year from now"
     when: not calico_cni_crt_valid.valid_at.point_2
 
-- name: Create calico-kubeconfig and push it to all nodes
+- name: Manage calico-kubeconfig private key
+  run_once: yes
   become: no
-  environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
   block:
     - name: Regenerate (force) private key of calico-kubeconfig if it is short to expire
       when: not (calico_cni_crt_valid.valid_at.point_2 | default('false'))
@@ -99,29 +101,27 @@
         entrust_not_after: "+3653d"
         provider: ownca
 
+- name: Distribute calico-kubeconfig to all nodes
+  become: yes
+  block:
     - name: Ensure that /etc/cni/net.d/ exists on all k8s_nodes
-      become: yes
-      delegate_to: "{{ item }}"
       file:
         owner: root
         group: root
         mode: 0640
         path: /etc/cni/net.d/
         state: directory
-      loop: "{{ groups['k8s_nodes'] }}"
 
     - name: Push calico-kubeconfig from localhost to k8s_nodes
-      become: yes
-      delegate_to: "{{ item }}"
       template:
         owner: root
         group: root
         mode: 0400
         src: "calico-kubeconfig.j2"
         dest: /etc/cni/net.d/calico-kubeconfig
-      loop: "{{ groups['k8s_nodes'] }}"
 
 - name: Create user for calico-cni, configure RBAC and create RoleBinding
+  run_once: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:
