@@ -61,6 +61,7 @@
 
 - name: Apply calico-kube-controller
   run_once: yes
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:

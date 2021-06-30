@@ -1,5 +1,5 @@
 - name: Run the test
-  become: no
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
 

@@ -7,7 +7,7 @@
 
 - name: Drain this node
   changed_when: True
-  become: no
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   delegate_to: "{{ (groups['masters'] | sort)[0] }}"

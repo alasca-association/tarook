@@ -1,6 +1,6 @@
 ---
 - name: execute test
-  become: no
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:

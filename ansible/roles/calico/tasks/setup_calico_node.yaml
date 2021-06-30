@@ -22,6 +22,7 @@
     when: calico_node_crt_local.stat.exists and not calico_node_key_local.stat.exists
 
   - name: Fetch calico/node Secret from k8s cluster
+    become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s_info:
@@ -122,6 +123,7 @@
 
   # The Secret should always be up-to-date
   - name: Apply calico/node private key and certificate to Secret
+    become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
@@ -144,6 +146,7 @@
 # --------------------------------------- #
 
 - name: Apply calico/node resources
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
@@ -185,6 +188,7 @@
     - calico-node-daemonset.yaml.j2
 
 - name: Restart calico/node Pods on certificate renewal
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   when: calico_node_crt_changed.changed

@@ -80,7 +80,7 @@
     - api_version: apps/v1
       kind: StatefulSet
   run_once: yes
-  become: no
+  become: yes
   when: flannel_conf.stat.exists
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf

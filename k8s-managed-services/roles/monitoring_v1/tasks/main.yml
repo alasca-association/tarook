@@ -44,7 +44,7 @@
 #
 # - name: Expose Prometheus with a NodePort
 #   when: monitoring and monitoring_ch_global_monitoring
-#   become: no
+#   become: yes
 #   environment:
 #     KUBECONFIG: /etc/kubernetes/admin.conf
 #   tags:

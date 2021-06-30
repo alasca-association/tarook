@@ -1,6 +1,6 @@
 ---
 - name: restart thanos-store-0 pod
-  become: no
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:
@@ -13,7 +13,7 @@
       strict: yes
 
 - name: restart prometheus-k8s-0 pod
-  become: no
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:
@@ -26,7 +26,7 @@
       strict: yes
 
 - name: restart prometheus-k8s-1 pod
-  become: no
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   k8s:

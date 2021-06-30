@@ -125,6 +125,7 @@
 
   # The ConfigMap should always be up-to-date
   - name: Apply local Typha CA certificate to ConfigMap
+    become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
@@ -166,6 +167,7 @@
     when: typha_crt_local.stat.exists and not typha_key_local.stat.exists
 
   - name: Fetch Typha Secret from k8s cluster
+    become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s_info:
@@ -268,6 +270,7 @@
 
   # The Secret should always be up-to-date
   - name: Apply Typha private key and certificate to Secret
+    become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
@@ -290,6 +293,7 @@
 # --------------------------------- #
 
 - name: Apply Typha resources
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
@@ -326,8 +330,6 @@
     - typha-deployment.yaml.j2
 
   - name: Deploy Typha service
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
     k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
@@ -339,6 +341,7 @@
     - typha-service.yaml
 
 - name: Restart Typha Pods on certificate_renewal
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   when: typha_crt_changed.changed

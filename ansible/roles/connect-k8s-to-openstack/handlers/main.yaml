@@ -1,6 +1,6 @@
 ---
 - name: restart CCM
-  become: no
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   command:
@@ -14,7 +14,7 @@
     - "daemonset.apps/openstack-cloud-controller-manager"
 
 - name: restart octavia-ingress-controller
-  become: no
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   command:
