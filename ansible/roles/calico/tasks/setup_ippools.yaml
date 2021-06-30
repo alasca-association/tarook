@@ -10,7 +10,7 @@
     DATASTORE_TYPE: kubernetes
   command:
     argv:
-      - calicoctl
+      - /usr/local/bin/calicoctl
       - apply
       - --filename=-
     stdin: '{{ lookup("template", "ippools.yaml.j2") }}'
