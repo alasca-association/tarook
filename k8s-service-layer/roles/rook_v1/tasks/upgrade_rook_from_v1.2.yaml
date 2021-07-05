@@ -46,3 +46,18 @@
           fail_on_error: yes
           strict: yes
 
+# The upgrade will take at least 5 minutes
+# We are pausing here to prevent spamming the output with failures
+- name: The upgrade will take several minutes, pausing ansible for 5m
+  pause:
+    seconds: 300
+
+- name: Wait until the ceph cluster's core components are fully updated
+  include_tasks: wait_for_rook_upgrade.yaml
+
+- name: Give the rook-based ceph cluster time (20s) to stabilize
+  pause:
+    seconds: 20
+
+- name: Include cluster health verification
+  include_tasks: cluster_health_verification.yaml
