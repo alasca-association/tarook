@@ -13,7 +13,7 @@
   - name: BGP - Create Default BGPConfiguration
     command:
       argv:
-        - calicoctl
+        - /usr/local/bin/calicoctl
         - apply
         - --filename=-
       stdin: '{{ lookup("template", "calico_bgp_conf.yaml.j2") }}'
@@ -24,7 +24,7 @@
   - name: BGP - Disable the default BGP node-to-node mesh
     command:
       argv:
-        - calicoctl
+        - /usr/local/bin/calicoctl
         - patch
         - bgpconfiguration
         - default
@@ -37,7 +37,7 @@
   - name: BGP - Change the default global AS number
     command:
       argv:
-        - calicoctl
+        - /usr/local/bin/calicoctl
         - patch
         - bgpconfiguration
         - default
@@ -49,7 +49,7 @@
   - name: BGP - Setup Route Reflector Cluster ID
     command:
       argv:
-        - calicoctl
+        - /usr/local/bin/calicoctl
         - patch
         - node
         - "{{ item }}"
@@ -62,7 +62,7 @@
   - name: BGP - Configure all non-reflector nodes to peer with route reflectors (master nodes)
     command:
       argv:
-        - calicoctl
+        - /usr/local/bin/calicoctl
         - apply
         - --filename=-
       stdin: '{{ lookup("file", "calico_bgp_peer_node.yaml") }}'
@@ -72,7 +72,7 @@
   - name: BGP - Configure all route reflectors (master nodes) to peer with all other nodes
     command:
       argv:
-        - calicoctl
+        - /usr/local/bin/calicoctl
         - apply
         - --filename=-
       stdin: '{{ lookup("file", "calico_bgp_peer_master.yaml") }}'
@@ -83,7 +83,7 @@
   - name: BGP - Configure route reflectors (master nodes) to peer with Gateways
     command:
       argv:
-        - calicoctl
+        - /usr/local/bin/calicoctl
         - apply
         - --filename=-
       stdin: '{{ lookup("template", "calico_bgp_peer_gateways.yaml.j2") }}'
@@ -94,7 +94,7 @@
   - name: Calico - BGP - Label Master-Nodes as Route Reflectors
     command:
       argv:
-        - calicoctl
+        - /usr/local/bin/calicoctl
         - label
         - nodes
         - "{{ item }}"
