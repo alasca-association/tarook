@@ -1,4 +1,4 @@
-{% from "utils.j2" import resource_constraints %}
+{% from "roles/rook_v1/templates/utils.j2" import resource_constraints %}
 apiVersion: "ceph.rook.io/v1"
 kind: "CephCluster"
 metadata:

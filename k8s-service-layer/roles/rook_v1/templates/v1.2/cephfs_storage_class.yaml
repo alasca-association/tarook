@@ -9,6 +9,10 @@ parameters:
   pool: {{ "%s-data0" | format(rook_fs_name) | to_json }}
   provisionVolume: "true"
 
+  # Root path of an existing CephFS volume
+  # Required for provisionVolume: "false"
+  # rootPath: /absolute/path
+
   # The secrets contain Ceph admin credentials.
   csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
   csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
@@ -17,6 +21,12 @@ parameters:
   csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
   csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
 
-# Delete the rbd volume when a PVC is deleted
+  # (optional) The driver can use either ceph-fuse (fuse) or ceph kernel client (kernel)
+  # If omitted, default volume mounter will be used - this is determined by probing for ceph-fuse
+  # or by setting the default mounter explicitly via --volumemounter command-line argument.
+  # mounter: kernel
 reclaimPolicy: Delete
 allowVolumeExpansion: true
+#mountOptions:
+  # uncomment the following line for debugging
+  #- debug
