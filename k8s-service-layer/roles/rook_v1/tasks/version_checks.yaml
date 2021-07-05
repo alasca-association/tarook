@@ -208,3 +208,8 @@
     # We do not want to trigger these steps for patch version updates so we have to check if we do a minor
     # version jump before including them. For patch version updates, updating the rook-operator image is enough
     # and this is done later on in main.yaml
+    - name: Trigger the concrete version-specific upgrade tasks
+      block:
+      - name: Include upgrade from v1.2 to v1.3 steps
+        when: rook_conf_maj_min_version == "1.3" and rook_operator_maj_min_version == "1.2"
+        include_tasks: upgrade_rook_from_v1.2.yaml

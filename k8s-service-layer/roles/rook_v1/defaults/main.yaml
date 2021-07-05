@@ -73,3 +73,7 @@ rook_supported_releases:
     supported_ceph_releases:
       - v13
       - v14
+  - rook_release: "v1.3"
+    supported_ceph_releases:
+      - v14
+      - v15
