@@ -32,3 +32,46 @@
         Configured version: {{ ceph_conf_maj_version }}
         Supported versions: {{ supported_ceph_releases }}
     when: ceph_conf_maj_version not in supported_ceph_releases
+
+######################################################################
+# Check if we need to upgrade Ceph                                   #
+######################################################################
+- name: Gather information about the Ceph Cluster
+  k8s_info:
+    kind: CephCluster
+    namespace: "{{ rook_namespace }}"
+    name: "{{ rook_cluster_name }}"
+  register: ceph_cluster_info
+  ignore_errors: yes
+
+- name: Compare the configured and the deployed Ceph version
+  when: ceph_cluster_info.resources is defined and ceph_cluster_info.resources | length != 0
+  vars:
+    ceph_cluster_version: "{{ ceph_cluster_info.resources[0]['spec']['cephVersion']['image'].split(':') | last | default(None) }}"
+    ceph_conf_version: "{{ rook_image_versions.ceph }}"
+  block:
+  # Downgrading Ceph is theoretically possible, but we do not want to cover automated downgrades
+  - name: Fail if configured ceph version is older than the deployed one
+    fail:
+      msg: |
+        An older ceph version than the currently deployed one has been configured.
+        Downgrading ceph is not supported. Please adjust your configuration.
+        Configured version: {{ ceph_conf_version }}
+        Deployed version:   {{ ceph_cluster_version }}
+    when: ceph_conf_version is version(ceph_cluster_version, operator='lt')
+
+  - name: Fail if configured ceph version is newer than the deployed one, but disruption is forbidden
+    fail:
+      msg: |
+        A newer ceph version than the currently deployed one has been configured.
+        This will trigger a ceph update, but disruption is forbidden. Please allow
+        disruption if you really want to update ceph or adjust your configuration.
+        Configured version: {{ ceph_conf_version }}
+        Deployed version:   {{ ceph_cluster_version }}
+    when: ceph_conf_version is version(ceph_cluster_version, operator='gt') and not _allow_disruption
+
+  - name: Upgrade Ceph if the configured version is newer
+    include_tasks: upgrade_ceph.yaml
+    when: ceph_conf_version is version(ceph_cluster_version, operator='gt') and _allow_disruption
+
+######################################################################
