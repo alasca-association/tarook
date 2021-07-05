@@ -66,3 +66,10 @@ rook_image_version_map:
     ceph: "v14.2.6"
     operator: "v1.2.3"
     toolbox: "v1.2.3"
+
+# Each rook release does only support certain major releases of ceph.
+rook_supported_releases:
+  - rook_release: "v1.2"
+    supported_ceph_releases:
+      - v13
+      - v14

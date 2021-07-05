@@ -13,6 +13,8 @@
 - name: Install Rook
   hosts: orchestrator
   gather_facts: no
+  vars_files:
+  - vars/disruption.yaml
   roles:
   - role: rook_v1
     when: rook | default(False)

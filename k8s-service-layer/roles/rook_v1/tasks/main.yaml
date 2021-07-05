@@ -2,6 +2,9 @@
   set_fact:
     rook_image_versions: "{{ rook_image_version_map[k8s_version_minor] }}"
 
+- name: Include version checks and updates
+  include_tasks: version_checks.yaml
+
 - name: Configure k8s resources
   when: rook | bool
   vars:
