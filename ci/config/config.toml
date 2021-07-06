@@ -55,6 +55,7 @@ rook_toolbox = true
 rook_fs = true
 rook_mon_volume = true
 rook_mon_volume_storage_class = "local-storage"
+rook_skip_upgrade_checks = true
 
 k8s_use_podsecuritypolicies = true
 k8s_network_plugin = "kube-router"

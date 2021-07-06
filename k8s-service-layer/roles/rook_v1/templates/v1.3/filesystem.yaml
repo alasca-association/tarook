@@ -20,7 +20,7 @@ spec:
     failureDomain: "host"
     replicated:
       size: {{ rook_fs_replicated }}
-      requireSafeReplicaSize: true
+      requireSafeReplicaSize: {{ (rook_fs_replicated | int != 1) | to_json }}
     compressionMode: "none"
     parameters:
       # Inline compression mode for the data pool
@@ -36,7 +36,7 @@ spec:
         size: {{ rook_fs_replicated }}
         # Disallow setting pool with replica 1, this could lead to data loss without recovery.
         # Make sure you're *ABSOLUTELY CERTAIN* that is what you want
-        requireSafeReplicaSize: true
+        requireSafeReplicaSize: {{ (rook_fs_replicated | int != 1) | to_json }}
       compressionMode: "none"
       parameters:
         # Inline compression mode for the data pool

@@ -25,7 +25,7 @@ spec:
     size: {{ item.replicated | default(1) }}
     # Disallow setting pool with replica 1, this could lead to data loss without recovery.
     # Make sure you're *ABSOLUTELY CERTAIN* that is what you want
-    requireSafeReplicaSize: true
+    requireSafeReplicaSize: {{ ((item.replicated | default(1) | int) != 1) | to_json }}
 {% endif %}
   deviceClass: hdd
   # Ceph CRUSH root location of the rule
