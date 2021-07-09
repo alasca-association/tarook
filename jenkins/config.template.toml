@@ -183,7 +183,7 @@ storage_nodeplugin_toleration = true
 #rook = true
 #
 # Currently we support the following rook versions:
-# v1.2.3 (default), v1.3.11, v1.4.9
+# v1.2.3 (default), v1.3.11, v1.4.9, v1.5.12
 #rook_version = "v1.3.11"
 
 # Scheduling keys
