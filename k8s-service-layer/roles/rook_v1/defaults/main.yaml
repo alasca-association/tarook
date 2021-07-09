@@ -110,3 +110,8 @@ rook_supported_releases:
     supported_ceph_releases:
       - v14 # actually v14.2.5
       - v15 # actually v15.2.0
+  - rook_release: "v1.6"
+    supported_ceph_releases:
+      - v14
+      - v15
+      - v16

@@ -181,6 +181,10 @@
         when: rook_conf_maj_min_version == "1.5" and rook_operator_maj_min_version == "1.4"
         include_tasks: upgrade_rook_from_v1.4.yaml
 
+      - name: Include upgrade from v1.5 to v1.6 steps
+        when: rook_conf_maj_min_version == "1.6" and rook_operator_maj_min_version == "1.5"
+        include_tasks: upgrade_rook_from_v1.5.yaml
+
 ######################################################################
 # Check if we need to upgrade Ceph                                   #
 ######################################################################
