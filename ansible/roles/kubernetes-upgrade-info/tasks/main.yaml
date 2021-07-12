@@ -2,6 +2,11 @@
   debug:
     msg: "Current k8s version according to the inventory is {{ k8s_version }}. Execute playbook with -v to see output of apt-cache policy. Pass the version to which the cluster should be updated as parameter 'next_k8s_version', i.e., ansible-playbook -i .. 05_upgrade_cluster.yaml -e next_k8s_version=1.15.4. Afterwards, update the value of k8s_version in the inventory."
 
+- name: LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
+  debug:
+    msg: '{{ supported_k8s_version[0] }}'
+
+
 - name: Obtain installed version (dpkg)
   command:
   args:
