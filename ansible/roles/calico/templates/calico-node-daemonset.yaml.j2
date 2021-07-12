@@ -7,14 +7,12 @@ metadata:
   labels:
     app.kubernetes.io/name: calico
     app.kubernetes.io/component: calico-node
-    app.kubernetes.io/version: {{ image_versions.calico_version | string | to_json }}
     app.kubernetes.io/part-of: calico-cni-plugin
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: calico
       app.kubernetes.io/component: calico-node
-      app.kubernetes.io/version: {{ image_versions.calico_version | string | to_json }}
       app.kubernetes.io/part-of: calico-cni-plugin
   updateStrategy:
     type: RollingUpdate

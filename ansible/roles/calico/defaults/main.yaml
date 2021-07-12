@@ -5,16 +5,19 @@ calico_mtu: 1450 # for OpenStack at most 1450
 # Version-checksums
 calico_binary_checksums:
   "3.17.1": "sha256:ed23b2c5e66d7e1eba5ba4cff4b3f4a09aafdec63787903c4bec463e834d5d11"
+  "3.19.0": "sha256:78d2e1ef77c81775c907489b4ce174d72c8e04638edf4b0017299b0d2f39b9e5"
 
 calico_binary_checksum: "{{ calico_binary_checksums[image_versions.calico_version] | default('invalid checksum') }}"
 
 calico_ipam_binary_checksums:
   "3.17.1": "sha256:ed23b2c5e66d7e1eba5ba4cff4b3f4a09aafdec63787903c4bec463e834d5d11"
+  "3.19.0": "sha256:78d2e1ef77c81775c907489b4ce174d72c8e04638edf4b0017299b0d2f39b9e5"
 
 calico_ipam_binary_checksum: "{{ calico_ipam_binary_checksums[image_versions.calico_version] | default('invalid checksum') }}"
 
 calicoctl_binary_checksums:
   "3.17.1": "sha256:6fb8ed009a3c1ab49bba0be65609242b8a641ffee262da5e7dd954753054de66"
+  "3.19.0": "sha256:696128998662d4e86620d8219b621709ee38fbf572144f965447200040776d0e"
 
 calicoctl_binary_checksum: "{{ calicoctl_binary_checksums[image_versions.calico_version] | default('invalid checksum') }}"
 
