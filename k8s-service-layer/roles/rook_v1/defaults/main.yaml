@@ -56,16 +56,32 @@ rook_scheduling_key: null
 # hack because k8s-config is not available on this layer
 k8s_version_minor: "1.18"
 
+# TODO: remove this as it is does nothing of use
 rook_image_version_map:
   "1.17":
-    ceph: "v14.2.6"
-    operator: "v1.2.3"
-    toolbox: "v1.2.3"
+    ceph: "{{ rook_ceph_versions.ceph }}"
+    operator: "{{ rook_version }}"
+    toolbox: "{{ rook_version }}"
 
   "1.18":
-    ceph: "v14.2.6"
-    operator: "v1.2.3"
-    toolbox: "v1.2.3"
+    ceph: "{{ rook_ceph_versions.ceph }}"
+    operator: "{{ rook_version }}"
+    toolbox: "{{ rook_version }}"
+
+  "1.19":
+    ceph: "{{ rook_ceph_versions.ceph }}"
+    operator: "{{ rook_version }}"
+    toolbox: "{{ rook_version }}"
+
+rook_version: "v1.2.3" # default
+
+rook_ceph_version_map:
+  "v1.2.3": # default
+    ceph: "v14.2.6" # default
+  "v1.3.11":
+    ceph: "v14.2.21"
+
+rook_ceph_versions: "{{ rook_ceph_version_map[rook_version] }}"
 
 # If OSDs are not replicated, the rook-ceph-operator will reject
 # to perform upgrades, because OSDs will become unavailable.
