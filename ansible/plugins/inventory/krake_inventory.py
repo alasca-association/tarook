@@ -10,7 +10,8 @@ from ansible.module_utils._text import to_native
 DOCUMENTATION = """
     name: krake_inventory
     plugin_type: inventory
-    short_description: Parse standard YAML static inventory but augment host variables with auto-generated JSON-file
+    short_description: Parse standard YAML static inventory but augment host
+                       variables with auto-generated JSON-file
     description:
     options:
       yaml_extensions:
@@ -117,12 +118,16 @@ class InventoryModule(YAMLInventory):
         if not data:
             raise AnsibleParserError("Parsed empty YAML file")
         elif not isinstance(data, MutableMapping):
-            raise AnsibleParserError("YAML inventory has invalid structure, it should be a dictionary, got: {}".format(type(data)))
+            raise AnsibleParserError("YAML inventory has invalid structure, \
+                                      it should be a dictionary, got: {}"
+                                     .format(type(data)))
 
         # We expect top level keys to correspond to groups, iterate over them
         # to get host, vars and subgroups (which we iterate over recursivelly)
         if not isinstance(data, MutableMapping):
-            raise AnsibleParserError("Invalid data from file, expected dictionary and got:\n\n{!r}".format(to_native(data)))
+            raise AnsibleParserError("Invalid data from file, \
+                                      expected dictionary and got:\n\n{!r}"
+                                     .format(to_native(data)))
 
         for group_name in data:
             if group_name not in self.ignore_keys:
@@ -136,7 +141,8 @@ class InventoryModule(YAMLInventory):
         hosts_file = etc_dir / filename
         ssh_config_file = etc_dir / "sshconf"
         self.inventory.set_variable('all', 'hosts_file', str(hosts_file))
-        self.inventory.set_variable('all', 'ssh_config_file', str(ssh_config_file))
+        self.inventory.set_variable('all', 'ssh_config_file',
+                                    str(ssh_config_file))
         self.inventory.set_variable('all', 'etc_dir', str(etc_dir))
 
         try:

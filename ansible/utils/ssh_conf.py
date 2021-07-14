@@ -56,7 +56,8 @@ def main():
                 )
                 print(
                     template.substitute(
-                        host=host, ip=ip, user=user, key=args.key, port=args.port
+                        host=host, ip=ip, user=user, key=args.key,
+                        port=args.port
                     )
                 )
 
