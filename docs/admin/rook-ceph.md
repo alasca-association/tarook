@@ -49,7 +49,7 @@ great care, but it is possible.
   $ kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') bash
   ```
 
-- The ceph cluster must be healthy.
+- The ceph cluster must be healthy (refer to [Cluster Health Verification](https://rook.io/docs/rook/v1.2/ceph-upgrade.html#health-verification)).
 
 #### Remove an OSD without data loss
 
