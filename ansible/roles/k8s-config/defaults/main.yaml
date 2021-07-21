@@ -6,9 +6,11 @@ k8s_network_bgp_worker_as: 64512
 k8s_network_bgp_gateway_as: 65000
 
 # Supported k8s versions
-supported_k8s_version: 
-                    - 1.18. 
-                    - 1.19.
+supported_k8s_version:
+                    - '1.16'
+                    - '1.17'
+                    - '1.18'
+                    - '1.19'
 
 # Minor version of k8s, e.g., '1.18.9' becomes '1.18'.
 k8s_version_minor: '{{ k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") }}'

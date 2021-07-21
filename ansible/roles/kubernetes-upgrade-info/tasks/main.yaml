@@ -2,11 +2,6 @@
   debug:
     msg: "Current k8s version according to the inventory is {{ k8s_version }}. Execute playbook with -v to see output of apt-cache policy. Pass the version to which the cluster should be updated as parameter 'next_k8s_version', i.e., ansible-playbook -i .. 05_upgrade_cluster.yaml -e next_k8s_version=1.15.4. Afterwards, update the value of k8s_version in the inventory."
 
-- name: LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK
-  debug:
-    msg: '{{ supported_k8s_version[0] }}'
-
-
 - name: Obtain installed version (dpkg)
   command:
   args:
@@ -77,16 +72,32 @@
         the ansible variable next_k8s_version.
     when: "next_k8s_version is not defined or not next_k8s_version.startswith(next_minor_version)"
 
-  - name: Require upgrade from {{ k8s_installed_version }}
+  - name: Get index of installed k8s version
+    set_fact:
+      minor_version: "{{ k8s_installed_version.split('.')[:-1] | join('.') }}"
+
+  - name: Get the index of the supported k8s version
+    set_fact:
+      index_ver: "{{ supported_k8s_version | ansible.utils.index_of('eq', minor_version) }}"
+
+  - name: Get tje index of the previous supported k8s version
+    set_fact:
+      index_pre: "{{ index_ver | int - 1 }}"
+
+  - name: Require upgrade to {{ supported_k8s_version[index_ver | int] }}.x
     fail:
       msg: |
-        The target version is {{ next_minor_version }}.x, so the upgrade can only start with a
-        cluster on 1.17.x to 1.19.x and has to be higher than the version {{ k8s_installed_version }}.
-    when: |
-      not (k8s_version.startswith('1.17.') or
-           k8s_version.startswith('1.18.') or
-           k8s_version.startswith('1.19.')
-          )
+        The target version was set to {{ next_k8s_version | default('') | to_json }}.
+        This is not a patch version of {{ supported_k8s_version[index_ver | int] }}. You need to set the version via
+        the ansible variable next_k8s_version.
+    when: "next_k8s_version is not defined or not next_k8s_version.startswith(supported_k8s_version[index_ver | int])"
+
+  - name: Require upgrade from {{ supported_k8s_version[index_pre | int] }}.x
+    fail:
+      msg: |
+        The target version is {{ supported_k8s_version[index_ver | int] }}.x, so the upgrade can only start with a
+        cluster on {{ supported_k8s_version[index_pre | int] }}.x or {{ supported_k8s_version[index_ver | int] }}.x.
+    when: "not (k8s_version.startswith(supported_k8s_version[index_pre | int]) or k8s_version.startswith(supported_k8s_version[index_ver | int]))"
 
 - name: Detect if upgrade is already done
   set_fact:
