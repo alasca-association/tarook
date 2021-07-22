@@ -8,7 +8,7 @@ resource "local_file" "inventory_stage2" {
     workers       = openstack_compute_instance_v2.worker,
     worker_ports  = openstack_networking_port_v2.worker,
   })
-  filename        = "${path.cwd}/../inventory/02_trampoline/hosts"
+  filename        = "../../inventory/02_trampoline/hosts"
   file_permission = 0640
 }
 
@@ -21,7 +21,7 @@ resource "local_file" "inventory_stage3" {
     workers       = openstack_compute_instance_v2.worker,
     worker_ports  = openstack_networking_port_v2.worker,
   })
-  filename        = "${path.cwd}/../inventory/03_final/hosts"
+  filename        = "../../inventory/03_final/hosts"
   file_permission = 0640
 }
 
