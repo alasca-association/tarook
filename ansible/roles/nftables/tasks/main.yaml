@@ -1,14 +1,13 @@
 - name: Install nftables package
   become: yes
-  apt:
-    update_cache: yes
+  package:
     state: present
     name:
       - nftables
 
 - name: Remove iptables package
   become: yes
-  apt:
+  package:
     state: absent
     name:
       - iptables

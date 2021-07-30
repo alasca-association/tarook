@@ -1,7 +1,6 @@
 - name: Install HAProxy
   become: yes
-  apt:
-    update_cache: yes
+  package:
     state: present
     name:
       - haproxy
