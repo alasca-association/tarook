@@ -47,7 +47,7 @@
         Your configured calico version is older than the currently deployed one.
         Please adjust your configuration to meet the deployed version, or a newer
         one if you want to update calico.
-    when: calico_custer_version is version(calico_conf_version, operator='lt')
+    when: calico_cluster_version is version(calico_conf_version, operator='lt')
 
 - name: Setup Preliminaries
   run_once: yes
