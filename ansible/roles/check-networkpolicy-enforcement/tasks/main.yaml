@@ -57,10 +57,6 @@
         fail_on_error: yes
         strict: yes
 
-  - name: Give the CNI plugin time to propagate changes (sleep 10s)
-    pause:
-      seconds: 10
-
   - name: fetch blocked-test pod completion state
     k8s_info:
       api_version: v1
@@ -95,10 +91,6 @@
         fail_on_error: yes
         strict: yes
 
-  - name: Give the CNI plugin time to propagate changes (sleep 10s)
-    pause:
-      seconds: 10
-
   - name: fetch unblocked-test pod completion state
     k8s_info:
       api_version: v1
@@ -122,18 +114,19 @@
       argv:
       - curl
       - "-sS"
-      - "-w"
       - "--connect-timeout"
-      - "20"
+      - "10"
+      - "--retry"
+      - "3"
+      - "--retry-delay"
+      - "1"
+      - "-w"
       - "\\n%{http_code}\\n"
       - "http://{{ item }}"
     register: curl_result
     loop: "{{ service_pod_ips }}"
-    until: "curl_result.rc == 7"
-    delay: 1
-    retries: 10
     changed_when: False
-    failed_when: "curl_result.rc != 7"
+    failed_when: "curl_result.rc not in [7,28]"
 
   - name: unblock access from everywhere
     k8s:
