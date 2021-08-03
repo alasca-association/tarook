@@ -68,36 +68,35 @@
     fail:
       msg: |
         The target version was set to {{ next_k8s_version | default('') | to_json }}.
-        This is not a patch version of {{ next_minor_version }} You need to set the version via
+        This is not a patch version of {{ next_minor_k8s_version }} You need to set the version via
         the ansible variable next_k8s_version.
-    when: "next_k8s_version is not defined or not next_k8s_version.startswith(next_minor_version)"
+    when: "next_k8s_version is not defined or not next_k8s_version.startswith(next_minor_k8s_version)"
 
   - name: Get index of installed k8s version
     set_fact:
-      minor_version: "{{ k8s_installed_version.split('.')[:-1] | join('.') }}"
+      minor_k8s_version: "{{ k8s_installed_version.split('.')[:-1] | join('.') }}"
 
   - name: Get the index of the supported k8s version
     set_fact:
-      index_ver: "{{ supported_k8s_version | ansible.utils.index_of('eq', minor_version) }}"
-
-  - name: Get tje index of the previous supported k8s version
+      index_ver: "{{ supported_k8s_versions | ansible.utils.index_of('eq', minor_k8s_version) }}"
+  
+  - name: Get the index of the successor supported k8s version
     set_fact:
-      index_pre: "{{ index_ver | int - 1 }}"
+      index_suc: "{{ index_ver | int + 1 }}"
 
-  - name: Require upgrade to {{ supported_k8s_version[index_ver | int] }}.x
+  - name: The choosen k8s version {{ next_k8s_version }} isn't supported
     fail:
       msg: |
-        The target version was set to {{ next_k8s_version | default('') | to_json }}.
-        This is not a patch version of {{ supported_k8s_version[index_ver | int] }}. You need to set the version via
-        the ansible variable next_k8s_version.
-    when: "next_k8s_version is not defined or not next_k8s_version.startswith(supported_k8s_version[index_ver | int])"
+        Right know the highest supported k8s version is {{ supported_k8s_versions[-1] }}.x
+    when: next_k8s_version.split('.')[:-1] | join('.') not in supported_k8s_versions
 
-  - name: Require upgrade from {{ supported_k8s_version[index_pre | int] }}.x
+  - name: Require a iterated update step from {{ supported_k8s_versions[index_ver | int] }}.x
     fail:
       msg: |
-        The target version is {{ supported_k8s_version[index_ver | int] }}.x, so the upgrade can only start with a
-        cluster on {{ supported_k8s_version[index_pre | int] }}.x or {{ supported_k8s_version[index_ver | int] }}.x.
-    when: "not (k8s_version.startswith(supported_k8s_version[index_pre | int]) or k8s_version.startswith(supported_k8s_version[index_ver | int]))"
+        Right now there is the k8s version {{ supported_k8s_versions[index_ver | int] }}.x installed. You have to update iterated.
+        It's not possible to update from version {{ k8s_installed_version }} to {{ next_k8s_version }}
+    when: not (next_k8s_version.split('.')[:-1] | join('.') == supported_k8s_versions[index_ver | int] or 
+          next_k8s_version.split('.')[:-1] | join('.') == supported_k8s_versions[index_suc | int])
 
 - name: Detect if upgrade is already done
   set_fact:

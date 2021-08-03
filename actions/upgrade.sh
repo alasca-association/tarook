@@ -34,4 +34,4 @@ require_disruption
 "$actions_dir/wg-up.sh"
 
 cd "$ansible_playbook"
-ansible_playbook -i "$ansible_inventoryfile_03" "$playbook" -e "next_k8s_version=$target_version" -e "next_minor_version=$minor_version" -e '{"do_upgrade": true}'
+ansible_playbook -i "$ansible_inventoryfile_03" "$playbook" -e "next_k8s_version=$target_version" -e "next_minor_k8s_version=$minor_version" -e '{"do_upgrade": true}'
