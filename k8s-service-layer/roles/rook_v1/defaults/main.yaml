@@ -52,6 +52,10 @@ rook_pools:
 
 rook_scheduling_key: null
 
+# ToDo: REMOVE ME after refactoring service layer inventories/variables
+# hack because k8s-config is not available on this layer
+k8s_version_minor: "1.18"
+
 rook_image_version_map:
   "1.17":
     ceph: "v14.2.6"
