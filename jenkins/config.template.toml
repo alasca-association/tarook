@@ -327,6 +327,14 @@ k8s_network_plugin = "kube-router"
 # Enforce the use of pod security policies inside the cluster.
 #k8s_use_podsecuritypolicies = true
 
+# Name of the internal OpenStack network. This field becomes important if a VM is
+# attached to two networks but the controller-manager should only pick up one. If 
+# you don't understand the purpose of this field, there's a very high chance you
+# won't need to touch it/uncomment it.
+# Note: This network name isn't fetched automagically (by terraform) on purpose
+# because there might be situations where the CCM should not pick the managed network.
+#openstack_network_name = "managed-k8s-network"
+
 cah_users_include_users = ["<user>", "<user>"]
 
 [ansible.03_final.host_vars.managed-k8s-gw-az1]
