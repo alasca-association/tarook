@@ -55,7 +55,7 @@ local kp =
       prometheus+:: {
         namespaces+: [
 {% if rook | bool %}
-            '{{ rook_namespace }}',
+            '{{ rook_namespace | default("rook-ceph") }}',
 {% endif %}
         ],
       },
