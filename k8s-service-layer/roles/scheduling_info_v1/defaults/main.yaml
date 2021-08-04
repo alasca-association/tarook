@@ -1,2 +1,5 @@
-k8s_node_labels: {}
-k8s_node_taints: {}
+# An array of dicts with the following format (for each node):
+# "k8s_node"            - String defining the node name
+# "k8s_node_labels" - List<String> defining the labels of the node
+# "k8s_node_taints" - List<String> defining the taints of the node
+node_labels_and_taints: []

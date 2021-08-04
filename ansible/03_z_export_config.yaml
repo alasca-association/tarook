@@ -12,17 +12,31 @@
     copy:
       content: |
         {
-          "_": "" {# just to make JSON syntax easier #}
           {% for kv in vars | dict2items %}
           {% set name = kv.key %}
           {% if name.startswith("monitoring")
                 or name.startswith("rook")
-                or name in ["k8s_use_podsecuritypolicies",
-                            "k8s_node_labels",
-                            "k8s_node_taints"] %}
-          , {{ name | to_json }}: {{ lookup('vars', name) | to_json }}
+                or name in ["k8s_use_podsecuritypolicies"] %}
+          {{ name | to_json }}: {{ lookup('vars', name) | to_json }}{% if not loop.last %},{% endif %}
           {% endif %}
           {% endfor %}
+          "node_labels_and_taints": [
+          {% for host in vars['groups']['k8s_nodes'] %}
+          {
+            "k8s_node": "{{ host }}",
+            "k8s_node_labels" : [
+              {% for label in vars['hostvars'][host]['k8s_node_labels'] | default({}) | dict2items %}
+              "{{ '%s=%s' | format(label.key,label.value) }}"{% if not loop.last %},{% endif %}
+              {% endfor %}
+            ],
+            "k8s_node_taints" : [
+              {% for taint in vars['hostvars'][host]['k8s_node_taints'] | default({}) | dict2items %}
+              "{{ '%s=%s' | format(taint.key,taint.value) }}"{% if not loop.last %},{% endif %}
+              {% endfor %}
+            ]
+          }{% if not loop.last %},{% endif %}
+          {% endfor %}
+        ]
         }
       dest: "{{ etc_dir }}/ksl.json"
     tags:
