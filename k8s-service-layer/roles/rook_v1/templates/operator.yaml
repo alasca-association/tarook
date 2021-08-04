@@ -246,6 +246,7 @@ spec:
           value: |
             - effect: NoSchedule
               key: {{ rook_scheduling_key | to_json }}
+              operator: Exists
 {% endif %}
         # (Optional) Ceph CSI plugin NodeAffinity.
         # - name: CSI_PLUGIN_NODE_AFFINITY

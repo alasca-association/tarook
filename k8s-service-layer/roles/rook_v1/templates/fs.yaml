@@ -30,7 +30,7 @@ spec:
               operator: Exists
       tolerations:
       - key: {{ rook_scheduling_key | to_json }}
-        operator: Equal
+        operator: Exists
 {% endif %}
     resources: {
 {% call resource_constraints(
