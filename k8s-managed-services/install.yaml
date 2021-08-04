@@ -1,14 +1,4 @@
 ---
-- name: Install Rook
-  hosts: orchestrator
-  gather_facts: no
-  roles:
-  - role: rook_v1
-    when: rook | default(False)
-  tags:
-  - mk8s-ms
-  - mk8s-ms/rook
-
 - name: Install Monitoring
   hosts: orchestrator
   gather_facts: no

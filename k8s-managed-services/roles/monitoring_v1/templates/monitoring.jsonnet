@@ -71,11 +71,6 @@ local kp =
       namespace: '{{ monitoring_namespace }}',
 
       prometheus+:: {
-        namespaces+: [
-{% if rook | bool %}
-            '{{ rook_namespace }}',
-{% endif %}
-        ],
         replicas: {{ monitoring_prometheus_replicas }}
       },
       versions+:: {

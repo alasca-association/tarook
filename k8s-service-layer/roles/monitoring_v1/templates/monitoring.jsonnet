@@ -52,6 +52,13 @@ local kp =
     _config+:: {
       namespace: '{{ monitoring_namespace }}',
     },
+      prometheus+:: {
+        namespaces+: [
+{% if rook | bool %}
+            '{{ rook_namespace }}',
+{% endif %}
+        ],
+      },
 
     nodeExporter+:: {
 {% if generate_psp | bool %}

@@ -74,16 +74,6 @@
       strict: yes
   loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json', errors='strict' if monitoring else 'warn') | default(' [] ', true) | from_json }}" # noqa 204
 
-- name: create rook service monitor
-  k8s:
-    state: present
-    apply: yes
-    definition: "{{ lookup('template', 'rook-service-monitor.yaml') }}"
-    validate:
-      fail_on_error: yes
-      strict: yes
-  when: rook | bool
-
 - name: create haproxy service monitor (gateway)
   k8s:
     state: present

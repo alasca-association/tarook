@@ -31,3 +31,13 @@
       fail_on_error: yes
       strict: yes
   loop: "{{ lookup('file', k8s_sl_monitoring_jsonnet_manifest_listing + '.json', errors='strict' if monitoring else 'warn') | default(' [] ', true) | from_json }}" # noqa 204
+
+- name: create rook service monitor
+  k8s:
+    state: present
+    apply: yes
+    definition: "{{ lookup('template', 'rook-service-monitor.yaml') }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+  when: rook | bool
