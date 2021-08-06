@@ -41,8 +41,8 @@ metadata:
   namespace: monitoring
 subsets:
   - addresses:
-{% for gw in groups["gateways"] %}
-    - ip: {{ hostvars[gw]["ansible_host"] }}
+{% for node in groups['frontend'] %}
+    - ip: {{ hostvars[node]["local_ipv4_address"] }}
 {% endfor %}
     ports:
       - name: metrics
