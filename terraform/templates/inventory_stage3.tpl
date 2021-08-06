@@ -2,6 +2,9 @@
 masters
 workers
 
+[frontend:children]
+gateways
+
 [masters]
 %{ for index, instance in masters ~}
 ${instance.name} ansible_host=${master_ports[index].all_fixed_ips[0]} local_ipv4_address=${master_ports[index].all_fixed_ips[0]}
