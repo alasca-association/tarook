@@ -7,7 +7,20 @@
     state: permissive
   register: selinux_res
 
-- name: Reboot host
+- name: Reboot block
   become: yes
-  reboot:
   when: selinux_res.reboot_required
+  block:
+
+    - name: Reboot host (cloud-init run)
+      command:
+        argv:
+          - reboot
+          - now
+      when: ansible_connection == 'local'
+
+    # We do not need a "when" here. ansible is killed approximately immediately
+    # anyway by the above command if it is executed; If the above command is
+    # not executed, we want to execute this one.
+    - name: Reboot host
+      reboot:
