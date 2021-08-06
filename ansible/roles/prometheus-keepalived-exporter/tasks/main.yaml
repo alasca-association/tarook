@@ -83,6 +83,12 @@
     - cap_kill+ep
     - cap_net_admin+ep
 
+- name: Activate ip_vs kernel module
+  become: yes
+  modprobe:
+    name: ip_vs
+    state: present
+
 - name: Create a systemd unit for keepalived_exporter
   become: yes
   copy:
