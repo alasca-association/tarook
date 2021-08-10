@@ -24,3 +24,17 @@ monitoring_ch_global_monitoring: True
 
 # IPsec stuff that's used by >= 1 role
 ipsec_virtual_subnet_pool: 10.3.0.0/24
+
+ssh_ciphers:
+  - aes256-gcm@openssh.com
+  - aes256-ctr
+  - chacha20-poly1305@openssh.com
+ssh_macs:
+  - hmac-sha2-512-etm@openssh.com
+  - hmac-sha2-256-etm@openssh.com
+  - umac-128-etm@openssh.com
+  - hmac-sha2-512
+  - hmac-sha2-256
+ssh_kex:
+  - curve25519-sha256@libssh.org
+  - diffie-hellman-group-exchange-sha256

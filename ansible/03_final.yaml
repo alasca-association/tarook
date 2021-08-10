@@ -25,6 +25,15 @@
   - role: monitoring-system-update-status
     tags: monitoring-system-update-status
 
+- name: Harden SSH
+  hosts: k8s_nodes
+  become: yes
+  collections:
+  - devsec.hardening
+  roles:
+  - role: devsec.hardening.ssh_hardening
+    tags: harden-ssh
+
 - name: Upgrade the system
   hosts: node_with_k8s_installed
   gather_facts: false
