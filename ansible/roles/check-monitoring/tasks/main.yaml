@@ -42,7 +42,7 @@
       url: 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="prometheus-keepalived",instance="{{ hostvars[item]["local_ipv4_address"] }}:9650"}'
       return_content: true
     register: metrics
-    loop: "{{ groups['gateways'] }}"
+    loop: "{{ groups['frontend'] }}"
     failed_when: |
       (metrics.json.status != 'success' or
        not (metrics.json.data.result | default(False)) or
@@ -53,7 +53,7 @@
       url: 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="prometheus-haproxy",instance="{{ hostvars[item]["local_ipv4_address"] }}:9101"}'
       return_content: true
     register: metrics
-    loop: "{{ groups['gateways'] }}"
+    loop: "{{ groups['frontend'] }}"
     failed_when: |
       (metrics.json.status != 'success' or
        not (metrics.json.data.result | default(False)) or
@@ -87,7 +87,7 @@
       return_content: true
     register: metrics
     when: "ch_k8s_lbaas | default(False)"
-    loop: "{{ groups['gateways'] }}"
+    loop: "{{ groups['frontend'] }}"
     failed_when: |
       (metrics.json.status != 'success' or
        not (metrics.json.data.result | default(False)) or

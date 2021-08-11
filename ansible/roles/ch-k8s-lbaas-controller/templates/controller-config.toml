@@ -22,7 +22,7 @@ subnet-id={{ ch_k8s_lbaas_subnet_id | to_json }}
 shared-secret={{ ch_k8s_lbaas_shared_secret | to_json }}
 token-lifetime=60
 
-{% for node in groups['gateways'] %}
+{% for node in groups['frontend'] %}
 [[agents.agent]]
 url="http://{{ hostvars[node]['local_ipv4_address'] }}:{{ ch_k8s_lbaas_agent_port }}"
 {% endfor %}
