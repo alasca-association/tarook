@@ -72,31 +72,21 @@
         the ansible variable next_k8s_version.
     when: "next_k8s_version is not defined or not next_k8s_version.startswith(next_minor_k8s_version)"
 
-  - name: Get index of installed k8s version
-    set_fact:
-      minor_k8s_version: "{{ k8s_installed_version.split('.')[:-1] | join('.') }}"
-
-  - name: Get the index of the supported k8s version
-    set_fact:
-      index_ver: "{{ supported_k8s_versions | ansible.utils.index_of('eq', minor_k8s_version) }}"
-  
-  - name: Get the index of the successor supported k8s version
-    set_fact:
-      index_suc: "{{ index_ver | int + 1 }}"
-
-  - name: The choosen k8s version {{ next_k8s_version }} isn't supported
+  - name: Check if the k8s version {{ next_k8s_version }} is supported
     fail:
       msg: |
         Right know the highest supported k8s version is {{ supported_k8s_versions[-1] }}.x
-    when: next_k8s_version.split('.')[:-1] | join('.') not in supported_k8s_versions
+    when: next_minor_k8s_version not in supported_k8s_versions
 
-  - name: Require a iterated update step from {{ supported_k8s_versions[index_ver | int] }}.x
+  - name: Require a iterated update step from {{ supported_k8s_versions[index_present | int] }}.x
     fail:
       msg: |
-        Right now there is the k8s version {{ supported_k8s_versions[index_ver | int] }}.x installed. You have to update iterated.
+        Right now there is the k8s version {{ supported_k8s_versions[index_present | int] }}.x installed.
+        Kubernetes only allows upgrades between minor versions,
+        and arbitrary up/downgrades within the patch levels of a minor version.
         It's not possible to update from version {{ k8s_installed_version }} to {{ next_k8s_version }}
-    when: not (next_k8s_version.split('.')[:-1] | join('.') == supported_k8s_versions[index_ver | int] or 
-          next_k8s_version.split('.')[:-1] | join('.') == supported_k8s_versions[index_suc | int])
+    when: not (next_minor_k8s_version == supported_k8s_versions[index_present | int] or 
+          next_minor_k8s_version == supported_k8s_versions[index_successor | int])
 
 - name: Detect if upgrade is already done
   set_fact:
