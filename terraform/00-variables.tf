@@ -177,3 +177,13 @@ variable "root_disk_volume_type" {
   type = string
   default = "three_times_replicated"
 }
+
+variable "worker_join_anti_affinity_group" {
+  type = list(bool)
+  default = []
+}
+
+variable "worker_anti_affinity_group_name" {
+  type = string
+  default = "cah-anti-affinity"
+}
