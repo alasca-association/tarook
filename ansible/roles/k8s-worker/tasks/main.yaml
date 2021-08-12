@@ -1,44 +1,30 @@
-- name: Upload k8s CA for validation
-  copy:
-    content: "{{ lookup('file', '{{ etc_dir }}/ca.crt') }}"
-    dest: /tmp/k8s-cacert-join.crt
-    mode: u=r,go-rwx
+- name: Test if kubelet.conf exists
+  become: yes
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_creds
 
 - name: Test if the node exists already
-  vars:
-    join_token: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') | regex_search('^.*--token\\s+(\\S+).*$', '\\1') | first }}"
+  # using kubectl here as openshift et al. are otherwise not installed on worker nodes. seems kinda excessive to deploy it just to check whether we need to join.
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/kubelet.conf
   command:
   args:
     argv:
-    - curl
-    - -sSL
-    - --cacert
-    - /tmp/k8s-cacert-join.crt
-    - -H
-    - "Authorization: Bearer {{ join_token }}"
-    - -H
-    - "Accept: application/json, */*"
-    - "https://{{ networking_fixed_ip }}:8888/api/v1/nodes/{{ inventory_hostname }}?timeout=10s"
-    warn: false  # TODO: Cannot use uri because it only supports ca_path starting ansible 2.11
-  register: node_object
+    - kubectl
+    - get
+    - node
+    - "{{ inventory_hostname }}"
+  failed_when: false
   changed_when: false
-  # uri:
-  #   method: GET
-  #   return_content: true
-  #   headers:
-  #     Authorization: "Bearer {{ join_token }}"
-  #     Accept: "application/json, */*"
-  #   ca_path: /tmp/k8s-cacert-join.crt
-  #   url: "https://{{ networking_fixed_ip }}:8888/api/v1/nodes/{{ inventory_hostname }}?timeout=10s"
-  #   status_code:
-  #   - 200
-  #   - 404
-  # register: node_object
+  when: kubelet_creds.stat.exists
+  register: node_check
 
 - name: Join the K8s cluster
   become: yes
   vars:
     our_address: "address: {{ ansible_host }}"
     kubeadm_out: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
-  when: (node_object.stdout | from_json).kind != "Node"
+  when: not kubelet_creds.stat.exists or node_check.rc != 0
   command: "{{ kubeadm_out }} --node-name {{ inventory_hostname | quote }}"
