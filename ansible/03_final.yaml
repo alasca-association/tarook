@@ -109,6 +109,25 @@
     - role: k8s-master
       tags: k8s-master
 
+- name: Install calico supporting services
+  hosts: masters
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  roles:
+    - role: calico-control-plane
+      tags:
+      - calico
+      - calico-control-plane
+      when: k8s_network_plugin == 'calico'
+    - role: calico-worker
+      tags:
+      - calico
+      - calico-control-plane
+      - calico-worker
+      when: k8s_network_plugin == 'calico'
+
 - name: Spawn the K8s worker nodes
   hosts: workers
   gather_facts: false
@@ -118,17 +137,10 @@
   roles:
     - role: k8s-worker
       tags: k8s-worker
-      gather_facts: false
-
-- name: Deploy and Configure the Calico-Setup
-  hosts: k8s_nodes
-  gather_facts: false
-  vars_files:
-  - vars/auto_generated_preamble.yaml
-  - vars/disruption.yaml
-  roles:
-    - role: calico
-      tags: calico
+    - role: calico-worker
+      tags:
+      - calico
+      - calico-worker
       when: k8s_network_plugin == 'calico'
 
 - name: Spawn the OpenStack k8s Control Plane
