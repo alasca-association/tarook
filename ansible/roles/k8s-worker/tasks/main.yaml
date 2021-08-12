@@ -1,13 +1,44 @@
-- name: Test if we are already part of a cluster
-  become: yes
-  stat:
-    path: /var/lib/kubelet/config.yaml
-  register: kubelet_config
+- name: Upload k8s CA for validation
+  copy:
+    content: "{{ lookup('file', '{{ etc_dir }}/ca.crt') }}"
+    dest: /tmp/k8s-cacert-join.crt
+    mode: u=r,go-rwx
+
+- name: Test if the node exists already
+  vars:
+    join_token: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') | regex_search('^.*--token\\s+(\\S+).*$', '\\1') | first }}"
+  command:
+  args:
+    argv:
+    - curl
+    - -sSL
+    - --cacert
+    - /tmp/k8s-cacert-join.crt
+    - -H
+    - "Authorization: Bearer {{ join_token }}"
+    - -H
+    - "Accept: application/json, */*"
+    - "https://{{ networking_fixed_ip }}:8888/api/v1/nodes/{{ inventory_hostname }}?timeout=10s"
+    warn: false  # TODO: Cannot use uri because it only supports ca_path starting ansible 2.11
+  register: node_object
+  changed_when: false
+  # uri:
+  #   method: GET
+  #   return_content: true
+  #   headers:
+  #     Authorization: "Bearer {{ join_token }}"
+  #     Accept: "application/json, */*"
+  #   ca_path: /tmp/k8s-cacert-join.crt
+  #   url: "https://{{ networking_fixed_ip }}:8888/api/v1/nodes/{{ inventory_hostname }}?timeout=10s"
+  #   status_code:
+  #   - 200
+  #   - 404
+  # register: node_object
 
 - name: Join the K8s cluster
   become: yes
   vars:
     our_address: "address: {{ ansible_host }}"
     kubeadm_out: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
-  when: not kubelet_config.stat.exists
+  when: (node_object.stdout | from_json).kind != "Node"
   command: "{{ kubeadm_out }} --node-name {{ inventory_hostname | quote }}"
