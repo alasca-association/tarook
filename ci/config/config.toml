@@ -15,7 +15,7 @@ enable_az_management = false
 [ansible.02_trampoline.group_vars.gateways]
 # Variable is repeated because its other definition is not visible here.
 deprecated_nodeport_lb_test_port = 30060
-lb_ports = [deprecated_nodeport_lb_test_port]
+lb_ports = ["{{ deprecated_nodeport_lb_test_port }}"]
 wg_ip_cidr = "172.30.153.0/24"
 wg_ip_gw = "172.30.153.1/24"
 
