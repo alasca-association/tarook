@@ -66,7 +66,7 @@ backend k8s_back
   server {{ host }} {{ hostvars[host]['local_ipv4_address'] }}:{{ k8s_apiserver_backend_port }} check check-ssl verify none
   {% endfor %}
 
-{% for port in lb_ports %}
+{% for port in lb_ports | default([]) %}
 {% if port is mapping %}
 {% set front_port = port.external %}
 {% set back_port = port.nodeport %}

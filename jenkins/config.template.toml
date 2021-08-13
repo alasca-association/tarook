@@ -1,7 +1,13 @@
 [ansible.02_trampoline.group_vars.gateways]
-lb_ports = [
-  30060
-]
+# lb_ports is a list of ports that are exposed by HAProxy on the gateway nodes and forwarded
+# to NodePorts in the k8s cluster. This poor man's load-balancing / exposing of services
+# has been superseded by ch-k8s-lbaas. For legacy reasons and because it's useful under
+# certain circumstances it is kept inside the repository.
+# The NodePorts are either literally exposed by HAProxy or can be mapped to other ports.
+# Short form:
+#lb_ports = [30060]
+# Explicit form:
+#lb_ports = [{external=80,nodeport=30080}]
 
 # Include and exclude C&H users from rollout
 # C&H users refers to items in the ch-users-databag repository

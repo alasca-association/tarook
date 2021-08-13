@@ -8,7 +8,7 @@ spec:
     app: nginx
   ports:
     - protocol: TCP
-      nodePort: 30060
+      nodePort: {{ deprecated_nodeport_lb_test_port }}
       port: 80
       targetPort: 80
   type: NodePort
