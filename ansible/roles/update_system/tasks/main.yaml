@@ -35,10 +35,29 @@
   - "_allow_disruption or not kubernetes_dir.stat.exists"
   register: upgrade_yum
 
+# This is required to be able to do initial updates on a Debian N image just
+# after Debian N+1 has been released. Otherwise, the next apt: call would fail
+# because the release info has changed from stable -> oldstable:
+#
+#     E: Repository 'http://deb.debian.org/debian buster InRelease' changed
+#     its 'Suite' value from 'stable' to 'oldstable'
+#     E: Repository 'http://deb.debian.org/debian buster-updates InRelease'
+#     changed its 'Suite' value from 'stable-updates' to 'oldstable-updates'
+#
+- name: Update apt cache
+  when: ansible_pkg_mgr == 'apt'
+  become: yes
+  command:
+  args:
+    argv:
+    - apt-get
+    - update
+    - --allow-releaseinfo-change
+    warn: false
+
 - name: Upgrade the whole system (apt) # noqa 403
   become: yes
   apt:
-    update_cache: yes
     upgrade: dist
     autoremove: yes
   # We’ve been seeing timeouts during this operation. By nudging ssh using
