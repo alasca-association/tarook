@@ -11,6 +11,12 @@ resource "openstack_networking_port_v2" "worker" {
   port_security_enabled = false
 }
 
+# server groups ought to be cheap so let's create one regardless of whether it's used or not
+resource "openstack_compute_servergroup_v2" "server_group" {
+  name = var.worker_anti_affinity_group_name
+  policies = ["anti-affinity"]
+}
+
 data "openstack_compute_flavor_v2" "worker" {
   count = var.workers
   name  = try(var.worker_flavors[count.index], var.default_worker_flavor)
@@ -45,6 +51,14 @@ resource "openstack_compute_instance_v2" "worker" {
   key_pair          = var.keypair
   config_drive      = true
 
+  dynamic scheduler_hints {
+    # Abusing 'for_each' as a conditional
+    for_each = try(var.worker_join_anti_affinity_group[count.index], false) == true ? ["dummy"] : []
+      content {
+        group = openstack_compute_servergroup_v2.server_group.id
+      }
+  }
+
   dynamic block_device {
     # Using "for_each" for check the conditional "create_root_disk_on_volume". It's not working as a loop. "dummy" should make this just more visible.
     for_each = var.create_root_disk_on_volume == true ? ["dummy"] : []
@@ -65,7 +79,9 @@ resource "openstack_compute_instance_v2" "worker" {
     port = openstack_networking_port_v2.worker[count.index].id
   }
 
+  # Ignoring 'scheduler_hints' here for existing VMs because otherwise tf would destroy and recreate them.
+  # The initial distribution for existing clusters must therefore be enforced manually.
   lifecycle {
-    ignore_changes = [key_pair, image_id]
+    ignore_changes = [key_pair, image_id, scheduler_hints]
   }
 }
