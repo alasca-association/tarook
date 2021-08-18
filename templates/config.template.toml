@@ -384,6 +384,24 @@ cluster_name = "rook-ceph" # •ᴗ•
 # ToDo: add description for internet_probe
 #internet_probe = true
 
+# --- KUBERNETES SERVICE LAYER : CERT MANAGER ---
+# ansible prefix: "k8s_cert_manager_"
+[k8s-service-layer.cert-manager]
+# Enable management of a cert-manager.io instance
+enabled = true # •ᴗ•
+
+# Configure in which namespace the cert-manager is run. The namespace is
+# created automatically, but never deleted automatically.
+#namespace = "k8s-svc-cert-manager"
+
+# Install or uninstall cert manager. If set to false, the cert-manager will be
+# uninstalled WITHOUT CHECK FOR DISRUPTION!
+#install = true
+
+# Scheduling key for the cert manager instance and its resources. Has no
+# default.
+#scheduling_key =
+
 # --- NODE SCHEDULING ---
 # ansible prefix: /
 [node-scheduling]

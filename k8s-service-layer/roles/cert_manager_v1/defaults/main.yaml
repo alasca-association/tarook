@@ -1,0 +1,4 @@
+---
+k8s_cert_manager_install: true
+k8s_cert_manager_namespace: k8s-svc-cert-manager
+k8s_cert_manager_scheduling_key: null

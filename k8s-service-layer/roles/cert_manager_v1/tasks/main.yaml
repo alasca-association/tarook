@@ -1,0 +1,33 @@
+---
+- name: Create namespace
+  when: k8s_cert_manager_install
+  community.kubernetes.k8s:
+    apply: yes
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ k8s_cert_manager_namespace }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+
+- name: "{{ k8s_cert_manager_install | ternary('I', 'Uni') }}nstall Cert Manager"
+  vars:
+    scheduling_key: "{{ k8s_cert_manager_scheduling_key }}"
+  community.kubernetes.helm:
+    chart_ref: cert-manager
+    chart_repo_url: https://charts.jetstack.io
+    release_namespace: "{{ k8s_cert_manager_namespace }}"
+    release_name: cert-manager
+    release_state: "{{ k8s_cert_manager_install | ternary('present', 'absent') }}"
+    values:
+      installCRDs: true
+      affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') }}"
+      tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') }}"
+      cainjector:
+        affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') }}"
+        tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') }}"
+      webhook:
+        affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') }}"
+        tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') }}"

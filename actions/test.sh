@@ -18,6 +18,9 @@ cd "$ansible_playbook"
 # see lib.sh
 trap do_cleanup_test_on_failure ERR
 
+# Required for the upper layer tests
+export KUBECONFIG="$cluster_repository/inventory/.etc/admin.conf"
+
 # Test k8s-service-layer
 pushd "$ansible_k8s_sl_playbook"
 ansible_playbook -i "inventory/default.yaml" -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" test.yaml

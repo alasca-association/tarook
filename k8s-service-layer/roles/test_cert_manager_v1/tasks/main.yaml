@@ -1,0 +1,46 @@
+---
+- name: Create namespace
+  community.kubernetes.k8s:
+    apply: yes
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ k8s_cert_manager_test_namespace }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+
+- name: Create issuer
+  community.kubernetes.k8s:
+    apply: yes
+    definition:
+      apiVersion: cert-manager.io/v1
+      kind: Issuer
+      metadata:
+        namespace: "{{ k8s_cert_manager_test_namespace }}"
+        name: test-issuer
+      spec:
+        selfSigned: {}
+    validate:
+      fail_on_error: yes
+      strict: yes
+
+- name: Require issuer to be ready
+  k8s_info:
+    api_version: cert-manager.io/v1
+    kind: Issuer
+    namespace: "{{ k8s_cert_manager_test_namespace }}"
+    name: "test-issuer"
+  register: issuer_state
+  until: "issuer_state.resources and (issuer_state.resources[0].status | default(False)) and (issuer_state.resources[0].status.conditions | default([])) and (issuer_state.resources[0].status.conditions[0].reason == 'IsReady')"
+  delay: 5
+  retries: 60
+
+- name: Delete namespace
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ k8s_cert_manager_test_namespace }}"
+    state: absent
+    wait: yes

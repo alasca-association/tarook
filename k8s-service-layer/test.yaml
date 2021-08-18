@@ -1,12 +1,17 @@
 ---
-- name: placeholder
+- name: Kubernetes Service Layer Tests
   hosts: orchestrator
+  gather_facts: no
   pre_tasks:
     - name: include env vars
-      when: ksl_vars_directory is defined
       include_vars:
         dir: "{{ ksl_vars_directory }}"
-  tasks:
-  - name: placeholder
-    debug:
-      msg: "Nothing to do yet... Add some tests to the service layer!"
+      tags:
+      - always
+  tags:
+  - test-mk8s-sl
+  roles:
+  - role: test_cert_manager_v1
+    when: k8s_cert_manager_enabled
+    tags:
+    - test-mk8s-sl/cert-manager
