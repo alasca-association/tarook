@@ -36,3 +36,8 @@
     when: k8s_monitoring_enabled
     tags:
     - mk8s-sl/monitoring
+
+  - role: ingress_v1
+    when: k8s_ingress_enabled
+    tags:
+    - mk8s-sl/ingress
