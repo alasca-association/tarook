@@ -1,0 +1,44 @@
+- name: configure jsonnet
+  tags:
+    - k8s-monitoring-build
+  template:
+    src: monitoring.jsonnet
+    dest: "{{ monitoring_jsonnet_dir_monitoring }}/{{ k8s_sl_monitoring_jsonnet_config_file }}"
+    mode: u=rw,go-rwx
+
+- name: rebuild
+  tags:
+    - k8s-monitoring-build
+  command:
+  args:
+    argv:
+    - "make"
+    - "-f"
+    - "../Makefile"
+    - "MANIFEST_DIR={{ k8s_sl_monitoring_jsonnet_manifest_dir_name }}"
+    - "MANIFEST_LISTING={{ k8s_sl_monitoring_jsonnet_manifest_listing }}"
+    - "CONFIG_FILE={{ k8s_sl_monitoring_jsonnet_config_file }}"
+    - "build"
+    chdir: "{{ monitoring_jsonnet_dir_monitoring }}"
+  changed_when: false
+
+- name: apply manifests
+  k8s:
+    state: present
+    apply: yes
+    definition: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/' + item) }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+  loop: "{{ lookup('file', k8s_sl_monitoring_jsonnet_manifest_listing + '.json', errors='strict' if monitoring else 'warn') | default(' [] ', true) | from_json }}" # noqa 204
+  no_log: true # blasts the output
+
+- name: create rook service monitor
+  k8s:
+    state: present
+    apply: yes
+    definition: "{{ lookup('template', 'rook-service-monitor.yaml') }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+  when: rook | bool

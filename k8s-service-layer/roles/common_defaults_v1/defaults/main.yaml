@@ -1,0 +1,6 @@
+---
+MK8S_USE_PODSECURITYPOLICIES: "{{ lookup('env', 'MK8S_USE_PODSECURITYPOLICIES') | default(False) | bool }}"
+
+# compatibility layer to things imported from classic mk8s
+k8s_use_podsecuritypolicies: "{{ MK8S_USE_PODSECURITYPOLICIES }}"
+monitoring_node_exporter_textfile_collector_path: "/var/lib/node_exporter/textfile_collector"

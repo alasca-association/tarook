@@ -1,0 +1,7 @@
+---
+- name: placeholder
+  hosts: orchestrator
+  tasks:
+  - name: placeholder
+    debug:
+      msg: "Nothing to do yet... Add some tests to the service layer!"

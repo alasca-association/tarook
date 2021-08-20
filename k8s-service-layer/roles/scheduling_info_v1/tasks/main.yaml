@@ -1,0 +1,24 @@
+---
+- name: Set node labels
+  with_subelements:
+    - "{{ node_labels_and_taints }}"
+    - k8s_node_labels
+  command:
+  args:
+    argv: "{{ ['kubectl', 'label', 'nodes', '--overwrite', item[0].k8s_node, (item[1] | default(''))] }}"
+  loop_control:
+    label: "node {{ item[0].k8s_node }}; label: {{ item[1] }}"
+  register: label_command
+  changed_when: "'not labeled' not in label_command.stdout"
+
+# The taint command always prints "modified", even if the taints were already
+# there.
+- name: Set node taints  # noqa 301
+  with_subelements:
+    - "{{ node_labels_and_taints }}"
+    - k8s_node_taints
+  command:
+  args:
+    argv: "{{ ['kubectl', 'taint', 'nodes', '--overwrite', item[0].k8s_node, (item[1] | default(''))] }}"
+  loop_control:
+    label: "node {{ item[0].k8s_node }}; taint: {{ item[1] }}"

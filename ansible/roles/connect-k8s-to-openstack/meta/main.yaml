@@ -1,5 +1,4 @@
 ---
 dependencies:
-- k8s-metadata
 - k8s-tools
 - k8s-config

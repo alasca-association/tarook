@@ -1,0 +1,15 @@
+- name: Create namespace
+  when: monitoring
+  community.kubernetes.k8s:
+    apply: yes
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ monitoring_namespace }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+
+- include_tasks: kube_monitoring.yaml
+  when: monitoring

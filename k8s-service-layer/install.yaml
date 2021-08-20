@@ -1,0 +1,30 @@
+---
+- name: Configure Node Scheduling Info
+  hosts: orchestrator
+  gather_facts: no
+  roles:
+  - scheduling_info_v1
+  tags:
+  # required for monitoring/rook too
+  - mk8s-sl/monitoring
+  - mk8s-sl/cert-manager
+  - mk8s-sl/ingress
+
+- name: Install Rook
+  hosts: orchestrator
+  gather_facts: no
+  roles:
+  - role: rook_v1
+    when: rook | default(False)
+  tags:
+  - mk8s-ms
+  - mk8s-ms/rook
+
+- name: Install Monitoring
+  hosts: orchestrator
+  gather_facts: no
+  roles:
+  - role: monitoring_v1
+    when: monitoring | default(True)
+  tags:
+  - mk8s-sl/monitoring

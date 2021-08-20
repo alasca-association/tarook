@@ -1,0 +1,123 @@
+- name: configure jsonnet
+  tags:
+    - k8s-monitoring-build
+  template:
+    src: monitoring.jsonnet
+    dest: "{{ monitoring_jsonnet_dir_monitoring }}/config.jsonnet"
+    mode: 0664
+
+- name: rebuild
+  tags:
+    - k8s-monitoring-build
+  command:
+  args:
+    argv:
+    - "make"
+    - "-f"
+    - "../Makefile"
+    - "build"
+    chdir: "{{ monitoring_jsonnet_dir_monitoring }}"
+  changed_when: false
+
+- name: create thanos secret
+  k8s:
+    apply: yes
+    definition:
+      apiVersion: v1
+      type: Opaque
+      kind: Secret
+      metadata:
+        name: "{{ monitoring_thanos_config_secret_name }}"
+        namespace: "{{ monitoring_namespace }}"
+      data:
+        thanos.yaml: "{{ lookup('template', 'thanos-objectstorage.yml') | b64encode }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+  when: monitoring_use_thanos
+  tags:
+  - thanos
+  notify:
+  - restart thanos-store statefulset
+  - restart prometheus-k8s statefulset
+
+- name: check if configmap for customer dashboards exists
+  k8s_info:
+    api_version: v1
+    kind: ConfigMap
+    name: "{{ monitoring_grafana_customer_dashboards_configmap }}"
+    namespace: monitoring
+  register: customer_dashboard
+
+- name: create an empty configmap for customer dashboards
+  when: monitoring_grafana_customer_dashboards and not customer_dashboard.resources
+  k8s:
+    state: present
+    apply: yes
+    definition: |
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: {{ monitoring_grafana_customer_dashboards_configmap | to_json }}
+        namespace: monitoring
+    validate:
+      fail_on_error: yes
+      strict: yes
+
+- name: apply manifests
+  k8s:
+    state: present
+    apply: yes
+    definition: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/' + item) }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+  loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json', errors='strict' if monitoring else 'warn') | default(' [] ', true) | from_json }}" # noqa 204
+
+- name: create haproxy service monitor (gateway)
+  k8s:
+    state: present
+    apply: yes
+    definition: "{{ lookup('template', 'haproxy-service-monitor.yaml') }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+  tags:
+    - haproxy-service-monitor
+
+- name: create keepalived service monitor (gateway)
+  k8s:
+    state: present
+    apply: yes
+    definition: "{{ lookup('template', 'keepalived-service-monitor.yaml') }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+  tags:
+    - keepalived-service-monitor
+
+- name: create node-exporter service monitor (gateway)
+  k8s:
+    state: present
+    apply: yes
+    definition: "{{ lookup('template', 'node-exporter-service-monitor.yaml') }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+  tags:
+    - node-exporter-service-monitor
+
+- name: create LBaaS component service monitors (gateway)
+  k8s:
+    definition: "{{ lookup('template', item) }}"
+    apply: yes
+    validate:
+      fail_on_error: yes
+      strict: yes
+  with_items:
+  - lbaas-service-monitor.yaml
+  when: "ch_k8s_lbaas | default(False)"
+  tags:
+  - ch-k8s-lbaas
+  - ch-k8s-lbaas-agent
+  - ch-k8s-lbaas-controller

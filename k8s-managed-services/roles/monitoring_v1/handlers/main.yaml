@@ -1,0 +1,24 @@
+---
+- name: restart thanos-store statefulset
+  command:
+  args:
+    argv:
+    - kubectl
+    - -n
+    - "{{ monitoring_namespace }}"
+    - rollout
+    - restart
+    - statefulset
+    - thanos-store
+
+- name: restart prometheus-k8s statefulset
+  command:
+  args:
+    argv:
+    - kubectl
+    - -n
+    - "{{ monitoring_namespace }}"
+    - rollout
+    - restart
+    - statefulset
+    - prometheus-k8s

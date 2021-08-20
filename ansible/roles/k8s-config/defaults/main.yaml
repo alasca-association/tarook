@@ -1,6 +1,5 @@
 ---
 k8s_use_podsecuritypolicies: false
-managed_k8s_control_plane_key: "node-restriction.kubernetes.io/cah-managed-k8s-role"
 k8s_network_pod_subnet: 10.244.0.0/16
 k8s_network_service_subnet: 10.96.0.0/12
 k8s_network_bgp_worker_as: 64512

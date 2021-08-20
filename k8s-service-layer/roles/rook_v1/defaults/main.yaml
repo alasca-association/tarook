@@ -1,0 +1,68 @@
+rook: false
+
+rook_namespace: rook-ceph
+rook_cluster_name: rook-ceph
+
+rook_nmons: 3
+rook_mon_volume: true
+rook_mon_volume_storage_class: local-storage
+rook_mon_volume_size: 10Gi
+rook_mon_allow_multiple_per_node: false
+rook_mon_memory_limit: "1Gi"
+rook_mon_memory_request: "{{ rook_mon_memory_limit }}"
+rook_mon_cpu_limit: "100m"
+rook_mon_cpu_request: "50m"
+
+rook_mgr_use_pg_autoscaler: true
+rook_mgr_memory_limit: "512Mi"
+rook_mgr_memory_request: "{{ rook_mgr_memory_limit }}"
+rook_mgr_cpu_limit: "500m"
+rook_mgr_cpu_request: "100m"
+
+# rook_nosds: 3
+# rook_osd_volume_size: 100Gi
+rook_osd_storage_class: csi-sc-cinderplugin
+rook_osd_anti_affinity: true
+rook_osd_autodestroy_safe: true
+rook_osd_memory_limit: "2Gi"
+rook_osd_memory_request: "{{ rook_osd_memory_limit }}"
+rook_osd_cpu_limit: "500m"
+rook_osd_cpu_request: "{{ rook_osd_cpu_limit }}"
+
+rook_mds_memory_limit: "4Gi"
+rook_mds_memory_request: "{{ rook_mds_memory_limit }}"
+rook_mds_cpu_limit: "1"
+rook_mds_cpu_request: "{{ rook_mds_cpu_limit }}"
+
+rook_operator_memory_limit: "256Mi"
+rook_operator_memory_request: "{{ rook_operator_memory_limit }}"
+rook_operator_cpu_limit: "100m"
+rook_operator_cpu_request: "{{ rook_operator_cpu_limit }}"
+
+rook_toolbox: true
+
+rook_fs: false
+rook_fs_name: "ceph-fs"
+rook_fs_replicated: 1
+rook_fs_preserve_pools_on_delete: false
+
+rook_pools:
+- name: data
+  create_storage_class: block
+
+rook_scheduling_key: null
+
+# ToDo: REMOVE ME after refactoring service layer inventories/variables
+# hack because k8s-config is not available on this layer
+k8s_version_minor: "1.18"
+
+rook_image_version_map:
+  "1.17":
+    ceph: "v14.2.6"
+    operator: "v1.2.3"
+    toolbox: "v1.2.3"
+
+  "1.18":
+    ceph: "v14.2.6"
+    operator: "v1.2.3"
+    toolbox: "v1.2.3"

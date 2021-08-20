@@ -146,6 +146,13 @@ k8s_network_plugin = "kube-router"
 #
 #k8s_network_plugin_switch_restart_namespaces=[...]
 
+# Placement of node plugins
+#
+# Setting this to true (which is not the built-in default) will cause the
+# storage plugins to run on all nodes (ignoring all taints). This is often
+# desirable.
+storage_nodeplugin_toleration = true
+
 # NETWORK CONFIGURATION
 
 # This is the subnet used by Kubernetes for Pods. Subnets will be delegated
@@ -175,22 +182,16 @@ k8s_network_plugin = "kube-router"
 # Enable rook deployment
 #rook = true
 
-# Placement controls
+# Scheduling keys
 #
-# These controls allow to control the placement of rook pods. The `taint` option
-# controls which additional taint the rook pods will tolerate. Note that the
-# only supported key is "{{ managed_k8s_control_plane_key }}", but the value
-# can be chosen freely to allow to separate e.g. monitoring and ceph on
-# different workers.
+# Scheduling keys control where services may run. A scheduling key corresponds
+# to both a node label and to a taint. In order for a service to run on a node,
+# it needs to have that label key.
 #
-# The `label` option constraints pods to run *only* on nodes with the specific
-# label. If no nodes have that label, the cluster will not start.
+# If no scheduling key is defined for service, it will run on any untainted
+# node.
 #
-# It is recommended to set both taint and label to the same thing.
-#
-#rook_placement_taint = { key = "{{ managed_k8s_control_plane_key }}", value = "meta" }
-#
-#rook_placement_label = { key = "{{ managed_k8s_control_plane_key }}", value = "meta" }
+#rook_scheduling_key = "node-restriction.kubernetes.io/cah-managed-k8s-storage"
 
 # Number of OSDs to run. This should be equal to the number of storage meta
 # workers you use.
@@ -263,27 +264,16 @@ k8s_network_plugin = "kube-router"
 #
 #monitoring_prometheus_monitor_all_namespaces=true
 
-# Placement controls
+# Scheduling keys
 #
-# These controls allow to control the placement of monitoring pods. The `taint`
-# option controls which additional taint the monitoring pods will tolerate. Note
-# that the only supported key is "{{ managed_k8s_control_plane_key }}", but the
-# value can be chosen freely to allow to separate e.g. monitoring and ceph on
-# different workers.
+# Scheduling keys control where services may run. A scheduling key corresponds
+# to both a node label and to a taint. In order for a service to run on a node,
+# it needs to have that label key.
 #
-# The `label` option constraints pods to run *only* on nodes with the specific
-# label. If no nodes have that label, the cluster will not start.
+# If no scheduling key is defined for service, it will run on any untainted
+# node.
 #
-# It is recommended to set both taint and label to the same thing.
-#
-#monitoring_placement_taint = { key = "{{ managed_k8s_control_plane_key }}", value = "meta" }
-#
-#monitoring_placement_label = { key = "{{ managed_k8s_control_plane_key }}", value = "meta" }
-#
-# To use the same taint and label controls as rook, set them in the following
-# way:
-#monitoring_placement_taint = "{{ rook_placement_taint }}"
-#monitoring_placement_label = "{{ rook_placement_label }}"
+#monitoring_scheduling_key = "node-restriction.kubernetes.io/cah-managed-k8s-monitoring"
 
 # Monitoring pod resource limits
 #

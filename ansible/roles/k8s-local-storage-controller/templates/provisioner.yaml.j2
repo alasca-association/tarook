@@ -179,10 +179,13 @@ spec:
         app.kubernetes.io/version: {{ local_storage_version | to_json }}
     spec:
       serviceAccountName: local-storage
+{% if local_storage_nodeplugin_toleration %}
       tolerations:
-        - effect: NoSchedule
-          key: node-restriction.kubernetes.io/cah-managed-k8s-role
-          operator: Exists
+        - operator: Exists
+{% if local_storage_nodeplugin_toleration != True %}
+          key: {{ local_storage_nodeplugin_toleration | to_json }}
+{% endif %}
+{% endif %}
       containers:
         - image: "quay.io/external_storage/local-volume-provisioner:v2.3.4"
           name: provisioner
