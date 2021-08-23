@@ -1,4 +1,4 @@
-# This upgrade file is only for the k8s version 1.18.
+# This upgrade file is only for the k8s version 1.19.
 # For now we keep for every minor update a seperate upgrade file
 # to avoid accidental major changes of old upgrade files.
 - name: Detect user
