@@ -8,7 +8,13 @@ RC_NO_DISRUPTION = 0
 
 
 def test_for_deletion(change):
-    if "delete" in change["change"]["actions"]:
+    if ("delete" in change["change"]["actions"] and
+            # We do not use security groups anymore. This explicit
+            # exclusion of security groups from the check easens the
+            # transition to the post-security-group world by allowing
+            # deletion without having to set the dangerous
+            # release-the-kraken option.
+            change["type"] != "openstack_compute_secgroup_v2"):
         print("Deleting a resource")
         return True
     return False

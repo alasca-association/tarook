@@ -2,10 +2,6 @@ data "openstack_networking_network_v2" "public_network" {
   name = var.public_network
 }
 
-data "openstack_networking_secgroup_v2" "default" {
-  name = "default"
-}
-
 data "openstack_compute_flavor_v2" "gateway" {
   name = var.gateway_flavor
 }

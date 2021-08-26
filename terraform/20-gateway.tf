@@ -1,19 +1,3 @@
-resource "openstack_compute_secgroup_v2" "gateway_secgroup" {
-  name        = var.gateway_security_group_name
-  description = "Security group for HAProxy ports"
-
-  dynamic "rule" {
-    for_each = var.haproxy_ports
-
-    content {
-      ip_protocol = "tcp"
-      cidr        = "0.0.0.0/0"
-      from_port   = rule.value
-      to_port     = rule.value
-    }
-  }
-}
-
 resource "openstack_networking_port_v2" "gw_vip_port" {
   name           = var.vip_port_name
   admin_state_up = true
@@ -22,12 +6,6 @@ resource "openstack_networking_port_v2" "gw_vip_port" {
   fixed_ip {
     subnet_id = openstack_networking_subnet_v2.cluster_subnet.id
   }
-
-  security_group_ids = [
-    data.openstack_networking_secgroup_v2.default.id,
-    openstack_compute_secgroup_v2.gateway_secgroup.id,
-    openstack_compute_secgroup_v2.vpn.id
-  ]
 }
 
 resource "openstack_networking_floatingip_v2" "gw_vip_fip" {
