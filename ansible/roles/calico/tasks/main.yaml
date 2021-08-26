@@ -47,7 +47,7 @@
         Your configured calico version is older than the currently deployed one.
         Please adjust your configuration to meet the deployed version, or a newer
         one if you want to update calico.
-    when: calico_cluster_version is version(calico_conf_version, operator='lt')
+    when: calico_cluster_version is version(calico_conf_version, operator='gt')
 
 - name: Setup Preliminaries
   include_tasks: setup_preliminaries.yaml
