@@ -36,6 +36,7 @@
 
   - name: Obtain version as per k8s database
     delegate_to: "{{ (groups['masters'] | sort)[0] }}"
+    become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     k8s_info:

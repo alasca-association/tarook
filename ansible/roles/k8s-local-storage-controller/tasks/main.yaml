@@ -24,7 +24,7 @@
   delegate_to: "{{ groups['masters'] | first }}"
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  become: no
+  become: yes
   run_once: yes
   block:
     - name: Create storage class
