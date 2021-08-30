@@ -1,0 +1,18 @@
+- name: Distribute calico-kubeconfig to all nodes
+  become: yes
+  block:
+    - name: Ensure that /etc/cni/net.d/ exists on all k8s_nodes
+      file:
+        owner: root
+        group: root
+        mode: 0640
+        path: /etc/cni/net.d/
+        state: directory
+
+    - name: Push calico-kubeconfig from localhost to k8s_nodes
+      template:
+        owner: root
+        group: root
+        mode: 0400
+        src: "calico-kubeconfig.j2"
+        dest: /etc/cni/net.d/calico-kubeconfig
