@@ -76,7 +76,6 @@ flake8:
   - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
   script:
   - pip3 install -r managed-k8s/requirements.txt
-  - python3 managed-k8s/jenkins/toml_helper.py
   - ./managed-k8s/actions/apply-terraform.sh
   - ./reachability-or-recreate.sh
   - ./retry_and_timeout.sh ./managed-k8s/actions/apply-stage2.sh 2 40m

@@ -3,6 +3,10 @@
 # -E to inherit trap into function calls
 set -eEuo pipefail
 actions_dir="$(dirname "$0")"
+
+# Ensure that the latest config is deployed to the inventory
+python3 "$actions_dir/update_inventory.py"
+
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 

@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 actions_dir="$(realpath "$(dirname "$0")")"
+
+# Ensure that the latest config is deployed to the inventory
+python3 "$actions_dir/update_inventory.py"
+
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
