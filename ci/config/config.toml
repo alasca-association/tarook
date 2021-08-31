@@ -48,6 +48,14 @@ is_gpu_cluster = false
 rook_enabled = true
 nodeplugin_toleration = true
 
+[kubernetes.local_storage.static]
+enabled = true
+storageclass_name = "local-storage"
+
+[kubernetes.local_storage.dynamic]
+enabled = true
+storageclass_name = "local-storage-dynamic"
+
 [kubernetes.monitoring]
 enabled = true
 

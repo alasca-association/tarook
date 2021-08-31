@@ -1,6 +1,6 @@
 - name: show test information
   debug:
-    msg: "This test is using the {{ local_storage_storageclass_name }} storageClass"
+    msg: "This test is using the {{ storageclass }} storageClass"
 
 - name: Run the test
   become: yes

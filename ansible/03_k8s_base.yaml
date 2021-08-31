@@ -214,13 +214,17 @@
     - ch-k8s-lbaas
     - ch-k8s-lbaas-agent
 
-- name: Configure the local-storage controller
+- name: Configure the local-storage controllers
   hosts: k8s_nodes
   vars_files:
   - vars/auto_generated_preamble.yaml
   roles:
     - role: k8s-local-storage-controller
       tags: lsc
+      when: k8s_local_storage_static_enabled
+    - role: k8s-local-path-provisioner
+      tags: lpp
+      when: k8s_local_storage_dynamic_enabled
 
 # yahrens: This play resides only transitionally here.
 # See https://gitlab.com/yaook/k8s/-/issues/349 for details
