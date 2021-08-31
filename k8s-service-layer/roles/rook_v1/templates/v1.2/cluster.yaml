@@ -32,7 +32,7 @@ spec:
     - name: cinder
       count: {{ rook_nosds | to_json }}
       portable: true
-{% if rook_osd_anti_affinity or rook_scheduling_key %}
+{% if rook_osd_anti_affinity or (not rook_nodeplugin_toleration) %}
       placement:
 {% if rook_osd_anti_affinity %}
         podAntiAffinity:
@@ -51,7 +51,7 @@ spec:
                   - rook-ceph-osd-prepare
               topologyKey: kubernetes.io/hostname
 {% endif %}
-{% if rook_scheduling_key %}
+{% if rook_scheduling_key is defined %}
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -84,7 +84,7 @@ spec:
           - ReadWriteOnce
         status: {}
   removeOSDsIfOutAndSafeToRemove: {{ rook_osd_autodestroy_safe | to_json }}
-{% if rook_scheduling_key %}
+{% if rook_scheduling_key is defined %}
   placement:
     all:
       nodeAffinity:

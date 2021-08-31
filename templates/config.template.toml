@@ -145,6 +145,8 @@ namespace = "rook-ceph" # •ᴗ•
 #
 cluster_name= "rook-ceph" # •ᴗ•
 #
+#nodeplugin_toleration = true
+#
 # Currently we support the following rook versions:
 # v1.2.3 (default), v1.3.11, v1.4.9, v1.5.12, v1.6.7
 version = "v1.6.7" # •ᴗ•

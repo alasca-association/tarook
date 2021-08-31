@@ -369,7 +369,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rook-ceph-operator
-  namespace: "{{ rook_namespace }}" # namespace:operator
+  namespace: {{ rook_namespace | to_json }} # namespace:operator
   labels:
     operator: rook
     storage-backend: ceph

@@ -28,7 +28,7 @@ spec:
       labels:
         app: rook-ceph-operator
     spec:
-{% if rook_scheduling_key %}
+{% if rook_scheduling_key is defined %}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -76,7 +76,7 @@ spec:
         # - name: AGENT_TOLERATION_KEY
         #   value: "<KeyOfTheTaintToTolerate>"
         # (Optional) Rook Agent tolerations list. Put here list of taints you want to tolerate in YAML format.
-{% if rook_scheduling_key %}
+{% if rook_nodeplugin_toleration and (rook_scheduling_key is defined) %}
         - name: AGENT_TOLERATIONS
           value: |
             - effect: NoSchedule
@@ -112,7 +112,7 @@ spec:
         # - name: DISCOVER_TOLERATION_KEY
         #   value: "<KeyOfTheTaintToTolerate>"
         # (Optional) Rook Discover tolerations list. Put here list of taints you want to tolerate in YAML format.
-{% if rook_scheduling_key %}
+{% if rook_nodeplugin_toleration and (rook_scheduling_key is defined) %}
         - name: DISCOVER_TOLERATIONS
           value: |
             - effect: NoSchedule
@@ -235,13 +235,13 @@ spec:
         #- name: ROOK_CSI_KUBELET_DIR_PATH
         #  value: "/var/lib/kubelet"
         # (Optional) Ceph Provisioner NodeAffinity.
-{% if rook_scheduling_key %}
+{% if rook_scheduling_key is defined and not rook_nodeplugin_toleration %}
         - name: CSI_PROVISIONER_NODE_AFFINITY
           value: {{ rook_scheduling_key | to_json }}
 {% endif %}
         # (Optional) CEPH CSI provisioner tolerations list. Put here list of taints you want to tolerate in YAML format.
         #  CSI provisioner would be best to start on the same nodes as other ceph daemons.
-{% if rook_scheduling_key %}
+{% if rook_nodeplugin_toleration and (rook_scheduling_key is defined) %}
         - name: CSI_PROVISIONER_TOLERATIONS
           value: |
             - effect: NoSchedule
@@ -255,7 +255,7 @@ spec:
         # CSI plugins need to be started on all the nodes where the clients need to mount the storage.
         - name: CSI_PLUGIN_TOLERATIONS
           value: |
-{% if rook_nodeplugin_toleration == True %}
+{% if rook_nodeplugin_toleration %}
             - operator: Exists
 {% else %}
             - effect: NoSchedule
@@ -264,8 +264,8 @@ spec:
             - effect: NoExecute
               key: node-role.kubernetes.io/etcd
               operator: Exists
-{% if rook_nodeplugin_toleration %}
-            - key: {{ rook_nodeplugin_toleration | to_json }}
+{% if rook_scheduling_key is defined and rook_nodeplugin_toleration %}
+            - key: {{ rook_scheduling_key | to_json }}
               operator: Exists
 {% endif %}
 {% endif %}

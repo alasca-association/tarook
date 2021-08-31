@@ -5,8 +5,8 @@ metadata:
 provisioner: {{ "%s.cephfs.csi.ceph.com" | format(rook_namespace) | to_json }}
 parameters:
   clusterID: {{ rook_cluster_name | to_json }}
-  fsName: {{ rook_fs_name | to_json }}
-  pool: {{ "%s-data0" | format(rook_fs_name) | to_json }}
+  fsName: {{ rook_ceph_fs_name | to_json }}
+  pool: {{ "%s-data0" | format(rook_ceph_fs_name) | to_json }}
   provisionVolume: "true"
 
   # Root path of an existing CephFS volume

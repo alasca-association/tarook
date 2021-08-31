@@ -1,8 +1,3 @@
-rook: false
-
-rook_namespace: rook-ceph
-rook_cluster_name: rook-ceph
-
 rook_nmons: 3
 rook_mon_volume: true
 rook_mon_volume_storage_class: local-storage
@@ -41,16 +36,16 @@ rook_operator_cpu_request: "{{ rook_operator_cpu_limit }}"
 
 rook_toolbox: true
 
-rook_fs: false
-rook_fs_name: "ceph-fs"
-rook_fs_replicated: 1
-rook_fs_preserve_pools_on_delete: false
+rook_ceph_fs: false
+rook_ceph_fs_name: "ceph-fs"
+rook_ceph_fs_replicated: 1
+rook_ceph_fs_preserve_pools_on_delete: false
 
 rook_pools:
 - name: data
   create_storage_class: block
 
-rook_scheduling_key: null
+rook_nodeplugin_toleration: False
 
 # ToDo: REMOVE ME after refactoring service layer inventories/variables
 # hack because k8s-config is not available on this layer
