@@ -9,7 +9,7 @@ submodule_managed_k8s_name="managed-k8s"
 submodule_managed_k8s_url="${MANAGED_K8S_GIT:-git@gitlab.cloudandheat.com:lcm/managed-k8s}"
 submodule_wg_user_name="wg_user"
 submodule_wg_user_git="${MANAGED_K8S_WG_USER_GIT:-git@gitlab.cloudandheat.com:lcm/wg_user}"
-submodule_passwordstore_users_name="passwordstore-users"
+submodule_passwordstore_users_repo_name="passwordstore_users"
 submodule_passwordstore_users_git="${MANAGED_K8S_PASSWORDSTORE_USER_GIT:-git@gitlab.cloudandheat.com:lcm/mk8s-passwordstore-users}"
 submodule_ch_role_user_git="${MANAGED_CH_ROLE_USER_GIT:-git@gitlab.cloudandheat.com:operations/ansible-roles/ch-role-users.git}"
 
