@@ -27,6 +27,6 @@ resource "local_file" "final_networking" {
     floating_ip_network_id = data.openstack_networking_network_v2.public_network.id,
     subnet_cidr            = openstack_networking_subnet_v2.cluster_subnet.cidr,
   })
-  filename        = "../../inventory/03_final/group_vars/all/networking_rendered.yaml"
+  filename        = "../../inventory/03_k8s_base/group_vars/all/terraform_networking.yaml"
   file_permission = 0640
 }

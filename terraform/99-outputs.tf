@@ -21,7 +21,7 @@ resource "local_file" "inventory_stage3" {
     workers       = openstack_compute_instance_v2.worker,
     worker_ports  = openstack_networking_port_v2.worker,
   })
-  filename        = "../../inventory/03_final/hosts"
+  filename        = "../../inventory/03_k8s_base/hosts"
   file_permission = 0640
 }
 
