@@ -13,11 +13,27 @@ cd "$ansible_playbook"
 # see lib.sh
 trap do_cleanup_test_on_failure ERR
 
-ansible_playbook -i "$ansible_inventoryfile_03" 04_tests.yaml
-ansible_playbook -i "$ansible_inventoryfile_03" -t ksl-config -t kms-config 03_z_export_config.yaml
+# Test k8s-service-layer
+AVARS=""
+for var_file in "$ansible_k8s_sl_vars_base"/*.yaml
+do
+    AVARS="${AVARS} -e @$var_file"
+done
 pushd "$ansible_k8s_sl_playbook"
-ansible_playbook -i "inventory/default.yaml" -e "@$cluster_repository/inventory/.etc/ksl.json" test.yaml
+# shellcheck disable=2086
+ansible_playbook -i "inventory/default.yaml" $AVARS test.yaml
 popd
+
+# Test k8s-managed-service layer
+for var_file in "$ansible_k8s_ms_vars_base"/*.yaml
+do
+    AVARS="${AVARS} -e @$var_file"
+done
 pushd "$ansible_k8s_ms_playbook"
-ansible_playbook -i "inventory/default.yaml" -i "$ansible_inventoryfile_03" -e "@$cluster_repository/inventory/.etc/kms.json" test.yaml
+# shellcheck disable=2086
+ansible_playbook -i "inventory/default.yaml" -i "$ansible_inventoryfile_03"  $AVARS test.yaml
 popd
+
+# Test k8s-base
+# shellcheck disable=2086
+ansible_playbook -i "$ansible_inventoryfile_03" $AVARS 04_tests.yaml

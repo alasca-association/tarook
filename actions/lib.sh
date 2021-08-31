@@ -144,6 +144,9 @@ function do_cleanup_test_on_failure() {
         # Note: we're invoking `ansible-playbook` directly to not inherit any values of `AFLAGS`.
         # Consider the case in which a developer wants to run only a single test via `AFLAGS="-t test-blah" 04_test.sh`.
         # When the task fails and this clause is reached, both the failing task and `test-cleanup` would be invoked.
+        pushd "$ansible_playbook"
         ansible-playbook -i "$ansible_inventoryfile_03" --diff -f42 -t test-cleanup 04_tests.yaml
+        popd
+        # TODO: test ksm and ksl
     fi
 }
