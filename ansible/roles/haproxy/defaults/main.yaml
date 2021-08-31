@@ -1,2 +1,4 @@
+---
+lb_ports: []
 haproxy_timeout_client: 600s
 haproxy_timeout_server: 600s

@@ -1,0 +1,33 @@
+- name: Create nftables config for monitoring
+  become: yes
+  template:
+    src: "{{ role_path }}/templates/monitoring.conf.j2"
+    dest: /etc/nft.d/monitoring.conf
+    owner: root
+    group: root
+    mode: 0600
+  register: nftables_monitoring_config
+
+- name: reload nftables
+  become: yes
+  systemd:
+    name: nftables
+    state: reloaded
+
+- name: Create HAProxy config for monitoring
+  become: yes
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/conf.d/10_monitoring.cfg
+    validate: haproxy -f %s -c
+    mode: 0600
+    owner: root
+    group: root
+  register: haproxy_monitoring_config
+
+- name: reload haproxy
+  become: yes
+  systemd:
+    name: haproxy
+    state: reloaded
+  when: haproxy_monitoring_config is changed
