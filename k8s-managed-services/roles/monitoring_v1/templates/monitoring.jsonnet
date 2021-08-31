@@ -1,4 +1,4 @@
-{% set generate_psp = k8s_use_podsecuritypolicies | default(False) %}
+{% set generate_psp = k8s_use_podsecuritypolicies %}
 {% from "jsonnet-tools.j2" import resource_constraints %}
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
 
@@ -80,7 +80,7 @@ local kp =
 
       grafana+:: {
 
-        plugins+: {{ monitoring_grafana_plugins | default([]) }},
+        plugins+: {{ monitoring_grafana_plugins }},
         datasources+:: [
 {% if monitoring_use_thanos | bool %}
           {
@@ -104,7 +104,7 @@ local kp =
       },
     },
     grafanaDashboards+:: {
-{% if rook | bool %}
+{% if k8s_storage_rook_enabled | bool %}
       'ceph-cluster.json': (import 'dashboards/ceph-cluster.json'),
       'ceph-osd.json': (import 'dashboards/ceph-osd.json'),
       'ceph-pools.json': (import 'dashboards/ceph-pools.json'),

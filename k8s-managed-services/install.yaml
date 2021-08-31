@@ -4,7 +4,7 @@
   gather_facts: no
   roles:
   - role: monitoring_v1
-    when: monitoring | default(False)
+    when: k8s_monitoring_enabled
   tags:
   - mk8s-ms
   - mk8s-ms/monitoring
@@ -14,7 +14,7 @@
   gather_facts: no
   roles:
   - role: device_plugin_v1
-    when: is_gpu_cluster | default(False)
+    when: k8s_is_gpu_cluster
   tags:
   - mk8s-ms
   - mk8s-ms/nvidia-device-plugin

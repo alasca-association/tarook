@@ -1,6 +1,6 @@
 ---
 - name: Deploy LBaaS agent
-  when: ch_k8s_lbaas
+  when: ch_k8s_lbaas_enabled
 
   block:
   - name: Create user
@@ -92,7 +92,7 @@
     notify: reload nftables
 
 - name: Disable LBaaS agent
-  when: not ch_k8s_lbaas
+  when: not ch_k8s_lbaas_enabled
   block:
   - name: Detect LBaaS agent # noqa 303
     command:

@@ -13,7 +13,7 @@
   roles:
   - role: monitoring_v1_test
     tags: test-monitoring
-    when: "monitoring | default(False)"
+    when: "k8s_monitoring_enabled"
 
 - name: Test GPU support
   hosts: "{{ groups['masters'] | first }}"
@@ -23,4 +23,4 @@
   - role: device_plugin_v1_test
     tags:
     - test-gpu-support
-    when: "is_gpu_cluster | default(False)"
+    when: "k8s_is_gpu_cluster"

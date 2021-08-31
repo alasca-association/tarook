@@ -72,7 +72,7 @@
     validate:
       fail_on_error: yes
       strict: yes
-  loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json', errors='strict' if monitoring else 'warn') | default(' [] ', true) | from_json }}" # noqa 204
+  loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json', errors='strict' if k8s_monitoring_enabled else 'warn') | default(' [] ', true) | from_json }}" # noqa 204
 
 - name: create haproxy service monitor (gateway)
   k8s:
@@ -116,7 +116,7 @@
       strict: yes
   with_items:
   - lbaas-service-monitor.yaml
-  when: "ch_k8s_lbaas | default(False)"
+  when: ch_k8s_lbaas_agent_port
   tags:
   - ch-k8s-lbaas
   - ch-k8s-lbaas-agent

@@ -70,7 +70,7 @@
       when: "deprecated_nodeport_lb_test_port is defined"
     - role: check-loadbalancer-service
       tags: test-loadbalancer-service
-      when: "openstack_lbaas | default(False) or ch_k8s_lbaas | default(False)"
+      when: (openstack_lbaas | default("False")) or ch_k8s_lbaas_enabled
 
 - name: Test enforcement of PodSecurityPolicies
   hosts: "{{ groups['masters'] | first }}"
@@ -80,7 +80,7 @@
   - role: check-psp-enforcement
     tags:
     - test-check-psp-enforcement
-    when: "k8s_use_podsecuritypolicies | default(False)"
+    when: "k8s_use_podsecuritypolicies"
 
 - name: Test enforcement of NetworkPolicies
   hosts: "{{ groups['masters'] | first }}"
@@ -90,7 +90,7 @@
   - role: check-networkpolicy-enforcement
     tags:
     - test-networkpolicy-enforcement
-    when: "(k8s_network_plugin | default('flannel')) in ['kube-router', 'calico']"
+    when: "k8s_network_plugin in ['kube-router', 'calico']"
 
 # Same line for argumentation: especially rook is known to take a bit more time to boot up
 - name: Check storage services
@@ -106,12 +106,12 @@
         block_storage_class: csi-sc-cinderplugin
     - role: check-block-storage
       tags: test-ceph-block-storage
-      when: "(rook | default(False)) | bool"
+      when: "k8s_storage_rook_enabled | bool"
       vars:
         block_storage_class: rook-ceph-data
     - role: check-shared-fs
       tags: test-ceph-shared-filesystem
-      when: "((rook | default(False)) | bool)  and ((rook_fs | default(False)) | bool)"
+      when: "(k8s_storage_rook_enabled | bool)  and (rook_ceph_fs | bool)"
       vars:
         fs_storage_class: rook-ceph-cephfs
     - role: check-local-storage

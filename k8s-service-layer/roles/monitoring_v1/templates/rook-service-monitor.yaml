@@ -2,7 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: rook-ceph-mgr
-  namespace: "{{ rook_namespace | default("rook-ceph") }}"
+  namespace: "{{ rook_namespace }}"
   labels:
     team: rook
 spec:
@@ -12,7 +12,7 @@ spec:
   selector:
     matchLabels:
       app: rook-ceph-mgr
-      rook_cluster: "{{ rook_cluster_name | default("rook-ceph") }}"
+      rook_cluster: "{{ rook_cluster_name }}"
   endpoints:
   - port: http-metrics
     path: /metrics

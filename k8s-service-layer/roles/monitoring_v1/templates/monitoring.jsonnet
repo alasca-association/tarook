@@ -1,4 +1,4 @@
-{% set generate_psp = k8s_use_podsecuritypolicies | default(False) %}
+{% set generate_psp = k8s_use_podsecuritypolicies %}
 {% from "jsonnet-tools.j2" import resource_constraints %}
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
 
@@ -54,8 +54,8 @@ local kp =
     },
       prometheus+:: {
         namespaces+: [
-{% if rook | bool %}
-            '{{ rook_namespace | default("rook-ceph") }}',
+{% if k8s_storage_rook_enabled | bool %}
+            '{{ rook_namespace }}',
 {% endif %}
         ],
       },

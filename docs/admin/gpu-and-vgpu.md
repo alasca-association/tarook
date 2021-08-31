@@ -12,7 +12,7 @@ For the moment, when a GPU is detected, it is assumed to be a pci passed-through
 
 If you wish to install the vGPU driver instead, override the `is_virtual_gpu` to `yes` in the host/group vars.
 
-If you wish to install the device plugin, override the `is_gpu_cluster` variable to `yes` in `group_vars/all.yaml` of `03_final`.
+If you wish to install the device plugin, override the `k8s_is_gpu_cluster` variable to `yes` in `group_vars/all.yaml` of `03_final`.
 
 
 # vGPU operational considerations
