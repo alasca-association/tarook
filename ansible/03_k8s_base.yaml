@@ -63,6 +63,16 @@
   roles:
   - detect_user
 
+- name: Prepare Gateways for global monitoring
+  hosts: gateways
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  roles:
+  - role: global-monitoring-support
+    tags: k8s-global-monitoring # ToDo: find better tag
+    when: k8s_global_monitoring_enabled
+
 - name: Prepare the k8s nodes
   hosts: k8s_nodes
   gather_facts: true
@@ -72,6 +82,7 @@
   roles:
     - role: ch-role-users
       tags: ch-role-users
+      when: cah_users_rollout
     - role: disable_selinux
       tags: disable_selinux
       when: ansible_distribution == "CentOS"
@@ -90,7 +101,7 @@
       tags: remove_snap
     - role: wireguard-support
       tags: wireguard
-      when: 'wireguard_on_workers | default(False)'
+      when: "wireguard_on_workers"
 
 - name: Spawn the K8s control plane
   hosts: masters

@@ -37,7 +37,7 @@ ansible-lint:
   stage: lint
   script:
   - 'cd ansible-legacy && ansible-galaxy install -r requirements.yaml'
-  - 'cd ansible-legacy && ansible-lint -x 701 02_trampoline.yaml 03_final.yaml 03_z_export_config.yaml && cd ..'
+  - 'cd ansible-legacy && ansible-lint -x 701 02_trampoline.yaml 03_k8s_base.yaml && cd ..'
   - 'cd k8s-service-layer && ansible-lint -x 701 install.yaml && cd ..'
   - 'cd k8s-managed-services && ansible-lint -x 701 install.yaml && cd ..'
   tags:
@@ -81,6 +81,8 @@ flake8:
   - ./reachability-or-recreate.sh
   - ./retry_and_timeout.sh ./managed-k8s/actions/apply-stage2.sh 2 40m
   - ./retry_and_timeout.sh ./managed-k8s/actions/apply-stage3.sh 2 80m
+  - ./retry_and_timeout.sh ./managed-k8s/actions/apply-stage4.sh 2 30m
+  - ./retry_and_timeout.sh ./managed-k8s/actions/apply-stage5.sh 2 30m
   - ./retry_and_timeout.sh ./managed-k8s/actions/test.sh 2 30m
   after_script:
   - cd ci/
