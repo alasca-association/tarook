@@ -106,17 +106,10 @@ if [ "$(realpath "$new_actions_dir")" != "$(realpath "$actions_dir")" ]; then
 fi
 
 mkdir -p config
-cp "$code_repository/jenkins/template.gitignore" .gitignore
-cp --no-clobber "$code_repository/jenkins/config.template.toml" config/config.toml
+cp "$code_repository/templates/template.gitignore" .gitignore
+cp --no-clobber "$code_repository/templates/config.template.toml" config/config.toml
 if [ ! $actions_dir == "./managed-k8s/actions" ]; then
 	run git add .gitignore config/config.toml
-fi
-
-if [ ! -d "$ansible_inventory_base" ]; then
-	mkdir -p inventory
-	mkdir -p inventory/02_trampoline
-	mkdir -p inventory/03_final
-	cp --no-clobber "$code_repository/jenkins/hosts.template" inventory/02_trampoline/hosts
 fi
 
 if [ ! $actions_dir == "./managed-k8s/actions" ]; then
