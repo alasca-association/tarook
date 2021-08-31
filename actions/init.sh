@@ -2,11 +2,6 @@
 set -euo pipefail
 actions_dir="$(dirname "$0")"
 
-# this is workaround as it's required for lib.sh
-# we don't need these variables for that script
-export wg_conf_name=
-export wg_user=
-
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
@@ -32,22 +27,34 @@ else
 	echo ""
 fi
 
-test_repo_access "$submodule_wg_user_git"
-if [ ! "$EXITCODE" -eq 128 ]; then
-	if [ "$(git rev-parse --is-inside-work-tree)" == "true" ]; then
-		if [ ! -d "$submodule_wg_user_name" ]; then
-			run git submodule add "$submodule_wg_user_git" "$submodule_wg_user_name"
-		else
-			pushd "$cluster_repository"/wg_user > /dev/null
-			run git remote set-url origin "$submodule_wg_user_git"
-			popd > /dev/null
-		fi
-	else
-		run git clone "$submodule_wg_user_git"
-	fi
-else
-	notef 'Access to C&Hs WireGuard user repo is missing. Skipping..'
-	echo ""
+# Add the Cloud&Heat wireguard peers repository as submodule
+if [ "${WG_COMPANY_USERS:-true}" ]; then
+    if [ "$(git rev-parse --is-inside-work-tree)" == "true" ]; then
+        if [ ! -d "$submodule_wg_user_name" ]; then
+            run git submodule add "$submodule_wg_user_git" "$submodule_wg_user_name"
+        else
+            pushd "$cluster_repository"/wg_user > /dev/null
+            run git remote set-url origin "$submodule_wg_user_git"
+            popd > /dev/null
+        fi
+    else
+        run git clone "$submodule_wg_user_git"
+    fi
+fi
+
+# Add the Cloud&Heat mk8s pass users repository as submodule
+if [ "${PASS_COMPANY_USERS:-true}" ]; then
+    if [ "$(git rev-parse --is-inside-work-tree)" == "true" ]; then
+        if [ ! -d "$submodule_passwordstore_users_repo_name" ]; then
+            run git submodule add "$submodule_passwordstore_users_git" "$submodule_passwordstore_users_repo_name"
+        else
+            pushd "$cluster_repository"/passwordstore_users > /dev/null
+            run git remote set-url origin "$submodule_passwordstore_users_git"
+            popd > /dev/null
+        fi
+    else
+        run git clone "$submodule_passwordstore_users_git"
+    fi
 fi
 
 test_repo_access "$submodule_ch_role_user_git"
@@ -64,24 +71,8 @@ if [ "$EXITCODE" -eq 128 ]; then
 	popd > /dev/null
 fi
 
-test_repo_access "$submodule_passwordstore_users_git"
-if [ ! "$EXITCODE" -eq 128 ]; then
-	if [ "$(git rev-parse --is-inside-work-tree)" == "true" ]; then
-		if [ ! -d "$submodule_passwordstore_users_name" ]; then
-			run git submodule add "$submodule_passwordstore_users_git" "$submodule_passwordstore_users_name"
-		else
-			run git remote set-url origin "$submodule_passwordstore_users_git"
-		fi
-	else
-		run git clone "$submodule_passwordstore_users_git"
-	fi
-else
-	notef 'Access to C&Hs Password Store repo is missing. Skipping..'
-	echo ""
-fi
-
 if [ ! "$actions_dir" == "./managed-k8s/actions" ]; then
-	run git submodule update --init --recursive
+    run git submodule update --init --recursive
 fi
 
 new_actions_dir="$submodule_managed_k8s_name/actions"

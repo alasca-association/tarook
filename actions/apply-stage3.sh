@@ -4,7 +4,8 @@ actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
-if [ -d "$wg_user_dir" ]; then
+# Bring the wireguard interface up
+if [ "${WG_USAGE,,:true}" ]; then
     "$actions_dir/wg-up.sh"
 fi
 

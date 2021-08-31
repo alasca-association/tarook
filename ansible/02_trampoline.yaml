@@ -65,6 +65,7 @@
     tags: wireguard
   - role: ch-role-users
     tags: ch-role-users
+    when: cah_users_rollout
   - role: prometheus-haproxy-exporter
     tags: prometheus-haproxy-exporter
   - role: prometheus-keepalived-exporter
