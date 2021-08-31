@@ -12,116 +12,116 @@ enable_az_management = false
 #azs = ["nova"]
 #public_network = "floating-IPv4"
 
-[ansible.02_trampoline.group_vars.gateways]
-# Variable is repeated because its other definition is not visible here.
+[load-balancing]
 deprecated_nodeport_lb_test_port = 30060
 lb_ports = ["{{ deprecated_nodeport_lb_test_port }}"]
-wg_ip_cidr = "172.30.153.0/24"
-wg_ip_gw = "172.30.153.1/24"
 
-[[ansible.02_trampoline.group_vars.gateways.wg_peers]]
+[load-balancing.priorities]
+"managed-k8s-gw-az1" = 150
+"managed-k8s-gw-az2" = 100
+"managed-k8s-gw-az3" = 80
+
+[wireguard]
+ip_cidr = "172.30.153.0/24"
+ip_gw = "172.30.153.1/24"
+
+[[wireguard.peers]]
 pub_key = "/0VYI+LK2VYUX3E7QDUCfp7p+0vU2tocsqGFjsKoJVs="
 ip = "172.30.153.14/32"
 ident = "gitlab-ci-runner"
 
-[ansible.02_trampoline.host_vars.managed-k8s-gw-az1]
-vrrp_priority = 150
+[ch-k8s-lbaas]
+enabled = true
+shared_secret = "IYeOlEFO1h3uc9x1bdw9thNNgmn1gm8dmzos3f04PLmFjt3d"
+version = "0.3.3"
+agent_port = 15203
 
-[ansible.02_trampoline.host_vars.managed-k8s-gw-az2]
-vrrp_priority = 100
+[kubernetes]
+version = "1.19.10"
+use_podsecuritypolicies = true
+is_gpu_cluster = false
 
-[ansible.02_trampoline.host_vars.managed-k8s-gw-az3]
-vrrp_priority = 50
+[kubernetes.storage]
+rook_enabled = true
+nodeplugin_toleration = true
 
-[ansible.03_final.host_vars.managed-k8s-gw-az1]
-vrrp_priority = 150
+[kubernetes.monitoring]
+enabled = true
 
-[ansible.03_final.host_vars.managed-k8s-gw-az2]
-vrrp_priority = 100
+[kubernetes.global_monitoring]
+enabled = true
+nodeport = 31911
+nodeport_name = "ch-k8s-global-monitoring"
 
-[ansible.03_final.host_vars.managed-k8s-gw-az3]
-vrrp_priority = 50
+[kubernetes.network]
+plugin = "kube-router"
+pod_subnet = "10.244.0.0/16"
+service_subnet = "10.96.0.0/12"
 
-[ansible.03_final.group_vars.all]
-ch_k8s_lbaas = true
-ch_k8s_lbaas_version = "0.3.3"
-ch_k8s_lbaas_shared_secret = "IYeOlEFO1h3uc9x1bdw9thNNgmn1gm8dmzos3f04PLmFjt3d"
-lb_ports = [30080]
-k8s_version = "1.19.10"
-rook = true
-rook_version = "v1.5.12"
-rook_nosds = 3
-rook_osd_volume_size = "90Gi"
-rook_toolbox = true
-rook_fs = true
-rook_mon_volume = true
-rook_mon_volume_storage_class = "local-storage"
-rook_skip_upgrade_checks = true
+[k8s-service-layer.rook]
+namespace = "rook-ceph"
+cluster_name = "rook-ceph"
+version = "v1.6.7"
+skip_upgrade_checks = true
+nodeplugin_toleration = true
+nosds = 3
+osd_volume_size = "90Gi"
+toolbox = true
+ceph_fs = true
+mon_volume = true
+mon_volume_storage_class = "local-storage"
 
-k8s_use_podsecuritypolicies = true
-k8s_network_plugin = "kube-router"
-monitoring_thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
+mds_memory_limit = "4Gi"
+mds_memory_request = "{{ rook_mds_memory_limit }}"
+mds_cpu_limit = "1"
+mds_cpu_request = "{{ rook_mds_cpu_limit }}"
 
+mon_cpu_limit = "500m"
+mon_cpu_request = "100m"
+operator_cpu_limit = "500m"
+operator_cpu_request = "100m"
+
+scheduling_key = "{{ scheduling_key_prefix }}/storage"
+
+[k8s-service-layer.prometheus]
+use_thanos = true
+thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
+scheduling_key = "{{ scheduling_key_prefix }}/monitoring"
+prometheus_memory_limit = "1Gi"
+prometheus_memory_request = "{{ monitoring_prometheus_memory_limit }}"
+prometheus_cpu_request = "{{ monitoring_prometheus_cpu_limit }}"
+prometheus_cpu_limit = "200m"
+
+[testing.test-nodes]
+"managed-k8s-worker-1" = "worker0"
+"managed-k8s-worker-3" = "worker1"
+"managed-k8s-worker-5" = "worker2"
+
+[node-scheduling]
 scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 
-storage_nodeplugin_toleration = true
-rook_scheduling_key = "{{ scheduling_key_prefix }}/storage"
-rook_nodeplugin_toleration = "{{ storage_nodeplugin_toleration }}"
-monitoring_scheduling_key = "{{ scheduling_key_prefix }}/monitoring"
+[node-scheduling.labels]
+managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true"]
+managed-k8s-worker-1 = ["{{ scheduling_key_prefix }}/monitoring=true"]
+managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true"]
+managed-k8s-worker-3 = ["{{ scheduling_key_prefix }}/monitoring=true"]
+managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true"]
+managed-k8s-worker-5 = ["{{ scheduling_key_prefix }}/monitoring=true"]
 
-# To prevent the CI running in CPU limits here and failing because of that
-rook_mon_cpu_limit = "500m"
-rook_mon_cpu_request = "100m"
-rook_operator_cpu_limit = "500m"
-rook_operator_cpu_request = "100m"
+[node-scheduling.taints]
+managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 
-monitoring_prometheus_memory_limit = "1Gi"
-monitoring_prometheus_cpu_limit = "200m"
+[passwordstore]
+rollout_company_users = false # False because we don't have the keys
 
-# Variable is repeated because its other definition is not visible here.
-deprecated_nodeport_lb_test_port = 30060
-
-[[ansible.03_final.group_vars.all.test_worker_nodes]]
-worker = "managed-k8s-worker-1"
-name = "worker0"
-
-[[ansible.03_final.group_vars.all.test_worker_nodes]]
-worker = "managed-k8s-worker-3"
-name = "worker1"
-
-[[ansible.03_final.group_vars.all.test_worker_nodes]]
-worker = "managed-k8s-worker-5"
-name = "worker2"
-
-[ansible.03_final.host_vars.managed-k8s-worker-0.k8s_node_labels]
-"scheduling.mk8s.cloudandheat.com/storage"="true"
-
-[ansible.03_final.host_vars.managed-k8s-worker-0.k8s_node_taints]
-"scheduling.mk8s.cloudandheat.com/storage"="true:NoSchedule"
-
-[ansible.03_final.host_vars.managed-k8s-worker-1.k8s_node_labels]
-"scheduling.mk8s.cloudandheat.com/monitoring"="true"
-
-[ansible.03_final.host_vars.managed-k8s-worker-2.k8s_node_labels]
-"scheduling.mk8s.cloudandheat.com/storage"="true"
-
-[ansible.03_final.host_vars.managed-k8s-worker-2.k8s_node_taints]
-"scheduling.mk8s.cloudandheat.com/storage"="true:NoSchedule"
-
-[ansible.03_final.host_vars.managed-k8s-worker-3.k8s_node_labels]
-"scheduling.mk8s.cloudandheat.com/monitoring"="true"
-
-[ansible.03_final.host_vars.managed-k8s-worker-4.k8s_node_labels]
-"scheduling.mk8s.cloudandheat.com/storage"="true"
-
-[ansible.03_final.host_vars.managed-k8s-worker-4.k8s_node_taints]
-"scheduling.mk8s.cloudandheat.com/storage"="true:NoSchedule"
-
-[ansible.03_final.host_vars.managed-k8s-worker-5.k8s_node_labels]
-"scheduling.mk8s.cloudandheat.com/monitoring"="true"
-
-[secrets]
-passwordstore_rollout_company_users = false # False because we don't have the keys
-[[secrets.passwordstore_additional_users]]
+[[passwordstore.additional_users]]
 ident = "mk8s-ci@gitlab"
 gpg_id = "mk8s-ci@gitlab"
+
+[cah-users]
+rollout = true
+
+[miscellaneous]
+wireguard_on_workers = false
