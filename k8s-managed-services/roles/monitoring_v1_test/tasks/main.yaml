@@ -3,7 +3,7 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-
+  when: false # ToDo: Enable again after fixing monitoring scheduling
   block:
   - name: discover IP address of prometheus service
     k8s_info:
