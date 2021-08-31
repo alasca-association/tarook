@@ -41,19 +41,15 @@
   when: monitoring and monitoring_internet_probe
   tags:
     - internet_probe
-#
-# - name: Expose Prometheus with a NodePort
-#   when: monitoring and monitoring_ch_global_monitoring
-#   become: yes
-#   environment:
-#     KUBECONFIG: /etc/kubernetes/admin.conf
-#   tags:
-#     - ch-k8s-global-monitoring
-#     - ch-k8s-global-monitoring-nodeport
-#   k8s:
-#     apply: yes
-#     definition: "{{ lookup('template', 'prometheus-nodeport.yaml') }}"
-#     validate:
-#       fail_on_error: yes
-#       strict: yes
-#
+
+- name: Expose Prometheus with a NodePort
+  when: k8s_monitoring_enabled and k8s_global_monitoring_enabled
+  tags:
+    - ch-k8s-global-monitoring
+    - ch-k8s-global-monitoring-nodeport
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'prometheus-nodeport.yaml') }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
