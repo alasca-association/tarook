@@ -109,35 +109,30 @@ This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`)
    python3 managed-k8s/jenkins/toml_helper.py
    ```
 
-7. Allow disruptions. As the upgrade is disruptive (at least for a short
-   amount of time) disruption needs to be enabled.
-   ```shell
-   export MANAGED_K8S_RELEASE_THE_KRAKEN=true
-   ```
-
-8. Execute `stage3`, or at least the `k8s-rook` tasks.
+7. Execute `stage3`, or at least the `k8s-rook` tasks. As the upgrade is
+   disruptive (at least for a short amount of time) disruption needs to be enabled.
    ```shell
    # Trigger stage 3
-   bash managed-k8s/actions/apply-stage3.sh
+   MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage3.sh
    # Trigger only k8s-rook
-   export AFLAGS='--tags rook'
-   bash managed-k8s/actions/apply-stage3.sh
+   export AFLAGS='--diff --tags mk8s-sl/rook'
+   MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage3.sh
    ```
 
-9.  Get yourself your favorite (non-alcoholic) drink and watch with
+8. Get yourself your favorite (non-alcoholic) drink and watch with
    fascinating enthusiasm how your rook-based ceph cluster gets upgraded.
    (Can take several minutes (up to hours)).
 
-11. After the upgrade has been proceeded, check that your managed-k8s
-   cluster still is in a sane state via the smoke tests.
-   ```shell
-   bash managed-k8s/actions/test.sh
-   ```
+9. After the upgrade has been proceeded, check that your managed-k8s
+    cluster still is in a sane state via the smoke tests.
+    ```shell
+    bash managed-k8s/actions/test.sh
+    ```
 
-12. Continue with steps `{1,3..11}` until you have reached your final
+10. Continue with steps `{1,3..11}` until you have reached your final
     target rook version.
 
-13. Celebrate that everything worked out `ᕕ( ᐛ )ᕗ`
+11. Celebrate that everything worked out `ᕕ( ᐛ )ᕗ`
 
 
 ### Updating rook manually
