@@ -432,10 +432,10 @@ spec:
             #   value: "<KeyOfTheTaintToTolerate>"
             # (Optional) Rook Agent tolerations list. Put here list of taints you want to tolerate in YAML format.
 {% if rook_scheduling_key %}
-        - name: AGENT_TOLERATIONS
-          value: |
-            - effect: NoSchedule
-              key: {{ rook_scheduling_key | to_json }}
+            - name: AGENT_TOLERATIONS
+              value: |
+                - effect: NoSchedule
+                  key: {{ rook_scheduling_key | to_json }}
 {% endif %}
             # (Optional) Rook Agent priority class name to set on the pod(s)
             # - name: AGENT_PRIORITY_CLASS_NAME
@@ -468,10 +468,10 @@ spec:
             #   value: "<KeyOfTheTaintToTolerate>"
             # (Optional) Rook Discover tolerations list. Put here list of taints you want to tolerate in YAML format.
 {% if rook_scheduling_key %}
-        - name: DISCOVER_TOLERATIONS
-          value: |
-            - effect: NoSchedule
-              key: {{ rook_scheduling_key | to_json }}
+            - name: DISCOVER_TOLERATIONS
+              value: |
+                - effect: NoSchedule
+                  key: {{ rook_scheduling_key | to_json }}
 {% endif %}
             # (Optional) Rook Discover priority class name to set on the pod(s)
             # - name: DISCOVER_PRIORITY_CLASS_NAME
