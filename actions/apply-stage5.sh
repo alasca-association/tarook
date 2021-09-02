@@ -8,11 +8,8 @@ python3 "$actions_dir/update_inventory.py"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
-AVARS=""
-for var_file in "$ansible_k8s_ms_vars_base"/*.yaml
-do
-    AVARS="${AVARS} -e @$var_file"
-done
+# Bring the wireguard interface up if configured so
+"$actions_dir/wg-up.sh"
 
 export KUBECONFIG="$cluster_repository/inventory/.etc/admin.conf"
 cd "$ansible_k8s_ms_playbook"
