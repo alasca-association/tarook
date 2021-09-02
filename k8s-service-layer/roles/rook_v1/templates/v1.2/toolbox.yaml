@@ -16,7 +16,7 @@ spec:
         app: {{ "%s-tools" | format(rook_cluster_name) | to_json }}
     spec:
       dnsPolicy: ClusterFirstWithHostNet
-{% if rook_scheduling_key is defined %}
+{% if rook_scheduling_key %}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

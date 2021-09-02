@@ -23,7 +23,7 @@ spec:
     annotations:
     #  key: value
     placement:
-{% if rook_scheduling_key is defined %}
+{% if rook_scheduling_key %}
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
