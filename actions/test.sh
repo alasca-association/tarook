@@ -19,26 +19,15 @@ cd "$ansible_playbook"
 trap do_cleanup_test_on_failure ERR
 
 # Test k8s-service-layer
-AVARS=""
-for var_file in "$ansible_k8s_sl_vars_base"/*.yaml
-do
-    AVARS="${AVARS} -e @$var_file"
-done
 pushd "$ansible_k8s_sl_playbook"
-# shellcheck disable=2086
-ansible_playbook -i "inventory/default.yaml" $AVARS test.yaml
+ansible_playbook -i "inventory/default.yaml" -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" test.yaml
 popd
 
 # Test k8s-managed-service layer
-for var_file in "$ansible_k8s_ms_vars_base"/*.yaml
-do
-    AVARS="${AVARS} -e @$var_file"
-done
 pushd "$ansible_k8s_ms_playbook"
-# shellcheck disable=2086
-ansible_playbook -i "inventory/default.yaml" -i "$ansible_inventoryfile_03"  $AVARS test.yaml
+ansible_playbook -i "inventory/default.yaml" -i "$ansible_inventoryfile_03" -e "kms_vars_directory=$ansible_k8s_ms_vars_base" test.yaml
 popd
 
 # Test k8s-base
 # shellcheck disable=2086
-ansible_playbook -i "$ansible_inventoryfile_03" $AVARS 04_tests.yaml
+ansible_playbook -i "$ansible_inventoryfile_03" -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" -e "kms_vars_directory=$ansible_k8s_ms_vars_base" 04_tests.yaml

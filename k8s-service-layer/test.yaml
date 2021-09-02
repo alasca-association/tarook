@@ -1,6 +1,11 @@
 ---
 - name: placeholder
   hosts: orchestrator
+  pre_tasks:
+    - name: include env vars
+      when: ksl_vars_directory is defined
+      include_vars:
+        dir: "{{ ksl_vars_directory }}"
   tasks:
   - name: placeholder
     debug:

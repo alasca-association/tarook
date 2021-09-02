@@ -10,16 +10,17 @@
 - name: Check monitoring
   hosts: "{{ groups['masters'] | first }}"
   gather_facts: no
+  pre_tasks:
+    - name: include env vars
+      when: kms_vars_directory is defined
+      include_vars:
+        dir: "{{ kms_vars_directory }}"
   roles:
   - role: monitoring_v1_test
-    tags: test-monitoring
+    tags:
+    - test-monitoring
     when: "k8s_monitoring_enabled"
 
-- name: Test GPU support
-  hosts: "{{ groups['masters'] | first }}"
-  become: no
-  gather_facts: no
-  roles:
   - role: device_plugin_v1_test
     tags:
     - test-gpu-support

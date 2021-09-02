@@ -97,6 +97,11 @@
   hosts: "{{ groups['masters'] | first }}"
   become: no
   gather_facts: false
+  pre_tasks:
+    - name: include env vars
+      when: ksl_vars_directory is defined
+      include_vars:
+        file: "{{ ksl_vars_directory }}/rook.yaml"
   vars:
     gateway: "{{ groups['gateways'] | first }}"
   roles:

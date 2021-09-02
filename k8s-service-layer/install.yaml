@@ -1,32 +1,31 @@
 ---
-- name: Configure Node Scheduling Info
-  hosts: orchestrator
-  gather_facts: no
-  roles:
-  - scheduling_info_v1
-  tags:
-  # required for monitoring/rook too
-  - mk8s-sl/monitoring
-  - mk8s-sl/cert-manager
-  - mk8s-sl/ingress
-
-- name: Install Rook
+- name: Kubernetes Service Layer
   hosts: orchestrator
   gather_facts: no
   vars_files:
   - vars/disruption.yaml
+  pre_tasks:
+    - name: include env vars
+      when: ksl_vars_directory is defined
+      include_vars:
+        dir: "{{ ksl_vars_directory }}"
+  tags:
+  - mk8s-ms
   roles:
+  - role: scheduling_info_v1
+    tags:
+    # required for monitoring/rook too
+    - mk8s-sl/monitoring
+    - mk8s-sl/cert-manager
+    - mk8s-sl/ingress
+
   - role: rook_v1
     when: k8s_storage_rook_enabled
-  tags:
-  - mk8s-sl
-  - mk8s-sl/rook
+    tags:
+    - mk8s-sl
+    - mk8s-sl/rook
 
-- name: Install Monitoring
-  hosts: orchestrator
-  gather_facts: no
-  roles:
   - role: monitoring_v1
     when: k8s_monitoring_enabled
-  tags:
-  - mk8s-sl/monitoring
+    tags:
+    - mk8s-sl/monitoring

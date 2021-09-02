@@ -1,20 +1,21 @@
 ---
-- name: Install Monitoring
+- name: Kubernetes Managed Services
   hosts: orchestrator
   gather_facts: no
+  pre_tasks:
+    - name: include env vars
+      when: kms_vars_directory is defined
+      include_vars:
+        dir: "{{ kms_vars_directory }}"
+  tags:
+  - mk8s-ms
   roles:
   - role: monitoring_v1
     when: k8s_monitoring_enabled
-  tags:
-  - mk8s-ms
-  - mk8s-ms/monitoring
+    tags:
+    - mk8s-ms/monitoring
 
-- name: Install nVIDIA device plugin
-  hosts: orchestrator
-  gather_facts: no
-  roles:
   - role: device_plugin_v1
     when: k8s_is_gpu_cluster
-  tags:
-  - mk8s-ms
-  - mk8s-ms/nvidia-device-plugin
+    tags:
+    - mk8s-ms/nvidia-device-plugin

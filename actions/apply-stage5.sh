@@ -13,5 +13,4 @@ python3 "$actions_dir/update_inventory.py"
 
 export KUBECONFIG="$cluster_repository/inventory/.etc/admin.conf"
 cd "$ansible_k8s_ms_playbook"
-# shellcheck disable=2086
-ansible_playbook -i "inventory/default.yaml" -i "$ansible_inventoryfile_03" $AVARS install.yaml
+ansible_playbook -i "inventory/default.yaml" -i "$ansible_inventoryfile_03" -e "kms_vars_directory=$ansible_k8s_ms_vars_base" install.yaml
