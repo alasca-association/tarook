@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 
-import typing   # needed for type hints
-import toml     # needed to dump the new configuration
-import pathlib  # needed for path handling
-import shutil   # needed to copy the old config
-import json     # needed for shiny feedback
+import typing    # needed for type hints
+import toml      # needed to dump the new configuration
+import pathlib   # needed for path handling
+import shutil    # needed to copy the old config
+import json      # needed for shiny feedback
+import datetime  # needed for the backup suffix
 # needed to merge default values into config
 from mergedeep import merge, Strategy
 
@@ -204,7 +205,8 @@ def convert_legacy_config(
     """
 
     # Create a backup of the config
-    backup_path = config_path.with_suffix(".toml.old")
+    backup_path = config_path.with_suffix(
+        F".{datetime.datetime.utcnow().isoformat()}.toml.old")
     shutil.copyfile(config_path, backup_path)
     print(
         # \"\N{floppy disk}"
