@@ -119,8 +119,8 @@ vrrp_priority = 80
 [ansible.03_final.group_vars.all]
 # KUBERNETES CLUSTER CONFIGURATION
 #
-# Kubernetes version. Currently, we support 1.17.* and 1.18.*.
-k8s_version = "1.18.18"
+# Kubernetes version. Currently, we support from 1.17.* to 1.19.*.
+k8s_version = "1.19.10"
 
 # Pick a networking plugin:
 #
@@ -181,6 +181,10 @@ storage_nodeplugin_toleration = true
 #
 # Enable rook deployment
 #rook = true
+#
+# Currently we support the following rook versions:
+# v1.2.3 (default), v1.3.11, v1.4.9, v1.5.12, v1.6.7
+#rook_version = "v1.3.11"
 
 # Scheduling keys
 #
@@ -206,6 +210,12 @@ storage_nodeplugin_toleration = true
 
 # Enable the CephFS shaerd filesystem.
 #rook_fs = true
+
+# If set to true Rook won’t perform any upgrade checks on Ceph daemons
+# during an upgrade. Use this at YOUR OWN RISK, only if you know what 
+# you’re doing.
+# https://rook.github.io/docs/rook/v1.3/ceph-cluster-crd.html#cluster-settings
+# rook_skip_upgrade_checks = false
 
 # Rook pod memory limits
 #

@@ -1,24 +1,30 @@
-- name: Get output of 'kubectl get nodes'
-  run_once: yes
-  delegate_to: "{{ groups['masters'] | first }}"
-  become: no
+- name: Test if kubelet.conf exists
+  become: yes
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_creds
+
+- name: Test if the node exists already
+  # using kubectl here as openshift et al. are otherwise not installed on worker nodes. seems kinda excessive to deploy it just to check whether we need to join.
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/kubelet.conf
   command:
   args:
     argv:
-    - "kubectl"
-    - "get"
-    - "nodes"
-    - "-o"
-    - "yaml"
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  register: kubectl_output
+    - kubectl
+    - get
+    - node
+    - "{{ inventory_hostname }}"
+  failed_when: false
   changed_when: false
+  when: kubelet_creds.stat.exists
+  register: node_check
 
 - name: Join the K8s cluster
   become: yes
   vars:
     our_address: "address: {{ ansible_host }}"
     kubeadm_out: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
-  when: not our_address in kubectl_output.stdout
+  when: not kubelet_creds.stat.exists or node_check.rc != 0
   command: "{{ kubeadm_out }} --node-name {{ inventory_hostname | quote }}"

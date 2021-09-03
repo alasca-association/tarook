@@ -1,0 +1,43 @@
+{% from "roles/rook_v1/templates/utils.j2" import resource_constraints %}
+apiVersion: ceph.rook.io/v1
+kind: CephFilesystem
+metadata:
+  name: {{ rook_fs_name | to_json }}
+  namespace: {{ rook_namespace | to_json }}
+spec:
+  metadataPool:
+    failureDomain: "host"
+    replicated:
+      size: {{ rook_fs_replicated | to_json }}
+      requireSafeReplicaSize: {{ (rook_fs_replicated | int != 1) | to_json }}
+  dataPools:
+  - failureDomain: "host"
+    replicated:
+      size: {{ rook_fs_replicated | to_json }}
+      requireSafeReplicaSize: {{ (rook_fs_replicated | int != 1) | to_json }}
+  preservePoolsOnDelete: true
+  metadataServer:
+    activeCount: 1
+    activeStandby: true
+    # A key/value list of annotations
+    annotations:
+    #  key: value
+    placement:
+{% if rook_scheduling_key %}
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: {{ rook_scheduling_key | to_json }}
+              operator: Exists
+      tolerations:
+      - key: {{ rook_scheduling_key | to_json }}
+        operator: Exists
+{% endif %}
+    resources: {
+{% call resource_constraints(
+  rook_mds_memory_request,
+  rook_mds_cpu_request,
+  rook_mds_memory_limit,
+  rook_mds_cpu_limit) %}{% endcall %}
+    }

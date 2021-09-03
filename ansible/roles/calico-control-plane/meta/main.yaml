@@ -1,0 +1,4 @@
+---
+dependencies:
+- calico
+- k8s-tools

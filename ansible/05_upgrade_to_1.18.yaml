@@ -1,3 +1,6 @@
+# This upgrade file is only for the k8s version 1.18.
+# For now we keep for every minor update a seperate upgrade file
+# to avoid accidental major changes of old upgrade files.
 - name: Detect user
   hosts: k8s_nodes
   gather_facts: false
@@ -10,7 +13,7 @@
   hosts: k8s_nodes
   gather_facts: true
   roles:
-    - kubernetes-upgrade-info-1.18
+    - kubernetes-upgrade-info
   tags:
     - kubernetes-upgrade-preflight-checks
 

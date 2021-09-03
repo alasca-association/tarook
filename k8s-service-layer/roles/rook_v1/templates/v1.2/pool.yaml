@@ -1,0 +1,20 @@
+apiVersion: ceph.rook.io/v1
+kind: CephBlockPool
+metadata:
+  name: {{ item.name | to_json }}
+  namespace: {{ rook_namespace | to_json }}
+spec:
+  failureDomain: {{ item.failure_domain | default('host') | to_json }}
+{% if item.erasure_coded | default(False) %}
+  erasureCoded:
+    dataChunks: {{ item.erasure_coded.data_chunks | default(2) | to_json }}
+    codingChunks: {{ item.erasure_coded.coding_chunks | default(1) | to_json }}
+{% else %}
+  replicated:
+    size: {{ item.replicated | default(1) | to_json }}
+    # Disallow setting pool with replica 1, this could lead to data loss without recovery.
+    # Make sure you're *ABSOLUTELY CERTAIN* that is what you want
+    requireSafeReplicaSize: {{ ((item.replicated | default(1) | int) != 1) | to_json }}
+
+{% endif %}
+  deviceClass: hdd

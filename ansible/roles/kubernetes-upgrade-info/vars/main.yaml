@@ -1,0 +1,4 @@
+minor_k8s_version: "{{ k8s_installed_version.split('.')[:2] | join('.') }}"
+
+index_present: "{{ supported_k8s_versions.index(minor_k8s_version) }}"
+index_successor: "{{ index_present | int + 1 }}"

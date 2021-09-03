@@ -13,12 +13,14 @@
 - name: Install Rook
   hosts: orchestrator
   gather_facts: no
+  vars_files:
+  - vars/disruption.yaml
   roles:
   - role: rook_v1
     when: rook | default(False)
   tags:
-  - mk8s-ms
-  - mk8s-ms/rook
+  - mk8s-sl
+  - mk8s-sl/rook
 
 - name: Install Monitoring
   hosts: orchestrator

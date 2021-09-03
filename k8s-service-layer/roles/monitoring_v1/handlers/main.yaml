@@ -1,39 +1,26 @@
 ---
-- name: restart thanos-store-0 pod
-  become: no
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
-    namespace: monitoring
-    name: thanos-store-0
-    kind: Pod
-    state: absent
-    validate:
-      fail_on_error: yes
-      strict: yes
+- name: restart thanos-store
+  become: yes
+  command:
+  args:
+    argv:
+    - kubectl
+    - rollout
+    - restart
+    - statefulset
+    - "-n"
+    - "{{ monitoring_namespace }}"
+    - thanos-store
 
-- name: restart prometheus-k8s-0 pod
-  become: no
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
-    namespace: monitoring
-    name: prometheus-k8s-0
-    kind: Pod
-    state: absent
-    validate:
-      fail_on_error: yes
-      strict: yes
-
-- name: restart prometheus-k8s-1 pod
-  become: no
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
-    namespace: monitoring
-    name: prometheus-k8s-1
-    kind: Pod
-    state: absent
-    validate:
-      fail_on_error: yes
-      strict: yes
+- name: restart prometheus-k8s
+  become: yes
+  command:
+  args:
+    argv:
+    - kubectl
+    - rollout
+    - restart
+    - statefulset
+    - "-n"
+    - "{{ monitoring_namespace }}"
+    - prometheus-k8s

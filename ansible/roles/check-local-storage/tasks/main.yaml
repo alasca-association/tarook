@@ -3,7 +3,7 @@
     msg: "This test is using the {{ local_storage_storageclass_name }} storageClass"
 
 - name: Run the test
-  become: no
+  become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
