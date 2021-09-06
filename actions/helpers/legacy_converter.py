@@ -167,7 +167,7 @@ def confirm_prompt(question: str) -> bool:
     return (reply == "y")
 
 
-def convert_legacy_config(
+def _convert_legacy_config(
     legacy_config: typing.MutableMapping,
     config_path: pathlib.Path,
     config_template_path: pathlib.Path
@@ -203,16 +203,6 @@ def convert_legacy_config(
     * Validating that we were able to process each key of the old config
     * Dumping the configuration
     """
-
-    # Create a backup of the config
-    backup_path = config_path.with_suffix(
-        F".{datetime.datetime.utcnow().isoformat()}.toml.old")
-    shutil.copyfile(config_path, backup_path)
-    print(
-        # \"\N{floppy disk}"
-        "Saved a backup of the old configuration "
-        F"to {backup_path}"
-    )
 
     ansible_config = legacy_config.get("ansible")
 
@@ -372,6 +362,28 @@ def convert_legacy_config(
     merged_config = merge(config_template, new_config,
                           strategy=Strategy.REPLACE)
 
+    return merged_config
+
+
+def convert_legacy_config(
+    legacy_config: typing.MutableMapping,
+    config_path: pathlib.Path,
+    config_template_path: pathlib.Path
+) -> typing.MutableMapping:
+
+    # Create a backup of the config
+    backup_path = config_path.with_suffix(
+        F".{datetime.datetime.utcnow().isoformat()}.toml.old")
+    shutil.copyfile(config_path, backup_path)
+    print(
+        # \"\N{floppy disk}"
+        "Saved a backup of the old configuration "
+        F"to {backup_path}"
+    )
+
+    merged_config = _convert_legacy_config(legacy_config,
+                                           config_path,
+                                           config_template_path)
     # Dump the new configuration
     with config_path.open("w") as fout:
         toml.dump(merged_config, fout)
@@ -390,6 +402,28 @@ def convert_legacy_config(
     while True:
         reply = confirm_prompt("Finished your manual verification?")
         if reply:
-            return new_config
+            return merged_config
         else:
             print("Take your time and come back when you feel safe...")
+
+
+if __name__ == "__main__":
+    import argparse
+    import sys
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config-file",
+                        type=pathlib.Path,
+                        default=pathlib.Path("config/config.toml"))
+    args = parser.parse_args()
+    config_path = args.config_file
+    print(f"Working on {config_path}", file=sys.stderr)
+    config_template_path = pathlib.Path("managed-k8s/templates/config.template.toml") # NOQA
+    with open(config_path, "r") as f:
+        legacy_config = toml.load(f)
+    legacy_sections = ["ansible", "terraform", "secrets"]
+    if not (set(legacy_config.keys()) == set(legacy_sections)):
+        print("This doesn't look like a legacy config. FIN.", file=sys.stderr)
+        sys.exit(1)
+    print(_convert_legacy_config(legacy_config,
+                                 config_path,
+                                 config_template_path))
