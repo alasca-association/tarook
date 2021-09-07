@@ -16,7 +16,8 @@ from mergedeep import merge, Strategy
 # they belong to, when processing them.
 KNOWN_SECTIONS_AND_KEYS_MAP = {
     "load-balancing": {
-        "lb_ports": "lb_ports"
+        "lb_ports": "lb_ports",
+        "deprecated_nodeport_lb_test_port": "deprecated_nodeport_lb_test_port", # NOQA
     },
     "ch-k8s-lbaas": {
         "ch_k8s_lbaas": "enabled",
@@ -33,7 +34,8 @@ KNOWN_SECTIONS_AND_KEYS_MAP = {
         "k8s_network_plugin_switch_restart_all_namespaces": "plugin_switch_restart_all_namespaces",  # NOQA
         "k8s_network_plugin_switch_restart_namespaces": "plugin_switch_restart_namespaces",  # NOQA
         "k8s_network_pod_subnet": "pod_subnet",
-        "k8s_network_service_subnet": "service_subnet"
+        "k8s_network_service_subnet": "service_subnet",
+        "k8s_network_bgp_worker_as": "bgp_worker_as",
     },
     "rook": {
         "rook": "enabled",
@@ -43,6 +45,7 @@ KNOWN_SECTIONS_AND_KEYS_MAP = {
         "rook_toolbox": "toolbox",
         "rook_fs": "ceph_fs",
         "rook_fs_require_safe_replica_size": "ceph_fs_safe_replica_size",
+        "rook_fs_replicated": "fs_replicated",
         "rook_mon_volume": "mon_volume",
         "rook_mon_volume_storage_class": "local-storage",
         "rook_pool_require_safe_replica_size": "pool_require_safe_replica_size",  # NOQA
@@ -55,6 +58,7 @@ KNOWN_SECTIONS_AND_KEYS_MAP = {
         "rook_osd_memory_request": "osd_memory_request",
         "rook_osd_cpu_limit": "osd_cpu_limit",
         "rook_osd_cpu_request": "osd_cpu_request",
+        "rook_osd_storage_class": "osd_storage_class",
         "rook_mgr_memory_limit": "mgr_memory_limit",
         "rook_mgr_memory_request": "mgr_memory_request",
         "rook_mgr_cpu_limit": "mgr_cpu_limit",
@@ -68,7 +72,8 @@ KNOWN_SECTIONS_AND_KEYS_MAP = {
         "rook_placement_taint": "placement_taint",
         "rook_placement_label": "placement_label",
         "rook_nodeplugin_toleration": "nodeplugin_toleration",
-        "storage_nodeplugin_toleration": "storage_nodeplugin_toleration"
+        "storage_nodeplugin_toleration": "storage_nodeplugin_toleration",
+        "rook_pools": "pools",
     },
     "monitoring": {
         "monitoring": "enabled",
@@ -80,6 +85,7 @@ KNOWN_SECTIONS_AND_KEYS_MAP = {
         "monitoring_alertmanager_memory_request": "alertmanager_memory_request",  # NOQA
         "monitoring_alertmanager_cpu_limit": "alertmanager_cpu_limit",
         "monitoring_alertmanager_cpu_request": "alertmanager_cpu_request",
+        "monitoring_alertmanager_config_secret": "alertmanager_config_secret",
         "monitoring_prometheus_memory_limit": "prometheus_memory_limit",
         "monitoring_prometheus_memory_request": "prometheus_memory_request",
         "monitoring_prometheus_cpu_limit": "prometheus_cpu_limit",
@@ -88,6 +94,7 @@ KNOWN_SECTIONS_AND_KEYS_MAP = {
         "monitoring_grafana_memory_request": "grafana_memory_request",
         "monitoring_grafana_cpu_limit": "grafana_cpu_limit",
         "monitoring_grafana_cpu_request": "grafana_cpu_request",
+        "monitoring_grafana_plugins": "grafana_plugins",
         "monitoring_kube_state_metrics_memory_limit": "kube_state_metrics_memory_limit",  # NOQA
         "monitoring_kube_state_metrics_memory_request": "kube_state_metrics_memory_request",  # NOQA
         "monitoring_kube_state_metrics_cpu_limit": "kube_state_metrics_cpu_limit",  # NOQA
@@ -104,9 +111,15 @@ KNOWN_SECTIONS_AND_KEYS_MAP = {
         "monitoring_thanos_store_memory_request": "thanos_store_memory_request",  # NOQA
         "monitoring_thanos_store_cpu_limit": "thanos_store_cpu_limit",
         "monitoring_thanos_store_cpu_request": "thanos_store_cpu_request",
+        "monitoring_thanos_compact_memory_limit": "thanos_compact_memory_limit", # NOQA
+        "monitoring_thanos_compact_memory_request": "thanos_compact_memory_request",  # NOQA
+        "monitoring_thanos_compact_cpu_limit": "thanos_compact_cpu_limit",
+        "monitoring_thanos_compact_cpu_request": "thanos_compact_cpu_request",
         "monitoring_thanos_objectstorage_container_name": "thanos_objectstorage_container_name",  # NOQA
         "monitoring_placement_taint": "placement_taint",
         "monitoring_placement_label": "placement_label",
+        "monitoring_internet_probe": "internet_probe",
+        "monitoring_internet_probe_targets": "internet_probe_targets",
     },
     "wireguard": {
         "wg_ip_cidr": "ip_cidr",
@@ -129,7 +142,9 @@ KNOWN_SECTIONS_AND_KEYS_MAP = {
         "ipsec_local_networks": "local_networks",
         "ipsec_virtual_subnet_pool": "virtual_subnet_pool",
         "ipsec_remote_addrs": "remote_addrs",
-        "ipsec_eap_psk": "eap_psk"
+        "ipsec_eap_psk": "eap_psk",
+        "ipsec_remote_name": "remote_name",
+        "ipsec_purge_installation": "purge_installation",
     },
     "cah-users": {
         "cah_users_roll_out_users_from": "roll_out_users_from",
@@ -139,7 +154,9 @@ KNOWN_SECTIONS_AND_KEYS_MAP = {
     },
     "miscellaneous": {
         "wireguard_on_workers": "wireguard_on_workers",
-        "openstack_network_name": "openstack_network_name"
+        "openstack_network_name": "openstack_network_name",
+        "nvidia_classic_driver_name": "nvidia_classic_driver_name",
+        "journald_storage": "journald_storage",
     },
 }
 

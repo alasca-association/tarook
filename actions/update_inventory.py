@@ -371,16 +371,19 @@ def main():
     # ---
     # MISCELLANEOUS
     # ---
+    # Including both stage2 and stage3 because at least `journald_storage` is
+    # used in both.
     print_process_state("Miscellaneous")
-    misc_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage3"] /
-        "group_vars" / "all" / "miscellaneous.yaml"
-    )
-    dump_to_ansible_inventory(
-        config.get("miscellaneous"),
-        misc_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("miscellaneous", "")
-    )
+    for stage in [ANSIBLE_STAGES["stage2"], ANSIBLE_STAGES["stage3"]]:
+        misc_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / stage /
+            "group_vars" / "all" / "miscellaneous.yaml"
+        )
+        dump_to_ansible_inventory(
+            config.get("miscellaneous"),
+            misc_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("miscellaneous", "")
+        )
 
     # ---
     # NODE SCHEDULING
