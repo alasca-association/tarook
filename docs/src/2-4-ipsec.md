@@ -1,4 +1,6 @@
-# Notes on IPsec/strongswan
+# IPsec
+
+<!-- TODO: needs complete rewrite to become nice -->
 
 This document should become a comprehensive documentation on the ipsec setup. I will feed it my notes and experiences along the way.
 I created the role `ipsec-vpn` that is part of stage2, i.e., strongswan will be rolled out on the gateway nodes. This setup ought to be pretty similar to wireguard. I am not sure yet what of the settings around wireguard will be helpful / sufficient for ipsec (forwarding, mtu). Also I don't know yet if there will be a conflict between ipsec and wireguard. wireguard should remain the default VPN solution.
@@ -12,7 +14,7 @@ Tools over which I stumbled:
 
 I followed the instructions in https://www.digitalocean.com/community/tutorials/how-to-set-up-an-ikev2-vpn-server-with-strongswan-on-ubuntu-20-04#step-6-%E2%80%94-configuring-the-firewall-&-kernel-ip-forwarding for a basic setup. The author proposes eap-mschapv2 as authentication (?) scheme. We will have to adapt this to the parameters stated by the customer. IPsec should not be tunneled via wireguard. Instead we need to use the public floating ip.
 
-IPsec itself is implemented inside the kernel. The userspace tooling is responsible to configure the network and handle the authentication. IPsec use IKE, the Internet Key Exchange protocol. "Charon" is the ferryman of Hades who carries souls across the Styx to the world of the dead. 
+IPsec itself is implemented inside the kernel. The userspace tooling is responsible to configure the network and handle the authentication. IPsec use IKE, the Internet Key Exchange protocol. "Charon" is the ferryman of Hades who carries souls across the Styx to the world of the dead.
 
 `strongswan` is a systemd service that invokes swanctl. It invokes `charon-systemd`. `swanctl` replaces the `starter`, `ipsec` and `stroke` tools.
 
@@ -31,7 +33,7 @@ More examples: https://wiki.strongswan.org/projects/strongswan/wiki/IKEv2Example
 
 What do I put in "local_addrs", what in "remote_addrs"? What is `remote_ts`? My laptop is behind a NAT, the gateway does not know about its public endpoint.
 `TS` is `traffic selector`. Split tunneling is the name of a scenario in which a client only sends traffic for specific destinations to the gateway.
-The initiator of an IPsec tunnel can request an additional IP address from the responder to use as an inner tunnel address. This address is called the `Virtual IP` 
+The initiator of an IPsec tunnel can request an additional IP address from the responder to use as an inner tunnel address. This address is called the `Virtual IP`
 `local_addrs` defaults to `%any` if not set and is hence optional. It's useful if one wants to limit traffic to a particular interface.
 
 The responder (server/gateway) does not receive a virtual ip. On the other hand, why should it? VirtualIP is cool in a setup in which the initiator is behind a NAT and cannot be reached.
@@ -62,7 +64,7 @@ Possible values for (CHILD) SA proposals can be found here: https://wiki.strongs
 
 `iifname $wan ip saddr 10.3.0.0/24 oifname $wan ct state new counter accept;`
 
-`10.3.0.0/24` is the virtual IP pool out of which an IP was assigned to the Initiator. This doesn't cut, though, because coming from that subnet is only a symptom. What I actually want is to forward decrypted payloads. 
+`10.3.0.0/24` is the virtual IP pool out of which an IP was assigned to the Initiator. This doesn't cut, though, because coming from that subnet is only a symptom. What I actually want is to forward decrypted payloads.
 
 nft >= 0.9.1 knows `meta ipsec exists`, nft >= 0.8.2 knows `meta secpath exists`. Both apparently detect IPsec traffic. Consequently the rule above becomes:
 

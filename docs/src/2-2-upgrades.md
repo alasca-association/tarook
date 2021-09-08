@@ -1,7 +1,4 @@
-# Updating the Rook-based Ceph Storage
-
-You may also refer to the
-[Rook-based Ceph Storage Documentation](rook-ceph.md).
+# Upgrading Rook and Ceph
 
 The following sections describe how an existing rook-based ceph
 cluster can be updated.
@@ -76,7 +73,7 @@ This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`)
     ```
 
 3. (Optional)
-   
+
    Determine which ceph version is currently deployed:
    ```shell
    kubectl -n rook-ceph get CephCluster rook-ceph \
@@ -144,7 +141,7 @@ by rook itself. You can simply patch the image version of the
 `rook-ceph-operator`.
 
 ```shell
-# Example for the update of rook 
+# Example for the update of rook
 # to a new (fictional) patch version of v1.7.*
 kubectl -n rook-ceph set image deploy/rook-ceph-operator rook-ceph-operator=rook/ceph:v1.7.42
 ```
@@ -162,7 +159,7 @@ Just ensure that the ceph version really is supported by the currently
 deployed rook version.
 
 ```shell
-# Example for the update of ceph to 
+# Example for the update of ceph to
 # a new (fictional) release v17.2.42
 kubectl -n rook-ceph patch CephCluster rook-ceph --type=merge -p "{\"spec\": {\"cephVersion\": {\"image\": \"ceph/ceph:v17.2.42\"}}}"
 ```

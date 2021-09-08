@@ -1,4 +1,6 @@
-# Architecture
+# GPU and vGPU Support
+
+## Architecture
 
 GPU and vGPU support in kubernetes is achieved by 3 main component:
 - The presence of the nvidia driver on the workers (drivers are different for vGPU/GPU)
@@ -15,20 +17,20 @@ If you wish to install the vGPU driver instead, override the `is_virtual_gpu` to
 If you wish to install the device plugin, override the `k8s_is_gpu_cluster` variable to `yes` in `group_vars/all.yaml` of `03_final`.
 
 
-# vGPU operational considerations
+## vGPU operational considerations
 
 The nvidia vGPUs are licensed products and therefore need extra configuration. The licensing is by default triggered with our own nvidia license servers. If you wish to use other servers please override the default variables defined in the `gpu-and-vpgu` role.
 
 Nova and the vGPU manager do not get along with parallel creation of vGPU VM. To avoid the crash use the option `-parallelism=1` with `terraform apply`
 
 
-# About pci scan and driver install
+## About pci scan and driver install
 
 The pci scan script could detect itself if the GPU is virtual or physical in the future. Indeed the product id of the subsystem is different (`lspci -nnk -d 10de:`). This could be implemented for example by maintaining a whitelist of the physical product ids, and if an unknown product id is encounter for a nvidia device subsystem, the GPU is probably virtual.
 
 If the VM hosts need to see their kernels updated, using the `--dkms` option for the drivers installation may need to be evaluated.
 
-# Physical host considerations
+## Physical host considerations
 
 Customers may have different scheduling preferences:
 https://docs.nvidia.com/grid/10.0/grid-vgpu-user-guide/index.html#vgpu-scheduler-time-slice

@@ -1,6 +1,0 @@
-site_name: Managed K8s
-use_directory_urls: false
-docs_dir: client/
-site_dir: sites/client
-nav:
-  - Home: index.md

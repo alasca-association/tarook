@@ -1,0 +1,13 @@
+[book]
+authors = [
+    "Anja Strunk",
+    "Jonas Schäfer",
+    "Olivier de Jonckere",
+    "Paul Seidler",
+    "Steve Starke",
+    "Yannic Ahrens"
+]
+language = "en"
+multilingual = false
+src = "src"
+title = "Managed Kubernetes Handbook"

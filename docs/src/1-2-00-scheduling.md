@@ -1,4 +1,6 @@
-# Roles and Taints
+# Scheduling (Taints and Labels)
+
+<!-- TODO: needs updating with current LCM -->
 
 ## Motivation
 
