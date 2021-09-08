@@ -14,23 +14,9 @@ required variables.
 [a template file](../../jenkins/envrc.template.sh) you can use to bootstrap
 your own .envrc file.
 
-- `wg_conf_name` (used by `wg-up.sh`): The name of the WireGuard interface to
-  create. Interface name length is restricted to 15 bytes and should start
-  with `wg`. Examples: `wg0`, `wg-k8s-dev`.
+## General
 
-- `wg_private_key_file` (used by `wg-up.sh`): Path to your WireGuard private
-  key file. This is not copied to any remote machine, but needed to generate
-  the local configuration locally and to bring the VPN tunnel up.
-
-- `wg_user` (used by `wg-up.sh`): Your WireGuard user name as per the
-  [`wg_user` repository](https://gitlab.cloudandheat.com/lcm/wg_user).
-
-- `TF_VAR_keypair` (used by `apply-terraform.sh`): The keypair name in
-  OpenStack to use for creating new instances. Does not affect instances which
-  have already been created.
-
-- `MANAGED_K8S_SSH_USER` (used by `apply-stage2.sh`, `apply-stage3.sh`,
-  and `test.sh`): The SSH user to use to log into the machines.
+- `MANAGED_K8S_SSH_USER`: The SSH user to use to log into the machines.
 
   By default, the ansible automation is written so that it’ll auto-detect one of
   the default SSH users (centos, debian, ubuntu) to connect to the machines.
@@ -65,6 +51,46 @@ your own .envrc file.
   By default, the scripts check whether they are running inside a tty. If they
   are, they will use coloured output. This environment variable can be set to
   override the auto-detection.
+
+## External resources
+
+- `MANAGED_K8S_GIT`: This URL is used by `init.sh` to bootstrap the cluster
+  repository. Can be used to override the repository to use another mirror.
+
+- `MANAGED_K8S_WG_USER_GIT`: Git URL to a repository with wireguard keys to
+  provision. See `WG_COMPANY_USERS` below.
+
+- `MANAGED_K8S_PASSWORDSTORE_USER_GIT`: Git URL to a repository with users to
+  grant access to cluster secrets. See `PASS_COMPANY_USERS` below.
+
+- `MANAGED_CH_ROLE_USER_GIT`: URL to the ch-role-users role submodule.
+
+## Secret management
+
+- `PASS_COMPANY_USERS` (boolean, default: true): If set to true, `init.sh` will
+  clone the repository `MANAGED_K8S_PASSWORDSTORE_USER_GIT`. The users in that
+  repository will be granted access to the pass-based secret store.
+
+- `WG_COMPANY_USERS` (boolean, default: true): If set to true, `init.sh` will
+  clone the repository `MANAGED_K8S_WG_USER_GIT`. The inventory helper will
+  then configure the wireguard users from that repository.
+
+## VPN Configuration
+
+- `wg_conf_name` (used by `wg-up.sh`): The name of the WireGuard interface to
+  create. Interface name length is restricted to 15 bytes and should start
+  with `wg`. Examples: `wg0`, `wg-k8s-dev`.
+
+- `wg_private_key_file` (used by `wg-up.sh`): Path to your WireGuard private
+  key file. This is not copied to any remote machine, but needed to generate
+  the local configuration locally and to bring the VPN tunnel up.
+
+- `wg_user` (used by `wg-up.sh`): Your WireGuard user name as per the
+  [`wg_user` repository](https://gitlab.cloudandheat.com/lcm/wg_user).
+
+- `TF_VAR_keypair` (used by `apply-terraform.sh`): The keypair name in
+  OpenStack to use for creating new instances. Does not affect instances which
+  have already been created.
 
 ## Behaviour-altering variables
 
@@ -102,3 +128,19 @@ disable safety checks or give consent to potentially dangerous operations.
   If you know what you’re doing (I certainly don’t), you can set
   `MANAGED_K8S_IGNORE_WIREGUARD_ROUTE` to any non-empty value to override this
   check.
+
+* `AFLAGS`: This allows to pass additional flags to ansible. The variable is
+  interpolated into the ansible call without further quoting, so it can be used
+  to do all kinds of fun stuff.
+
+  A primary use is to force diff output or only execute some tags:
+
+  ```bash
+  AFLAGS="--diff -t some-tag" ./managed-k8s/actions/apply-stage3.sh
+  ```
+
+* `TF_USAGE` (default: true): Allows to disable execution of the terraform
+  stage by setting it to false.
+
+  This is also taken into account by the inventory helper. Intended use case
+  are bare-metal or otherwise pre-provisioned setups.
