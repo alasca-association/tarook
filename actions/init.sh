@@ -28,7 +28,7 @@ else
 fi
 
 # Add the Cloud&Heat wireguard peers repository as submodule
-if [ "${WG_COMPANY_USERS:-true}" ]; then
+if [ "${WG_COMPANY_USERS:-true}" == "true" ]; then
     if [ "$(git rev-parse --is-inside-work-tree)" == "true" ]; then
         if [ ! -d "$submodule_wg_user_name" ]; then
             run git submodule add "$submodule_wg_user_git" "$submodule_wg_user_name"
@@ -43,7 +43,7 @@ if [ "${WG_COMPANY_USERS:-true}" ]; then
 fi
 
 # Add the Cloud&Heat mk8s pass users repository as submodule
-if [ "${PASS_COMPANY_USERS:-true}" ]; then
+if [ "${PASS_COMPANY_USERS:-true}" == "true" ]; then
     if [ "$(git rev-parse --is-inside-work-tree)" == "true" ]; then
         if [ ! -d "$submodule_passwordstore_users_repo_name" ]; then
             run git submodule add "$submodule_passwordstore_users_git" "$submodule_passwordstore_users_repo_name"
