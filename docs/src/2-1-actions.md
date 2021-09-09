@@ -5,8 +5,8 @@
 The `managed-k8s` submodule provides the following actions to work with the
 cluster repository. All paths are relative to the cluster repository.
 
-The scripts extensively rely on environment variables. See below for a
-description of which environment variables exist and what they do.
+The scripts extensively rely on environment variables. See the
+[Environment Variables Reference](./2-1-envvars.md) for details.
 
 - on changes: `run python3 managed-k8s/jenkins/toml_helper.py`
 - run `python3 <path-to-managed-k8s>/jenkins/toml_helper.py`
