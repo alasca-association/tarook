@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-if [ "${WG_USAGE:-true}" = 'true' ]; then
+if [ "${WG_USAGE:-true}" == "true" ]; then
     actions_dir="$(dirname "$0")"
     # shellcheck source=actions/lib.sh
     . "$actions_dir/lib.sh"

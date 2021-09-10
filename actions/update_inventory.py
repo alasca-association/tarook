@@ -248,7 +248,7 @@ def main():
     # ---
     # TERRAFORM
     # ---
-    if (os.getenv('TF_USAGE', 'True').lower() == 'true'):
+    if (os.getenv('TF_USAGE', 'true') == 'true'):
         print_process_state("Terraform")
         terraform_helper.deploy_terraform_config(config.get("terraform"))
 
@@ -256,7 +256,7 @@ def main():
     # WIREGUARD
     # ---
     # only if wireguard is desired
-    if (os.getenv('WG_USAGE', 'True').lower() == 'true'):
+    if (os.getenv('WG_USAGE', 'true') == 'true'):
         print_process_state("Wireguard")
         wg_ansible_inventory_path = (
             ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage2"] /

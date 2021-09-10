@@ -440,7 +440,7 @@ def generate_wireguard_config(
 
     # Check if C&H company members should be added as wireguard peers
     wireguard_rollout_company_users = \
-        (os.getenv('WG_COMPANY_USERS', 'True').lower == 'true') \
+        (os.getenv('WG_COMPANY_USERS', 'true') == 'true') \
         or \
         wireguard_config.get("rollout_company_users", "true")
 
