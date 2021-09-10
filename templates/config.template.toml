@@ -37,9 +37,11 @@ subnet_cidr = "172.30.154.0/24"
 openstack_lbaas = false # •ᴗ•
 
 [load-balancing.priorities]
-"managed-k8s-gw-az1" = 150 # •ᴗ•
-"managed-k8s-gw-az2" = 100 # •ᴗ•
-"managed-k8s-gw-az3" = 80  # •ᴗ•
+# The following fields are commented out because they make assumptions on the existence
+# and naming scheme of nodes. Use them for inspiration :)
+#"managed-k8s-gw-az1" = 150 # •ᴗ•
+#"managed-k8s-gw-az2" = 100 # •ᴗ•
+#"managed-k8s-gw-az3" = 80  # •ᴗ•
 
 # --- C&H KUBERNETES LBaaS ---
 # ansible prefix: "ch_k8s_lbaas_"
@@ -304,24 +306,30 @@ scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 
 # --- NODE SCHEDULING: LABELS ---
 [node-scheduling.labels]
-managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true"]
-managed-k8s-worker-1 = ["{{ scheduling_key_prefix }}/monitoring=true"]
-managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true"]
-managed-k8s-worker-3 = ["{{ scheduling_key_prefix }}/monitoring=true"]
-managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true"]
-managed-k8s-worker-5 = ["{{ scheduling_key_prefix }}/monitoring=true"]
+# The following fields are commented out because they make assumptions on the existence
+# and naming scheme of nodes. Use them for inspiration :)
+#managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true"]
+#managed-k8s-worker-1 = ["{{ scheduling_key_prefix }}/monitoring=true"]
+#managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true"]
+#managed-k8s-worker-3 = ["{{ scheduling_key_prefix }}/monitoring=true"]
+#managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true"]
+#managed-k8s-worker-5 = ["{{ scheduling_key_prefix }}/monitoring=true"]
 #
 # --- NODE SCHEDULING: TAINTS ---
 [node-scheduling.taints]
-managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
-managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
-managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+# The following fields are commented out because they make assumptions on the existence
+# and naming scheme of nodes. Use them for inspiration :)
+#managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+#managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+#managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 
 # --- TESTING: TEST NODES ---
 [testing.test-nodes]
-"managed-k8s-worker-1" = "worker0"
-"managed-k8s-worker-3" = "worker1"
-"managed-k8s-worker-5" = "worker2"
+# The following fields are commented out because they make assumptions on the existence
+# and naming scheme of nodes. Use them for inspiration :)
+#"managed-k8s-worker-1" = "worker0"
+#"managed-k8s-worker-3" = "worker1"
+#"managed-k8s-worker-5" = "worker2"
 
 # --- WIREGUARD ---
 # ansible prefix: "wg_"
