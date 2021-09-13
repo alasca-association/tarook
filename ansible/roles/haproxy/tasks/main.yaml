@@ -9,16 +9,35 @@
   set_fact:
     private_vip: "{{ networking_fixed_ip }}"
 
+- name: Create directory for HAProxy configurations
+  become: yes
+  file:
+    state: directory
+    path: /etc/haproxy/conf.d/
+    owner: root
+    group: root
+    mode: 0600
+
 - name: Create HAProxy configuration
   become: yes
   template:
     src: haproxy.cfg.j2
-    dest: /etc/haproxy/haproxy.cfg
+    dest: /etc/haproxy/conf.d/00_haproxy.cfg
     validate: haproxy -f %s -c
     mode: 0600
     owner: root
     group: root
   register: haproxy
+
+- name: Configure HAProxy to use the directory as config source
+  become: yes
+  template:
+    src: config.cfg.j2
+    dest: /etc/default/haproxy
+    owner: root
+    group: root
+    mode: 0640
+  register: haproxy_config
 
 - name: Start the haproxy service # noqa no-handler
   become: yes
@@ -27,4 +46,4 @@
     enabled: yes
     state: restarted
     name: haproxy
-  when: haproxy is changed
+  when: haproxy is changed or haproxy_config is changed

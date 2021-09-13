@@ -1,5 +1,5 @@
 - name: Create namespace
-  when: monitoring
+  when: k8s_monitoring_enabled
   community.kubernetes.k8s:
     apply: yes
     definition:
@@ -12,4 +12,4 @@
       strict: yes
 
 - include_tasks: kube_monitoring.yaml
-  when: monitoring
+  when: k8s_monitoring_enabled

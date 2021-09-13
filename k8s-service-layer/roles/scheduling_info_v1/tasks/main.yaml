@@ -5,7 +5,7 @@
     - k8s_node_labels
   command:
   args:
-    argv: "{{ ['kubectl', 'label', 'nodes', '--overwrite', item[0].k8s_node, (item[1] | default(''))] }}"
+    argv: "{{ ['kubectl', 'label', 'nodes', '--overwrite', item[0].k8s_node, item[1]] }}"
   loop_control:
     label: "node {{ item[0].k8s_node }}; label: {{ item[1] }}"
   register: label_command
@@ -19,6 +19,6 @@
     - k8s_node_taints
   command:
   args:
-    argv: "{{ ['kubectl', 'taint', 'nodes', '--overwrite', item[0].k8s_node, (item[1] | default(''))] }}"
+    argv: "{{ ['kubectl', 'taint', 'nodes', '--overwrite', item[0].k8s_node, item[1]] }}"
   loop_control:
     label: "node {{ item[0].k8s_node }}; taint: {{ item[1] }}"

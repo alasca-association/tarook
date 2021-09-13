@@ -1,5 +1,4 @@
 ---
-monitoring: true
 monitoring_namespace: 'monitoring'
 
 monitoring_use_thanos: true
@@ -24,8 +23,6 @@ monitoring_scheduling_key: null
 monitoring_scheduling_value: null
 
 monitoring_prometheus_monitor_all_namespaces: True
-
-monitoring_ch_global_monitoring_nodeport_name: ch-k8s-global-monitoring
 
 monitoring_grafana_customer_dashboards: True
 monitoring_grafana_customer_dashboards_configmap: grafana-customer-dashboards

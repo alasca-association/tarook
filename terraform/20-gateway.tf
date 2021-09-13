@@ -104,12 +104,12 @@ data "template_file" "trampoline_gateways" {
 
 resource "local_file" "trampoline_gateways" {
   content         = data.template_file.trampoline_gateways.rendered
-  filename        = "../../inventory/02_trampoline/group_vars/gateways/rendered.yaml"
+  filename        = "../../inventory/02_trampoline/group_vars/gateways/terraform_networking-trampoline.yaml"
   file_permission = 0640
 }
 
 resource "local_file" "final_group_all" {
   content         = data.template_file.trampoline_gateways.rendered
-  filename        = "../../inventory/03_final/group_vars/all/rendered_ip.yaml"
+  filename        = "../../inventory/03_k8s_base/group_vars/all/terraform_networking-trampoline.yaml"
   file_permission = 0640
 }

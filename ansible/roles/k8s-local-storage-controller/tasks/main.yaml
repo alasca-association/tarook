@@ -58,7 +58,7 @@
   become: no
   delegate_to: localhost
   run_once: yes
-  when: "dump_k8s_manifests | default(False)"
+  when: "dump_k8s_manifests"
   vars:
     manifest_dir: "{{ etc_dir }}/manifests"
   tags:

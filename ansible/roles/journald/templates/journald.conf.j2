@@ -2,6 +2,6 @@
 
 [Journal]
 Storage={{ journald_storage }}
-ForwardToSyslog={{ journald_forward_to_syslog | default("false") | lower }}
+ForwardToSyslog={{ journald_forward_to_syslog | lower }}
 SystemMaxUse={{ journald_system_max_use }}
 RuntimeMaxUse={{ journald_runtime_max_use }}

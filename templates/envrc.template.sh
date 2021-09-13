@@ -5,6 +5,15 @@
 # please see docs/admin/cluster-repo.md in the managed-k8s lcm
 # repository.
 
+# Passwordstore: Encrypt for C&H company members
+export PASS_COMPANY_USERS=true
+
+# Wireguard: Use wireguard on gateways (default: True)
+export WG_USAGE=true
+
+# Wireguard: Role out C&H company members
+export WG_COMPANY_USERS=true
+
 # Wireguard: Interface and config file name
 wg_conf_name='wg0'
 export wg_conf_name
@@ -16,6 +25,9 @@ export wg_private_key_file
 # Wireguard: Your username in the wg-user repository
 wg_user='firstnamelastname'
 export wg_user
+
+# Terraform: Use Terraform (default: True)
+export TF_USAGE=true
 
 # OpenStack: Name of the keypair to use to bootstrap new instances.
 # Does not affect existing instances.

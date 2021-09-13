@@ -27,4 +27,4 @@
     validate:
       fail_on_error: yes
       strict: yes
-  loop: "{{ lookup('file', monitoring_jsonnet_dir_thanos + '/manifests.files.json', errors='strict' if monitoring and monitoring_use_thanos else 'warn' ) | default(' [] ', true) | from_json }}"  # noqa 204
+  loop: "{{ lookup('file', monitoring_jsonnet_dir_thanos + '/manifests.files.json', errors='strict' if k8s_monitoring_enabled and monitoring_use_thanos else 'warn' ) | default(' [] ', true) | from_json }}"  # noqa 204

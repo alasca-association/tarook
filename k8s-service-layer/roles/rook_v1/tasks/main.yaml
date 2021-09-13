@@ -6,7 +6,7 @@
   include_tasks: version_checks.yaml
 
 - name: Configure k8s resources
-  when: rook | bool
+  when: k8s_storage_rook_enabled | bool
   vars:
     rook_conf_major_version: "{{ rook_image_versions.operator.split('.')[0] }}"
     rook_conf_minor_version: "{{ rook_image_versions.operator.split('.')[1] }}"
@@ -147,7 +147,7 @@
     vars:
       fs_template: "{{ '%s/filesystem.yaml' | format(rook_conf_maj_min_version) }}"
     k8s:
-      state: "{{ rook_fs | ternary('present', 'absent') }}"
+      state: "{{ rook_ceph_fs | ternary('present', 'absent') }}"
       apply: yes
       definition: "{{ lookup('template', fs_template) }}"
       validate:
@@ -158,7 +158,7 @@
     vars:
       cephfs_storage_class_template: "{{ '%s/cephfs_storage_class.yaml' | format(rook_conf_maj_min_version) }}"
     k8s:
-      state: "{{ rook_fs | ternary('present', 'absent') }}"
+      state: "{{ rook_ceph_fs | ternary('present', 'absent') }}"
       apply: yes
       definition: "{{ lookup('template', cephfs_storage_class_template) }}"
       validate:

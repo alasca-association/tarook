@@ -1,6 +1,6 @@
 ---
 - name: Deploy LBaaS controller
-  when: ch_k8s_lbaas
+  when: ch_k8s_lbaas_enabled
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf

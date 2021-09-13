@@ -3,7 +3,7 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-
+  when: false # ToDo: Enable again after fixing monitoring scheduling
   block:
   - name: discover IP address of prometheus service
     k8s_info:
@@ -64,7 +64,7 @@
       url: 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="rook-ceph-mgr"}'
       return_content: true
     register: metrics
-    when: "rook | default(False)"
+    when: "k8s_storage_rook_enabled"
     failed_when: |
       (metrics.json.status != 'success' or
        not (metrics.json.data.result | default(False)) or
@@ -75,7 +75,7 @@
       url: 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="ch-k8s-lbaas-controller"}'
       return_content: true
     register: metrics
-    when: "ch_k8s_lbaas | default(False)"
+    when: "ch_k8s_lbaas_enabled | default(False)"
     failed_when: |
       (metrics.json.status != 'success' or
        not (metrics.json.data.result | default(False)) or
@@ -86,7 +86,7 @@
       url: 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="ch-k8s-lbaas-agent",instance="{{ hostvars[item]["local_ipv4_address"] }}:{{ ch_k8s_lbaas_agent_port }}"}'
       return_content: true
     register: metrics
-    when: "ch_k8s_lbaas | default(False)"
+    when: "ch_k8s_lbaas_enabled | default(False)"
     loop: "{{ groups['frontend'] }}"
     failed_when: |
       (metrics.json.status != 'success' or

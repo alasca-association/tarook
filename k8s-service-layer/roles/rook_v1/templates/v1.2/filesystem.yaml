@@ -2,19 +2,19 @@
 apiVersion: ceph.rook.io/v1
 kind: CephFilesystem
 metadata:
-  name: {{ rook_fs_name | to_json }}
+  name: {{ rook_ceph_fs_name | to_json }}
   namespace: {{ rook_namespace | to_json }}
 spec:
   metadataPool:
     failureDomain: "host"
     replicated:
-      size: {{ rook_fs_replicated | to_json }}
-      requireSafeReplicaSize: {{ (rook_fs_replicated | int != 1) | to_json }}
+      size: {{ rook_ceph_fs_replicated | to_json }}
+      requireSafeReplicaSize: {{ (rook_ceph_fs_replicated | int != 1) | to_json }}
   dataPools:
   - failureDomain: "host"
     replicated:
-      size: {{ rook_fs_replicated | to_json }}
-      requireSafeReplicaSize: {{ (rook_fs_replicated | int != 1) | to_json }}
+      size: {{ rook_ceph_fs_replicated | to_json }}
+      requireSafeReplicaSize: {{ (rook_ceph_fs_replicated | int != 1) | to_json }}
   preservePoolsOnDelete: true
   metadataServer:
     activeCount: 1

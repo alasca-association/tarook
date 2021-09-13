@@ -1,5 +1,5 @@
 - name: Create namespace
-  when: monitoring
+  when: k8s_monitoring_enabled
   community.kubernetes.k8s:
     apply: yes
     definition:
@@ -15,11 +15,11 @@
   - thanos
 
 - name: Configure default PSP
-  when: monitoring
+  when: k8s_monitoring_enabled
   k8s:
     apply: yes
     definition: "{{ lookup('template', 'default-psp.yaml') }}"
-    state: "{{ k8s_use_podsecuritypolicies | default(False) | ternary('present', 'absent') }}"
+    state: "{{ k8s_use_podsecuritypolicies | ternary('present', 'absent') }}"
     validate:
       fail_on_error: yes
       strict: yes
@@ -28,32 +28,28 @@
   - thanos
 
 - include: kube_monitoring.yml
-  when: monitoring
+  when: k8s_monitoring_enabled
   tags:
   - monitoring
 
 - import_tasks: kube_thanos.yml
-  when: monitoring and monitoring_use_thanos
+  when: k8s_monitoring_enabled and monitoring_use_thanos
   tags:
   - thanos
 
 - import_tasks: internet_probe.yaml
-  when: monitoring and monitoring_internet_probe
+  when: k8s_monitoring_enabled and monitoring_internet_probe
   tags:
     - internet_probe
-#
-# - name: Expose Prometheus with a NodePort
-#   when: monitoring and monitoring_ch_global_monitoring
-#   become: yes
-#   environment:
-#     KUBECONFIG: /etc/kubernetes/admin.conf
-#   tags:
-#     - ch-k8s-global-monitoring
-#     - ch-k8s-global-monitoring-nodeport
-#   k8s:
-#     apply: yes
-#     definition: "{{ lookup('template', 'prometheus-nodeport.yaml') }}"
-#     validate:
-#       fail_on_error: yes
-#       strict: yes
-#
+
+- name: Expose Prometheus with a NodePort
+  when: k8s_monitoring_enabled and k8s_global_monitoring_enabled
+  tags:
+    - ch-k8s-global-monitoring
+    - ch-k8s-global-monitoring-nodeport
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'prometheus-nodeport.yaml') }}"
+    validate:
+      fail_on_error: yes
+      strict: yes

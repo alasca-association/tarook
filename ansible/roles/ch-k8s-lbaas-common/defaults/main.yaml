@@ -1,5 +1,5 @@
 ---
-ch_k8s_lbaas: false
+ch_k8s_lbaas_enabled: false
 ch_k8s_lbaas_use_floating_ips: true
 ch_k8s_lbaas_controller_image: "publicgitlab-registry.cloudandheat.com/k8s/ch-k8s-lbaas/controller:{{ image_versions.ch_k8s_lbaas }}"
 
@@ -18,4 +18,4 @@ ch_k8s_lbaas_agent_binary_checksums:
 
 ch_k8s_lbaas_agent_binary_checksum: "{{ ch_k8s_lbaas_agent_binary_checksums[image_versions.ch_k8s_lbaas] | default('invalid checksum') }}"
 
-ch_k8s_lbaas_use_bgp: "{{ (k8s_network_plugin | default('flannel')) == 'kube-router' }}"
+ch_k8s_lbaas_use_bgp: "{{ (k8s_network_plugin) == 'kube-router' }}"

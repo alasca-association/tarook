@@ -105,6 +105,14 @@
     mode: '0640'
   register: wg0_conf
 
+- name: Make sure wireguard directory exists in etc directory
+  delegate_to: localhost
+  become: no
+  file:
+    path: "{{ etc_dir }}/wireguard"
+    state: directory
+    mode: 0755
+
 - name: Create a wg0.conf template for each peer
   become: no
   delegate_to: localhost
@@ -114,7 +122,7 @@
     dest: "{{ wg_client_path }}"
     mode: '0640'
   vars:
-    wg_client_path: "{{ etc_dir }}/wg_{{ item['ident'] }}.conf"
+    wg_client_path: "{{ etc_dir }}/wireguard/wg_{{ item['ident'] }}.conf"
     vip_port: vip-port
   loop: "{{ wg_peers }}"
 
@@ -124,7 +132,7 @@
   run_once: yes
   debug:
     msg: |
-      The wg-* configurations were written to {{ etc_dir }}.
+      The wg-* configurations were written to {{ etc_dir }}/wireguard.
       You need to insert your private wireguard key and bring the wireguard
       interface up before continuing.
 

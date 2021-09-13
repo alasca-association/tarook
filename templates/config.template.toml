@@ -1,0 +1,473 @@
+# Variables marked with "•ᴗ•" are mandatory!
+# This means you have to set them, there is no default.
+
+# NOTE:For some sections the inventory updater will apply pefixes to
+# the variables before passing them over to the ansible inventories. 
+
+# --- TERRAFORM ---
+# ansible prefix: /
+[terraform]
+subnet_cidr = "172.30.154.0/24"
+#masters = 3
+#workers = 3
+#worker_flavors = ["L", "M", "L"]
+#enable_az_management = false
+
+# If true, create block volume for each instance and boot from there.
+# Equivalent to `openstack server create --boot-from-volume […]. (`false` by default)
+#create_root_disk_on_volume = true
+
+# Volume type that is used if `create_root_disk_on_volume` is true. ("three_times_replicated" by default)
+#root_disk_volume_type = "three_times_replicated"
+
+# --- LOAD-BALANCING ---
+# ansible prefix: /
+[load-balancing]
+# lb_ports is a list of ports that are exposed by HAProxy on the gateway nodes and forwarded
+# to NodePorts in the k8s cluster. This poor man's load-balancing / exposing of services
+# has been superseded by ch-k8s-lbaas. For legacy reasons and because it's useful under
+# certain circumstances it is kept inside the repository.
+# The NodePorts are either literally exposed by HAProxy or can be mapped to other ports.
+# Short form:
+#lb_ports = [30060]
+# Explicit form:
+#lb_ports = [{external=80,nodeport=30080}]
+
+# Enable/Disable OpenStack-based load-balancing.
+openstack_lbaas = false # •ᴗ•
+
+[load-balancing.priorities]
+# The following fields are commented out because they make assumptions on the existence
+# and naming scheme of nodes. Use them for inspiration :)
+#"managed-k8s-gw-az1" = 150 # •ᴗ•
+#"managed-k8s-gw-az2" = 100 # •ᴗ•
+#"managed-k8s-gw-az3" = 80  # •ᴗ•
+
+# --- C&H KUBERNETES LBaaS ---
+# ansible prefix: "ch_k8s_lbaas_"
+[ch-k8s-lbaas]
+# To enable our LBaaS service, un-comment the following options and fill in a
+# unique, random, base64-encoded secret in place of `...`.
+# To generate such a secret, you can use the following command:
+# $ dd if=/dev/urandom bs=16 count=1 status=none | base64
+
+enabled = true        # •ᴗ•
+shared_secret = "..."
+version = "0.3.3"
+agent_port = 15203
+
+# --- KUBERNETES: BASIC CLUSTER CONFIGURATION ---
+# ansible prefix: "k8s_"
+[kubernetes]
+# Kubernetes version. Currently, we support from 1.17.* to 1.19.*.
+version = "1.19.14" # •ᴗ•
+
+# Enforce the use of pod security policies inside the cluster.
+use_podsecuritypolicies = true # •ᴗ•
+
+# Uncomment if this cluster contains a worker with GPU access so that the driver
+# and surrounding framework is deployed.
+is_gpu_cluster = false # •ᴗ•
+
+# --- KUBERNETES: STORAGE CONFIGURATION ---
+# ansible prefix: "k8s_storage"
+[kubernetes.storage]
+# Many clusters will want to use rook, so you should enable
+# or disable it here if you want. It requires extra options
+# which need to be chosen with care.
+rook_enabled = true # •ᴗ•
+
+# Setting this to true will cause the storage plugins
+#to run on all nodes (ignoring all taints). This is often desirable.
+nodeplugin_toleration = true # •ᴗ•
+
+# --- KUBERNETES: MONITORING CONFIGURATION ---
+# ansible prefix: "k8s_monitoring"
+[kubernetes.monitoring]
+# Enable Prometheus monitoring
+enabled = true # •ᴗ•
+
+# --- KUBERNETES: GLOBAL MONITORING CONFIGURATION ---
+# ansible prefix: "k8s_global_monitoring"
+[kubernetes.global_monitoring]
+# This section contains global monitoring related
+# information which needs to be known to stage3
+# and higher layers.
+
+# Enable/Disable global monitoring
+enabled = true                             # •ᴗ•
+nodeport = 31911
+nodeport_name = "ch-k8s-global-monitoring"
+
+# --- KUBERNETES: NETWORK CONFIGURATION ---
+# ansible prefix: "k8s_network"
+[kubernetes.network]
+# This is the subnet used by Kubernetes for Pods. Subnets will be delegated
+# automatically to each node.
+pod_subnet = "10.244.0.0/16" # •ᴗ•
+
+# This is the subnet used by Kubernetes for Services.
+service_subnet = "10.96.0.0/12" # •ᴗ•
+
+# Pick a networking plugin:
+# - kube-router: High-performance, low-overhead implementation with support
+#   for NetworkPolicy objects
+# - flannel: Historical default option. Do not use for new clusters. It is
+#   still the default (from the ansible side) to not break existing clusters.
+# - calico: High-performance, pure IP networking, policy engine. Calico provides
+#   layer 3 networking capabilities and associates a virtual router with each node.
+#   Allows the establishment of zone boundaries through BGP
+plugin = "kube-router" # •ᴗ•
+
+# When upgrading to kube-router, configuration on how to handle the transition
+# is required. Note that all pods MUST be restarted (otherwise they’ll have no
+# connectivity after the restart).
+# If set to true, ansible will restart all DaemonSets, StatefulSets and
+# Deployments in all namespaces via `kubectl rollout restart`. If set to false,
+# only our managed namespaces (rook-ceph, monitoring and kube-system) are
+# restarted, which means that the customer will have to do their own restarts.
+#plugin_switch_restart_all_namespaces=true
+
+# This can be used to change the set of namespaces where restarts are
+# automatically carried out if k8s_network_plugin_switch_restart_all_namespaces
+# is set to false. Generally, you’ll not want to change this.
+#plugin_switch_restart_namespaces=[...]
+
+# --- KUBERNETES SERVICE LAYER ---
+# --- KUBERNETES SERVICE LAYER : ROOK (STORAGE) ---
+# ansible prefix: "rook"
+[k8s-service-layer.rook]
+
+namespace = "rook-ceph" # •ᴗ•
+cluster_name = "rook-ceph" # •ᴗ•
+
+# Currently we support the following rook versions:
+# v1.2.3 (default), v1.3.11, v1.4.9, v1.5.12, v1.6.7
+version = "v1.6.7" # •ᴗ•
+
+#nodeplugin_toleration = true
+
+# If set to true Rook won’t perform any upgrade checks on Ceph daemons
+# during an upgrade. Use this at YOUR OWN RISK, only if you know what 
+# you’re doing.
+# https://rook.github.io/docs/rook/v1.3/ceph-cluster-crd.html#cluster-settings
+#skip_upgrade_checks = false
+
+# Scheduling keys control where services may run. A scheduling key corresponds
+# to both a node label and to a taint. In order for a service to run on a node,
+# it needs to have that label key.
+# If no scheduling key is defined for a service, it will run on any untainted
+# node.
+#scheduling_key = "node-restriction.kubernetes.io/cah-managed-k8s-storage"
+# If you're using a general scheduling key prefix,
+# you can reference it here directly:
+#scheduling_key = "{{ scheduling_key_prefix }}/storage"
+
+# Number of OSDs to run. This should be equal to the number of storage meta
+# workers you use.
+#nosds = 3
+
+# The size of the storage backing each OSD.
+#osd_volume_size = "90Gi"
+
+# Enable the rook toolbox, which is a pod with ceph tools installed to
+# introspect the cluster state.
+#toolbox = true
+
+# Enable the CephFS shaerd filesystem.
+#ceph_fs = true
+
+# ROOK POD RESOURCE LIMITS
+# The default values are the *absolute minimum* values required by rook. Going
+# below these numbers will make rook refuse to even create the pods. See also:
+# https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-configuration-settings
+
+# Memory limit for mon Pods
+#mon_memory_limit = "1Gi"
+#mon_memory_request = "{{ rook_mon_memory_limit }}"
+#mon_cpu_limit = "500m"
+#mon_cpu_request = "100m"
+
+# Resource limits for OSD pods
+# Note that these are chosen so that the OSD pods end up in the
+# Guaranteed QoS class.
+#osd_memory_limit = "2Gi"
+#osd_memory_request = "{{ rook_osd_memory_limit }}"
+#osd_cpu_limit = "500m"
+#osd_cpu_request = "{{ rook_osd_cpu_limit }}"
+
+# Memory limit for mgr Pods
+#mgr_memory_limit = "512Mi"
+#mgr_memory_request = "{{ rook_mgr_memory_limit }}"
+#mgr_cpu_limit = "500m"
+#mgr_cpu_request = "100m"
+
+# Memory limit for MDS / CephFS Pods
+#mds_memory_limit = "4Gi"
+#mds_memory_request = "{{ rook_mds_memory_limit }}"
+#mds_cpu_limit = "1"
+#mds_cpu_request = "{{ rook_mds_cpu_limit }}"
+
+# Rook-ceph operator limits
+#operator_cpu_limit = "500m"
+#operator_cpu_request = "100m"
+
+# --- KUBERNETES SERVICE LAYER : MONITORING(PROMETHEUS) ---
+# ansible prefix: "monitoring_"
+[k8s-service-layer.prometheus]
+# Enable use of Thanos
+#use_thanos = true
+
+# Thanos uses local storage to keep a copy of the metadata from the object store
+# for faster access. The size and storage class for that volume can be
+# configured:
+#thanos_metadata_volume_size="10Gi"
+#thanos_metadata_volume_storage_class="rook-ceph-data"
+
+# By default, the monitoring will capture all namespaces. If this is not
+# desired, the following switch can be turned off. In that case, only the
+# kube-system, monitoring and rook namespaces are scraped by Prometheus.
+#prometheus_monitor_all_namespaces=true
+
+# Scheduling keys control where services may run. A scheduling key corresponds
+# to both a node label and to a taint. In order for a service to run on a node,
+# it needs to have that label key.
+# If no scheduling key is defined for service, it will run on any untainted
+# node.
+#scheduling_key = "node-restriction.kubernetes.io/cah-managed-k8s-monitoring"
+# If you're using a general scheduling key prefix
+# you can reference it here directly
+#scheduling_key = "{{ scheduling_key_prefix }}/monitoring"
+
+# Monitoring pod resource limits
+# PROMETHEUS POD RESOURCE LIMITS
+# The following limits are applied to the respective pods.
+# Note that the Prometheus limits are chosen fairly conservatively and may need
+# tuning for larger and smaller clusters.
+# By default, we prefer to set limits in such a way that the Pods end up in the
+# Guaranteed QoS class (i.e. both CPU and Memory limits and requests set to the
+# same value).
+
+#alertmanager_memory_limit = "256Mi"
+#alertmanager_memory_request = "{{ monitoring_alertmanager_memory_limit }}"
+#alertmanager_cpu_limit = "100m"
+#alertmanager_cpu_request = "{{ monitoring_alertmanager_cpu_limit }}"
+
+#prometheus_memory_limit = "3Gi"
+#prometheus_memory_request = "{{ monitoring_prometheus_memory_limit }}"
+#prometheus_cpu_limit = "1"
+#prometheus_cpu_request = "{{ monitoring_prometheus_cpu_limit }}"
+
+#grafana_memory_limit = "512Mi"
+#grafana_memory_request = "256Mi"
+#grafana_cpu_limit = "500m"
+#grafana_cpu_request = "100m"
+
+#kube_state_metrics_memory_limit = "128Mi"
+#kube_state_metrics_memory_request = "50Mi"
+#kube_state_metrics_cpu_limit = "50m"
+#kube_state_metrics_cpu_request = "20m"
+
+#thanos_sidecar_memory_limit = "256Mi"
+#thanos_sidecar_memory_request = "{{ monitoring_thanos_sidecar_memory_limit }}"
+#thanos_sidecar_cpu_limit = "500m"
+#thanos_sidecar_cpu_request = "{{ monitoring_thanos_sidecar_cpu_limit }}"
+
+# Note that the default limits for Thanos are quite experimental. We’re still
+# gathering experience here. Please see also
+# ansible/roles/k8s-monitoring/defaults/main.yaml for more discussion on the
+# defaults.
+
+# Instead of ad-hoc changing limits in your cluster, seeking discussion with
+# the Flyingdutchman/CID team for a change of defaults is to be preferred.
+
+#thanos_query_memory_limit = "786Mi"
+#thanos_query_memory_request = "128Mi"
+#thanos_query_cpu_limit = "1"
+#thanos_query_cpu_request = "100m"
+
+#thanos_store_memory_limit = "2Gi"
+#thanos_store_memory_request = "256Mi"
+#thanos_store_cpu_limit = "500m"
+#thanos_store_cpu_request = "100m"
+
+#thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
+
+# ToDo: add description for internet_probe
+#internet_probe = true
+
+# --- NODE SCHEDULING ---
+# ansible prefix: /
+[node-scheduling]
+# Scheduling keys control where services may run. A scheduling key corresponds
+# to both a node label and to a taint. In order for a service to run on a node,
+# it needs to have that label key. The following defines a prefix for these keys
+scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
+
+# --- NODE SCHEDULING: LABELS ---
+[node-scheduling.labels]
+# The following fields are commented out because they make assumptions on the existence
+# and naming scheme of nodes. Use them for inspiration :)
+#managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true"]
+#managed-k8s-worker-1 = ["{{ scheduling_key_prefix }}/monitoring=true"]
+#managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true"]
+#managed-k8s-worker-3 = ["{{ scheduling_key_prefix }}/monitoring=true"]
+#managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true"]
+#managed-k8s-worker-5 = ["{{ scheduling_key_prefix }}/monitoring=true"]
+#
+# --- NODE SCHEDULING: TAINTS ---
+[node-scheduling.taints]
+# The following fields are commented out because they make assumptions on the existence
+# and naming scheme of nodes. Use them for inspiration :)
+#managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+#managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+#managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+
+# --- TESTING: TEST NODES ---
+[testing.test-nodes]
+# The following fields are commented out because they make assumptions on the existence
+# and naming scheme of nodes. Use them for inspiration :)
+#"managed-k8s-worker-1" = "worker0"
+#"managed-k8s-worker-3" = "worker1"
+#"managed-k8s-worker-5" = "worker2"
+
+# --- WIREGUARD ---
+# ansible prefix: "wg_"
+[wireguard]
+# Set the environment variable "WG_COMPANY_USERS" or this field to 'false' if C&H company members
+# should not be rolled out as wireguard peers. Default is true
+#rollout_company_users = true
+
+# IP address range to use for WireGuard clients. Must be set to a CIDR and must
+# not conflict with the terraform.subnet_cidr.
+# Should be chosen uniquely for all clusters of a customer at the very least
+# so that they can use all of their clusters at the same time without having
+# to tear down tunnels.
+ip_cidr = "172.30.153.64/26"
+ip_gw = "172.30.153.65/26"
+
+# To add WireGuard keys for customers, create blocks like the following
+# You can add as many of them as you want. inventory_helper.py will auto-allocate IP
+# addresses from the ip_cidr.
+#[[wireguard.peers]]
+#pub_key = "test1"
+#ident = "testkunde1"
+
+## Wireguard-based site-to-site tunnel
+# If enabled, configure site to site tunnel (defaults to false)
+#s2s_enabled = true
+
+# Subnet of the wireguard "transfer net" between the two endpoints
+#s2s_transfer_subnet = "172.30.18.2/31"
+
+# IP which is assigned to our VRRP master in transfer network
+#s2s_ip = "172.30.18.2"
+
+# IP which is assigned to our VRRP master in transfer network
+#s2s_peer_ip = "172.30.18.3"
+
+# Port on which wireguard listens
+#s2s_port = "16000"
+
+# Public wireguard key of the peer
+#s2s_peer_pub_key = "7CuC/cSw1US+nilx0ihoA1qb2DsQI0QV2RBuLE8cnhk="
+
+# Endpoint under which the peer can be reached
+#s2s_peer_public_endpoint = "<public-IP-of-your-peer>:16000"
+
+# BGP AS IDs for both parties (should differ, unless iBGP is wanted)
+#s2s_bgp_as = "65010"
+#s2s_peer_bgp_as = "65009"
+
+# --- IPSEC ---
+# ansible prefix: "ipsec_"
+[ipsec]
+enabled = false # •ᴗ•
+
+# Must be a list of parent SA proposals to offer to the client.
+# Must be explicitly set if ipsec_enabled is set to true.
+#proposals =
+
+# Must be a list of ESP proposals to offer to the client.
+# Defaults to ipsec_proposals
+#esp_proposals = "{{ ipsec_proposals }}"
+
+# List of CIDRs to route to the peer. If not set, only dynamic IP
+# assignments will be routed.
+# Defaults to null to disable.
+#peer_networks = []
+
+# List of CIDRs to offer to the peer. Defaults to a list with only the
+# `subnet_cidr` in it.
+#local_networks = ["{{ subnet_cidr }}"]
+
+# Pool to source virtual IP addresses from. Those are the IP addresses assigned
+# to clients which do not have remote networks. Disabled by default.
+#virtual_subnet_pool = false
+
+# List of addresses to accept as remote. When initiating, the first single IP
+# address is used.
+# Default is false, disabling the filter altogether.
+#remote_addrs = false
+
+# The PSK for EAP. Must be set.
+#eap_psk =
+
+# --- PASSWORDSTORE ---
+# ansible prefix: "passwordstore_"
+[passwordstore]
+# Set this field to `false` if the "company" users should not be rolled out.
+#rollout_company_users = true
+
+# Configure Additional GPG-IDs that should have access to the cluster-repo specific passwordstore.
+# If you're not member of the "company-wide" list, e.g., because you're a student you must add yourself here.
+# yannic.ahrens@cloudandheat.com serves as an example here because the author is incredibly vain and likes
+# to see his name written down everywhere.
+# Parameters:
+#   - 'ident': easy to read identification string, not used anywhere yet
+#   - 'gpg_id': ID of your public GPG key, ideally in long-form
+
+# --- PASSWORDSTORE: ADDITIONAL USERS ---
+#[[passwordstore.additional_users]]
+#ident = "yannic.ahrens@cloudandheat.com"
+#gpg_id = "68AA582E81AD111C127F01273370EBE296354805"
+
+# --- C&H USERS ---
+# ansible prefix: "cah_users_"
+[cah-users]
+rollout = true  # •ᴗ•
+
+# Include and exclude C&H users from rollout
+# C&H users refers to items in the ch-users-databag repository
+# For additional information refer the ch-role-users repository
+# The users have to be provided as List<String>
+# Possible Configurations:
+# - roll_out_users_from
+#   - include specific user group
+#   - Default: ["opsi", "it-operations", "head"]
+# - exclude_users_from
+#   - exclude specific user group
+#   - Default: ["students", "service"]
+# - include_users
+#   - include specific user(s)
+#   - Default: []
+# - exclude_users
+#   - exclude specific user(s)
+#   - Default: ["deployer"]
+# Example Usage:
+# include_users = ["<user>", "<user>"]
+
+# --- MISCELLANEOUS ---
+# ansible prefix: /
+[miscellaneous]
+# Install wireguard on all workers (without setting up any server-side stuff)
+# so that it can be used from within Pods.
+wireguard_on_workers = false
+
+# Name of the internal OpenStack network. This field becomes important if a VM is
+# attached to two networks but the controller-manager should only pick up one. If 
+# you don't understand the purpose of this field, there's a very high chance you
+# won't need to touch it/uncomment it.
+# Note: This network name isn't fetched automagically (by terraform) on purpose
+# because there might be situations where the CCM should not pick the managed network.
+#openstack_network_name = "managed-k8s-network"

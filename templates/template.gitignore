@@ -1,6 +1,6 @@
 *.key
 /inventory/02_trampoline
-/inventory/03_final
+/inventory/03_k8s_base
 /inventory/.etc/ssh_known_hosts
 /inventory/.etc/kubeadm_token
 /wg*.conf

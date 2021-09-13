@@ -12,12 +12,15 @@ ansible_k8s_ms_playbook="$code_repository/k8s-managed-services"
 ansible_inventory_template="$ansible_playbook/inventories/terraform"
 ansible_inventory_base="$cluster_repository/inventory"
 ansible_inventoryfile_02="$ansible_inventory_base/02_trampoline/hosts"
-ansible_inventoryfile_03="$ansible_inventory_base/03_final/hosts"
+ansible_inventoryfile_03="$ansible_inventory_base/03_k8s_base/hosts"
+ansible_k8s_sl_vars_base="$ansible_inventory_base/04_k8s_service_layer"
+ansible_k8s_ms_vars_base="$ansible_inventory_base/05_k8s_managed_service"
 
-wg_conf="${wg_conf:-$cluster_repository/$wg_conf_name.conf}"
-wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
-ansible_wg_template="$ansible_inventory_base/.etc/wg_${wg_user}.conf"
-
+if [ "${WG_USAGE:-true}" == "true" ]; then
+    wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
+    wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
+    ansible_wg_template="$ansible_inventory_base/.etc/wireguard/wg_${wg_user}.conf"
+fi
 
 if [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'true' ]; then
     use_color='true'
@@ -109,6 +112,12 @@ function validate_wireguard() {
     fi
 }
 
+function test_repo_access() {
+    set +e
+    git ls-remote "$1" master &> /dev/null; EXITCODE=$?
+    set -e
+}
+
 function ansible_playbook() {
     ansible_flags="${AFLAGS:---diff -f42}"
 
@@ -135,6 +144,9 @@ function do_cleanup_test_on_failure() {
         # Note: we're invoking `ansible-playbook` directly to not inherit any values of `AFLAGS`.
         # Consider the case in which a developer wants to run only a single test via `AFLAGS="-t test-blah" 04_test.sh`.
         # When the task fails and this clause is reached, both the failing task and `test-cleanup` would be invoked.
+        pushd "$ansible_playbook"
         ansible-playbook -i "$ansible_inventoryfile_03" --diff -f42 -t test-cleanup 04_tests.yaml
+        popd
+        # TODO: test ksm and ksl
     fi
 }

@@ -1,46 +1,16 @@
 #!/usr/bin/python3
 
-import collections
-import ipaddress
-import itertools
-import json
 import pathlib
+import ipaddress
+import collections
 import typing
-import random
-
 import toml
-import yaml
+import itertools
+import random
+import os
 
-USERS_PATH = pathlib.Path("wg_user")
-PASSWORDSTORE_USERS_FILE = pathlib.Path("passwordstore-users") / "main.toml"
-CONFIG_PATH = pathlib.Path("config/config.toml")
-IPAM_PATH = pathlib.Path("config/wireguard_ipam.toml")
-TFVARS_DIR = pathlib.Path("terraform")
-TFVARS_FILE = TFVARS_DIR / "config.tfvars.json"
-ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory")
-IPAM_ANSIBLE_FILE = (
-    ANSIBLE_INVENTORY_BASEPATH / "02_trampoline" / "group_vars" /
-    "gateways" / "wireguard.json"
-)
-
-
-class PasswordstoreUser(collections.namedtuple(
-        "PasswordstoreUser", ["ident", "gpg_id"])):
-
-    @classmethod
-    def fromdict(cls, d):
-        return cls(ident=d["ident"], gpg_id=d["gpg_id"])
-
-    def todict(self) -> typing.Mapping[str, str]:
-        return {"ident": self.ident,
-                "gpg_id": self.gpg_id}
-
-
-def load_passwordstore_users(
-        config_path: pathlib.Path
-        ) -> typing.List[PasswordstoreUser]:
-    with config_path.open("r") as f:
-        return [PasswordstoreUser.fromdict(u) for u in toml.load(f)["users"]]
+WG_COMPANY_USERS_PATH = pathlib.Path("wg_user")
+WG_IPAM_CONFIG_PATH = pathlib.Path("config/wireguard_ipam.toml")
 
 
 class WireGuardUser(collections.namedtuple(
@@ -99,40 +69,9 @@ class WireGuardUser(collections.namedtuple(
         return result
 
 
-def load_wg_users(
-        source_dir: pathlib.Path
-        ) -> typing.Mapping[str, WireGuardUser]:
-    """
-    Read all wireguard users from all ``*.toml`` files in `source_dir`.
-
-    Return the wireguard users as mapping which maps the public key to the
-    user object.
-    """
-    wg_users = {}
-    for filepath in source_dir.iterdir():
-        if not filepath.name.endswith(".toml"):
-            continue
-        with filepath.open("r") as f:
-            # we don’t want to carry any address information from the global
-            # repository into the clusters.
-            user = WireGuardUser.fromdict(toml.load(f), with_address=False)
-        if user.public_key in wg_users:
-            raise ValueError(
-                "duplicate public key in wg_user repository: {} in use by "
-                "{!r} and {!r}".format(
-                    user.public_key,
-                    user.name,
-                    wg_users[user.public_key].name,
-                )
-            )
-        wg_users[user.public_key] = user
-
-    return wg_users
-
-
-def index_wg_users(
+def _index_wg_users(
         users: typing.Iterable[WireGuardUser]
-        ) -> typing.Mapping[str, WireGuardUser]:
+) -> typing.Mapping[str, WireGuardUser]:
     """
     Index an iterable of wireguard users by their public key.
 
@@ -145,10 +84,10 @@ def index_wg_users(
     return result
 
 
-def merge_wg_users(
+def _merge_wg_users(
         users_a: typing.Iterable[WireGuardUser],
         users_b: typing.Iterable[WireGuardUser],
-        ) -> typing.Mapping[str, WireGuardUser]:
+) -> typing.Mapping[str, WireGuardUser]:
     """
     Deep merge wireguard users.
 
@@ -167,7 +106,9 @@ def merge_wg_users(
     return result
 
 
-def require_unique_names(users: typing.Iterable[WireGuardUser]):
+def _require_unique_names(
+    users: typing.Iterable[WireGuardUser]
+) -> bool:
     seen_names = {}
     for user in users:
         if user.name in seen_names:
@@ -177,23 +118,49 @@ def require_unique_names(users: typing.Iterable[WireGuardUser]):
                 )
             )
         seen_names[user.name] = user
+    return True
 
 
-def generate_ipaddress(
-        subnet: typing.Union[ipaddress.IPv4Network, ipaddress.IPv6Network]
-        ):
+def _get_subnets_from_config(
+    wg_config: typing.MutableMapping
+) -> typing.Tuple[ipaddress.IPv4Network, ipaddress.IPv6Network]:
+    """
+    load IPv4 and IPv6 subnet from the config and return them
+    """
+    subnetv4 = None
+    subnetv6 = None
+    if "ip_cidr" in wg_config:
+        subnetv4 = ipaddress.IPv4Network(wg_config["ip_cidr"])
+    if "ipv6_cidr" in wg_config:
+        subnetv6 = ipaddress.IPv6Network(wg_config["ipv6_cidr"])
+    # legacy
+    if "wg_ip_cidr" in wg_config:
+        subnetv4 = ipaddress.IPv4Network(wg_config["wg_ip_cidr"])
+    if "wg_ipv6_cidr" in wg_config:
+        subnetv6 = ipaddress.IPv6Network(wg_config["wg_ipv6_cidr"])
+    if not subnetv4 and not subnetv6:
+        raise ValueError(
+            "Wireguard section has neither wg_ip_cidr nor wg_ipv6_cidr set ",
+        )
+
+    return subnetv4, subnetv6
+
+
+def _generate_ipaddress(
+    subnet: typing.Union[ipaddress.IPv4Network, ipaddress.IPv6Network]
+) -> typing.Union[ipaddress.IPv4Address, ipaddress.IPv6Address]:
     random.seed()
     return subnet.network_address + random.getrandbits(
-            subnet.max_prefixlen - subnet.prefixlen
-            )
+        subnet.max_prefixlen - subnet.prefixlen
+    )
 
 
-def assign_ipv4_addresses(
+def _assign_ipv4_addresses(
         users: typing.Iterable[WireGuardUser],
         existing_assignment: typing.Mapping[str, WireGuardUser],
         subnet: ipaddress.IPv4Network,
         reserved_addresses: typing.Set[ipaddress.IPv4Address]
-        ) -> typing.Mapping[str, WireGuardUser]:
+) -> typing.Mapping[str, WireGuardUser]:
     """
     Assign IP addresses to users, taking the existing assignment into account.
 
@@ -227,7 +194,7 @@ def assign_ipv4_addresses(
 
         try:
             existing_address = existing_assignment[
-                                new_user.public_key].address_v4
+                new_user.public_key].address_v4
         except KeyError:
             existing_address = new_user.address_v4
 
@@ -249,7 +216,7 @@ def assign_ipv4_addresses(
             # it is checked if the set of reserved_addresses is full
             # if not the random IP address generation is repeated
             while True:
-                address = generate_ipaddress(subnet)
+                address = _generate_ipaddress(subnet)
                 if address in reserved_addresses:
                     if len(reserved_addresses) == subnet.num_addresses:
                         raise ValueError(
@@ -269,18 +236,18 @@ def assign_ipv4_addresses(
     return result
 
 
-def assign_ipv6_addresses(
+def _assign_ipv6_addresses(
         users: typing.Iterable[WireGuardUser],
         existing_assignment: typing.Mapping[str, WireGuardUser],
-        subnet: ipaddress.IPv6Network,
+        subnetv6: ipaddress.IPv6Network,
         reserved_addresses: typing.Set[ipaddress.IPv6Address]
-        ) -> typing.Mapping[str, WireGuardUser]:
+) -> typing.Mapping[str, WireGuardUser]:
     """
     Assign IP addresses to users, taking the existing assignment into account.
 
     :param users: An iterable of WireGuardUser objects for which to allocate
         addresses.
-    :param subnet: The IPv4 or IPv6 subnet to allocate addresses from.
+    :param subnetv6: The IPv4 or IPv6 subnet to allocate addresses from.
     :param reserved_addresses: A set of addresess which will never be assigned
         to a client.
     :raises RuntimeError: If the subnet is too large.
@@ -292,7 +259,7 @@ def assign_ipv6_addresses(
     will get addresses from the given subnet as necessary.
     """
 
-    if subnet.num_addresses > 2**64:
+    if subnetv6.num_addresses > 2**64:
         raise RuntimeError(
             "this is a safety net: the subnet you chose has more than 2**64 "
             "addresses. we don't know if this code will eat your "
@@ -308,7 +275,7 @@ def assign_ipv6_addresses(
 
         try:
             existing_address = existing_assignment[
-                                new_user.public_key].address_v6
+                new_user.public_key].address_v6
         except KeyError:
             existing_address = new_user.address_v4
 
@@ -320,7 +287,7 @@ def assign_ipv6_addresses(
                     "user".format(
                         new_user.name,
                         existing_address,
-                        subnet,
+                        subnetv6,
                     )
                 )
             reserved_addresses.add(existing_address)
@@ -330,9 +297,9 @@ def assign_ipv6_addresses(
             # it is checked if the set of reserved_addresses is full
             # if not the random IP address generation is repeated
             while True:
-                address = generate_ipaddress(subnet)
+                address = _generate_ipaddress(subnetv6)
                 if address in reserved_addresses:
-                    if len(reserved_addresses) == subnet.num_addresses:
+                    if len(reserved_addresses) == subnetv6.num_addresses:
                         raise ValueError(
                             "failed to allocate address for {!r}: "
                             "no more addresses left".format(new_user.name)
@@ -350,153 +317,165 @@ def assign_ipv6_addresses(
     return result
 
 
-def merge_user_ipaddress(users_a: typing.Iterable[WireGuardUser],
-                         users_b: typing.Iterable[WireGuardUser],
-                         ) -> typing.Iterable[WireGuardUser]:
-    for user in users_a:
-        users_a[user] = users_a[user]._replace(
-                address_v6=users_b[user].address_v6)
-    return users_a
+def _assign_ip_addresses_to_wg_users(
+    subnetv4: ipaddress.IPv4Network,
+    subnetv6: ipaddress.IPv6Network,
+    wireguard_users: typing.Mapping[str, WireGuardUser],
+) -> typing.Mapping[str, WireGuardUser]:
 
+    # Init the (existing) IPAM config
+    existing_ipam_users = _load_peers_from_ipam_config()
 
-def main():
-    with CONFIG_PATH.open("r") as fin:
-        config = toml.load(fin)
-    try:
-        with IPAM_PATH.open("r") as fin:
-            ipam = toml.load(fin)
-    except FileNotFoundError:
-        ipam = {}
-
-    allowed_sections = ("ansible", "secrets", "terraform")
-    for s in config.keys():
-        if s not in allowed_sections:
-            raise ValueError(
-                "'{}' is an unknown section. Currently supported are {}".format(s, allowed_sections) # NOQA
-            )
-    subnet = None
-    subnetv6 = None
-    if "wg_ip_cidr" in \
-            config["ansible"]["02_trampoline"]["group_vars"]["gateways"]:
-        subnet = ipaddress.IPv4Network(config["ansible"]["02_trampoline"]["group_vars"]["gateways"]["wg_ip_cidr"])  # NOQA
-    if "wg_ipv6_cidr" in \
-            config["ansible"]["02_trampoline"]["group_vars"]["gateways"]:
-        subnetv6 = ipaddress.IPv6Network(config["ansible"]["02_trampoline"]["group_vars"]["gateways"]["wg_ipv6_cidr"])  # NOQA
-    if not subnet and not subnetv6:
-        raise ValueError(
-            "ansible.02_trampoline.group_vars.gateways.wg_ip_cidr is not set ",
-        )
-
-    TFVARS_DIR.mkdir(exist_ok=True)
-
-    terraform_cfg = config["terraform"]
-    with open(TFVARS_FILE, "w") as fout:
-        json.dump(terraform_cfg, fout)
-
-    ansible_cfg = config["ansible"]
-    secrets_cfg = config["secrets"]
-
-    company_users = load_wg_users(USERS_PATH)
-    if secrets_cfg.pop("passwordstore_rollout_company_users", True):
-        passwordstore_company_users = load_passwordstore_users(PASSWORDSTORE_USERS_FILE) # NOQA
-    else:
-        passwordstore_company_users = []
-
-    # note that we explicitly remove the wg_peers config here since we write
-    # the wg_peers in a separate file later on.
-    cluster_wg_config = \
-        ansible_cfg["02_trampoline"]["group_vars"]["gateways"].pop(
-            "wg_peers", []
-        )
-    cluster_users = [
-        WireGuardUser.fromdict(item, with_address=True, address_optional=True)
-        for item in cluster_wg_config
-    ]
-
-    passwordstore_cluster_users = [PasswordstoreUser.fromdict(u)
-            for u in secrets_cfg.pop("passwordstore_additional_users", [])] # NOQA
-
-    # merge wg users while rejecting duplicates, since a company and a
-    # cluster-specific user should never share private keys
-    configured_users = merge_wg_users(company_users.values(), cluster_users)
-
-    passwordstore_users = passwordstore_company_users + \
-        passwordstore_cluster_users
-
-    require_unique_names(configured_users.values())
-
-    ipam_users = index_wg_users([
-        WireGuardUser.fromdict(item, with_address=True)
-        for item in ipam.get("users", [])
-    ])
-
-    if subnet:
-        assigned_v4_users = assign_ipv4_addresses(
-            configured_users.values(),
-            ipam_users,
-            subnet,
-            {subnet[1], subnet.broadcast_address},
+    if subnetv4:
+        assigned_v4_users = _assign_ipv4_addresses(
+            wireguard_users.values(),
+            existing_ipam_users,
+            subnetv4,
+            {subnetv4[1], subnetv4.broadcast_address},
         )
         if not subnetv6:
             assigned_users = assigned_v4_users
     if subnetv6:
-        assigned_v6_users = assign_ipv6_addresses(
-            configured_users.values(),
-            ipam_users,
+        assigned_v6_users = _assign_ipv6_addresses(
+            wireguard_users.values(),
+            existing_ipam_users,
             subnetv6,
             {subnetv6[1]},
         )
-        if not subnet:
+        if not subnetv4:
             assigned_users = assigned_v6_users
-    if subnet and subnetv6:
-        assigned_users = merge_user_ipaddress(
-                        assigned_v4_users,
-                        assigned_v6_users
-                        )
+    if subnetv4 and subnetv6:
+        assigned_users = _merge_user_ipaddress(
+            assigned_v4_users,
+            assigned_v6_users
+        )
 
-    with IPAM_PATH.open("w") as fout:
+    return assigned_users
+
+
+def _merge_user_ipaddress(users_a: typing.Iterable[WireGuardUser],
+                          users_b: typing.Iterable[WireGuardUser],
+                          ) -> typing.Iterable[WireGuardUser]:
+    for user in users_a:
+        users_a[user] = users_a[user]._replace(
+            address_v6=users_b[user].address_v6)
+    return users_a
+
+
+def _load_peers_from_ipam_config(
+    path_to_ipam_conf: pathlib.Path = WG_IPAM_CONFIG_PATH
+):
+    """
+    Load configured wg peers from IPAM_PATH
+    """
+    try:
+        with WG_IPAM_CONFIG_PATH.open("r") as fin:
+            ipam_config = toml.load(fin)
+    except FileNotFoundError:
+        ipam_config = {}
+    return _index_wg_users([
+        WireGuardUser.fromdict(item, with_address=True)
+        for item in ipam_config.get("wg_users", [])
+    ])
+
+
+def _load_wireguard_company_users(
+        source_dir: pathlib.Path = WG_COMPANY_USERS_PATH
+) -> typing.Mapping[str, WireGuardUser]:
+    """
+    Read all wireguard users from all ``*.toml`` files in `source_dir`.
+    Default path should be the path to the "wg-users" repository
+
+    Return the wireguard users as mapping which maps the public key to the
+    user object.
+    """
+    wg_company_users = {}
+    for filepath in source_dir.iterdir():
+        if not filepath.name.endswith(".toml"):
+            continue
+        with filepath.open("r") as f:
+            # we don’t want to carry any address information from the global
+            # repository into the clusters.
+            user = WireGuardUser.fromdict(toml.load(f), with_address=False)
+        if user.public_key in wg_company_users:
+            raise ValueError(
+                "duplicate public key in wg_user repository: {} in use by "
+                "{!r} and {!r}".format(
+                    user.public_key,
+                    user.name,
+                    wg_company_users[user.public_key].name,
+                )
+            )
+        wg_company_users[user.public_key] = user
+
+    return wg_company_users
+
+
+def _dump_IPAM_config(
+    assigned_users: typing.Mapping[str, WireGuardUser]
+) -> None:
+    with WG_IPAM_CONFIG_PATH.open("w") as fout:
         toml.dump({
-            "users": [
+            "wg_users": [
                 user.todict()
                 for user in sorted(assigned_users.values(),
                                    key=lambda x: x.name)
             ]
         }, fout)
 
-    for stage, stage_cfg in ansible_cfg.items():
-        for var_type, vars_cfg in stage_cfg.items():
-            for entity, entity_cfg in vars_cfg.items():
-                cfg_path = (
-                    ANSIBLE_INVENTORY_BASEPATH / stage / var_type /
-                    entity / "config.json"
-                )
-                cfg_path.parent.mkdir(exist_ok=True, mode=0o750,
-                                      parents=True)
-                with cfg_path.open("w") as f:
-                    json.dump(entity_cfg, f)
 
-    # Write the contents of `ansible_common`, i.e., passwordstore_users
-    # to `group_vars/all/all.yaml`. Needs additional work to support other
-    # kinds of entries.
-    for stage in ansible_cfg.keys():
-        cfg_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage / "group_vars" /
-            "all" / "all.yaml"
-        )
-        cfg_path.parent.mkdir(exist_ok=True, mode=0o750, parents=True)
-        with cfg_path.open("w") as f:
-            yaml.dump({"passwordstore_users": [
-                u.todict() for u in passwordstore_users]}, f)
+def generate_wireguard_config(
+    wireguard_config: typing.MutableMapping,
+) -> None:
+    """
+    Holistic function to generate wireguard configration including
+    all wireguard peers
+    """
 
-    with IPAM_ANSIBLE_FILE.open("w") as fout:
-        json.dump({
-            "wg_peers": [
-                user.todict()
-                for user in assigned_users.values()
-            ]
-        }, fout)
+    # Init the configured users as wireguard peers
+    wireguard_configured_users = [
+        WireGuardUser.fromdict(item, with_address=True, address_optional=True)
+        for item in wireguard_config.pop("peers", [])
+    ]
 
+    # Check if C&H company members should be added as wireguard peers
+    wireguard_rollout_company_users = \
+        (os.getenv('WG_COMPANY_USERS', 'true') == 'true') \
+        or \
+        wireguard_config.get("rollout_company_users", "true")
 
-if __name__ == "__main__":
-    import sys
-    sys.exit(main() or 0)
+    # Init the company members as wireguard peers
+    wireguard_company_users = []
+    if wireguard_rollout_company_users:
+        wireguard_company_users = _load_wireguard_company_users()
+
+    # Merge the wireguard users (configured and company) while rejecting
+    # duplicates, since a company and a cluster-specific (additional) user
+    # should never share private keys
+    wireguard_users = _merge_wg_users(
+        wireguard_company_users.values(),
+        wireguard_configured_users
+    )
+
+    # Validate (all) wireguard users, require unique names
+    _require_unique_names(wireguard_users.values())
+
+    # Extract the IPv4 and IPv6 subnet for wireguard from the config
+    subnetv4, subnetv6 = _get_subnets_from_config(wireguard_config)
+
+    # Assign IP addresses to the wireguard peers
+    assigned_wireguard_users = _assign_ip_addresses_to_wg_users(
+        subnetv4,
+        subnetv6,
+        wireguard_users,
+    )
+
+    # Dump the wireguard IPAM config
+    _dump_IPAM_config(assigned_wireguard_users)
+
+    wireguard_config["peers"] = [
+        user.todict()
+        for user in assigned_wireguard_users.values()
+    ]
+
+    return wireguard_config
