@@ -6,7 +6,7 @@ bind-port={{ ch_k8s_lbaas_agent_port | to_json }}
 
 [keepalived]
 interface={{ network_interface | to_json }}
-priority={{ priority }}
+priority={{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
 virtual-router-id-base=10
 
 [keepalived.service]

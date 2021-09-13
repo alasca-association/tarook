@@ -1,0 +1,1 @@
+vrrp_priorities: [150, 100, 80]
