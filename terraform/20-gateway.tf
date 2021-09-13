@@ -1,5 +1,5 @@
 resource "openstack_networking_port_v2" "gw_vip_port" {
-  name           = var.vip_port_name
+  name = "${var.cluster_name}-gateway-vip"
   admin_state_up = true
   network_id     = openstack_networking_network_v2.cluster_network.id
 
@@ -21,7 +21,7 @@ resource "openstack_networking_floatingip_v2" "gw_vip_fip" {
 
 resource "openstack_networking_port_v2" "gateway" {
   count = length(var.azs)
-  name  = "managed-k8s-gw-${lower(var.azs[count.index])}"
+  name = "${var.cluster_name}-gw-${lower(var.azs[count.index])}"
 
   network_id = openstack_networking_network_v2.cluster_network.id
 
@@ -35,7 +35,7 @@ resource "openstack_networking_port_v2" "gateway" {
 resource "openstack_blockstorage_volume_v2" "gateway-volume" {
   count = var.create_root_disk_on_volume == true ? length(var.azs) : 0
 
-  name        = "managed-k8s-gw-volume-${try(var.azs[count.index], count.index)}"
+  name        = "${var.cluster_name}-gw-volume-${try(var.azs[count.index], count.index)}"
   size        = data.openstack_compute_flavor_v2.gateway.disk
   image_id    = data.openstack_images_image_v2.gateway.id
   volume_type = var.root_disk_volume_type
