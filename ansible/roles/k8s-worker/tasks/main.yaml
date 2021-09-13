@@ -27,4 +27,5 @@
     our_address: "address: {{ ansible_host }}"
     kubeadm_out: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
   when: not kubelet_creds.stat.exists or node_check.rc != 0
-  command: "{{ kubeadm_out }} --node-name {{ inventory_hostname | quote }}"
+  # XXX: ansible command module does not support setting the umask
+  shell: "umask 077 && {{ kubeadm_out }} --node-name {{ inventory_hostname | quote }}"
