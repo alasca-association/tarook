@@ -16,6 +16,7 @@ apiServer:
 controllerManager:
     extraArgs:
         "bind-address" : "0.0.0.0"
+        "terminated-pod-gc-threshold": "{{ terminated_pod_gc_threshold }}"
 
 scheduler:
     extraArgs:
