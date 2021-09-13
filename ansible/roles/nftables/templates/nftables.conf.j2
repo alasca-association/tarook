@@ -76,7 +76,7 @@ table inet filter {
 
         jump base_checks
 
-        iifname $wg oifname $wan ct state new counter accept;
+        iifname $wg oifname $wan ip daddr {{ priv_ip_cidr }} ct state new counter accept;
 
         iifname $wan oifname $wan ip saddr {{ priv_ip_cidr }} ct state new counter accept;
 
