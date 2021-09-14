@@ -74,6 +74,11 @@ rook_image_version_map:
     operator: "{{ rook_version }}"
     toolbox: "{{ rook_version }}"
 
+  "1.21":
+    ceph: "{{ rook_ceph_versions.ceph }}"
+    operator: "{{ rook_version }}"
+    toolbox: "{{ rook_version }}"
+
 rook_version: "v1.2.3" # default
 
 rook_ceph_version_map:
