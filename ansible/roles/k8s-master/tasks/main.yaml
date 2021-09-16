@@ -206,13 +206,6 @@
           path: "{{ etc_dir }}/ca.crt"
         register: ca_cert
 
-      # ToDo: remove after issue is fixed
-      # https://github.com/kubernetes/kubernetes/issues/99305
-      - name: Create fix for etcd Pod (kubernetes/issues/99305)
-        template:
-          src: kubeadm_fix_etcd_99305.yaml.j2
-          dest: /tmp/etcd0+json.yaml
-
       - name: Create kubeadm-join-config.yaml
         vars:
           kubeadm_join_token: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
@@ -225,19 +218,11 @@
 
       - name: Join the initial control as another master
         # XXX: ansible command module does not support setting the umask
-        #ToDo: remove --experimental-patches /tmp/ after https://github.com/kubernetes/kubernetes/issues/99305 is fixed
-        shell: "umask 077 && kubeadm join --experimental-patches /tmp/ --config=/tmp/kubeadm-join-config.yaml"
+        shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml"
 
       - name: Remove kubeadm-join-config.yaml
         file:
           path: /tmp/kubeadm-join-config.yaml
-          state: absent
-
-      # ToDo: remove after issue is fixed
-      # https://github.com/kubernetes/kubernetes/issues/99305
-      - name: Remove fix for etcd Pod (kubernetes/issues/99305)
-        file:
-          path: /tmp/etcd0+json.yaml
           state: absent
 
 - name: Make the kube config readable by gods
