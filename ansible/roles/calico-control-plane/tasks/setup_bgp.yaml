@@ -84,16 +84,6 @@
     register: bgp_worker_to_master_peering
     changed_when: "'Successfully applied' and 'BGPPeer' in bgp_worker_to_master_peering.stdout"
 
-  - name: BGP - Configure route reflectors (master nodes) to peer with workers
-    command:
-      argv:
-        - /usr/local/bin/calicoctl
-        - apply
-        - --filename=-
-      stdin: '{{ lookup("file", "calico_bgp_peer_master.yaml") }}'
-    register: bgp_master_to_node_peering
-    changed_when: "'Successfully applied' and 'BGPPeer' in bgp_master_to_node_peering.stdout"
-
   - name: BGP - Configure route reflectors (master nodes) to peer with the LoadBalanced-Master Gateway
     command:
         argv:
