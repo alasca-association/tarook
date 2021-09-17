@@ -1,4 +1,5 @@
 rook_nmons: 3
+rook_namespace: "rook-ceph"
 rook_mon_volume: true
 rook_mon_volume_storage_class: local-storage
 rook_mon_volume_size: 10Gi
