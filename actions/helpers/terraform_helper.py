@@ -9,13 +9,17 @@ TFVARS_FILE = TFVARS_DIR / "config.tfvars.json"
 
 
 def get_current_config():
-    if not TFVARS_DIR.exists() or not TFVARS_FILE.exists():
+    if not TFVARS_FILE.exists():
         return {}
     with open(TFVARS_FILE, "r") as f:
         return json.load(f)
 
 
 def check_for_changed_cluster_name(current_config, new_config):
+    if not TFVARS_FILE.exists():
+        # If config.tfvars.json does not exist yet we can safely assume that
+        # the cluster does not exist.
+        return
     cluster_name = current_config.get("cluster_name", "")
     candidate_cluster_name = new_config.get("cluster_name", "")
     if cluster_name != candidate_cluster_name:
