@@ -41,6 +41,21 @@
     state: directory
     mode: 0755
 
+# The focus of the following two tasks is on fixing the permissions.
+- name: Ensure that /etc/kubernetes/pki exists
+  become: yes
+  file:
+    path: /etc/kubernetes/pki
+    state: directory
+    mode: u=rwx,go-rwx
+
+- name: Ensure that /var/lib/etcd exists
+  become: yes
+  file:
+    path: /var/lib/etcd
+    state: directory
+    mode: u=rwx,go-rwx
+
 - name: Spawn K8s cluster with 'kubeadm init'
   when: "local_kube_apiserver_status is failed and lb_kube_apiserver_status is failed"
   tags:
@@ -51,11 +66,6 @@
   # secure place
   - name: Generate a fresh CA for the Kubernetes master
     block:
-    - name: Ensure that /etc/kubernetes/pki exists
-      file:
-        path: /etc/kubernetes/pki
-        state: directory
-        mode: u=rwx,go-rwx
     - name: Generate OpenSSL private key for CA certificate
       openssl_privatekey:
         path: /etc/kubernetes/pki/ca.key
