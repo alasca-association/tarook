@@ -4,3 +4,4 @@ k8s_network_plugin_switch_restart_namespaces:
 - kube-system
 - monitoring
 - rook-ceph
+terminated_pod_gc_threshold: 10

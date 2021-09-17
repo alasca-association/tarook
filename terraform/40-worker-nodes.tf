@@ -1,6 +1,6 @@
 resource "openstack_networking_port_v2" "worker" {
   count = var.workers
-  name  = "managed-k8s-worker-${try(var.worker_names[count.index], count.index)}"
+  name = "${var.cluster_name}-worker-${try(var.worker_names[count.index], count.index)}"
 
   network_id = openstack_networking_network_v2.cluster_network.id
 
@@ -30,7 +30,7 @@ data "openstack_images_image_v2" "worker" {
 resource "openstack_blockstorage_volume_v2" "worker-volume" {
   count = var.create_root_disk_on_volume == true ? var.workers : 0
 
-  name        = "managed-k8s-worker-volume-${try(var.worker_names[count.index], count.index)}"
+  name        = "${var.cluster_name}-worker-volume-${try(var.worker_names[count.index], count.index)}"
   size        = data.openstack_compute_flavor_v2.worker[count.index].disk
   image_id    = data.openstack_images_image_v2.worker[count.index].id
   volume_type = var.root_disk_volume_type

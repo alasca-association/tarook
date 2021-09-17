@@ -16,7 +16,14 @@ apiServer:
 controllerManager:
     extraArgs:
         "bind-address" : "0.0.0.0"
+        "terminated-pod-gc-threshold": "{{ terminated_pod_gc_threshold }}"
 
 scheduler:
     extraArgs:
         "bind-address" : "0.0.0.0"
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+authentication:
+    anonymous:
+        enabled: false

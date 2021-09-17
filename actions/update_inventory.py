@@ -451,20 +451,12 @@ def main():
     # ---
     print_process_state("Load-Balancing")
     # Process priorities
-    for host in config.get("load-balancing", dict()).get("priorities", dict()).keys():  # NOQA
-        host_lb_config = {
-            "priority": config["load-balancing"]["priorities"][host]
-        }
-        for stage in [ANSIBLE_STAGES["stage2"], ANSIBLE_STAGES["stage3"]]:
-            lb_priorities_ansible_inventory_path = (
-                ANSIBLE_INVENTORY_BASEPATH / stage / "host_vars" / host /
-                "load-balancing.yaml"
-            )
-            dump_to_ansible_inventory(
-                host_lb_config,
-                lb_priorities_ansible_inventory_path,
-                SECTION_VARIABLE_PREFIX_MAP.get("load-balancing", "")
-            )
+    for host in config.get("load-balancing", {}).get("priorities", {}).keys():
+        print(
+            "WARNING: ignoring deprecated host-based priority override for "
+            "host {}".format(host)
+        )
+
     # Remove priorities after they have been processed so that they
     # are not contained in the upper section anymore
     config.get("load-balancing", dict()).pop("priorities", dict())

@@ -1,6 +1,6 @@
 ---
 monitoring: true
-monitoring_namespace: 'k8s-svc-monitoring'
+monitoring_namespace: 'monitoring'
 monitoring_watch_namespaces: []
 
 monitoring_jsonnet_dir_monitoring: "{{ playbook_dir }}/../jsonnet-sources/monitoring"

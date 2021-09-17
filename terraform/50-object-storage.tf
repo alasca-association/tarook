@@ -1,5 +1,5 @@
 resource "openstack_objectstorage_container_v1" "thanos_data" {
-  name          = var.thanos_container_name
+  name = "${var.cluster_name}-monitoring-thanos-data"
   force_destroy = var.thanos_delete_container
 }
 

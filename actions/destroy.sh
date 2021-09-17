@@ -46,7 +46,11 @@ fi
 cd "$terraform_state_dir"
 export TF_DATA_DIR="$terraform_state_dir/.terraform"
 run terraform -chdir="$terraform_module" init
-run terraform -chdir="$terraform_module" destroy --var-file="$terraform_state_dir/config.tfvars.json" --auto-approve
+# The following task will fail if a) thanos wrote data into a container and b) `MANAGED_K8S_NUKE_FROM_ORBIT` is not set
+run terraform -chdir="$terraform_module" destroy --var-file="$terraform_state_dir/config.tfvars.json" --auto-approve || true
+
+# Purge the remaining terraform directory. Its existence is a condition for additional disruption checks.
+rm -f "$terraform_state_dir/config.tfvars.json"
 
 IFS=$'\n' read -r -d '' -a volume_ids < <( openstack volume list -f value -c ID && printf '\0' )
 if [ "${#volume_ids[@]}" != 0 ]; then

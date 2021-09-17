@@ -41,6 +41,21 @@
     state: directory
     mode: 0755
 
+# The focus of the following two tasks is on fixing the permissions.
+- name: Ensure that /etc/kubernetes/pki exists
+  become: yes
+  file:
+    path: /etc/kubernetes/pki
+    state: directory
+    mode: u=rwx,go-rwx
+
+- name: Ensure that /var/lib/etcd exists
+  become: yes
+  file:
+    path: /var/lib/etcd
+    state: directory
+    mode: u=rwx,go-rwx
+
 - name: Spawn K8s cluster with 'kubeadm init'
   when: "local_kube_apiserver_status is failed and lb_kube_apiserver_status is failed"
   tags:
@@ -51,10 +66,6 @@
   # secure place
   - name: Generate a fresh CA for the Kubernetes master
     block:
-    - name: Ensure that /etc/kubernetes/pki exists
-      file:
-        path: /etc/kubernetes/pki
-        state: directory
     - name: Generate OpenSSL private key for CA certificate
       openssl_privatekey:
         path: /etc/kubernetes/pki/ca.key
@@ -93,12 +104,8 @@
       mode: 0600
 
   - name: Run kubeadm init
-    command:
-      argv:
-        - kubeadm
-        - init
-        - "--node-name={{ inventory_hostname }}"
-        - --config=/tmp/kubeadm-config.yaml
+    # XXX: ansible command module does not support setting the umask
+    shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-config.yaml
 
   - name: Remove kubeadm-config.yaml
     file:
@@ -178,18 +185,21 @@
         copy:
           src: "{{ etc_dir }}/{{ item }}"
           dest: "/etc/kubernetes/pki/"
+          mode: u=rw,go-rwx
         loop: "{{ pki_cert_files }}"
 
       - name: Copy etcd certificates and keys from localhost to residual masters
         copy:
           src: "{{ etc_dir }}/etcd/{{ item }}"
           dest: "/etc/kubernetes/pki/etcd/"
+          mode: u=rw,go-rwx
         loop: "{{ etcd_files }}"
 
   - name: Join the initial control as another master
     vars:
       kubeadm_out: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
-    command: "{{ kubeadm_out }} --control-plane"
+    # XXX: ansible command module does not support setting the umask
+    shell: "umask 077 && {{ kubeadm_out }} --control-plane"
 
 - name: Make the kube config readable by gods
   become: yes

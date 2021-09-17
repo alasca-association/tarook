@@ -33,15 +33,17 @@ subnet_cidr = "172.30.154.0/24"
 # Explicit form:
 #lb_ports = [{external=80,nodeport=30080}]
 
+# A list of priorities to assign to the gateway/frontend nodes. The priorities
+# will be assigned based on the sorted list of matching nodes.
+#
+# If more nodes exist than there are entries in this list, the rollout will
+# fail.
+#
+# Please note the keepalived.conf manpage for choosing priority values.
+#vrrp_priorities = [150, 100, 50]
+
 # Enable/Disable OpenStack-based load-balancing.
 openstack_lbaas = false # •ᴗ•
-
-[load-balancing.priorities]
-# The following fields are commented out because they make assumptions on the existence
-# and naming scheme of nodes. Use them for inspiration :)
-#"managed-k8s-gw-az1" = 150 # •ᴗ•
-#"managed-k8s-gw-az2" = 100 # •ᴗ•
-#"managed-k8s-gw-az3" = 80  # •ᴗ•
 
 # --- C&H KUBERNETES LBaaS ---
 # ansible prefix: "ch_k8s_lbaas_"
@@ -59,8 +61,8 @@ agent_port = 15203
 # --- KUBERNETES: BASIC CLUSTER CONFIGURATION ---
 # ansible prefix: "k8s_"
 [kubernetes]
-# Kubernetes version. Currently, we support from 1.17.* to 1.19.*.
-version = "1.19.14" # •ᴗ•
+# Kubernetes version. Currently, we support from 1.17.* to 1.20.*.
+version = "1.20.10" # •ᴗ•
 
 # Enforce the use of pod security policies inside the cluster.
 use_podsecuritypolicies = true # •ᴗ•

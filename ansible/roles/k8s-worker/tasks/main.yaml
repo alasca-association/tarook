@@ -24,7 +24,8 @@
 - name: Join the K8s cluster
   become: yes
   vars:
-    our_address: "address: {{ ansible_host }}"
+    our_address: "address: {{ local_ipv4_address | default(ansible_default_ipv4.address) }}"
     kubeadm_out: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
   when: not kubelet_creds.stat.exists or node_check.rc != 0
-  command: "{{ kubeadm_out }} --node-name {{ inventory_hostname | quote }}"
+  # XXX: ansible command module does not support setting the umask
+  shell: "umask 077 && {{ kubeadm_out }} --node-name {{ inventory_hostname | quote }}"

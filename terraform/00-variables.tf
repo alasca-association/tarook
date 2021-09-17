@@ -1,35 +1,15 @@
+variable "cluster_name" {
+  type = string
+  default = "managed-k8s"
+}
+
 variable "haproxy_ports" {
-  type    = list(number)
+  type = list(number)
   default = [30000, 30060]
-}
-
-variable "network_name" {
-  type    = string
-  default = "managed-k8s-network"
-}
-
-variable "subnet_name" {
-  type    = string
-  default = "managed-k8s-network"
 }
 
 variable "subnet_cidr" {
   type = string
-}
-
-variable "security_group_name" {
-  type    = string
-  default = "managed-k8s"
-}
-
-variable "ssh_security_group_name" {
-  type    = string
-  default = "managed-k8s-ssh"
-}
-
-variable "vpn_security_group_name" {
-  type    = string
-  default = "managed-k8s-vpn"
 }
 
 variable "ssh_cidrs" {
@@ -37,19 +17,9 @@ variable "ssh_cidrs" {
   default = ["0.0.0.0/0"]
 }
 
-variable "gateway_security_group_name" {
-  type    = string
-  default = "managed-k8s-gw"
-}
-
 variable "public_network" {
   type    = string
   default = "shared-public-IPv4"
-}
-
-variable "router_name" {
-  type    = string
-  default = "managed-k8s-router"
 }
 
 variable "keypair" {
@@ -69,11 +39,6 @@ variable "default_worker_image_name" {
 variable "gateway_image_name" {
   type    = string
   default = "Debian 10 (buster)"
-}
-
-variable "vip_port_name" {
-  type    = string
-  default = "vip-port"
 }
 
 variable "gateway_flavor" {
@@ -144,11 +109,6 @@ variable "master_azs" {
 variable "master_names" {
   type    = list(string)
   default = []
-}
-
-variable "thanos_container_name" {
-  type    = string
-  default = "managed-k8s-monitoring-thanos-data"
 }
 
 variable "thanos_delete_container" {
