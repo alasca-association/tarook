@@ -451,7 +451,7 @@ def main():
     # ---
     print_process_state("Load-Balancing")
     # Process priorities
-    for host in config.get("load-balancing", dict()).get("priorities", dict()).keys():
+    for host in config.get("load-balancing", {}).get("priorities", {}).keys():
         print(
             "WARNING: ignoring deprecated host-based priority override for "
             "host {}".format(host)
