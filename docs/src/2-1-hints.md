@@ -7,11 +7,8 @@
 - to add more ssh user, you have to add these lines in the config.toml
 
    ```
-   [ansible.02_trampoline.group_vars.gateways]
-    cah_users_include_users = ["<user>", "<user>"]
-
-   [ansible.03_final.group_vars.all]
-    cah_users_include_users = ["<user>", "<user>"]
+   [cah-users]
+    include_users = ["<user>", "<user>"]
    ```
 
 

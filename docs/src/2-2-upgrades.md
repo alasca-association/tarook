@@ -47,8 +47,8 @@ automated downgrades.
 ## How to update an existing Cluster
 
 The rook version to be deployed can be defined in your managed-k8s
-cluster configuration via the variable
-`[ansible.03_final.group_vars.all]['rook_version']`.
+cluster configuration via the variable `version` in the
+`[k8s-service-layer.rook]` section.
 
 This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`).
 
@@ -86,11 +86,11 @@ This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`)
    all supported rook releases are also stated in the `k8s-config`
    role as well as in the `k8s-rook` role (and in this doc file).
 
-5. Set `[ansible.03_final.group_vars.all]['rook_version']` to the
+5. Set `version` in the `[k8s-service-layer.rook]` section to the
    *next* (supported) minor release of rook.
    ```toml
    [...]
-   [ansible.03_final.group_vars.all]
+   [k8s-service-layer.rook]
    [...]
    # Enable rook deployment
    rook = true

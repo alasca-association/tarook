@@ -179,7 +179,7 @@ In addition, the procedure was repeated three times.
    ```
 
 6. Reduce the number of OSDs in the Cluster CRD. Update the `config.toml` of the
-   cluster by decreasing `ansible.03_final.group_vars.all.rook_nosds` by one.
+   cluster by decreasing `k8s-service-layer.rook.nosds` by one.
 
    Run the `toml_helper.py` and execute stage three (possibly with `-t rook` to
    only apply rook changes).

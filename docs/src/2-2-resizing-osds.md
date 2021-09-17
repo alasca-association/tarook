@@ -99,8 +99,8 @@ however, it may lead to temporarily unavailable data.
    indices.)
 
 2. Set the new target volume size. Update the `config.toml` of kubernetes
-   cluster by setting `ansible.03_final.group_vars.all.rook_osd_volume_size`
-   to the new desired size.
+   cluster by setting `k8s-service-layer.rook.osd_volume_size` to the new
+   desired size.
 
    Run the `toml_helper.py` and apply the changes by running ansible stage 3
    (possibly with `-t rook` to only apply the rook changes).
