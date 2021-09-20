@@ -12,7 +12,7 @@ Tools over which I stumbled:
 - swanctl
 - `Pluto` seems to refer to the old IKEv1 daemon. `Charon` is a fresh re-implementation that aims to be compatible to Pluto and implements to IKEv1 and IKEv2.
 
-I followed the instructions in https://www.digitalocean.com/community/tutorials/how-to-set-up-an-ikev2-vpn-server-with-strongswan-on-ubuntu-20-04#step-6-%E2%80%94-configuring-the-firewall-&-kernel-ip-forwarding for a basic setup. The author proposes eap-mschapv2 as authentication (?) scheme. We will have to adapt this to the parameters stated by the customer. IPsec should not be tunneled via wireguard. Instead we need to use the public floating ip.
+I followed the instructions in https://www.digitalocean.com/community/tutorials/how-to-set-up-an-ikev2-vpn-server-with-strongswan-on-ubuntu-20-04#step-6-%E2%80%94-configuring-the-firewall-&-kernel-ip-forwarding for a basic setup. The author proposes eap-mschapv2 as authentication (?) scheme. IPsec should not be tunneled via wireguard. Instead we need to use the public floating ip.
 
 IPsec itself is implemented inside the kernel. The userspace tooling is responsible to configure the network and handle the authentication. IPsec use IKE, the Internet Key Exchange protocol. "Charon" is the ferryman of Hades who carries souls across the Styx to the world of the dead.
 
