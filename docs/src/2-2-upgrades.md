@@ -1,7 +1,4 @@
-# Updating the Rook-based Ceph Storage
-
-You may also refer to the
-[Rook-based Ceph Storage Documentation](rook-ceph.md).
+# Upgrading Rook and Ceph
 
 The following sections describe how an existing rook-based ceph
 cluster can be updated.
@@ -50,8 +47,8 @@ automated downgrades.
 ## How to update an existing Cluster
 
 The rook version to be deployed can be defined in your managed-k8s
-cluster configuration via the variable
-`[ansible.03_final.group_vars.all]['rook_version']`.
+cluster configuration via the variable `version` in the
+`[k8s-service-layer.rook]` section.
 
 This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`).
 
@@ -76,7 +73,7 @@ This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`)
     ```
 
 3. (Optional)
-   
+
    Determine which ceph version is currently deployed:
    ```shell
    kubectl -n rook-ceph get CephCluster rook-ceph \
@@ -89,11 +86,11 @@ This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`)
    all supported rook releases are also stated in the `k8s-config`
    role as well as in the `k8s-rook` role (and in this doc file).
 
-5. Set `[ansible.03_final.group_vars.all]['rook_version']` to the
+5. Set `version` in the `[k8s-service-layer.rook]` section to the
    *next* (supported) minor release of rook.
    ```toml
    [...]
-   [ansible.03_final.group_vars.all]
+   [k8s-service-layer.rook]
    [...]
    # Enable rook deployment
    rook = true
@@ -144,7 +141,7 @@ by rook itself. You can simply patch the image version of the
 `rook-ceph-operator`.
 
 ```shell
-# Example for the update of rook 
+# Example for the update of rook
 # to a new (fictional) patch version of v1.7.*
 kubectl -n rook-ceph set image deploy/rook-ceph-operator rook-ceph-operator=rook/ceph:v1.7.42
 ```
@@ -162,7 +159,7 @@ Just ensure that the ceph version really is supported by the currently
 deployed rook version.
 
 ```shell
-# Example for the update of ceph to 
+# Example for the update of ceph to
 # a new (fictional) release v17.2.42
 kubectl -n rook-ceph patch CephCluster rook-ceph --type=merge -p "{\"spec\": {\"cephVersion\": {\"image\": \"ceph/ceph:v17.2.42\"}}}"
 ```

@@ -1,5 +1,7 @@
 # Wireguard
 
+<!-- TODO: needs updating with current LCM -->
+
 ## Basic setup
 
 1. Set the umask to something secure: ``umask 0077``
