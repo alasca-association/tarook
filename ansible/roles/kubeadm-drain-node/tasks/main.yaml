@@ -20,4 +20,6 @@
     - "{{ inventory_hostname }}"
     - "--force"
     - "--ignore-daemonsets"
-    - "--delete-local-data=true"
+    - "{{ k8s_version is version('1.20', operator='ge') |
+          ternary('--delete-emptydir-data=true',
+                  '--delete-local-data=true') }}"
