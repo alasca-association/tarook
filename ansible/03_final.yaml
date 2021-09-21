@@ -1,0 +1,111 @@
+- name: Initial node bootstrap
+  hosts: k8s_nodes
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  roles:
+  - detect_user
+  - role: ssh-known-hosts
+    tags: ssh-known-hosts
+  - role: prepare-node
+    tags: prepare-node
+  - role: update_system
+    tags: update_system
+
+- name: Detect login for gateways
+  hosts: gateways
+  gather_facts: false
+  roles:
+  - detect_user
+
+- name: Prepare the k8s nodes
+  hosts: k8s_nodes
+  gather_facts: true
+  vars_files:
+  - vars/disruption.yaml
+  roles:
+    - role: ch-role-users
+      tags: ch-role-users
+    - role: disable_selinux
+      tags: disable_selinux
+      when: ansible_distribution == "CentOS"
+    - role: centos-networking
+      tags: centos-networking
+      when: ansible_distribution == "CentOS"
+    - role: ntp
+      tags: ntp
+    - role: gpu-and-vgpu
+      tags: gpu-and-vgpu
+    - role: docker
+      tags: docker
+    - role: kubeadm
+      tags: kubeadm
+    - role: remove_snap
+      tags: remove_snap
+
+- name: Spawn the K8s control plane
+  hosts: masters
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  # With serial we can specify the number of hosts on which the Playbook is
+  # executed in parallel.
+  # https://docs.ansible.com/ansible/latest/user_guide/playbooks_delegation.html
+  # FIXME: Do we really want to copy our OpenStack user credentials like this?
+  serial:
+    - 1
+    - "100%"
+  roles:
+    - role: k8s-master
+      tags: k8s-master
+
+- name: Spawn the K8s worker nodes
+  hosts: workers
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  roles:
+    - role: k8s-worker
+      tags: k8s-worker
+      gather_facts: false
+
+- name: Spawn the OpenStack k8s Control Plane
+  hosts: masters
+  become: yes
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  run_once: yes
+  roles:
+    - role: connect-k8s-to-openstack
+      tags: openstack
+    - role: ch-k8s-lbaas-controller
+      tags:
+      - ch-k8s-lbaas
+      - ch-k8s-lbaas-controller
+
+- name: Configure LBaaS on the gateways
+  hosts: gateways
+  become: yes
+  gather_facts: true
+  roles:
+  - role: ch-k8s-lbaas-agent
+    tags:
+    - ch-k8s-lbaas
+    - ch-k8s-lbaas-agent
+
+- name: Configure k8s resources
+  hosts: masters
+  become: yes
+  run_once: yes
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  roles:
+  - role: k8s-rook
+    tags: rook
+    when: rook
+  - role: k8s-monitoring
+    tags: k8s-monitoring
+  - role: device-plugin
+    tags: device-plugin

@@ -1,0 +1,33 @@
+---
+- name: Deploy LBaaS controller
+  when: ch_k8s_lbaas
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+  block:
+  - name: Create LBaaS controller PodSecurityPolicy objects
+    k8s:
+      definition: "{{ lookup('template', 'controller-psp.yaml') }}"
+    when: k8s_use_podsecuritypolicies
+
+  - name: Configure LBaaS controller
+    k8s:
+      definition:
+        apiVersion: v1
+        kind: Secret
+        type: Opaque
+        data:
+          controller-config.toml: "{{ lookup('template', 'controller-config.toml') | b64encode }}"
+        metadata:
+          name: ch-k8s-lbaas-controller-config
+          namespace: kube-system
+    notify:
+    - restart ch-k8s-lbaas-controller
+
+  - name: Deploy LBaaS controller
+    k8s:
+      definition: "{{ lookup('template', item) }}"
+    with_items:
+    - controller-rbac.yaml
+    - controller.yaml

@@ -1,0 +1,35 @@
+- name: Install nftables package
+  become: yes
+  apt:
+    update_cache: yes
+    state: present
+    name:
+      - nftables
+
+- name: Remove iptables package
+  become: yes
+  apt:
+    state: absent
+    name:
+      - iptables
+
+- name: Retrieve private subnet
+  set_fact:
+    priv_ip_cidr: "{{ ip | ipaddr('network/prefix') }}"
+  vars:
+    ip: "{{ ansible_default_ipv4.address }}/{{ ansible_default_ipv4.netmask }}"
+
+- name: Configure nftables firewall
+  become: yes
+  template:
+    src: "{{ role_path }}/templates/nftables.conf.j2"
+    dest: /etc/nftables.conf
+
+- name: Start&enable nftables systemd service
+  become: yes
+  systemd:
+    name: nftables
+    state: restarted
+    enabled: yes
+    masked: false
+

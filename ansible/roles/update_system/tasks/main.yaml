@@ -1,0 +1,67 @@
+- name: Check if the node has kubernetes installed
+  stat:
+    path: "/etc/kubernetes"
+  register: kubernetes_dir
+
+
+- name: Gather facts
+  setup:
+
+# https://ansible-tips-and-tricks.readthedocs.io/en/latest/os-dependent-tasks/installing_packages/#installing-system-updates
+- name: Upgrade the whole system (dnf) # noqa 403
+  become: yes
+  dnf:
+    name: '*'
+    state: latest
+  # see the apt task for details
+  async: 1800
+  poll: 5
+  when:
+  - ansible_pkg_mgr == 'dnf'
+  # gateways are internet-facing and highly-available
+  - "_allow_disruption or not kubernetes_dir.stat.exists"
+  register: upgrade_dnf
+
+- name: Upgrade the whole system (yum) # noqa 403
+  yum:
+    name: '*'
+    state: latest
+    update_cache: yes
+  # see the apt task for details
+  async: 1800
+  poll: 5
+  when:
+  - ansible_pkg_mgr == 'yum'
+  # gateways are internet-facing and highly-available
+  - "_allow_disruption or not kubernetes_dir.stat.exists"
+  register: upgrade_yum
+
+- name: Upgrade the whole system (apt) # noqa 403
+  become: yes
+  apt:
+    update_cache: yes
+    upgrade: dist
+  # We’ve been seeing timeouts during this operation. By nudging ssh using
+  # SIGWINCH, ansible is allowed to continue.
+  #
+  # I suspect that there is some timeout involved which kills off the SSH
+  # connection and SIGWINCH lets it revive or something. Either way, the
+  # internet™ suggests to give async a shot, so we do that:
+  #
+  # See-Also:
+  # - The comment which suggested using async:
+  #   https://github.com/ansible/ansible/issues/62807#issuecomment-537741591
+  # - More docs on async operations:
+  #   https://docs.ansible.com/ansible/latest/user_guide/playbooks_async.html
+  async: 1800
+  poll: 5
+  register: upgrade_apt
+  when:
+  - ansible_pkg_mgr == 'apt'
+  # gateways are internet-facing and highly-available
+  - "_allow_disruption or not kubernetes_dir.stat.exists"
+
+- name: Reboot the system
+  become: yes
+  reboot:
+  when: upgrade_dnf is changed or upgrade_yum is changed or upgrade_apt is changed

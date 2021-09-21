@@ -1,0 +1,30 @@
+---
+- name: restart thanos-store-0 pod
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    namespace: monitoring
+    name: thanos-store-0
+    kind: Pod
+    state: absent
+
+- name: restart prometheus-k8s-0 pod
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    namespace: monitoring
+    name: prometheus-k8s-0
+    kind: Pod
+    state: absent
+
+- name: restart prometheus-k8s-1 pod
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    namespace: monitoring
+    name: prometheus-k8s-1
+    kind: Pod
+    state: absent

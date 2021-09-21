@@ -1,0 +1,6 @@
+site_name: Managed K8s
+use_directory_urls: false
+docs_dir: admin/
+site_dir: sites/admin
+nav:
+  - Home: index.md

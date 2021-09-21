@@ -1,0 +1,31 @@
+- name: Install prometheus-haproxy-exporter
+  become: yes
+  apt:
+    update_cache: yes
+    state: present
+    name:
+      - prometheus-haproxy-exporter
+
+- name: Configure prometheus-haproxy-exporter
+  become: yes
+  vars:
+    haproxy_admin_sock: /tmp/haproxy_admin.sock
+  copy:
+    content: |
+      ARGS=--haproxy.scrape-uri=unix:{{ haproxy_admin_sock }}
+    dest: "/etc/default/prometheus-haproxy-exporter"
+
+- name: Add user prometheus to group haproxy to access admin sock
+  become: yes
+  user:
+    append: yes
+    name: prometheus
+    groups:
+      - haproxy
+
+- name: Enable & restart prometheus-haproxy-exporter
+  become: yes
+  systemd:
+    name: prometheus-haproxy-exporter
+    enabled: yes
+    state: restarted

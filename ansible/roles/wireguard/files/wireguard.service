@@ -1,0 +1,10 @@
+[Unit]
+Description=Wireguard VPN
+After=network.target
+
+# Could potentially be replaced by systemd-networkd
+[Service]
+ExecStart=/usr/bin/wg-quick up /etc/wireguard/wg0.conf
+
+[Install]
+WantedBy=multi-user.target

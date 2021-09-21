@@ -1,0 +1,23 @@
+ansible_python_interpreter: /usr/bin/python3
+etc_dir: "{{ (ansible_inventory_sources[0] | dirname) }}/../.etc"
+ssh_known_hosts_file: "{{ etc_dir }}/ssh_known_hosts"
+ansible_ssh_extra_args: "-o UserKnownHostsFile={{ ssh_known_hosts_file }}"
+
+# stage 02 only, but needed for multiple roles
+vpn_port: 7777
+
+# These variables are needed by stage 02 and stage 03
+haproxy_frontend_port: 8888
+haproxy_health_url: 127.0.0.1:6669
+haproxy_backend_port: 6443
+haproxy_stats_port: 48981
+
+ch_k8s_lbaas_agent_port: 15203
+
+rook: yes
+
+
+pki_cert_files: ["ca.crt", "ca.key", "sa.key", "sa.pub", "front-proxy-ca.crt", "front-proxy-ca.key", "ca.crt", "ca.key"]
+etcd_files: ["ca.crt", "ca.key"]
+
+network_interface: "{{ ansible_default_ipv4.interface }}"

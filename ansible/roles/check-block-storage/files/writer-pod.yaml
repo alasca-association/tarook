@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: writer-test
+  name: writer-test
+  namespace: default
+spec:
+  containers:
+  - image: debian:stable
+    imagePullPolicy: IfNotPresent
+    name: debian
+    command: ["bash", "-c", "set -euo pipefail; cd /mnt; dd if=/dev/urandom of=noise bs=4k count=1k; sha256sum noise > SHA256SUMS"]
+    volumeMounts:
+      - mountPath: /mnt
+        name: block-storage-test
+  volumes:
+  - name: block-storage-test
+    persistentVolumeClaim:
+      claimName: block-storage-test
+      readOnly: false
+  nodeSelector:
+    name: worker1
+  restartPolicy: Never

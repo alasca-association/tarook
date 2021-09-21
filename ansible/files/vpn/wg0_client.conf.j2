@@ -1,0 +1,9 @@
+[Interface]
+PrivateKey = {{ item['priv_key'] }}
+Address = {{ item['ip'] }}/24
+DNS = 8.8.8.8
+
+[Peer]
+PublicKey = {{ wg_public_key_server['stdout'] }}
+Endpoint = {{ public_vip }}:{{ vpn_port }}
+AllowedIPs = 10.47.0.0/24, {{ hostvars[groups['networks'][0]]['subnet_cidr'] }}

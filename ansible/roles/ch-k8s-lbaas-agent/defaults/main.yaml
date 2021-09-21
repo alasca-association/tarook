@@ -1,0 +1,11 @@
+---
+ch_k8s_lbaas_agent_user: ch-k8s-lbaas-agent
+ch_k8s_lbaas_agent_binary_url: "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download/v{{ ch_k8s_lbaas_version }}/ch-k8s-lbaas-agent"
+
+
+ch_k8s_lbaas_agent_binary_checksums:
+  "0.1.0": "sha256:395da1f398c02941876597e8f0cd60128d682f01ed0e343063850392fee5f762"
+  "0.1.1": "sha256:a1706d4caa969cb74185567e38a2d83ca54fd5349edf9c3ca61f10fbf82652af"
+  "0.2.0": "sha256:c61829076571d7f3b65f810e97337d3226eda749def85aa830343f9d148c529f"
+
+ch_k8s_lbaas_agent_binary_checksum: "{{ ch_k8s_lbaas_agent_binary_checksums[ch_k8s_lbaas_version] | default('invalid checksum') }}"

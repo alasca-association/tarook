@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ch-k8s-lbaas-controller
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ch-k8s-lbaas-controller
+  template:
+    metadata:
+      labels:
+        app: ch-k8s-lbaas-controller
+    spec:
+      containers:
+      - name: controller
+        image: {{ ch_k8s_lbaas_controller_image | to_json }}
+        args: ["--config", "/config/controller-config.toml"]
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          readOnly: true
+        ports:
+        - containerPort: 15203
+          name: api
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 96Mi
+      serviceAccountName: ch-k8s-lbaas-controller
+      volumes:
+      - name: config
+        secret:
+          secretName: ch-k8s-lbaas-controller-config
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      nodeSelector:
+        node-role.kubernetes.io/master: ""

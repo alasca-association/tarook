@@ -1,0 +1,45 @@
+- name: Establish connectivity to the nodes
+  hosts: gateways
+  gather_facts: false
+  strategy: free
+  vars_files:
+  - vars/disruption.yaml
+  roles:
+  - detect_user
+  - role: ssh-known-hosts
+    tags: ssh-known-hosts
+
+- name: Upgrade node system
+  hosts: gateways
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  serial: "{{ _allow_disruption | ternary(3, 1) }}"
+  roles:
+  - role: update_system
+    tags: update_system
+    vars:
+      on_gateways: true
+
+- name: Configure load balancer and VPN gateway
+  hosts: gateways
+  gather_facts: true
+  vars_files:
+  - vars/disruption.yaml
+  roles:
+  - role: nftables
+    tags: nftables
+  - role: ntp
+    tags: ntp
+  - role: keepalived
+    tags: keepalived
+  - role: haproxy
+    tags: haproxy
+  - role: wireguard
+    tags: wireguard
+  - role: ch-role-users
+    tags: ch-role-users
+  - role: prometheus-haproxy-exporter
+    tags: prometheus-haproxy-exporter
+  - role: prometheus-keepalived-exporter
+    tags: prometheus-keepalived-exporter

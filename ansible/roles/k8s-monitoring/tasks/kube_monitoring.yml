@@ -1,0 +1,73 @@
+- name: configure jsonnet
+  connection: local
+  template:
+    src: monitoring.jsonnet
+    dest: "{{ monitoring_jsonnet_dir_monitoring }}/config.jsonnet"
+
+- name: rebuild
+  connection: local
+  command:
+  args:
+    argv:
+    - "make"
+    - "-f"
+    - "../Makefile"
+    - "build"
+    chdir: "{{ monitoring_jsonnet_dir_monitoring }}"
+  changed_when: false
+
+- name: create thanos secret
+  k8s:
+    definition:
+      apiVersion: v1
+      type: Opaque
+      kind: Secret
+      metadata:
+        name: "{{ monitoring_thanos_config_secret_name }}"
+        namespace: "{{ monitoring_namespace }}"
+      data:
+        thanos.yaml: "{{ lookup('template', 'thanos-objectstorage.yml') | b64encode }}"
+  when: monitoring_use_thanos
+  tags:
+  - thanos
+  notify:
+  - restart thanos-store-0 pod
+  - restart prometheus-k8s-0 pod
+  - restart prometheus-k8s-1 pod
+
+- name: apply manifests
+  k8s:
+    state: present
+    definition: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/' + item) }}"
+  loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json' ) | from_json }}"
+
+- name: create rook service monitor
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'rook-service-monitor.yaml') }}"
+  when: rook
+
+- name: create haproxy service monitor (gateway)
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'haproxy-service-monitor.yaml') }}"
+  tags:
+    - haproxy-service-monitor
+
+- name: create keepalived service monitor (gateway)
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'keepalived-service-monitor.yaml') }}"
+  tags:
+    - keepalived-service-monitor
+
+- name: create LBaaS component service monitors (gateway)
+  k8s:
+    definition: "{{ lookup('template', item) }}"
+  with_items:
+  - lbaas-service-monitor.yaml
+  when: "ch_k8s_lbaas | default(False)"
+  tags:
+  - ch-k8s-lbaas
+  - ch-k8s-lbaas-agent
+  - ch-k8s-lbaas-controller

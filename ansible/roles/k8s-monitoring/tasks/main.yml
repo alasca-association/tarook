@@ -1,0 +1,41 @@
+- name: Create namespace
+  # this would also be done by kube_monitoring, but we need to do it here since
+  # it is shared by both
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ monitoring_namespace }}"
+  tags:
+  - monitoring
+  - thanos
+
+- name: Configure default PSP
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    definition: "{{ lookup('template', 'default-psp.yaml') }}"
+    state: "{{ k8s_use_podsecuritypolicies | default(False) | ternary('present', 'absent') }}"
+  tags:
+  - monitoring
+  - thanos
+
+- include: kube_monitoring.yml
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  tags:
+  - monitoring
+
+- include: kube_thanos.yml
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  when: monitoring_use_thanos
+  tags:
+  - thanos

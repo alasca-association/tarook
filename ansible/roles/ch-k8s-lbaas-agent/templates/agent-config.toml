@@ -1,0 +1,15 @@
+shared-secret={{ ch_k8s_lbaas_shared_secret | to_json }}
+bind-address="0.0.0.0"
+bind-port={{ ch_k8s_lbaas_agent_port | to_json }}
+
+[keepalived]
+interface={{ network_interface | to_json }}
+priority={{ vrrp_priority }}
+virtual-router-id-base=10
+
+[keepalived.service]
+config-file="/var/lib/ch-k8s-lbaas-agent/keepalived/lbaas.conf"
+check-delay=2
+
+[nftables.service]
+config-file="/var/lib/ch-k8s-lbaas-agent/nftables/lbaas.conf"

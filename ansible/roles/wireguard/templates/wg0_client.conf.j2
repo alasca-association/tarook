@@ -1,0 +1,8 @@
+[Interface]
+PrivateKey = REPLACEME
+Address = {{ item['ip'] }}
+
+[Peer]
+PublicKey = {{ lookup('file', wg_local_pub_path) }}
+Endpoint = {{ networking_floating_ip }}:{{ vpn_port }}
+AllowedIPs = {{ wg_ip_cidr }}, {{ subnet_cidr }}

@@ -1,0 +1,4 @@
+- name: Uncordon the worker node
+  become: no
+  delegate_to: master-az1 # TODO: ugly because it assumes a certain scheme (jinja2)
+  command: "kubectl uncordon {{ inventory_hostname }}"

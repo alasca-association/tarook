@@ -1,0 +1,16 @@
+apiVersion: ceph.rook.io/v1
+kind: CephBlockPool
+metadata:
+  name: "{{ item.name }}"
+  namespace: "{{ rook_namespace }}"
+spec:
+  failureDomain: {{ item.failure_domain | default('host') }}
+{% if item.erasure_coded | default(False) %}
+  erasureCoded:
+    dataChunks: {{ item.erasure_coded.data_chunks | default(2) }}
+    codingChunks: {{ item.erasure_coded.coding_chunks | default(1) }}
+{% else %}
+  replicated:
+    size: {{ item.replicated | default(1) }}
+{% endif %}
+  deviceClass: hdd

@@ -1,0 +1,43 @@
+- name: Add in config the modules to load at boot time
+  become: yes
+  copy:
+    dest: /etc/modules-load.d/custom-network-conf.conf
+    content: |
+      ip_tables
+      ip_vs_sh
+      ip_vs_wrr
+      ip_vs_rr
+      ip_vs
+      ip6_tables
+      ip6table_filter
+      overlay
+      br_netfilter
+
+- name: Reload kernel modules
+  become: yes
+  systemd:
+    enabled: yes
+    state: restarted
+    name: systemd-modules-load
+
+- name: Manage sysctl entries
+  become: yes
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-kubernetes-cri.conf
+  loop:
+    - key: net.bridge.bridge-nf-call-iptables
+      value: 1
+    - key: net.ipv4.ip_forward
+      value: 1
+    - key: net.bridge.bridge-nf-call-ip6tables
+      value: 1
+
+# To get access to iptables-save
+# Using yum module as this role is only targeting CentOS hosts
+- name: Install the legacy network scripts
+  become: yes
+  yum:
+    name: network-scripts

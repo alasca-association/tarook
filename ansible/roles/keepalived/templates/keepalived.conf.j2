@@ -1,0 +1,28 @@
+vrrp_script chk_haproxy {
+    script "/usr/local/bin/chk_haproxy.sh"
+    interval 2
+    fall 2
+    rise 2
+}
+
+vrrp_instance VIP_1 {
+    state MASTER
+    interface {{ network_interface }}
+    # All VRRP instances belonging to the same cluster must share this id
+    virtual_router_id 47 
+    priority {{ vrrp_priority }}
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass {{ vrrp_password }}
+    }
+    virtual_ipaddress {
+        {{ private_vip }}
+    }
+
+    track_script {
+        chk_haproxy
+    }
+}
+
+include /var/lib/ch-k8s-lbaas-agent/keepalived/*.conf

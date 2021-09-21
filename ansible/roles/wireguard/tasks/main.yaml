@@ -1,0 +1,138 @@
+- name: Pin packages from 'unstable' repo with low priority
+  become: yes
+  copy:
+    dest: /etc/apt/preferences.d/limit-unstable
+    content: |
+      Package: *
+      Pin: release a=unstable
+      Pin-Priority: 90
+
+- name: Add 'unstable' repo to sources.list.d
+  become: yes
+  lineinfile:
+    path: /etc/apt/sources.list.d/unstable.list
+    create: yes
+    state: present
+    line: deb http://deb.debian.org/debian/ unstable main
+
+# This is an extra task because I'm not sure about the order packages are installed.
+# The header files must be available when DKMS wants to build the module
+- name: Install linux-headers package so wg dkms module is built
+  become: yes
+  apt:
+    state: present
+    update_cache: yes
+    name:
+      - linux-headers-cloud-amd64
+
+- name: Install wireguard on the wireguard VPN server
+  become: yes
+  apt:
+    state: present
+    name:
+      - wireguard
+
+- name: Modprobe the wireguard module to ensure its existence
+  become: yes
+  modprobe:
+    name: wireguard
+    state: present
+
+- name: Ensure private key consistency
+  become: yes
+  any_errors_fatal: true
+  block:
+    - name: Check for existence of private key in old location (LEGACY)
+      stat:
+        path: /etc/wireguard/wg_gw.key
+      register: wg_gw
+    - name: Fail if the key exists (LEGACY)
+      fail:
+        msg: |
+          This task fails because we changed the handling of the wireguard key of the gateway.
+          The key is now stored locally in the inventory and not on the gateways.
+          To avoid voodoo synchronization, manual intervention is required.
+          1.) Copy the private wireguard key file of the gateway (/etc/wireguard/wg_gw.key) to your local inventory {{ etc_dir }}/wg_gw_priv.key.
+          2.) Remove the key file (/etc/wireguard/wg_gw.key) from all gateways.
+          3.) Re-run the playbook
+          This task is only relevant for existing clusters.
+      when: "wg_gw.stat.exists"
+
+- name: Create shared private wireguard key of the gateways
+  become: no
+  delegate_to: localhost
+  run_once: yes
+  shell: "umask 0077 && wg genkey > {{ wg_local_priv_path | quote }}"
+  args:
+    creates: "{{ wg_local_priv_path }}"
+
+- name: Load shared public key
+  become: no
+  delegate_to: localhost
+  run_once: yes
+  shell: "wg pubkey > {{ wg_local_pub_path | quote }} < {{ wg_local_priv_path | quote }}"
+  changed_when: false
+
+- name: Create /etc/wireguard/wg0.conf on gateway side
+  become: yes
+  template:
+    src: wg0_server.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    mode: '0640'
+
+- name: Create a wg0.conf template for each peer
+  become: no
+  delegate_to: localhost
+  run_once: yes
+  template:
+    src: wg0_client.conf.j2
+    dest: "{{ wg_client_path }}"
+    mode: '0640'
+  vars:
+    wg_client_path: "{{ etc_dir }}/wg_{{ item['ident'] }}.conf"
+    vip_port: vip-port
+  loop: "{{ wg_peers }}"
+
+- name: Notify user about auto-generated wg.conf
+  delegate_to: localhost
+  become: no
+  run_once: yes
+  debug:
+    msg: |
+      The wg-* configurations were written to {{ etc_dir }}.
+      You need to insert your private wireguard key and bring the wireguard
+      interface up before continuing.
+
+- name: Create /etc/sysctl.d/wireguard.conf on the wireguard VPN server
+  become: yes
+  copy:
+    dest: /etc/sysctl.d/wireguard.conf
+    content: |
+      net.ipv4.ip_forward=1
+
+- name: Load /etc/sysctl.d/wireguard.conf on the wireguard VPN server
+  become: yes
+  command: sysctl -p /etc/sysctl.d/wireguard.conf
+  changed_when: false
+
+- name: Copy /etc/systemd/system/wireguard.service
+  become: yes
+  copy:
+    src: "{{ role_path }}/files/wireguard.service"
+    dest: /etc/systemd/system/wireguard.service
+
+# TODO: this systemd unit is partially broken but at least it's reboot-safe
+- name: Start and enable wireguard.service
+  become: yes
+  systemd:
+    daemon_reload: yes
+    enabled: yes
+    name: wireguard
+    state: restarted
+
+# TODO: fix systemd and use it consequently
+- name: Restart the wireguard service for good
+  become: yes
+  shell: wg-quick down wg0; wg-quick up wg0
+  changed_when: false
+

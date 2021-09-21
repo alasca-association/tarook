@@ -1,0 +1,205 @@
+- name: Load admin credentials into interactive shells
+  become: yes
+  copy:
+    src: kubernetes-admin.sh
+    dest: /etc/profile.d/
+    owner: root
+    group: root
+    mode: u=rw,go=r
+
+- name: Check reachability of local kube-apiserver
+  wait_for:
+    port: 6443
+    timeout: 5
+  ignore_errors: yes
+  register: local_kube_apiserver_status
+
+- name: Register fact for private_vip
+  set_fact:
+    private_vip: "{{ networking_fixed_ip }}"
+
+- name: Check reachability of load-balanced kube-apiserver
+  when: local_kube_apiserver_status is failed
+  vars:
+    gateway: "{{ groups['gateways'] | first }}"
+    host: "{{ private_vip }}:{{ hostvars[gateway]['haproxy_frontend_port'] }}"
+  uri:
+    url: "https://{{ host }}"
+    status_code: 403
+    validate_certs: no # self-signed certificate
+    timeout: 3
+  register: lb_kube_apiserver_status
+  until: lb_kube_apiserver_status.status == 403
+  retries: 3
+  ignore_errors: yes
+
+- name: Spawn K8s cluster with 'kubeadm init'
+  when: "local_kube_apiserver_status is failed and lb_kube_apiserver_status is failed"
+  tags:
+    - spawn
+  become: yes
+  block:
+  # TODO: we should protect this with a password and store it in a more
+  # secure place
+  - name: Generate a fresh CA for the Kubernetes master
+    block:
+    - name: Ensure that /etc/kubernetes/pki exists
+      file:
+        path: /etc/kubernetes/pki
+        state: directory
+    - name: Generate OpenSSL private key for CA certificate
+      openssl_privatekey:
+        path: /etc/kubernetes/pki/ca.key
+    - name: Generate OpenSSL CA certificate signing request (CSR)
+      openssl_csr:
+        path: /etc/kubernetes/pki/ca.csr
+        privatekey_path: /etc/kubernetes/pki/ca.key
+        common_name: "{{ inventory_hostname }}-ca"
+        subject:
+          C: DE
+          ST: Saxony
+          L: Dresden
+          O: Cloud&Heat Technologies GmbH
+          CN: "{{ inventory_hostname }}-ca"
+        basic_constraints:
+          - CA:TRUE
+
+    - name: Generate OpenSSL CA certificate
+      openssl_certificate:
+        path: /etc/kubernetes/pki/ca.crt
+        privatekey_path: /etc/kubernetes/pki/ca.key
+        csr_path: /etc/kubernetes/pki/ca.csr
+        provider: selfsigned
+
+  - name: Check if gcr.io can be reached
+    command: kubeadm config images pull
+
+  - name: Create kubeadm-config.yaml
+    vars:
+      gateway: "{{ groups['gateways'] | first }}"
+    template:
+      src: kubeadm-config.yaml.j2
+      dest: /tmp/kubeadm-config.yaml
+
+  - name: Run kubeadm init
+    command:
+      argv:
+        - kubeadm
+        - init
+        - --config=/tmp/kubeadm-config.yaml
+
+    # To get the hash of the discovery CA:
+    # https://github.com/kubernetes/kubeadm/issues/659#issuecomment-396070894
+
+  - name: Configure bridge-nf-call-iptables
+    sysctl:
+      name: net.bridge.bridge-nf-call-iptables
+      value: 1
+      state: present
+
+  - name: Configure initial PodSecurityPolicy objects
+    become: yes
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s:
+      definition: "{{ lookup('file', item) }}"
+      state: "{{ k8s_use_podsecuritypolicies | ternary('present', 'absent') }}"
+    loop:
+    - psp.yaml
+
+  - name: Setup flannel overlay network
+    become: yes
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    k8s:
+      definition: "{{ lookup('file', 'kube-flannel.yaml') }}"
+      state: "present"
+
+  - name: Fetch certificates file and keys from the initial master to localhost
+    fetch:
+      src: "/etc/kubernetes/pki/{{ item }}"
+      dest: "{{ etc_dir }}/"
+      flat: yes
+    loop: "{{ pki_cert_files }}"
+    run_once: yes
+
+  - name: Fetch etcd certificates file and keys from the initial master to localhost
+    fetch:
+      src: "/etc/kubernetes/pki/etcd/{{ item }}"
+      dest: "{{ etc_dir }}/etcd/"
+      flat: yes
+    loop: "{{ etcd_files }}"
+    run_once: yes
+
+  - name: Copy kubeconfig to localhost
+    fetch:
+      src: /etc/kubernetes/admin.conf
+      dest: "{{ etc_dir }}/"
+      flat: yes
+
+- name: Test if this host can generate a token
+  stat:
+    path: /etc/kubernetes/admin.conf
+  register: kube_config
+
+- name: Generate a new join token
+  when: kube_config.stat.exists
+  block:
+  - name: Get an access token and the CA hash
+    become: yes
+    command: kubeadm token create --print-join-command
+    register: kubeadm_token_out
+
+  - name: Make sure 'etc_dir' exists
+    delegate_to: localhost
+    become: no
+    file:
+      path: "{{ etc_dir }}"
+      state: directory
+
+  - name: Save access token locally
+    delegate_to: localhost
+    become: no
+    copy:
+      content: " {{ kubeadm_token_out.stdout }}"
+      dest: "{{ etc_dir }}/kubeadm_token"
+
+- name: Join the K8s control plane
+  when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed"
+  become: yes
+  block:
+  - name: Copy certificate files and keys from the initial master
+    block:
+      - name: Copy certificates and keys from localhost to residual masters
+        copy:
+          src: "{{ etc_dir }}/{{ item }}"
+          dest: "/etc/kubernetes/pki/"
+        loop: "{{ pki_cert_files }}"
+
+      - name: Copy etcd certificates and keys from localhost to residual masters
+        copy:
+          src: "{{ etc_dir }}/etcd/{{ item }}"
+          dest: "/etc/kubernetes/pki/etcd/"
+        loop: "{{ etcd_files }}"
+
+  - name: Join the initial control as another master
+    vars:
+      kubeadm_out: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
+    command: "{{ kubeadm_out }} --control-plane"
+
+- name: Make the kube config readable by gods
+  become: yes
+  file:
+    state: file
+    path: /etc/kubernetes/admin.conf
+    owner: root
+    group: "{{ k8s_admin_credentials_group }}"
+    mode: u=rw,g=r,o-rwx
+
+- name: Ensure that the current user is allowed to read the kube config
+  become: yes
+  user:
+    append: yes
+    groups: "{{ k8s_admin_credentials_group }}"
+    name: "{{ ansible_user }}"
+  when: "ansible_user | default(False)"

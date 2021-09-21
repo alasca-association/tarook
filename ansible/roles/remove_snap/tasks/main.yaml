@@ -1,0 +1,9 @@
+# TODO: Only on Ubuntu ?
+- name: Remove the snap service
+  become: yes
+  apt:
+    state: absent
+    purge: yes
+    name:
+      - snapd
+  when: ansible_pkg_mgr == 'apt'

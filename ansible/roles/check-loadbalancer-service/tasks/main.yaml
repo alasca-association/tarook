@@ -1,0 +1,62 @@
+---
+- name: execute test
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name: create test namespace
+    k8s:
+      api_version: v1
+      name: "{{ check_loadbalancer_service_namespace }}"
+      kind: Namespace
+      state: present
+
+  - name: create service
+    k8s:
+      definition: "{{ lookup('template', 'service.yaml') }}"
+      state: present
+
+  - name: require service to have ingress IP address set
+    k8s_info:
+      api_version: v1
+      kind: Service
+      namespace: "{{ check_loadbalancer_service_namespace }}"
+      name: "echo-service"
+    register: service_state
+    until: "service_state.resources and (service_state.resources[0].status | default(False)) and (service_state.resources[0].status.loadBalancer | default(False)) and (service_state.resources[0].status.loadBalancer.ingress | default(False))"
+    delay: 5
+    retries: 60
+
+  - name: require service to be reachable from this machine and respond to HTTP
+    delegate_to: localhost
+    command:
+    args:
+      warn: false
+      argv:
+      - curl
+      - "-s"
+      - "-w"
+      - "\\n%{http_code}\\n"
+      - "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
+    register: curl_result
+    until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
+    delay: 1
+    retries: 60
+    changed_when: False
+
+  - name: clean up resources
+    k8s:
+      definition: "{{ lookup('template', 'service.yaml') }}"
+      state: absent
+    tags:
+    - test-cleanup
+
+  - name: delete test namespace
+    k8s:
+      api_version: v1
+      name: "{{ check_loadbalancer_service_namespace }}"
+      kind: Namespace
+      state: absent
+      wait: yes
+    tags:
+    - test-cleanup

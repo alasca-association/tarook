@@ -1,0 +1,28 @@
+---
+- name: restart CCM
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  command:
+  args:
+    argv:
+    - "kubectl"
+    - "-n"
+    - "kube-system"
+    - "rollout"
+    - "restart"
+    - "daemonset.apps/openstack-cloud-controller-manager"
+
+- name: restart octavia-ingress-controller
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  command:
+  args:
+    argv:
+    - "kubectl"
+    - "-n"
+    - "kube-system"
+    - "rollout"
+    - "restart"
+    - "statefulset.apps/octavia-ingress-controller"

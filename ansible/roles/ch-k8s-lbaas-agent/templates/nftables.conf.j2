@@ -1,0 +1,5 @@
+table inet filter {
+    chain input {
+        ip saddr {{ subnet_cidr }} tcp dport {{ ch_k8s_lbaas_agent_port }} accept;
+    }
+}

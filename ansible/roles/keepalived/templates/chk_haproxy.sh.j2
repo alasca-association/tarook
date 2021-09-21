@@ -1,0 +1,3 @@
+#!/bin/bash
+
+wget http://{{ haproxy_health_url }}/healthz -O - 2>&1 | grep -q '200 OK'

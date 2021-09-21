@@ -1,0 +1,51 @@
+#jinja2:lstrip_blocks: True
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: keepalived-service-monitor
+  namespace: monitoring
+  labels:
+    team: rook
+spec:
+  namespaceSelector:
+    matchNames:
+      - monitoring
+  selector:
+    matchLabels:
+      app: prometheus-keepalived
+  endpoints:
+    - interval: 5s
+      port: metrics
+      path: /metrics
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus-keepalived
+  namespace: monitoring
+  labels:
+    app: prometheus-keepalived
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 9600
+      targetPort: 9600
+
+---
+
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: prometheus-keepalived
+  namespace: monitoring
+subsets:
+  - addresses:
+{% for gw in groups["gateways"] %}
+    - ip: {{ hostvars[gw]["ansible_host"] }}
+{% endfor %}
+    ports:
+      - name: metrics
+        port: 9650

@@ -1,0 +1,12 @@
+[Interface]
+Address = {{ wg_ip_gw }}
+ListenPort = {{ vpn_port }}
+PrivateKey = {{ lookup('file', wg_local_priv_path) }}
+
+{% for peer in wg_peers %}
+# {{ peer["ident"] }}
+[Peer]
+PublicKey = {{ peer["pub_key"] }}
+AllowedIps = {{ peer["ip"] }}
+
+{% endfor %}

@@ -1,0 +1,43 @@
+---
+- name: Populate service facts
+  service_facts:
+
+- name: stop systemd time sync
+  become: yes
+  become_user: root
+  service:
+    name: systemd-timesyncd
+    enabled: no
+  when: ansible_facts.services['systemd-timesyncd'] is defined
+
+- name: stop systemd time sync
+  become: yes
+  become_user: root
+  service:
+    name: systemd-timesyncd
+    enabled: no
+  when: ansible_facts.services['systemd-timesyncd'] is defined
+
+- name: install chrony
+  become: yes
+  become_user: root
+  package:
+    name:
+    - chrony
+    state: present
+
+- name: ensure chrony is running
+  become: yes
+  become_user: root
+  service:
+    name: chronyd
+    state: started
+    enabled: yes
+
+- name: disable systemd time sync
+  become: yes
+  become_user: root
+  service:
+    name: systemd-timesyncd
+    state: stopped
+  when: ansible_facts.services['systemd-timesyncd'] is defined

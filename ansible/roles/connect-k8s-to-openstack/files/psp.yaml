@@ -1,0 +1,183 @@
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: openstack-ccm-psp
+  namespace: kube-system
+spec:
+  runAsUser:
+    rule: MustRunAs
+    ranges:
+    - min: 1001
+      max: 1001
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: MayRunAs
+    ranges:
+    - min: 1001
+      max: 1001
+  runAsGroup:
+    rule: MayRunAs
+    ranges:
+    - min: 1001
+      max: 1001
+  volumes:
+  - hostPath
+  - secret
+  allowedHostPaths:
+  - pathPrefix: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
+    readOnly: false
+  - pathPrefix: /etc/kubernetes/pki
+    readOnly: true
+  - pathPrefix: /etc/ssl/certs
+    readOnly: true
+  hostPID: false
+  hostNetwork: true
+  hostIPC: false
+  privileged: false
+  allowPrivilegeEscalation: false
+  fsGroup:
+    rule: RunAsAny
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: openstack-csi-cinder-nodeplugin-psp
+  namespace: kube-system
+spec:
+  privileged: true
+  allowPrivilegeEscalation: true
+  allowedCapabilities:
+  - CAP_SYS_ADMIN
+  - SYS_ADMIN
+  runAsUser:
+    rule: RunAsAny
+  runAsGroup:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  fsGroup:
+    rule: RunAsAny
+  volumes:
+  - hostPath
+  - secret
+  allowedHostPaths:
+  - pathPrefix: /var/lib/kubelet/plugins/cinder.csi.openstack.org
+    readOnly: false
+  - pathPrefix: /var/lib/kubelet/plugins_registry/
+    readOnly: false
+  - pathPrefix: /var/lib/kubelet
+    readOnly: false
+  - pathPrefix: /var/lib/cloud/data
+    readOnly: true
+  - pathPrefix: /dev
+    readOnly: false
+  hostPID: false
+  hostNetwork: true
+  hostIPC: false
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: openstack-csi-cinder-controllerplugin-psp
+  namespace: kube-system
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  runAsUser:
+    rule: RunAsAny
+  runAsGroup:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  fsGroup:
+    rule: RunAsAny
+  volumes:
+  - secret
+  - emptyDir
+  hostPID: false
+  hostNetwork: false
+  hostIPC: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: openstack-ccm-psp-user
+  namespace: kube-system
+rules:
+- apiGroups: ["policy"]
+  verbs: ["use"]
+  resources: ["podsecuritypolicies"]
+  resourceNames:
+  - openstack-ccm-psp
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: openstack-csi-cinder-nodeplugin-psp-user
+  namespace: kube-system
+rules:
+- apiGroups: ["policy"]
+  verbs: ["use"]
+  resources: ["podsecuritypolicies"]
+  resourceNames:
+  - openstack-csi-cinder-nodeplugin-psp
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: openstack-csi-cinder-controllerplugin-psp-user
+  namespace: kube-system
+rules:
+- apiGroups: ["policy"]
+  verbs: ["use"]
+  resources: ["podsecuritypolicies"]
+  resourceNames:
+  - openstack-csi-cinder-controllerplugin-psp
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: openstack-ccm-psp-users
+  namespace: kube-system
+subjects:
+- kind: ServiceAccount
+  name: cloud-controller-manager
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: openstack-ccm-psp-user
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: openstack-csi-cinder-nodeplugin-psp-users
+  namespace: kube-system
+subjects:
+- kind: ServiceAccount
+  name: csi-cinder-node-sa
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: openstack-csi-cinder-nodeplugin-psp-user
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: openstack-csi-cinder-controllerplugin-psp-users
+  namespace: kube-system
+subjects:
+- kind: ServiceAccount
+  name: csi-cinder-controller-sa
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: openstack-csi-cinder-controllerplugin-psp-user

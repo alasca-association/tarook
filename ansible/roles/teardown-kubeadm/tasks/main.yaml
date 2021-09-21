@@ -1,0 +1,37 @@
+# https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#tear-down
+
+# We might want / need to drain the node before we can undo the changes of kubeadm
+
+# kubeadm reset asks for confirmation, therefore pass --force
+- name: Run kubeadm reset
+  command: kubeadm reset --force
+
+- name: Flush all iptables chains (delete all rules one by one)
+  command: iptables -F
+
+- name: Flush the nat table
+  command: iptables -t nat -F
+
+- name: Flush the mangle table
+  command: iptables -t mangle -F
+
+- name: Delete every non-builtin chain
+  command: iptables -X
+
+- name: Remove /var/lib/etcd
+  file:
+    path: /var/lib/etcd
+    state: absent
+
+- name: Unhold k8s tools
+  become: yes
+  command: apt-mark unhold kubeadm kubectl kubelet
+
+- name: Remove k8s tools
+  become: yes
+  apt:
+    state: absent
+    name:
+      - kubeadm
+      - kubectl
+      - kubelet

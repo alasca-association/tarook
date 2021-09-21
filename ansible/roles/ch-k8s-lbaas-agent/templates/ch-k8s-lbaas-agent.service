@@ -1,0 +1,39 @@
+[Unit]
+Description=CLOUD&HEAT Kubernetes Loadbalancer-as-a-Service Agent
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/ch-k8s-lbaas-agent --config /etc/ch-k8s-lbaas-agent/config.toml
+User={{ ch_k8s_lbaas_agent_user }}
+Group={{ ch_k8s_lbaas_agent_user }}
+
+ConfigurationDirectory=ch-k8s-lbaas-agent
+ConfigurationDirectoryMode=0750
+StateDirectory=ch-k8s-lbaas-agent/nftables ch-k8s-lbaas-agent/keepalived
+StateDirectoryMode=0755
+StandardOutput=journal
+StandardError=journal
+
+Restart=always
+RestartSec=5s
+
+# We need to escalate via sudo...
+NoNewPrivileges=false
+PrivateTmp=yes
+ProtectSystem=full
+ProtectControlGroups=true
+ProtectHome=tmpfs
+
+# The following options can not be activated because we need NoNewPrivileges=false
+# PrivateDevices=yes
+# ProtectKernelTunables=true
+# ProtectKernelModules=true
+# RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+# ProtectKernelLogs=true
+# MemoryDenyWriteExecute=true
+# RestrictRealtime=true
+# RestrictSUIDSGID=true
+

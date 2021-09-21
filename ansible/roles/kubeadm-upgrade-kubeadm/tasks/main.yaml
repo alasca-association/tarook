@@ -1,0 +1,17 @@
+- name: Remove the hold of kubeadm
+  become: yes
+  command: apt-mark unhold kubeadm
+
+- name: Upgrade kubeadm
+  become: yes
+  apt:
+    name:
+      - "kubeadm={{ next_k8s_version }}-00"
+
+- name: Re-hold kubeadm
+  become: yes
+  command: apt-mark hold kubeadm
+  
+- name: Check kubeadm's version
+  command: kubeadm version
+

@@ -1,0 +1,7 @@
+- name: Add SSH keys to .authorized_keys
+  lineinfile:
+    state: present
+    path: /home/ubuntu/.ssh/authorized_keys
+    line: "{{ item }}"
+    create: yes
+  loop: "{{ ssh_authorized_keys }}"

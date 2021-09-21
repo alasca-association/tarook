@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: reader-test
+  name: reader-test
+  namespace: default
+spec:
+  containers:
+  - image: debian:stable
+    imagePullPolicy: IfNotPresent
+    name: debian
+    command: ["bash", "-c", "set -euo pipefail; cd /mnt; test -e noise; sha256sum -c SHA256SUMS"]
+    volumeMounts:
+      - mountPath: /mnt
+        name: block-storage-test
+  volumes:
+  - name: block-storage-test
+    persistentVolumeClaim:
+      claimName: block-storage-test
+      readOnly: false
+  nodeSelector:
+    name: worker0
+  restartPolicy: Never

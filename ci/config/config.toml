@@ -1,0 +1,85 @@
+[terraform]
+subnet_cidr = "172.30.154.0/24"
+haproxy_ports = [30060]
+workers = 6
+worker_images = ["CentOS 8", "CentOS 8"]
+
+# dd2a only
+#azs = ["nova"]
+#public_network = "floating-IPv4"
+
+[ansible.02_trampoline.group_vars.gateways]
+lb_ports = [30060]
+wg_ip_cidr = "172.30.153.0/24"
+wg_ip_gw = "172.30.153.1/24"
+
+[[ansible.02_trampoline.group_vars.gateways.wg_peers]]
+pub_key = "/0VYI+LK2VYUX3E7QDUCfp7p+0vU2tocsqGFjsKoJVs="
+ip = "172.30.153.14/32"
+ident = "gitlab-ci-runner"
+
+[ansible.02_trampoline.host_vars.managed-k8s-gw-az1]
+vrrp_priority = 150
+
+[ansible.02_trampoline.host_vars.managed-k8s-gw-az2]
+vrrp_priority = 100
+
+[ansible.02_trampoline.host_vars.managed-k8s-gw-az3]
+vrrp_priority = 50
+
+[ansible.03_final.host_vars.managed-k8s-gw-az1]
+vrrp_priority = 150
+
+[ansible.03_final.host_vars.managed-k8s-gw-az2]
+vrrp_priority = 100
+
+[ansible.03_final.host_vars.managed-k8s-gw-az3]
+vrrp_priority = 50
+
+[ansible.03_final.group_vars.all]
+ch_k8s_lbaas = true
+ch_k8s_lbaas_version = "0.2.0"
+ch_k8s_lbaas_shared_secret = "IYeOlEFO1h3uc9x1bdw9thNNgmn1gm8dmzos3f04PLmFjt3d"
+lb_ports = [30080]
+k8s_version = "1.17.3"
+rook = true
+rook_nosds = 3
+rook_osd_volume_size = "90Gi"
+rook_toolbox = true
+rook_fs = true
+k8s_use_podsecuritypolicies = true
+monitoring_thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
+monitoring_placement_taint = "{{ rook_placement_taint }}"
+monitoring_placement_label = "{{ rook_placement_label }}"
+
+[ansible.03_final.group_vars.all.rook_placement_taint]
+key = "{{ managed_k8s_control_plane_key }}"
+value = "meta"
+
+[ansible.03_final.group_vars.all.rook_placement_label]
+key = "{{ managed_k8s_control_plane_key }}"
+value = "meta"
+
+[[ansible.03_final.group_vars.all.test_worker_nodes]]
+worker = "managed-k8s-worker-1"
+name = "worker0"
+
+[[ansible.03_final.group_vars.all.test_worker_nodes]]
+worker = "managed-k8s-worker-3"
+name = "worker1"
+
+[[ansible.03_final.group_vars.all.test_worker_nodes]]
+worker = "managed-k8s-worker-5"
+name = "worker2"
+
+[ansible.03_final.host_vars.managed-k8s-worker-0]
+k8s_node_labels = [ "{{ managed_k8s_control_plane_key }}=meta" ]
+k8s_node_taints = [ "{{ managed_k8s_control_plane_key }}=meta:NoSchedule",]
+
+[ansible.03_final.host_vars.managed-k8s-worker-2]
+k8s_node_labels = [ "{{ managed_k8s_control_plane_key }}=meta" ]
+k8s_node_taints = [ "{{ managed_k8s_control_plane_key }}=meta:NoSchedule",]
+
+[ansible.03_final.host_vars.managed-k8s-worker-4]
+k8s_node_labels = [ "{{ managed_k8s_control_plane_key }}=meta" ]
+k8s_node_taints = [ "{{ managed_k8s_control_plane_key }}=meta:NoSchedule",]

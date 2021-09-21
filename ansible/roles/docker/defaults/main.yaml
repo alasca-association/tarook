@@ -1,0 +1,5 @@
+---
+nvidia_runtime:
+  name: nvidia
+  path: nvidia-container-runtime
+docker_insecure_registries: []

@@ -1,0 +1,72 @@
+---
+- name: Run the test
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+  block:
+  - name: discover IP address of prometheus service
+    k8s_info:
+      namespace: monitoring
+      name: prometheus-k8s
+      api_version: v1
+      kind: Service
+    register: prometheus_service
+    failed_when: |
+      not ((prometheus_service.resources | default(False))
+        and (prometheus_service.resources[0].spec | default(False))
+        and (prometheus_service.resources[0].spec.clusterIP | default(False))
+      )
+
+  - name: set cluster IP fact
+    set_fact:
+      prometheus_cluster_ip: "{{ prometheus_service.resources[0].spec.clusterIP }}"
+
+  - name: information about config
+    debug:
+      msg: "This test is using the prometheus at {{ prometheus_cluster_ip }}:9090"
+
+  - name: check node exporter scrape endpoint status
+    uri:
+      url: 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="node-exporter",instance={{ item | to_json }}}'
+      return_content: true
+    register: metrics
+    loop: "{{ groups['k8s_nodes'] }}"
+    failed_when: |
+      (metrics.json.status != 'success' or
+       not (metrics.json.data.result | default(False)) or
+       metrics.json.data.result[0].value[1] != '1')
+
+  - name: check ceph mgr scrape endpoint status
+    uri:
+      url: 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="rook-ceph-mgr"}'
+      return_content: true
+    register: metrics
+    when: "rook | default(False)"
+    failed_when: |
+      (metrics.json.status != 'success' or
+       not (metrics.json.data.result | default(False)) or
+       metrics.json.data.result[0].value[1] != '1')
+
+  - name: check LBaaS controller scrape endpoint status
+    uri:
+      url: 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="ch-k8s-lbaas-controller"}'
+      return_content: true
+    register: metrics
+    when: "ch_k8s_lbaas | default(False)"
+    failed_when: |
+      (metrics.json.status != 'success' or
+       not (metrics.json.data.result | default(False)) or
+       metrics.json.data.result[0].value[1] != '1')
+
+  - name: check LBaaS agent scrape endpoint status
+    uri:
+      url: 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="ch-k8s-lbaas-agent",instance="{{ hostvars[item]["local_ipv4_address"] }}:{{ ch_k8s_lbaas_agent_port }}"}'
+      return_content: true
+    register: metrics
+    when: "ch_k8s_lbaas | default(False)"
+    loop: "{{ groups['gateways'] }}"
+    failed_when: |
+      (metrics.json.status != 'success' or
+       not (metrics.json.data.result | default(False)) or
+       metrics.json.data.result[0].value[1] != '1')

@@ -1,0 +1,10 @@
+[Unit]
+Description=Prometheus exporter for keepalived
+Documentation=https://github.com/gen2brain/keepalived_exporter
+
+[Service]
+Restart=always
+ExecStart=/usr/local/bin/keepalived_exporter
+
+[Install]
+WantedBy=multi-user.target

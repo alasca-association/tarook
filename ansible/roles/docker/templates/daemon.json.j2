@@ -1,0 +1,21 @@
+{
+{% if has_gpu | default(False) %}
+    "default-runtime": {{ nvidia_runtime.name | to_json }},
+    "runtimes": {
+        {{ nvidia_runtime.name | to_json }}: {
+            "path": {{ nvidia_runtime.path | to_json }},
+            "runtimeArgs": {{ nvidia_runtime.runtimeArgs | default([], true) | to_json }}
+        }
+    },
+{% endif %}
+{% if docker_insecure_registries %}
+    "insecure-registries": {{ docker_insecure_registries | to_json }},
+{% endif %}
+    "exec-opts": ["native.cgroupdriver=systemd"],
+    "log-driver": "json-file",
+    "log-opts": {
+        "max-size": "100m"
+    },
+    "storage-driver": "overlay2",
+    "mtu": 1450
+}

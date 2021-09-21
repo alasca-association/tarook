@@ -1,0 +1,14 @@
+---
+
+# This role ensures that the pre requisite for Ansible is installed: python3
+# As python3 is previsouly not installed on the system, gathering_facts is not run.
+# Therefore we cannot use the automtic detection of the system package manager.
+# Instead, we simply try them all.
+- name: Ensure python is installed
+  # The so-called Wood Hammer Method (haha)
+  raw: |
+    test -e /usr/bin/python3 || \
+    sudo apt install -y python3 || \
+    sudo dnf install -y python3 || \
+    sudo yum install -y python3
+  changed_when: false

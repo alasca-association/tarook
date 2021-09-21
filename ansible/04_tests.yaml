@@ -1,0 +1,111 @@
+- name: Detect user
+  hosts: k8s_nodes
+  gather_facts: false
+  roles:
+  - detect_user
+
+- name: Check K8s setup
+  hosts: "{{ groups['k8s_nodes'] }}"
+  become: no
+  gather_facts: false
+  tasks:
+    - name: Check that all hosts are initialized by the cloud provider
+      delegate_to: "{{ groups['masters'] | first }}"
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      shell: "kubectl get nodes {{ inventory_hostname }} -o jsonpath='{.spec.taints[*].key}' | grep 'node.cloudprovider.kubernetes.io/uninitialized'"
+      register: result
+      failed_when: result.rc == 0
+      tags:
+      - test-ccm
+
+    - name: Check that the Internal IP address of each node is set
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      delegate_to: "{{ groups['masters'] | first }}"
+      command: "kubectl get nodes {{ inventory_hostname }} -o jsonpath='{.status.addresses[*].address}'"
+      register: ip_address
+      failed_when: ip_address.stdout == ""
+      tags:
+      - test-ccm
+
+# Ugly: assuming naming scheme here.
+- name: Annotate worker nodes
+  hosts: "{{ groups['masters'] | first }}"
+  become: no
+  gather_facts: false
+  tags:
+    - label
+  tasks:
+    - name: Annotate the worker nodes
+      # TODO: local delegation -> KUBECONFIG must be set correctly
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      command: "kubectl label --overwrite nodes {{ item['worker'] }} name={{ item['name'] }}"
+      loop: "{{ test_worker_nodes }}"
+      tags:
+      - test-service
+      - test-cinder-block-storage
+      - test-ceph-block-storage
+      - test-ceph-shared-filesystem
+
+- name: Check basic functionality
+  hosts: "{{ groups['masters'] | first }}"
+  become: no
+  gather_facts: false
+  vars:
+    gateway: "{{ groups['gateways'] | first }}"
+  roles:
+    - role: check-services
+      tags: test-service
+    - role: check-block-storage
+      tags: test-cinder-block-storage
+      vars:
+        block_storage_class: csi-sc-cinderplugin
+    - role: check-block-storage
+      tags: test-ceph-block-storage
+      vars:
+        block_storage_class: rook-ceph-data
+    - role: check-shared-fs
+      tags: test-ceph-shared-filesystem
+      vars:
+        fs_storage_class: rook-ceph-cephfs
+    - role: check-loadbalancer-service
+      tags: test-loadbalancer-service
+      when: "openstack_lbaas | default(False) or ch_k8s_lbaas | default(False)"
+
+- name: Remove worker node annotation
+  hosts: "{{ groups['masters'] | first }}"
+  become: no
+  gather_facts: false
+  tasks:
+      - name: Remove annotation of worker nodes
+        environment:
+          KUBECONFIG: /etc/kubernetes/admin.conf
+        command: "kubectl label --overwrite nodes {{ item['worker'] }} name-"
+        loop: "{{ test_worker_nodes }}"
+        tags:
+        - test-service
+        - test-cinder-block-storage
+        - test-ceph-block-storage
+        - test-ceph-shared-filesystem
+        - test-cleanup
+
+- name: Test enforcement of PodSecurityPolicies
+  hosts: "{{ groups['masters'] | first }}"
+  become: no
+  gather_facts: no
+  roles:
+  - role: check-psp-enforcement
+    tags:
+    - test-check-psp-enforcement
+    when: "k8s_use_podsecuritypolicies | default(False)"
+
+# We test the monitoring down here because we need to give Prometheus a bit of
+# time to boot and collect the first bits of data.
+- name: Check monitoring
+  hosts: "{{ groups['masters'] | first }}"
+  gather_facts: no
+  roles:
+  - role: check-monitoring
+    tags: test-monitoring

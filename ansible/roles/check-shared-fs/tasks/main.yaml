@@ -1,0 +1,56 @@
+---
+- name: show test information
+  debug:
+    msg: "This test is using the {{ fs_storage_class }} storageClass"
+
+- name: Run the test
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+  block:
+  - name: create PVC
+    k8s:
+      state: present
+      definition: "{{ lookup('template', 'pvc.yaml') }}"
+
+  - name: start worker pods
+    k8s:
+      state: present
+      definition: "{{ lookup('template', 'pod.yaml') }}"
+    loop: "{{ test_worker_nodes | map(attribute='name') | list }}"
+    register: worker_pods
+
+  - name: fetch worker pod completion state
+    k8s_info:
+      api_version: v1
+      kind: Pod
+      name: "shared-fs-test-{{ item.item }}"
+      namespace: default
+    register: worker_state
+    loop: "{{ worker_pods.results }}"
+    until: "worker_state.resources and (worker_state.resources[0].status | default(False)) and (worker_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
+    delay: 1
+    retries: 60
+
+  - name: check worker pod success
+    debug:
+      msg: "Worker pod {{ item.resources[0].metadata.name }} is in condition {{ item.resources[0].status.phase }}"
+    failed_when: 'item.resources[0].status.phase == "Failed"'
+    loop: "{{ worker_state.results }}"
+
+  - name: delete worker pods
+    k8s:
+      state: absent
+      definition: "{{ lookup('template', 'pod.yaml') }}"
+    loop: "{{ test_worker_nodes | map(attribute='name') | list }}"
+    register: worker_pods
+    tags:
+    - test-cleanup
+
+  - name: delete PVC
+    k8s:
+      state: absent
+      definition: "{{ lookup('template', 'pvc.yaml') }}"
+    tags:
+    - test-cleanup

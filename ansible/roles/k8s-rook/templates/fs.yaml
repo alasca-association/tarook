@@ -1,0 +1,46 @@
+apiVersion: ceph.rook.io/v1
+kind: CephFilesystem
+metadata:
+  name: "{{ rook_fs_name }}"
+  namespace: "{{ rook_namespace }}"
+spec:
+  metadataPool:
+    failureDomain: "host"
+    replicated:
+      size: {{ rook_fs_replicated }}
+  dataPools:
+  - failureDomain: "host"
+    replicated:
+      size: {{ rook_fs_replicated }}
+  preservePoolsOnDelete: true
+  metadataServer:
+    activeCount: 1
+    activeStandby: true
+    # A key/value list of annotations
+    annotations:
+    #  key: value
+    placement:
+{% if rook_placement_label %}
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: "{{ rook_placement_label.key }}"
+              operator: In
+              values:
+              - "{{ rook_placement_label.value }}"
+{% endif %}
+{% if rook_placement_taint %}
+      tolerations:
+      - key: "{{ rook_placement_taint.key }}"
+        value: "{{ rook_placement_taint.value }}"
+        operator: Equal
+        effect: "{{ rook_placement_taint.effect | default('NoSchedule') }}"
+{% endif %}
+    resources:
+    #  limits:
+    #    cpu: "500m"
+    #    memory: "1024Mi"
+    #  requests:
+    #    cpu: "500m"
+    #    memory: "1024Mi"

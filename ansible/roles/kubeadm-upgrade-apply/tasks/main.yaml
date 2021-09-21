@@ -1,0 +1,10 @@
+- name: Run kubeadm upgrade plan
+  become: yes
+  command: kubeadm upgrade plan
+
+# Do not renew certificates here because we rolled out our own chain
+# --yes auto-confirms and makes upgrade non-interactive
+- name: Execute the upgrade
+  when: do_upgrade
+  become: yes
+  command: "kubeadm upgrade apply --certificate-renewal=false --yes v{{ next_k8s_version }}"

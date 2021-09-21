@@ -1,0 +1,23 @@
+- name: configure jsonnet
+  connection: local
+  template:
+    src: thanos.jsonnet
+    dest: "{{ monitoring_jsonnet_dir_thanos }}/config.jsonnet"
+
+- name: rebuild
+  connection: local
+  command:
+  args:
+    argv:
+    - "make"
+    - "-f"
+    - "../Makefile"
+    - "build"
+    chdir: "{{ monitoring_jsonnet_dir_thanos }}"
+  changed_when: false
+
+- name: apply manifests
+  k8s:
+    state: present
+    definition: "{{ lookup('file', monitoring_jsonnet_dir_thanos + '/' + item) }}"
+  loop: "{{ lookup('file', monitoring_jsonnet_dir_thanos + '/manifests.files.json' ) | from_json }}"

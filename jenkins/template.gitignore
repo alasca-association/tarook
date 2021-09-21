@@ -1,0 +1,7 @@
+*.key
+/inventory/02_trampoline
+/inventory/03_final
+/inventory/.etc/ssh_known_hosts
+/inventory/.etc/kubeadm_token
+/wg*.conf
+.terraform

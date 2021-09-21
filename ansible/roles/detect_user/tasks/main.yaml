@@ -1,0 +1,91 @@
+- name: wait for ssh to become available
+  delegate_to: localhost
+  become: no
+  wait_for:
+    host: "{{ ansible_host | default(inventory_hostname) }}"
+    port: 22
+    sleep: 5
+    timeout: 300
+    state: started
+  tags:
+  - detect-user
+
+- name: test logins # noqa 306
+  delegate_to: localhost
+  become: no
+  # this is "slightly" ugly, but should take into account many possible ways
+  # to tweak how ansible does things
+  shell: |
+    ssh \
+      -o ConnectTimeout=10 \
+      -o PasswordAuthentication=no \
+      -o StrictHostKeyChecking=no \
+      {% if ansible_ssh_private_key_file | default(False) %}-i {{ ansible_ssh_private_key_file | quote }}{% endif %} \
+      {% if ansible_port | default(False) %}-p {{ ansible_port }}{% endif %} \
+      {{ ansible_ssh_common_args }} \
+      {{ ansible_ssh_extra_args }} \
+      {{ item | quote }}@{{ ansible_host | default(inventory_hostname) | quote }} \
+      true </dev/null
+  loop: "{{ detect_user_attempts }}"
+  failed_when: false
+  changed_when: false
+  register: login_results
+  tags:
+  - detect-user
+  - always
+
+- name: login results
+  vars:
+    valid_login_info: "{{ login_results.results | reject('failed') | reject('unreachable') | selectattr('rc', 'equalto', 0) | first | default({}) }}"
+    valid_user: "{{ valid_login_info.item | default(False) }}"
+  set_fact:
+    ansible_user: "{{ valid_user }}"
+    cacheable: yes
+  tags:
+  - detect-user
+  - always
+
+- name: fail if login detection did not work
+  fail:
+    msg: "failed to detect a valid login! tried: {{ detect_user_attempts }}"
+  when: "not ansible_user"
+  tags:
+  - detect-user
+  - always
+
+- name: show login info
+  debug:
+    msg: "will henceforth use {{ ansible_user }} to connect to {{ inventory_hostname }}"
+  tags:
+  - detect-user
+
+- name: test new login
+  become: no
+  raw: whoami
+  changed_when: false
+  register: whoami
+  failed_when: "ansible_user not in whoami.stdout_lines"
+  tags:
+  - detect-user
+  - always
+
+- name: warn if a generic user is being used
+  debug:
+    msg: |
+      WARNING: The login to
+
+        {{ inventory_hostname }}
+
+      uses the user name
+
+        {{ whoami.stdout }},
+
+      which is a generic user. This is only okay if this is the first roll out
+      to the machine.
+
+      If this is *not* the first rollout, this indicates a problem with the
+      user setup and should be investigated.
+  when: "whoami.stdout in detect_user_warn"
+  tags:
+  - detect-user
+  - always

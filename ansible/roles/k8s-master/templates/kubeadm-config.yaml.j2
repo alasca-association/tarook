@@ -1,0 +1,11 @@
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: ClusterConfiguration
+kubernetesVersion: "v{{ k8s_version }}"
+controlPlaneEndpoint: "{{ private_vip }}:{{ hostvars[gateway]['haproxy_frontend_port'] }}"
+networking:
+    podSubnet: 10.244.0.0/16
+
+apiServer:
+    extraArgs:
+        enable-admission-plugins: NodeRestriction{% if k8s_use_podsecuritypolicies %},PodSecurityPolicy{% endif %}
+

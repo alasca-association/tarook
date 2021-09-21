@@ -1,0 +1,12 @@
+*.sw*
+*.pyc
+*.retry
+.direnv/
+*.kube
+.etc
+.envrc
+cloud-configs/
+*.tfstate*
+.idea/
+*.key
+docs/sites

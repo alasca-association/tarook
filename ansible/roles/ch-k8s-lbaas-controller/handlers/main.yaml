@@ -1,0 +1,13 @@
+- name: restart ch-k8s-lbaas-controller
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  command:
+  args:
+    argv:
+    - "kubectl"
+    - "-n"
+    - "kube-system"
+    - "rollout"
+    - "restart"
+    - "deployment.apps/ch-k8s-lbaas-controller"

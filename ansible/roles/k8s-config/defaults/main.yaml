@@ -1,0 +1,3 @@
+---
+k8s_use_podsecuritypolicies: false
+managed_k8s_control_plane_key: "node-restriction.kubernetes.io/cah-managed-k8s-role"

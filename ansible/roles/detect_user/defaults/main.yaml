@@ -1,0 +1,12 @@
+detect_user_attempts:
+- "{{ lookup('env', 'MANAGED_K8S_SSH_USER') | default(lookup('env', 'USER')) }}"
+- centos
+- debian
+- ubuntu
+
+detect_user_warn:
+- centos
+- debian
+- ubuntu
+- fedora
+- rhel

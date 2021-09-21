@@ -1,0 +1,98 @@
+- name: Create cloud-config secret
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: Opaque
+      data:
+        cloud.conf: "{{ lookup('template', 'os_cloud_config.ini') | b64encode }}"
+      metadata:
+        name: cloud-config
+        namespace: kube-system
+  notify:
+  - restart CCM
+
+- name: Patch the K8s controller manager to mount the cloud-config
+  script: "{{ playbook_dir }}/utils/patch_kube_controller.py -i -f /etc/kubernetes/manifests/kube-controller-manager.yaml"
+  args:
+    executable: python3
+
+- name: Force restart of kube-controller-manager
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    state: absent
+    api_version: v1
+    kind: Pod
+    namespace: kube-system
+    name: "kube-controller-manager-{{ inventory_hostname }}"
+    wait: no
+
+- name: Start the OpenStack Cloud Controller manager
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+    - name: Prepare PodSecurityPolicy configuration
+      k8s:
+        state: "{{ k8s_use_podsecuritypolicies | ternary('present', 'absent') }}"
+        definition: "{{ lookup('file', 'psp.yaml') }}"
+
+    - name: Deploy the CCM and its RBAC
+      k8s:
+        state: present
+        definition: "{{ lookup('template', item) }}"
+      loop:
+      - controller-manager/openstack-cloud-controller-manager-ds.yaml
+      - rbac/cloud-controller-manager-roles.yaml
+      - rbac/cloud-controller-manager-role-bindings.yaml
+
+    - name: Start the Cinder CSI driver plugin
+      k8s:
+        state: present
+        definition: "{{ lookup('template', 'cinder-csi-plugin/' + item) }}"
+      loop:
+      - cinder-csi-controllerplugin-rbac.yaml
+      - cinder-csi-controllerplugin.yaml
+      - cinder-csi-nodeplugin-rbac.yaml
+      - cinder-csi-nodeplugin.yaml
+
+    - name: Create storage class
+      k8s:
+        state: present
+        definition: "{{ lookup('template', 'cinder_storage_class.yaml') }}"
+
+- name: Start the Octavia Ingress Controller
+  when: openstack_lbaas_ingress
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  tags:
+  - openstack-lbaas
+  block:
+    - name: Configure Ingress Controller
+      k8s:
+        definition:
+          apiVersion: v1
+          kind: Secret
+          type: Opaque
+          data:
+            octavia-ingress-controller-config.yaml: "{{ lookup('template', 'octavia-ingress-controller/config.yaml') | b64encode }}"
+          metadata:
+            name: octavia-ingress-controller-config
+            namespace: kube-system
+        state: present
+      notify:
+      - restart octavia-ingress-controller
+
+    - name: Deploy Ingress Controller
+      k8s:
+        state: present
+        definition: "{{ lookup('template', item) }}"
+      loop:
+      - octavia-ingress-controller/rbac.yaml
+      - octavia-ingress-controller/controller.yaml

@@ -1,0 +1,22 @@
+[openstack.auth]
+region={{ lookup('env', 'OS_REGION_NAME') | to_json }}
+username={{ lookup('env','OS_USERNAME') | to_json }}
+password={{ lookup('env','OS_PASSWORD') | to_json }}
+auth-url={{ lookup('env', 'OS_AUTH_URL') | to_json }}
+user-domain-name={{ lookup('env', 'OS_USER_DOMAIN_NAME') | to_json }}
+project-name={{ lookup('env', 'OS_PROJECT_NAME') | to_json }}
+project-domain-id={{ lookup('env', 'OS_PROJECT_DOMAIN_ID') | to_json }}
+
+[openstack.network]
+use-floating-ips={{ ch_k8s_lbaas_use_floating_ips | ternary('true', 'false') }}
+floating-ip-network-id={{ ch_k8s_lbaas_floating_ip_network_id | to_json }}
+subnet-id={{ ch_k8s_lbaas_subnet_id | to_json }}
+
+[agents]
+shared-secret={{ ch_k8s_lbaas_shared_secret | to_json }}
+token-lifetime=60
+
+{% for node in groups['gateways'] %}
+[[agents.agent]]
+url="http://{{ hostvars[node]['local_ipv4_address'] }}:{{ ch_k8s_lbaas_agent_port }}"
+{% endfor %}

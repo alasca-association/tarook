@@ -1,0 +1,3 @@
+---
+wg_local_priv_path: "{{ etc_dir }}/wg_gw_priv.key"
+wg_local_pub_path: "{{ etc_dir }}/wg_gw_pub.key"

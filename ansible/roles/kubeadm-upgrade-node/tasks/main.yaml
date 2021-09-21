@@ -1,0 +1,4 @@
+- name: Run kubeadm upgrade node
+  when: do_upgrade
+  become: yes
+  command: kubeadm upgrade node --certificate-renewal=false

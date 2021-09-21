@@ -1,0 +1,76 @@
+---
+- name: show test information
+  debug:
+    msg: "This test is using the {{ block_storage_class }} storageClass"
+
+- name: Run the test
+  become: no
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+  block:
+  - name: create PVC
+    k8s:
+      definition: "{{ lookup('template', 'pvc.yaml') }}"
+      state: present
+
+  - name: start writer pod
+    k8s:
+      definition: "{{ lookup('file', 'writer-pod.yaml') }}"
+      state: present
+
+  - name: fetch writer pod completion state
+    k8s_info:
+      api_version: v1
+      kind: Pod
+      name: writer-test
+      namespace: default
+    register: writer_state
+    until: "writer_state.resources and (writer_state.resources[0].status | default(False)) and (writer_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
+    delay: 1
+    retries: 60
+
+  - name: check writer pod success
+    debug:
+      msg: "Writer pod is in condition {{ writer_state.resources[0].status.phase }}"
+    failed_when: 'writer_state.resources[0].status.phase == "Failed"'
+
+  - name: run reader pod
+    k8s:
+      definition: "{{ lookup('file', 'reader-pod.yaml') }}"
+      state: present
+
+  - name: fetch reader pod completion state
+    k8s_info:
+      api_version: v1
+      kind: Pod
+      name: reader-test
+      namespace: default
+    register: reader_state
+    until: "reader_state.resources and (reader_state.resources[0].status | default(False)) and (reader_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
+    delay: 1
+    retries: 60
+
+  - name: check writer pod success
+    debug:
+      msg: "Reader pod is in condition {{ reader_state.resources[0].status.phase }}"
+    failed_when: 'reader_state.resources[0].status.phase == "Failed"'
+
+  - name: delete pods
+    k8s:
+      definition: "{{ lookup('file', item) }}"
+      state: absent
+      wait: yes
+    loop:
+    - "reader-pod.yaml"
+    - "writer-pod.yaml"
+    tags:
+    - test-cleanup
+
+  - name: delete PVC
+    k8s:
+      definition: "{{ lookup('template', 'pvc.yaml') }}"
+      state: absent
+      wait: yes
+    tags:
+    - test-cleanup

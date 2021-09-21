@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "dependencies": [
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/ksonnet/ksonnet-lib",
+          "subdir": ""
+        }
+      },
+      "version": "0d2f82676817bbf9e4acf6495b2090205f323b9f",
+      "sum": "h28BXZ7+vczxYJ2sCt8JuR9+yznRtU/iA6DCpQUrtEg=",
+      "name": "ksonnet"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/thanos-io/kube-thanos",
+          "subdir": "jsonnet/kube-thanos"
+        }
+      },
+      "version": "f9d83bec965c81620e842d2d16fd9cab46925ee9",
+      "sum": "S2e1WEpwNEgHVY/KQrEF70lo7NK2qwMMnG7+L3ZVbW8="
+    }
+  ],
+  "legacyImports": false
+}

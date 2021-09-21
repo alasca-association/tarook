@@ -1,0 +1,20 @@
+- name: Remove the hold of kubelet
+  become: yes
+  command: apt-mark unhold kubelet
+
+- name: Upgrade kubelet
+  become: yes
+  apt:
+    name:
+      - "kubelet={{ next_k8s_version }}-00"
+
+- name: Re-hold kubelet
+  become: yes
+  command: apt-mark hold kubelet
+
+- name: Restart kubelet
+  become: yes
+  systemd:
+    name: kubelet
+    state: restarted
+    enabled: yes

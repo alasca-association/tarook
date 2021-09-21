@@ -1,0 +1,77 @@
+[ansible.02_trampoline.group_vars.gateways]
+lb_ports = [
+  30060
+]
+cah_users_include_users = ["<user>", "<user>"]
+
+# IP address range to use for WireGuard clients. Must be set to a CIDR and must
+# not conflict with the terraform.subnet_cidr.
+#
+# Should be chosen uniquely for all clusters of a customer at the very least
+# so that they can use all of their clusters at the same time without having
+# to tear down tunnels.
+wg_ip_cidr = "172.30.153.64/26"
+wg_ip_gw = "172.30.153.65/26"
+
+# To add WireGuard keys for customers, create blocks like the following:
+#
+#[[ansible.02_trampoline.group_vars.gateways.wg_peers]]
+#pub_key = "test1"
+#ident = "testkunde1"
+#
+# You can add as many of them as you want. toml_helper.py will auto-allocate IP
+# addresses from the wg_ip_cidr.
+
+[ansible.02_trampoline.host_vars.managed-k8s-gw-az1]
+vrrp_priority = 150
+
+[ansible.02_trampoline.host_vars.managed-k8s-gw-az2]
+vrrp_priority = 100
+
+[ansible.02_trampoline.host_vars.managed-k8s-gw-az3]
+vrrp_priority = 80
+
+[ansible.03_final.group_vars.all]
+k8s_version = "1.17.3"
+rook = true
+rook_nosds = 3
+rook_osd_volume_size = "90Gi"
+rook_toolbox = true
+rook_fs = true
+cah_users_include_users = ["<user>", "<user>"]
+
+# To enable our LBaaS service, un-comment the following options and fill in a
+# unique, random, base64-encoded secret in place of `...`.
+#
+# To generate such a secret, you can use the following command:
+#
+# $ dd if=/dev/urandom bs=16 count=1 status=none | base64
+#
+#ch_k8s_lbaas = true
+#ch_k8s_lbaas_shared_secret = "..."
+#ch_k8s_lbaas_version = "0.2.0"
+
+[ansible.03_final.host_vars.managed-k8s-gw-az1]
+vrrp_priority = 150
+
+[ansible.03_final.host_vars.managed-k8s-gw-az2]
+vrrp_priority = 100
+
+[ansible.03_final.host_vars.managed-k8s-gw-az3]
+vrrp_priority = 80
+
+[[ansible.03_final.group_vars.all.test_worker_nodes]]
+worker = "managed-k8s-worker-0"
+name = "worker0"
+
+[[ansible.03_final.group_vars.all.test_worker_nodes]]
+worker = "managed-k8s-worker-1"
+name = "worker1"
+
+[[ansible.03_final.group_vars.all.test_worker_nodes]]
+worker = "managed-k8s-worker-2"
+name = "worker2"
+
+[terraform]
+subnet_cidr = "172.30.154.0/24"
+workers = 3

@@ -1,0 +1,10 @@
+---
+- name: restart ch-k8s-lbaas-agent
+  service:
+    name: ch-k8s-lbaas-agent
+    state: restarted
+
+- name: reload nftables
+  service:
+    name: nftables
+    state: reloaded
