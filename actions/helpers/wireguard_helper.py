@@ -21,40 +21,42 @@ class WireGuardUser(collections.namedtuple(
     def fromdict(cls, d, *, with_address=True, address_optional=False):
         if with_address:
             try:
-                address = ipaddress.ip_interface(d["ip"])
+                addressv4_interface = ipaddress.ip_interface(d["ip"])
+                addressv4_ip = addressv4_interface.ip
             except KeyError:
-                address = None
+                addressv4_ip = None
             else:
-                if address.network.prefixlen != 32:
+                if addressv4_interface.network.prefixlen != 32:
                     raise ValueError(
                         "incorrect prefix length in IP address config: {} "
-                        "(from: {!r}".format(address, d)
+                        "(from: {!r}".format(addressv4_interface, d)
                     )
 
             try:
-                addressv6 = ipaddress.ip_interface(d["ipv6"])
+                addressv6_interface = ipaddress.ip_interface(d["ipv6"])
+                addressv6_ip = addressv6_interface.ip
             except KeyError:
-                addressv6 = None
+                addressv6_ip = None
             else:
-                if addressv6.network.prefixlen != 128:
+                if addressv6_interface.network.prefixlen != 128:
                     raise ValueError(
                         "incorrect prefix lenght in IP address config: {} "
-                        "(from: {!r}".format(address, d)
+                        "(from: {!r}".format(addressv6_interface, d)
                     )
 
-            if address is None and addressv6 is None and not address_optional:
+            if addressv4_ip is None and addressv6_ip is None and not address_optional: # NOQA
                 raise ValueError(
                     "ip address missing on user {!r}".format(d)
                 ) from None
         else:
-            address = None
-            addressv6 = None
+            addressv4_ip = None
+            addressv6_ip = None
 
         return cls(
             public_key=d["pub_key"],
             name=d["ident"],
-            address_v4=address,
-            address_v6=addressv6,
+            address_v4=addressv4_ip,
+            address_v6=addressv6_ip,
         )
 
     def todict(self) -> typing.Mapping[str, str]:
