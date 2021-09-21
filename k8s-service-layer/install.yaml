@@ -10,7 +10,7 @@
       include_vars:
         dir: "{{ ksl_vars_directory }}"
   tags:
-  - mk8s-ms
+  - mk8s-sl
   roles:
   - role: scheduling_info_v1
     tags:
