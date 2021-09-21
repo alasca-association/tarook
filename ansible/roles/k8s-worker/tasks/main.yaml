@@ -21,11 +21,41 @@
   when: kubelet_creds.stat.exists
   register: node_check
 
-- name: Join the K8s cluster
-  become: yes
+- name: Join the k8s cluster as worker
   vars:
-    our_address: "address: {{ local_ipv4_address | default(ansible_default_ipv4.address) }}"
-    kubeadm_out: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
+    our_address_v4: "address: {{ local_ipv4_address }}"
+    our_address_v6: "address: {{ local_ipv6_address | default('') }}"
   when: not kubelet_creds.stat.exists or node_check.rc != 0
-  # XXX: ansible command module does not support setting the umask
-  shell: "umask 077 && {{ kubeadm_out }} --node-name {{ inventory_hostname | quote }}"
+  block:
+  - name: Register fact for k8s api VIPv4
+    set_fact:
+      private_k8s_api_vip_v4: "{{ networking_fixed_ip }}"
+  
+  - name: Register fact for k8s api VIPv6
+    when: dualstack_support and false # Enable when we implemented a true DualStack Control Plane
+    set_fact:
+      private_k8s_api_vip_v6: "{{ networking_fixed_ip_v6 }}"
+
+  - name: Get certificate information
+    become: no
+    delegate_to: localhost
+    community.crypto.x509_certificate_info:
+      path: "{{ etc_dir }}/ca.crt"
+    register: ca_cert
+
+  - name: Create kubeadm-join-config.yaml
+    vars:
+      kubeadm_join_token: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
+    template:
+      src: kubeadm-join-config.yaml.j2
+      dest: /tmp/kubeadm-join-config.yaml
+
+  - name: Join the k8s cluster as another worker
+    become: yes
+    # XXX: ansible command module does not support setting the umask
+    shell: "umask 077 && kubeadm join --node-name {{ inventory_hostname | quote }} --config=/tmp/kubeadm-join-config.yaml"
+
+  - name: Remove kubeadm-join-config.yaml
+    file:
+      path: /tmp/kubeadm-join-config.yaml
+      state: absent

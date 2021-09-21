@@ -69,6 +69,17 @@ table inet filter {
 
         ip protocol icmp counter accept
         ip protocol vrrp counter accept
+
+        {% if dualstack_support %}
+
+        udp dport 546 udp sport 547 accept comment "Allow DHCPv6"
+
+        tcp dport @tcp_internal_accepted ip6 saddr { {{ subnet_v6_cidr }}, {{ wg_ipv6_cidr }} }  accept comment "Accept connections to internal services from private subnet v6"
+
+        meta nfproto ipv6 meta l4proto ipv6-icmp accept comment "Accept all ICMPv6 traffic"
+
+        {% endif %}
+
     }
 
     chain forward {
@@ -79,6 +90,10 @@ table inet filter {
         iifname $wg oifname $wan ip daddr {{ priv_ip_cidr }} ct state new counter accept;
 
         iifname $wan oifname $wan ip saddr {{ priv_ip_cidr }} ct state new counter accept;
+
+        {% if dualstack_support %}
+        iifname $wan oifname $wan ip6 saddr {{ subnet_v6_cidr }} ct state new counter accept;
+        {% endif %}
 
     }
 

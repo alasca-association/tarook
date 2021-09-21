@@ -136,21 +136,6 @@
       You need to insert your private wireguard key and bring the wireguard
       interface up before continuing.
 
-- name: Create /etc/sysctl.d/wireguard.conf on the wireguard VPN server
-  become: yes
-  copy:
-    dest: /etc/sysctl.d/wireguard.conf
-    content: |
-      net.ipv4.ip_forward=1
-    owner: root
-    group: root
-    mode: 0640
-
-- name: Load /etc/sysctl.d/wireguard.conf on the wireguard VPN server
-  become: yes
-  command: sysctl -p /etc/sysctl.d/wireguard.conf
-  changed_when: false
-
 - name: Remove old service
   become: yes
   file:
@@ -198,3 +183,37 @@
     - name: Re-raise error
       fail:
         msg: "{{ ansible_failed_result }}"
+
+- name: Deploy bird configuration for wireguard routes
+  block:
+  - name: Ensure that drop-in directory for bird configs exist
+    file:
+      path: /etc/bird.d/
+      state: directory
+
+  - name: Ensure that drop-in directory for bird configs exist (IPv6)
+    file:
+      path: /etc/birdv6.d/
+      state: directory
+    when: dualstack_support
+
+  - name: Create bird config for IPv4 wireguard routes
+    become: yes
+    template:
+      src: wg_bird.conf.j2
+      dest: /etc/bird.d/00-wireguard.conf
+      owner: bird
+      group: bird
+      mode: 0640
+    notify: restart bird
+
+  - name: Create bird config for IPv6 wireguard routes
+    become: yes
+    template:
+      src: wg_bird_v6.conf.j2
+      dest: /etc/birdv6.d/00-wireguard.conf
+      owner: bird
+      group: bird
+      mode: 06400
+    when: dualstack_support
+    notify: restart bird6

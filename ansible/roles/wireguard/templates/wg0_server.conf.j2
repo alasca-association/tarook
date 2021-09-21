@@ -1,7 +1,8 @@
 {{ _auto_generated_preamble }}
 
 [Interface]
-Address = {{ wg_ip_gw }}
+Address = {{ wg_ip_gw }} {%- if dualstack_support %}, {{ wg_ipv6_gw }}{% endif %}
+
 ListenPort = {{ vpn_port }}
 PrivateKey = {{ wg_gw_priv_key }}
 
@@ -9,6 +10,6 @@ PrivateKey = {{ wg_gw_priv_key }}
 # {{ peer["ident"] }}
 [Peer]
 PublicKey = {{ peer["pub_key"] }}
-AllowedIps = {{ peer["ip"] }}
+AllowedIps = {{ peer["ip"] }} {%- if dualstack_support %}, {{ peer["ipv6"] }}{% endif %}
 
 {% endfor %}

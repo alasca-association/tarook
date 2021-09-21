@@ -8,3 +8,17 @@ spec:
   natOutgoing: true
   disabled: false
   nodeSelector: all()
+
+{% if dualstack_support %}
+---
+apiVersion: projectcalico.org/v3
+kind: IPPool
+metadata:
+  name: calico-ippool-v6
+spec:
+  cidr: "{{ k8s_network_pod_subnet_v6 }}"
+  ipipMode: Never
+  natOutgoing: false
+  disabled: false
+  nodeSelector: all()
+{% endif %}

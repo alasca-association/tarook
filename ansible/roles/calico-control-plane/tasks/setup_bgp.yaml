@@ -3,7 +3,7 @@
 # be used directly by kubectl. Please refer to the following issue:
 # https://github.com/projectcalico/calico/issues/2923
 
-- name: Create and patch Calico BGP Configuration
+- name: Create calico BGP configuration and apply peering
   run_once: True
   become: yes
   environment:
@@ -11,7 +11,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes
   block:
-  - name: BGP - Create Default BGPConfiguration
+  - name: BGP - Apply default calico BGP configuration
     command:
       argv:
         - /usr/local/bin/calicoctl
@@ -47,7 +47,8 @@
     register: bgp_as_number_patch
     changed_when: "'Successfully patched' and 'BGPConfiguration' in bgp_as_number_patch.stdout"
 
-  - name: BGP - Setup Route Reflector Cluster ID
+  # By adding a routeReflectorClusterID to the node, calico/node recognizes that it is a route reflector
+  - name: BGP - Mark the k8s masters as route reflectors
     command:
       argv:
         - /usr/local/bin/calicoctl
@@ -60,7 +61,20 @@
     changed_when: "'Successfully patched' and 'Node' in bgp_route_reflector_cluster_id_patch.stdout"
     with_items: "{{ groups['masters'] }}"
 
-  - name: BGP - Configure all non-reflector nodes to peer with route reflectors (master nodes)
+  # Labeling the masters easies identification
+  - name: BGP - Label the k8s masters as route reflectors
+    command:
+      argv:
+        - calicoctl
+        - label
+        - nodes
+        - "{{ item }}"
+        - route-reflector=true
+    register: bgp_label_masters
+    changed_when: "'Successfully updated label route-reflector on nodes' in bgp_label_masters.stdout"
+    with_items: "{{ groups['masters'] }}"
+
+  - name: BGP - Configure workers to peer with route reflectors (master nodes)
     command:
       argv:
         - /usr/local/bin/calicoctl
@@ -70,36 +84,12 @@
     register: bgp_worker_to_master_peering
     changed_when: "'Successfully applied' and 'BGPPeer' in bgp_worker_to_master_peering.stdout"
 
-  - name: BGP - Configure all route reflectors (master nodes) to peer with all other nodes
+  - name: BGP - Configure route reflectors (master nodes) to peer with the LoadBalanced-Master Gateway
     command:
-      argv:
-        - /usr/local/bin/calicoctl
-        - apply
-        - --filename=-
-      stdin: '{{ lookup("file", "calico_bgp_peer_master.yaml") }}'
-    register: bgp_master_to_node_peering
-    changed_when: "'Successfully applied' and 'BGPPeer' in bgp_master_to_node_peering.stdout"
-
-  # gw_as_number is set in the bird playbook
-  - name: BGP - Configure route reflectors (master nodes) to peer with Gateways
-    command:
-      argv:
-        - /usr/local/bin/calicoctl
-        - apply
-        - --filename=-
-      stdin: '{{ lookup("template", "calico_bgp_peer_gateways.yaml.j2") }}'
-    register: bgp_master_to_gateways_peering
-    changed_when: "'Successfully applied' and 'BGPPeer' in bgp_master_to_gateways_peering.stdout"
-    with_items: "{{ groups['gateways'] }}"
-
-  - name: Calico - BGP - Label Master-Nodes as Route Reflectors
-    command:
-      argv:
-        - /usr/local/bin/calicoctl
-        - label
-        - nodes
-        - "{{ item }}"
-        - route-reflector=true
-    register: bgp_label_masters
-    changed_when: "'Successfully updated label route-reflector on nodes' in bgp_label_masters.stdout"
-    with_items: "{{ groups['masters'] }}"
+        argv:
+          - calicoctl
+          - apply
+          - --filename=-
+        stdin: '{{ lookup("template", "calico_bgp_peer_lb_master.yaml.j2") }}'
+    register: bgp_master_to_lb
+    changed_when: "'Successfully applied' and 'BGPPeer' in bgp_master_to_lb.stdout"

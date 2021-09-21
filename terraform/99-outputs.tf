@@ -7,6 +7,7 @@ resource "local_file" "inventory_stage2" {
     gateway_fips  = openstack_networking_floatingip_v2.gateway,
     workers       = openstack_compute_instance_v2.worker,
     worker_ports  = openstack_networking_port_v2.worker,
+    dualstack_support = var.dualstack_support,
   })
   filename        = "../../inventory/02_trampoline/hosts"
   file_permission = 0640
@@ -20,6 +21,7 @@ resource "local_file" "inventory_stage3" {
     gateway_ports = openstack_networking_port_v2.gateway,
     workers       = openstack_compute_instance_v2.worker,
     worker_ports  = openstack_networking_port_v2.worker,
+    dualstack_support = var.dualstack_support,
   })
   filename        = "../../inventory/03_k8s_base/hosts"
   file_permission = 0640

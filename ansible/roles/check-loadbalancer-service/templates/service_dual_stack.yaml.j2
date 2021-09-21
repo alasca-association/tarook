@@ -1,0 +1,20 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: echo-service-dual-stack
+  namespace: "{{ check_loadbalancer_service_namespace }}"
+  annotations:
+    service.beta.kubernetes.io/openstack-internal-load-balancer: "false"
+spec:
+  selector:
+    app: echo
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  ipFamilyPolicy: PreferDualStack
+  ipFamilies:
+  - IPv4
+  - IPv6

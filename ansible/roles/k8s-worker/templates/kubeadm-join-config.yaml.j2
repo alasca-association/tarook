@@ -1,0 +1,17 @@
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: JoinConfiguration
+nodeRegistration:
+  kubeletExtraArgs:
+{% if dualstack_support %}
+    node-ip: {{ [local_ipv4_address, local_ipv6_address] | join(",") | to_json }}
+{% else %}
+    node-ip: {{ local_ipv4_address | to_json }}
+{% endif %}
+
+discovery:
+  bootstrapToken:
+    apiServerEndpoint: {{ private_k8s_api_vip_v4 }}:{{ k8s_apiserver_frontend_port }}
+    token: {{ kubeadm_join_token }}
+    caCertHashes:
+    - "sha256:{{ ca_cert['public_key_fingerprints']['sha256'] | replace(':', '') }}"
+  timeout: 5m0s

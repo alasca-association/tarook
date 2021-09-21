@@ -1,10 +1,10 @@
 {{ _auto_generated_preamble }}
 
-{% for hostname in groups['masters'] %}
+{% for hostname in groups['k8s_nodes'] %}
 {% set peer = hostvars[hostname] %}
 protocol bgp {{ hostname | replace('-', '_') }} {
     table master;
-    local {{ local_ipv4_address }} as {{ k8s_network_bgp_gateway_as }};
+    local {{ networking_fixed_ip }} as {{ k8s_network_bgp_gateway_as }};
     neighbor {{ peer.local_ipv4_address }} as {{ k8s_network_bgp_worker_as }};
     multihop;
     import filter {
@@ -12,12 +12,7 @@ protocol bgp {{ hostname | replace('-', '_') }} {
         scope = SCOPE_UNIVERSE;
         accept;
     };
-    export filter {
-        if scope != SCOPE_ORGANIZATION then {
-            reject;
-        }
-        accept;
-    };
+    export filter k8s_worker;
 }
 
 {% endfor %}

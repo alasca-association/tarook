@@ -1,7 +1,10 @@
 {{ _auto_generated_preamble }}
 
 frontend k8s_prometheus_front
-  bind {{ networking_fixed_ip }}:{{ k8s_global_monitoring_nodeport }}
+  bind {{ private_vip }}:{{ k8s_global_monitoring_nodeport }}
+  {% if dualstack_support %}
+  bind {{ private_vip_v6 }}:{{ k8s_global_monitoring_nodeport }} transparent
+  {% endif %}
   mode tcp
   log global
   option tcplog
@@ -18,6 +21,9 @@ backend k8s_prometheus_back
   timeout connect 10s
   timeout server 600s
 
-{% for host in groups['masters'] %}
+  {% for host in groups['masters'] %}
   server {{ host }} {{ hostvars[host]['local_ipv4_address'] }}:{{ k8s_global_monitoring_nodeport }} check verify none
-{% endfor %}
+  {% if dualstack_support %}
+  server {{ host }} {{ hostvars[host]['local_ipv6_address'] }}:{{ k8s_global_monitoring_nodeport }} check verify none
+  {% endif %}
+  {% endfor %}

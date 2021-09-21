@@ -29,6 +29,14 @@
       tags:
       - test-ccm
 
+- name: Validate DualStack-Support
+  hosts: "{{ groups['k8s_nodes'] }}"
+  roles:
+  - role: check-dualstack
+    tags:
+    - test-dualstack
+    when: dualstack_support
+
 - name: Test Calico CNI Support
   hosts: "{{ groups['k8s_nodes'] }}"
   gather_facts: no
@@ -36,6 +44,7 @@
   - role: check-calico
     tags:
     - check-calico
+    - test-dualstack
     when: k8s_network_plugin == 'calico'
 
 # Ugly: assuming naming scheme here.
@@ -66,10 +75,14 @@
     gateway: "{{ groups['gateways'] | first }}"
   roles:
     - role: check-services
-      tags: test-service
       when: "deprecated_nodeport_lb_test_port is defined"
+      tags:
+      - test-service
+      - test-dualstack
     - role: check-loadbalancer-service
-      tags: test-loadbalancer-service
+      tags:
+      - test-loadbalancer-service
+      - test-dualstack
       when: (openstack_lbaas | default("False")) or ch_k8s_lbaas_enabled
 
 - name: Test enforcement of PodSecurityPolicies

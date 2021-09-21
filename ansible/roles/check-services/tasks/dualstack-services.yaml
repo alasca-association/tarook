@@ -1,0 +1,146 @@
+- name: Check dual stack service functionality
+  block:
+  - name: Apply the nginx+service manifest (DualStack)
+    k8s:
+      definition: "{{ lookup('template', 'nginx_dual_stack.yaml.j2') }}"
+      state: present
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: Check the connection to the DualStack service
+    vars:
+      svc_test_port: 30060
+    command: "curl -s {{ hostvars[gateway]['ansible_host'] }}:{{ svc_test_port }}"
+    register: curl_result
+    failed_when: curl_result.rc != 0
+
+  - name: Get the DualStack Service information
+    k8s_info:
+      api_version: v1
+      kind: Service
+      name: nginx-service-dual-stack
+      namespace: "{{ check_services_namespace }}"
+    register: nginx_dual_stack_service_info
+
+  - name: Fail if the DualStack service has no IPv4 address
+    vars:
+      nginx_service_cluster_ips: "{{ nginx_dual_stack_service_info['resources'][0]['spec']['clusterIPs'] }}"
+    fail:
+      msg: "The DualStack service does not have an IPv4 Address"
+    when: nginx_service_cluster_ips | ipv4 | length==0
+
+  - name: Fail if the DualStack service has no IPv6 address
+    vars:
+      nginx_service_cluster_ips: "{{ nginx_dual_stack_service_info['resources'][0]['spec']['clusterIPs'] }}"
+    fail:
+      msg: "The DualStack service does not have an IPv6 Address"
+    when: nginx_service_cluster_ips | ipv6 | length==0
+
+  - name: Remove the DualStack service
+    k8s:
+      definition: "{{ lookup('template', 'nginx_dual_stack.yaml.j2') }}"
+      state: absent
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+- name: Check SingleStack IPv4 service functionality
+  block:
+  - name: Apply the nginx+service manifest (SingleStack IPv4)
+    k8s:
+      definition: "{{ lookup('template', 'nginx_single_stack_v4.yaml.j2') }}"
+      state: present
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: Check the connection to the SingleStack IPv4 service
+    vars:
+      svc_test_port: 30060
+    command: "curl -s {{ hostvars[gateway]['ansible_host'] }}:{{ svc_test_port }}"
+    register: curl_result
+    failed_when: curl_result.rc != 0
+
+  - name: Get the SingleStack IPv4 service information
+    k8s_info:
+      api_version: v1
+      kind: Service
+      name: nginx-service-single-stack-v4
+      namespace: "{{ check_services_namespace }}"
+    register: nginx_single_stack_v4_service_info
+
+  - name: Fail if the SingleStack IPv4 service has no IPv4 address
+    vars:
+      nginx_service_cluster_ips: "{{ nginx_single_stack_v4_service_info['resources'][0]['spec']['clusterIPs'] }}"
+    fail:
+      msg: "The SingleStack IPv4 service does not have an IPv4 Address"
+    when: nginx_service_cluster_ips | ipv4 | length==0
+
+  - name: Fail if the SingleStack IPv4 service has an IPv6 address
+    vars:
+      nginx_service_cluster_ips: "{{ nginx_single_stack_v4_service_info['resources'][0]['spec']['clusterIPs'] }}"
+    fail:
+      msg: "The SingleStack IPv4 service has an IPv6 Address"
+    when: nginx_service_cluster_ips | ipv6 | length>0
+
+  - name: Remove the SingleStack IPv4 service
+    k8s:
+      definition: "{{ lookup('template', 'nginx_single_stack_v4.yaml.j2') }}"
+      state: absent
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+- name: Check SingleStack IPv6 service functionality
+  block:
+  - name: Apply the nginx+service manifest (SingleStack IPv6)
+    k8s:
+      definition: "{{ lookup('template', 'nginx_single_stack_v6.yaml.j2') }}"
+      state: present
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: Check the connection to the SingleStack IPv6 service
+    vars:
+      svc_test_port: 30060
+    command: "curl -s {{ hostvars[gateway]['ansible_host'] }}:{{ svc_test_port }}"
+    register: curl_result
+    failed_when: curl_result.rc != 0
+
+  - name: Get the SingleStack IPv6 service information
+    k8s_info:
+      api_version: v1
+      kind: Service
+      name: nginx-service-single-stack-v6
+      namespace: "{{ check_services_namespace }}"
+    register: nginx_single_stack_v6_service_info
+
+  - name: Fail if the SingleStack IPv6 service has an IPv4 address
+    vars:
+      nginx_service_cluster_ips: "{{ nginx_single_stack_v6_service_info['resources'][0]['spec']['clusterIPs'] }}"
+    fail:
+      msg: "The SingleStack IPv6 service has an IPv4 Address"
+    when: nginx_service_cluster_ips | ipv4 | length>0
+
+  - name: Fail if the SingleStack IPv6 service has no IPv6 address
+    vars:
+      nginx_service_cluster_ips: "{{ nginx_single_stack_v6_service_info['resources'][0]['spec']['clusterIPs'] }}"
+    fail:
+      msg: "The SingleStack IPv6 does not have an IPv6 Address"
+    when: nginx_service_cluster_ips | ipv6 | length==0
+
+  - name: Remove the SingleStack IPv6 service
+    k8s:
+      definition: "{{ lookup('template', 'nginx_single_stack_v6.yaml.j2') }}"
+      state: absent
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes

@@ -268,7 +268,7 @@ def _assign_ipv6_addresses(
         )
 
     result = {}
-    for user in sorted(users, key=lambda x: x.address_v4 is None):
+    for user in sorted(users, key=lambda x: x.address_v6 is None):
         new_user = user
 
         assert new_user.public_key not in result
@@ -277,7 +277,7 @@ def _assign_ipv6_addresses(
             existing_address = existing_assignment[
                 new_user.public_key].address_v6
         except KeyError:
-            existing_address = new_user.address_v4
+            existing_address = new_user.address_v6
 
         if existing_address is not None:
             if existing_address in reserved_addresses:

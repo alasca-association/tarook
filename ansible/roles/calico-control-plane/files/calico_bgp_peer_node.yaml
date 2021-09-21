@@ -1,7 +1,7 @@
 kind: BGPPeer
 apiVersion: projectcalico.org/v3
 metadata:
-  name: peer-with-route-reflectors
+  name: nodes-with-route-reflectors
 spec:
   nodeSelector: all()
-  peerSelector: route-reflector == 'true'
+  peerSelector: has(route-reflector)

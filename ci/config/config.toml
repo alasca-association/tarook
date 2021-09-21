@@ -1,5 +1,6 @@
 [terraform]
 subnet_cidr = "172.30.154.0/24"
+subnet_v6_cidr = "fd00::/120"
 haproxy_ports = [30060]
 workers = 6
 default_master_image_name = "mk8s-ci-ubuntu-1804-nightly"
@@ -8,6 +9,7 @@ gateway_image_name = "mk8s-ci-debian-10-nightly"
 worker_flavors = ["L", "M", "L", "M", "L", "M"]
 enable_az_management = false
 cluster_name = "ci"
+#dualstack_support = false
 
 # dd2a only
 #azs = ["nova"]
@@ -20,10 +22,13 @@ lb_ports = ["{{ deprecated_nodeport_lb_test_port }}"]
 [wireguard]
 ip_cidr = "172.30.153.0/24"
 ip_gw = "172.30.153.1/24"
+ipv6_cidr = "fd01::/120"
+ipv6_gw = "fd01::1/120"
 
 [[wireguard.peers]]
 pub_key = "/0VYI+LK2VYUX3E7QDUCfp7p+0vU2tocsqGFjsKoJVs="
 ip = "172.30.153.14/32"
+ipv6 = "fd01::14/128"
 ident = "gitlab-ci-runner"
 
 [ch-k8s-lbaas]
@@ -33,7 +38,7 @@ version = "0.3.3"
 agent_port = 15203
 
 [kubernetes]
-version = "1.19.10"
+version = "1.21.4"
 use_podsecuritypolicies = true
 is_gpu_cluster = false
 

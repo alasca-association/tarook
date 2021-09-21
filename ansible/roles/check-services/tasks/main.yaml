@@ -28,13 +28,25 @@
     register: curl_result
     failed_when: curl_result.rc != 0
 
+  - name: Remove the Service
+    k8s:
+      definition: "{{ lookup('template', 'nginx.yaml') }}"
+      state: absent
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: Validate Services for DualStack-Clusters
+    when: dualstack_support
+    include_tasks: dualstack-services.yaml
+
   - name: delete namespace
     k8s:
       api_version: v1
       kind: Namespace
       state: absent
       name: "{{ check_services_namespace }}"
-      wait: yes
       validate:
         fail_on_error: yes
         strict: yes

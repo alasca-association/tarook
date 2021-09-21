@@ -133,7 +133,7 @@ kuberouter-rook:
   resource_group: ch-k8s-ci-environment-f1a-1
 
 # Spawn a cluster with calico as CNI and rook enabled
-calico-rook:
+calico-rook-dualstack:
   image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
   extends: .preparation_and_test_and_cleanup
   rules:
@@ -148,6 +148,29 @@ calico-rook:
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
     AFLAGS: "--diff -e k8s_network_plugin=calico"
+    TF_VAR_dualstack_support: "true"
+  tags:
+  - docker
+  - wireguard-ready
+  resource_group: ch-k8s-ci-environment-f1a-1
+
+# Spawn a cluster with calico as CNI and rook disabled
+calico-dualstack:
+  image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
+  extends: .preparation_and_test_and_cleanup
+  rules:
+  - if: '$CI_COMMIT_REF_NAME =~ /^(master|stable)$/'
+    when: manual
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    when: manual
+  - when: never
+  allow_failure: false
+  stage: spawn-cluster
+  variables:
+    ANSIBLE_ANY_ERRORS_FATAL: "true"
+    ANSIBLE_FORCE_COLOR: "true"
+    AFLAGS: "--diff -e k8s_network_plugin=calico -e rook=False"
+    TF_VAR_dualstack_support: "true"
   tags:
   - docker
   - wireguard-ready

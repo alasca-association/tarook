@@ -14,9 +14,18 @@
         fail_on_error: yes
         strict: yes
 
-  - name: create service
+  - name: Create k8s preliminaries (ServiceAccount,RBAC,PSP,echo-Deployment)
     k8s:
-      definition: "{{ lookup('template', 'service.yaml') }}"
+      definition: "{{ lookup('template', 'preliminaries.yaml.j2') }}"
+      state: present
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: Create SingleStack IPv4 load-balanced service
+    k8s:
+      definition: "{{ lookup('template', 'service_single_stack_v4.yaml.j2') }}"
       state: present
       validate:
         fail_on_error: yes
@@ -27,7 +36,7 @@
       api_version: v1
       kind: Service
       namespace: "{{ check_loadbalancer_service_namespace }}"
-      name: "echo-service"
+      name: "echo-service-single-stack-v4"
     register: service_state
     until: "service_state.resources and (service_state.resources[0].status | default(False)) and (service_state.resources[0].status.loadBalancer | default(False)) and (service_state.resources[0].status.loadBalancer.ingress | default(False))"
     delay: 5
@@ -50,9 +59,22 @@
     retries: 60
     changed_when: False
 
-  - name: clean up resources
+  - name: Remove SingleStack IPv4 load-balanced service
     k8s:
-      definition: "{{ lookup('template', 'service.yaml') }}"
+      definition: "{{ lookup('template', 'service_single_stack_v4.yaml.j2') }}"
+      state: absent
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: Validate LB-Services for DualStack-Clusters
+    when: dualstack_support
+    include_tasks: dualstack-lb-services.yaml
+
+  - name: Clean up k8s preliminaries (ServiceAccount,RBAC,PSP,echo-Deployment)
+    k8s:
+      definition: "{{ lookup('template', 'preliminaries.yaml.j2') }}"
       state: absent
       validate:
         fail_on_error: yes

@@ -85,19 +85,3 @@ spec:
         ports:
         - containerPort: 80
       serviceAccountName: test
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: echo-service
-  namespace: "{{ check_loadbalancer_service_namespace }}"
-  annotations:
-    service.beta.kubernetes.io/openstack-internal-load-balancer: "false"
-spec:
-  selector:
-    app: echo
-  type: LoadBalancer
-  ports:
-  - name: http
-    port: 80
-    targetPort: 80

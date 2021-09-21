@@ -1,0 +1,94 @@
+- name: Check dual stack lb service functionality
+  block:
+  - name: Create DualStack load-balanced service
+    k8s:
+      definition: "{{ lookup('template', 'service_dual_stack.yaml.j2') }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: require service to have ingress IP address set
+    k8s_info:
+      api_version: v1
+      kind: Service
+      namespace: "{{ check_loadbalancer_service_namespace }}"
+      name: "echo-service-dual-stack"
+    register: service_state
+    until: "service_state.resources and (service_state.resources[0].status | default(False)) and (service_state.resources[0].status.loadBalancer | default(False)) and (service_state.resources[0].status.loadBalancer.ingress | default(False))"
+    delay: 5
+    retries: 60
+
+  - name: require service to be reachable from this machine and respond to HTTP
+    delegate_to: localhost
+    command:
+    args:
+      warn: false
+      argv:
+      - curl
+      - "-s"
+      - "-w"
+      - "\\n%{http_code}\\n"
+      - "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
+    register: curl_result
+    until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
+    delay: 1
+    retries: 60
+    changed_when: False
+
+  - name: Remove DualStack load-balanced service
+    k8s:
+      definition: "{{ lookup('template', 'service_dual_stack.yaml.j2') }}"
+      state: absent
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+- name: Check single stack IPv6 lb service functionality
+  when: false # Currently we do not support IPv6 single stack load balanced services (refer to the dualstack docs)
+  block:
+  - name: Create SingleStack IPv6 load-balanced service
+    k8s:
+      definition: "{{ lookup('template', 'service_single_stack_v6.yaml.j2') }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: require service to have ingress IP address set
+    k8s_info:
+      api_version: v1
+      kind: Service
+      namespace: "{{ check_loadbalancer_service_namespace }}"
+      name: "echo-service-single-stack-v6"
+    register: service_state
+    until: "service_state.resources and (service_state.resources[0].status | default(False)) and (service_state.resources[0].status.loadBalancer | default(False)) and (service_state.resources[0].status.loadBalancer.ingress | default(False))"
+    delay: 5
+    retries: 60
+
+  - name: require service to be reachable from this machine and respond to HTTP
+    delegate_to: localhost
+    command:
+    args:
+      warn: false
+      argv:
+      - curl
+      - "-s"
+      - "-w"
+      - "\\n%{http_code}\\n"
+      - "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
+    register: curl_result
+    until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
+    delay: 1
+    retries: 60
+    changed_when: False
+
+  - name: Remove SingleStack IPv6 load-balanced service
+    k8s:
+      definition: "{{ lookup('template', 'service_single_stack_v6.yaml.j2') }}"
+      state: absent
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes

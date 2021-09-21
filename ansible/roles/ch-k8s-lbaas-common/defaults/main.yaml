@@ -18,4 +18,4 @@ ch_k8s_lbaas_agent_binary_checksums:
 
 ch_k8s_lbaas_agent_binary_checksum: "{{ ch_k8s_lbaas_agent_binary_checksums[image_versions.ch_k8s_lbaas] | default('invalid checksum') }}"
 
-ch_k8s_lbaas_use_bgp: "{{ (k8s_network_plugin) == 'kube-router' }}"
+ch_k8s_lbaas_use_bgp: "{{ (k8s_network_plugin | default('flannel')) in ['kube-router','calico'] }}"
