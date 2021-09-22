@@ -26,7 +26,7 @@ ipv6_cidr = "fd01::/120"
 ipv6_gw = "fd01::1/120"
 
 [[wireguard.peers]]
-pub_key = "/0VYI+LK2VYUX3E7QDUCfp7p+0vU2tocsqGFjsKoJVs="
+pub_key = "MQL6dL0DSOnXTLrScCseY7Fs8S5Hb4yHc6SZ+/ucNx0="
 ip = "172.30.153.14/32"
 ipv6 = "fd01::14/128"
 ident = "gitlab-ci-runner"
