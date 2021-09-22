@@ -79,7 +79,6 @@
 - name: The upgrade will take several minutes, pausing ansible for 5m
   pause:
     seconds: 300
-    seconds: 180
 
 - name: Wait until the ceph cluster's core components are fully updated
   include_tasks: wait_for_rook_upgrade.yaml
