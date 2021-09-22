@@ -59,6 +59,8 @@ def _load_passwordstore_company_users(
     company_users_config_path: pathlib.Path
     = PASSWORDSTORE_COMPANY_USERS_FILE
 ) -> typing.List[PasswordstoreUser]:
+    if not company_users_config_path.exists():
+        return []
     with company_users_config_path.open("r") as f:
         return [PasswordstoreUser.fromdict(u)
                 for u in toml.load(f)["users"]]
