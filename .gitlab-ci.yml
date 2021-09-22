@@ -96,7 +96,7 @@ kuberouter:
   image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
   extends: .preparation_and_test_and_cleanup
   rules:
-  - if: '$CI_COMMIT_REF_NAME =~ /^(master|stable)$/'
+  - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
     when: on_success
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual
@@ -117,7 +117,7 @@ kuberouter-rook:
   image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
   extends: .preparation_and_test_and_cleanup
   rules:
-  - if: '$CI_COMMIT_REF_NAME =~ /^(master|stable)$/'
+  - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
     when: manual
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual
@@ -137,7 +137,7 @@ calico-rook-dualstack:
   image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
   extends: .preparation_and_test_and_cleanup
   rules:
-  - if: '$CI_COMMIT_REF_NAME =~ /^(master|stable)$/'
+  - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
     when: on_success
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual
@@ -159,7 +159,7 @@ calico-dualstack:
   image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
   extends: .preparation_and_test_and_cleanup
   rules:
-  - if: '$CI_COMMIT_REF_NAME =~ /^(master|stable)$/'
+  - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
     when: manual
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual
