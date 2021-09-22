@@ -1,4 +1,0 @@
-[submodule "ansible/roles/ch-role-users"]
-	path = ansible/roles/ch-role-users
-	url = git@gitlab.cloudandheat.com:operations/ansible-roles/ch-role-users.git
-	branch = master
