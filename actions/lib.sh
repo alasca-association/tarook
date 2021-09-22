@@ -112,12 +112,6 @@ function validate_wireguard() {
     fi
 }
 
-function test_repo_access() {
-    set +e
-    git ls-remote "$1" master &> /dev/null; EXITCODE=$?
-    set -e
-}
-
 function ansible_playbook() {
     ansible_flags="${AFLAGS:---diff -f42}"
 

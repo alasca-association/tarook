@@ -122,7 +122,7 @@ ident = "mk8s-ci@gitlab"
 gpg_id = "mk8s-ci@gitlab"
 
 [cah-users]
-rollout = true
+rollout = false
 
 [miscellaneous]
 wireguard_on_workers = false

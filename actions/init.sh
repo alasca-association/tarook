@@ -57,18 +57,21 @@ if [ "${PASS_COMPANY_USERS:-true}" == "true" ]; then
     fi
 fi
 
-test_repo_access "$submodule_ch_role_user_git"
-if [ "$EXITCODE" -eq 128 ]; then
-	warningf 'Access to C&Hs user repo is missing. Removing submodule'
-	warningf '-------------------------------------------------------'
-	warningf '🚨  DO NOT PUSH YOUR CLUSTER REPO BECAUSE OF THAT!  🚨'
-	echo ""
-	pushd "$cluster_repository/managed-k8s" > /dev/null
-	if [ -d "managed-k8s/ansible/roles/ch-role-users/" ]; then
-		run git rm ansible/roles/ch-role-users
-	fi
-	mkdir -p ansible/roles/ch-role-users
-	popd > /dev/null
+# Add the Cloud&Heat cah-role-users repository as submodule
+if [ "${SSH_COMPANY_USERS:-true}" == "true" ]; then
+  pushd "$cluster_repository/managed-k8s" > /dev/null
+  if [ "$(git rev-parse --is-inside-work-tree)" == "true" ]; then
+        if [ ! -d "ansible/roles/ch-role-users/" ]; then
+            run git submodule add "$submodule_ch_role_user_git" "ch-role-users" "ansible/roles/ch-role-users/"
+        else
+            pushd "ansible-roles/ch-role-users" > /dev/null
+            run git remote set-url origin "$submodule_ch_role_user_git"
+            popd > /dev/null
+        fi
+  else
+    run git clone "$submodule_ch_role_user_git"
+  fi
+  popd > /dev/null
 fi
 
 if [ ! "$actions_dir" == "./managed-k8s/actions" ]; then

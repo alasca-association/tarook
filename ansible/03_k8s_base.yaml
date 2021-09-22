@@ -73,6 +73,17 @@
     tags: k8s-global-monitoring # ToDo: find better tag
     when: k8s_global_monitoring_enabled
 
+- name: Rollout company users
+  hosts: k8s_nodes
+  gather_facts: true
+  tasks:
+    - name: Rollout company users
+      when: cah_users_rollout
+      include_role:
+        name: ch-role-users
+      tags:
+        - ch-role-users
+
 - name: Prepare the k8s nodes
   hosts: k8s_nodes
   gather_facts: true
@@ -80,9 +91,6 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   roles:
-    - role: ch-role-users
-      tags: ch-role-users
-      when: cah_users_rollout
     - role: disable_selinux
       tags: disable_selinux
       when: ansible_distribution == "CentOS"
