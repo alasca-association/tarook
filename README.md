@@ -1,8 +1,7 @@
 ## Documentation
 
-The documentation is created with mkdocs [0] and located under docs/.
- - To start the built-in dev-server, run `mkdocs serve -f mkdocs_<client|admin>.yml`
- - To compile the documentation to html, run `mkdocs build -f mkdocs_<client|admin>.yml`
+The documentation is created with mkdocs [0] and located under [docs/](docs/).
+Built instructions can be found in the [respective README](docs/README.md).
 
 [0] mkdocs.org
 
