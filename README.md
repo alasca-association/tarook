@@ -1,9 +1,23 @@
+# Managed-k8s
+
+Managed-k8s is a Lifecycle-Management tool to provide and operate a customizable, highly available, and flexible kubernetes cluster.
+
+Managed-k8s is part of the [Yaook](https://yaook.cloud) project. All Yaook related resources are publicly available under https://gitlab.com/yaook.
+
+For further information on how to install and use managed-k8s, please refer to the [documentation](#documentation).
+
 ## Documentation
 
-The documentation is created with mkdocs [0] and located under [docs/](docs/).
-Built instructions can be found in the [respective README](docs/README.md).
+The documentation is created with [mdBook](https://github.com/rust-lang/mdBook) and located under [docs/](docs/).
 
-[0] mkdocs.org
+Built instructions for the documentation can be found in the [respective README](docs/README.md).
+
+## Contributing
+
+Contributions, issues and feature requests are welcome.
+Feel free to check the [issues page](https://gitlab.com/yaook/k8s/-/issues) if you want to contribute.
+
+Please also refer to the the [development workflow](https://gitlab.com/yaook/meta/-/wikis/Development-Workflow).
 
 ## License
 
