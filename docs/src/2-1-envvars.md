@@ -65,15 +65,11 @@ your own .envrc file.
 
 - `MANAGED_CH_ROLE_USER_GIT`: URL to the ch-role-users role submodule.
 
-## Secret management
+## Secret Management
 
 - `PASS_COMPANY_USERS` (boolean, default: true): If set to true, `init.sh` will
   clone the repository `MANAGED_K8S_PASSWORDSTORE_USER_GIT`. The users in that
   repository will be granted access to the pass-based secret store.
-
-- `WG_COMPANY_USERS` (boolean, default: true): If set to true, `init.sh` will
-  clone the repository `MANAGED_K8S_WG_USER_GIT`. The inventory helper will
-  then configure the wireguard users from that repository.
 
 ## VPN Configuration
 
@@ -88,11 +84,22 @@ your own .envrc file.
 - `wg_user` (used by `wg-up.sh`): Your WireGuard user name as per the
   [`wg_user` repository](https://gitlab.cloudandheat.com/lcm/wg_user).
 
+- `WG_COMPANY_USERS` (boolean, default: true): If set to true, `init.sh` will
+  clone the repository `MANAGED_K8S_WG_USER_GIT`. The inventory helper will
+  then configure the wireguard users from that repository.
+
+## SSH Configuration
+
 - `TF_VAR_keypair` (used by `apply-terraform.sh`): The keypair name in
   OpenStack to use for creating new instances. Does not affect instances which
   have already been created.
 
-## Behaviour-altering variables
+- `SSH_COMPANY_USERS` (boolean, default: true): If set to true, `init.sh` will
+  clone the repository `MANAGED_CH_ROLE_USER_GIT`. The inventory helper will
+  then configure your inventory such that the `ch-role-users` role is executed
+  in stage2 and stage3.
+
+## Behavior-altering variables
 
 The variables in this section should not be set during normal operation. They
 disable safety checks or give consent to potentially dangerous operations.
