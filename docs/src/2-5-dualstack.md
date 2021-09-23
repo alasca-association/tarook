@@ -5,9 +5,7 @@ Associated [Merge Request](https://gitlab.cloudandheat.com/lcm/managed-k8s/-/mer
 ---
 **NOTE**
 
-It is still possible to create an IPv4-only cluster.
-
-It is currently not possible to create an IPv6-only cluster.
+It is currently not possible to create an IPv6-only cluster (IPv4-only is default).
 
 It is **not possible to upgrade** a single stack cluster to a dualStack cluster.
 
@@ -24,10 +22,11 @@ This section states necessary config changes to your mk8s setup to enable DualSt
 
 ### Prerequisites
 
-* Terraform `v0.12` or later
 * Kubernetes `v1.21` or later
 * Calico `v3.11` or later
-* [ch-k8s-lbaas](https://github.com/cloudandheat/ch-k8s-lbaas) `v0.3.3` or later
+* For managed-k8s-on-OpenStack clusters:
+  * Terraform `v0.12` or later
+  * [ch-k8s-lbaas](https://github.com/cloudandheat/ch-k8s-lbaas) `v0.3.3` or later
 
 ### Necessary changes in your config file
 

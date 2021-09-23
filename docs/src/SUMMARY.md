@@ -39,6 +39,8 @@
     - [Wireguard](./2-4-wireguard.md)
     - [IPsec](./2-4-ipsec.md)
 
+- [DualStack-Support](./2-5-dualstack.md)
+
 ---
 
 [A. Initial Test Notes for Rook Ceph](./app-a-rook-ceph-notes.md)
