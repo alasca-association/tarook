@@ -144,3 +144,9 @@ disable safety checks or give consent to potentially dangerous operations.
 
   This is also taken into account by the inventory helper. Intended use case
   are bare-metal or otherwise pre-provisioned setups.
+
+## Template
+
+```bash
+{{#include templates/envrc.template.sh}}
+```
