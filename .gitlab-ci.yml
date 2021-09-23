@@ -68,6 +68,9 @@ flake8:
   - rm -rf ci # make sure we're operating on a clean directory
   - git checkout -- ci
   - export MANAGED_K8S_GIT="$(realpath .)"
+  - export WG_COMPANY_USERS="false"
+  - export PASS_COMPANY_USERS="false"
+  - export SSH_COMPANY_USERS="false"
   - cd ci
   - git init
   - ../actions/init.sh
@@ -93,10 +96,10 @@ flake8:
 
 # Spawn a cluster with kube-router as CNI and rook disabled
 kuberouter:
-  image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
+  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:deel"
   extends: .preparation_and_test_and_cleanup
   rules:
-  - if: '$CI_COMMIT_REF_NAME =~ /^(master|stable)$/'
+  - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
     when: on_success
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual
@@ -114,10 +117,10 @@ kuberouter:
 
 # Spawn a cluster with kube-router as CNI and rook enabled
 kuberouter-rook:
-  image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
+  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:deel"
   extends: .preparation_and_test_and_cleanup
   rules:
-  - if: '$CI_COMMIT_REF_NAME =~ /^(master|stable)$/'
+  - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
     when: manual
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual
@@ -134,10 +137,10 @@ kuberouter-rook:
 
 # Spawn a cluster with calico as CNI and rook enabled
 calico-rook-dualstack:
-  image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
+  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:deel"
   extends: .preparation_and_test_and_cleanup
   rules:
-  - if: '$CI_COMMIT_REF_NAME =~ /^(master|stable)$/'
+  - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
     when: on_success
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual
@@ -156,10 +159,10 @@ calico-rook-dualstack:
 
 # Spawn a cluster with calico as CNI and rook disabled
 calico-dualstack:
-  image: gitlab-registry.cloudandheat.com/docker/ch-managed-k8s-docker/f1a:master
+  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:deel"
   extends: .preparation_and_test_and_cleanup
   rules:
-  - if: '$CI_COMMIT_REF_NAME =~ /^(master|stable)$/'
+  - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
     when: manual
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual

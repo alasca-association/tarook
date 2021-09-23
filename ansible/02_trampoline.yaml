@@ -44,6 +44,17 @@
     tags: update_system
     when: _allow_disruption
 
+- name: Rollout company users
+  hosts: gateways
+  gather_facts: true
+  tasks:
+    - name: Rollout company users
+      when: cah_users_rollout
+      include_role:
+        name: ch-role-users
+      tags:
+        - ch-role-users
+
 - name: Configure load balancer and VPN gateway
   hosts: gateways
   gather_facts: true
@@ -63,9 +74,6 @@
     tags: haproxy
   - role: wireguard
     tags: wireguard
-  - role: ch-role-users
-    tags: ch-role-users
-    when: cah_users_rollout
   - role: prometheus-haproxy-exporter
     tags: prometheus-haproxy-exporter
   - role: prometheus-keepalived-exporter

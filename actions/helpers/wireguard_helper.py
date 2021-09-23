@@ -392,6 +392,9 @@ def _load_wireguard_company_users(
     user object.
     """
     wg_company_users = {}
+    if not source_dir.exists():
+        return wg_company_users
+
     for filepath in source_dir.iterdir():
         if not filepath.name.endswith(".toml"):
             continue
