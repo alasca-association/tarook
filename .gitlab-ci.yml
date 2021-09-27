@@ -43,10 +43,14 @@ ansible-lint:
     entrypoint: ["/bin/sh", "-c"]
   stage: lint
   script:
-  - 'cd ansible-legacy && ansible-galaxy install -r requirements.yaml'
-  - 'cd ansible-legacy && ansible-lint -x 701 02_trampoline.yaml 03_k8s_base.yaml && cd ..'
-  - 'cd k8s-service-layer && ansible-lint -x 701 install.yaml && cd ..'
-  - 'cd k8s-managed-services && ansible-lint -x 701 install.yaml && cd ..'
+  - 'ansible-galaxy install -r ansible/requirements.yaml'                           # Install requirements
+  - 'ansible-lint -c ci/lint/ansible-lint-conf ansible/02_trampoline.yaml'         # Check stage 2
+  - 'ansible-lint -c ci/lint/ansible-lint-conf ansible/03_k8s_base.yaml'           # Check stage 3
+  - 'ansible-lint -c ci/lint/ansible-lint-conf k8s-service-layer/install.yaml'     # Check stage 4
+  - 'ansible-lint -c ci/lint/ansible-lint-conf k8s-managed-services/install.yaml'  # Check stage 5
+  - 'ansible-lint -c ci/lint/ansible-lint-conf ansible/04_tests.yaml'              # Check smoke tests
+  - 'ansible-lint -c ci/lint/ansible-lint-conf k8s-service-layer/test.yaml'        # Check ksl tests
+  - 'ansible-lint -c ci/lint/ansible-lint-conf k8s-managed-services/test.yaml'     # Check ksm tests
   tags:
   - docker
 
