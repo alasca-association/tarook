@@ -73,7 +73,7 @@ $ popd
 
 Now you can run ``init.sh`` to bootstrap your cluster repository. Back in your
 cluster repository directory, you now call the `init.sh` script from the
-`managed-k8s` repositor you just cloned:
+`managed-k8s` repository you just cloned:
 
 ```console
 $ "$somewhere_else/actions/init.sh"
