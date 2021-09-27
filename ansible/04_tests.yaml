@@ -5,11 +5,11 @@
   - detect_user
 
 - name: Check K8s setup
-  hosts: "{{ groups['k8s_nodes'] }}"
+  hosts: k8s_nodes
   become: no
   gather_facts: false
   tasks:
-    - name: Check that all hosts are initialized by the cloud provider
+    - name: Check that all hosts are initialized by the cloud provider # noqa no-changed-when risky-shell-pipe
       delegate_to: "{{ groups['masters'] | first }}"
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
@@ -19,7 +19,7 @@
       tags:
       - test-ccm
 
-    - name: Check that the Internal IP address of each node is set
+    - name: Check that the Internal IP address of each node is set # noqa no-changed-when
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
       delegate_to: "{{ groups['masters'] | first }}"
@@ -30,7 +30,7 @@
       - test-ccm
 
 - name: Validate DualStack-Support
-  hosts: "{{ groups['k8s_nodes'] }}"
+  hosts: k8s_nodes
   roles:
   - role: check-dualstack
     tags:
@@ -38,7 +38,7 @@
     when: dualstack_support
 
 - name: Test Calico CNI Support
-  hosts: "{{ groups['k8s_nodes'] }}"
+  hosts: k8s_nodes
   gather_facts: no
   roles:
   - role: check-calico
@@ -49,13 +49,13 @@
 
 # Ugly: assuming naming scheme here.
 - name: Annotate worker nodes
-  hosts: "{{ groups['masters'] | first }}"
+  hosts: masters[0]
   become: no
   gather_facts: false
   tags:
     - label
   tasks:
-    - name: Annotate the worker nodes
+    - name: Annotate the worker nodes # noqa no-changed-when
       # TODO: local delegation -> KUBECONFIG must be set correctly
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
@@ -68,7 +68,7 @@
       - test-ceph-shared-filesystem
 
 - name: Check services
-  hosts: "{{ groups['masters'] | first }}"
+  hosts: masters[0]
   become: no
   gather_facts: false
   vars:
@@ -86,7 +86,7 @@
       when: (openstack_lbaas | default("False")) or ch_k8s_lbaas_enabled
 
 - name: Test enforcement of PodSecurityPolicies
-  hosts: "{{ groups['masters'] | first }}"
+  hosts: masters[0]
   become: no
   gather_facts: no
   roles:
@@ -96,7 +96,7 @@
     when: "k8s_use_podsecuritypolicies"
 
 - name: Test enforcement of NetworkPolicies
-  hosts: "{{ groups['masters'] | first }}"
+  hosts: masters[0]
   become: no
   gather_facts: no
   roles:
@@ -107,7 +107,7 @@
 
 # Same line for argumentation: especially rook is known to take a bit more time to boot up
 - name: Check storage services
-  hosts: "{{ groups['masters'] | first }}"
+  hosts: masters[0]
   become: no
   gather_facts: false
   pre_tasks:
@@ -136,11 +136,11 @@
       tags: test-local-storage
 
 - name: Remove worker node annotation
-  hosts: "{{ groups['masters'] | first }}"
+  hosts: masters[0]
   become: no
   gather_facts: false
   tasks:
-      - name: Remove annotation of worker nodes
+      - name: Remove annotation of worker nodes # noqa no-changed-when
         environment:
           KUBECONFIG: /etc/kubernetes/admin.conf
         command: "kubectl label --overwrite nodes {{ item['worker'] }} name-"

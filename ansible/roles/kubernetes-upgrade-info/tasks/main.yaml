@@ -14,7 +14,7 @@
   register: installed_version_dpkg
   changed_when: false
 
-- name: Obtain installed version (rpm)
+- name: Obtain installed version (rpm) # noqa command-instead-of-module
   command:
   args:
     argv:

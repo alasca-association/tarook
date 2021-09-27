@@ -36,7 +36,7 @@
   vars:
     password_store_dir: "{{ etc_dir }}/passwordstore"
   block:
-    - name: Lookup key in passwordstore # noqa 207
+    - name: Lookup key in passwordstore # noqa ignore-errors no-jinja-nesting
       ignore_errors: yes
       # Check if the key exists
       set_fact:

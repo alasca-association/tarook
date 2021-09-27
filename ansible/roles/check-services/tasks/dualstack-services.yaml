@@ -9,7 +9,7 @@
         fail_on_error: yes
         strict: yes
 
-  - name: Check the connection to the DualStack service
+  - name: Check the connection to the DualStack service # noqa command-instead-of-module
     vars:
       svc_test_port: 30060
     command: "curl -s {{ hostvars[gateway]['ansible_host'] }}:{{ svc_test_port }}"
@@ -58,7 +58,7 @@
         fail_on_error: yes
         strict: yes
 
-  - name: Check the connection to the SingleStack IPv4 service
+  - name: Check the connection to the SingleStack IPv4 service # noqa command-instead-of-module
     vars:
       svc_test_port: 30060
     command: "curl -s {{ hostvars[gateway]['ansible_host'] }}:{{ svc_test_port }}"
@@ -107,7 +107,7 @@
         fail_on_error: yes
         strict: yes
 
-  - name: Check the connection to the SingleStack IPv6 service
+  - name: Check the connection to the SingleStack IPv6 service # noqa command-instead-of-module
     vars:
       svc_test_port: 30060
     command: "curl -s {{ hostvars[gateway]['ansible_host'] }}:{{ svc_test_port }}"

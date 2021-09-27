@@ -30,7 +30,7 @@
     group: root
   register: haproxy_monitoring_config
 
-- name: reload haproxy
+- name: reload haproxy # noqa no-handler
   become: yes
   systemd:
     name: haproxy

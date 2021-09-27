@@ -2,7 +2,7 @@
   block:
   - name: Get distribution
     shell: ". /etc/os-release;echo $ID$VERSION_ID"
-    register: DISTRIBUTION
+    register: DISTRIBUTION # noqa var-naming
 
   - name: Install nvidia-docker2 repo
     get_url:
