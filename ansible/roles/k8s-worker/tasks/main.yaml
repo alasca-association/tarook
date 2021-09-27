@@ -49,6 +49,9 @@
     template:
       src: kubeadm-join-config.yaml.j2
       dest: /tmp/kubeadm-join-config.yaml
+      owner: root
+      group: root
+      mode: 0640
 
   - name: Join the k8s cluster as another worker
     become: yes
