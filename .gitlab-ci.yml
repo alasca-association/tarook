@@ -163,7 +163,7 @@ calico-dualstack:
     when: manual
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual
-  allow_failure: false
+  allow_failure: true
   stage: spawn-cluster
   variables:
     ANSIBLE_ANY_ERRORS_FATAL: "true"
