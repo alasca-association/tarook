@@ -9,7 +9,7 @@ gateway_image_name = "mk8s-ci-debian-10-nightly"
 worker_flavors = ["L", "M", "L", "M", "L", "M"]
 enable_az_management = false
 cluster_name = "ci"
-#dualstack_support = false
+dualstack_support = false
 
 # dd2a only
 #azs = ["nova"]

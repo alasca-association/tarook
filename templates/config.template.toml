@@ -13,7 +13,7 @@ subnet_cidr = "172.30.154.0/24"
 #worker_flavors = ["L", "M", "L"]
 #enable_az_management = false
 # Enable DualStack support by setting this variable to true (default: false)
-#dualstack_support = false
+dualstack_support = false # "•ᴗ•"
 # You need to specify a proper subnet for the cluster
 #subnet_v6_cidr = "fd00::/120"
 

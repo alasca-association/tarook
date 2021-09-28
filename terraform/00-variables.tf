@@ -19,7 +19,6 @@ variable "subnet_v6_cidr" {
 variable "dualstack_support" {
   description = "If set to true, dualstack support related resources will be (re-)created"
   type = bool
-  default = false
 }
 
 variable "ssh_cidrs" {
