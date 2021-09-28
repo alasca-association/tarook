@@ -14,12 +14,13 @@ variable "subnet_cidr" {
 
 variable "subnet_v6_cidr" {
   type = string
+  default = "fd00::/120"  # a default value is needed so
+                          # terraform recognizes this variable as optional
 }
 
 variable "dualstack_support" {
   description = "If set to true, dualstack support related resources will be (re-)created"
   type = bool
-  default = false
 }
 
 variable "ssh_cidrs" {
