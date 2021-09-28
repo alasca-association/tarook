@@ -1,6 +1,5 @@
 [terraform]
 subnet_cidr = "172.30.154.0/24"
-subnet_v6_cidr = "fd00::/120"
 haproxy_ports = [30060]
 workers = 6
 default_master_image_name = "mk8s-ci-ubuntu-1804-nightly"
@@ -9,7 +8,9 @@ gateway_image_name = "mk8s-ci-debian-10-nightly"
 worker_flavors = ["L", "M", "L", "M", "L", "M"]
 enable_az_management = false
 cluster_name = "ci"
+
 dualstack_support = false
+subnet_v6_cidr = "fd00::/120"
 
 # dd2a only
 #azs = ["nova"]

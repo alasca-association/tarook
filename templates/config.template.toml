@@ -14,7 +14,7 @@ subnet_cidr = "172.30.154.0/24"
 #enable_az_management = false
 # Enable DualStack support by setting this variable to true (default: false)
 dualstack_support = false # "•ᴗ•"
-# You need to specify a proper subnet for the cluster
+# If you enabled DualStack-support you may want to adjust the IPv6 subnet
 #subnet_v6_cidr = "fd00::/120"
 
 # If true, create block volume for each instance and boot from there.
