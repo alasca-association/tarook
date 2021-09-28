@@ -103,7 +103,6 @@ kuberouter:
     when: on_success
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual
-  - when: never
   allow_failure: false
   stage: spawn-cluster
   variables:
@@ -124,7 +123,6 @@ kuberouter-rook:
     when: manual
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual
-  - when: never
   allow_failure: true
   stage: spawn-cluster
   variables:
@@ -144,7 +142,6 @@ calico-rook-dualstack:
     when: on_success
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual
-  - when: never
   allow_failure: false
   stage: spawn-cluster
   variables:
@@ -166,8 +163,7 @@ calico-dualstack:
     when: manual
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     when: manual
-  - when: never
-  allow_failure: false
+  allow_failure: true
   stage: spawn-cluster
   variables:
     ANSIBLE_ANY_ERRORS_FATAL: "true"
