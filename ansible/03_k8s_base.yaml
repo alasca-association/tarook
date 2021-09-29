@@ -28,6 +28,13 @@
   - role: disable-swap
     tags: disable-swap
 
+- name: Disable SELinux
+  hosts: k8s_nodes
+  roles:
+  - role: disable_selinux
+    tags: disable_selinux
+    when: ansible_os_family == 'RedHat'
+
 - name: Harden SSH
   hosts: k8s_nodes
   become: yes
@@ -96,9 +103,6 @@
   roles:
   - role: centos-networking
     tags: centos-networking
-    when: ansible_os_family == 'RedHat'
-  - role: disable_selinux
-    tags: disable_selinux
     when: ansible_os_family == 'RedHat'
   - role: ntp
     tags: ntp

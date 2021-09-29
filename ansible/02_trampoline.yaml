@@ -20,8 +20,15 @@
   - role: is-gateway-initialized
     tags: update_system
 
+- name: Disable SELinux
+  hosts: frontend
+  roles:
+  - role: disable_selinux
+    tags: disable_selinux
+    when: ansible_os_family == 'RedHat'
+
 - name: Harden SSH
-  hosts: gateways
+  hosts: frontend
   become: yes
   collections:
   - devsec.hardening
@@ -67,9 +74,6 @@
   roles:
   - role: passwordstore
     tags: passwordstore
-  - role: disable_selinux
-    tags: disable_selinux
-    when: ansible_os_family == 'RedHat'
   - role: ntp
     tags: ntp
   - role: keepalived
