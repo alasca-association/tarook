@@ -14,6 +14,8 @@ spec:
   - name: http
     port: 80
     targetPort: 80
+{% if k8s_version is version('1.21', operator='ge') %}
   ipFamilyPolicy: SingleStack
   ipFamilies:
   - IPv4
+{% endif %}
