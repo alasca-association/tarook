@@ -32,3 +32,5 @@ ssh_macs:
 ssh_kex:
   - curve25519-sha256@libssh.org
   - diffie-hellman-group-exchange-sha256
+
+on_openstack: "{{ 'OpenStack' in ansible_facts.product_name }}"
