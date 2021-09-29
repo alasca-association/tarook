@@ -92,7 +92,7 @@ scheduling_key = "{{ scheduling_key_prefix }}/monitoring"
 prometheus_memory_limit = "1Gi"
 prometheus_memory_request = "{{ monitoring_prometheus_memory_limit }}"
 prometheus_cpu_request = "{{ monitoring_prometheus_cpu_limit }}"
-prometheus_cpu_limit = "200m"
+prometheus_cpu_limit = "1"
 
 [testing.test-nodes]
 "ci-worker-1" = "worker0"
