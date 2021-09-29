@@ -1,13 +1,22 @@
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
+      when: always
+    - when: never
+
 stages:
 - lint
 - spawn-cluster
 
 tflint:
+  when: always
   image:
     name: wata727/tflint:latest
     entrypoint: ["/bin/sh", "-c"]
-  rules:
-  - when: always
   stage: lint
   script:
   - tflint terraform
@@ -15,11 +24,10 @@ tflint:
   - docker
 
 shellcheck:
+  when: always
   variables:
     SHELLCHECK_IMAGE_TAG: v0.7.2
   image: koalaman/shellcheck-alpine:$SHELLCHECK_IMAGE_TAG
-  rules:
-  - when: always
   stage: lint
   script:
   - "find -iname '*.sh' '!' -ipath './jsonnet-sources/*/vendor/**' '!' -ipath './.git/**' -print0 | xargs -0 -- shellcheck -Calways"
@@ -27,13 +35,12 @@ shellcheck:
   - docker
 
 ansible-lint:
+  when: always
   variables:
     ANSIBLE_LINT_IMAGE_TAG: 5
   image:
     name: cytopia/ansible-lint:$ANSIBLE_LINT_IMAGE_TAG
     entrypoint: ["/bin/sh", "-c"]
-  rules:
-  - when: always
   stage: lint
   script:
   - 'cd ansible-legacy && ansible-galaxy install -r requirements.yaml'
@@ -44,17 +51,17 @@ ansible-lint:
   - docker
 
 flake8:
+  when: always
   image: python:3
   script:
   - 'pip3 install flake8'
   - 'python3 -m flake8 --filename="*.py"'
-  rules:
-  - when: always
   stage: lint
   tags:
   - docker
 
-.preparation_and_test_and_cleanup:
+.prepare_spawn_test_cleanup_k8s_cluster:
+  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:deel"
   before_script:
   - 'export wg_conf_name=wg0'
   # id_rsa must be set as `File` input in the GitLab CI/CD variables of the
@@ -93,11 +100,14 @@ flake8:
     paths:
       - ci/podlogs/
     when: always
+  tags:
+  - docker
+  - wireguard-ready
+  resource_group: ch-k8s-ci-environment-f1a-1
 
 # Spawn a cluster with kube-router as CNI and rook disabled
 kuberouter:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:deel"
-  extends: .preparation_and_test_and_cleanup
+  extends: .prepare_spawn_test_cleanup_k8s_cluster
   rules:
   - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
     when: on_success
@@ -109,15 +119,10 @@ kuberouter:
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
     AFLAGS: "--diff -e rook=False"
-  tags:
-  - docker
-  - wireguard-ready
-  resource_group: ch-k8s-ci-environment-f1a-1
 
 # Spawn a cluster with kube-router as CNI and rook enabled
 kuberouter-rook:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:deel"
-  extends: .preparation_and_test_and_cleanup
+  extends: .prepare_spawn_test_cleanup_k8s_cluster
   rules:
   - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
     when: manual
@@ -128,15 +133,10 @@ kuberouter-rook:
   variables:
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
-  tags:
-  - docker
-  - wireguard-ready
-  resource_group: ch-k8s-ci-environment-f1a-1
 
 # Spawn a cluster with calico as CNI and rook enabled
 calico-rook-dualstack:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:deel"
-  extends: .preparation_and_test_and_cleanup
+  extends: .prepare_spawn_test_cleanup_k8s_cluster
   rules:
   - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
     when: on_success
@@ -149,15 +149,10 @@ calico-rook-dualstack:
     ANSIBLE_FORCE_COLOR: "true"
     AFLAGS: "--diff -e k8s_network_plugin=calico"
     TF_VAR_dualstack_support: "true"
-  tags:
-  - docker
-  - wireguard-ready
-  resource_group: ch-k8s-ci-environment-f1a-1
 
 # Spawn a cluster with calico as CNI and rook disabled
 calico-dualstack:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:deel"
-  extends: .preparation_and_test_and_cleanup
+  extends: .prepare_spawn_test_cleanup_k8s_cluster
   rules:
   - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
     when: manual
@@ -170,7 +165,3 @@ calico-dualstack:
     ANSIBLE_FORCE_COLOR: "true"
     AFLAGS: "--diff -e k8s_network_plugin=calico -e rook=False"
     TF_VAR_dualstack_support: "true"
-  tags:
-  - docker
-  - wireguard-ready
-  resource_group: ch-k8s-ci-environment-f1a-1
