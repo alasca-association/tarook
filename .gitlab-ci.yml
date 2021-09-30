@@ -61,7 +61,7 @@ flake8:
   - docker
 
 .prepare_spawn_test_cleanup_k8s_cluster:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a"
+  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
   before_script:
   - 'export wg_conf_name=wg0'
   # id_rsa must be set as `File` input in the GitLab CI/CD variables of the
