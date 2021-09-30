@@ -11,7 +11,7 @@ below.
 required variables.
 
 **Hint:** This LCM repository contains
-[a template file](../../jenkins/envrc.template.sh) you can use to bootstrap
+[a template file](../../templates/envrc.template.sh) you can use to bootstrap
 your own .envrc file.
 
 ## General
