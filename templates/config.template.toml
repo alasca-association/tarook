@@ -469,7 +469,7 @@ enabled = false # •ᴗ•
 # --- C&H USERS ---
 # ansible prefix: "cah_users_"
 [cah-users]
-rollout = true  # •ᴗ•
+rollout = false  # •ᴗ•
 
 # Include and exclude C&H users from rollout
 # C&H users refers to items in the ch-users-databag repository
