@@ -5,6 +5,9 @@
   template:
     src: wg.conf.j2
     dest: /etc/wireguard/wg-peer1.conf
+    owner: root
+    group: root
+    mode: 0640
   notify: Reconfigure wireguard
 
 - name: Configure nftables
@@ -14,6 +17,9 @@
   template:
     src: nftables.conf.j2
     dest: /etc/nft.d/20-site-to-site.conf
+    owner: root
+    group: root
+    mode: 0640
   notify: Reconfigure nftables
 
 - name: Configure bird
@@ -21,6 +27,9 @@
   template:
     src: bird.conf.j2
     dest: /etc/bird.d/20-wg-s2s.conf
+    owner: bird
+    group: bird
+    mode: 0640
   notify: Reconfigure bird
 
 - name: Configure keepalived

@@ -36,7 +36,7 @@
   vars:
     password_store_dir: "{{ etc_dir }}/passwordstore"
   block:
-    - name: Lookup key in passwordstore # noqa 207
+    - name: Lookup key in passwordstore # noqa ignore-errors no-jinja-nesting
       ignore_errors: yes
       # Check if the key exists
       set_fact:
@@ -185,20 +185,26 @@
         msg: "{{ ansible_failed_result }}"
 
 - name: Deploy bird configuration for wireguard routes
+  become: yes
   block:
   - name: Ensure that drop-in directory for bird configs exist
     file:
       path: /etc/bird.d/
       state: directory
+      owner: root
+      group: bird
+      mode: 0640
 
   - name: Ensure that drop-in directory for bird configs exist (IPv6)
     file:
       path: /etc/birdv6.d/
       state: directory
+      owner: root
+      group: bird
+      mode: 0640
     when: dualstack_support
 
   - name: Create bird config for IPv4 wireguard routes
-    become: yes
     template:
       src: wg_bird.conf.j2
       dest: /etc/bird.d/00-wireguard.conf
@@ -208,7 +214,6 @@
     notify: restart bird
 
   - name: Create bird config for IPv6 wireguard routes
-    become: yes
     template:
       src: wg_bird_v6.conf.j2
       dest: /etc/birdv6.d/00-wireguard.conf

@@ -1,3 +1,7 @@
+use_default_rules: true
+
 skip_list:
  - role-name      # Role name {} does not match ``^[a-z][a-z0-9_]+$`` pattern
  - meta-no-info   # meta/main.yml should contain relevant info
+
+verbosity: 2 # To make sure the roles are actually checked

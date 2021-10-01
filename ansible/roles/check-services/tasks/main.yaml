@@ -23,7 +23,7 @@
         fail_on_error: yes
         strict: yes
 
-  - name: Check the connection
+  - name: Check the connection # noqa command-instead-of-module
     command: "curl -s {{ hostvars[gateway]['ansible_host'] }}:{{ deprecated_nodeport_lb_test_port }}"
     register: curl_result
     failed_when: curl_result.rc != 0

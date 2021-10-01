@@ -4,4 +4,7 @@
     path: /home/ubuntu/.ssh/authorized_keys
     line: "{{ item }}"
     create: yes
+    owner: ubuntu
+    group: ubuntu
+    mode: 0644
   loop: "{{ ssh_authorized_keys }}"

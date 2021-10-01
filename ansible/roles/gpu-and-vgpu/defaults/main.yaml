@@ -6,8 +6,8 @@ nvidia_classic_driver_name: "NVIDIA-Linux-x86_64-450.80.02.run"
 nvidia_working_dir: "/tmp"
 nvidia_gridd_conf: "/etc/nvidia/gridd.conf"
 
-ServerAddress: "\"redacted.invalid\"" # removed durin open sourcing
-ServerPort: "7070"
-BackupServerAddress: "\"redacted.invalid\"" # removed durin open sourcing
-BackupServerPort: "7070"
-FeatureType: "2"
+server_address: "\"redacted.invalid\"" # removed durin open sourcing
+server_port: "7070"
+backup_server_address: "\"redacted.invalid\"" # removed durin open sourcing
+backup_server_port: "7070"
+feature_type: "2"

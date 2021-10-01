@@ -27,7 +27,7 @@
         mode: 0600
 
     # https://github.com/rook/rook/issues/7659
-    - name: Replace old Custom Resource Definitions (CRDs)
+    - name: Replace old Custom Resource Definitions (CRDs) # noqa ignore-errors
       command:
       args:
         argv:

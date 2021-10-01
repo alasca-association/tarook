@@ -3,19 +3,19 @@
 # We might want / need to drain the node before we can undo the changes of kubeadm
 
 # kubeadm reset asks for confirmation, therefore pass --force
-- name: Run kubeadm reset
+- name: Run kubeadm reset # noqa no-changed-when
   command: kubeadm reset --force
 
-- name: Flush all iptables chains (delete all rules one by one)
+- name: Flush all iptables chains (delete all rules one by one) # noqa no-changed-when
   command: iptables -F
 
-- name: Flush the nat table
+- name: Flush the nat table # noqa no-changed-when
   command: iptables -t nat -F
 
-- name: Flush the mangle table
+- name: Flush the mangle table # noqa no-changed-when
   command: iptables -t mangle -F
 
-- name: Delete every non-builtin chain
+- name: Delete every non-builtin chain # noqa no-changed-when
   command: iptables -X
 
 - name: Remove /var/lib/etcd
@@ -23,7 +23,7 @@
     path: /var/lib/etcd
     state: absent
 
-- name: Unhold k8s tools
+- name: Unhold k8s tools # noqa no-changed-when
   become: yes
   command: apt-mark unhold kubeadm kubectl kubelet
 

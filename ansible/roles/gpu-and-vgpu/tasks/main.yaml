@@ -75,11 +75,11 @@
         dest: "{{ nvidia_gridd_conf }}"
         content: |
           {{ _auto_generated_preamble }}
-          ServerAddress={{ ServerAddress }}
-          ServerPort={{ ServerPort }}
-          BackupServerAddress={{ BackupServerAddress }}
-          BackupServerPort={{ BackupServerPort }}
-          FeatureType={{ FeatureType }}
+          ServerAddress={{ server_address }}
+          ServerPort={{ server_port }}
+          BackupServerAddress={{ backup_server_address }}
+          BackupServerPort={{ backup_server_port }}
+          FeatureType={{ feature_type }}
       register: nvidia_conf
 
     - name: Set permissions to the nvidia gridd conf

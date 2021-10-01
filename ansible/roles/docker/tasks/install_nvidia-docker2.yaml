@@ -2,14 +2,12 @@
   block:
   - name: Get distribution
     shell: ". /etc/os-release;echo $ID$VERSION_ID"
-    register: DISTRIBUTION
+    register: distribution
 
   - name: Install nvidia-docker2 repo
     get_url:
-      url: "https://nvidia.github.io/nvidia-docker/{{ DISTRIBUTION.stdout }}/nvidia-docker.repo"
+      url: "https://nvidia.github.io/nvidia-docker/{{ distribution.stdout }}/nvidia-docker.repo"
       dest: /etc/yum.repos.d/nvidia-docker.repo
-    environment:
-      distribution: "$(. /etc/os-release;echo $ID$VERSION_ID)"
 
   - name: Install nvidia-docker2 packages
     package:

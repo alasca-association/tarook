@@ -1,4 +1,4 @@
-- name: Run kubeadm upgrade plan
+- name: Run kubeadm upgrade plan # noqa no-changed-when
   become: yes
   command: kubeadm upgrade plan
 
