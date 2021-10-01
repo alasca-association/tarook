@@ -98,8 +98,8 @@ flake8:
   - wireguard-ready
   resource_group: ch-k8s-ci-environment-f1a-1
 
-# Spawn a cluster with kube-router as CNI and rook disabled
-kuberouter:
+# Spawn a cluster with kube-router as CNI and rook enabled
+kuberouter-rook:
   rules:
     - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
       when: never
@@ -110,10 +110,9 @@ kuberouter:
   variables:
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
-    AFLAGS: "--diff -e rook=False"
 
-# Spawn a cluster with kube-router as CNI and rook enabled
-kuberouter-rook:
+# Manually spawn a cluster with kube-router as CNI and rook enabled
+kuberouter-rook-manual:
   when: manual
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   allow_failure: true
@@ -137,8 +136,8 @@ calico-rook-dualstack:
     AFLAGS: "--diff -e k8s_network_plugin=calico"
     TF_VAR_dualstack_support: "true"
 
-# Spawn a cluster with calico as CNI and rook disabled
-calico-dualstack:
+# Spawn a cluster with calico as CNI and rook enabled
+calico-rook-dualstack-manual:
   when: manual
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   allow_failure: true
@@ -146,5 +145,5 @@ calico-dualstack:
   variables:
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
-    AFLAGS: "--diff -e k8s_network_plugin=calico -e rook=False"
+    AFLAGS: "--diff -e k8s_network_plugin=calico"
     TF_VAR_dualstack_support: "true"
