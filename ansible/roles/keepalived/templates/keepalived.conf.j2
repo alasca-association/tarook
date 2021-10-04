@@ -55,7 +55,7 @@ vrrp_instance VIP_1_V6 {
         {{ private_vip_v6 }}
     }
     unicast_peer {
-        {% for hostname in groups['gateways'] %}
+        {% for hostname in groups['frontend'] %}
         {% set peer = hostvars[hostname] %}
         {% if not peer.local_ipv6_address == local_ipv6_address %}
         {{ peer.local_ipv6_address | ipaddr }}
