@@ -83,7 +83,7 @@
       tags:
       - test-loadbalancer-service
       - test-dualstack
-      when: (openstack_lbaas | default("False")) or ch_k8s_lbaas_enabled
+      when: (openstack_lbaas | default(False)) or ch_k8s_lbaas_enabled
 
 - name: Test enforcement of PodSecurityPolicies
   hosts: masters[0]
