@@ -5,5 +5,5 @@ DNS = 8.8.8.8
 
 [Peer]
 PublicKey = {{ wg_public_key_server['stdout'] }}
-Endpoint = {{ public_vip }}:{{ vpn_port }}
+Endpoint = {{ public_vip }}:{{ wg_port }}
 AllowedIPs = 10.47.0.0/24, {{ hostvars[groups['networks'][0]]['subnet_cidr'] }}

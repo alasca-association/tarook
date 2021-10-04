@@ -6,5 +6,5 @@ Address = {{ item['ip'] }} {%- if dualstack_support %}, {{ item['ipv6'] }}{% end
 
 [Peer]
 PublicKey = {{ lookup('file', wg_local_pub_path) }}
-Endpoint = {{ networking_floating_ip }}:{{ vpn_port }}
+Endpoint = {{ networking_floating_ip }}:{{ wg_port }}
 AllowedIPs = {{ wg_ip_cidr }}, {{ subnet_cidr }} {%- if dualstack_support %}, {{ wg_ipv6_cidr }}, {{ subnet_v6_cidr }}{% endif %}

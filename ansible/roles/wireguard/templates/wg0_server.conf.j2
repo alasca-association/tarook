@@ -3,7 +3,7 @@
 [Interface]
 Address = {{ wg_ip_gw }} {%- if dualstack_support %}, {{ wg_ipv6_gw }}{% endif %}
 
-ListenPort = {{ vpn_port }}
+ListenPort = {{ wg_port }}
 PrivateKey = {{ wg_gw_priv_key }}
 
 {% for peer in wg_peers %}

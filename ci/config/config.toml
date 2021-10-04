@@ -25,6 +25,7 @@ ip_cidr = "172.30.153.0/24"
 ip_gw = "172.30.153.1/24"
 ipv6_cidr = "fd01::/120"
 ipv6_gw = "fd01::1/120"
+port = 7777
 
 [[wireguard.peers]]
 pub_key = "MQL6dL0DSOnXTLrScCseY7Fs8S5Hb4yHc6SZ+/ucNx0="
