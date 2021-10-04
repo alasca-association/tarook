@@ -8,6 +8,7 @@ workflow:
 stages:
 - lint
 - spawn-cluster
+- deploy
 
 tflint:
   image:
@@ -56,6 +57,29 @@ flake8:
   stage: lint
   tags:
   - docker
+
+testBook:
+  stage: lint
+  image: rust
+  variables:
+    CARGO_HOME: $CI_PROJECT_DIR/cargo
+  before_script:
+    - export PATH="$PATH:$CARGO_HOME/bin"
+    - mdbook --version || cargo install mdbook
+  script:
+    - mdbook build docs -d ../public
+  rules:
+  - when: always
+  artifacts:
+    expose_as: "Rendered Docs"
+    expire_in: '7 days'
+    paths:
+      - public/
+  tags:
+  - docker
+  cache:
+    paths:
+      - $CARGO_HOME/bin
 
 .prepare_spawn_test_cleanup_k8s_cluster:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
@@ -159,3 +183,26 @@ calico-rook-dualstack-manual:
     ANSIBLE_FORCE_COLOR: "true"
     AFLAGS: "--diff -e k8s_network_plugin=calico"
     TF_VAR_dualstack_support: "true"
+
+pages:
+  stage: deploy
+  image: rust
+  variables:
+    CARGO_HOME: $CI_PROJECT_DIR/cargo
+  before_script:
+    - export PATH="$PATH:$CARGO_HOME/bin"
+    - mdbook --version || cargo install mdbook
+  script:
+    - mdbook build docs -d ../public
+  rules:
+  - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/'
+    when: always
+  - when: never
+  artifacts:
+    paths:
+      - public/
+  tags:
+  - docker
+  cache:
+    paths:
+      - $CARGO_HOME/bin
