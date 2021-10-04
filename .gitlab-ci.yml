@@ -100,6 +100,8 @@ flake8:
 
 # Spawn a cluster with kube-router as CNI and rook enabled
 kuberouter-rook:
+  environment:
+    name: spawn-cluster
   rules:
     - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
       when: never
@@ -113,6 +115,8 @@ kuberouter-rook:
 
 # Manually spawn a cluster with kube-router as CNI and rook enabled
 kuberouter-rook-manual:
+  environment:
+    name: spawn-cluster
   when: manual
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   allow_failure: true
@@ -123,6 +127,8 @@ kuberouter-rook-manual:
 
 # Spawn a cluster with calico as CNI and rook enabled
 calico-rook-dualstack:
+  environment:
+    name: spawn-cluster
   rules:
   - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
     when: never
@@ -138,6 +144,8 @@ calico-rook-dualstack:
 
 # Spawn a cluster with calico as CNI and rook enabled
 calico-rook-dualstack-manual:
+  environment:
+    name: spawn-cluster
   when: manual
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   allow_failure: true
