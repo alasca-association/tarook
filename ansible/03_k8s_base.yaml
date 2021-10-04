@@ -205,7 +205,7 @@
     - ch-k8s-lbaas-agent
 
 - name: Configure the local-storage controller
-  hosts: workers
+  hosts: k8s_nodes
   vars_files:
   - vars/auto_generated_preamble.yaml
   roles:
