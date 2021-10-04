@@ -44,9 +44,9 @@ backend k8s_back
   timeout server {{ haproxy_timeout_server }}
 
   {% for host in groups['masters'] %}
-  server {{ host }} {{ hostvars[host]['local_ipv4_address'] }}:{{ k8s_apiserver_backend_port }} check check-ssl verify none
+  server {{ host }} {{ hostvars[host]['local_ipv4_address'] }}:6443 check check-ssl verify none
   {% if dualstack_support %}
-  server {{ host }} {{ hostvars[host]['local_ipv6_address'] }}:{{ k8s_apiserver_backend_port }} check check-ssl verify none
+  server {{ host }} {{ hostvars[host]['local_ipv6_address'] }}:6443 check check-ssl verify none
   {% endif %}
   {% endfor %}
 

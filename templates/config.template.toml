@@ -84,6 +84,9 @@ use_podsecuritypolicies = false # •ᴗ•
 # and surrounding framework is deployed.
 is_gpu_cluster = false # •ᴗ•
 
+[kubernetes.apiserver]
+frontend_port = 8888 # •ᴗ•
+
 # --- KUBERNETES: STORAGE CONFIGURATION ---
 # ansible prefix: "k8s_storage"
 [kubernetes.storage]
