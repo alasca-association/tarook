@@ -87,6 +87,27 @@ rook_enabled = true # •ᴗ•
 #to run on all nodes (ignoring all taints). This is often desirable.
 nodeplugin_toleration = true # •ᴗ•
 
+# --- KUBERNETES: LOCAL STORAGE CONFIGURATION ---
+# ansible prefix: "k8s_local_storage"
+[kubernetes.local_storage.static]
+# Name of the storage class to create.
+#storageclass_name = "local-storage"
+
+# Namespace to deploy the components in
+#namespace = "kube-system"
+
+# Directory where the volume will be placed on the worker node
+#data_directory = "/mnt/data"
+
+# Synchronization directory where the provisioner will pick up the volume from
+#discovery_directory = "/mnt/mk8s-disks"
+
+# Version of the provisioner to use
+#version = "v2.3.4"
+
+# Toleration for the plugin. Defaults to `kubernetes.storage.nodeplugin_toleration`
+#nodeplugin_toleration = ...
+
 # --- KUBERNETES: MONITORING CONFIGURATION ---
 # ansible prefix: "k8s_monitoring"
 [kubernetes.monitoring]

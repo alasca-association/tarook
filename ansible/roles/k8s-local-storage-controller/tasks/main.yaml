@@ -9,13 +9,13 @@
       group: root
       mode: 0755
     loop:
-      - "{{ local_storage_data_directory }}"
-      - "{{ local_storage_discovery_directory }}/disk"
+      - "{{ k8s_local_storage_static_data_directory }}"
+      - "{{ k8s_local_storage_static_discovery_directory }}/disk"
 
   - name: Create bind mount
     mount:
-      src: "{{ local_storage_data_directory }}"
-      path: "{{ local_storage_discovery_directory }}/disk"
+      src: "{{ k8s_local_storage_static_data_directory }}"
+      path: "{{ k8s_local_storage_static_discovery_directory }}/disk"
       state: mounted
       opts: bind
       fstype: ext4

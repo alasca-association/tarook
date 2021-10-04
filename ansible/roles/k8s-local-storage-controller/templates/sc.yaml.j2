@@ -2,8 +2,8 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: {{ local_storage_storageclass_name | to_json }}
-  namespace: {{ local_storage_namespace | to_json }}
+  name: {{ k8s_local_storage_static_storageclass_name | to_json }}
+  namespace: {{ k8s_local_storage_static_namespace | to_json }}
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
 # Supported policies: Delete, Retain
