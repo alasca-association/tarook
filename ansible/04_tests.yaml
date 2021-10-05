@@ -111,7 +111,12 @@
   become: no
   gather_facts: false
   pre_tasks:
-    - name: include env vars
+    # include default vars of rook
+    - name: include rook defaults
+      when: k8s_storage_rook_enabled | bool
+      include_vars:
+        file: "{{ ksl_playbook_directory }}/roles/rook_v1/defaults/main.yaml"
+    - name: include ksl inventory variables
       when: ksl_vars_directory is defined
       include_vars:
         file: "{{ ksl_vars_directory }}/rook.yaml"
@@ -129,7 +134,7 @@
         block_storage_class: rook-ceph-data
     - role: check-shared-fs
       tags: test-ceph-shared-filesystem
-      when: "(k8s_storage_rook_enabled | bool) and ((rook_ceph_fs | default(false)) | bool)"
+      when: "(k8s_storage_rook_enabled | bool) and (rook_ceph_fs | bool)"
       vars:
         fs_storage_class: rook-ceph-cephfs
     - role: check-local-storage

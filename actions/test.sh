@@ -30,4 +30,6 @@ popd
 
 # Test k8s-base
 # shellcheck disable=2086
-ansible_playbook -i "$ansible_inventoryfile_03" -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" -e "kms_vars_directory=$ansible_k8s_ms_vars_base" 04_tests.yaml
+ansible_playbook -i "$ansible_inventoryfile_03" -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" \
+    -e "ksl_playbook_directory=$ansible_k8s_sl_playbook" \
+    -e "kms_vars_directory=$ansible_k8s_ms_vars_base" 04_tests.yaml
