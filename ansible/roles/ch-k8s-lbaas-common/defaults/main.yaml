@@ -1,10 +1,10 @@
 ---
 ch_k8s_lbaas_enabled: false
 ch_k8s_lbaas_use_floating_ips: true
-ch_k8s_lbaas_controller_image: "publicgitlab-registry.cloudandheat.com/k8s/ch-k8s-lbaas/controller:{{ image_versions.ch_k8s_lbaas }}"
+ch_k8s_lbaas_controller_image: "publicgitlab-registry.cloudandheat.com/k8s/ch-k8s-lbaas/controller:{{ ch_k8s_lbaas_version }}"
 
 ch_k8s_lbaas_agent_user: ch-k8s-lbaas-agent
-ch_k8s_lbaas_agent_binary_url: "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download/v{{ image_versions.ch_k8s_lbaas }}/ch-k8s-lbaas-agent"
+ch_k8s_lbaas_agent_binary_url: "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download/v{{ ch_k8s_lbaas_version }}/ch-k8s-lbaas-agent"
 
 
 ch_k8s_lbaas_agent_binary_checksums:
@@ -16,6 +16,6 @@ ch_k8s_lbaas_agent_binary_checksums:
   "0.3.2": "sha256:f9a32317f26c6f135b5128455c09551efabab51340757350cb108d2726ea4175"
   "0.3.3": "sha256:c2ecf97b307da8db235728afa2f65a7ba6d2b77d9c6d7ff16d2fbe056410a073"
 
-ch_k8s_lbaas_agent_binary_checksum: "{{ ch_k8s_lbaas_agent_binary_checksums[image_versions.ch_k8s_lbaas] | default('invalid checksum') }}"
+ch_k8s_lbaas_agent_binary_checksum: "{{ ch_k8s_lbaas_agent_binary_checksums[ch_k8s_lbaas_version] | default('invalid checksum') }}"
 
 ch_k8s_lbaas_use_bgp: "{{ (k8s_network_plugin | default('flannel')) in ['kube-router','calico'] }}"
