@@ -34,7 +34,7 @@
   become: yes
   template:
     src: config.cfg.j2
-    dest: /etc/default/haproxy
+    dest: "{{ haproxy_service_config_map[ansible_os_family] }}"
     owner: root
     group: root
     mode: 0640
