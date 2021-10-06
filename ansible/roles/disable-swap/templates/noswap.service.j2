@@ -1,0 +1,15 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=Disable swapfile
+Documentation=man:swapon(8) man:systemd.swap(5)
+Before=kubelet.service
+After=local-fs.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/sbin/swapoff -a
+
+[Install]
+WantedBy=default.target

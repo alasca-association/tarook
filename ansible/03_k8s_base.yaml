@@ -24,6 +24,8 @@
     tags: configure-automatic-system-updates
   - role: monitoring-system-update-status
     tags: monitoring-system-update-status
+  - role: disable-swap
+    tags: disable-swap
 
 - name: Harden SSH
   hosts: k8s_nodes
