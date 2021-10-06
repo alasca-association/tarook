@@ -7,7 +7,6 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-
   block:
   - name: create namespace
     k8s:
@@ -52,6 +51,8 @@
     failed_when: 'writer_state.resources[0].status.phase == "Failed"'
 
   - name: run reader pod
+    vars:
+      writer_pod_node_name: "{{ writer_state.resources[0].spec.nodeName }}"
     k8s:
       definition: "{{ lookup('template', 'reader-pod.yaml') }}"
       state: present
@@ -70,7 +71,7 @@
     delay: 5
     retries: 240
 
-  - name: check writer pod success
+  - name: check reader pod success
     debug:
       msg: "Reader pod is in condition {{ reader_state.resources[0].status.phase }}"
     failed_when: 'reader_state.resources[0].status.phase == "Failed"'
