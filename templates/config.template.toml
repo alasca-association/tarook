@@ -1,5 +1,7 @@
 # Variables marked with "•ᴗ•" are mandatory!
-# This means you have to set them, there is no default.
+# This means you have to set them, there is no default value!
+# If a variable is commented out, it is optional and the defined
+# value is the default.
 
 # NOTE:For some sections the inventory updater will apply pefixes to
 # the variables before passing them over to the ansible inventories. 
@@ -12,16 +14,16 @@ subnet_cidr = "172.30.154.0/24"
 #workers = 3
 #worker_flavors = ["L", "M", "L"]
 #enable_az_management = false
-# Enable DualStack support by setting this variable to true (default: false)
+# Enable DualStack support
 dualstack_support = false # "•ᴗ•"
 # If you enabled DualStack-support you may want to adjust the IPv6 subnet
 #subnet_v6_cidr = "fd00::/120"
 
 # If true, create block volume for each instance and boot from there.
-# Equivalent to `openstack server create --boot-from-volume […]. (`false` by default)
-#create_root_disk_on_volume = true
+# Equivalent to `openstack server create --boot-from-volume […].
+#create_root_disk_on_volume = false
 
-# Volume type that is used if `create_root_disk_on_volume` is true. ("three_times_replicated" by default)
+# Volume type that is used if `create_root_disk_on_volume` is true.
 #root_disk_volume_type = "three_times_replicated"
 
 # --- LOAD-BALANCING ---
@@ -139,8 +141,7 @@ service_subnet = "10.96.0.0/12" # •ᴗ•
 # Pick a networking plugin:
 # - kube-router: High-performance, low-overhead implementation with support
 #   for NetworkPolicy objects
-# - flannel: Historical default option. Do not use for new clusters. It is
-#   still the default (from the ansible side) to not break existing clusters.
+# - flannel: Historical default option. Do not use for new clusters.
 # - calico: High-performance, pure IP networking, policy engine. Calico provides
 #   layer 3 networking capabilities and associates a virtual router with each node.
 #   Allows the establishment of zone boundaries through BGP
@@ -169,8 +170,8 @@ namespace = "rook-ceph" # •ᴗ•
 cluster_name = "rook-ceph" # •ᴗ•
 
 # Currently we support the following rook versions:
-# v1.2.3 (default), v1.3.11, v1.4.9, v1.5.12, v1.6.7
-version = "v1.6.7" # •ᴗ•
+# v1.2.3, v1.3.11, v1.4.9, v1.5.12, v1.6.7
+#version = "v1.2.3"
 
 #nodeplugin_toleration = true
 
@@ -362,7 +363,7 @@ scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 # ansible prefix: "wg_"
 [wireguard]
 # Set the environment variable "WG_COMPANY_USERS" or this field to 'false' if C&H company members
-# should not be rolled out as wireguard peers. Default is true
+# should not be rolled out as wireguard peers.
 #rollout_company_users = true
 
 # IP address range to use for WireGuard clients. Must be set to a CIDR and must
@@ -385,8 +386,8 @@ ip_gw = "172.30.153.65/26"
 #ident = "testkunde1"
 
 ## Wireguard-based site-to-site tunnel
-# If enabled, configure site to site tunnel (defaults to false)
-#s2s_enabled = true
+# If enabled, configure site to site tunnel
+#s2s_enabled = false
 
 # Subnet of the wireguard "transfer net" between the two endpoints
 #s2s_transfer_subnet = "172.30.18.2/31"
@@ -420,25 +421,21 @@ enabled = false # •ᴗ•
 #proposals =
 
 # Must be a list of ESP proposals to offer to the client.
-# Defaults to ipsec_proposals
 #esp_proposals = "{{ ipsec_proposals }}"
 
 # List of CIDRs to route to the peer. If not set, only dynamic IP
 # assignments will be routed.
-# Defaults to null to disable.
 #peer_networks = []
 
-# List of CIDRs to offer to the peer. Defaults to a list with only the
-# `subnet_cidr` in it.
+# List of CIDRs to offer to the peer.
 #local_networks = ["{{ subnet_cidr }}"]
 
 # Pool to source virtual IP addresses from. Those are the IP addresses assigned
-# to clients which do not have remote networks. Disabled by default.
+# to clients which do not have remote networks.
 #virtual_subnet_pool = false
 
 # List of addresses to accept as remote. When initiating, the first single IP
 # address is used.
-# Default is false, disabling the filter altogether.
 #remote_addrs = false
 
 # The PSK for EAP. Must be set.
