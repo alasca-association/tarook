@@ -4,4 +4,5 @@ openstack_lbaas_ingress: false
 # to add the volume type `three_times_replicated_nvme` to your OpenStack project.
 openstack_cinder_nvme: false
 cinder_storage_nodeplugin_toleration: "{{ k8s_storage_nodeplugin_toleration }}"
+k8s_storage_cinder_enable_topology: false
 openstack_network_name: ""
