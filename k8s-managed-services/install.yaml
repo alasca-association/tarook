@@ -7,6 +7,8 @@
       when: kms_vars_directory is defined
       include_vars:
         dir: "{{ kms_vars_directory }}"
+      tags:
+        - always
   tags:
   - mk8s-ms
   roles:

@@ -71,7 +71,7 @@
 
   - name: Check that no no-psp Pods exist
     fail:
-      msg: "The pod {{ item.metadata.name }} exists, it should've been forbidden by policy (annotations: {{ item.metadata.annotations }})."
+      msg: "The pod {{ item.metadata.name }} exists, it should've been forbidden by policy (annotations: {{ item.metadata.annotations | default([]) }})."
     loop: "{{ pod_info.resources }}"
     when: "item.metadata.name.startswith('failing-job-no-psp-')"
 
