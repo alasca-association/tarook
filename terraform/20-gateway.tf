@@ -55,11 +55,11 @@ resource "openstack_networking_port_v2" "gateway" {
 
 resource "openstack_blockstorage_volume_v2" "gateway-volume" {
   count = var.create_root_disk_on_volume == true ? length(var.azs) : 0
-
   name        = "${var.cluster_name}-gw-volume-${try(var.azs[count.index], count.index)}"
-  size        = data.openstack_compute_flavor_v2.gateway.disk
+  size        = (data.openstack_compute_flavor_v2.gateway.disk > 0) ? data.openstack_compute_flavor_v2.gateway.disk : var.gateway_root_disk_volume_size
   image_id    = data.openstack_images_image_v2.gateway.id
   volume_type = var.root_disk_volume_type
+  availability_zone = var.enable_az_management ? var.azs[count.index] : null
 
   timeouts {
     create = var.timeout_time

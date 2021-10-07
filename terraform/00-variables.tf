@@ -158,3 +158,33 @@ variable "worker_anti_affinity_group_name" {
   type = string
   default = "cah-anti-affinity"
 }
+
+variable "master_root_disk_sizes" {
+  type = list(number)
+  default = []
+  description = "If 'create_root_disk_on_volume=true' and the master flavor does not specify a disk size, the root disk volume of this particular instance will have this size."
+}
+
+variable "worker_root_disk_sizes" {
+  type = list(number)
+  default = []
+  description = "If 'create_root_disk_on_volume=true' and the worker flavor does not specify a disk size, the root disk volume of this particular instance will have this size."
+}
+
+variable "gateway_root_disk_volume_size" {
+  type = number
+  default = 10
+  description = "If 'create_root_disk_on_volume=true' and the gateway flavor does not specify a disk size, the root disk volume will have this size."
+}
+
+variable "default_master_root_disk_size" {
+  type = number
+  default = 50
+  description = "If 'create_root_disk_on_volume=true', the master flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size."
+}
+
+variable "default_worker_root_disk_size" {
+  type = number
+  default = 50
+  description = "If 'create_root_disk_on_volume=true', the worker flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size."
+}

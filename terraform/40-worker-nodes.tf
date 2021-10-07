@@ -36,11 +36,11 @@ data "openstack_images_image_v2" "worker" {
 
 resource "openstack_blockstorage_volume_v2" "worker-volume" {
   count = var.create_root_disk_on_volume == true ? var.workers : 0
-
   name        = "${var.cluster_name}-worker-volume-${try(var.worker_names[count.index], count.index)}"
-  size        = data.openstack_compute_flavor_v2.worker[count.index].disk
+  size        = (data.openstack_compute_flavor_v2.worker[count.index].disk > 0) ? data.openstack_compute_flavor_v2.worker[count.index].disk : try(var.worker_root_disk_sizes[count.index], var.default_worker_root_disk_size)
   image_id    = data.openstack_images_image_v2.worker[count.index].id
   volume_type = var.root_disk_volume_type
+  availability_zone = var.enable_az_management ? try(var.worker_azs[count.index], var.azs[count.index % length(var.azs)]) : null
 
   timeouts {
     create = var.timeout_time

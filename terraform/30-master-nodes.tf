@@ -33,9 +33,10 @@ resource "openstack_blockstorage_volume_v2" "master-volume" {
   count = var.create_root_disk_on_volume == true ? var.masters : 0
 
   name        = "${var.cluster_name}-master-volume-${try(var.master_names[count.index], count.index)}"
-  size        = data.openstack_compute_flavor_v2.master[count.index].disk
+  size        = (data.openstack_compute_flavor_v2.master[count.index].disk > 0) ? data.openstack_compute_flavor_v2.master[count.index].disk : try(var.master_root_disk_sizes[count.index], var.default_master_root_disk_size)
   image_id    = data.openstack_images_image_v2.master[count.index].id
   volume_type = var.root_disk_volume_type
+  availability_zone = var.enable_az_management ? try(var.master_azs[count.index], var.azs[count.index % length(var.azs)]) : null
 
   timeouts {
     create = var.timeout_time
