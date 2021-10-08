@@ -3,7 +3,6 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  when: false # ToDo: Enable again after fixing monitoring scheduling
   block:
   - name: discover IP address of prometheus service
     k8s_info:
@@ -32,10 +31,12 @@
       return_content: true
     register: metrics
     loop: "{{ groups['k8s_nodes'] }}"
-    failed_when: |
-      (metrics.json.status != 'success' or
-       not (metrics.json.data.result | default(False)) or
-       metrics.json.data.result[0].value[1] != '1')
+    until: |
+      metrics.failed == false and
+      metrics.status == 200 and
+      metrics.json.data | json_query('result[0].value | [1]') == '1'
+    retries: 25
+    delay: 3
 
   - name: check keepalived exporter scrape endpoint status
     uri:
@@ -43,10 +44,12 @@
       return_content: true
     register: metrics
     loop: "{{ groups['frontend'] }}"
-    failed_when: |
-      (metrics.json.status != 'success' or
-       not (metrics.json.data.result | default(False)) or
-       metrics.json.data.result[0].value[1] != '1')
+    until: |
+      metrics.failed == false and
+      metrics.status == 200 and
+      metrics.json.data | json_query('result[0].value | [1]') == '1'
+    retries: 25
+    delay: 3
 
   - name: check haproxy exporter scrape endpoint status
     uri:
@@ -54,10 +57,12 @@
       return_content: true
     register: metrics
     loop: "{{ groups['frontend'] }}"
-    failed_when: |
-      (metrics.json.status != 'success' or
-       not (metrics.json.data.result | default(False)) or
-       metrics.json.data.result[0].value[1] != '1')
+    until: |
+      metrics.failed == false and
+      metrics.status == 200 and
+      metrics.json.data | json_query('result[0].value | [1]') == '1'
+    retries: 25
+    delay: 3
 
   - name: check ceph mgr scrape endpoint status
     uri:
@@ -65,10 +70,12 @@
       return_content: true
     register: metrics
     when: "k8s_storage_rook_enabled"
-    failed_when: |
-      (metrics.json.status != 'success' or
-       not (metrics.json.data.result | default(False)) or
-       metrics.json.data.result[0].value[1] != '1')
+    until: |
+      metrics.failed == false and
+      metrics.status == 200 and
+      metrics.json.data | json_query('result[0].value | [1]') == '1'
+    retries: 25
+    delay: 3
 
   - name: check LBaaS controller scrape endpoint status
     uri:
@@ -76,10 +83,12 @@
       return_content: true
     register: metrics
     when: "ch_k8s_lbaas_enabled | default(False)"
-    failed_when: |
-      (metrics.json.status != 'success' or
-       not (metrics.json.data.result | default(False)) or
-       metrics.json.data.result[0].value[1] != '1')
+    until: |
+      metrics.failed == false and
+      metrics.status == 200 and
+      metrics.json.data | json_query('result[0].value | [1]') == '1'
+    retries: 25
+    delay: 3
 
   - name: check LBaaS agent scrape endpoint status
     uri:
@@ -88,7 +97,9 @@
     register: metrics
     when: "ch_k8s_lbaas_enabled | default(False)"
     loop: "{{ groups['frontend'] }}"
-    failed_when: |
-      (metrics.json.status != 'success' or
-       not (metrics.json.data.result | default(False)) or
-       metrics.json.data.result[0].value[1] != '1')
+    until: |
+      metrics.failed == false and
+      metrics.status == 200 and
+      metrics.json.data | json_query('result[0].value | [1]') == '1'
+    retries: 25
+    delay: 3

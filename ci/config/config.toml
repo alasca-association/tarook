@@ -5,7 +5,7 @@ workers = 6
 default_master_image_name = "mk8s-ci-ubuntu-1804-nightly"
 default_worker_image_name = "mk8s-ci-ubuntu-1804-nightly"
 gateway_image_name = "mk8s-ci-debian-10-nightly"
-worker_flavors = ["L", "M", "L", "M", "L", "M"]
+worker_flavors = ["L", "L", "L", "L", "L", "L"]
 enable_az_management = false
 cluster_name = "ci"
 
@@ -92,7 +92,7 @@ scheduling_key = "{{ scheduling_key_prefix }}/monitoring"
 prometheus_memory_limit = "1Gi"
 prometheus_memory_request = "{{ monitoring_prometheus_memory_limit }}"
 prometheus_cpu_request = "{{ monitoring_prometheus_cpu_limit }}"
-prometheus_cpu_limit = "200m"
+prometheus_cpu_limit = "1"
 
 [testing.test-nodes]
 "ci-worker-1" = "worker0"
@@ -108,7 +108,6 @@ ci-worker-1 = ["{{ scheduling_key_prefix }}/monitoring=true"]
 ci-worker-2 = ["{{ scheduling_key_prefix }}/storage=true"]
 ci-worker-3 = ["{{ scheduling_key_prefix }}/monitoring=true"]
 ci-worker-4 = ["{{ scheduling_key_prefix }}/storage=true"]
-ci-worker-5 = ["{{ scheduling_key_prefix }}/monitoring=true"]
 
 [node-scheduling.taints]
 ci-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
