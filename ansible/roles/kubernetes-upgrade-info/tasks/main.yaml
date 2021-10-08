@@ -1,38 +1,22 @@
 - name: Show k8s version listed in playbook
   debug:
-    msg: "Current k8s version according to the inventory is {{ k8s_version }}. Execute playbook with -v to see output of apt-cache policy. Pass the version to which the cluster should be updated as parameter 'next_k8s_version', i.e., ansible-playbook -i .. 05_upgrade_cluster.yaml -e next_k8s_version=1.15.4. Afterwards, update the value of k8s_version in the inventory."
+    msg: |
+      "Current k8s version according to the inventory is {{ k8s_version }}.
+      Execute playbook with -v to see output of apt-cache policy.
+      Pass the version to which the cluster should be updated as parameter 'next_k8s_version',
+      i.e., ansible-playbook -i .. 05_upgrade_cluster.yaml -e next_k8s_version=1.15.4.
+      Afterwards, update the value of k8s_version in the inventory."
 
-- name: Obtain installed version (dpkg)
-  command:
-  args:
-    argv:
-    - dpkg-query
-    - "--showformat=${Version}"
-    - "--show"
-    - kubeadm
-  when: ansible_pkg_mgr == 'apt'
-  register: installed_version_dpkg
-  changed_when: false
-
-- name: Obtain installed version (rpm) # noqa command-instead-of-module
-  command:
-  args:
-    argv:
-    - rpm
-    - "-q"
-    - kubeadm
-  when: ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum'
-  register: installed_version_rpm
-  changed_when: false
+- name: Obtain installed packages
+  ansible.builtin.package_facts:
+    manager: auto
 
 - name: Pre-flight checks
   any_errors_fatal: true
   block:
   - name: Obtain installed version
     set_fact:
-      k8s_installed_version: "{{
-        ((ansible_pkg_mgr == 'apt') and installed_version_dpkg.stdout.split('-')[0]) or
-        ((ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum') and installed_version_rpm.stdout.split('-')[1]) }}"
+      k8s_installed_version: "{{ ansible_facts.packages['kubeadm'][0]['version'].split('-')[0] }}"
 
   - name: Obtain version as per k8s database
     delegate_to: "{{ (groups['masters'] | sort)[0] }}"
@@ -86,7 +70,7 @@
         Kubernetes only allows upgrades between minor versions,
         and arbitrary up/downgrades within the patch levels of a minor version.
         It's not possible to update from version {{ k8s_installed_version }} to {{ next_k8s_version }}
-    when: not (next_minor_k8s_version == supported_k8s_versions[index_present | int] or 
+    when: not (next_minor_k8s_version == supported_k8s_versions[index_present | int] or
           next_minor_k8s_version == supported_k8s_versions[index_successor | int])
 
 - name: Detect if upgrade is already done

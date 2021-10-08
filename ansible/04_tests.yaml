@@ -9,23 +9,30 @@
   become: no
   gather_facts: false
   tasks:
-    - name: Check that all hosts are initialized by the cloud provider # noqa no-changed-when risky-shell-pipe
+    - name: Get node info
       delegate_to: "{{ groups['masters'] | first }}"
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
-      shell: "kubectl get nodes {{ inventory_hostname }} -o jsonpath='{.spec.taints[*].key}' | grep 'node.cloudprovider.kubernetes.io/uninitialized'"
+      k8s_info:
+        kind: node
+        name: "{{ inventory_hostname }}"
       register: result
-      failed_when: result.rc == 0
       tags:
       - test-ccm
 
-    - name: Check that the Internal IP address of each node is set # noqa no-changed-when
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      delegate_to: "{{ groups['masters'] | first }}"
-      command: "kubectl get nodes {{ inventory_hostname }} -o jsonpath='{.status.addresses[*].address}'"
-      register: ip_address
-      failed_when: ip_address.stdout == ""
+    - name: Check that all hosts are initialized by the cloud provider
+      vars:
+        taints: "{{ result | json_query('resources[*].spec.taints[*]') }}"
+      fail:
+      when: "'node.cloudprovider.kubernetes.io/uninitialized' in taints"
+      tags:
+      - test-ccm
+
+    - name: Check that the Internal IP address of each node is set
+      vars:
+        ip_address: "{{ result | json_query('resources[*].status.addresses[*].address') | count }}"
+      fail:
+      when: "ip_address == '0'"
       tags:
       - test-ccm
 
