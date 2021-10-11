@@ -1,23 +1,5 @@
 # Initialization
 
-### Prepare WireGuard
-
-```bash
-mkdir ~/.wireguard/
-(umask 0077 && wg genkey > ~/.wireguard/wg.key)
-wg pubkey < ~/.wireguard/wg.key
-```
-
-## Empty git repository
-
-To start out with a cluster, you need an (empty) git repository which will
-serve as your cluster repository:
-
-```console
-$ git init my-test-cluster
-$ cd my-test-cluster
-```
-
 ## Pre-init requisites
 
 * You have access to an OpenStack project and created a ssh [key pair](https://docs.openstack.org/horizon/latest/user/configure-access-and-security-for-instances.html#add-a-key-pair).
@@ -32,7 +14,7 @@ $ cd my-test-cluster
   sudo apt install python3-pip python3-venv \
     python3-toml moreutils jq wireguard pass
   # current kernel headers
-  apt install linux-headers-$(uname -r)
+  sudo apt install linux-headers-$(uname -r)
   ```
 
 * It's strongly recommended to use a [virtual environment for Python](https://docs.python.org/3/tutorial/venv.html#creating-virtual-environments).
@@ -57,6 +39,24 @@ $ cd my-test-cluster
   # sudo chmod +x if necessary
   ```
 
+## Prepare WireGuard
+
+```bash
+mkdir ~/.wireguard/
+(umask 0077 && wg genkey > ~/.wireguard/wg.key)
+wg pubkey < ~/.wireguard/wg.key
+```
+
+## Empty git repository
+
+To start out with a cluster, you need an (empty) git repository which will
+serve as your cluster repository:
+
+```console
+$ git init my-test-cluster
+$ cd my-test-cluster
+```
+
 ## Initialise cluster repository
 
 To create the initial bare-minimum directory structure, a script is provided
@@ -76,7 +76,7 @@ cluster repository directory, you now call the `init.sh` script from the
 `managed-k8s` repository you just cloned:
 
 ```console
-$ "$somewhere_else/actions/init.sh"
+$ "$somewhere_else/k8s/actions/init.sh"
 ```
 
 The `init.sh` script will:
@@ -94,6 +94,6 @@ After you have initialized your cluster, you should ensure that all the Python p
 
 ```bash
 # pwd is the cluster-repository
-python3 -m pip install -r k8s/requirements.txt
+python3 -m pip install -r managed-k8s/requirements.txt
 ```
 
