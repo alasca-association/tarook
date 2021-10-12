@@ -34,10 +34,12 @@ dualstack_support = false # "•ᴗ•"
 # has been superseded by ch-k8s-lbaas. For legacy reasons and because it's useful under
 # certain circumstances it is kept inside the repository.
 # The NodePorts are either literally exposed by HAProxy or can be mapped to other ports.
+# The `layer` attribute can either be `tcp` (L4) or `http` (L7). For `http`, `option forwardfor`
+# is added implicitly to the backend servers in the haproxy configuration.
 # Short form:
 #lb_ports = [30060]
 # Explicit form:
-#lb_ports = [{external=80,nodeport=30080}]
+#lb_ports = [{external=80,nodeport=30080, layer=tcp}]
 
 # A list of priorities to assign to the gateway/frontend nodes. The priorities
 # will be assigned based on the sorted list of matching nodes.
