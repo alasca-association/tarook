@@ -80,6 +80,9 @@ mds_cpu_request = "{{ rook_mds_cpu_limit }}"
 
 mon_cpu_limit = "500m"
 mon_cpu_request = "100m"
+mon_memory_limit = "1Gi"
+mon_memory_request = "500Mi"
+
 operator_cpu_limit = "500m"
 operator_cpu_request = "100m"
 
