@@ -8,10 +8,12 @@ import collections
 import typing
 import errno
 
+from copy import deepcopy
+
 from helpers import terraform_helper
 from helpers import pass_helper
 from helpers import wireguard_helper
-from helpers import legacy_converter
+from helpers.legacy_converter import convert_legacy_config, prune
 
 # Path to the main configuration
 CONFIG_PATH = pathlib.Path("config/config.toml")
@@ -186,6 +188,55 @@ def dump_to_ansible_inventory(
         yaml.safe_dump(final_config, fout)
 
 
+def recursive_diff(data: dict, temp_data: dict, diff=None, parents=None):
+    """Recursively compares two configs and produces a diff between them.
+
+    Template config :param:`temp_data` contains mandatory keys and values.
+    The user defined config :param:`data` should be a superset of
+    :param:`temp_data`. This function recursively compares if all
+    mandatory keys and values from :param:`temp_data` are listed in
+    :param:`data`. The diff is stored in list.
+
+    The diff is fulfilled based on following conditions:
+    1. If key from :param:`temp_data` is not listed in :param:`data`
+    2. If value of corresponding key from :param:`temp_data` not equal value
+       of corresponding key in :param:`data` and value in :param:`data`
+       was replaced (vanished) by "", [] or {}.
+    """
+    if diff is None:
+        diff = []
+    if parents is None:
+        parents = []
+
+    for key in temp_data.keys():
+        if key not in data:
+            diff.append(f"mandatory key {'.'.join(parents)}.{key} is missing")
+            continue
+
+        if data[key] != temp_data[key] and data[key] in ([], {}, ""):
+            diff.append(
+                f"value for mandatory key {'.'.join(parents)}.{key} is missing"
+            )
+            continue
+
+        if isinstance(temp_data[key], list):
+            for item_data, item_temp_data in zip(data[key], temp_data[key]):
+                parents.append(key)
+                recursive_diff(
+                    item_data, item_temp_data, diff=diff, parents=parents
+                )
+                parents = []
+
+        if isinstance(temp_data[key], dict):
+            parents.append(key)
+            recursive_diff(
+                data[key], temp_data[key], diff=diff, parents=parents
+            )
+            parents = []
+
+    return diff
+
+
 def print_process_state(
     section: str
 ):
@@ -215,6 +266,10 @@ def main():
     with CONFIG_PATH.open("r") as fin:
         config = toml.load(fin)
 
+    # Load the template config.template.toml
+    with CONFIG_TEMPLATE_PATH.open("r") as fin:
+        config_template = toml.load(fin)
+
     # Check whether the config is in the legacy format
     legacy_sections = ["ansible", "terraform", "secrets"]
     if (set(config.keys()) == set(legacy_sections)):
@@ -223,7 +278,7 @@ def main():
             "Looks like your config is past prime. "
             "Taking care of the elderly now. Trying to rejuvenate it.")
         # Start to process the legacy config
-        config = legacy_converter.convert_legacy_config(
+        config = convert_legacy_config(
             config,
             CONFIG_PATH,
             CONFIG_TEMPLATE_PATH
@@ -236,6 +291,17 @@ def main():
             "{} are unknown sections. Currently supported are {}".format(
                 unallowed_keys,
                 ALLOWED_TOP_LEVEL_SECTIONS)
+        )
+
+    # Check that the config contains all mandatory variables
+    mandatory_diff = recursive_diff(
+        prune(deepcopy(config)), prune(deepcopy(config_template))
+    )
+    if mandatory_diff:
+        raise ValueError(
+            "missing mandatory variables:\n\t- {}".format(
+                "\n\t- ".join(mandatory_diff),
+            )
         )
 
     # Config looks good on first sight, be brave and cleanup the inventory
