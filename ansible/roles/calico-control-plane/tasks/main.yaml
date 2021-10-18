@@ -5,7 +5,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   command:
     argv:
-      - calicoctl
+      - /usr/local/bin/calicoctl
       - version
   register: calicoctl_version
   ignore_errors: yes

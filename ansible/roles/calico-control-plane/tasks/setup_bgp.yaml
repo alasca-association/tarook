@@ -7,7 +7,6 @@
   run_once: True
   become: yes
   environment:
-    PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes
   block:
@@ -65,7 +64,7 @@
   - name: BGP - Label the k8s masters as route reflectors
     command:
       argv:
-        - calicoctl
+        - /usr/local/bin/calicoctl
         - label
         - nodes
         - "{{ item }}"
@@ -87,7 +86,7 @@
   - name: BGP - Configure route reflectors (master nodes) to peer with the LoadBalanced-Master Gateway
     command:
         argv:
-          - calicoctl
+          - /usr/local/bin/calicoctl
           - apply
           - --filename=-
         stdin: '{{ lookup("template", "calico_bgp_peer_lb_master.yaml.j2") }}'

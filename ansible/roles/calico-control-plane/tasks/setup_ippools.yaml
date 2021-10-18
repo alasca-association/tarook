@@ -6,7 +6,6 @@
 - name: Apply IPPool(s)
   become: yes
   environment:
-    PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes
   command:
