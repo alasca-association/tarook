@@ -17,6 +17,7 @@
   raw: cat /etc/os-release | grep -i 'ID_LIKE'
   register: os_info
   changed_when: false
+  failed_when: 'os_info.rc not in [0, 1]'
 
 - name: Required package installation on RedHat family
   become: yes

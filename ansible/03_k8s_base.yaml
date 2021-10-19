@@ -11,7 +11,8 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   roles:
-  - detect_user
+  - role: detect_user
+    tags: detect_user
   - role: ssh-known-hosts
     tags: ssh-known-hosts
   - role: prepare-node
@@ -26,6 +27,13 @@
     tags: monitoring-system-update-status
   - role: disable-swap
     tags: disable-swap
+
+- name: Disable SELinux
+  hosts: k8s_nodes
+  roles:
+  - role: disable_selinux
+    tags: disable_selinux
+    when: ansible_os_family == 'RedHat'
 
 - name: Harden SSH
   hosts: k8s_nodes
@@ -93,25 +101,22 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   roles:
-    - role: disable_selinux
-      tags: disable_selinux
-      when: ansible_distribution == "CentOS"
-    - role: centos-networking
-      tags: centos-networking
-      when: ansible_distribution == "CentOS"
-    - role: ntp
-      tags: ntp
-    - role: gpu-and-vgpu
-      tags: gpu-and-vgpu
-    - role: docker
-      tags: docker
-    - role: kubeadm
-      tags: kubeadm
-    - role: remove_snap
-      tags: remove_snap
-    - role: wireguard-support
-      tags: wireguard
-      when: "wireguard_on_workers"
+  - role: centos-networking
+    tags: centos-networking
+    when: ansible_os_family == 'RedHat'
+  - role: ntp
+    tags: ntp
+  - role: gpu-and-vgpu
+    tags: gpu-and-vgpu
+  - role: docker
+    tags: docker
+  - role: kubeadm
+    tags: kubeadm
+  - role: remove_snap
+    tags: remove_snap
+  - role: wireguard-support
+    tags: wireguard
+    when: wireguard_on_workers
 
 # If DualStack is enabled, the k8s cluster needs to use calico as CNI plugin
 # In Ansible, it is not possible to overwrite inventory variables, therefore we need to fail here
@@ -126,7 +131,7 @@
 
 - name: Spawn the K8s control plane
   hosts: masters
-  gather_facts: false
+  gather_facts: true
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
@@ -162,7 +167,7 @@
 
 - name: Spawn the K8s worker nodes
   hosts: workers
-  gather_facts: false
+  gather_facts: true
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
@@ -186,6 +191,7 @@
   roles:
     - role: connect-k8s-to-openstack
       tags: openstack
+      when: on_openstack
     - role: ch-k8s-lbaas-controller
       tags:
       - ch-k8s-lbaas

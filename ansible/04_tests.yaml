@@ -72,7 +72,7 @@
   become: no
   gather_facts: false
   vars:
-    gateway: "{{ groups['gateways'] | first }}"
+    gateway: "{{ groups['gateways'] or groups['masters'] | first }}"
   roles:
     - role: check-services
       when: "deprecated_nodeport_lb_test_port is defined"
