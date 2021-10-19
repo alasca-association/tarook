@@ -3,7 +3,7 @@ yaook_vault_namespace: yaook-mgmt
 yaook_vault_chart_version: 0.13.0
 yaook_vault_ca_issuer_kind: "{{ yaook_tls_infra_default_issuer_kind }}"
 yaook_vault_ca_issuer: "{{ yaook_tls_infra_default_issuer }}"
-yaook_vault_cert_dnsname: null
+yaook_vault_cert_dnsname: vault.cluster.local
 yaook_vault_init_key_shares: 5
 yaook_vault_init_key_threshold: 2
 yaook_vault_replicas: 3

@@ -47,20 +47,22 @@
       fail_on_error: yes
       strict: yes
 
-- name: Enumerate worker IPs
+- name: Enumerate workers
   community.kubernetes.k8s_info:
     api_version: v1
     kind: Node
   register: nodes
 
+- name: Collect worker IPs
+  set_fact:
+    yaook_vault_worker_ips: "{{ (nodes.resources | map(attribute='status') | map(attribute='addresses') | flatten(levels=1) | selectattr('type', 'eq', 'InternalIP') | map(attribute='address')) }}"
+
 - name: Set vault server DNS names
   set_fact:
     yaook_vault_cert_dnsnames_complete: |
       [
-        {{ "vault.%s.cluster.local" | format(yaook_vault_namespace) | to_json }}
-        {% if yaook_vault_cert_dnsname %}
+        {{ "vault.%s.svc.cluster.local" | format(yaook_vault_namespace) | to_json }}
         , {{ yaook_vault_cert_dnsname | to_json }}
-        {% endif %}
       ]
 
 - name: Create Vault Certificate
@@ -82,7 +84,7 @@
         secretName: vault-cert
         duration: 72h
         renewBefore: 24h
-        ipAddresses: "{{ (nodes.resources | map(attribute='status') | map(attribute='addresses') | flatten(levels=1) | selectattr('type', 'eq', 'InternalIP') | map(attribute='address')) + ['127.0.0.1', '::1'] }}"
+        ipAddresses: "{{ yaook_vault_worker_ips + ['127.0.0.1', '::1'] }}"
         dnsNames: "{{ yaook_vault_cert_dnsnames_complete }}"
     validate:
       fail_on_error: yes
@@ -108,6 +110,15 @@
           hosts: "{{ yaook_vault_cert_dnsnames_complete }}"
           secretName:
           - vault-cert
+        ingress:
+          enabled: true
+          annotations:
+            kubernetes.io/ingress.class: nginx
+            nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+            nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+            infra-bare-metal.yaook.cloud/dns-ip: "{{ yaook_vault_worker_ips | join(',') }}"
+          hosts:
+          - host: "{{ yaook_vault_cert_dnsname }}"
         standalone:
           enabled: true
           config: |
