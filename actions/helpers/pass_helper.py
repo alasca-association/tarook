@@ -85,7 +85,10 @@ def generate_passwordstore_config(
 
     # Add company users if configured so
     if pass_config.get("rollout_company_users", True):
-        passwordstore_users.extend(_load_passwordstore_company_users())  # NOQA
+        passwordstore_gpg_ids = [user.gpg_id for user in passwordstore_users]
+        for company_user in _load_passwordstore_company_users():
+            if company_user.gpg_id not in passwordstore_gpg_ids:
+                passwordstore_users.append(company_user)
 
     # ToDo: dump to PASS USERS FILE
     _dump_pass_users_config(passwordstore_users)
