@@ -51,7 +51,7 @@ dualstack_support = false # "•ᴗ•"
 #vrrp_priorities = [150, 100, 50]
 
 # Enable/Disable OpenStack-based load-balancing.
-openstack_lbaas = false # •ᴗ•
+# openstack_lbaas = false
 
 # --- C&H KUBERNETES LBaaS ---
 # ansible prefix: "ch_k8s_lbaas_"
@@ -422,7 +422,7 @@ ip_gw = "172.30.153.65/26"
 # --- IPSEC ---
 # ansible prefix: "ipsec_"
 [ipsec]
-enabled = false # •ᴗ•
+# enabled = false
 
 # Must be a list of parent SA proposals to offer to the client.
 # Must be explicitly set if ipsec_enabled is set to true.
