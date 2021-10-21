@@ -16,4 +16,4 @@ fi
 # The openrc file is not available in the shellcheck image
 # shellcheck disable=SC1091
 . /root/openrc.sh
-MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8s_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
+MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
