@@ -61,3 +61,12 @@
       file:
         path: /tmp/kubeadm-join-config.yaml
         state: absent
+
+    # Workaround because it is currently not possible
+    # to pass a kubelet config file for kubeadm join
+    # https://stackoverflow.com/questions/60378117/limit-the-number-of-pods-per-node
+    - name: Configure kubelet
+      include_role:
+        name: kubelet-configuration
+      vars:
+        _init_cluster: True # needs to be passed so that kubelet is configured & restarted

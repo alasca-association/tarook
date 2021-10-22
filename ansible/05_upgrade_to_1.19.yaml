@@ -65,6 +65,9 @@
   roles:
     - name: kubeadm-upgrade-kubelet
       when: "not (k8s_upgrade_done | default(False))"
+      # we do not want to customize kubelet on control-plane nodes
+      vars:
+        k8s_kubelet_disable_customizations: true
 
 - name: Upgrade the worker nodes
   hosts: workers
