@@ -169,6 +169,18 @@ plugin = "kube-router" # •ᴗ•
 # is set to false. Generally, you’ll not want to change this.
 #plugin_switch_restart_namespaces=[...]
 
+# --- KUBERNETS: KUBELET CONFIGURATION (WORKERS) ---
+# ansible prefix: "k8s_kubelet"
+[kubernetes.kubelet]
+# This section enables you to customize kubelet on the k8s workers (sic!)
+# Changes will be rolled out only during k8s upgrades or if you explicitly
+# allow disruptions.
+
+# Maximum number of Pods per worker
+# Increasing this value may also decrease performance,
+# as more Pods can be packed into a single node.
+#pod_limit = 110
+
 # --- KUBERNETES SERVICE LAYER ---
 # --- KUBERNETES SERVICE LAYER : ROOK (STORAGE) ---
 # ansible prefix: "rook"

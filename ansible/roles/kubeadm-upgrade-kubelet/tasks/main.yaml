@@ -45,9 +45,8 @@
       - kubelet
       - kubectl
 
-- name: Restart kubelet
-  become: yes
-  systemd:
-    name: kubelet
-    state: restarted
-    enabled: yes
+- name: Configure and restart kubelet
+  include_role:
+    name: kubelet-configuration
+  vars:
+    _require_kubelet_restart: True

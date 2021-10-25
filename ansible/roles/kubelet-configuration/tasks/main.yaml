@@ -1,0 +1,29 @@
+- name: Configure and restart kubelet
+  when: > 
+    ( _allow_disruption | default(False)
+        or do_upgrade | default(False)
+        or _init_cluster | default(False))
+    and not k8s_kubelet_disable_customizations | default(False)
+  become: yes
+  block:
+  - name: Set the maximum number of Pods
+    when: k8s_kubelet_pod_limit is defined
+    lineinfile:
+      path: /var/lib/kubelet/config.yaml
+      regexp: 'maxPods:(\s+)([0-9]+)(\s*)\n?$'
+      line: "maxPods: {{ k8s_kubelet_pod_limit }}"
+      state: present
+      owner: root
+      group: root
+      mode: 0600
+    notify: restart kubelet
+
+- name: Force restart of kubelet if requested
+  debug:
+    msg: It IS requested!
+  changed_when: true
+  notify: restart kubelet
+  when: _require_kubelet_restart | default(False)
+
+- name: Flush handlers
+  meta: flush_handlers
