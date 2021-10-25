@@ -1,0 +1,31 @@
+---
+default_scope: other
+categories:
+  added: Added
+  fixed: Fixed
+  removed: Removed
+  changed: Changed
+include_groups:
+  - yaook
+template: |
+  {% if categories %}
+  {% each categories %}
+  ### {{ title }} ({% if single_change %}1 change{% else %}{{ count }} changes{% end %})
+
+  {% each entries %}
+  - [{{ title }}]({{ commit.reference }})\
+  {% if author.credit %} by {{ author.reference }}{% end %}\
+  {% if commit.trailers.MR %}\
+   ([merge request]({{ commit.trailers.MR }}))\
+  {% else %}\
+  {% if merge_request %}\
+   ([merge request]({{ merge_request.reference }}))\
+  {% end %}\
+  {% end %}\
+
+  {% end %}
+
+  {% end %}
+  {% else %}
+  No changes.
+  {% end %}
