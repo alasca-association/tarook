@@ -36,10 +36,13 @@ dualstack_support = false # "•ᴗ•"
 # The NodePorts are either literally exposed by HAProxy or can be mapped to other ports.
 # The `layer` attribute can either be `tcp` (L4) or `http` (L7). For `http`, `option forwardfor`
 # is added implicitly to the backend servers in the haproxy configuration.
+# If `use_proxy_protocol` is set to `true`, HAProxy will use the proxy protocol to convey information
+# about the connection initiator to the backend. NOTE: the backend has to accept the proxy
+# protocol, otherwise your traffic will be discarded.
 # Short form:
 #lb_ports = [30060]
 # Explicit form:
-#lb_ports = [{external=80,nodeport=30080, layer=tcp}]
+#lb_ports = [{external=80,nodeport=30080, layer=tcp, use_proxy_protocol=true}]
 
 # A list of priorities to assign to the gateway/frontend nodes. The priorities
 # will be assigned based on the sorted list of matching nodes.
