@@ -45,7 +45,7 @@ KNOWN_SECTIONS_AND_KEYS_MAP = {
         "rook_toolbox": "toolbox",
         "rook_fs": "ceph_fs",
         "rook_fs_require_safe_replica_size": "ceph_fs_safe_replica_size",
-        "rook_fs_replicated": "fs_replicated",
+        "rook_fs_replicated": "ceph_fs_replicated",
         "rook_mon_volume": "mon_volume",
         "rook_mon_volume_storage_class": "local-storage",
         "rook_pool_require_safe_replica_size": "pool_require_safe_replica_size",  # NOQA
