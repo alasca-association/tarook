@@ -8,7 +8,7 @@
   tags:
   - k8s-tools
 
-- name: Ensure that kubernetes libraries is installed
+- name: Ensure that kubernetes libraries are installed
   become: yes
   pip:
     name:
