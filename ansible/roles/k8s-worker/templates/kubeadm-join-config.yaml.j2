@@ -7,6 +7,23 @@ nodeRegistration:
 {% else %}
     node-ip: {{ local_ipv4_address | to_json }}
 {% endif %}
+{% set labels = k8s_node_labels[inventory_hostname] | default([]) %}
+{% if labels %}
+    node-labels: {{ labels | join(",") | to_json }}
+{% endif %}
+{% set taints = k8s_node_taints[inventory_hostname] | default([]) %}
+{% if taints %}
+  taints:
+{% for taint in taints %}
+{% set taint_parts = taint.split(":", 1) %}
+{% set kv_parts = taint_parts[0].split("=", 1) %}
+  - key: {{ kv_parts[0] | to_json }}
+{% if kv_parts | length > 1 %}
+    value: {{ kv_parts[1] | to_json }}
+{% endif %}
+    effect: {{ taint_parts[1] | default("NoExecute") | to_json }}
+{% endfor %}
+{% endif %}
 
 discovery:
   bootstrapToken:
