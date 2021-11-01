@@ -1,16 +1,38 @@
-- name: Run kubeadm upgrade plan # noqa no-changed-when
+- name: kubeadm upgrade plan & apply
   become: yes
-  command: kubeadm upgrade plan
-
-# Do not renew certificates here because we rolled out our own chain
-# --yes auto-confirms and makes upgrade non-interactive
-- name: Execute the upgrade
   when: do_upgrade
-  become: yes
-  command: "kubeadm upgrade apply --certificate-renewal=false --yes v{{ next_k8s_version }}"
-  # Let’s also play this safe here -- the `upgrade apply` command can take a
-  # while and we want to be sure that we don’t run into any connection timeouts.
-  # Note that this imposes a run-time limit on the apply command (half an hour)
-  # which I suppose is OK.
-  async: 1800
-  poll: 5
+  block:
+    - name: Run kubeadm upgrade plan # noqa no-changed-when
+      command:
+        argv:
+          - "kubeadm"
+          - "upgrade"
+          - "plan"
+
+    # Do not renew certificates here because we rolled out our own chain
+    # --yes auto-confirms and makes upgrade non-interactive
+    - name: Execute the upgrade
+      command:
+        argv:
+          - "kubeadm"
+          - "upgrade"
+          - "apply"
+          - "--certificate-renewal=false"
+          - "--yes"
+          - "v{{ next_k8s_version }}"
+      # Let’s also play this safe here -- the `upgrade apply` command can take a
+      # while and we want to be sure that we don’t run into any connection timeouts.
+      # Note that this imposes a run-time limit on the apply command (half an hour)
+      # which I suppose is OK.
+      async: 1800
+      poll: 5
+
+    # Workaround because kubeadm recreates kube-proxy and it is
+    # currently not possible to avoid that
+    - name: Remove kube-proxy
+      vars:
+        _allow_disruption: true
+      when: k8s_network_plugin == 'kube-router'
+      include_role:
+        name: k8s-master
+        tasks_from: remove_kube-proxy
