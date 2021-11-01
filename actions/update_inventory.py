@@ -159,6 +159,34 @@ def flatten_config(
     return dict(items)
 
 
+def apply_prefix(
+    config: typing.Mapping,
+    key_prefix: str
+) -> typing.MutableMapping:
+    final_config = {}
+    for key, value in config.items():
+        new_key = F'{key_prefix}_{key}'
+        final_config[new_key] = value
+    return final_config
+
+
+def write_to_inventory(
+    config: typing.Mapping,
+    ansible_inventory_path: pathlib.Path,
+):
+    # Ensure config is not empty
+    if not config:
+        return
+
+    # Ensure the respective inventory directory is existing
+    ansible_inventory_path.parent.mkdir(exist_ok=True, mode=0o750,
+                                        parents=True)
+
+    # Dump the variables as YAML
+    with ansible_inventory_path.open("w") as fout:
+        yaml.safe_dump(config, fout)
+
+
 def dump_to_ansible_inventory(
     config: typing.MutableMapping,
     ansible_inventory_path: pathlib.Path,
@@ -168,24 +196,15 @@ def dump_to_ansible_inventory(
     if not config:
         return
 
-    # Ensure the respective inventory directory is existing
-    ansible_inventory_path.parent.mkdir(exist_ok=True, mode=0o750,
-                                        parents=True)
     # Flatten the config
-    flat_config = flatten_config(config)
+    final_config = flatten_config(config)
 
     # Apply key prefix
     if key_prefix:
-        final_config = {}
-        for key, value in flat_config.items():
-            new_key = F'{key_prefix}_{key}'
-            final_config[new_key] = value
-    else:
-        final_config = flat_config
+        final_config = apply_prefix(final_config, key_prefix)
 
     # Dump the variables as YAML
-    with ansible_inventory_path.open("w") as fout:
-        yaml.safe_dump(final_config, fout)
+    write_to_inventory(final_config, ansible_inventory_path)
 
 
 def recursive_diff(data: dict, temp_data: dict, diff=None, parents=None):
