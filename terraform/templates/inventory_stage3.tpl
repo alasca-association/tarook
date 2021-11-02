@@ -1,5 +1,6 @@
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
+on_openstack=true
 
 [k8s_nodes:children]
 masters

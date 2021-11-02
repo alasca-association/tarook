@@ -193,7 +193,7 @@
   roles:
     - role: connect-k8s-to-openstack
       tags: openstack
-      when: on_openstack
+      when: on_openstack | default(False) | bool
     - role: ch-k8s-lbaas-controller
       tags:
       - ch-k8s-lbaas
