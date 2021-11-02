@@ -20,6 +20,13 @@ spec:
     persistentVolumeClaim:
       claimName: {{ check_local_storage_pvc_name | to_json }}
       readOnly: false
-  nodeSelector:
-    name: worker1
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - {{ writer_pod_node_name }}
   restartPolicy: Never
