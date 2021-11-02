@@ -1,25 +1,6 @@
-etc_dir: "{{ (ansible_inventory_sources[0] | dirname) }}/../.etc"
-ssh_known_hosts_file: "{{ etc_dir }}/ssh_known_hosts"
-ansible_ssh_extra_args: "-o UserKnownHostsFile={{ ssh_known_hosts_file }}"
-
-
 # These variables are needed by stage 02 and stage 03
 haproxy_health_url: 127.0.0.1:6669
 haproxy_stats_port: 48981
 
 # IPsec stuff that's used by >= 1 role
 ipsec_virtual_subnet_pool: 10.3.0.0/24
-
-ssh_ciphers:
-  - aes256-gcm@openssh.com
-  - aes256-ctr
-  - chacha20-poly1305@openssh.com
-ssh_macs:
-  - hmac-sha2-512-etm@openssh.com
-  - hmac-sha2-256-etm@openssh.com
-  - umac-128-etm@openssh.com
-  - hmac-sha2-512
-  - hmac-sha2-256
-ssh_kex:
-  - curve25519-sha256@libssh.org
-  - diffie-hellman-group-exchange-sha256
