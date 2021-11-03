@@ -76,7 +76,9 @@ agent_port = 15203
 version = "1.21.4" # •ᴗ•
 
 # Enforce the use of pod security policies inside the cluster.
-use_podsecuritypolicies = true # •ᴗ•
+# NOTE: PSPs are being deprecated by k8s and they will be removed from the LCM soon.
+# They are not tested anymore and things may break.
+use_podsecuritypolicies = false # •ᴗ•
 
 # Uncomment if this cluster contains a worker with GPU access so that the driver
 # and surrounding framework is deployed.
