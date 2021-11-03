@@ -9,9 +9,6 @@ haproxy_health_url: 127.0.0.1:6669
 k8s_apiserver_backend_port: 6443
 haproxy_stats_port: 48981
 
-pki_cert_files: ["ca.crt", "ca.key", "sa.key", "sa.pub", "front-proxy-ca.crt", "front-proxy-ca.key", "ca.crt", "ca.key"]
-etcd_files: ["ca.crt", "ca.key"]
-
 network_interface: "{{ ansible_default_ipv4.interface }}"
 
 # IPsec stuff that's used by >= 1 role
