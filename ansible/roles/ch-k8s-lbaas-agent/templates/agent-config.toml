@@ -5,7 +5,7 @@ bind-address="0.0.0.0"
 bind-port={{ ch_k8s_lbaas_agent_port | to_json }}
 
 [keepalived]
-interface={{ network_interface | to_json }}
+interface={{ ansible_default_ipv4.interface | to_json }}
 priority={{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
 virtual-router-id-base=10
 
