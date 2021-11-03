@@ -2,8 +2,6 @@ etc_dir: "{{ (ansible_inventory_sources[0] | dirname) }}/../.etc"
 ssh_known_hosts_file: "{{ etc_dir }}/ssh_known_hosts"
 ansible_ssh_extra_args: "-o UserKnownHostsFile={{ ssh_known_hosts_file }}"
 
-# stage 02 only, but needed for multiple roles
-vpn_port: 7777
 
 # These variables are needed by stage 02 and stage 03
 k8s_apiserver_frontend_port: 8888

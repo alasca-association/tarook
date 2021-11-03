@@ -401,6 +401,8 @@ ip_gw = "172.30.153.65/26"
 #ipv6_cidr = "fd01::/120"
 #ipv6_gw = "fd01::1/120"
 
+port = 7777 # •ᴗ•
+
 # To add WireGuard keys for customers, create blocks like the following
 # You can add as many of them as you want. inventory_helper.py will auto-allocate IP
 # addresses from the ip_cidr.

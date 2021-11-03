@@ -7,7 +7,7 @@ flush ruleset
 
 define wan = {{ ansible_default_ipv4.interface }}
 define wg = wg0
-define wg_port = {{ vpn_port }}
+define wg_port = {{ wg_port }}
 define k8s_port = {{ k8s_apiserver_frontend_port }}
 define haproxy_stats_port = {{ haproxy_stats_port }}
 define haproxy_prom_metrics_port = 9101
