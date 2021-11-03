@@ -1,9 +1,9 @@
 {{ _auto_generated_preamble }}
 
 frontend k8s_prometheus_front
-  bind {{ private_vip }}:{{ k8s_global_monitoring_nodeport }}
+  bind {{ networking_fixed_ip }}:{{ k8s_global_monitoring_nodeport }}
   {% if dualstack_support %}
-  bind {{ private_vip_v6 }}:{{ k8s_global_monitoring_nodeport }} transparent
+  bind {{ networking_fixed_ip_v6 }}:{{ k8s_global_monitoring_nodeport }} transparent
   {% endif %}
   mode tcp
   log global
