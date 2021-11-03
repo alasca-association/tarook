@@ -13,5 +13,13 @@ multilingual = false
 src = "src"
 title = "Yaook Kubernetes Handbook"
 
+[output.html]
+git-repository-url = "https://gitlab.com/yaook/k8s"
+git-repository-icon = "fa-code-fork"
+no-section-label = true
+
 # https://crates.io/crates/mdbook-linkcheck
 [output.linkcheck]
+
+[build]
+create-missing = false

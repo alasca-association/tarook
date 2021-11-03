@@ -6,6 +6,7 @@
 # NOTE:For some sections the inventory updater will apply pefixes to
 # the variables before passing them over to the ansible inventories. 
 
+# ANCHOR: terraform_config
 # --- TERRAFORM ---
 # ansible prefix: /
 [terraform]
@@ -26,6 +27,9 @@ dualstack_support = false # "•ᴗ•"
 # Volume type that is used if `create_root_disk_on_volume` is true.
 #root_disk_volume_type = "three_times_replicated"
 
+# ANCHOR_END: terraform_config
+
+# ANCHOR: load-balancing_config
 # --- LOAD-BALANCING ---
 # ansible prefix: /
 [load-balancing]
@@ -59,6 +63,9 @@ dualstack_support = false # "•ᴗ•"
 # Port for HAProxy statistics
 #haproxy_stats_port = 48981
 
+# ANCHOR_END: load-balancing_config
+
+# ANCHOR: ch-k8s-lbaas_config
 # --- C&H KUBERNETES LBaaS ---
 # ansible prefix: "ch_k8s_lbaas_"
 [ch-k8s-lbaas]
@@ -72,6 +79,9 @@ shared_secret = "..."
 version = "0.3.3"
 agent_port = 15203
 
+# ANCHOR_END: ch-k8s-lbaas_config
+
+# ANCHOR: kubernetes_basic_cluster_configuration
 # --- KUBERNETES: BASIC CLUSTER CONFIGURATION ---
 # ansible prefix: "k8s_"
 [kubernetes]
@@ -90,6 +100,9 @@ is_gpu_cluster = false # •ᴗ•
 [kubernetes.apiserver]
 frontend_port = 8888 # •ᴗ•
 
+# ANCHOR_END: kubernetes_basic_cluster_configuration
+
+# ANCHOR: storage_base_configuration
 # --- KUBERNETES: STORAGE CONFIGURATION ---
 # ansible prefix: "k8s_storage"
 [kubernetes.storage]
@@ -108,7 +121,10 @@ nodeplugin_toleration = true # •ᴗ•
 # Important: Cinder must support AZs and the AZs must match the AZs used by nova!
 #cinder_enable_topology=true
 
-# --- KUBERNETES: LOCAL STORAGE CONFIGURATION ---
+# ANCHOR_END: storage_base_configuration
+
+# ANCHOR: storage_local_static_configuration
+# --- KUBERNETES: STATIC LOCAL STORAGE CONFIGURATION ---
 # ansible prefix: "k8s_local_storage"
 [kubernetes.local_storage.static]
 # Enable static provisioning of local storage. This provisions a single local
@@ -138,6 +154,11 @@ enabled = false  # •ᴗ•
 # Toleration for the plugin. Defaults to `kubernetes.storage.nodeplugin_toleration`
 #nodeplugin_toleration = ...
 
+# ANCHOR_END: storage_local_static_configuration
+
+# ANCHOR: storage_local_dynamic_configuration
+# --- KUBERNETES: DYNAMIC LOCAL STORAGE CONFIGURATION ---
+# ansible prefix: "k8s_local_storage"
 [kubernetes.local_storage.dynamic]
 # Enable dynamic local storage provisioning. This provides a storage class which
 # can be used with PVCs to allocate local storage on a node.
@@ -160,6 +181,8 @@ enabled = false  # •ᴗ•
 
 # Toleration for the plugin. Defaults to `kubernetes.storage.nodeplugin_toleration`
 #nodeplugin_toleration = ...
+
+# ANCHOR_END: storage_local_dynamic_configuration
 
 # --- KUBERNETES: MONITORING CONFIGURATION ---
 # ansible prefix: "k8s_monitoring"
@@ -600,11 +623,12 @@ port = 7777 # •ᴗ•
 # The PSK for EAP. Must be set.
 #eap_psk =
 
+# ANCHOR: passwordstore
 # --- PASSWORDSTORE ---
 # ansible prefix: "passwordstore_"
 [passwordstore]
-# Set this field to `false` if the "company" users should not be rolled out.
-#rollout_company_users = true
+# Set this field to `true` if the "company" users should be rolled out.
+#rollout_company_users = false
 
 # Configure Additional GPG-IDs that should have access to the cluster-repo specific passwordstore.
 # If you're not member of the "company-wide" list, e.g., because you're a student you must add yourself here.
@@ -618,6 +642,8 @@ port = 7777 # •ᴗ•
 #[[passwordstore.additional_users]]
 #ident = "yannic.ahrens@cloudandheat.com"
 #gpg_id = "68AA582E81AD111C127F01273370EBE296354805"
+
+# ANCHOR_END: passwordstore
 
 # --- C&H USERS ---
 # ansible prefix: "cah_users_"
