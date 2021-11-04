@@ -4,9 +4,7 @@ ansible_ssh_extra_args: "-o UserKnownHostsFile={{ ssh_known_hosts_file }}"
 
 
 # These variables are needed by stage 02 and stage 03
-k8s_apiserver_frontend_port: 8888
 haproxy_health_url: 127.0.0.1:6669
-k8s_apiserver_backend_port: 6443
 haproxy_stats_port: 48981
 
 network_interface: "{{ ansible_default_ipv4.interface }}"

@@ -1,0 +1,34 @@
+- name: Create nftables config for k8s API server
+  become: yes
+  template:
+    src: nftables.conf.j2
+    dest: /etc/nft.d/k8s_apiserver.conf
+    owner: root
+    group: root
+    mode: 0600
+  register: nftables_k8s_apiserver_config
+
+- name: reload nftables # noqa no-handler
+  become: yes
+  systemd:
+    name: nftables
+    state: reloaded
+  when: nftables_k8s_apiserver_config is changed
+
+- name: Create HAProxy config for the k8s API
+  become: yes
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/conf.d/20_k8s-apiserver.cfg
+    validate: haproxy -f %s -c
+    mode: 0600
+    owner: root
+    group: root
+  register: haproxy_k8s_apiserver_config
+
+- name: reload haproxy # noqa no-handler
+  become: yes
+  systemd:
+    name: haproxy
+    state: reloaded
+  when: haproxy_k8s_apiserver_config is changed

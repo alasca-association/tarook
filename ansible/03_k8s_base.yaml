@@ -73,12 +73,14 @@
   roles:
   - detect_user
 
-- name: Prepare Gateways for global monitoring
+- name: Prepare Gateways
   hosts: gateways
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   roles:
+  - role: k8s-api-frontend
+    tags: k8s-api-frontend
   - role: global-monitoring-support
     tags: k8s-global-monitoring # ToDo: find better tag
     when: k8s_global_monitoring_enabled

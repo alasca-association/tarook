@@ -44,6 +44,9 @@ version = "1.21.4"
 use_podsecuritypolicies = false
 is_gpu_cluster = false
 
+[kubernetes.apiserver]
+frontend_port = 8888
+
 [kubernetes.storage]
 rook_enabled = true
 nodeplugin_toleration = true
