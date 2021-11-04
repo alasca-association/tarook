@@ -7,8 +7,6 @@ ansible_ssh_extra_args: "-o UserKnownHostsFile={{ ssh_known_hosts_file }}"
 haproxy_health_url: 127.0.0.1:6669
 haproxy_stats_port: 48981
 
-network_interface: "{{ ansible_default_ipv4.interface }}"
-
 # IPsec stuff that's used by >= 1 role
 ipsec_virtual_subnet_pool: 10.3.0.0/24
 

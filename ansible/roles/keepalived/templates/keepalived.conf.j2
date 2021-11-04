@@ -22,7 +22,7 @@ vrrp_sync_group VGG {
 
 vrrp_instance VIP_1 {
     state MASTER
-    interface {{ network_interface }}
+    interface {{ ansible_default_ipv4.interface }}
     # All VRRP instances belonging to the same cluster must share this id
     virtual_router_id 47 
     priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
@@ -43,7 +43,7 @@ vrrp_instance VIP_1 {
 {% if dualstack_support %}
 vrrp_instance VIP_1_V6 {
     state MASTER
-    interface {{ network_interface }}
+    interface {{ ansible_default_ipv4.interface }}
     virtual_router_id 47 
     priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
     advert_int 1
