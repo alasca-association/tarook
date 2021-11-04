@@ -16,39 +16,11 @@ defaults
   timeout client  50000
   timeout server  50000
 
-frontend k8s_front
-  bind {{ private_vip }}:{{ k8s_apiserver_frontend_port }}
-  {% if dualstack_support %}
-  bind {{ private_vip_v6 }}:{{ k8s_apiserver_frontend_port }} transparent
-  {% endif %}
-  mode tcp
-  log global
-  option tcplog
-  timeout client {{ haproxy_timeout_client }}
-  default_backend k8s_back
-
 frontend healthz
   bind {{ haproxy_health_url }}
   mode http
   monitor-uri /healthz
   option dontlognull
-
-backend k8s_back
-  mode tcp
-  option httpchk GET / "HTTP/1.1\r\nHost: 192.168.0.14\r\n\r\n"
-  http-check expect status 403
-  option redispatch
-  log global
-  balance roundrobin
-  timeout connect 10s
-  timeout server {{ haproxy_timeout_server }}
-
-  {% for host in groups['masters'] %}
-  server {{ host }} {{ hostvars[host]['local_ipv4_address'] }}:6443 check check-ssl verify none
-  {% if dualstack_support %}
-  server {{ host }} {{ hostvars[host]['local_ipv6_address'] }}:6443 check check-ssl verify none
-  {% endif %}
-  {% endfor %}
 
 {% for port in lb_ports %}
 {% set backend_options = ["verify", "none"] %}

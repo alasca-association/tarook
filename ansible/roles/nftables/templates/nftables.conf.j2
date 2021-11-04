@@ -8,17 +8,17 @@ flush ruleset
 define wan = {{ ansible_default_ipv4.interface }}
 define wg = wg0
 define wg_port = {{ wg_port }}
-define k8s_port = {{ k8s_apiserver_frontend_port }}
 define haproxy_stats_port = {{ haproxy_stats_port }}
 define haproxy_prom_metrics_port = 9101
 define keepalived_prom_metrics_port = 9650
 define node_exporter_metrics_port = 9100
 
 table inet filter {
+    # this set may be extended by other roles dropping
+    # files into the drop-in directory "/etc/nft.d/"
     set tcp_internal_accepted {
         type inet_service; flags interval;
         elements = {
-            $k8s_port,
             $haproxy_prom_metrics_port,
             $haproxy_stats_port,
             $keepalived_prom_metrics_port,

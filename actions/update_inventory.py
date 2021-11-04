@@ -413,17 +413,6 @@ def main():
             kubernetes_ansible_inventory_path,
             SECTION_VARIABLE_PREFIX_MAP.get("kubernetes", "")
         )
-    # WORKAROUND:
-    # APIServer ports are currently needed in stage2
-    kubernetes_apiserver_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage2"] /
-        "group_vars" / "gateways" / "k8s_apiserver.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["kubernetes"]["apiserver"],
-        kubernetes_apiserver_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("kubernetes", "")
-    )
 
     # ---
     # KUBERNETES SERVICE LAYER
