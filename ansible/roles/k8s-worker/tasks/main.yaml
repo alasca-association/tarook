@@ -24,15 +24,6 @@
 - name: Gather necessary cluster join information
   when: not kubelet_creds.stat.exists or node_check.rc != 0
   block:
-  - name: Register fact for k8s api VIPv4
-    set_fact:
-      private_k8s_api_vip_v4: "{{ networking_fixed_ip }}"
-  
-  - name: Register fact for k8s api VIPv6
-    when: dualstack_support and false # Enable when we implemented a true DualStack Control Plane
-    set_fact:
-      private_k8s_api_vip_v6: "{{ networking_fixed_ip_v6 }}"
-
   - name: Get certificate information
     become: no
     delegate_to: localhost

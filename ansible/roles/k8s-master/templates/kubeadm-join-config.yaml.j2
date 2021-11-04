@@ -13,7 +13,7 @@ nodeRegistration:
 
 discovery:
   bootstrapToken:
-    apiServerEndpoint: {{ private_k8s_api_vip_v4 }}:{{ k8s_apiserver_frontend_port }}
+    apiServerEndpoint: {{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}
     token: {{ kubeadm_join_token }}
     caCertHashes:
     - "sha256:{{ ca_cert['public_key_fingerprints']['sha256'] | replace(':', '') }}"

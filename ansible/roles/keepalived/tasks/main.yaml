@@ -5,11 +5,6 @@
     name:
       - keepalived
 
-- name: Register fact for private_vip
-  set_fact:
-    private_vip: "{{ networking_fixed_ip }}"
-    private_vip_v6: "{{ networking_fixed_ip_v6 }}"
-
 - name: Create keepalived configuration
   become: yes
   template:

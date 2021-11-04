@@ -14,20 +14,14 @@
   ignore_errors: yes
   register: local_kube_apiserver_status
 
-- name: Register facts for k8s api VIPv4 and host availability evaluation
+- name: Register the available frontend
   set_fact:
-    private_k8s_api_vip_v4: "{{ networking_fixed_ip }}"
     available_frontend: "{{ groups['frontend'] | first }}"
-
-- name: Register fact for k8s api VIPv6
-  when: dualstack_support
-  set_fact:
-    private_k8s_api_vip_v6: "{{ networking_fixed_ip_v6 }}"
 
 - name: Check reachability of load-balanced kube-apiserver
   when: local_kube_apiserver_status is failed
   vars:
-    host: "{{ private_k8s_api_vip_v4 }}:{{ hostvars[available_frontend]['k8s_apiserver_frontend_port'] }}"
+    host: "{{ networking_fixed_ip }}:{{ hostvars[available_frontend]['k8s_apiserver_frontend_port'] }}"
   uri:
     url: "https://{{ host }}"
     status_code: 403
