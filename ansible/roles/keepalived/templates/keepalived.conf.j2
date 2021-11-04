@@ -32,7 +32,7 @@ vrrp_instance VIP_1 {
         auth_pass {{ vrrp_password }}
     }
     virtual_ipaddress {
-        {{ private_vip }}
+        {{ networking_fixed_ip }}
     }
     track_script {
         chk_haproxy
@@ -52,7 +52,7 @@ vrrp_instance VIP_1_V6 {
         auth_pass {{ vrrp_password }}
     }
     virtual_ipaddress {
-        {{ private_vip_v6 }}
+        {{ networking_fixed_ip_v6 }}
     }
     unicast_peer {
         {% for hostname in groups['frontend'] %}
