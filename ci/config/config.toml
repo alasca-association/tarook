@@ -51,6 +51,14 @@ frontend_port = 8888
 rook_enabled = true
 nodeplugin_toleration = true
 
+[kubernetes.local_storage.static]
+enabled = true
+storageclass_name = "local-storage"
+
+[kubernetes.local_storage.dynamic]
+enabled = true
+storageclass_name = "local-storage-dynamic"
+
 [kubernetes.monitoring]
 enabled = true
 

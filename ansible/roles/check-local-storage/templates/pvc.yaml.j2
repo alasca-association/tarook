@@ -9,4 +9,4 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  storageClassName: {{ local_storage_storageclass_name | to_json }}
+  storageClassName: {{ storageclass | to_json }}

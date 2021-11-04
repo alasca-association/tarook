@@ -1,0 +1,9 @@
+{{ _auto_generated_preamble }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ k8s_local_storage_dynamic_storageclass_name | to_json }}
+  namespace: {{ k8s_local_storage_dynamic_namespace | to_json }}
+provisioner: rancher.io/local-path
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete

@@ -108,7 +108,16 @@ nodeplugin_toleration = true # •ᴗ•
 # --- KUBERNETES: LOCAL STORAGE CONFIGURATION ---
 # ansible prefix: "k8s_local_storage"
 [kubernetes.local_storage.static]
+# Enable static provisioning of local storage. This provisions a single local
+# storage volume per worker node.
+#
+# It is recommended to use the dynamic local storage instead.
+enabled = false  # •ᴗ•
+
 # Name of the storage class to create.
+#
+# NOTE: the static and dynamic provisioner must have distinct storage class
+# names if both are enabled!
 #storageclass_name = "local-storage"
 
 # Namespace to deploy the components in
@@ -122,6 +131,29 @@ nodeplugin_toleration = true # •ᴗ•
 
 # Version of the provisioner to use
 #version = "v2.3.4"
+
+# Toleration for the plugin. Defaults to `kubernetes.storage.nodeplugin_toleration`
+#nodeplugin_toleration = ...
+
+[kubernetes.local_storage.dynamic]
+# Enable dynamic local storage provisioning. This provides a storage class which
+# can be used with PVCs to allocate local storage on a node.
+enabled = false  # •ᴗ•
+
+# Name of the storage class to create.
+#
+# NOTE: the static and dynamic provisioner must have distinct storage class
+# names if both are enabled!
+#storageclass_name = "local-storage"
+
+# Namespace to deploy the components in
+#namespace = "kube-system"
+
+# Directory where the volumes will be placed on the worker node
+#data_directory = "/mnt/dynamic-data"
+
+# Version of the local path controller to deploy
+#version = "v0.0.20"
 
 # Toleration for the plugin. Defaults to `kubernetes.storage.nodeplugin_toleration`
 #nodeplugin_toleration = ...
