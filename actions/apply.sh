@@ -11,4 +11,8 @@ fi
 "$actions_dir/apply-stage4.sh"
 "$actions_dir/apply-stage5.sh"
 
+if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then
+  "$actions_dir/apply-custom.sh"
+fi
+
 "$actions_dir/test.sh"
