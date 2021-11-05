@@ -112,6 +112,9 @@ prometheus_cpu_limit = "1"
 [k8s-service-layer.cert-manager]
 enabled = true
 
+[k8s-service-layer.ingress]
+enabled = true
+
 [testing.test-nodes]
 "ci-worker-1" = "worker0"
 "ci-worker-3" = "worker1"

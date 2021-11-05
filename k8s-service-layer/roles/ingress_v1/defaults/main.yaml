@@ -1,0 +1,8 @@
+---
+k8s_ingress_install: true
+k8s_ingress_namespace: k8s-svc-ingress
+k8s_ingress_scheduling_key: null
+k8s_ingress_service_type: LoadBalancer
+k8s_ingress_nodeport_http: 32080
+k8s_ingress_nodeport_https: 32443
+k8s_ingress_enable_ssl_passthrough: "true"

@@ -84,6 +84,7 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "rook": "rook",
     "prometheus": "monitoring",
     "cert-manager": "k8s_cert_manager",
+    "ingress": "k8s_ingress",
 }
 
 
@@ -456,6 +457,18 @@ def main():
         config["k8s-service-layer"].get("cert-manager"),
         kubernetes_service_cm_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("cert-manager", "")
+    )
+
+    # KUBERNETES SERVICE LAYER: INGRESS
+    print_process_state("KSL - INGRESS")
+    kubernetes_service_ingress_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
+        "ingress.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("ingress"),
+        kubernetes_service_ingress_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("ingress", "")
     )
 
     # ---

@@ -402,6 +402,37 @@ enabled = true # •ᴗ•
 # default.
 #scheduling_key =
 
+# --- KUBERNETES SERVICE LAYER : INGRESS ---
+# ansible prefix: "k8s_ingress_"
+[k8s-service-layer.ingress]
+# Enable nginx-ingress management.
+enabled = false # •ᴗ•
+
+# Namespace to deploy the ingress in (will be created if it does not exist, but
+# never deleted).
+#namespace = "k8s-svc-ingress"
+
+# If enabled, choose whether to install or uninstall the ingress. IF SET TO
+# FALSE, THE INGRESS CONTROLLER WILL BE DELETED WITHOUT CHECKING FOR
+# DISRUPTION.
+#install = true
+
+# Scheduling key for the cert manager instance and its resources. Has no
+# default.
+#scheduling_key =
+
+# Service type for the frontend Kubernetes service.
+#service_type = "LoadBalancer"
+
+# Node port for the HTTP endpoint
+#nodeport_http = 32080
+
+# Node port for the HTTPS endpoint
+#nodeport_https = 32443
+
+# Enable SSL passthrough in the controller
+#enable_ssl_passthrough = true
+
 # --- NODE SCHEDULING ---
 # ansible prefix: /
 [node-scheduling]
