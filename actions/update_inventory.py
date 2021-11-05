@@ -83,6 +83,7 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "cah-users": "cah_users",
     "rook": "rook",
     "prometheus": "monitoring",
+    "cert-manager": "k8s_cert_manager",
 }
 
 
@@ -441,6 +442,21 @@ def main():
             kubernetes_service_monitoring_ansible_inventory_path,
             SECTION_VARIABLE_PREFIX_MAP.get("prometheus", "")
         )
+
+    # ---
+    # KUBERNETES SERVICE LAYER
+    # ---
+    # KUBERNETES SERVICE LAYER: CERT MANAGER
+    print_process_state("KSL - CERT MANAGER")
+    kubernetes_service_cm_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
+        "cert-manager.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("cert-manager"),
+        kubernetes_service_cm_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("cert-manager", "")
+    )
 
     # ---
     # C&H KUBERNETES LBaaS
