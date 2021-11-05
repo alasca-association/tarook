@@ -1,14 +1,7 @@
----
-- name: Detect user
-  hosts: masters[0]
-  gather_facts: false
-  roles:
-  - detect_user
-
 # We test the monitoring down here because we need to give Prometheus a bit of
 # time to boot and collect the first bits of data.
 - name: Check monitoring
-  hosts: masters[0]
+  hosts: orchestrator
   gather_facts: no
   pre_tasks:
     - name: include env vars
