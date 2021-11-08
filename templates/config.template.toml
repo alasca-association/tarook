@@ -441,7 +441,7 @@ enabled = false # •ᴗ•
 # it needs to have that label key. The following defines a prefix for these keys
 scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 
-# --- NODE SCHEDULING: LABELS ---
+# --- NODE SCHEDULING: LABELS (sent to ansible as k8s_node_labels!) ---
 [node-scheduling.labels]
 # The following fields are commented out because they make assumptions on the existence
 # and naming scheme of nodes. Use them for inspiration :)
@@ -452,7 +452,7 @@ scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 #managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true"]
 #managed-k8s-worker-5 = ["{{ scheduling_key_prefix }}/monitoring=true"]
 #
-# --- NODE SCHEDULING: TAINTS ---
+# --- NODE SCHEDULING: TAINTS (sent to ansible as k8s_node_taints!) ---
 [node-scheduling.taints]
 # The following fields are commented out because they make assumptions on the existence
 # and naming scheme of nodes. Use them for inspiration :)

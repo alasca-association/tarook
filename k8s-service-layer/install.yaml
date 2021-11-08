@@ -14,13 +14,6 @@
   tags:
   - mk8s-sl
   roles:
-  - role: scheduling_info_v1
-    tags:
-    # required for monitoring/rook too
-    - mk8s-sl/monitoring
-    - mk8s-sl/cert-manager
-    - mk8s-sl/ingress
-
   - role: cert_manager_v1
     when: k8s_cert_manager_enabled
     tags:

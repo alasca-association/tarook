@@ -507,41 +507,40 @@ def main():
     # ---
     # Process labels and taints for each node
     print_process_state("Node Scheduling")
-    node_scheduling_config = dict()
-    node_scheduling_config["node_labels_and_taints"] = list()
-    for node in list(
-        set(
-            list(
-                config["node-scheduling"]["labels"].keys())
-            + list(config["node-scheduling"]["taints"].keys()
-                   )
-        )
-    ):
-        node_specific_labels_taints = dict()
-        node_specific_labels_taints["k8s_node"] = node
-        node_specific_labels_taints["k8s_node_labels"] = \
-            config["node-scheduling"]["labels"].get(node, [])
-        node_specific_labels_taints["k8s_node_taints"] = \
-            config["node-scheduling"]["taints"].get(node, [])
-        node_scheduling_config["node_labels_and_taints"].append(
-            node_specific_labels_taints
-        )
-    # Remove labels after they have been processed so that they
-    # are not contained in the upper section anymore
-    del config["node-scheduling"]["labels"]
-    # Remove taints after they have been processed so that they
-    # are not contained in the upper section anymore
-    del config["node-scheduling"]["taints"]
+    node_scheduling_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage3"] /
+        "group_vars" / "all" / "node-scheduling.yaml"
+    )
+    label_taint_inventory_paths = [
+        (
+            ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
+            "group_vars" / "all" / "node-scheduling.yaml"
+        ),
+        (
+            ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage5"] /
+            "group_vars" / "all" / "node-scheduling.yaml"
+        ),
+    ]
+    node_scheduling_config = {
+        # We use pop here to only apply the prefix to labels + taints
+        "k8s_node_labels": config.get("node-scheduling", {}).pop("labels", {}),
+        "k8s_node_taints": config.get("node-scheduling", {}).pop("taints", {}),
+    }
+    node_scheduling_config.update(config.get("node-scheduling", {}))
+    write_to_inventory(
+        node_scheduling_config,
+        node_scheduling_inventory_path,
+    )
 
-    label_taint_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
-        "node-scheduling.yaml"
-    )
-    dump_to_ansible_inventory(
-        {**config.get("node-scheduling"), **node_scheduling_config},
-        label_taint_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("node-scheduling", "")
-    )
+    # We do not want those two in the other stages.
+    del node_scheduling_config["k8s_node_labels"]
+    del node_scheduling_config["k8s_node_taints"]
+
+    for path in label_taint_inventory_paths:
+        write_to_inventory(
+            node_scheduling_config,
+            path,
+        )
 
     # ---
     # TESTING
