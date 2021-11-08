@@ -193,7 +193,7 @@
       state: directory
       owner: root
       group: bird
-      mode: 0640
+      mode: 0750
 
   - name: Ensure that drop-in directory for bird configs exist (IPv6)
     file:
@@ -201,7 +201,7 @@
       state: directory
       owner: root
       group: bird
-      mode: 0640
+      mode: 0750
     when: dualstack_support
 
   - name: Create bird config for IPv4 wireguard routes
