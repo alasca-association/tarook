@@ -514,11 +514,11 @@ def main():
     label_taint_inventory_paths = [
         (
             ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
-            "group_vars" / "all" / "node-scheduling.yaml"
+            "node-scheduling.yaml"
         ),
         (
             ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage5"] /
-            "group_vars" / "all" / "node-scheduling.yaml"
+            "node-scheduling.yaml"
         ),
     ]
     node_scheduling_config = {
