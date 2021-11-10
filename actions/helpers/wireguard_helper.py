@@ -447,8 +447,8 @@ def generate_wireguard_config(
         or \
         wireguard_config.get("rollout_company_users", False)
 
-    # Init the company members as wireguard peers
-    wireguard_company_users = []
+    # Init the company members as wireguard peers if enabled
+    wireguard_company_users = {}
     if wireguard_rollout_company_users:
         wireguard_company_users = _load_wireguard_company_users()
 
@@ -459,6 +459,10 @@ def generate_wireguard_config(
         wireguard_company_users.values(),
         wireguard_configured_users
     )
+
+    if not wireguard_users:
+        raise ValueError(
+            "You enabled wireguard, but did not configure any peers.")
 
     # Validate (all) wireguard users, require unique names
     _require_unique_names(wireguard_users.values())
