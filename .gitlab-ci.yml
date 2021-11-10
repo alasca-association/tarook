@@ -7,7 +7,6 @@ workflow:
 
 stages:
 - lint
-- release-infos
 - spawn-cluster
 - deploy
 
@@ -207,23 +206,3 @@ pages:
   cache:
     paths:
       - $CARGO_HOME/bin
-
-gen-changelogs:
-  stage: release-infos
-  variables:
-    TOKEN: $GL_CHANGELOG_TOKEN
-    VERSION: 0.0.1-alpha # ToDo: Make me configurable and automate me
-    BRANCH: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME 
-    FROM_SHA: $CI_MERGE_REQUEST_TARGET_BRANCH_SHA
-    ALPINE_IMAGE_TAG: "3.13.6"
-  image: alpine:$ALPINE_IMAGE_TAG
-  before_script:
-    - apk --no-cache add curl bash
-  script:
-    - bash .gitlab/scripts/changelog.sh
-  rules:
-    - if: '$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/ || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: always
-    - when: never
-  tags:
-    - docker
