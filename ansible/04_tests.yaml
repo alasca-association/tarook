@@ -139,11 +139,11 @@
         fs_storage_class: rook-ceph-cephfs
     - role: check-local-storage
       tags: test-local-storage
-      storageclass: "{{ k8s_local_storage_static_storageclass_name }}"
+      storageclass: "{{ k8s_local_storage_static_storageclass_name | default('local-storage') }}"
       when: k8s_local_storage_static_enabled
     - role: check-local-storage
       tags: test-local-storage-dynamic
-      storageclass: "{{ k8s_local_storage_dynamic_storageclass_name }}"
+      storageclass: "{{ k8s_local_storage_dynamic_storageclass_name | default('local-storage') }}"
       when: k8s_local_storage_dynamic_enabled
 
 - name: Remove worker node annotation
