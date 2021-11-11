@@ -83,6 +83,10 @@ testBook:
 
 .prepare_spawn_test_cleanup_k8s_cluster:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
+  variables:
+    WG_COMPANY_USERS: "false"
+    PASS_COMPANY_USERS: "false"
+    SSH_COMPANY_USERS: "false"
   before_script:
   - 'export wg_conf_name=wg0'
   # id_rsa must be set as `File` input in the GitLab CI/CD variables of the
@@ -96,9 +100,6 @@ testBook:
   - rm -rf ci # make sure we're operating on a clean directory
   - git checkout -- ci
   - export MANAGED_K8S_GIT="$(realpath .)"
-  - export WG_COMPANY_USERS="false"
-  - export PASS_COMPANY_USERS="false"
-  - export SSH_COMPANY_USERS="false"
   - cd ci
   - git init
   - ../actions/init.sh
