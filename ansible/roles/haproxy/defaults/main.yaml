@@ -1,7 +1,5 @@
 ---
 lb_ports: []
-haproxy_timeout_client: 600s
-haproxy_timeout_server: 600s
 haproxy_service_config_map:
   Debian: /etc/default/haproxy
   RedHat: /etc/sysconfig/haproxy
