@@ -235,6 +235,11 @@ cluster_name = "rook-ceph" # •ᴗ•
 
 #nodeplugin_toleration = true
 
+# Storage class name. SHOULD be compliant with one storage class you
+# have configured in the kubernetes.local_storage section (or you should
+# know what your are doing).
+#mon_volume_storage_class = "local-storage"
+
 # If set to true Rook won’t perform any upgrade checks on Ceph daemons
 # during an upgrade. Use this at YOUR OWN RISK, only if you know what 
 # you’re doing.
