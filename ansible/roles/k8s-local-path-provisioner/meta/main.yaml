@@ -1,2 +1,6 @@
+---
+galaxy_info:
+  author: Yaook Authors
+  license: Apache-2.0
 dependencies:
-  - k8s-config
+- k8s-config
