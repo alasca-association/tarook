@@ -72,10 +72,11 @@
   become: no
   gather_facts: false
   vars:
-    gateway: "{{ groups['gateways'] or groups['masters'] | first }}"
+    gateway: "{{ groups['gateways'] | first or groups['masters'] | first }}"
+    deprecated_nodeport_lb_test_port: "{{ hostvars[groups['frontend'] | first ]['deprecated_nodeport_lb_test_port'] | default(0) }}"
   roles:
     - role: check-services
-      when: "deprecated_nodeport_lb_test_port is defined"
+      when: "deprecated_nodeport_lb_test_port | int > 0"
       tags:
       - test-service
       - test-dualstack

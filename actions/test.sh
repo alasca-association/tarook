@@ -32,7 +32,11 @@ ansible_playbook -i "inventory/default.yaml" -i "$ansible_inventoryfile_03" -e "
 popd
 
 # Test k8s-base
+# Please unclutter me
 # shellcheck disable=2086
-ansible_playbook -i "$ansible_inventoryfile_03" -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" \
+ansible_playbook -i "$ansible_inventoryfile_03" \
+    -i "$ansible_inventoryfile_02" \
+    -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" \
     -e "ksl_playbook_directory=$ansible_k8s_sl_playbook" \
-    -e "kms_vars_directory=$ansible_k8s_ms_vars_base" 04_tests.yaml
+    -e "kms_vars_directory=$ansible_k8s_ms_vars_base" \
+    04_tests.yaml
