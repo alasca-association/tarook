@@ -1,4 +1,5 @@
 - name: Create nftables config for monitoring
+  when: on_openstack | bool
   become: yes
   template:
     src: "nftables.conf.j2"

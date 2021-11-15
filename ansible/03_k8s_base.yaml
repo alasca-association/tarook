@@ -74,7 +74,7 @@
   - detect_user
 
 - name: Prepare Gateways
-  hosts: gateways
+  hosts: frontend
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
