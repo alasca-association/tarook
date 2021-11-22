@@ -16,3 +16,14 @@ ipsec_packages:
   - strongswan-pki
   - libcharon-extra-plugins
   - libstrongswan-extra-plugins
+
+# NOTE:
+# This is a pragmatic workaround. The k8s API configuration has been moved
+# to stage3 (refer !392). Therefore, the k8s_apiserver_frontend_port is not
+# available in stage2. Because IPsec is not tested in the CI, we did not
+# notice that !392 breaks this role (ref #373).
+# Future developers should consider splitting the IPsec setup and
+# configuration like it has been done in !392 and during the inventory
+# refactoring (ref global-monitoring-frontend preparation role (tombstone MR)).
+# Maybe that would be a cleaner solution.
+k8s_apiserver_frontend_port: 8888
