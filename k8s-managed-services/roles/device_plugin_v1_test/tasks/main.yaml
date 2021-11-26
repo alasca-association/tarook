@@ -1,9 +1,5 @@
 ---
 - name: Run the test
-  become: yes
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-
   block:
     - name: create namespace
       k8s:
