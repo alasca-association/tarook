@@ -6,14 +6,7 @@
     owner: root
     group: root
     mode: 0600
-  register: nftables_monitoring_config
-
-- name: reload nftables # noqa no-handler
-  become: yes
-  systemd:
-    name: nftables
-    state: reloaded
-  when: nftables_monitoring_config is changed
+  notify: reload nftables
 
 - name: Create HAProxy config for monitoring
   become: yes
@@ -24,11 +17,4 @@
     mode: 0600
     owner: root
     group: root
-  register: haproxy_monitoring_config
-
-- name: reload haproxy # noqa no-handler
-  become: yes
-  systemd:
-    name: haproxy
-    state: reloaded
-  when: haproxy_monitoring_config is changed
+  notify: reload haproxy
