@@ -9,7 +9,7 @@
     mode: 0600
   notify: reload nftables
 
-- name: Create HAProxy config for the k8s API
+- name: Create HAProxy config for the k8s API server
   become: yes
   template:
     src: haproxy.cfg.j2
@@ -18,11 +18,4 @@
     mode: 0600
     owner: root
     group: root
-  register: haproxy_k8s_apiserver_config
-
-- name: reload haproxy # noqa no-handler
-  become: yes
-  systemd:
-    name: haproxy
-    state: reloaded
-  when: haproxy_k8s_apiserver_config is changed
+  notify: reload haproxy
