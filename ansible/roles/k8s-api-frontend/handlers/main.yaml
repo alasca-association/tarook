@@ -1,0 +1,12 @@
+---
+- name: reload haproxy
+  become: yes
+  systemd:
+    name: haproxy
+    state: reloaded
+
+- name: reload nftables
+  become: yes
+  systemd:
+    name: nftables
+    state: reloaded

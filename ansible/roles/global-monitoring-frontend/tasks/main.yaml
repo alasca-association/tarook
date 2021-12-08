@@ -1,19 +1,19 @@
-- name: Create nftables config for k8s API server
-  become: yes
+- name: Create nftables config for monitoring
   when: on_openstack | bool
+  become: yes
   template:
-    src: nftables.conf.j2
-    dest: /etc/nft.d/k8s_apiserver.conf
+    src: "nftables.conf.j2"
+    dest: /etc/nft.d/monitoring.conf
     owner: root
     group: root
     mode: 0600
   notify: reload nftables
 
-- name: Create HAProxy config for the k8s API server
+- name: Create HAProxy config for monitoring
   become: yes
   template:
     src: haproxy.cfg.j2
-    dest: /etc/haproxy/conf.d/20_k8s-apiserver.cfg
+    dest: /etc/haproxy/conf.d/10_monitoring.cfg
     validate: haproxy -f %s -c
     mode: 0600
     owner: root
