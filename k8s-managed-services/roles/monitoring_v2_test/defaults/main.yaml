@@ -1,0 +1,6 @@
+check_prometheus_scraping_namespace: monitoring-kms-checks-a49f875c-07fc-486a-b0b5-8be51dbf44ba
+
+monitoring_prometheus_operator_release_name: "prometheus-operator"
+monitoring_prometheus_stack_release_name: "prometheus-stack"
+
+monitoring_use_grafana: true

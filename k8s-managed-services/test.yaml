@@ -9,7 +9,7 @@
       include_vars:
         dir: "{{ kms_vars_directory }}"
   roles:
-  - role: monitoring_v1_test
+  - role: monitoring_v2_test
     tags:
     - test-monitoring
     when: "k8s_monitoring_enabled"
