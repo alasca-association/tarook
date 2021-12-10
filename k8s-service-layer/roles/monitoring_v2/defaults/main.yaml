@@ -17,6 +17,7 @@ monitoring_prometheus_cpu_request: "{{ monitoring_prometheus_cpu_limit }}"
 monitoring_prometheus_operator_release_name: "prometheus-operator"
 monitoring_prometheus_stack_release_name: "prometheus-stack"
 
+monitoring_use_grafana: true
 monitoring_use_thanos: true
 
 monitoring_prometheus_stack_version: "10.3.5"

@@ -37,7 +37,7 @@ alertmanager:
 
 ##
 grafana:
-  enabled: true
+  enabled: {{ monitoring_use_grafana | bool }}
 {% if monitoring_scheduling_key %}
   tolerations:
     - key: "{{ monitoring_scheduling_key }}"

@@ -344,6 +344,9 @@ cluster_name = "rook-ceph" # •ᴗ•
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#upgrading-chart
 #prometheus_stack_version = "10.3.5"
 
+# Enable grafana
+#use_grafana = true
+
 # Enable use of Thanos
 #use_thanos = true
 
