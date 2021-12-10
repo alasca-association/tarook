@@ -142,11 +142,14 @@ kuberouter-rook:
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
 
-# Manually spawn a cluster with kube-router as CNI and rook enabled
+# Manually spawn a cluster with kube-router as CNI and rook enabled (MR only)
 kuberouter-rook-manual:
   environment:
     name: spawn-cluster
-  when: manual
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      when: manual
+    - when: never
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   allow_failure: true
   stage: spawn-cluster
@@ -171,11 +174,14 @@ calico-rook-dualstack:
     AFLAGS: "--diff -e k8s_network_plugin=calico"
     TF_VAR_dualstack_support: "true"
 
-# Spawn a cluster with calico as CNI and rook enabled
+# Manually spawn a cluster with calico as CNI and rook enabled (MR only)
 calico-rook-dualstack-manual:
   environment:
     name: spawn-cluster
-  when: manual
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      when: manual
+    - when: never
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   allow_failure: true
   stage: spawn-cluster
