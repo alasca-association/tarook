@@ -54,6 +54,16 @@ grafana:
   datasources:
     datasources.yaml:
       apiVersion: 1
+{% if monitoring_use_thanos %}
+      datasources:
+        - name: thanos
+          type: prometheus
+          access: proxy
+          orgId: 1
+          url: "http://thanos-query.{{ monitoring_namespace }}.svc:9090"
+          version: 1
+          editable: false
+{% endif %}
   sidecar:
     dashboards:
       enabled: true
@@ -209,7 +219,7 @@ prometheusOperator:
 prometheus:
   enabled: true
   thanosService:
-    enabled: false
+    enabled: {{ monitoring_use_thanos | bool }}
   serviceMonitor:
     relabelings:
       - sourceLabels: [__meta_kubernetes_pod_node_name]
@@ -220,6 +230,13 @@ prometheus:
         action: replace
   prometheusSpec:
     serviceMonitorSelectorNilUsesHelmValues: false
+{% if monitoring_use_thanos | bool %}
+    thanos:
+      objectStorageConfig:
+        optional: false
+        name: thanos-objectstorage
+        key: thanos.yaml
+{% endif %}
     containers:
       - name: prometheus
         livenessProbe:

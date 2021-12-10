@@ -32,11 +32,6 @@
   tags:
   - monitoring
 
-- import_tasks: kube_thanos.yml
-  when: k8s_monitoring_enabled and monitoring_use_thanos
-  tags:
-  - thanos
-
 - import_tasks: internet_probe.yaml
   when: k8s_monitoring_enabled and monitoring_internet_probe
   tags:

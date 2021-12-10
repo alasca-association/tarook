@@ -405,14 +405,6 @@ cluster_name = "rook-ceph" # •ᴗ•
 #thanos_sidecar_cpu_limit = "500m"
 #thanos_sidecar_cpu_request = "{{ monitoring_thanos_sidecar_cpu_limit }}"
 
-# Note that the default limits for Thanos are quite experimental. We’re still
-# gathering experience here. Please see also
-# ansible/roles/k8s-monitoring/defaults/main.yaml for more discussion on the
-# defaults.
-
-# Instead of ad-hoc changing limits in your cluster, seeking discussion with
-# the Flyingdutchman/CID team for a change of defaults is to be preferred.
-
 #thanos_query_memory_limit = "786Mi"
 #thanos_query_memory_request = "128Mi"
 #thanos_query_cpu_limit = "1"

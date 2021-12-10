@@ -168,7 +168,7 @@ local q = t.query + t.query.withServiceMonitor + t.query.withResources + commonC
       'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
       for service in [s.service]
     ] + [
-      'dnssrv+_grpc._tcp.prometheus-k8s.monitoring.svc.cluster.local'
+      'dnssrv+_grpc._tcp.{{ monitoring_prometheus_service_name }}.monitoring.svc.cluster.local'
     ],
     replicaLabels: ['prometheus_replica', 'rule_replica'],
     resources: {

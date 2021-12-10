@@ -24,6 +24,11 @@
     values: "{{ lookup('template', 'prometheus_operator.yaml.j2') | from_yaml }}"
     wait: yes
 
+- name: Install thanos
+  include_role:
+    name: monitoring_thanos_v1
+  when: monitoring_use_thanos
+
 # Install the prometheus stack
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall KSL monitoring stack"
   community.kubernetes.helm:

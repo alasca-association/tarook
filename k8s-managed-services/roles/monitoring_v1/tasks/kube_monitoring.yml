@@ -19,27 +19,10 @@
     chdir: "{{ monitoring_jsonnet_dir_monitoring }}"
   changed_when: false
 
-- name: create thanos secret
-  k8s:
-    apply: yes
-    definition:
-      apiVersion: v1
-      type: Opaque
-      kind: Secret
-      metadata:
-        name: "{{ monitoring_thanos_config_secret_name }}"
-        namespace: "{{ monitoring_namespace }}"
-      data:
-        thanos.yaml: "{{ lookup('template', 'thanos-objectstorage.yml') | b64encode }}"
-    validate:
-      fail_on_error: yes
-      strict: yes
+- name: Install thanos
+  include_role:
+    name: monitoring_thanos_v1
   when: monitoring_use_thanos
-  tags:
-  - thanos
-  notify:
-  - restart thanos-store statefulset
-  - restart prometheus-k8s statefulset
 
 - name: check if configmap for customer dashboards exists
   k8s_info:
