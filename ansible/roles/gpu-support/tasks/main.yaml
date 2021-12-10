@@ -25,54 +25,66 @@
   become: yes
   when:
     - has_gpu
-  - "_allow_disruption or not kubernetes_dir.stat.exists"
+    - "_allow_disruption or not kubernetes_dir.stat.exists"
+    - ansible_facts['pkg_mgr'] == "apt"
   block:
-  - name: Install deps for the nvidia drivers
-    yum:
-      name:
-      - make
-      - git
-      - gcc
-      - vim
-      - pciutils
-      - wget
-      - gcc-c++
-      - kernel-devel
-      - elfutils-libelf-devel
+    - name: Install deps for the nvidia drivers
+      apt:
+        state: present
+        name:
+          - "linux-headers-{{ ansible_kernel }}"
 
-  - name: Install classic gpu driver
-    block:
-    - name: Download the nvidia classic driver script on the host
-      get_url:
-        url: "{{ nvidia_object_store }}/{{ nvidia_classic_driver_name }}"
-        dest: "{{ nvidia_working_dir }}/{{ nvidia_classic_driver_name }}"
-        mode: '0755'
+    - name: Add key of nvidia's cuda repo
+      apt_key:
+        url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+        state: present
 
-    - name: Blacklist nouveau safely (we do not trust <classic driver> --disable-nouveau)
+    - name: Add repository
+      apt_repository:
+        repo: deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /
+        state: present
+        update_cache: yes
+
+    - name: Install driver
+      apt:
+        update_cache: no
+        install_recommends: no
+        autoremove: yes
+        name:
+          - nvidia-headless-450
+          - nvidia-utils-450
+      register: installed_driver
+
+    - name: Blacklist nouveau
+      # The installation script lies! It says: """
+      # update-initramfs: deferring update (trigger activated)
+      # A modprobe blacklist file has been created at /etc/modprobe.d to prevent Nouveau
+      # from loading. This can be reverted by deleting the following file:
+      # /etc/modprobe.d/nvidia-graphics-drivers.conf"""
+      # And guess what? That configuration file doesn't exist!
       copy:
         dest: /etc/modprobe.d/blacklist_nouveau.conf
         content: |
           {{ _auto_generated_preamble }}
           blacklist nouveau
           options nouveau modeset=0
+        mode: 0755
+        owner: root
+        group: root
+      register: blacklisted_nouveau
 
-    - name: Apply nouveau blacklisting
-      command: "dracut -f -v"
+    - name: Update initramfs
+      command: "update-initramfs -k {{ ansible_kernel }} -uv"
+      when: blacklisted_nouveau.changed or installed_driver.changed
+      register: ramfs
 
-    # This step and the next reboot are intended to support replaying of 03_final after a kernel update
-    - name: Uninstall potential currently installed nvidia classic driver (can take long)
-      command: "{{ nvidia_working_dir }}/{{ nvidia_classic_driver_name }} --uninstall -s -q"
-
-    - name: Reboot
-      become: yes
+    - name: Reboot the node
+      when: ramfs.changed
       reboot:
 
-    - name: Install nvidia classic driver (can take long)
-      command: "{{ nvidia_working_dir }}/{{ nvidia_classic_driver_name }} -s -q"
-
-  - name: Reboot
-    become: yes
-    reboot:
-
-  - name: Basic sanity check with nvidia-smi
-    command: nvidia-smi
+    - name: Basic sanity check with nvidia-smi
+      # nvidia-smi -L lists all detected cards.
+      # I installed the toolchain on a host with any nvidia cards and the rc was != 0.
+      # It's therefore safe to assume that if the installation somehow failed, then this task would fail too.
+      changed_when: false
+      command: nvidia-smi -L
