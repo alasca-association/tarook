@@ -1,38 +1,30 @@
-- name: Check that docker is installed
+- name: Check if the node has kubernetes installed
+  stat:
+    path: "/etc/kubernetes"
+  register: kubernetes_dir
+
+- name: Ensure /etc/docker directory is present
   become: yes
-  command:
-  args:
-    argv:
-    - which
-    - docker
-  register: docker_check
-  when: not _allow_disruption
-  failed_when: false
-  changed_when: docker_check.rc != 0
+  file:
+    path: /etc/docker
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
 
 - name: Install docker CE (apt)
   become: yes
   apt:
-    update_cache: yes
     state: present
     name:
       - docker.io
   when:
   - ansible_pkg_mgr == 'apt'
-  # if docker is not installed, installing and configuring it does not create
-  # a disruption
-  - _allow_disruption or docker_check is changed
-  notify:
-    - Create docker daemon configuration
-    - Restart docker
 
 - name: Install docker CE (yum/dnf)
   become: yes
   when:
   - ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf'
-  # if docker is not installed, installing and configuring it does not create
-  # a disruption
-  - _allow_disruption or docker_check is changed
   block:
   # TODO: test without
   - name: Install pre-requisites to docker
@@ -53,9 +45,6 @@
       - docker-ce
       - docker-ce-cli
       - containerd.io
-    notify:
-      - Create docker daemon configuration
-      - Restart docker
 
 - name: Install docker nvidia runtime
   become: yes
@@ -89,22 +78,22 @@
         name: nvidia-docker2
         update_cache: yes
 
-- name: Update configuration for docker daemon if disruption is allowed
-  debug:
-    msg: "Updating configuration for docker daemon because disruption is allowed"
-  when: _allow_disruption
-  notify:
-    - Create docker daemon configuration
-    - Restart docker
-
-- name: Ensure /etc/docker directory is present
+- name: Create docker daemon configuration
   become: yes
-  file:
-    path: /etc/docker
-    state: directory
-    mode: 0755
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0640
+  register: configuration_update
 
-# If the docker daemon is freshly installed or updated,
-# we want to configure and restart it immediately
-- name: Force restart of docker at this point
-  meta: flush_handlers
+- name: Restart docker
+  become: yes
+  # Only restart if something changed AND we're allowed to do the restart
+  when: configuration_update.changed and (_allow_disruption or not kubernetes_dir.stat.exists)
+  systemd:
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
+    name: docker
