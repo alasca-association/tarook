@@ -332,6 +332,11 @@ cluster_name = "rook-ceph" # •ᴗ•
 # --- KUBERNETES SERVICE LAYER : MONITORING(PROMETHEUS) ---
 # ansible prefix: "monitoring_"
 [k8s-service-layer.prometheus]
+# If kubernetes.monitoring.enabled is true, choose whether to install or uninstall
+# Prometheus. IF SET TO FALSE, PROMETHEUS WILL BE DELETED WITHOUT CHECKING FOR
+# DISRUPTION (sic!).
+#install = true
+
 # Enable use of Thanos
 #use_thanos = true
 
