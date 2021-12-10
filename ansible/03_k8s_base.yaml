@@ -108,8 +108,8 @@
     when: ansible_os_family == 'RedHat'
   - role: ntp
     tags: ntp
-  - role: gpu-and-vgpu
-    tags: gpu-and-vgpu
+  - role: gpu-support
+    tags: gpu-support
   - role: docker
     tags: docker
   - role: kubeadm
