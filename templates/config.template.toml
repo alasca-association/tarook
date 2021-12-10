@@ -337,6 +337,13 @@ cluster_name = "rook-ceph" # •ᴗ•
 # DISRUPTION (sic!).
 #install = true
 
+# helm chart version of the prometheus stack
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
+# If you set this empty (not unset), the latest version is used
+# Note that upgrades require additional steps and maybe even LCM changes are needed:
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#upgrading-chart
+#prometheus_stack_version = "10.3.5"
+
 # Enable use of Thanos
 #use_thanos = true
 
