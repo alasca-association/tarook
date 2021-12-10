@@ -169,7 +169,7 @@ kubeScheduler:
 
 ##
 kubeProxy:
-  enabled: false
+  enabled: {{ (k8s_network_plugin in ['calico']) | bool }}
   serviceMonitor:
     enabled: true
     relabelings:

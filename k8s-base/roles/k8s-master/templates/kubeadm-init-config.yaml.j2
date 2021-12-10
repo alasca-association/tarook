@@ -60,17 +60,19 @@ scheduler:
     extraArgs:
         "bind-address" : "0.0.0.0"
 
-{% if not dualstack_support %}
+{% if dualstack_support %}
 # enabled by defaul since v1.21
 featureGates:
-  IPv6DualStack: false
-
+  IPv6DualStack: true
 {% else %}
 featureGates:
-  IPv6DualStack: true
+  IPv6DualStack: false
+{% endif %}
 
 ---
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
+metricsBindAddress: "0.0.0.0:10249"
+{% if dualstack_support %}
 mode: ipvs
 {% endif %}
