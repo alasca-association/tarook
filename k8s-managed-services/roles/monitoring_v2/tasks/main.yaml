@@ -1,4 +1,15 @@
 ---
+- name: "{{ monitoring_internet_probe | ternary('I', 'Uni') }}nstall blackbox-exporter"
+  community.kubernetes.helm:
+    chart_ref: prometheus-blackbox-exporter
+    chart_repo_url: https://prometheus-community.github.io/helm-charts
+    chart_version: 5.3.1
+    release_namespace: "{{ monitoring_namespace }}"
+    release_name: "{{ kms_blackbox_exporter_release_name }}"
+    release_state: "{{ monitoring_internet_probe | ternary('present', 'absent') }}"
+    values: "{{ lookup('template', 'blackbox_exporter.yaml.j2') | from_yaml }}"
+    wait: yes
+
 - name: Create architecture-specific service monitors
   block:
   - name: Create keepalived service monitor (frontend)

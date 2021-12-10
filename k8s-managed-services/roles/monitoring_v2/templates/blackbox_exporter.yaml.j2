@@ -1,0 +1,41 @@
+## Disable pod security policy
+pspEnabled: false
+
+serviceMonitor:
+  targets:
+#    - name: example                    # Human readable URL that will appear in Prometheus / AlertManager
+#      url: http://example.com/healthz  # The URL that blackbox will scrape
+#      labels: {}                       # Map of labels for ServiceMonitor. Overrides value set in `defaults`
+#      interval: 60s                    # Scraping interval. Overrides value set in `defaults`
+#      scrapeTimeout: 60s               # Scrape timeout. Overrides value set in `defaults`
+#      module: http_2xx                 # Module used for scraping. Overrides value set in `defaults`
+#      additionalMetricsRelabels: {}    # Map of metric labels and values to add
+{% for target in monitoring_internet_probe_targets %}
+    - name: {{ target.name | to_json }}
+      url: {{ target.url | to_json }}
+      interval: {{ target.interval | to_json | default("60s") }}
+      scrapeTimeout: {{ target.scrapeTimeout | to_json | default("60s") }}
+{% endfor %}
+
+## Custom PrometheusRules to be defined
+## ref: https://github.com/coreos/prometheus-operator#customresourcedefinitions
+prometheusRule:
+  enabled: true
+  additionalLabels:
+    app.kubernetes.io/name: blackbox-exporter
+    app.kubernetes.io/instance: blackbox-exporter
+    role: alert-rules
+  namespace: {{ monitoring_namespace | to_json }}
+  rules:
+    - alert: mk8s:internet-probe:target-unreachable
+      expr: probe_success < 1
+      annotations:
+        summary:
+          One of the internet probe targets could not be reached.
+        description:
+          The blackbox exporter could not reach one or more of its targets.
+          That means that either the target is actually down or the egress
+          traffic is disrupted.
+      for: 1m
+      labels:
+        severity: warning

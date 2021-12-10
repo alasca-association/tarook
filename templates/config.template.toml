@@ -417,8 +417,15 @@ cluster_name = "rook-ceph" # •ᴗ•
 
 #thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
 
-# ToDo: add description for internet_probe
-#internet_probe = true
+# Scrape external targets via blackbox exporter
+# https://github.com/helm/charts/tree/master/stable/prometheus-blackbox-exporter
+#internet_probe = false
+
+#[[k8s-service-layer.prometheus.internet_probe_targets]]
+# name="example"                    # Human readable URL that will appear in Prometheus / AlertManager
+# url="http://example.com/healthz"  # The URL that blackbox will scrape
+# interval="60s"                    # Scraping interval. Overrides value set in `defaults`
+# scrapeTimeout="60s"               # Scrape timeout. Overrides value set in `defaults`
 
 # --- KUBERNETES SERVICE LAYER : CERT MANAGER ---
 # ansible prefix: "k8s_cert_manager_"
