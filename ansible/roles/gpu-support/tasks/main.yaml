@@ -9,32 +9,22 @@
     name:
     - pciutils
 
-- name: Copy the gpu discovery script to the host
-  become: yes
-  template:
-    src: check_pci.sh.j2
-    dest: "{{ nvidia_working_dir }}/check_pci.sh"
-    mode: u=rwx,go=rx
-    owner: root
-    group: root
-
 - name: Detect (v)GPU presence
-  become: yes
-  command: "{{ nvidia_working_dir }}/check_pci.sh"
-  register: gpu_test
-  failed_when: gpu_test.rc == 2
+  # The command says "give me all devices by nvidia (vendor ID 10de) that you can find on the node"
+  # Hence it (a) doesn't care about other GPU vendors nor (b) whether the device is actually a GPU.
+  command: "lspci -d 10de:"
   changed_when: false
+  register: gpu_test
 
 - name: Set gpu fact
   set_fact:
-    has_gpu: yes
-  when: gpu_test.rc == 0
+    has_gpu: "{{ ((gpu_test.stdout | length) > 0) | bool }}"
 
 # A GPU as been detected
 - name: Install GPU drivers
   become: yes
   when:
-  - "has_gpu is defined"
+    - has_gpu
   - "_allow_disruption or not kubernetes_dir.stat.exists"
   block:
   - name: Install deps for the nvidia drivers
@@ -134,8 +124,3 @@
 
   - name: Basic sanity check with nvidia-smi
     command: nvidia-smi
-
-
-
-
-
