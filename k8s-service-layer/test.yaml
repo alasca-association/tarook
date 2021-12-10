@@ -11,7 +11,7 @@
   tags:
   - test-mk8s-sl
   roles:
-  - role: test_cert_manager_v1
+  - role: cert_manager_v1_test
     when: k8s_cert_manager_enabled
     tags:
     - test-mk8s-sl/cert-manager
