@@ -57,9 +57,37 @@
       - Create docker daemon configuration
       - Restart docker
 
-- name: Check for nvidia-docker2 support
-  include_tasks: install_nvidia-docker2.yaml
-  when: has_gpu is defined
+- name: Install docker nvidia runtime
+  become: yes
+  vars:
+    # This value is the concatenation of the fields $ID and $VERSION_ID in /etc/os-release,
+    # e.g., `ubuntu18.04`.
+    # I think it's a bad idea to simply source these fields so let's follow a different
+    # path.
+    distribution: "{{ (ansible_distribution | lower) }}{{ansible_distribution_version }}"
+  when:
+    - has_gpu
+    - ansible_facts['pkg_mgr'] == "apt"
+  block:
+    - name: Add nvidia's repo key
+      apt_key:
+        url: https://nvidia.github.io/nvidia-docker/gpgkey
+        state: present
+
+    - name: Add nvidia-docker2 repositories
+      apt_repository:
+        # Don't update on each item
+        update_cache: false
+        repo: "{{ item }}"
+      loop:
+        - "deb https://nvidia.github.io/libnvidia-container/stable/{{ distribution }}/$(ARCH) /"
+        - "deb https://nvidia.github.io/nvidia-container-runtime/stable/{{ distribution }}/$(ARCH) /"
+        - "deb https://nvidia.github.io/nvidia-docker/{{ distribution }}/$(ARCH) /"
+
+    - name: Install nvidia-docker2 package
+      apt:
+        name: nvidia-docker2
+        update_cache: yes
 
 - name: Update configuration for docker daemon if disruption is allowed
   debug:
