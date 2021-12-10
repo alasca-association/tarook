@@ -1,0 +1,20 @@
+---
+monitoring_install: true
+monitoring_namespace: 'monitoring'
+
+monitoring_scheduling_key: null
+
+monitoring_prometheus_operator_memory_limit: "400Mi"
+monitoring_prometheus_operator_memory_request: "100Mi"
+monitoring_prometheus_operator_cpu_limit: "500m"
+monitoring_prometheus_operator_cpu_request: "100m"
+
+monitoring_prometheus_memory_limit: "3Gi"
+monitoring_prometheus_memory_request: "{{ monitoring_prometheus_memory_limit }}"
+monitoring_prometheus_cpu_limit: "1"
+monitoring_prometheus_cpu_request: "{{ monitoring_prometheus_cpu_limit }}"
+
+monitoring_prometheus_operator_release_name: "prometheus-operator"
+monitoring_prometheus_stack_release_name: "prometheus-stack"
+
+monitoring_use_thanos: true

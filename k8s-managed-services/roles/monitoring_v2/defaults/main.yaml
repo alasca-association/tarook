@@ -1,0 +1,5 @@
+---
+monitoring_namespace: 'monitoring'
+
+kms_prometheus_stack_release_name: "kms-prometheus-stack"
+kms_blackbox_exporter_release_name: "kms-blackbox"

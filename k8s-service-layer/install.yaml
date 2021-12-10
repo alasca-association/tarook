@@ -25,7 +25,7 @@
     - mk8s-sl
     - mk8s-sl/rook
 
-  - role: monitoring_v1
+  - role: monitoring_v2
     when: k8s_monitoring_enabled
     tags:
     - mk8s-sl/monitoring

@@ -1,0 +1,49 @@
+#jinja2:lstrip_blocks: True
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: haproxy-service-monitor
+  namespace: "{{ monitoring_namespace }}"
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ monitoring_namespace }}
+  selector:
+    matchLabels:
+      app: prometheus-haproxy
+  endpoints:
+    - interval: 5s
+      port: metrics
+      path: /metrics
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus-haproxy
+  namespace: "{{ monitoring_namespace }}"
+  labels:
+    app: prometheus-haproxy
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 9100
+      targetPort: 9100
+
+---
+
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: prometheus-haproxy
+  namespace: "{{ monitoring_namespace }}"
+subsets:
+  - addresses:
+{% for node in groups['frontend'] %}
+    - ip: {{ hostvars[node]["local_ipv4_address"] }}
+{% endfor %}
+    ports:
+      - name: metrics
+        port: 9101

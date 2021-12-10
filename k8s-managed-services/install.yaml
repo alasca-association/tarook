@@ -12,7 +12,7 @@
   tags:
   - mk8s-ms
   roles:
-  - role: monitoring_v1
+  - role: monitoring_v2
     when: k8s_monitoring_enabled
     tags:
     - mk8s-ms/monitoring

@@ -1,0 +1,248 @@
+##
+defaultRules:
+  create: true
+  rules:
+    etcd: false # disabled for now
+
+##
+global:
+  rbac:
+    create: true
+    pspEnabled: {{ k8s_use_podsecuritypolicies | bool }}
+
+##
+alertmanager:
+  enabled: true
+  serviceMonitor:
+    relabelings:
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: nodename
+        replacement: $1
+        action: replace
+{% if monitoring_scheduling_key %}
+  tolerations:
+    - key: "{{ monitoring_scheduling_key }}"
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+            - key: "{{ monitoring_scheduling_key }}"
+              operator: Exists
+{% endif %}
+
+##
+grafana:
+  enabled: true
+{% if monitoring_scheduling_key %}
+  tolerations:
+    - key: "{{ monitoring_scheduling_key }}"
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: "{{ monitoring_scheduling_key }}"
+                operator: Exists
+{% endif %}
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      searchNamespace: "ALL"
+      folderAnnotation: customer-dashboards
+      provider:
+        foldersFromFilesStructure: true
+  serviceMonitor:
+    relabelings:
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: nodename
+        replacement: $1
+        action: replace
+
+##
+kubeApiServer:
+  enabled: true
+  serviceMonitor:
+    relabelings:
+      - sourceLabels:
+          - __meta_kubernetes_namespace
+          - __meta_kubernetes_service_name
+          - __meta_kubernetes_endpoint_port_name
+        action: keep
+        regex: default;kubernetes;https
+      - targetLabel: __address__
+        replacement: kubernetes.default.svc:443
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: nodename
+        replacement: $1
+        action: replace
+
+##
+kubelet:
+  enabled: true
+  serviceMonitor:
+    relabelings:
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: nodename
+        replacement: $1
+        action: replace
+
+##
+kubeControllerManager:
+  enabled: true
+  service:
+    port: 10257
+    targetPort: 10257
+  serviceMonitor:
+    enabled: true
+    https: true
+    insecureSkipVerify: true
+    relabelings:
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: nodename
+        replacement: $1
+        action: replace
+
+##
+coreDNS:
+  enabled: true
+  serviceMonitor:
+    relabelings:
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: nodename
+        replacement: $1
+        action: replace
+
+# Disabled for now, because scraping
+# the etcd metrics requires authentication
+kubeEtcd:
+  enabled: false
+
+##
+kubeScheduler:
+  enabled: true
+  service:
+    enabled: true
+    port: 10259
+    targetPort: 10259
+  serviceMonitor:
+    enabled: true
+    https: true
+    insecureSkipVerify: true
+    relabelings:
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: nodename
+        replacement: $1
+        action: replace
+
+##
+kubeProxy:
+  enabled: false
+  serviceMonitor:
+    enabled: true
+    relabelings:
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: nodename
+        replacement: $1
+        action: replace
+    
+##
+kubeStateMetrics:
+  enabled: true
+  serviceMonitor:
+    relabelings:
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: nodename
+        replacement: $1
+        action: replace
+
+##
+kube-state-metrics:
+  rbac:
+    create: true
+  podSecurityPolicy:
+    enabled: {{ k8s_use_podsecuritypolicies | bool }}
+
+##
+nodeExporter:
+  enabled: true
+  serviceMonitor:
+    relabelings:
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: nodename
+        replacement: $1
+        action: replace
+
+##
+prometheusOperator:
+  enabled: false
+
+##
+prometheus:
+  enabled: true
+  thanosService:
+    enabled: false
+  serviceMonitor:
+    relabelings:
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: nodename
+        replacement: $1
+        action: replace
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    containers:
+      - name: prometheus
+        livenessProbe:
+          failureThreshold: 1000
+        readinessProbe:
+          failureThreshold: 1000
+    resources:
+      requests:
+        cpu: "{{ monitoring_prometheus_cpu_request }}"
+        memory: "{{ monitoring_prometheus_memory_request }}"
+      limits:
+        cpu: "{{ monitoring_prometheus_cpu_limit }}"
+        memory: "{{ monitoring_prometheus_memory_limit }}"
+{% if monitoring_scheduling_key %}
+    tolerations:
+    - key: "{{ monitoring_scheduling_key }}"
+      operator: Exists
+      effect: NoSchedule
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: "{{ monitoring_scheduling_key }}"
+                  operator: Exists
+{% endif %}
