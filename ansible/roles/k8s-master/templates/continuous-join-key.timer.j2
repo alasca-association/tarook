@@ -1,0 +1,13 @@
+{{ _auto_generated_preamble }}
+[Unit]
+Description=Periodically publish a k8s join key
+After=network.target network-online.target kubelet.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Timer]
+OnBootSec=10
+OnUnitActiveSec=3600
+RandomizedDelaySec=1800
+Unit=publish-join-key.service

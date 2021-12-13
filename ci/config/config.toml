@@ -72,6 +72,9 @@ plugin = "kube-router"
 pod_subnet = "10.244.0.0/16"
 service_subnet = "10.96.0.0/12"
 
+[kubernetes.continuous_join_key]
+enabled = false
+
 [k8s-service-layer.rook]
 namespace = "rook-ceph"
 cluster_name = "rook-ceph"

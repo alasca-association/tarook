@@ -219,6 +219,10 @@
           path: /tmp/kubeadm-join-config.yaml
           state: absent
 
+- name: Enable periodic publishing of the k8s join key
+  include_tasks: continuous_join_key.yaml
+  when: k8s_continuous_join_key_enabled
+
 - name: Ensure that the 'gods' group exists
   become: yes
   group:

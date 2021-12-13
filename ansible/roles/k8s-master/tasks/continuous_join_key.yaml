@@ -1,0 +1,40 @@
+---
+- name: Deploy continuous join key script
+  become: yes
+  template:
+    src: publish-join-key.sh.j2
+    dest: /usr/local/bin/publish-join-key
+    mode: u=rx,go-rwx
+    owner: root
+    group: root
+  notify: Publish join key
+  register: publish_script
+
+- name: Deploy continuous join key systemd service
+  become: yes
+  template:
+    src: publish-join-key.service.j2
+    dest: /etc/systemd/system/publish-join-key.service
+    mode: u=rw,go=r
+    owner: root
+    group: root
+  notify: Publish join key
+  register: service_unit
+
+- name: Deploy continuous join key systemd timer
+  become: yes
+  template:
+    src: continuous-join-key.timer.j2
+    dest: /etc/systemd/system/continuous-join-key.timer
+    mode: u=rw,go=r
+    owner: root
+    group: root
+  register: timer_unit
+
+- name: Start and enable continuous publishing
+  become: yes
+  systemd:
+    name: continuous-join-key.timer
+    daemon_reload: "{{ service_unit is changed or timer_unit is changed }}"
+    state: started
+    enabled: yes
