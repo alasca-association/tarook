@@ -2,9 +2,9 @@
 subnet_cidr = "172.30.154.0/24"
 haproxy_ports = [30060]
 workers = 6
-default_master_image_name = "mk8s-ci-ubuntu-1804-nightly"
-default_worker_image_name = "mk8s-ci-ubuntu-1804-nightly"
-gateway_image_name = "mk8s-ci-debian-10-nightly"
+default_master_image_name = "Ubuntu 18.04 LTS x64"
+default_worker_image_name = "Ubuntu 18.04 LTS x64"
+gateway_image_name = "Debian 10 (buster)"
 worker_flavors = ["L", "L", "L", "L", "L", "L"]
 enable_az_management = false
 cluster_name = "ci"
