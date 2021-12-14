@@ -128,7 +128,10 @@
   tasks:
   - name: Check if DualStack support is enabled, but CNI plugin is not set to calico
     fail:
-      msg: "### ERROR ###\nYou have enabled DualStack support, but have not chosen calico as k8s network plugin.\nPlease set 'k8s_network_plugin' to 'calico' in your config and rerun." # noqa 204
+      msg: |
+        ### ERROR ###
+        You have enabled DualStack support, but have not chosen calico as k8s network plugin.
+        Please set 'k8s_network_plugin' to 'calico' in your config and rerun.
     when: dualstack_support and k8s_network_plugin != "calico"
 
 - name: Spawn the K8s control plane
