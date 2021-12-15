@@ -5,7 +5,8 @@ workers = 6
 default_master_image_name = "Ubuntu 18.04 LTS x64"
 default_worker_image_name = "Ubuntu 18.04 LTS x64"
 gateway_image_name = "Debian 10 (buster)"
-worker_flavors = ["L", "L", "L", "L", "L", "L"]
+# https://github.com/SovereignCloudStack/Operational-Docs/blob/main/flavor-naming-draft.MD
+worker_flavors = ["L", "L", "L", "L", "L", "SCS-4C:8:50s-GNt:1-mk8sPrivate"]
 enable_az_management = false
 cluster_name = "ci"
 
@@ -42,7 +43,7 @@ agent_port = 15203
 [kubernetes]
 version = "1.21.4"
 use_podsecuritypolicies = false
-is_gpu_cluster = false
+is_gpu_cluster = true
 
 [kubernetes.apiserver]
 frontend_port = 8888

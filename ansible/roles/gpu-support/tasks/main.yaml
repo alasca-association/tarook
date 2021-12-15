@@ -1,0 +1,73 @@
+- name: Check if the node has kubernetes installed
+  stat:
+    path: "/etc/kubernetes"
+  register: kubernetes_dir
+
+# A GPU as been detected
+- name: Install GPU drivers
+  become: yes
+  when:
+    - has_gpu
+    - "_allow_disruption or not kubernetes_dir.stat.exists"
+    - ansible_facts['pkg_mgr'] == "apt"
+  block:
+    - name: Install deps for the nvidia drivers
+      apt:
+        state: present
+        name:
+          - "linux-headers-{{ ansible_kernel }}"
+
+    - name: Add key of nvidia's cuda repo
+      apt_key:
+        url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+        state: present
+
+    - name: Add repository
+      apt_repository:
+        repo: deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /
+        state: present
+        update_cache: yes
+
+    - name: Install driver
+      apt:
+        update_cache: no
+        install_recommends: no
+        autoremove: yes
+        name:
+          - nvidia-headless-450
+          - nvidia-utils-450
+      register: installed_driver
+
+    - name: Blacklist nouveau
+      # The installation script lies! It says: """
+      # update-initramfs: deferring update (trigger activated)
+      # A modprobe blacklist file has been created at /etc/modprobe.d to prevent Nouveau
+      # from loading. This can be reverted by deleting the following file:
+      # /etc/modprobe.d/nvidia-graphics-drivers.conf"""
+      # And guess what? That configuration file doesn't exist!
+      copy:
+        dest: /etc/modprobe.d/blacklist_nouveau.conf
+        content: |
+          {{ _auto_generated_preamble }}
+          blacklist nouveau
+          options nouveau modeset=0
+        mode: 0755
+        owner: root
+        group: root
+      register: blacklisted_nouveau
+
+    - name: Update initramfs
+      command: "update-initramfs -k {{ ansible_kernel }} -uv"
+      when: blacklisted_nouveau.changed or installed_driver.changed
+      register: ramfs
+
+    - name: Reboot the node
+      when: ramfs.changed
+      reboot:
+
+    - name: Basic sanity check with nvidia-smi
+      # nvidia-smi -L lists all detected cards.
+      # I installed the toolchain on a host with any nvidia cards and the rc was != 0.
+      # It's therefore safe to assume that if the installation somehow failed, then this task would fail too.
+      changed_when: false
+      command: nvidia-smi -L
