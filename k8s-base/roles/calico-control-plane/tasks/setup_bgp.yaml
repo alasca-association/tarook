@@ -88,6 +88,7 @@
         argv:
           - /usr/local/bin/calicoctl
           - apply
+          - --skip-empty
           - --filename=-
         stdin: '{{ lookup("template", "calico_bgp_peer_lb_master.yaml.j2") }}'
     register: bgp_master_to_lb
