@@ -12,7 +12,7 @@ spec:
   type: LoadBalancer
   ports:
   - name: http
-    port: 80
+    port: {{ check_loadbalancer_service_port }}
     targetPort: 80
   ipFamilyPolicy: PreferDualStack
   ipFamilies:

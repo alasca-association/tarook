@@ -1,1 +1,3 @@
 check_loadbalancer_service_namespace: test-9f9c8d96-9b84-4509-90c7-665db1065345-lbaas
+# Some random port which hopefully isn't used yet s.t. lbaas can re-use an existing floating ip
+check_loadbalancer_service_port: 48972

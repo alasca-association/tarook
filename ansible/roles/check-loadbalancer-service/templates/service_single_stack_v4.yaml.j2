@@ -12,7 +12,7 @@ spec:
   type: LoadBalancer
   ports:
   - name: http
-    port: 80
+    port: {{ check_loadbalancer_service_port }}
     targetPort: 80
 {% if k8s_version is version('1.21', operator='ge') %}
   ipFamilyPolicy: SingleStack
