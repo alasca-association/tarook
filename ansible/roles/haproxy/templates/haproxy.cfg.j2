@@ -17,7 +17,7 @@ defaults
   timeout server  50000
 
 frontend healthz
-  bind {{ haproxy_health_url }}
+  bind 127.0.0.1:6669
   mode http
   monitor-uri /healthz
   option dontlognull
