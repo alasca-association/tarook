@@ -1,4 +1,4 @@
-# This upgrade file is only for the k8s version 1.20.
+# This upgrade file is only for the k8s version 1.18.
 # For now we keep for every minor update a separate upgrade file
 # to avoid accidental major changes of old upgrade files.
 
@@ -8,7 +8,7 @@
   # we need *all* hosts.
   any_errors_fatal: true
   vars_files:
-  - vars/etc.yaml
+    - ../vars/etc.yaml
   roles:
   - detect_user
 
@@ -25,7 +25,7 @@
   gather_facts: false
   any_errors_fatal: true
   vars_files:
-    - vars/disruption.yaml
+    - ../vars/disruption.yaml
   tags:
     - kubeadm-first-master
   roles:
@@ -44,7 +44,7 @@
   serial: 1
   any_errors_fatal: true
   vars_files:
-    - vars/disruption.yaml
+    - ../vars/disruption.yaml
   tags:
     - kubeadm-other-masters
   roles:
@@ -76,7 +76,7 @@
   gather_facts: false
   any_errors_fatal: true
   vars_files:
-    - vars/disruption.yaml
+    - ../vars/disruption.yaml
   tags:
     - workers
   serial: 1

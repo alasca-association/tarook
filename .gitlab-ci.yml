@@ -40,11 +40,11 @@ ansible-lint:
   stage: lint
   script:
   - 'ansible-galaxy install -r ansible/requirements.yaml'                           # Install requirements
-  - 'ansible-lint -c ci/lint/ansible-lint-conf ansible/02_trampoline.yaml'         # Check stage 2
-  - 'ansible-lint -c ci/lint/ansible-lint-conf ansible/03_k8s_base.yaml'           # Check stage 3
+  - 'ansible-lint -c ci/lint/ansible-lint-conf k8s-base/install_frontend.yaml'         # Check stage 2
+  - 'ansible-lint -c ci/lint/ansible-lint-conf k8s-base/install_k8s_base.yaml'           # Check stage 3
   - 'ansible-lint -c ci/lint/ansible-lint-conf k8s-service-layer/install.yaml'     # Check stage 4
   - 'ansible-lint -c ci/lint/ansible-lint-conf k8s-managed-services/install.yaml'  # Check stage 5
-  - 'ansible-lint -c ci/lint/ansible-lint-conf ansible/04_tests.yaml'              # Check smoke tests
+  - 'ansible-lint -c ci/lint/ansible-lint-conf k8s-base/test.yaml'              # Check smoke tests
   - 'ansible-lint -c ci/lint/ansible-lint-conf k8s-service-layer/test.yaml'        # Check ksl tests
   - 'ansible-lint -c ci/lint/ansible-lint-conf k8s-managed-services/test.yaml'     # Check ksm tests
   tags:
