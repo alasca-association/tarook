@@ -6,9 +6,10 @@ workflow:
     - if: $CI_MERGE_REQUEST_EVENT_TYPE
 
 stages:
-  - lint
-  - spawn-cluster
-  - deploy
+- lint
+- spawn-cluster
+- cluster-upgrades
+- deploy
 
 tflint:
   image:
@@ -135,6 +136,8 @@ vault-container-test:
     WG_COMPANY_USERS: "false"
     PASS_COMPANY_USERS: "false"
     SSH_COMPANY_USERS: "false"
+    ANSIBLE_ANY_ERRORS_FATAL: "true"
+    ANSIBLE_FORCE_COLOR: "true"
   before_script:
     - "export wg_conf_name=wg0"
     # id_rsa must be set as `File` input in the GitLab CI/CD variables of the
@@ -185,6 +188,31 @@ vault-container-test:
     - docker
     - wireguard-ready
 
+.test_upgrade_path_k8s_cluster:
+  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
+  variables: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables]
+  before_script:
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
+  script:
+  # Set k8s version to minimal supported version
+  - export AFLAGS="$AFLAGS_BASE -e k8s_version=1.19.16"
+  # Spawn and test cluster
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
+    # Upgrade cluster to k8s v1.20.15
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.20.15
+    # Update k8s version
+  - export AFLAGS="$AFLAGS_BASE -e k8s_version=1.20.15"
+    # Upgrade cluster to k8s v1.21.10
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.21.12
+    # Update k8s version
+  - export AFLAGS="$AFLAGS_BASE -e k8s_version=1.21.12"
+    # Retest the cluster
+  - ./managed-k8s/actions/test.sh
+  after_script:
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, after_script]
+  artifacts: !reference [.prepare_spawn_test_cleanup_k8s_cluster, artifacts]
+  tags: !reference [.prepare_spawn_test_cleanup_k8s_cluster, tags]
+
 # Spawn a cluster with kube-router as CNI and rook enabled
 kuberouter-rook:
   environment:
@@ -194,11 +222,7 @@ kuberouter-rook:
       when: never
     - when: on_success
   extends: .prepare_spawn_test_cleanup_k8s_cluster
-  allow_failure: false
   stage: spawn-cluster
-  variables:
-    ANSIBLE_ANY_ERRORS_FATAL: "true"
-    ANSIBLE_FORCE_COLOR: "true"
 
 # Manually spawn a cluster with kube-router as CNI and rook enabled (MR only)
 kuberouter-rook-manual:
@@ -211,9 +235,6 @@ kuberouter-rook-manual:
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   allow_failure: true
   stage: spawn-cluster
-  variables:
-    ANSIBLE_ANY_ERRORS_FATAL: "true"
-    ANSIBLE_FORCE_COLOR: "true"
 
 # Spawn a cluster with calico as CNI and rook enabled
 calico-rook-dualstack:
@@ -224,12 +245,9 @@ calico-rook-dualstack:
       when: never
     - when: on_success
   extends: .prepare_spawn_test_cleanup_k8s_cluster
-  allow_failure: false
   stage: spawn-cluster
   variables:
-    ANSIBLE_ANY_ERRORS_FATAL: "true"
-    ANSIBLE_FORCE_COLOR: "true"
-    AFLAGS: "--diff -e k8s_network_plugin=calico"
+    AFLAGS: "-e k8s_network_plugin=calico"
     TF_VAR_dualstack_support: "true"
 
 # Manually spawn a cluster with calico as CNI and rook enabled (MR only)
@@ -244,10 +262,88 @@ calico-rook-dualstack-manual:
   allow_failure: true
   stage: spawn-cluster
   variables:
-    ANSIBLE_ANY_ERRORS_FATAL: "true"
-    ANSIBLE_FORCE_COLOR: "true"
-    AFLAGS: "--diff -e k8s_network_plugin=calico"
+    AFLAGS: "-e k8s_network_plugin=calico"
     TF_VAR_dualstack_support: "true"
+
+# Spawn a cluster and test the k8s upgrade path (w/ kube-router)
+k8s-upgrade-kube-router:
+  environment:
+    name: spawn-cluster
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      when: never
+    - if: $CI_COMMIT_REF_NAME == 'devel'
+      when: never
+    - if: $CI_COMMIT_REF_NAME == 'stable'
+      when: never
+    - when: on_success
+  extends: .test_upgrade_path_k8s_cluster
+  stage: cluster-upgrades
+
+# Manually spawn a cluster and test the k8s upgrade path (w/ kube-router)
+k8s-upgrade-kube-router-manual:
+  environment:
+    name: spawn-cluster
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      when: manual
+    - if: $CI_COMMIT_REF_NAME == 'devel'
+      when: manual
+    - if: $CI_COMMIT_REF_NAME == 'stable'
+      when: manual
+    - when: never
+  extends: .test_upgrade_path_k8s_cluster
+  stage: cluster-upgrades
+  allow_failure: true
+
+# Spawn a cluster and test the k8s upgrade path (w/ calico)
+k8s-upgrade-calico:
+  environment:
+    name: spawn-cluster
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      when: never
+    - if: $CI_COMMIT_REF_NAME == 'devel'
+      when: never
+    - if: $CI_COMMIT_REF_NAME == 'stable'
+      when: never
+    - when: on_success
+  extends: .test_upgrade_path_k8s_cluster
+  stage: cluster-upgrades
+  variables:
+    AFLAGS_BASE: "-e k8s_network_plugin=calico"
+    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
+    # so we need to reference the default vars here (only one level of nesting is allowed)
+    WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
+    PASS_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, PASS_COMPANY_USERS]
+    SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
+    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
+    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+
+# Manually spawn a cluster and test the k8s upgrade path (w/ calico)
+k8s-upgrade-calico-manual:
+  environment:
+    name: spawn-cluster
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      when: manual
+    - if: $CI_COMMIT_REF_NAME == 'devel'
+      when: manual
+    - if: $CI_COMMIT_REF_NAME == 'stable'
+      when: manual
+    - when: never
+  extends: .test_upgrade_path_k8s_cluster
+  stage: cluster-upgrades
+  allow_failure: true
+  variables:
+    AFLAGS_BASE: "-e k8s_network_plugin=calico"
+    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
+    # so we need to reference the default vars here (only one level of nesting is allowed)
+    WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
+    PASS_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, PASS_COMPANY_USERS]
+    SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
+    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
+    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
 
 pages:
   stage: deploy
