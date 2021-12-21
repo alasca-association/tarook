@@ -49,16 +49,6 @@
   - role: update_system
     tags: update_system
 
-- name: Upgrade initialized nodes
-  hosts: initialized_gateways
-  vars_files:
-  - vars/disruption.yaml
-  serial: 1
-  roles:
-  - role: update_system
-    tags: update_system
-    when: _allow_disruption
-
 - name: Rollout company users
   hosts: gateways
   gather_facts: true

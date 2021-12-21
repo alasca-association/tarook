@@ -1,0 +1,80 @@
+- name: Initial sanity checks
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - validate_configuration
+
+- name: Establish connectivity to the gateway nodes 
+  hosts: frontend
+  gather_facts: false
+  strategy: free
+  vars_files:
+  - vars/disruption.yaml
+  roles:
+  - role: detect_user
+    tags: detect_user
+  - role: ssh-known-hosts
+    tags: ssh-known-hosts
+  - role: prepare-node
+    tags: prepare-node
+  - role: is-gateway-initialized
+    tags: update_system
+
+- name: Upgrade uninitialized gateway nodes
+  gather_facts: false
+  hosts: uninitialized_gateways
+  vars_files:
+  - vars/disruption.yaml
+  roles:
+  - role: update_system
+    tags: update_system
+
+- name: Upgrade initialized gateway nodes
+  gather_facts: false
+  hosts: initialized_gateways
+  vars_files:
+  - vars/disruption.yaml
+  serial: 1
+  roles:
+  - role: update_system
+    tags: update_system
+    when: _allow_disruption
+
+- name: Establish connectivity to the k8s nodes 
+  hosts: k8s_nodes
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  roles:
+  - role: detect_user
+    tags: detect_user
+  - role: ssh-known-hosts
+    tags: ssh-known-hosts
+  - role: prepare-node
+    tags: prepare-node
+  - role: is-k8s-installed
+    tags: update_system
+
+- name: Upgrade initialized k8s nodes
+  hosts: node_with_k8s_installed
+  gather_facts: false
+  serial: 1
+  vars_files:
+  - vars/disruption.yaml
+  roles:
+    - kubeadm-drain-node
+    - update_system
+    - kubeadm-uncordon-node
+  tags:
+    - update_system
+
+- name: Upgrade uninitialized k8s nodes
+  hosts: node_with_k8s_not_installed
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  roles:
+    - update_system
+  tags:
+    - update_system

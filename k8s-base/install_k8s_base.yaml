@@ -48,19 +48,6 @@
     tags: harden-ssh
 
 - name: Upgrade the system
-  hosts: node_with_k8s_installed
-  gather_facts: false
-  serial: 1
-  vars_files:
-  - vars/disruption.yaml
-  roles:
-    - kubeadm-drain-node
-    - update_system
-    - kubeadm-uncordon-node
-  tags:
-    - update_system
-
-- name: Upgrade the system
   hosts: node_with_k8s_not_installed
   gather_facts: false
   vars_files:
