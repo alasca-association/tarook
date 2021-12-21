@@ -25,8 +25,13 @@
     - mk8s-sl
     - mk8s-sl/rook
 
+  - role: monitoring_v1
+    when: k8s_monitoring_enabled and (monitoring_use_jsonnet_setup | default(False))
+    tags:
+    - mk8s-sl/monitoring
+
   - role: monitoring_v2
-    when: k8s_monitoring_enabled
+    when: k8s_monitoring_enabled and not (monitoring_use_jsonnet_setup | default(False))
     tags:
     - mk8s-sl/monitoring
 

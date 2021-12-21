@@ -427,6 +427,11 @@ cluster_name = "rook-ceph" # •ᴗ•
 # interval="60s"                    # Scraping interval. Overrides value set in `defaults`
 # scrapeTimeout="60s"               # Scrape timeout. Overrides value set in `defaults`
 
+# Use legacy jsonnet-based setup (monitoring_v1).
+# The jsonnet-based monitoring setup will get removed soon™
+# https://github.com/prometheus-operator/kube-prometheus
+#use_jsonnet_setup = false
+
 # --- KUBERNETES SERVICE LAYER : CERT MANAGER ---
 # ansible prefix: "k8s_cert_manager_"
 [k8s-service-layer.cert-manager]

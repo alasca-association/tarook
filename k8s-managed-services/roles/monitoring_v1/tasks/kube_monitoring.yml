@@ -19,11 +19,6 @@
     chdir: "{{ monitoring_jsonnet_dir_monitoring }}"
   changed_when: false
 
-- name: Install thanos
-  include_role:
-    name: monitoring_thanos_v1
-  when: monitoring_use_thanos
-
 - name: check if configmap for customer dashboards exists
   k8s_info:
     api_version: v1
