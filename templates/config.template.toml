@@ -569,8 +569,8 @@ port = 7777 # •ᴗ•
 #local_networks = ["{{ subnet_cidr }}"]
 
 # Pool to source virtual IP addresses from. Those are the IP addresses assigned
-# to clients which do not have remote networks.
-#virtual_subnet_pool = false
+# to clients which do not have remote networks. (e.g.: "10.3.0.0/24")
+#virtual_subnet_pool = null
 
 # List of addresses to accept as remote. When initiating, the first single IP
 # address is used.

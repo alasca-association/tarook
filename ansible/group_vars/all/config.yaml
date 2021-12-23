@@ -1,6 +1,3 @@
 # These variables are needed by stage 02 and stage 03
 haproxy_health_url: 127.0.0.1:6669
 haproxy_stats_port: 48981
-
-# IPsec stuff that's used by >= 1 role
-ipsec_virtual_subnet_pool: 10.3.0.0/24
