@@ -20,9 +20,6 @@ CONFIG_PATH = pathlib.Path("config/config.toml")
 # Path to the configuration template
 CONFIG_TEMPLATE_PATH = pathlib.Path(
     "managed-k8s/templates/config.template.toml")
-# Path to the generic Ansible variables
-GENERIC_VARS_FILE = pathlib.Path(
-    "managed-k8s/ansible/group_vars/all/config.yaml")
 # Base path to the Ansible inventory
 ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory")
 # List of top level sections which we do accept in the main config

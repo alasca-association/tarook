@@ -1,6 +1,8 @@
 - name: Initial sanity checks
   hosts: localhost
   gather_facts: false
+  vars_files:
+  - vars/etc.yaml
   roles:
     - validate_configuration
 
@@ -10,6 +12,7 @@
   strategy: free
   vars_files:
   - vars/disruption.yaml
+  - vars/etc.yaml
   roles:
   - role: detect_user
     tags: detect_user
@@ -32,6 +35,8 @@
   become: yes
   collections:
   - devsec.hardening
+  vars_files:
+  - vars/ssh-hardening.yaml
   roles:
   - role: devsec.hardening.ssh_hardening
     tags: harden-ssh
@@ -71,6 +76,7 @@
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
   roles:
   - role: passwordstore
     tags: passwordstore
@@ -91,6 +97,7 @@
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
   roles:
   - role: bird
     tags: bird

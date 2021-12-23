@@ -1,6 +1,8 @@
 - name: Detect user
   hosts: k8s_nodes
   gather_facts: false
+  vars_files:
+  - vars/etc.yaml
   roles:
   - detect_user
 
