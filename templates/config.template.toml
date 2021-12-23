@@ -192,7 +192,6 @@ service_subnet = "10.96.0.0/12" # •ᴗ•
 # Pick a networking plugin:
 # - kube-router: High-performance, low-overhead implementation with support
 #   for NetworkPolicy objects
-# - flannel: Historical default option. Do not use for new clusters.
 # - calico: High-performance, pure IP networking, policy engine. Calico provides
 #   layer 3 networking capabilities and associates a virtual router with each node.
 #   Allows the establishment of zone boundaries through BGP

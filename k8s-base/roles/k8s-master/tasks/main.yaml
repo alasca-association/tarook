@@ -250,15 +250,11 @@
   include_tasks: setup_kube-router.yaml
   when: k8s_network_plugin == 'kube-router'
 
-- name: Setup flannel networking
-  include_tasks: setup_flannel.yaml
-  when: k8s_network_plugin == 'flannel'
-
 - name: Fail if no networking was configured
   fail:
     msg: |
       You chose "{{ k8s_network_plugin }}", but that did not work.
-      Currently, we support 'kube-router', 'flannel' and 'calico'.
+      Currently, we support 'kube-router', and 'calico'.
   # This variable is set by the setup_*.yaml files included above.
   # If you reach this point, none of them was included, probably because of
   # a typo in your k8s_network_plugin variable.
