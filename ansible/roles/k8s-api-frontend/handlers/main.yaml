@@ -1,11 +1,11 @@
 ---
-- name: reload haproxy
+- name: reload haproxy for k8s-api-frontend
   become: yes
   systemd:
     name: haproxy
     state: reloaded
 
-- name: reload nftables
+- name: reload nftables for k8s-api-frontend
   become: yes
   systemd:
     name: nftables
