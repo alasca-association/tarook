@@ -13,7 +13,7 @@ python3 "$actions_dir/update_inventory.py"
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"
 
-cd "$ansible_playbook"
+cd "$ansible_k8s_base_playbook"
 
 # see lib.sh
 trap do_cleanup_test_on_failure ERR
@@ -39,4 +39,4 @@ ansible_playbook -i "$ansible_inventoryfile_03" \
     -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" \
     -e "ksl_playbook_directory=$ansible_k8s_sl_playbook" \
     -e "kms_vars_directory=$ansible_k8s_ms_vars_base" \
-    04_tests.yaml
+    test.yaml

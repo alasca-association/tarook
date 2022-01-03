@@ -6,10 +6,12 @@ terraform_min_version="0.14.0"
 terraform_state_dir="$cluster_repository/terraform"
 terraform_module="$code_repository/terraform"
 terraform_plan="$terraform_state_dir/plan.tfplan"
-ansible_playbook="$code_repository/ansible"
+ansible_directory="$code_repository/ansible"
+
+ansible_k8s_base_playbook="$code_repository/k8s-base"
 ansible_k8s_sl_playbook="$code_repository/k8s-service-layer"
 ansible_k8s_ms_playbook="$code_repository/k8s-managed-services"
-ansible_inventory_template="$ansible_playbook/inventories/terraform"
+ansible_inventory_template="$ansible_k8s_base_playbook/inventories/terraform"
 ansible_inventory_base="$cluster_repository/inventory"
 ansible_inventoryfile_02="$ansible_inventory_base/02_trampoline/hosts"
 ansible_inventoryfile_03="$ansible_inventory_base/03_k8s_base/hosts"
@@ -123,7 +125,7 @@ function ansible_playbook() {
     fi
 
     # shellcheck disable=SC2086
-    run ansible-playbook $ansible_flags "$@"
+    (export ANSIBLE_CONFIG="$ansible_directory/ansible.cfg" && run ansible-playbook $ansible_flags "$@")
 }
 
 function cleanup_test_on_failure() {

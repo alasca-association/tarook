@@ -11,6 +11,6 @@ python3 "$actions_dir/update_inventory.py"
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"
 
-cd "$ansible_playbook"
-ansible-galaxy install -r requirements.yaml
-ansible_playbook -i "$ansible_inventoryfile_03" 03_k8s_base.yaml "$@"
+cd "$ansible_k8s_base_playbook"
+ansible-galaxy install -r "$ansible_directory/requirements.yaml"
+ansible_playbook -i "$ansible_inventoryfile_03" install_k8s_base.yaml "$@"

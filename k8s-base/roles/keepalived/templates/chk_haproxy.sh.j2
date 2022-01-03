@@ -1,0 +1,5 @@
+#!/bin/bash
+
+{{ _auto_generated_preamble }}
+
+wget http://127.0.0.1:6669/healthz -O - 2>&1 | grep -q '200 OK'

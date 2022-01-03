@@ -22,9 +22,9 @@ if ! echo "$target_version" | grep -Pq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
     exit 2
 fi
 minor_version="$(echo "$target_version" | cut -d'.' -f1-2)"
-playbook="05_upgrade_to_${minor_version}.yaml"
+playbook="k8s-upgrades/k8s_upgrade_to_${minor_version}.yaml"
 
-if [ ! -e "$ansible_playbook/$playbook" ]; then
+if [ ! -e "$ansible_k8s_base_playbook/$playbook" ]; then
     errorf 'cannot find an upgrade playbook for target minor version %q' "$minor_version"
     hintf 'I looked for %q' "$ansible_playbook/$playbook"
     exit 2
@@ -36,5 +36,10 @@ require_disruption
 
 "$actions_dir/wg-up.sh"
 
-cd "$ansible_playbook"
-ansible_playbook -i "$ansible_inventoryfile_03" "$playbook" -e "next_k8s_version=$target_version" -e "next_minor_k8s_version=$minor_version" -e '{"do_upgrade": true}'
+cd "$ansible_k8s_base_playbook"
+# include k8s-base roles
+ANSIBLE_ROLES_PATH="$ansible_k8s_base_playbook/roles/" \
+    ansible_playbook -i "$ansible_inventoryfile_03" "$playbook" \
+    -e "next_k8s_version=$target_version" \
+    -e "next_minor_k8s_version=$minor_version" \
+    -e '{"do_upgrade": true}' \

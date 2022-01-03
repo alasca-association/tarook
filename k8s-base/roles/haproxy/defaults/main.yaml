@@ -3,3 +3,5 @@ lb_ports: []
 haproxy_service_config_map:
   Debian: /etc/default/haproxy
   RedHat: /etc/sysconfig/haproxy
+
+haproxy_stats_port: 48981

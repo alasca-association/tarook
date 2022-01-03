@@ -56,6 +56,9 @@ dualstack_support = false # "•ᴗ•"
 # Enable/Disable OpenStack-based load-balancing.
 # openstack_lbaas = false
 
+# Port for HAProxy statistics
+#haproxy_stats_port = 48981
+
 # --- C&H KUBERNETES LBaaS ---
 # ansible prefix: "ch_k8s_lbaas_"
 [ch-k8s-lbaas]
