@@ -417,6 +417,11 @@ cluster_name = "rook-ceph" # •ᴗ•
 
 #thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
 
+# Use legacy jsonnet-based setup (monitoring_v1).
+# The jsonnet-based monitoring setup will get removed soon™
+# https://github.com/prometheus-operator/kube-prometheus
+#use_jsonnet_setup = false
+
 # Scrape external targets via blackbox exporter
 # https://github.com/helm/charts/tree/master/stable/prometheus-blackbox-exporter
 #internet_probe = false
@@ -426,11 +431,6 @@ cluster_name = "rook-ceph" # •ᴗ•
 # url="http://example.com/healthz"  # The URL that blackbox will scrape
 # interval="60s"                    # Scraping interval. Overrides value set in `defaults`
 # scrapeTimeout="60s"               # Scrape timeout. Overrides value set in `defaults`
-
-# Use legacy jsonnet-based setup (monitoring_v1).
-# The jsonnet-based monitoring setup will get removed soon™
-# https://github.com/prometheus-operator/kube-prometheus
-#use_jsonnet_setup = false
 
 # --- KUBERNETES SERVICE LAYER : CERT MANAGER ---
 # ansible prefix: "k8s_cert_manager_"
