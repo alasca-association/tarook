@@ -7,7 +7,7 @@
     owner: root
     group: root
     mode: 0600
-  notify: reload nftables
+  notify: reload nftables for global-monitoring-frontend
 
 - name: Create HAProxy config for monitoring
   become: yes
@@ -18,4 +18,4 @@
     mode: 0600
     owner: root
     group: root
-  notify: reload haproxy
+  notify: reload haproxy for global-monitoring-frontend
