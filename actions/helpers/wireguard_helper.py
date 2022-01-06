@@ -9,7 +9,7 @@ import itertools
 import random
 import os
 
-WG_COMPANY_USERS_PATH = pathlib.Path("wg_user")
+WG_COMPANY_USERS_PATH = pathlib.Path("submodules/wg_user")
 WG_IPAM_CONFIG_PATH = pathlib.Path("config/wireguard_ipam.toml")
 
 
