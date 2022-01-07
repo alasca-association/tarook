@@ -125,7 +125,6 @@ testBook:
   tags:
   - docker
   - wireguard-ready
-  resource_group: ch-k8s-ci-environment-f1a-1
 
 # Spawn a cluster with kube-router as CNI and rook enabled
 kuberouter-rook:
