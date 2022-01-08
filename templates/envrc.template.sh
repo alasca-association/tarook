@@ -44,4 +44,9 @@ export KUBECONFIG
 # Optional: activate the virtual env for managed-k8s
 source_env ~/.venv/managed-k8s/bin/activate
 
+# Optional: Use custom roles that can be droped into the
+# 'cluster_repository/k8s-custom' folder and executed after
+# after initialization through the included main.yaml
+export K8S_CUSTOM_STAGE_USAGE=false
+
 # Optional: You can also source your openrc from here.

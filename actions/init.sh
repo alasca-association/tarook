@@ -105,6 +105,18 @@ if [ ! $actions_dir == "./managed-k8s/actions" ]; then
 	run git add .gitignore config/config.toml
 fi
 
+if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then
+    mkdir -p "$ansible_inventory_base/99_custom"
+
+    ln -sf ../02_trampoline/hosts inventory/99_custom/hosts
+
+    mkdir -p "$ansible_k8s_custom_playbook/roles"
+
+    if [ ! -f "$ansible_k8s_custom_playbook/main.yaml" ]; then
+        echo "# Add your roles and tasks here:" > "$ansible_k8s_custom_playbook/main.yaml"
+    fi
+fi
+
 if [ ! $actions_dir == "./managed-k8s/actions" ]; then
 	notef 'cluster repository initialised successfully!'
 	notef 'You should now update config/config.toml as needed and '
