@@ -10,4 +10,7 @@ authors = [
 language = "en"
 multilingual = false
 src = "src"
-title = "Managed Kubernetes Handbook"
+title = "Yaook Kubernetes Handbook"
+
+# https://crates.io/crates/mdbook-linkcheck
+[output.linkcheck]

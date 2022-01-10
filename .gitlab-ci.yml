@@ -66,6 +66,7 @@ testBook:
   before_script:
     - export PATH="$PATH:$CARGO_HOME/bin"
     - mdbook --version || cargo install mdbook
+    - mdbook-linkcheck --version || cargo install mdbook-linkcheck
   script:
     - mdbook build docs -d ../public
   rules:
@@ -198,6 +199,7 @@ pages:
   before_script:
     - export PATH="$PATH:$CARGO_HOME/bin"
     - mdbook --version || cargo install mdbook
+    - mdbook-linkcheck --version || cargo install mdbook-linkcheck
   script:
     - mdbook build docs -d ../public
   rules:
