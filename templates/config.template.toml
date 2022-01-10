@@ -332,6 +332,21 @@ cluster_name = "rook-ceph" # •ᴗ•
 # --- KUBERNETES SERVICE LAYER : MONITORING(PROMETHEUS) ---
 # ansible prefix: "monitoring_"
 [k8s-service-layer.prometheus]
+# If kubernetes.monitoring.enabled is true, choose whether to install or uninstall
+# Prometheus. IF SET TO FALSE, PROMETHEUS WILL BE DELETED WITHOUT CHECKING FOR
+# DISRUPTION (sic!).
+#install = true
+
+# helm chart version of the prometheus stack
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
+# If you set this empty (not unset), the latest version is used
+# Note that upgrades require additional steps and maybe even LCM changes are needed:
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#upgrading-chart
+#prometheus_stack_version = "10.3.5"
+
+# Enable grafana
+#use_grafana = true
+
 # Enable use of Thanos
 #use_thanos = true
 
@@ -390,14 +405,6 @@ cluster_name = "rook-ceph" # •ᴗ•
 #thanos_sidecar_cpu_limit = "500m"
 #thanos_sidecar_cpu_request = "{{ monitoring_thanos_sidecar_cpu_limit }}"
 
-# Note that the default limits for Thanos are quite experimental. We’re still
-# gathering experience here. Please see also
-# ansible/roles/k8s-monitoring/defaults/main.yaml for more discussion on the
-# defaults.
-
-# Instead of ad-hoc changing limits in your cluster, seeking discussion with
-# the Flyingdutchman/CID team for a change of defaults is to be preferred.
-
 #thanos_query_memory_limit = "786Mi"
 #thanos_query_memory_request = "128Mi"
 #thanos_query_cpu_limit = "1"
@@ -410,8 +417,20 @@ cluster_name = "rook-ceph" # •ᴗ•
 
 #thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
 
-# ToDo: add description for internet_probe
-#internet_probe = true
+# Use legacy jsonnet-based setup (monitoring_v1).
+# The jsonnet-based monitoring setup will get removed soon™
+# https://github.com/prometheus-operator/kube-prometheus
+#use_jsonnet_setup = false
+
+# Scrape external targets via blackbox exporter
+# https://github.com/helm/charts/tree/master/stable/prometheus-blackbox-exporter
+#internet_probe = false
+
+#[[k8s-service-layer.prometheus.internet_probe_targets]]
+# name="example"                    # Human readable URL that will appear in Prometheus / AlertManager
+# url="http://example.com/healthz"  # The URL that blackbox will scrape
+# interval="60s"                    # Scraping interval. Overrides value set in `defaults`
+# scrapeTimeout="60s"               # Scrape timeout. Overrides value set in `defaults`
 
 # --- KUBERNETES SERVICE LAYER : CERT MANAGER ---
 # ansible prefix: "k8s_cert_manager_"

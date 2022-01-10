@@ -395,10 +395,6 @@ def main():
         kubernetes_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("kubernetes", "")
     )
-    # WORKAROUND: k8s_version, k8s_use_podsecurity_policies,
-    # and k8s_is_gpu_cluster
-    # are also needed in stage4 and stage5 ...
-    del config["kubernetes"]["network"]
     # the kubelet section contains no mandatory variables and therefore
     # does not necessarily have to be defined in the config.toml
     config["kubernetes"].pop("kubelet", None)

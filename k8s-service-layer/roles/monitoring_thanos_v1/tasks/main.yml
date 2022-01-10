@@ -1,5 +1,4 @@
 - name: Create namespace
-  when: k8s_monitoring_enabled
   community.kubernetes.k8s:
     apply: yes
     definition:
@@ -10,11 +9,15 @@
     validate:
       fail_on_error: yes
       strict: yes
+  tags:
+  - monitoring
+  - thanos
 
-- include_tasks: kube_monitoring.yaml
-  when: k8s_monitoring_enabled
-
-- name: Install thanos
+- name: Create thanos secret
   include_role:
-    name: monitoring_thanos_v1
-  when: monitoring_use_thanos
+    name: monitoring_thanos_secret_v1
+
+- import_tasks: kube_thanos.yml
+  when: k8s_monitoring_enabled and monitoring_use_thanos
+  tags:
+  - thanos

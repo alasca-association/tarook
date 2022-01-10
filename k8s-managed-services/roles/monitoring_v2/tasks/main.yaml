@@ -1,0 +1,50 @@
+---
+- name: "{{ monitoring_internet_probe | ternary('I', 'Uni') }}nstall blackbox-exporter"
+  community.kubernetes.helm:
+    chart_ref: prometheus-blackbox-exporter
+    chart_repo_url: https://prometheus-community.github.io/helm-charts
+    chart_version: 5.3.1
+    release_namespace: "{{ monitoring_namespace }}"
+    release_name: "{{ kms_blackbox_exporter_release_name }}"
+    release_state: "{{ monitoring_internet_probe | ternary('present', 'absent') }}"
+    values: "{{ lookup('template', 'blackbox_exporter.yaml.j2') | from_yaml }}"
+    wait: yes
+
+- name: Create architecture-specific service monitors
+  block:
+  - name: Create keepalived service monitor (frontend)
+    k8s:
+      state: present
+      apply: yes
+      definition: "{{ lookup('template', 'keepalived-service-monitor.yaml.j2') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: Create HAProxy service monitor (frontend)
+    k8s:
+      state: present
+      apply: yes
+      definition: "{{ lookup('template', 'haproxy-service-monitor.yaml.j2') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: Create ch-k8s-LBaaS service monitors (frontend)
+    k8s:
+      definition: "{{ lookup('template', 'lbaas-service-monitor.yaml.j2') }}"
+      apply: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+    when: ch_k8s_lbaas_enabled
+
+  - name: Create rook-ceph-mgr service monitor
+    k8s:
+      state: present
+      apply: yes
+      definition: "{{ lookup('template', 'rook-service-monitor.yaml.j2') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+    when: k8s_storage_rook_enabled

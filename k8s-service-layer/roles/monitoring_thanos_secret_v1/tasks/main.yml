@@ -1,0 +1,18 @@
+- name: create thanos secret
+  k8s:
+    apply: yes
+    definition:
+      apiVersion: v1
+      type: Opaque
+      kind: Secret
+      metadata:
+        name: "{{ monitoring_thanos_config_secret_name }}"
+        namespace: "{{ monitoring_namespace }}"
+      data:
+        thanos.yaml: "{{ lookup('template', 'thanos-objectstorage.yml') | b64encode }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+  when: monitoring_use_thanos
+  tags:
+  - thanos

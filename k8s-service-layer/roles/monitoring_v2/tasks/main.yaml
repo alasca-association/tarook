@@ -1,0 +1,47 @@
+---
+- name: Patch kube-proxy
+  include_tasks:
+    file: kube_proxy_patch.yaml
+  when: (k8s_monitoring_enabled | bool) and (k8s_network_plugin in ['calico'])
+
+- name: Create namespace
+  when: k8s_monitoring_enabled | bool
+  community.kubernetes.k8s:
+    apply: yes
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ monitoring_namespace }}"
+    validate:
+      fail_on_error: yes
+      strict: yes
+
+# Prevent timeouts by installing the operator in advance
+- name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall Prometheus operator"
+  community.kubernetes.helm:
+    chart_ref: kube-prometheus-stack
+    chart_repo_url: https://prometheus-community.github.io/helm-charts
+    chart_version: "{{ monitoring_prometheus_stack_version }}"
+    release_namespace: "{{ monitoring_namespace }}"
+    release_name: "{{ monitoring_prometheus_operator_release_name }}"
+    release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
+    values: "{{ lookup('template', 'prometheus_operator.yaml.j2') | from_yaml }}"
+    wait: yes
+
+- name: Install thanos
+  include_role:
+    name: monitoring_thanos_v1
+  when: monitoring_use_thanos
+
+# Install the prometheus stack
+- name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall KSL monitoring stack"
+  community.kubernetes.helm:
+    chart_ref: kube-prometheus-stack
+    chart_repo_url: https://prometheus-community.github.io/helm-charts
+    chart_version: "{{ monitoring_prometheus_stack_version }}"
+    release_namespace: "{{ monitoring_namespace }}"
+    release_name: "{{ monitoring_prometheus_stack_release_name }}"
+    release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
+    values: "{{ lookup('template', 'prometheus_stack.yaml.j2') | from_yaml }}"
+    wait: yes
