@@ -74,10 +74,10 @@ dualstack_support = false # "•ᴗ•"
 # To generate such a secret, you can use the following command:
 # $ dd if=/dev/urandom bs=16 count=1 status=none | base64
 
-enabled = true        # •ᴗ•
-shared_secret = "..."
-version = "0.3.3"
-agent_port = 15203
+enabled       = true    # •ᴗ•
+shared_secret = "..."   # REPLACE ME
+version       = "0.3.3"
+agent_port    = 15203
 
 # ANCHOR_END: ch-k8s-lbaas_config
 
@@ -131,7 +131,7 @@ nodeplugin_toleration = true # •ᴗ•
 # storage volume per worker node.
 #
 # It is recommended to use the dynamic local storage instead.
-enabled = false  # •ᴗ•
+enabled = false # •ᴗ•
 
 # Name of the storage class to create.
 #
@@ -162,7 +162,7 @@ enabled = false  # •ᴗ•
 [kubernetes.local_storage.dynamic]
 # Enable dynamic local storage provisioning. This provides a storage class which
 # can be used with PVCs to allocate local storage on a node.
-enabled = false  # •ᴗ•
+enabled = false # •ᴗ•
 
 # Name of the storage class to create.
 #
@@ -184,12 +184,18 @@ enabled = false  # •ᴗ•
 
 # ANCHOR_END: storage_local_dynamic_configuration
 
+# ANCHOR: kubernetes_monitoring_configuration
 # --- KUBERNETES: MONITORING CONFIGURATION ---
 # ansible prefix: "k8s_monitoring"
 [kubernetes.monitoring]
-# Enable Prometheus monitoring
-enabled = true # •ᴗ•
+# Enable Prometheus-based monitoring.
+# For prometheus-specific configurations take a look at the
+# k8s-service-layer.prometheus section.
+enabled = false # •ᴗ•
 
+# ANCHOR_END: kubernetes_monitoring_configuration
+
+# ANCHOR: kubernetes_global_monitoring_configuration
 # --- KUBERNETES: GLOBAL MONITORING CONFIGURATION ---
 # ansible prefix: "k8s_global_monitoring"
 [kubernetes.global_monitoring]
@@ -198,10 +204,13 @@ enabled = true # •ᴗ•
 # and higher layers.
 
 # Enable/Disable global monitoring
-enabled = true                             # •ᴗ•
-nodeport = 31911
+enabled       = false                      # •ᴗ•
+nodeport      = 31911
 nodeport_name = "ch-k8s-global-monitoring"
 
+# ANCHOR_END: kubernetes_global_monitoring_configuration
+
+# ANCHOR: kubernetes_network_configuration
 # --- KUBERNETES: NETWORK CONFIGURATION ---
 # ansible prefix: "k8s_network"
 [kubernetes.network]
@@ -220,21 +229,10 @@ service_subnet = "10.96.0.0/12" # •ᴗ•
 #   Allows the establishment of zone boundaries through BGP
 plugin = "calico" # •ᴗ•
 
-# When upgrading to kube-router, configuration on how to handle the transition
-# is required. Note that all pods MUST be restarted (otherwise they’ll have no
-# connectivity after the restart).
-# If set to true, ansible will restart all DaemonSets, StatefulSets and
-# Deployments in all namespaces via `kubectl rollout restart`. If set to false,
-# only our managed namespaces (rook-ceph, monitoring and kube-system) are
-# restarted, which means that the customer will have to do their own restarts.
-#plugin_switch_restart_all_namespaces=true
+# ANCHOR_END: kubernetes_network_configuration
 
-# This can be used to change the set of namespaces where restarts are
-# automatically carried out if k8s_network_plugin_switch_restart_all_namespaces
-# is set to false. Generally, you’ll not want to change this.
-#plugin_switch_restart_namespaces=[...]
-
-# --- KUBERNETS: KUBELET CONFIGURATION (WORKERS) ---
+# ANCHOR: kubernetes_kubelet_configuration
+# --- KUBERNETES: KUBELET CONFIGURATION (WORKERS) ---
 # ansible prefix: "k8s_kubelet"
 [kubernetes.kubelet]
 # This section enables you to customize kubelet on the k8s workers (sic!)
@@ -246,7 +244,10 @@ plugin = "calico" # •ᴗ•
 # as more Pods can be packed into a single node.
 #pod_limit = 110
 
-# --- KUBERNETS: CONTINUOUS JOIN KEY ---
+# ANCHOR_END: kubernetes_kubelet_configuration
+
+# ANCHOR: kubernetes_continuous_join_key_configuration
+# --- KUBERNETES: CONTINUOUS JOIN KEY ---
 # ansible prefix: "k8s_continuous_join_key"
 [kubernetes.continuous_join_key]
 # This section controls a systemd timer which periodically publishes a fresh
@@ -268,12 +269,17 @@ enabled = false # •ᴗ•
 # renewal script.
 #env_path = "/dev/null"
 
+# ANCHOR_END: kubernetes_continuous_join_key_configuration
+
 # --- KUBERNETES SERVICE LAYER ---
+# ANCHOR: ksl_rook_configuration
 # --- KUBERNETES SERVICE LAYER : ROOK (STORAGE) ---
 # ansible prefix: "rook"
 [k8s-service-layer.rook]
+# If kubernetes.storage.rook_enabled is enabled, rook will be installed.
+# In this section you can customize and configure rook.
 
-namespace = "rook-ceph" # •ᴗ•
+namespace    = "rook-ceph" # •ᴗ•
 cluster_name = "rook-ceph" # •ᴗ•
 
 # Currently we support the following rook versions:
@@ -288,7 +294,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 #mon_volume_storage_class = "local-storage"
 
 # If set to true Rook won’t perform any upgrade checks on Ceph daemons
-# during an upgrade. Use this at YOUR OWN RISK, only if you know what 
+# during an upgrade. Use this at YOUR OWN RISK, only if you know what
 # you’re doing.
 # https://rook.github.io/docs/rook/v1.3/ceph-cluster-crd.html#cluster-settings
 #skip_upgrade_checks = false
@@ -352,6 +358,9 @@ cluster_name = "rook-ceph" # •ᴗ•
 #operator_cpu_limit = "500m"
 #operator_cpu_request = "100m"
 
+# ANCHOR_END: ksl_rook_configuration
+
+# ANCHOR: ksl_prometheus_configuration
 # --- KUBERNETES SERVICE LAYER : MONITORING(PROMETHEUS) ---
 # ansible prefix: "monitoring_"
 [k8s-service-layer.prometheus]
@@ -455,6 +464,8 @@ cluster_name = "rook-ceph" # •ᴗ•
 # interval="60s"                    # Scraping interval. Overrides value set in `defaults`
 # scrapeTimeout="60s"               # Scrape timeout. Overrides value set in `defaults`
 
+# ANCHOR_END: ksl_prometheus_configuration
+
 # --- KUBERNETES SERVICE LAYER : CERT MANAGER ---
 # ansible prefix: "k8s_cert_manager_"
 [k8s-service-layer.cert-manager]
@@ -473,6 +484,7 @@ enabled = true # •ᴗ•
 # default.
 #scheduling_key =
 
+# ANCHOR: ksl_ingress_configuration
 # --- KUBERNETES SERVICE LAYER : INGRESS ---
 # ansible prefix: "k8s_ingress_"
 [k8s-service-layer.ingress]
@@ -504,6 +516,9 @@ enabled = false # •ᴗ•
 # Enable SSL passthrough in the controller
 #enable_ssl_passthrough = true
 
+# ANCHOR_END: ksl_ingress_configuration
+
+# ANCHOR: node_scheduling_configuration
 # --- NODE SCHEDULING ---
 # ansible prefix: /
 [node-scheduling]
@@ -531,14 +546,9 @@ scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 #managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 #managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 
-# --- TESTING: TEST NODES ---
-[testing.test-nodes]
-# The following fields are commented out because they make assumptions on the existence
-# and naming scheme of nodes. Use them for inspiration :)
-#"managed-k8s-worker-1" = "worker0"
-#"managed-k8s-worker-3" = "worker1"
-#"managed-k8s-worker-5" = "worker2"
+# ANCHOR_END: node_scheduling_configuration
 
+# ANCHOR: wireguard_config
 # --- WIREGUARD ---
 # ansible prefix: "wg_"
 [wireguard]
@@ -552,7 +562,7 @@ scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 # so that they can use all of their clusters at the same time without having
 # to tear down tunnels.
 ip_cidr = "172.30.153.64/26"
-ip_gw = "172.30.153.65/26"
+ip_gw   = "172.30.153.65/26"
 
 # Same for IPv6
 #ipv6_cidr = "fd01::/120"
@@ -560,9 +570,9 @@ ip_gw = "172.30.153.65/26"
 
 port = 7777 # •ᴗ•
 
-# To add WireGuard keys for customers, create blocks like the following
-# You can add as many of them as you want. inventory_helper.py will auto-allocate IP
-# addresses from the ip_cidr.
+# To add WireGuard keys, create blocks like the following
+# You can add as many of them as you want. Inventory updater will auto-allocate IP
+# addresses from the configured ip_cidr.
 #[[wireguard.peers]]
 #pub_key = "test1"
 #ident = "testkunde1"
@@ -593,6 +603,9 @@ port = 7777 # •ᴗ•
 #s2s_bgp_as = "65010"
 #s2s_peer_bgp_as = "65009"
 
+# ANCHOR_END: wireguard_config
+
+# ANCHOR: ipsec_configuration
 # --- IPSEC ---
 # ansible prefix: "ipsec_"
 [ipsec]
@@ -623,7 +636,9 @@ port = 7777 # •ᴗ•
 # The PSK for EAP. Must be set.
 #eap_psk =
 
-# ANCHOR: passwordstore
+# ANCHOR_END: ipsec_configuration
+
+# ANCHOR: passwordstore_configuration
 # --- PASSWORDSTORE ---
 # ansible prefix: "passwordstore_"
 [passwordstore]
@@ -643,12 +658,13 @@ port = 7777 # •ᴗ•
 #ident = "yannic.ahrens@cloudandheat.com"
 #gpg_id = "68AA582E81AD111C127F01273370EBE296354805"
 
-# ANCHOR_END: passwordstore
+# ANCHOR_END: passwordstore_configuration
 
+# ANCHOR: ch-role-users_configuration
 # --- C&H USERS ---
 # ansible prefix: "cah_users_"
 [cah-users]
-rollout = false  # •ᴗ•
+rollout = false # •ᴗ•
 
 # Include and exclude C&H users from rollout
 # C&H users refers to items in the ch-users-databag repository
@@ -670,6 +686,20 @@ rollout = false  # •ᴗ•
 # Example Usage:
 # include_users = ["<user>", "<user>"]
 
+# ANCHOR_END: ch-role-users_configuration
+
+# ANCHOR: testing_test_nodes_configuration
+# --- TESTING: TEST NODES ---
+[testing.test-nodes]
+# The following fields are commented out because they make assumptions on the existence
+# and naming scheme of nodes. Use them for inspiration :)
+#"managed-k8s-worker-1" = "worker0"
+#"managed-k8s-worker-3" = "worker1"
+#"managed-k8s-worker-5" = "worker2"
+
+# ANCHOR_END: testing_test_nodes_configuration
+
+# ANCHOR: miscellaneous_configuration
 # --- MISCELLANEOUS ---
 # ansible prefix: /
 [miscellaneous]
@@ -689,3 +719,5 @@ wireguard_on_workers = false
 # might be required depending on the software running on the nodes (e.g., ElasticSearch).
 # If you leave the value commented out you're fine and the system's default will be kept.
 #vm_max_map_count = 262144
+
+# ANCHOR_END: miscellaneous_configuration
