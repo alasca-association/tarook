@@ -191,11 +191,11 @@ service_subnet = "10.96.0.0/12" # •ᴗ•
 
 # Pick a networking plugin:
 # - kube-router: High-performance, low-overhead implementation with support
-#   for NetworkPolicy objects
+#   for NetworkPolicy objects (DEPRACTED: Support will be dropped in the near future)
 # - calico: High-performance, pure IP networking, policy engine. Calico provides
 #   layer 3 networking capabilities and associates a virtual router with each node.
 #   Allows the establishment of zone boundaries through BGP
-plugin = "kube-router" # •ᴗ•
+plugin = "calico" # •ᴗ•
 
 # When upgrading to kube-router, configuration on how to handle the transition
 # is required. Note that all pods MUST be restarted (otherwise they’ll have no
