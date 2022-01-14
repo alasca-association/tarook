@@ -109,11 +109,11 @@ frontend_port = 8888 # •ᴗ•
 # Many clusters will want to use rook, so you should enable
 # or disable it here if you want. It requires extra options
 # which need to be chosen with care.
-rook_enabled = true # •ᴗ•
+rook_enabled = false # •ᴗ•
 
 # Setting this to true will cause the storage plugins
 #to run on all nodes (ignoring all taints). This is often desirable.
-nodeplugin_toleration = true # •ᴗ•
+#nodeplugin_toleration = false # •ᴗ•
 
 # This flag enables the topology feature gate of the cinder controller plugin.
 # Its purpose is to allocate volumes from cinder which are in the same AZ as
@@ -205,8 +205,8 @@ enabled = false # •ᴗ•
 
 # Enable/Disable global monitoring
 enabled       = false                      # •ᴗ•
-nodeport      = 31911
-nodeport_name = "ch-k8s-global-monitoring"
+#nodeport      = 31911
+#nodeport_name = "ch-k8s-global-monitoring"
 
 # ANCHOR_END: kubernetes_global_monitoring_configuration
 
@@ -470,7 +470,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 # ansible prefix: "k8s_cert_manager_"
 [k8s-service-layer.cert-manager]
 # Enable management of a cert-manager.io instance
-enabled = true # •ᴗ•
+enabled = false # •ᴗ•
 
 # Configure in which namespace the cert-manager is run. The namespace is
 # created automatically, but never deleted automatically.
