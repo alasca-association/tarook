@@ -5,16 +5,16 @@
 * You have access to an OpenStack project and created a ssh [key pair](https://docs.openstack.org/horizon/latest/user/configure-access-and-security-for-instances.html#add-a-key-pair).
   * As the SSH configuration on the host nodes will be hardened, your key has to be in the format of a [supported cryptographic algorithm](#appendix).
 * You have set up your [environment variables](./environmental-variables.md).
-  * It's strongly recommended to use [direnv](https://direnv.net/) to
+  * It's strongly recommended using [direnv](https://direnv.net/) to
     properly setup your environment variables.
   * A template file with default values is provided in [`templates/envrc.template.sh`](./environmental-variables.md#template).
   You **must** set some user-specific values though.
 * You have installed all the [system dependencies](#appendix).
-* It's strongly recommended to use a [virtual environment for Python](https://docs.python.org/3/tutorial/venv.html#creating-virtual-environments).
+* It's strongly recommended using a [virtual environment for Python](https://docs.python.org/3/tutorial/venv.html#creating-virtual-environments).
   * We suggest to put it at `~/.venv/managed-k8s`.
 * You have installed the [jsonnet](https://github.com/google/jsonnet) and [jsonnet-bundler](https://github.com/jsonnet-bundler/jsonnet-bundler#install) golang module.
 * You have installed [Terraform](#appendix).
-* You have instaled [helm](https://helm.sh/docs/intro/install/).
+* You have installed [helm](https://helm.sh/docs/intro/install/).
 
 ## Prepare WireGuard
 

@@ -2,7 +2,7 @@
 
 ## Upgrade implications / disruptions
 
-- All pods will rescheduled at least once, sometimes more often
+- All pods will be rescheduled at least once, sometimes more often
 - All pods without a controller will be deleted
 - Data in emptyDir volumes will be lost
 - (if enabled) Ceph storage will be blocking/unavailable for the duration of the

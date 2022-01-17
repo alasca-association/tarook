@@ -4,8 +4,7 @@ If you want to create a yk8s cluster on OpenStack, follow the following steps.
 A bare-metal yk8s cluster requires further preparations.
 
 These are minimal instructions on how to deploy a yk8s-cluster.
-When nothing else is specified, the working directory is assumed to be the top level of the
-[cluster repository](./../design/cluster-repository.md).
+Commands are assumed to be executed at the top level of the [cluster repository](./../design/cluster-repository.md), if not stated otherwise.
 
 ---
 
