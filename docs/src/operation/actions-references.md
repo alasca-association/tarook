@@ -158,7 +158,7 @@ It cleans up the inventory and ensures the latest variable/value pairs from your
 
 This script can be used to trigger a Kubernetes upgrade.
 More details about that can be found [here](./upgrading-kubernetes.md).
-g
+
 ## `lib.sh`
 
 The `lib.sh` is included by other action scripts and defines commonly used variables and function definitions.

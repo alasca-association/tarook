@@ -173,7 +173,7 @@ The following variables must be defined when deploying rook:
 
 #### Prometheus-based Monitoring Configuration
 
-The used prometheus-based monitoring setup is explained in more detail [here](./../managed-services/prometheus/overview.md).
+The used prometheus-based monitoring setup will be explained in more detail soon :)
 
 <details>
 <summary>config.toml: KSL - Prometheus Configuration</summary>
@@ -185,7 +185,7 @@ The used prometheus-based monitoring setup is explained in more detail [here](./
 
 #### NGINX Ingress Controller Configuration
 
-The used NGINX ingress controller setup is explained in detail [here](./../managed-services/nginx-ingress-controller.md).
+The used NGINX ingress controller setup will be explained in more detail soon :)
 
 <details>
 <summary>config.toml: KSL - Prometheus Configuration</summary>

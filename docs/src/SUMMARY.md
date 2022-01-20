@@ -23,12 +23,12 @@
 
 - [Quick Start](./operation/quick-start.md)
 - [Actions References](./operation/actions-references.md)
-- [Spawning a Cluster](./operation/spawning-cluster.md)
+- [Spawning a Cluster]() <!-- ./operation/spawning-cluster.md -->
 - [Node Scheduling (Taints and Labels)](./operation/node-scheduling.md)
 - [Upgrading Kubernetes](./operation/upgrading-kubernetes.md)
-- [Updating Host Nodes](./operation/updating-host-nodes.md)
+- [Updating Host Nodes]() <!-- ./operation/updating-host-nodes.md -->
 - [GPU and vGPU Support](./operation/gpu-and-vgpu.md)
-- [Resetting Kubernetes](./operation/resetting-kubernetes.md)
+- [Resetting Kubernetes]() <!-- ./operation/resetting-kubernetes.md -->
 - [Backups](./operation/backups.md)
 
 ---
@@ -40,14 +40,14 @@
   - [Reducing the number of OSDs](./managed-services/rook/removing-osds.md)
   - [Resizing an OSD](./managed-services/rook/resizing-osds.md)
   - [Upgrading Rook and Ceph](./managed-services/rook/upgrades.md)
-- [Monitoring](./managed-services/prometheus/overview.md)
-  - [Prometheus-based Monitoring Stack](./managed-services/prometheus/prometheus-stack.md)
-  - [Global Monitoring](./managed-services/prometheus/global-monitoring.md)
-- [Load-Balancing](./managed-services/load-balancing/overview.md)
+- [Monitoring]() <!-- ./managed-services/prometheus/overview.md -->
+  - [Prometheus-based Monitoring Stack]() <!-- ./managed-services/prometheus/prometheus-stack.md -->
+  - [Global Monitoring]() <!-- ./managed-services/prometheus/global-monitoring.md -->
+- [Load-Balancing]() <!-- ./managed-services/load-balancing/overview.md -->
   - [ch-k8s-lbaas](./managed-services/load-balancing/ch-k8s-lbaas.md)
-- [NGINX Ingress Controller](./managed-services/nginx-ingress-controller.md)
-- [Cert-Manager](./managed-services/cert-manager.md)
-
+- [NGINX Ingress Controller]() <!-- ./managed-services/nginx-ingress-controller.md -->
+- [Cert-Manager]() <!-- ./managed-services/cert-manager.md -->
+ 
 ---
 
 # VPN

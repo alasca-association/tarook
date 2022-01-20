@@ -29,7 +29,7 @@ There are four kinds of host nodes:
 | :----------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Frontend Node      | The frontend nodes act as entry point to the Kubernetes Cluster. They are highly available, support load-balancing and act as a firewall.                                                                                                           |
 | Control Plane Node | The control plane nodes build the k8s control plane manage the (meta-)workers and the Pods in the cluster. More details can be found in the official [k8s docs](https://kubernetes.io/docs/concepts/overview/components/#control-plane-components). |
-| Meta-Worker        | The meta-workers host the management application workload, e.g.  of the [rook storage solution](./managed-services/rook/overview.md) or the [prometheus-based monitoring stack](./managed-services/prometheus/overview.md).                         |
+| Meta-Worker        | The meta-workers host the management application workload, e.g.  of the [rook storage solution](./managed-services/rook/overview.md) or the prometheus-based monitoring stack (more details soon).                                                  |
 | Worker             | The workers host the user application workload.                                                                                                                                                                                                     |
 
 > ***Note:*** A control plane node can also act as a frontend node.
