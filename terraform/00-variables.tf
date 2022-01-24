@@ -1,3 +1,4 @@
+# ANCHOR: terraform_variables
 variable "cluster_name" {
   type = string
   default = "managed-k8s"
@@ -188,3 +189,5 @@ variable "default_worker_root_disk_size" {
   default = 50
   description = "If 'create_root_disk_on_volume=true', the worker flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size."
 }
+
+# ANCHOR_END: terraform_variables
