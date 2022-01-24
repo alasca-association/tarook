@@ -68,7 +68,8 @@ testBook:
     - mdbook --version || cargo install mdbook
     - mdbook-linkcheck --version || cargo install mdbook-linkcheck
   script:
-    - mdbook build docs -d ../public
+    - mdbook build docs
+    - cp -r docs/book/html public
   rules:
     - when: always
   artifacts:
@@ -201,7 +202,8 @@ pages:
     - mdbook --version || cargo install mdbook
     - mdbook-linkcheck --version || cargo install mdbook-linkcheck
   script:
-    - mdbook build docs -d ../public
+    - mdbook build docs
+    - cp -r docs/book/html public
   rules:
     - if: "$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/"
       when: always
