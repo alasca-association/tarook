@@ -460,6 +460,9 @@ cluster_name = "rook-ceph" # •ᴗ•
 # https://github.com/prometheus-operator/kube-prometheus
 #use_jsonnet_setup = false
 
+# Include migration tasks
+# migrate_from_v1 = false
+
 # Scrape external targets via blackbox exporter
 # https://github.com/helm/charts/tree/master/stable/prometheus-blackbox-exporter
 #internet_probe = false

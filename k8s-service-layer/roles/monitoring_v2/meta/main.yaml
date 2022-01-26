@@ -4,3 +4,4 @@ galaxy_info:
   author: Yaook Authors
 dependencies:
 - common_defaults_v1
+- monitoring_v1_to_v2_migration
