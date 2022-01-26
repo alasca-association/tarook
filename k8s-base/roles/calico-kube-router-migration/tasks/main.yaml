@@ -1,5 +1,6 @@
 ---
 - name: Delete kube-router config from /etc/cni/net.d/
+  become: yes
   file:
     path: /etc/cni/net.d/10-kuberouter.conflist
     state: absent
