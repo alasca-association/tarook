@@ -28,4 +28,4 @@
     - wget
     - python3-cryptography
     - zip
-  when: "'rhel fedora' in os_info.stdout"
+  when: "'rhel' in os_info.stdout and 'fedora' in os_info.stdout"
