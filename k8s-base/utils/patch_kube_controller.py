@@ -11,7 +11,7 @@ if __name__ == '__main__':
     args = vars(parser.parse_args())
 
     with open(args['file']) as f:
-        data = yaml.load(f)
+        data = yaml.safe_load(f)
 
     volumeMount = {"mountPath": "/etc/kubernetes/cloud-config",
                    "name": "cloud-config",
