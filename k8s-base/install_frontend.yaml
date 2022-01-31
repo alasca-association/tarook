@@ -78,8 +78,6 @@
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
   roles:
-  - role: passwordstore
-    tags: passwordstore
   - role: ntp
     tags: ntp
   - role: keepalived
