@@ -113,7 +113,7 @@ rook_enabled = false # •ᴗ•
 
 # Setting this to true will cause the storage plugins
 #to run on all nodes (ignoring all taints). This is often desirable.
-#nodeplugin_toleration = false # •ᴗ•
+nodeplugin_toleration = false # •ᴗ•
 
 # This flag enables the topology feature gate of the cinder controller plugin.
 # Its purpose is to allocate volumes from cinder which are in the same AZ as
