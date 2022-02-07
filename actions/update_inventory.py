@@ -381,7 +381,6 @@ def main():
         ipsec_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("ipsec", "")
     )
-
     # ---
     # KUBERNETES
     # ---

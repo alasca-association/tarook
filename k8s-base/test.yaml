@@ -1,5 +1,5 @@
 - name: Detect user
-  hosts: k8s_nodes
+  hosts: k8s_nodes:gateways
   gather_facts: false
   vars_files:
   - vars/etc.yaml
@@ -56,6 +56,20 @@
     - test-dualstack
     when: k8s_network_plugin == 'calico'
 
+- name: Initiate IPSec connection
+  hosts: gateways[0]
+  tasks:
+    - name: Initiate connection with remote
+      become: yes
+      command:
+      args:
+        argv:
+        - swanctl
+        - --initiate
+        - --child
+        - net-1  
+      when: (ipsec_enabled | default(False)) and (ipsec_test_enabled | default(False))
+  
 - name: Validate IPSec
   hosts: k8s_nodes
   vars:
