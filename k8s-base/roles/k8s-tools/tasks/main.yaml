@@ -13,11 +13,9 @@
   pip:
     name:
     - openshift
-      # Workaround: pin the version here because 12.0.0 introduces a breaking change.
-      # even if specified otherwise in the kubeconfig, the module will try to contact localhost:80
-    - kubernetes==11.0.0
+    - kubernetes
     - kubernetes-validate
-    state: present
+    state: latest
     extra_args: "{{ (ansible_pkg_mgr == 'apt') | ternary('--system', '') }}"
   tags:
   - k8s-tools
