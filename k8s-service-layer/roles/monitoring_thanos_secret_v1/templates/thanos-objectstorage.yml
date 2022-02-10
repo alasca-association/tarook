@@ -2,7 +2,7 @@ type: SWIFT
 config:
   auth_url: "{{ monitoring_thanos_objectstorage_auth_url }}"
   username: "{{ monitoring_thanos_objectstorage_username }}"
-  user_domain_name: "{{ monitoring_thanos_objectstorage_user_domain_name }}"
+  domain_name: "{{ monitoring_thanos_objectstorage_user_domain_name }}"
   password: "{{ monitoring_thanos_objectstorage_password }}"
   project_name: "{{ monitoring_thanos_objectstorage_project_name }}"
   project_domain_id: "{{ monitoring_thanos_objectstorage_project_domain_id }}"
