@@ -1,0 +1,6 @@
+---
+galaxy_info:
+  license: Apache-2.0
+  issue_tracker_url: https://gitlab.com/yaook/k8s/-/issues
+  authors: Yaook Authors
+dependencies: []

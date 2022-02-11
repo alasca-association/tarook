@@ -1,0 +1,37 @@
+- name: Check reachability of remote endpoint
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name: create namespace
+    k8s:
+      api_version: v1
+      kind: Namespace
+      name: "{{ check_ipsec_namespace }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: create a ping job
+    k8s:
+      state: present
+      definition: "{{ lookup('template', 'busybox-ping-job.yaml.j2') }}"
+      wait: yes
+      wait_condition:
+        type: Complete
+        status: "True"
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: delete namespace
+    k8s:
+      api_version: v1
+      kind: Namespace
+      name: "{{ check_ipsec_namespace }}"
+      state: absent
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
