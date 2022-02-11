@@ -10,7 +10,7 @@ import os
 PASS_USERS_FILE = pathlib.Path("config/pass_users.toml")
 # Path to the company users file
 PASSWORDSTORE_COMPANY_USERS_FILE = pathlib.Path(
-    "passwordstore_users") / "main.toml"
+    "submodules/passwordstore_users") / "main.toml"
 
 
 class PasswordstoreUser(collections.namedtuple(
