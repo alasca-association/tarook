@@ -18,3 +18,47 @@ As an example, let's add a dashboard for the NGINX Ingress Controller and have i
 4. Annotate the configmap with the proper path: `kubectl annotate cm -n fancy nginx-db customer-dashboards=nginx`.
 
 The sidecar should pick up the change eventually. If it doesn't or you're impatient, you could restart Grafana by destroying its pod.
+
+## Alertmanager
+
+The monitoring stack comes with an alertmanager instance that is available to the end user for their convenience. One can create also their own `Alertmanager` resource which is then translated into a `StatefulSet` by the prometheus operator. AM configuration should be kept separate and can be injected by creating a `AlertmanagerConfig` resource within the `monitoring` namespace. Other namespace are not considered without further configuration. For further information please refer to the [corresponding documentation.](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/alerting.md) A silly example:
+
+```
+kind: AlertmanagerConfig
+apiVersion: monitoring.coreos.com/v1alpha1
+metadata:
+  name: custom-amc
+  namespace: monitoring
+spec:
+  receivers:
+    - name: your mom
+      emailConfigs:
+        - hello: localhost
+          requireTLS: true
+          to: a@b.de
+          smarthost: a.com:25
+          from: c@d.de
+      pagerdutyConfigs:
+        - url: https://events.pagerduty.com/v2/enqueue
+          routingKey:
+            key: a
+            name: blub
+            optional: true
+  route:
+    receiver: your mom
+    groupBy:
+    - job
+    continue: false
+    routes:
+    - receiver: your mom
+      match:
+        alertname: Watchdog
+      continue: false
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+```
+
+Note 1: The author hasn't worked much with `Alertmanager(Config)` in the past and only ensured that manifests are read correctly. Their test was looking at `k exec -ti -n monitoring alertmanager-prometheus-stack-kube-prom-alertmanager-0 -- amtool --alertmanager.url=http://127.0.0.1:9093 config`.
+
+Note 2: You will probably mess up the `AlertmanagerConfig` manifest in one way or another. The AdmissionController caught some typos. On other occasions I had to look into the logs of the `prometheus-operator` pod. And eventually the AM failed to come up because I missed some further fields which I figured via the logs of the `AM` pod.
