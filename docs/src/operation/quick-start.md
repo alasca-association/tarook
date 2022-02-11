@@ -15,7 +15,7 @@ Commands are assumed to be executed at the top level of the [cluster repository]
    * You need to add your gpg key to the [additional passwordstore users](#passwordstore-configuration).
      * Please do also ensure that your gpg keyring is up-to-date.
    * You need to add your (public) wireguard key to the [wireguard peer configuration](./../usage/cluster-configuration.md#wireguard-configuration).
-   * You need to create a secret for the [ch-k8s-lbaas](./../managed-services/load-balancing/ch-k8s-lbaas.md#ch-k8-lbaas-configuraton) if your cluster runs on top of OpenStack.
+   * If your cluster runs on top of OpenStack, you need to either create a secret in the [ch-k8s-lbaas](./../managed-services/load-balancing/ch-k8s-lbaas.md#ch-k8-lbaas-configuraton) section or disable it.
 
 3. Trigger the cluster creation by executing the [`apply.sh`](./actions-references.md#applysh) script.
 

@@ -113,7 +113,7 @@ disable safety checks or give consent to potentially dangerous operations.
 > after enabling the Customization layer.
 ## Template
 
-The template file is located at `templates/config.template.toml`.
+The template file is located at `templates/envrc.template.sh`.
 
 ```bash
 {{#include ../templates/envrc.template.sh}}
