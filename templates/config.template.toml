@@ -611,6 +611,11 @@ port = 7777 # •ᴗ•
 [ipsec]
 # enabled = false
 
+# Flag to enable the test suite.
+# Must make sure a remote enpoint, with ipsec enbaled, is running
+# and open for connections.
+# test_enabled = false
+
 # Must be a list of parent SA proposals to offer to the client.
 # Must be explicitly set if ipsec_enabled is set to true.
 #proposals =
@@ -632,6 +637,10 @@ port = 7777 # •ᴗ•
 # List of addresses to accept as remote. When initiating, the first single IP
 # address is used.
 #remote_addrs = false
+
+# Private address of remote endpoint.
+# only used when test_enabled is True
+#remote_private_addrs = ""
 
 # The PSK for EAP. Must be set.
 #eap_psk =

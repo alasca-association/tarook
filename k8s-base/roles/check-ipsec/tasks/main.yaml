@@ -1,0 +1,5 @@
+- name: Check reachability of remote IPsec endpoint
+  wait_for:
+    host: "{{ ipsec_remote_private_addrs }}"
+    port: 22
+    timeout: 30
