@@ -149,7 +149,14 @@ gpg_id = "mk8s-ci@gitlab"
 [ipsec]
 enabled = true
 test_enabled = true
-# these are ipsec varibales used for ipsec test suite
+# To test IPSec we assume presence of a remote endpoint with ipsec up and running.
+# We setup an endpoint on a private VM (outside CI) 
+# using https://gitlab.com/yaook/incubator/k8s-ipsec-endpoint 
+# We added its IP network information here to initialize an Ipsec tunnel in CI.
+
+# In case you have no access to the endpoint (and no one remains who can), 
+# feel free to create a new one and update the IP.
+
 proposals = ["aes256-sha256-modp2048"]
 peer_networks = ["172.20.150.0/24"]
 remote_addrs = ["185.128.117.233"]

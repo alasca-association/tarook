@@ -612,8 +612,7 @@ port = 7777 # •ᴗ•
 # enabled = false
 
 # Flag to enable the test suite.
-# Must make sure a remote enpoint, with ipsec enbaled, is running
-# and open for connections.
+# Must make sure a remote endpoint, with ipsec enabled, is running and open for connections. 
 # test_enabled = false
 
 # Must be a list of parent SA proposals to offer to the client.

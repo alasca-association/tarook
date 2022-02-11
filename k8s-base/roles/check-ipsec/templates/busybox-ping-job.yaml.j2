@@ -1,0 +1,15 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ipsec-test
+  namespace: "{{ check_ipsec_namespace }}"
+spec:
+  template:
+    spec:
+      containers:
+      - name: ipsec-test-busybox
+        image: busybox
+        command: ["ping", "-c", "2", "{{ ipsec_remote_private_addrs }}" ]
+      restartPolicy: Never
+  backoffLimit: 2
