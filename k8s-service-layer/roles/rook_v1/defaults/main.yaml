@@ -6,8 +6,8 @@ rook_mon_volume_size: 10Gi
 rook_mon_allow_multiple_per_node: false
 rook_mon_memory_limit: "1Gi"
 rook_mon_memory_request: "{{ rook_mon_memory_limit }}"
-rook_mon_cpu_limit: "100m"
-rook_mon_cpu_request: "50m"
+rook_mon_cpu_limit: "500m"
+rook_mon_cpu_request: "100m"
 
 rook_mgr_use_pg_autoscaler: true
 rook_mgr_memory_limit: "512Mi"
@@ -15,8 +15,8 @@ rook_mgr_memory_request: "{{ rook_mgr_memory_limit }}"
 rook_mgr_cpu_limit: "500m"
 rook_mgr_cpu_request: "100m"
 
-# rook_nosds: 3
-# rook_osd_volume_size: 100Gi
+rook_nosds: 3
+rook_osd_volume_size: 90Gi
 rook_osd_storage_class: csi-sc-cinderplugin
 rook_osd_anti_affinity: true
 rook_osd_autodestroy_safe: true
@@ -45,8 +45,9 @@ rook_ceph_fs_preserve_pools_on_delete: false
 rook_pools:
 - name: data
   create_storage_class: block
+  replicated: 1
 
-rook_nodeplugin_toleration: False
+rook_nodeplugin_toleration: true
 
 # ToDo: REMOVE ME after refactoring service layer inventories/variables
 # hack because k8s-config is not available on this layer
