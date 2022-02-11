@@ -29,14 +29,13 @@ your_cluster_repo
 |   ├── roles/
 |   └── main.yaml
 ├── managed-k8s/                  # Submodule with the LCM code
-├── terraform/
-│   ├── .terraform/
-│   │   └── plugins/
-│   │       └── linux_amd64/
-│   │           └── lock.json     # Terraform plugin version lock
-│   ├── terraform.tfstate         # Terraform state
-│   └── terraform.tfstate.backup  # Terraform state backup
-└── submodules/                   # Directory for additional optional submodules
+└── terraform/
+    ├── .terraform/
+    │   └── plugins/
+    │       └── linux_amd64/
+    │           └── lock.json     # Terraform plugin version lock
+    ├── terraform.tfstate         # Terraform state
+    └── terraform.tfstate.backup  # Terraform state backup
 ```
 
 Detailed explanation:
@@ -75,13 +74,15 @@ Detailed explanation:
   is managed by the [`apply-terraform.sh`](./../operation/actions-references.md)
   action script.
 
+*Optional:*
+
 - `submodules/` is a directory which holds optional git submodules. You can add
   your submodules to this directory and e.g. use them in the [custom layer/stage](./abstraction-layers.md).
   Since this project is largely managed by C&H and partners, we have taken
   the privilege to be able to enable and integrate company specific submodules directly in the source code.
 
   If you're managing your `pass`, wireguard or SSH users via git repositories,
-  these will get added here (subtle hint for C&H employees).
+  these should be added here.
 
 ## Cluster-User Interaction
 
