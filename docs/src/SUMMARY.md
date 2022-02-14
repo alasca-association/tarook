@@ -1,6 +1,8 @@
-# Summary
+# yk8s Summary
 
-[Introduction](./introduction.md)
+- [Introduction](./introduction.md)
+- [Quick Start: How to Deploy a yk8s Cluster](./quick-start.md)
+- [FAQ and Troubleshooting](./faq.md)
 
 ---
 
@@ -21,7 +23,6 @@
 
 # Operating a yk8s-Cluster
 
-- [Quick Start](./operation/quick-start.md)
 - [Actions References](./operation/actions-references.md)
 - [Spawning a Cluster]() <!-- ./operation/spawning-cluster.md -->
 - [Node Scheduling (Taints and Labels)](./operation/node-scheduling.md)

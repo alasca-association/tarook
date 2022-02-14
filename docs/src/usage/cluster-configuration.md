@@ -1,4 +1,4 @@
-# yk8s-Cluster configuration
+# yk8s-Cluster Configuration
 
 The [environment variables](./environmental-variables.md) affect the [action scripts](./../operation/actions-references.md). The `config/config.toml` however is the main configuration file and can be adjusted to customize the yk8s cluster to fit your needs. It also contains operational flags which can trigger operational tasks. After [initializing a cluster repository](./initialization.md), the `config/config.toml` contains necessary (default) values to create a cluster. However, you'll still need to adjust some of them before triggering a cluster creation.
 
@@ -116,6 +116,8 @@ a monitoring-cluster. The following section can be used to enable and configure 
 
 #### Network Configuration
 
+> ***Note:*** To enable the calico network plugin, `kubernetes.network.plugin` needs to be set to `calico`.
+
 <details>
 <summary>config.toml: Kubernetes - Network Configuration</summary>
 
@@ -156,12 +158,7 @@ Currently, this is only needed for yk8s clusters created via the yaook/metal-con
 
 The used rook setup is explained in more detail [here](./../managed-services/rook/overview.md).
 
-If you want to use rook, you additionally need to enable either [dynamic or static local storage](#storage-configuration) (or both).
-
-The following variables must be defined when deploying rook:
-
-* `rook_nosds`
-* `osd_volume_size`
+> ***Note:*** To enable rook in a cluster on top of OpenStack, you need to set both `k8s-service-layer.rook.nosds` and `k8s-service-layer.rook.osd_volume_size`, as well as enable [`kubernetes.storage.rook_enabled` and either `kubernetes.local_storage.dynamic.enabled` or `kubernetes.local_storage.static.enabled` local storage](#storage-configuration) (or both).
 
 <details>
 <summary>config.toml: KSL - Rook Configuration</summary>
@@ -175,6 +172,8 @@ The following variables must be defined when deploying rook:
 
 The used prometheus-based monitoring setup will be explained in more detail soon :)
 
+> ***Note:*** To enable prometheus, `k8s-serice-layer.prometheus.install` and `kubernetes.monitoring.enabled` need to be set to `true`.
+
 <details>
 <summary>config.toml: KSL - Prometheus Configuration</summary>
 
@@ -187,13 +186,29 @@ The used prometheus-based monitoring setup will be explained in more detail soon
 
 The used NGINX ingress controller setup will be explained in more detail soon :)
 
+> ***Note:*** To enable an ingress controller, `k8s-service-layer.ingress.enabled` needs to be set to `true`.
+
 <details>
-<summary>config.toml: KSL - Prometheus Configuration</summary>
+<summary>config.toml: KSL - NGINX Ingress Configuration</summary>
 
 ```toml
 {{#include ../templates/config.template.toml:ksl_ingress_configuration}}
 ```
 </details>
+
+#### Cert-Manager Configuration
+
+The used Cert-Manager controller setup will be explained in more detail soon :)
+
+> ***Note:*** To enable cert-manager, `k8s-service-layer.cert-manager.enabled` needs to be set to `true`.
+<details>
+<summary>config.toml: KSL - Cert-Manager Configuration</summary>
+
+```toml
+{{#include ../templates/config.template.toml:ksl_cert_manager_configuration}}
+```
+</details>
+
 
 ### Node-Scheduling: Labels and Taints Configuration
 
@@ -209,12 +224,14 @@ More details about the labels and taints configuration can be found [here](./../
 
 ### Wireguard Configuration
 
-You **MUST** add yourself to the wireguard peers. You can do so either in the following section of the config file or
-by using and configuring a wireguard users git repository. E.g. you may stumble across the term `wg_user`.
-That is a git submodule which refers to an internal C&H repository which holds the WireGuard public keys of all Cloud&heat members
-which should have access to clusters by default.
+You **MUST** add yourself to the [wireguard](./../vpn/wireguard.md) peers.
 
-More details about the wireguard setup can be found [here](./../vpn/wireguard.md).
+You can do so either in the following section of the config file or
+by using and configuring a git submodule.
+This submodule would then refer to another repository, holding
+the wireguard public keys of everybody that should have access to
+the cluster by default. This is the recommended approach for
+companies and organizations.
 
 <details>
 <summary>config.toml: Wireguard Configuration</summary>
@@ -238,10 +255,15 @@ More details about the IPsec setup can be found [here](./../vpn/ipsec.md).
 
 ### Passwordstore Configuration
 
-You **MUST** add yourself to the passwordstore users. You can do so either in the following section of the config file or
-by using and configuring a passwordstore users git repository. E.g., you may stumble across the term `passwordstore_users`.
-That is a git submodule which refers to an internal C&H repository which holds the GPG ids of all Cloud&Heat members
-which should have access to clusters by default.
+You **MUST** add yourself to the passwordstore users.
+
+You can do so either by adding yourself to
+`passwordstore.additional_users` in the config file below or
+by using and configuring a git submodule.
+This submodule would then refer to another repository, holding
+the GPG IDs of everybody that should have access to the cluster
+by default. This is the recommended approach for companies and
+organizations.
 
 <details>
 <summary>config.toml: Passwordstore Configuration</summary>

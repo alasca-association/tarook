@@ -466,6 +466,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 
 # ANCHOR_END: ksl_prometheus_configuration
 
+# ANCHOR: ksl_cert_manager_configuration
 # --- KUBERNETES SERVICE LAYER : CERT MANAGER ---
 # ansible prefix: "k8s_cert_manager_"
 [k8s-service-layer.cert-manager]
@@ -483,6 +484,8 @@ enabled = false # •ᴗ•
 # Scheduling key for the cert manager instance and its resources. Has no
 # default.
 #scheduling_key =
+
+# ANCHOR_END: ksl_cert_manager_configuration
 
 # ANCHOR: ksl_ingress_configuration
 # --- KUBERNETES SERVICE LAYER : INGRESS ---
