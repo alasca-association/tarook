@@ -37,6 +37,18 @@ export TF_USAGE=true
 TF_VAR_keypair='firstnamelastname-hostname-gendate'
 export TF_VAR_keypair
 
+# Optional: Vault: Activate Hashicorp Vault Docker container
+export USE_VAULT_IN_DOCKER=false
+
+# Vault: Define Vault data storage path
+#VAULT_DIR="$(pwd)/vault"
+#export VAULT_DIR
+
+# Vault: Env var script for the Vault docker instance 
+# Resource your envrc.sh file again after you've started Vault,
+# to source Vault related information, like VAULT_ADDR, VAULT_ROOT_TOKEN
+#. "$(pwd)/managed-k8s/actions/vault_env.sh"
+
 # Optional: Useful to be able to interact with the cluster via kubectl.
 KUBECONFIG="$(pwd)/inventory/.etc/admin.conf"
 export KUBECONFIG

@@ -19,6 +19,8 @@ ansible_inventoryfile_03="$ansible_inventory_base/03_k8s_base/hosts"
 ansible_inventoryfile_custom="$ansible_inventory_base/99_custom/hosts"
 ansible_k8s_sl_vars_base="$ansible_inventory_base/04_k8s_service_layer"
 ansible_k8s_ms_vars_base="$ansible_inventory_base/05_k8s_managed_service"
+vault_container_name="yaook-vault"
+vault_dir="${VAULT_DIR:-$cluster_repository/vault}"
 
 if [ "${WG_USAGE:-true}" == "true" ]; then
     wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
