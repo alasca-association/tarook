@@ -54,7 +54,6 @@
         - "kubeadm={{ k8s_version }}-00"
         - "kubectl={{ k8s_version }}-00"
     when: ansible_pkg_mgr == 'apt'
-    notify: Restart kubelet
 
   - name: Prepare list of packages to install (yum/dnf)
     set_fact:
@@ -63,7 +62,6 @@
         - "kubeadm-{{ k8s_version }}-00"
         - "kubectl-{{ k8s_version }}-00"
     when: ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum'
-    notify: Restart kubelet
 
   - name: Install kubelet, kubeadm and kubectl
     # Note: check available version with `apt-cache policy <package name>`
@@ -71,6 +69,7 @@
     package:
       state: present
       name: "{{ packages }}"
+    notify: Restart kubelet
 
   - name: Prevent the k8s packages for being updated (apt)
     become: yes
