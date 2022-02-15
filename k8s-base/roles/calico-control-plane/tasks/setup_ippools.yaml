@@ -8,6 +8,8 @@
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes
+  vars:
+    calico_ipipmode: "{{ k8s_network_calico_ipipmode | default('Never') }}"
   command:
     argv:
       - /usr/local/bin/calicoctl

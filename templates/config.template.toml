@@ -229,6 +229,10 @@ service_subnet = "10.96.0.0/12" # •ᴗ•
 #   Allows the establishment of zone boundaries through BGP
 plugin = "calico" # •ᴗ•
 
+# Define if the IP-in-IP encapsulation of calico should be activated
+# https://projectcalico.docs.tigera.io/networking/vxlan-ipip
+# calico_ipipmode = "Always"
+
 # ANCHOR_END: kubernetes_network_configuration
 
 # ANCHOR: kubernetes_kubelet_configuration
