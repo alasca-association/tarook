@@ -10,6 +10,8 @@ monitoring_thanos_objectstorage_project_domain_id: "{{ lookup('env', 'OS_PROJECT
 monitoring_thanos_objectstorage_password: "{{ lookup('env', 'OS_PASSWORD') }}"
 monitoring_thanos_objectstorage_region_name: "{{ lookup('env', 'OS_REGION_NAME') }}"
 
+monitoring_thanos_objectstorage_container_name: "managed-k8s-monitoring-thanos-data"
+
 monitoring_thanos_metadata_volume_size: 10Gi
 monitoring_thanos_metadata_volume_storage_class: csi-sc-cinderplugin
 
