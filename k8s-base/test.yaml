@@ -37,7 +37,7 @@
       when: "ip_address == '0'"
       tags:
       - test-ccm
-
+  
 - name: Validate DualStack-Support
   hosts: k8s_nodes
   roles:
@@ -57,16 +57,13 @@
     when: k8s_network_plugin == 'calico'
 
 - name: Validate IPSec
-  hosts: masters[0]
-  vars:
-    gateway: "{{ groups['gateways'] | first }}"
-    ipsec_enabled: "{{ hostvars[gateway]['ipsec_enabled'] }}"
-    ipsec_test_enabled: "{{ hostvars[gateway]['ipsec_test_enabled'] }}"
-    ipsec_remote_private_addrs: "{{ hostvars[gateway]['ipsec_remote_private_addrs'] }}"
+  hosts: localhost
   gather_facts: false
   roles:
   - role: check-ipsec
-    when: (ipsec_enabled | default(False)) and (ipsec_test_enabled | default(False))
+    tags:
+    - check-ipsec
+    when: ipsec_enabled and ipsec_test_enabled
 
 # Ugly: assuming naming scheme here.
 - name: Annotate worker nodes
