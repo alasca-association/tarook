@@ -1,7 +1,9 @@
 - name: Check reachability of remote endpoint
-  become: yes
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
+  vars:
+    gateway: "{{ groups['gateways'] | first }}"
+    ipsec_enabled: "{{ hostvars[gateway]['ipsec_enabled']  | default(False) }}"
+    ipsec_test_enabled: "{{ hostvars[gateway]['ipsec_test_enabled']  | default(False) }}"
+    ipsec_remote_private_addrs: "{{ hostvars[gateway]['ipsec_remote_private_addrs'] }}"
   block:
   - name: create namespace
     k8s:
