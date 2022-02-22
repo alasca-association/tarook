@@ -231,7 +231,7 @@ plugin = "calico" # •ᴗ•
 
 # Define if the IP-in-IP encapsulation of calico should be activated
 # https://projectcalico.docs.tigera.io/networking/vxlan-ipip
-# calico_ipipmode = "Always"
+# calico_ipipmode = "Never"
 
 # ANCHOR_END: kubernetes_network_configuration
 

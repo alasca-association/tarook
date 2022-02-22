@@ -4,7 +4,7 @@ metadata:
   name: calico-ippool
 spec:
   cidr: "{{ k8s_network_pod_subnet }}"
-  ipipMode: "{{ calico_ipipmode }}"
+  ipipMode: "{{ k8s_network_calico_ipipmode }}"
   natOutgoing: true
   disabled: false
   nodeSelector: all()
@@ -17,7 +17,7 @@ metadata:
   name: calico-ippool-v6
 spec:
   cidr: "{{ k8s_network_pod_subnet_v6 }}"
-  ipipMode: "{{ calico_ipipmode }}"
+  ipipMode: "{{ k8s_network_calico_ipipmode }}"
   natOutgoing: false
   disabled: false
   nodeSelector: all()
