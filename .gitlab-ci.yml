@@ -46,6 +46,7 @@ ansible-lint:
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/test.yaml" # Check smoke tests
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-service-layer/test.yaml" # Check ksl tests
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-managed-services/test.yaml" # Check ksm tests
+    - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/system_update_nodes.yaml" # Check system update node
   tags:
     - docker
 
