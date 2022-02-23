@@ -106,12 +106,17 @@ scheduling_key = "{{ scheduling_key_prefix }}/storage"
 
 [k8s-service-layer.prometheus]
 use_thanos = true
+use_grafana = true
 thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
 scheduling_key = "{{ scheduling_key_prefix }}/monitoring"
-prometheus_memory_limit = "1Gi"
-prometheus_memory_request = "{{ monitoring_prometheus_memory_limit }}"
-prometheus_cpu_request = "{{ monitoring_prometheus_cpu_limit }}"
-prometheus_cpu_limit = "1"
+
+internet_probe = true
+[[k8s-service-layer.prometheus.internet_probe_targets]]
+name          = "yaook"                       # Human readable URL that will appear in Prometheus / AlertManager
+url           = "https://yaook.cloud/" # The URL that blackbox will scrape
+interval      = "60s"                          # Scraping interval. Overrides value set in `defaults`
+scrapeTimeout = "60s"                          # Scrape timeout. Overrides value set in `defaults`
+
 
 [k8s-service-layer.cert-manager]
 enabled = true
