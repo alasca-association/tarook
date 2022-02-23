@@ -1,15 +1,18 @@
 - name: Initial sanity checks
   hosts: localhost
   gather_facts: false
+  vars_files:
+  - vars/etc.yaml
   roles:
     - validate_configuration
 
-- name: Establish connectivity to the gateway nodes 
+- name: Establish connectivity to the gateway nodes
   hosts: frontend
   gather_facts: false
   strategy: free
   vars_files:
   - vars/disruption.yaml
+  - vars/etc.yaml
   roles:
   - role: detect_user
     tags: detect_user
@@ -40,12 +43,13 @@
     tags: update_system
     when: _allow_disruption
 
-- name: Establish connectivity to the k8s nodes 
+- name: Establish connectivity to the k8s nodes
   hosts: k8s_nodes
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
   roles:
   - role: detect_user
     tags: detect_user
