@@ -6,7 +6,7 @@
   roles:
     - validate_configuration
 
-- name: Establish connectivity to the gateway nodes
+- name: Establish connectivity to the frontend nodes
   hosts: frontend
   gather_facts: false
   strategy: free
@@ -20,21 +20,21 @@
     tags: ssh-known-hosts
   - role: prepare-node
     tags: prepare-node
-  - role: is-gateway-initialized
+  - role: is-frontend-initialized
     tags: update_system
 
-- name: Upgrade uninitialized gateway nodes
+- name: Upgrade uninitialized frontend nodes
   gather_facts: false
-  hosts: uninitialized_gateways
+  hosts: uninitialized_frontend_nodes
   vars_files:
   - vars/disruption.yaml
   roles:
   - role: update_system
     tags: update_system
 
-- name: Upgrade initialized gateway nodes
+- name: Upgrade initialized frontend nodes
   gather_facts: false
-  hosts: initialized_gateways
+  hosts: initialized_frontend_nodes
   vars_files:
   - vars/disruption.yaml
   serial: 1

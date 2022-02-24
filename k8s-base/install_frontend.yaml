@@ -20,7 +20,7 @@
     tags: ssh-known-hosts
   - role: prepare-node
     tags: prepare-node
-  - role: is-gateway-initialized
+  - role: is-frontend-initialized
     tags: update_system
 
 - name: Disable SELinux
@@ -42,7 +42,7 @@
     tags: harden-ssh
 
 - name: Upgrade uninitialized nodes
-  hosts: uninitialized_gateways
+  hosts: uninitialized_frontend_nodes
   vars_files:
   - vars/disruption.yaml
   roles:
