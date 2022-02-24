@@ -2,7 +2,7 @@
 
 This project uses Ansible to provide a customizable, highly available, scalable and flexible kubeadm-based k8s cluster installation and lifecycle-management on top of OpenStack or bare-metal.
 
-> ***Hint***: A Quick Start guide can be found [here](./operation/quick-start.md).
+> ***Hint:*** If you want to get your cluster up and running, the [Quick Start guide](./quick-start.md) is a good place to begin.
 
 **Main Feature Selling Points**
 

@@ -2,4 +2,4 @@
 
 > TODO: needs details :)
 >
-> Until then, take a look at the [Quick Start Guide](quick-start.md).
+> Until then, take a look at the [Quick Start Guide](./../quick-start.md).
