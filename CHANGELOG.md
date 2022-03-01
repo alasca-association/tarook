@@ -4,6 +4,15 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## 2022-02-24
+
+### [Add action for system updates of initialized nodes (!429)](https://gitlab.com/yaook/k8s/-/merge_requests/429)
+
+The node system updates have been pulled out into a [separate action script](https://yaook.gitlab.io/k8s/operation/actions-references.html#system_update_nodessh).
+The reason for that is, that even though one has not set `MANAGED_K8S_RELEASE_THE_KRAKEN`, the cache of the package manager of the host node is updated in stage2 and stage3.
+That takes quite some time and is unnecessary as the update itself won't happen.
+More rationales are explained in the commit message of e4c622114949a7f5108e8b4fa3d4217dcb1345bc.
+
 ## 2022-02-11
 
 ### [cluster-repo: Move submodules into dedicated directory (!433)](https://gitlab.com/yaook/k8s/-/merge_requests/433)

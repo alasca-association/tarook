@@ -5,8 +5,8 @@
   set_fact:
     install_status: "{{ ('keepalived.service' in ansible_facts.services or 'haproxy.service' in ansible_facts.services or 'wg-quick@.service' in ansible_facts.services) | ternary('initialized', 'uninitialized', 'initialized') }}"  # noqa 204
 
-- name: Group gateways
+- name: Group frontend nodes
   group_by:
-    key: "{{ install_status }}_gateways"
+    key: "{{ install_status }}_frontend_nodes"
 
 
