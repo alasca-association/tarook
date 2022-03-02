@@ -18,6 +18,27 @@
     - chrony
     state: present
 
+- name: create custom configuration
+  become: yes
+  when: custom_chrony_configuration | bool
+  template:
+    src: chrony.conf.j2 
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: 0640
+  register: configuration_update
+
+- name: Restart chrony # noqa no-handler
+  become: yes
+  # Only restart if something changed AND we're allowed to do the restart
+  when: configuration_update.changed
+  systemd:
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
+    name: chrony
+
 - name: ensure chrony is running
   become: yes
   become_user: root
