@@ -302,6 +302,19 @@ from different nodes. This is disabled by default as it requires some prethinkin
 ```
 </details>
 
+## Miscellaneous Configuration
+
+This section contains various configuration options for special use cases.
+You won't need to enable and adjust any of these under normal circumstances.
+
+<details>
+<summary>Miscellaneous configuration</summary>
+
+```toml
+{{#include ../templates/config.template.toml:miscellaneous_configuration}}
+```
+</details>
+
 ## Ansible Configuration
 
 The Ansible configuration file can be found in the `ansible/` directory.
