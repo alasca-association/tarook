@@ -373,6 +373,8 @@ cluster_name = "rook-ceph" # •ᴗ•
 # DISRUPTION (sic!).
 #install = true
 
+#namespace = "monitoring"
+
 # helm chart version of the prometheus stack
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
 # If you set this empty (not unset), the latest version is used
@@ -457,6 +459,9 @@ cluster_name = "rook-ceph" # •ᴗ•
 # The jsonnet-based monitoring setup will get removed soon™
 # https://github.com/prometheus-operator/kube-prometheus
 #use_jsonnet_setup = false
+
+# Include migration tasks
+# migrate_from_v1 = false
 
 # Scrape external targets via blackbox exporter
 # https://github.com/helm/charts/tree/master/stable/prometheus-blackbox-exporter

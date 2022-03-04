@@ -8,18 +8,18 @@
       api_version: v1
       kind: Endpoints
     register: prometheus_endpoint
-    failed_when: |
-      not(
+    until: |
         (prometheus_endpoint.resources | default(False))
         and (prometheus_endpoint.resources[0].subsets | default(False))
         and (prometheus_endpoint.resources[0].subsets[0].addresses | default(False))
         and (prometheus_endpoint)
-      )
+    retries: 60
+    delay: 3
 
   - name: Set prometheus cluster IP and web port
     set_fact:
       prometheus_cluster_ip: "{{ prometheus_endpoint.resources[0].subsets[0].addresses[0].ip }}"
-      prometheus_web_port: "{{ (prometheus_endpoint.resources[0].subsets[0].ports | selectattr('name', 'equalto', 'web') | first).port }}"
+      prometheus_web_port: "{{ (prometheus_endpoint.resources[0].subsets[0].ports | selectattr('name', 'in', ['web','http-web']) | first).port }}"
 
   - name: information about config
     debug:

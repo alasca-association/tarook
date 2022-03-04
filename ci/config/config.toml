@@ -1,17 +1,17 @@
 [terraform]
-subnet_cidr = "172.30.154.0/24"
-haproxy_ports = [30060]
-workers = 6
+subnet_cidr               = "172.30.154.0/24"
+haproxy_ports             = [30060]
+workers                   = 6
 default_master_image_name = "Ubuntu 18.04 LTS x64"
 default_worker_image_name = "Ubuntu 18.04 LTS x64"
-gateway_image_name = "Debian 10 (buster)"
+gateway_image_name        = "Debian 10 (buster)"
 # https://github.com/SovereignCloudStack/Operational-Docs/blob/main/flavor-naming-draft.MD
-worker_flavors = ["L", "L", "L", "L", "L", "SCS-4C:8:50s-GNt:1-mk8sPrivate"]
+worker_flavors       = ["L", "L", "L", "L", "L", "SCS-4C:8:50s-GNt:1-mk8sPrivate"]
 enable_az_management = false
-cluster_name = "ci"
+cluster_name         = "ci"
 
 dualstack_support = false
-subnet_v6_cidr = "fd00::/120"
+subnet_v6_cidr    = "fd00::/120"
 
 # dd2a only
 #azs = ["nova"]
@@ -19,99 +19,104 @@ subnet_v6_cidr = "fd00::/120"
 
 [load-balancing]
 deprecated_nodeport_lb_test_port = 30060
-lb_ports = ["{{ deprecated_nodeport_lb_test_port }}"]
+lb_ports                         = ["{{ deprecated_nodeport_lb_test_port }}"]
 
 [wireguard]
-ip_cidr = "172.30.153.0/24"
-ip_gw = "172.30.153.1/24"
+ip_cidr   = "172.30.153.0/24"
+ip_gw     = "172.30.153.1/24"
 ipv6_cidr = "fd01::/120"
-ipv6_gw = "fd01::1/120"
-port = 7777
+ipv6_gw   = "fd01::1/120"
+port      = 7777
 
 [[wireguard.peers]]
 pub_key = "MQL6dL0DSOnXTLrScCseY7Fs8S5Hb4yHc6SZ+/ucNx0="
-ip = "172.30.153.14/32"
-ipv6 = "fd01::14/128"
-ident = "gitlab-ci-runner"
+ip      = "172.30.153.14/32"
+ipv6    = "fd01::14/128"
+ident   = "gitlab-ci-runner"
 
 [ch-k8s-lbaas]
-enabled = true
+enabled       = true
 shared_secret = "IYeOlEFO1h3uc9x1bdw9thNNgmn1gm8dmzos3f04PLmFjt3d"
-version = "0.3.3"
-agent_port = 15203
+version       = "0.3.3"
+agent_port    = 15203
 
 [kubernetes]
-version = "1.21.4"
+version                 = "1.21.9"
 use_podsecuritypolicies = false
-is_gpu_cluster = true
+is_gpu_cluster          = true
 
 [kubernetes.apiserver]
 frontend_port = 8888
 
 [kubernetes.storage]
-rook_enabled = true
+rook_enabled          = true
 nodeplugin_toleration = true
 
 [kubernetes.local_storage.static]
-enabled = true
+enabled           = true
 storageclass_name = "local-storage"
 
 [kubernetes.local_storage.dynamic]
-enabled = true
+enabled           = true
 storageclass_name = "local-storage-dynamic"
 
 [kubernetes.monitoring]
 enabled = true
 
 [kubernetes.global_monitoring]
-enabled = true
-nodeport = 31911
+enabled       = true
+nodeport      = 31911
 nodeport_name = "ch-k8s-global-monitoring"
 
 [kubernetes.network]
-plugin = "kube-router"
-pod_subnet = "10.244.0.0/16"
+plugin         = "kube-router"
+pod_subnet     = "10.244.0.0/16"
 service_subnet = "10.96.0.0/12"
 
 [kubernetes.continuous_join_key]
 enabled = false
 
 [k8s-service-layer.rook]
-namespace = "rook-ceph"
-cluster_name = "rook-ceph"
-version = "v1.6.7"
-skip_upgrade_checks = true
-nodeplugin_toleration = true
-nosds = 3
-osd_volume_size = "90Gi"
-toolbox = true
-ceph_fs = true
-mon_volume = true
+namespace                = "rook-ceph"
+cluster_name             = "rook-ceph"
+version                  = "v1.6.7"
+skip_upgrade_checks      = true
+nodeplugin_toleration    = true
+nosds                    = 3
+osd_volume_size          = "90Gi"
+toolbox                  = true
+ceph_fs                  = true
+mon_volume               = true
 mon_volume_storage_class = "local-storage"
 
-mds_memory_limit = "4Gi"
+mds_memory_limit   = "4Gi"
 mds_memory_request = "{{ rook_mds_memory_limit }}"
-mds_cpu_limit = "1"
-mds_cpu_request = "{{ rook_mds_cpu_limit }}"
+mds_cpu_limit      = "1"
+mds_cpu_request    = "{{ rook_mds_cpu_limit }}"
 
-mon_cpu_limit = "500m"
-mon_cpu_request = "100m"
-mon_memory_limit = "1Gi"
+mon_cpu_limit      = "500m"
+mon_cpu_request    = "100m"
+mon_memory_limit   = "1Gi"
 mon_memory_request = "500Mi"
 
-operator_cpu_limit = "500m"
+operator_cpu_limit   = "500m"
 operator_cpu_request = "100m"
 
 scheduling_key = "{{ scheduling_key_prefix }}/storage"
 
 [k8s-service-layer.prometheus]
-use_thanos = true
+use_thanos                          = true
+use_grafana                         = true
 thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
-scheduling_key = "{{ scheduling_key_prefix }}/monitoring"
-prometheus_memory_limit = "1Gi"
-prometheus_memory_request = "{{ monitoring_prometheus_memory_limit }}"
-prometheus_cpu_request = "{{ monitoring_prometheus_cpu_limit }}"
-prometheus_cpu_limit = "1"
+scheduling_key                      = "{{ scheduling_key_prefix }}/monitoring"
+
+internet_probe = true
+[[k8s-service-layer.prometheus.internet_probe_targets]]
+name          = "yaook"                # Human readable URL that will appear in Prometheus / AlertManager
+url           = "https://yaook.cloud/" # The URL that blackbox will scrape
+interval      = "60s"                  # Scraping interval. Overrides value set in `defaults`
+scrapeTimeout = "60s"                  # Scrape timeout. Overrides value set in `defaults`
+
 
 [k8s-service-layer.cert-manager]
 enabled = true
@@ -143,11 +148,11 @@ ci-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 rollout_company_users = false # False because we don't have the keys
 
 [[passwordstore.additional_users]]
-ident = "mk8s-ci@gitlab"
+ident  = "mk8s-ci@gitlab"
 gpg_id = "mk8s-ci@gitlab"
 
 [ipsec]
-enabled = true
+enabled      = true
 test_enabled = true
 # To test IPSec we assume presence of a remote endpoint with ipsec up and running.
 # We setup an endpoint on a private VM (outside CI) 
@@ -157,10 +162,10 @@ test_enabled = true
 # In case you have no access to the endpoint (and no one remains who can), 
 # feel free to create a new one and update the IP.
 
-proposals = ["aes256-sha256-modp2048"]
-peer_networks = ["172.20.150.0/24"]
-remote_addrs = ["185.128.117.233"]
-remote_name = "185.128.117.233"
+proposals            = ["aes256-sha256-modp2048"]
+peer_networks        = ["172.20.150.0/24"]
+remote_addrs         = ["185.128.117.233"]
+remote_name          = "185.128.117.233"
 remote_private_addrs = "172.20.150.233"
 
 [cah-users]

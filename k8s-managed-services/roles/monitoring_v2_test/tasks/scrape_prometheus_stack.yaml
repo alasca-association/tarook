@@ -46,7 +46,7 @@
   community.kubernetes.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
-    command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='apiserver',instance='{{ hostvars[item]["local_ipv4_address"] }}:6443'}"
+    command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='apiserver',service='kubernetes',instance='kubernetes.default.svc:443'}"
   register: metrics
   until: |
     metrics.failed == false and
@@ -55,7 +55,6 @@
     metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
-  loop: "{{ groups['masters'] }}"
 
 - name: Check the kubelet endpoints status
   community.kubernetes.k8s_exec:

@@ -20,4 +20,4 @@ monitoring_prometheus_stack_release_name: "prometheus-stack"
 monitoring_use_grafana: true
 monitoring_use_thanos: true
 
-monitoring_prometheus_stack_version: "10.3.5"
+monitoring_prometheus_stack_version: "32.2.1"

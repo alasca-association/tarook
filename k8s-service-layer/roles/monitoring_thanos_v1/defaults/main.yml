@@ -13,7 +13,7 @@ monitoring_thanos_objectstorage_region_name: "{{ lookup('env', 'OS_REGION_NAME')
 monitoring_thanos_metadata_volume_size: 10Gi
 monitoring_thanos_metadata_volume_storage_class: csi-sc-cinderplugin
 
-monitoring_thanos_version: v0.15.0
+monitoring_thanos_version: v0.23.0
 
 monitoring_jsonnet_dir_thanos: "{{ playbook_dir }}/../jsonnet-sources/thanos"
 
