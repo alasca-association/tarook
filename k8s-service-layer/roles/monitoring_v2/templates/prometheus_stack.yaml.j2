@@ -233,7 +233,35 @@ prometheus-node-exporter:
 
 ##
 prometheusOperator:
-  enabled: false
+  enabled: true
+  resources:
+    limits:
+      cpu: {{ monitoring_prometheus_operator_cpu_limit | to_json }}
+      memory: {{ monitoring_prometheus_operator_memory_limit | to_json }}
+    requests:
+      cpu: {{ monitoring_prometheus_operator_cpu_request | to_json }}
+      memory: {{ monitoring_prometheus_operator_memory_request | to_json }}
+  serviceMonitor:
+    relabelings:
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: nodename
+        replacement: $1
+        action: replace
+{% if monitoring_scheduling_key %}
+  tolerations:
+    - key: "{{ monitoring_scheduling_key }}"
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: "{{ monitoring_scheduling_key }}"
+                operator: Exists
+{% endif %}
 
 ##
 prometheus:

@@ -14,7 +14,6 @@ monitoring_prometheus_memory_request: "{{ monitoring_prometheus_memory_limit }}"
 monitoring_prometheus_cpu_limit: "1"
 monitoring_prometheus_cpu_request: "{{ monitoring_prometheus_cpu_limit }}"
 
-monitoring_prometheus_operator_release_name: "prometheus-operator"
 monitoring_prometheus_stack_release_name: "prometheus-stack"
 
 monitoring_use_grafana: true
