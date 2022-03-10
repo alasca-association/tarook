@@ -2,9 +2,6 @@
 subnet_cidr               = "172.30.154.0/24"
 haproxy_ports             = [30060]
 workers                   = 6
-default_master_image_name = "Ubuntu 18.04 LTS x64"
-default_worker_image_name = "Ubuntu 18.04 LTS x64"
-gateway_image_name        = "Debian 10 (buster)"
 # https://github.com/SovereignCloudStack/Operational-Docs/blob/main/flavor-naming-draft.MD
 worker_flavors       = ["L", "L", "L", "L", "L", "SCS-4C:8:50s-GNt:1-mk8sPrivate"]
 enable_az_management = false
