@@ -453,6 +453,10 @@ cluster_name = "rook-ceph" # •ᴗ•
 #thanos_store_cpu_limit = "500m"
 #thanos_store_cpu_request = "100m"
 
+# WARNING: If you have set terraform.cluster_name, you must set this
+# variable to "${terraform.cluster_name}-monitoring-thanos-data".
+# The default terraform.cluster_name is "managed-k8s" which is why the
+# default object store container name is set to the following.
 #thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
 
 # Use legacy jsonnet-based setup (monitoring_v1).
