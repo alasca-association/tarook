@@ -104,7 +104,7 @@ scheduling_key = "{{ scheduling_key_prefix }}/storage"
 [k8s-service-layer.prometheus]
 use_thanos                          = true
 use_grafana                         = true
-thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
+thanos_objectstorage_container_name = "ci-monitoring-thanos-data"
 scheduling_key                      = "{{ scheduling_key_prefix }}/monitoring"
 
 internet_probe = true
