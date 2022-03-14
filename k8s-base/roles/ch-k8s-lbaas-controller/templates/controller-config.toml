@@ -12,6 +12,9 @@ auth-url={{ lookup('env', 'OS_AUTH_URL') | to_json }}
 user-domain-name={{ lookup('env', 'OS_USER_DOMAIN_NAME') | to_json }}
 project-name={{ lookup('env', 'OS_PROJECT_NAME') | to_json }}
 project-domain-id={{ lookup('env', 'OS_PROJECT_DOMAIN_ID') | to_json }}
+auth-type={{ lookup('env', 'OS_AUTH_TYPE') | to_json }}
+application-credential-id={{ lookup('env', 'OS_APPLICATION_CREDENTIAL_ID') | to_json }}
+application-credential-secret={{ lookup('env', 'OS_APPLICATION_CREDENTIAL_SECRET') | to_json }}
 
 [openstack.network]
 use-floating-ips={{ ch_k8s_lbaas_use_floating_ips | ternary('true', 'false') }}

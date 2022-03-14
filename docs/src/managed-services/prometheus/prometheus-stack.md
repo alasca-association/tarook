@@ -62,3 +62,11 @@ spec:
 Note 1: The author hasn't worked much with `Alertmanager(Config)` in the past and only ensured that manifests are read correctly. Their test was looking at `k exec -ti -n monitoring alertmanager-prometheus-stack-kube-prom-alertmanager-0 -- amtool --alertmanager.url=http://127.0.0.1:9093 config`.
 
 Note 2: You will probably mess up the `AlertmanagerConfig` manifest in one way or another. The AdmissionController caught some typos. On other occasions I had to look into the logs of the `prometheus-operator` pod. And eventually the AM failed to come up because I missed some further fields which I figured via the logs of the `AM` pod.
+
+## Thanos
+
+Thanos is deployed outside of the kube-prometheus-stack helm chart. By default, it writes its metrics into a SWIFT object storage container that resides in the same OpenStack project.
+
+**TODO:** Add more information, e.g., on `thanos compact`.
+
+> ***Warning:*** If you want to use application credentials, then you have to disable the thanos monitoring component (`use_thanos = false`) for now. See [here](https://gitlab.com/yaook/k8s/-/issues/436#note_873556688) for more context.

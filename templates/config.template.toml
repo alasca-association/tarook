@@ -398,7 +398,13 @@ cluster_name = "rook-ceph" # •ᴗ•
 # Enable grafana
 #use_grafana = true
 
+
 # Enable use of Thanos
+# Important: Currently Thanos will not work with OpenStack application credentials [0]. If you use OpenStack
+# application credentials then you have to set `use_thanos = false`. f you don't listen to me, then the
+# LCM will kindly throw an error message into your face in stage 4 and abort :).
+#
+# [0] https://gitlab.com/yaook/k8s/-/issues/436#note_873556688
 #use_thanos = true
 
 # Thanos uses local storage to keep a copy of the metadata from the object store
