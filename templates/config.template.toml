@@ -745,3 +745,11 @@ wireguard_on_workers = false
 #vm_max_map_count = 262144
 
 # ANCHOR_END: miscellaneous_configuration
+
+# Custom Chrony Configration
+# The ntp servers used by chrony can be customized if it should be necessary or wanted.
+# A list of pools and/or servers can be specified. 
+# Chrony treats both similarily but it expects that a pool will resolve to several ntp servers.
+#custom_chrony_configuration = false
+#custom_ntp_pools = [ "0.pool.ntp.example.org", "1.pool.ntp.example.org"]
+#custom_ntp_servers = [ "0.server.ntp.example.org", "1.server.ntp.example.org"]
