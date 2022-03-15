@@ -2,9 +2,6 @@
 subnet_cidr               = "172.30.154.0/24"
 haproxy_ports             = [30060]
 workers                   = 6
-default_master_image_name = "Ubuntu 18.04 LTS x64"
-default_worker_image_name = "Ubuntu 18.04 LTS x64"
-gateway_image_name        = "Debian 10 (buster)"
 # https://github.com/SovereignCloudStack/Operational-Docs/blob/main/flavor-naming-draft.MD
 worker_flavors       = ["L", "L", "L", "L", "L", "SCS-4C:8:50s-GNt:1-mk8sPrivate"]
 enable_az_management = false
@@ -107,7 +104,7 @@ scheduling_key = "{{ scheduling_key_prefix }}/storage"
 [k8s-service-layer.prometheus]
 use_thanos                          = true
 use_grafana                         = true
-thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
+thanos_objectstorage_container_name = "ci-monitoring-thanos-data"
 scheduling_key                      = "{{ scheduling_key_prefix }}/monitoring"
 
 internet_probe = true
@@ -155,11 +152,11 @@ gpg_id = "mk8s-ci@gitlab"
 enabled      = true
 test_enabled = true
 # To test IPSec we assume presence of a remote endpoint with ipsec up and running.
-# We setup an endpoint on a private VM (outside CI) 
-# using https://gitlab.com/yaook/incubator/k8s-ipsec-endpoint 
+# We setup an endpoint on a private VM (outside CI)
+# using https://gitlab.com/yaook/incubator/k8s-ipsec-endpoint
 # We added its IP network information here to initialize an Ipsec tunnel in CI.
 
-# In case you have no access to the endpoint (and no one remains who can), 
+# In case you have no access to the endpoint (and no one remains who can),
 # feel free to create a new one and update the IP.
 
 proposals            = ["aes256-sha256-modp2048"]
