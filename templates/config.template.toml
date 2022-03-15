@@ -113,7 +113,7 @@ rook_enabled = false # •ᴗ•
 
 # Setting this to true will cause the storage plugins
 #to run on all nodes (ignoring all taints). This is often desirable.
-#nodeplugin_toleration = false # •ᴗ•
+nodeplugin_toleration = false # •ᴗ•
 
 # This flag enables the topology feature gate of the cinder controller plugin.
 # Its purpose is to allocate volumes from cinder which are in the same AZ as
@@ -570,7 +570,7 @@ scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 [wireguard]
 # Set the environment variable "WG_COMPANY_USERS" or this field to 'false' if C&H company members
 # should not be rolled out as wireguard peers.
-#rollout_company_users = true
+#rollout_company_users = false
 
 # IP address range to use for WireGuard clients. Must be set to a CIDR and must
 # not conflict with the terraform.subnet_cidr.
