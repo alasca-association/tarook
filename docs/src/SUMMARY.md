@@ -42,7 +42,7 @@
   - [Resizing an OSD](./managed-services/rook/resizing-osds.md)
   - [Upgrading Rook and Ceph](./managed-services/rook/upgrades.md)
 - [Monitoring]() <!-- ./managed-services/prometheus/overview.md -->
-  - [Prometheus-based Monitoring Stack]() <!-- ./managed-services/prometheus/prometheus-stack.md -->
+  - [Prometheus-based Monitoring Stack](./managed-services/prometheus/prometheus-stack.md)
   - [Global Monitoring]() <!-- ./managed-services/prometheus/global-monitoring.md -->
 - [Load-Balancing]() <!-- ./managed-services/load-balancing/overview.md -->
   - [ch-k8s-lbaas](./managed-services/load-balancing/ch-k8s-lbaas.md)
