@@ -1,6 +1,8 @@
 - name: Prepare wireguard install on Debian
   become: yes
-  when: 'ansible_distribution == "Debian"'
+  # wireguard is included in the bullseye (11) repos, so we only need to add 'unstable' for buster (10).
+  # Note: I'm not sure if they were available at that time, but buster-backports would have been more appropriate :)
+  when: 'ansible_distribution == "Debian" and ansible_distribution_release == "buster"'
 
   block:
   - name: Pin packages from 'unstable' repo with low priority
