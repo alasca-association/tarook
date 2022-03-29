@@ -10,6 +10,7 @@ frontend k8s_front
   option tcplog
   timeout client 600s
   default_backend k8s_back
+  maxconn 2000
 
 backend k8s_back
   mode tcp
