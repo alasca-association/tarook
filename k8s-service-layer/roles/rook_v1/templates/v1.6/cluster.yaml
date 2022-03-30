@@ -49,7 +49,7 @@ spec:
   waitTimeoutForHealthyOSDInMinutes: 10
   mon:
     # Set the number of mons to be started. Must be an odd number, and is generally recommended to be 3.
-    count: 3
+    count: {{ rook_nmons }}
     # The mons should be on unique nodes. For production, at least 3 nodes are recommended for this reason.
     # Mons should only be allowed on the same node for test environments where data loss is acceptable.
     allowMultiplePerNode: {{ rook_mon_allow_multiple_per_node }}
@@ -69,7 +69,7 @@ spec:
 {% endif %}
   mgr:
 {% if rook_mgr_use_pg_autoscaler %}
-    count: 1
+    count: {{ rook_nmgrs }}
     modules:
     # Several modules should not need to be included in this list. The "dashboard" and "monitoring" modules
     # are already enabled by other settings in the cluster CR.

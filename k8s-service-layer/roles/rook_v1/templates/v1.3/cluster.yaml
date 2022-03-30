@@ -44,7 +44,7 @@ spec:
   continueUpgradeAfterChecksEvenIfNotHealthy: false
   # set the amount of mons to be started
   mon:
-    count: 3
+    count: {{ rook_nmons }}
     allowMultiplePerNode: {{ rook_mon_allow_multiple_per_node }}
 {% if rook_mon_volume %}
     # A volume claim template can be specified in which case new monitors (and
