@@ -192,4 +192,10 @@ variable "default_worker_root_disk_size" {
   description = "If 'create_root_disk_on_volume=true', the worker flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size."
 }
 
+variable "network_mtu" {
+  type = number
+  default = 1450
+  description = "MTU for the network used for the cluster."
+}
+
 # ANCHOR_END: terraform_variables

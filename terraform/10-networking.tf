@@ -1,6 +1,10 @@
 resource "openstack_networking_network_v2" "cluster_network" {
   name = "${var.cluster_name}-network"
   admin_state_up = true
+  mtu = var.network_mtu
+  lifecycle {
+    ignore_changes = [mtu]
+  }
 }
 
 resource "openstack_networking_subnet_v2" "cluster_subnet" {
