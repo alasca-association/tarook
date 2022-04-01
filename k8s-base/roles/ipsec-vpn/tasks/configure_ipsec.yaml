@@ -70,7 +70,7 @@
   become: yes
   when: networking_fixed_ip not in ansible_facts.all_ipv4_addresses
   systemd:
-    name: strongswan-swanctl
+    name: "{{ strongswan_service }}"
     enabled: no
     state: stopped
 
@@ -78,7 +78,7 @@
   become: yes
   when: networking_fixed_ip in ansible_facts.all_ipv4_addresses
   systemd:
-    name: strongswan-swanctl
+    name: "{{ strongswan_service }}"
     enabled: no
     state: "{{ (swanctl_config.changed or charon_config.changed) | ternary('reloaded', 'started') }}"
 
@@ -104,8 +104,8 @@
 
 - name: Configure keepalived
   become: yes
-  copy:
-    src: 10-swanctl-notify.sh
+  template:
+    src: 10-swanctl-notify.sh.j2
     dest: /etc/keepalived/scripts/
     owner: root
     group: root

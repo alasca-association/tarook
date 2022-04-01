@@ -12,11 +12,11 @@ STATE=$3
 case $STATE in
     "MASTER")
         ip xfrm policy flush
-        /usr/bin/systemctl start strongswan-swanctl
+        /usr/bin/systemctl start {{ strongswan_service }}
         exit 0
         ;;
     "BACKUP" | "FAULT")
-        /usr/bin/systemctl stop strongswan-swanctl
+        /usr/bin/systemctl stop {{ strongswan_service }}
         ip xfrm policy flush
         exit 0
         ;;
