@@ -86,7 +86,7 @@ serve as your [cluster repository](./../design/cluster-repository.md):
 1. Clone the `yaook/k8s` repository to a location **outside** of your cluster repository:
     ```console
     $ pushd $somewhere_else
-    $ git clone git@gitlab.com:yaook/k8s.git
+    $ git clone https://gitlab.com/yaook/k8s.git
     $ popd
     ```
 1. Setup your environment variables:
