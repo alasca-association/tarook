@@ -27,20 +27,7 @@ $ GO111MODULE="on" go get github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@v0.4
 
 <details>
 <summary>Install Terraform</summary>
-
-```console
-# Download the compressed terraform binary
-$ wget -q -O "terraform.zip" https://releases.hashicorp.com/terraform/1.0.7/terraform_1.0.7_linux_amd64.zip
-
-# Extract the binary
-$ unzip -q terraform.zip
-
-# Move the binary
-$ mv terraform /usr/local/bin/terraform
-
-# You may need allow execution of the binary
-$ sudo chmod +x /usr/local/bin/terraform
-```
+Follow [the upstream instructions on installing Terrafrom.](https://www.terraform.io/downloads)
 </details>
 
 <details>
