@@ -32,7 +32,7 @@ Follow [the upstream instructions on installing Terrafrom.](https://www.terrafor
 
 <details>
 <summary>Install helm</summary>
-Follow <a href=https://helm.sh/docs/intro/install/>the upstream instructions on installing Helm</a>.
+Follow [the upstream instructions on installing Helm.](https://helm.sh/docs/intro/install/)
 </details>
 
 We also strongly recommend installing and using:
