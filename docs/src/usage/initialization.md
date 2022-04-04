@@ -81,7 +81,7 @@ serve as your [cluster repository](./../design/cluster-repository.md):
         ```console
         $ cp $somewhere_else/k8s/templates/envrc.template.sh ./.envrc
         ```
-    1. Make the [minimal changes](./environmental-variables.html#minimal-required-changes) to `./envrc`.
+    1. Make the [minimal changes](./environmental-variables.md#minimal-required-changes) to `./envrc`.
     1. Make sure to they have taken effect by running `direnv allow`.
 1. Initialize the cluster repository:
     ```console
