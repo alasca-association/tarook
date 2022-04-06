@@ -14,6 +14,17 @@
       set_fact:
         phe_user: "prometheus"
 
+    - name: Configure the exporter
+      become: yes
+      template:
+        src: prometheus-haproxy-exporter.default
+        dest: /etc/default/prometheus-haproxy-exporter
+        owner: root
+        group: root
+        mode: u=rwx,g=rx,o-rwx
+      register: phe_default_config
+
+
 - name: Install prometheus-haproxy-exporter
   become: yes
   when: ansible_os_family == 'RedHat'
@@ -86,8 +97,6 @@
           register: phe_binary
 
         - name: Create prometheus-haproxy-exporter service file
-          vars:
-            haproxy_admin_sock: /tmp/haproxy_admin.sock
           template:
             src: prometheus-haproxy-exporter.service
             dest: /usr/lib/systemd/system/prometheus-haproxy-exporter.service
@@ -106,6 +115,6 @@
   become: yes
   systemd:
     name: prometheus-haproxy-exporter
-    state: "{{ ((phe_binary is changed) or (phe_service is changed)) | ternary('restarted', 'started') }}"
+    state: "{{ ((phe_binary is changed) or (phe_service is changed) or (phe_default_config is changed)) | ternary('restarted', 'started') }}"
     enabled: yes
     daemon-reload: yes

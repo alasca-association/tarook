@@ -9,3 +9,5 @@ prometheus_haproxy_exporter_checksums:
   0.12.0: "sha256:41d797bc7d54023ea0ea23e58be5795a0947289d3d33beab3372c52e4fcbb298"
 
 prometheus_haproxy_exporter_checksum: "{{ prometheus_haproxy_exporter_checksums[prometheus_haproxy_exporter_version] | default('invalid checksum') }}"
+
+prometheus_haproxy_exporter_admin_sock: /tmp/haproxy_admin.sock
