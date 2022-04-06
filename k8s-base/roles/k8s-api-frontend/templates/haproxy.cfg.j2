@@ -10,7 +10,7 @@ frontend k8s_front
   option tcplog
   timeout client 600s
   default_backend k8s_back
-  maxconn 2000
+  maxconn {{ haproxy_frontend_k8s_api_maxconn }}
 
 backend k8s_back
   mode tcp
