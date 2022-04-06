@@ -49,6 +49,8 @@ rook_pools:
 
 rook_nodeplugin_toleration: False
 
+rook_use_host_networking: false
+
 # ToDo: REMOVE ME after refactoring service layer inventories/variables
 # hack because k8s-config is not available on this layer
 k8s_version_minor: "1.18"

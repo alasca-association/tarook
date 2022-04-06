@@ -95,9 +95,10 @@ spec:
     # If you have multiple rook-ceph clusters in the same k8s cluster, choose the same namespace (ideally, namespace with prometheus
     # deployed) to set rulesNamespace for all the clusters. Otherwise, you will get duplicate alerts with multiple alert definitions.
     rulesNamespace: "{{ rook_namespace }}"
-#  network:
+{% if rook_use_host_networking %}
+  network:
     # enable host networking
-    #provider: host
+    provider: host
     # enable the Multus network provider
     #provider: multus
     #selectors:
@@ -114,6 +115,7 @@ spec:
     #ipFamily: "IPv6"
     # Ceph daemons to listen on both IPv4 and Ipv6 networks
     #dualStack: false
+{% endif %}
   # enable the crash collector for ceph daemon crash collection
   crashCollector:
     disable: false
