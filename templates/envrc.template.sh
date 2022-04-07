@@ -24,6 +24,8 @@ export wg_conf_name
 # Wireguard: Absolute path to your private wireguard key.
 wg_private_key_file="$(pwd)/../privkey"
 export wg_private_key_file
+# Alternatively you can directly export your wireguard key
+#export wg_private_key="$(pass PASS_PATH_TO_YOUR_WIREGUARD_KEY)"
 
 # Wireguard: Your username in the wg-user repository
 wg_user='firstnamelastname'
