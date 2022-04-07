@@ -313,6 +313,16 @@ cluster_name = "rook-ceph" # •ᴗ•
 # you can reference it here directly:
 #scheduling_key = "{{ scheduling_key_prefix }}/storage"
 
+# Number of mons to run.
+# Default is 3 and is the minimum to ensure high-availability!
+# The number of mons has to be uneven.
+#nmons = 3
+
+# Number of mgrs to run. Default is 1 and can be extended to 2
+# and achieve high-availability.
+# The count of mgrs is adjustable since rook v1.6 and does not work with older versions.
+#nmgrs = 1
+
 # Number of OSDs to run. This should be equal to the number of storage meta
 # workers you use.
 #nosds = 3

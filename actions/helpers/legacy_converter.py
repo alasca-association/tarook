@@ -41,6 +41,8 @@ KNOWN_SECTIONS_AND_KEYS_MAP = {
         "rook": "enabled",
         "rook_version": "version",
         "rook_nosds": "nosds",
+        "rook_nmons": "nmons",
+        "rook_nmgrs": "nmgrs",
         "rook_osd_volume_size": "osd_volume_size",
         "rook_toolbox": "toolbox",
         "rook_fs": "ceph_fs",

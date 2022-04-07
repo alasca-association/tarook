@@ -11,7 +11,7 @@ spec:
   dataDirHostPath: /var/lib/rook
   skipUpgradeChecks: {{ rook_skip_upgrade_checks | to_json }}
   mon:
-    count: 3
+    count: {{ rook_nmons }}
     allowMultiplePerNode: {{ rook_mon_allow_multiple_per_node | to_json }}
 {% if rook_mon_volume %}
     volumeClaimTemplate:
