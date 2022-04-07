@@ -18,6 +18,8 @@ You can overwrite all Terraform related variables (see below for a complete list
 By default 3 control plane nodes and 4 workers will get created.
 You'll need to adjust these values if you e.g. want to enable [rook](./../managed-services/rook/overview.md).
 
+Note: Right now there is a variable `masters` to configure the k8s controller server count and `workers` for the k8s node count. However there is no explicit variable for the gateway node count! This is implicitly defined by the number of elements in the `azs` array.
+
 <details>
 <summary>All Terraform variables and their defaults</summary>
 
