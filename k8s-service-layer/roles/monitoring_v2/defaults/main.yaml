@@ -15,8 +15,10 @@ monitoring_prometheus_cpu_limit: "1"
 monitoring_prometheus_cpu_request: "{{ monitoring_prometheus_cpu_limit }}"
 
 monitoring_prometheus_stack_release_name: "prometheus-stack"
+monitoring_prometheus_adapter_release_name: "prometheus-adapter"
 
 monitoring_use_grafana: true
 monitoring_use_thanos: true
 
 monitoring_prometheus_stack_version: "33.2.0"
+monitoring_prometheus_adapter_version: "3.2.0"
