@@ -82,3 +82,9 @@ $ MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed
 
 - Follow the instuctions on [how to connect to the cluster via ssh](#how-do-i-ssh-into-my-cluster-nodes).
 - Ensure that your ssh key is in [a supported format](./usage/initialization.md#appendix).
+
+### The `Get certificate information task` of the `k8s-master` fails
+
+- The exact error: `AttributeError: 'builtins.Certificate' object has no attribute '_backend'`
+- Remove your local Ansible directory but make sure to not remove data you still need so make backup in case (e.g. `mv ~/.ansible ~/.ansible.bak`)
+- https://gitlab.com/yaook/k8s/-/issues/441

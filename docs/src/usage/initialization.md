@@ -27,25 +27,12 @@ $ GO111MODULE="on" go get github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@v0.4
 
 <details>
 <summary>Install Terraform</summary>
-
-```console
-# Download the compressed terraform binary
-$ wget -q -O "terraform.zip" https://releases.hashicorp.com/terraform/1.0.7/terraform_1.0.7_linux_amd64.zip
-
-# Extract the binary
-$ unzip -q terraform.zip
-
-# Move the binary
-$ mv terraform /usr/local/bin/terraform
-
-# You may need allow execution of the binary
-$ sudo chmod +x /usr/local/bin/terraform
-```
+Follow [the upstream instructions on installing Terrafrom.](https://www.terraform.io/downloads)
 </details>
 
 <details>
 <summary>Install helm</summary>
-Follow <a href=https://helm.sh/docs/intro/install/>the upstream instructions on installing Helm</a>.
+Follow [the upstream instructions on installing Helm.](https://helm.sh/docs/intro/install/)
 </details>
 
 We also strongly recommend installing and using:
@@ -94,7 +81,7 @@ serve as your [cluster repository](./../design/cluster-repository.md):
         ```console
         $ cp $somewhere_else/k8s/templates/envrc.template.sh ./.envrc
         ```
-    1. Make the [minimal changes](./environmental-variables.html#minimal-required-changes) to `./envrc`.
+    1. Make the [minimal changes](./environmental-variables.md#minimal-required-changes) to `./envrc`.
     1. Make sure to they have taken effect by running `direnv allow`.
 1. Initialize the cluster repository:
     ```console
