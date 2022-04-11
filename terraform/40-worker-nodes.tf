@@ -46,6 +46,10 @@ resource "openstack_blockstorage_volume_v2" "worker-volume" {
     create = var.timeout_time
     delete = var.timeout_time
   }
+
+  lifecycle {
+    ignore_changes = [image_id]
+  }
 }
 
 resource "openstack_compute_instance_v2" "worker" {
