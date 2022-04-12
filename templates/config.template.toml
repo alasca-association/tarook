@@ -805,8 +805,6 @@ wireguard_on_workers = false
 # A list of insecure registries that can be accessed without TLS verification.
 #docker_insecure_registries: [ "0.docker-registry.example.org", "1.docker-registry.example.org" ]
 
-# ANCHOR_END: miscellaneous_configuration
-
 # Custom Chrony Configration
 # The ntp servers used by chrony can be customized if it should be necessary or wanted.
 # A list of pools and/or servers can be specified.
@@ -814,3 +812,5 @@ wireguard_on_workers = false
 #custom_chrony_configuration = false
 #custom_ntp_pools = [ "0.pool.ntp.example.org", "1.pool.ntp.example.org"]
 #custom_ntp_servers = [ "0.server.ntp.example.org", "1.server.ntp.example.org"]
+
+# ANCHOR_END: miscellaneous_configuration
