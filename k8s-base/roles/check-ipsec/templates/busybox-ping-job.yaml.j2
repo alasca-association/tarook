@@ -1,15 +1,21 @@
 ---
-apiVersion: batch/v1
-kind: Job
+apiVersion: v1
+kind: Pod
 metadata:
-  name: ipsec-test
+  name: ipsec-test-busybox
   namespace: "{{ check_ipsec_namespace }}"
+  labels:
+    k8s-app: ipsec-test-busybox
 spec:
-  template:
-    spec:
-      containers:
-      - name: ipsec-test-busybox
-        image: busybox
-        command: ["ping", "-c", "2", "{{ ipsec_remote_private_addrs }}" ]
-      restartPolicy: Never
-  
+  nodeSelector:
+    kubernetes.io/os: linux
+  containers:
+  - name: ipsec-test-busybox
+    image: busybox
+    command:
+    - sleep
+    - infinity
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200

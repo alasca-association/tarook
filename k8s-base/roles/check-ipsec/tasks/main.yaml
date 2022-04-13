@@ -15,17 +15,25 @@
         fail_on_error: yes
         strict: yes
 
-  - name: create a ping job
+  - name: create a busybox Pod
     k8s:
       state: present
       definition: "{{ lookup('template', 'busybox-ping-job.yaml.j2') }}"
       wait: yes
-      wait_condition:
-        type: Complete
-        status: "True"
+      apply: yes
       validate:
         fail_on_error: yes
         strict: yes
+
+  - name: Try to ping test-node via IPsec
+    community.kubernetes.k8s_exec:
+      namespace: "{{ check_ipsec_namespace }}"
+      pod: ipsec-test-busybox
+      command: ping -c 1 {{ ipsec_remote_private_addrs }}
+    register: ipsec_test_vm_ping
+    delay: 5
+    retries: 20
+    until: ipsec_test_vm_ping.return_code == 0
 
   - name: delete namespace
     k8s:
