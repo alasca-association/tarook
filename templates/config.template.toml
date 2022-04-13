@@ -762,6 +762,9 @@ wireguard_on_workers = false
 # external network traffic and the amount of docker pulls from dockerhub.
 #docker_registry_mirrors: [ "https://0.docker-mirror.example.org", "https://1.docker-mirror.example.org" ]
 
+# A list of insecure registries that can be accessed without TLS verification.
+#docker_insecure_registries: [ "0.docker-registry.example.org", "1.docker-registry.example.org" ]
+
 # ANCHOR_END: miscellaneous_configuration
 
 # Custom Chrony Configration
