@@ -193,16 +193,16 @@ spec:
 
         # Enable the default version of the CSI CephFS driver. To start another version of the CSI driver, see image properties below.
         - name: ROOK_CSI_ENABLE_CEPHFS
-          value: "true"
+          value: "{{ rook_csi_plugins }}"
 
         # Enable the default version of the CSI RBD driver. To start another version of the CSI driver, see image properties below.
         - name: ROOK_CSI_ENABLE_RBD
-          value: "true"
+          value: "{{ rook_csi_plugins }}"
         - name: ROOK_CSI_ENABLE_GRPC_METRICS
-          value: "true"
+          value: "{{ rook_csi_plugins }}"
         # Enable deployment of snapshotter container in ceph-csi provisioner.
         - name: CSI_ENABLE_SNAPSHOTTER
-          value: "true"
+          value: "{{ rook_csi_plugins }}"
         # Enable Ceph Kernel clients on kernel < 4.17 which support quotas for Cephfs
         # If you disable the kernel client, your application may be disrupted during upgrade.
         # See the upgrade guide: https://rook.io/docs/rook/v1.2/ceph-upgrade.html

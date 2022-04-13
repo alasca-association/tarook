@@ -30,10 +30,10 @@ data:
 
   # Enable the CSI driver.
   # To run the non-default version of the CSI driver, see the override-able image properties in operator.yaml
-  ROOK_CSI_ENABLE_CEPHFS: "true"
+  ROOK_CSI_ENABLE_CEPHFS: "{{ rook_csi_plugins }}"
   # Enable the default version of the CSI RBD driver. To start another version of the CSI driver, see image properties below.
-  ROOK_CSI_ENABLE_RBD: "true"
-  ROOK_CSI_ENABLE_GRPC_METRICS: "false"
+  ROOK_CSI_ENABLE_RBD: "{{ rook_csi_plugins }}"
+  ROOK_CSI_ENABLE_GRPC_METRICS: "{{ rook_csi_plugins }}"
 
   # Set to true to enable host networking for CSI CephFS and RBD nodeplugins. This may be necessary
   # in some network configurations where the SDN does not provide access to an external cluster or
@@ -51,10 +51,10 @@ data:
   # CSI_ENABLE_OMAP_GENERATOR: "false"
 
   # set to false to disable deployment of snapshotter container in CephFS provisioner pod.
-  CSI_ENABLE_CEPHFS_SNAPSHOTTER: "true"
+  CSI_ENABLE_CEPHFS_SNAPSHOTTER: "{{ rook_csi_plugins }}"
 
   # set to false to disable deployment of snapshotter container in RBD provisioner pod.
-  CSI_ENABLE_RBD_SNAPSHOTTER: "true"
+  CSI_ENABLE_RBD_SNAPSHOTTER: "{{ rook_csi_plugins }}"
 
   # Enable cephfs kernel driver instead of ceph-fuse.
   # If you disable the kernel client, your application may be disrupted during upgrade.
