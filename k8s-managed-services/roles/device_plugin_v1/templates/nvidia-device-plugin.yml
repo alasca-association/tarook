@@ -47,56 +47,9 @@ spec:
             path: /var/lib/kubelet/device-plugins
       serviceAccount: {{ device_plugin_service_account_name | to_json }}
 ---
-apiVersion: policy/v1beta1
-kind: PodSecurityPolicy
-metadata:
-  name: {{ device_plugin_psp_name }}
-spec:
-  allowPrivilegeEscalation: false
-  fsGroup:
-    rule: RunAsAny
-  runAsGroup:
-    rule: RunAsAny
-  runAsUser:
-    rule: RunAsAny
-  seLinux:
-    rule: RunAsAny
-  supplementalGroups:
-    rule: RunAsAny
-  volumes:
-    - persistentVolumeClaim
-    - hostPath
-    - secret
----
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ device_plugin_service_account_name | to_json }}
   namespace: kube-system
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: psp:nvidia
-rules:
-- apiGroups:
-    - policy
-  resourceNames:
-    - {{ device_plugin_psp_name }}
-  resources:
-    - podsecuritypolicies
-  verbs:
-    - use
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: psp:nvidia
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: psp:nvidia
-subjects:
-- kind: ServiceAccount
-  name: {{ device_plugin_service_account_name }}
-  namespace: kube-system
+

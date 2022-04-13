@@ -35,17 +35,7 @@
   vars:
     template_folder: "{{ ('k8s-v' + k8s_version_minor + '/') }}"
   block:
-    - name: Prepare PodSecurityPolicy configuration
-      k8s:
-        state: "{{ k8s_use_podsecuritypolicies | ternary('present', 'absent') }}"
-        apply: yes
-        definition: "{{ lookup('file', 'psp.yaml') }}"
-        validate:
-          fail_on_error: yes
-          strict: yes
-
-    # https://github.com/kubernetes/cloud-provider-openstack/blob/8ea8cfb8321246d3f05fcbedab668aa330028575/docs/openstack-cloud-controller-manager/using-openstack-cloud-controller-manager.md
-    - name: Deploy RBAC resources of CCM
+    - name: Deploy the CCM and its RBAC
       k8s:
         state: present
         apply: yes

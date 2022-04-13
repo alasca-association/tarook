@@ -91,11 +91,6 @@ agent_port    = 15203
 # Kubernetes version. Currently, we support from 1.17.* to 1.22.*.
 version = "1.22.11" # •ᴗ•
 
-# Enforce the use of pod security policies inside the cluster.
-# NOTE: PSPs are being deprecated by k8s and they will be removed from the LCM soon.
-# They are not tested anymore and things may break.
-use_podsecuritypolicies = false # •ᴗ•
-
 # Uncomment if this cluster contains a worker with GPU access so that the driver
 # and surrounding framework is deployed.
 is_gpu_cluster = false # •ᴗ•

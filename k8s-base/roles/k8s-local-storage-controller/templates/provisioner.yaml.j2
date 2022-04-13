@@ -1,38 +1,5 @@
 ---
 {{ _auto_generated_preamble }}
-# Source: provisioner/templates/psp.yaml
-apiVersion: policy/v1beta1
-kind: PodSecurityPolicy
-metadata:
-  name: local-storage
-  labels:
-    app.kubernetes.io/name: local-storage
-    app.kubernetes.io/instance: local-storage
-    app.kubernetes.io/version: {{ k8s_local_storage_static_version | to_json }}
-spec:
-  allowPrivilegeEscalation: true
-  allowedHostPaths:
-  - pathPrefix: /dev
-  - pathPrefix: {{ k8s_local_storage_static_discovery_directory | to_json }}
-  fsGroup:
-    rule: RunAsAny
-  privileged: true
-  requiredDropCapabilities:
-  - ALL
-  runAsUser:
-    ranges:
-    - max: 65535
-      min: 1
-    rule: MustRunAs
-  seLinux:
-    rule: RunAsAny
-  supplementalGroups:
-    rule: RunAsAny
-  volumes:
-  - configMap
-  - secret
-  - hostPath
----
 # Source: provisioner/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -114,45 +81,6 @@ subjects:
 roleRef:
   kind: ClusterRole
   name: local-storage-node-clusterrole
-  apiGroup: rbac.authorization.k8s.io
----
-# Source: provisioner/templates/rbac.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: local-storage-psp-role
-  namespace: {{ k8s_local_storage_static_namespace | to_json }}
-  labels:
-    app.kubernetes.io/name: local-storage
-    app.kubernetes.io/instance: local-storage
-    app.kubernetes.io/version: {{ k8s_local_storage_static_version | to_json }}
-rules:
-- apiGroups:
-    - policy
-  resources:
-    - podsecuritypolicies
-  resourceNames:
-    - local-storage
-  verbs:
-    - use
----
-# Source: provisioner/templates/rbac.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: local-storage-psp-rolebinding
-  namespace: {{ k8s_local_storage_static_namespace | to_json }}
-  labels:
-    app.kubernetes.io/name: local-storage
-    app.kubernetes.io/instance: local-storage
-    app.kubernetes.io/version: {{ k8s_local_storage_static_version | to_json }}
-subjects:
-- kind: ServiceAccount
-  name: local-storage
-  namespace: {{ k8s_local_storage_static_namespace | to_json }}
-roleRef:
-  kind: Role
-  name: local-storage-psp-role
   apiGroup: rbac.authorization.k8s.io
 ---
 # Source: provisioner/templates/daemonset.yaml

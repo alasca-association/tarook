@@ -6,15 +6,6 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
 
   block:
-  - name: Create LBaaS controller PodSecurityPolicy objects
-    k8s:
-      apply: yes
-      definition: "{{ lookup('template', 'controller-psp.yaml') }}"
-      validate:
-        fail_on_error: yes
-        strict: yes
-    when: k8s_use_podsecuritypolicies
-
   - name: Configure LBaaS controller
     k8s:
       apply: yes

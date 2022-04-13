@@ -1,35 +1,4 @@
 ---
-apiVersion: policy/v1beta1
-kind: PodSecurityPolicy
-metadata:
-  name: kube-router
-  namespace: kube-system
-spec:
-  privileged: true
-  volumes:
-    - configMap
-    - secret
-    - hostPath
-  allowedHostPaths:
-    - pathPrefix: "/etc/cni/net.d"
-    - pathPrefix: "/lib/modules"
-    - pathPrefix: "/var/lib/kube-router/kubeconfig"
-  readOnlyRootFilesystem: false
-  runAsUser:
-    rule: RunAsAny
-  supplementalGroups:
-    rule: RunAsAny
-  fsGroup:
-    rule: RunAsAny
-  allowPrivilegeEscalation: true
-  defaultAllowPrivilegeEscalation: false
-  hostPID: false
-  hostIPC: false
-  hostNetwork: true
-  hostPorts: []
-  seLinux:
-    rule: 'RunAsAny'
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -218,10 +187,6 @@ rules:
       - get
       - list
       - watch
-  - apiGroups: ['extensions']
-    resources: ['podsecuritypolicies']
-    verbs: ['use']
-    resourceNames: ['kube-router']
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1

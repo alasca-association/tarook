@@ -9,7 +9,6 @@ defaultRules:
 global:
   rbac:
     create: true
-    pspEnabled: {{ k8s_use_podsecuritypolicies | bool }}
 
 ##
 alertmanager:
@@ -207,8 +206,6 @@ kubeStateMetrics:
 kube-state-metrics:
   rbac:
     create: true
-  podSecurityPolicy:
-    enabled: {{ k8s_use_podsecuritypolicies | bool }}
 
 ##
 nodeExporter:

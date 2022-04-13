@@ -27,7 +27,6 @@ KNOWN_SECTIONS_AND_KEYS_MAP = {
     "kubernetes": {
         "k8s_version": "version",
         "is_gpu_cluster": "is_gpu_cluster",
-        "k8s_use_podsecuritypolicies": "use_podsecuritypolicies"
     },
     "kubernetes-network": {
         "k8s_network_plugin": "plugin",

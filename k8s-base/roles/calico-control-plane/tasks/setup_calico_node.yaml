@@ -161,17 +161,6 @@
     with_items:
     - calico-node-serviceaccount.yaml
 
-  - name: Create calico/node PodSecurityPolicy
-    k8s:
-      definition: "{{ lookup('file', item) }}"
-      apply: yes
-      state: present
-      validate:
-        fail_on_error: yes
-        strict: yes
-    with_items:
-    - calico-node-psp.yaml
-
   # Install calico/node Daemon-Set
   # Felix: - Calico per-node daemon
   # BIRD: - Distribution of routing information via the BGP protocol

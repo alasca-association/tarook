@@ -14,19 +14,6 @@
   - monitoring
   - thanos
 
-- name: Configure default PSP
-  when: k8s_monitoring_enabled
-  k8s:
-    apply: yes
-    definition: "{{ lookup('template', 'default-psp.yaml') }}"
-    state: "{{ k8s_use_podsecuritypolicies | ternary('present', 'absent') }}"
-    validate:
-      fail_on_error: yes
-      strict: yes
-  tags:
-  - monitoring
-  - thanos
-
 - include: kube_monitoring.yml
   when: k8s_monitoring_enabled
   tags:
