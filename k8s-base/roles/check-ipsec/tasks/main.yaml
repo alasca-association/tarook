@@ -33,7 +33,7 @@
     register: ipsec_test_vm_ping
     delay: 5
     retries: 20
-    until: ipsec_test_vm_ping.return_code == 0
+    until: ipsec_test_vm_ping.rc == 0
 
   - name: delete namespace
     k8s:

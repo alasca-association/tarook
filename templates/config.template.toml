@@ -10,7 +10,7 @@
 # --- TERRAFORM ---
 # ansible prefix: /
 [terraform]
-subnet_cidr = "172.30.154.0/24"
+#subnet_cidr = "172.30.154.0/24"
 #masters = 3
 #workers = 3
 #worker_flavors = ["L", "M", "L"]

@@ -11,6 +11,7 @@ variable "haproxy_ports" {
 
 variable "subnet_cidr" {
   type = string
+  default = "172.30.154.0/24"
 }
 
 variable "subnet_v6_cidr" {

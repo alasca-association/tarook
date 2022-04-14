@@ -1,5 +1,11 @@
 [terraform]
-subnet_cidr               = "172.30.154.0/24"
+# Huh, no subnet_cidr? Yep, that variable is now set by the gitlab runners.
+# For testing IPsec in parallel (you know that the CI can spawn > 1 clusters in parallel, don't you?)
+# we have to have different OpenStack subnet addresses. Otherwise our poor remote IPsec endpoint
+# would be confused because two peers would contact it with the same traffic selector and hence the
+# test ping wouldn't go through reliably. If you want to lookup the CIDR, log into the runner nodes and
+# checkout the `environment` variable in the indiviual `[[runners]]` sections.
+
 haproxy_ports             = [30060]
 workers                   = 6
 # https://github.com/SovereignCloudStack/Operational-Docs/blob/main/flavor-naming-draft.MD
