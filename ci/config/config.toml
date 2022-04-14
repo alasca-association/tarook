@@ -89,6 +89,7 @@ nmons                    = 3
 nmgrs                    = 2
 nosds                    = 3
 osd_volume_size          = "90Gi"
+encrypt_osds             = true
 toolbox                  = true
 ceph_fs                  = true
 mon_volume               = true
