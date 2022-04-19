@@ -86,8 +86,8 @@ spec:
           - ReadWriteOnce
         status: {}
   removeOSDsIfOutAndSafeToRemove: {{ rook_osd_autodestroy_safe | to_json }}
-{% if rook_scheduling_key %}
   placement:
+{% if rook_scheduling_key %}
     all:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -97,6 +97,30 @@ spec:
               operator: Exists
       tolerations:
       - key: {{ rook_scheduling_key | to_json }}
+        operator: Exists
+{% endif %}
+{% if rook_mon_scheduling_key %}
+    mon:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: {{ rook_mon_scheduling_key | to_json }}
+              operator: Exists
+      tolerations:
+      - key: {{ rook_mon_scheduling_key | to_json }}
+        operator: Exists
+{% endif %}
+{% if rook_mgr_scheduling_key %}
+    mgr:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: {{ rook_mgr_scheduling_key | to_json }}
+              operator: Exists
+      tolerations:
+      - key: {{ rook_mgr_scheduling_key | to_json }}
         operator: Exists
 {% endif %}
   resources:
