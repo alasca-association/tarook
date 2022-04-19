@@ -11,6 +11,9 @@
 {% if docker_insecure_registries %}
     "insecure-registries": {{ docker_insecure_registries | to_json }},
 {% endif %}
+{% if docker_registry_mirrors %}
+    "registry-mirrors": {{ docker_registry_mirrors | to_json }},
+{% endif %}
     "exec-opts": ["native.cgroupdriver=systemd"],
     "log-driver": "json-file",
     "log-opts": {

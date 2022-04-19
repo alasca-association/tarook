@@ -4,7 +4,7 @@
 # value is the default.
 
 # NOTE:For some sections the inventory updater will apply pefixes to
-# the variables before passing them over to the ansible inventories. 
+# the variables before passing them over to the ansible inventories.
 
 # ANCHOR: terraform_config
 # --- TERRAFORM ---
@@ -641,7 +641,7 @@ port = 7777 # •ᴗ•
 # enabled = false
 
 # Flag to enable the test suite.
-# Must make sure a remote endpoint, with ipsec enabled, is running and open for connections. 
+# Must make sure a remote endpoint, with ipsec enabled, is running and open for connections.
 # test_enabled = false
 
 # Must be a list of parent SA proposals to offer to the client.
@@ -745,7 +745,7 @@ rollout = false # •ᴗ•
 wireguard_on_workers = false
 
 # Name of the internal OpenStack network. This field becomes important if a VM is
-# attached to two networks but the controller-manager should only pick up one. If 
+# attached to two networks but the controller-manager should only pick up one. If
 # you don't understand the purpose of this field, there's a very high chance you
 # won't need to touch it/uncomment it.
 # Note: This network name isn't fetched automagically (by terraform) on purpose
@@ -757,11 +757,19 @@ wireguard_on_workers = false
 # If you leave the value commented out you're fine and the system's default will be kept.
 #vm_max_map_count = 262144
 
+# Custom Docker Configuration
+# A list of registry mirrors can be configured as a pull through cache to reduce
+# external network traffic and the amount of docker pulls from dockerhub.
+#docker_registry_mirrors: [ "https://0.docker-mirror.example.org", "https://1.docker-mirror.example.org" ]
+
+# A list of insecure registries that can be accessed without TLS verification.
+#docker_insecure_registries: [ "0.docker-registry.example.org", "1.docker-registry.example.org" ]
+
 # ANCHOR_END: miscellaneous_configuration
 
 # Custom Chrony Configration
 # The ntp servers used by chrony can be customized if it should be necessary or wanted.
-# A list of pools and/or servers can be specified. 
+# A list of pools and/or servers can be specified.
 # Chrony treats both similarily but it expects that a pool will resolve to several ntp servers.
 #custom_chrony_configuration = false
 #custom_ntp_pools = [ "0.pool.ntp.example.org", "1.pool.ntp.example.org"]
