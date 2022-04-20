@@ -300,6 +300,9 @@ cluster_name = "rook-ceph" # •ᴗ•
 # know what your are doing).
 #mon_volume_storage_class = "local-storage"
 
+# Enables rook to use the host network.
+#use_host_networking = false
+
 # If set to true Rook won’t perform any upgrade checks on Ceph daemons
 # during an upgrade. Use this at YOUR OWN RISK, only if you know what
 # you’re doing.

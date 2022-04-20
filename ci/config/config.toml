@@ -94,6 +94,8 @@ ceph_fs                  = true
 mon_volume               = true
 mon_volume_storage_class = "local-storage"
 
+use_host_networking = true
+
 mds_memory_limit   = "4Gi"
 mds_memory_request = "{{ rook_mds_memory_limit }}"
 mds_cpu_limit      = "1"
