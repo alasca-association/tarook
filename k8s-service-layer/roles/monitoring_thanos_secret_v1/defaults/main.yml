@@ -11,3 +11,5 @@ monitoring_thanos_objectstorage_password: "{{ lookup('env', 'OS_PASSWORD') }}"
 monitoring_thanos_objectstorage_region_name: "{{ lookup('env', 'OS_REGION_NAME') }}"
 
 monitoring_thanos_config_secret_name: thanos-objectstorage
+
+monitoring_thanos_objectstorage_container_name: "managed-k8s-monitoring-thanos-data"
