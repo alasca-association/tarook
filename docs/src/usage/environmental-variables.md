@@ -37,10 +37,14 @@ Details about these can be found below.
 | `MANAGED_K8S_COLOR_OUTPUT` |         | Boolean value which either force enables or force disables coloured output of the scripts. By default, the scripts check whether they are running inside a tty. If they are, they will use coloured output. This environment variable can be set to override the auto-detection. |
 ## OpenStack credentials
 
+We support `v3password` (user name / password) and `v3applicationcredential` (application credentials) as authentication schemes. They differ in the set of environment variables you have to provide.
+
+* ***Both*** schemes need: `OS_AUTH_URL`, `OS_REGION_NAME`, `OS_INTERFACE` and `OS_IDENTITY_VERSION`.
+* ***User name/password based*** authentication requires additionally: `OS_PASSWORD`, `OS_PROJECT_DOMAIN_ID`, `OS_PROJECT_NAME`, `OS_USERNAME`, `OS_USER_DOMAIN_NAME`.
+* ***Application credential*** based authentication requires additionally: `OS_AUTH_TYPE=v3applicationcredential`, `OS_APPLICATION_CREDENTIAL_ID`, `OS_APPLICATION_CREDENTIAL_SECRET`.
+
+
 * These **MUST** be set if you want to deploy on OpenStack.
-* Necessary variables:`OS_AUTH_URL`, `OS_IDENTITY_API_VERSION`, `OS_INTERFACE`, `OS_PASSWORD`,
-  `OS_PROJECT_DOMAIN_ID`, `OS_PROJECT_NAME`, `OS_REGION_NAME`, `OS_USERNAME`,
-  `OS_USER_DOMAIN_NAME`
 * These variables are used by Terraform to create, maintain and destroy the underlying
   harbour infrastructure layer. They are also needed by the [Cloud Controller Manager](https://kubernetes.io/docs/concepts/architecture/cloud-controller/)
   when applying the k8s-base layer.
@@ -53,6 +57,37 @@ Details about these can be found below.
 > `OS_PROJECT_DOMAIN_ID`) is not supported and will lead to a broken cluster;
 > the configuration files inside the cluster are generated solely based on the
 > variables listed above.
+
+> ***Warning:*** Currently the combination of thanos and application credentials [is not supported](../managed-services/prometheus/prometheus-stack.md#thanos). 
+
+### Sample openrc for user name/password based authentication
+
+```
+export OS_AUTH_TYPE=v3password # optional
+export OS_AUTH_URL=https://identity.xyz:5000/v3
+export OS_PROJECT_ID=0xdeadbeef
+export OS_PROJECT_NAME="janedoes-project
+export OS_USER_DOMAIN_NAME="Default"
+export OS_PROJECT_DOMAIN_ID="default"
+export OS_USERNAME="jane.doe@xyz"
+export OS_PASSWORD="super_secure"
+export OS_REGION_NAME="abcd"
+export OS_INTERFACE=public
+export OS_IDENTITY_API_VERSION=3
+```
+
+### Sample openrc for application credentials based authentication
+
+```
+export OS_AUTH_TYPE=v3applicationcredential
+export OS_AUTH_URL=https://identity.xyz:5000/v3
+export OS_APPLICATION_CREDENTIAL_ID="0xdeadbeef"
+export OS_APPLICATION_CREDENTIAL_SECRET="alsoSuperSecure"
+export OS_REGION_NAME="abcd"
+export OS_INTERFACE=public
+export OS_IDENTITY_API_VERSION=3
+```
+
 
 ## External resources
 
