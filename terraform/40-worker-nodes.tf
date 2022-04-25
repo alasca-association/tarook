@@ -82,10 +82,6 @@ resource "openstack_compute_instance_v2" "worker" {
       }
   }
 
-  depends_on = [
-    openstack_objectstorage_container_v1.thanos_data
-  ]
-
   network {
     port = openstack_networking_port_v2.worker[count.index].id
   }
