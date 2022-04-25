@@ -198,4 +198,9 @@ variable "network_mtu" {
   description = "MTU for the network used for the cluster."
 }
 
+variable "monitoring_use_thanos" {
+  type = bool
+  description = "Create an object storage container for thanos."
+}
+
 # ANCHOR_END: terraform_variables
