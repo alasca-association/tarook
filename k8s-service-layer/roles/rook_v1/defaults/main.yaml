@@ -27,6 +27,9 @@ rook_osd_cpu_limit: "500m"
 rook_osd_cpu_request: "{{ rook_osd_cpu_limit }}"
 rook_encrypt_osds: false
 
+rook_use_all_available_devices: false
+rook_on_openstack: true
+
 rook_mds_memory_limit: "4Gi"
 rook_mds_memory_request: "{{ rook_mds_memory_limit }}"
 rook_mds_cpu_limit: "1"
