@@ -19,7 +19,8 @@
 
     - name: Add key of nvidia's cuda repo
       apt_key:
-        url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+        # presented key is the same for ubuntu1604, ubuntu1804 and ubuntu2004
+        url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
         state: present
 
     - name: Add repository
