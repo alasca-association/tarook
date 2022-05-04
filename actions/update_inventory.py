@@ -338,9 +338,10 @@ def main():
         # If we want to use thanos, then terraform has to create
         # an object storage container. This variable is set in an upper stage
         # and cannot be made available easily to tf except for making the user
-        # provide an additional variable. Therefore we're picking it here and insert
-        # it ourselves.
-        tf_config["monitoring_use_thanos"] = config["k8s-service-layer"].get("prometheus").get("use_thanos")
+        # provide an additional variable. Therefore we're picking it here and
+        # insert it ourselves.
+        tf_config["monitoring_use_thanos"] = \
+            config["k8s-service-layer"].get("prometheus").get("use_thanos")
         terraform_helper.deploy_terraform_config(tf_config)
 
     # ---
