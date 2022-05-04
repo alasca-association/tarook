@@ -31,7 +31,7 @@ spec:
   allowPrivilegeEscalation: false
 ---
 kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: psp:ch-k8s-lbaas-controller
 rules:
@@ -45,7 +45,7 @@ rules:
   - ch-k8s-lbaas-controller
 ---
 kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: psp:ch-k8s-lbaas-controller
 roleRef:
