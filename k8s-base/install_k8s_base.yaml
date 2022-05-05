@@ -45,13 +45,13 @@
     tags: disable_selinux
     when: ansible_os_family == 'RedHat'
 
-- name: Harden SSH
-  hosts: k8s_nodes
-  become: true
-  roles:
-  # https://github.com/dev-sec/ansible-collection-hardening/
-  - role: devsec.hardening.ssh_hardening
-    tags: harden-ssh
+#- name: Harden SSH
+#  hosts: k8s_nodes
+#  become: true
+#  roles:
+#  # https://github.com/dev-sec/ansible-collection-hardening/
+#  - role: devsec.hardening.ssh_hardening
+#    tags: harden-ssh
 
 - name: Upgrade the system
   hosts: k8s_nodes
