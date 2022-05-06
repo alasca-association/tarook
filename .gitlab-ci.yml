@@ -54,7 +54,7 @@ flake8:
   image: python:3
   script:
     - "pip3 install flake8"
-    - 'python3 -m flake8 --filename="*.py"'
+    - 'python3 -m flake8 --max-line-length 88 --filename="*.py"'
   stage: lint
   tags:
     - docker
