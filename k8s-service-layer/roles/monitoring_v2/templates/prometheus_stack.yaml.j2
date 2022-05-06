@@ -116,6 +116,9 @@ kubelet:
         targetLabel: nodename
         replacement: $1
         action: replace
+      - sourceLabels: [__metrics_path__]
+        targetLabel: metrics_path
+        action: replace
 
 ##
 kubeControllerManager:
