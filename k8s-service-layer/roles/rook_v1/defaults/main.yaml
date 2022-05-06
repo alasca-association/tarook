@@ -32,9 +32,9 @@ rook_mds_memory_request: "{{ rook_mds_memory_limit }}"
 rook_mds_cpu_limit: "1"
 rook_mds_cpu_request: "{{ rook_mds_cpu_limit }}"
 
-rook_operator_memory_limit: "256Mi"
+rook_operator_memory_limit: "512Mi"
 rook_operator_memory_request: "{{ rook_operator_memory_limit }}"
-rook_operator_cpu_limit: "100m"
+rook_operator_cpu_limit: "1"
 rook_operator_cpu_request: "{{ rook_operator_cpu_limit }}"
 
 rook_csi_plugins: true
