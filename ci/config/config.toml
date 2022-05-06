@@ -9,7 +9,7 @@
 haproxy_ports             = [30060]
 workers                   = 6
 # https://github.com/SovereignCloudStack/Operational-Docs/blob/main/flavor-naming-draft.MD
-worker_flavors       = ["L", "L", "L", "L", "L", "SCS-4C:8:50s-GNt:1-mk8sPrivate"]
+worker_flavors       = ["L", "L", "L", "L", "L", "L"]
 enable_az_management = false
 cluster_name         = "ci"
 
@@ -46,7 +46,7 @@ agent_port    = 15203
 [kubernetes]
 version                 = "1.21.9"
 use_podsecuritypolicies = false
-is_gpu_cluster          = true
+is_gpu_cluster          = false
 
 [kubernetes.apiserver]
 frontend_port = 8888
