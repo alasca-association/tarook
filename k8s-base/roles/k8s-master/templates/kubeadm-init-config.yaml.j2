@@ -16,7 +16,7 @@ nodeRegistration:
   name: {{ inventory_hostname }}
 {% set taints = k8s_node_taints[inventory_hostname] | default(false) %}
 {% if taints != false %}
-  taints: [
+  taints:
 {% for taint in taints %}
 {% set taint_parts = taint.split(":", 1) %}
 {% set kv_parts = taint_parts[0].split("=", 1) %}
@@ -26,7 +26,7 @@ nodeRegistration:
 {% endif %}
     effect: {{ taint_parts[1] | default("NoExecute") | to_json }}
 {% endfor %}
-  ]
+
 {% endif %}
 
 localAPIEndpoint:
