@@ -9,6 +9,30 @@
       - gnupg
   when: ansible_pkg_mgr == 'apt'
 
+- name: Expand NO_PROXY configuration on Ubuntu machines
+  when: (cluster_behind_proxy | default(false)) and ansible_distribution == 'Ubuntu'
+  become: yes
+  lineinfile:
+    path: /etc/environment
+    regexp: "^(.*{{ item }}.*)$"
+    line: "{{ item }}={{ no_proxy }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
+    state: present
+  loop:
+    - NO_PROXY
+    - no_proxy
+
+- name: Expand NO_PROXY configuration on RHEL machines
+  when: (cluster_behind_proxy | default(false)) and ansible_distribution == 'Red Hat Enterprise Linux'
+  become: yes
+  lineinfile:
+    path: /etc/profile.d/proxy.sh
+    regexp: "^(.*{{ item }}.*)$"
+    line: "{{ item }}={{ no_proxy }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
+    state: present
+  loop:
+    - NO_PROXY
+    - no_proxy
+
 - name: Add Google's K8s repository (apt)
   become: yes
   block:
