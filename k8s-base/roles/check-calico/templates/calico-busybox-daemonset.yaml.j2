@@ -22,6 +22,6 @@ spec:
         effect: NoSchedule
       containers:
       - name: calico-busybox-test
-        image: busybox
+        image: registry.gitlab.com/yaook/images/k8s-debian:main
         command: ["sleep", "infinity"]
       serviceAccountName: calico-busybox-test

@@ -6,7 +6,7 @@ metadata:
   namespace: {{ check_shared_filesystem_namespace | to_json }}
 spec:
   containers:
-  - image: debian:stable
+  - image: registry.gitlab.com/yaook/images/k8s-debian:main
     imagePullPolicy: IfNotPresent
     name: debian
     command: ["bash", "-c", "set -euo pipefail; touch /mnt/{{ item }}; for i in $(seq 1 45); do all_ok=1; for worker in $0; do if [ ! -e /mnt/$worker ]; then all_ok=0; echo \"hint for $worker missing\"; fi; done; if [ $all_ok = 1 ]; then break; fi; sleep 1; done; [ $all_ok = 1 ]", {{ test_worker_nodes | map(attribute='name') | join(' ') | to_json }}]

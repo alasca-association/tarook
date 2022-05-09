@@ -8,7 +8,7 @@ metadata:
   namespace: {{ check_local_storage_namespace | to_json }}
 spec:
   containers:
-  - image: debian:stable
+  - image: registry.gitlab.com/yaook/images/k8s-debian:main
     imagePullPolicy: IfNotPresent
     name: debian
     command: ["bash", "-c", "set -euo pipefail; cd /mnt; dd if=/dev/urandom of=noise bs=4k count=1k; sha256sum noise > SHA256SUMS"]

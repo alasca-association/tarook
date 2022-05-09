@@ -49,12 +49,6 @@
           strict: yes
       register: scraper_info
 
-    - name: Ensure curl is available inside the scraper Pod
-      community.kubernetes.k8s_exec:
-        namespace: "{{ check_node_exporter_namespace }}"
-        pod: node-exporter-scraper
-        command: "apk add curl"
-
     - name: check node exporter scrape endpoint status
       community.kubernetes.k8s_exec:
         namespace: "{{ check_node_exporter_namespace }}"

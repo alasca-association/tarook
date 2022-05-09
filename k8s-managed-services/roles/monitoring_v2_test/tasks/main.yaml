@@ -52,12 +52,6 @@
           strict: yes
       register: scraper_info
 
-    - name: Ensure curl is available inside the scraper Pod
-      community.kubernetes.k8s_exec:
-        namespace: "{{ check_prometheus_scraping_namespace }}"
-        pod: prometheus-test-scraper
-        command: "apk add curl"
-
     - name: Scrape endpoints for prometheus stack itself
       include_tasks: scrape_prometheus_stack.yaml
 
