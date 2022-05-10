@@ -22,7 +22,7 @@ metadata:
   namespace: {{ check_services_namespace | to_json }}
 spec:
   containers:
-  - image: nginx
+  - image: registry.gitlab.com/yaook/images/k8s-nginx:main
     name: nginx
     resources: {}
   dnsPolicy: ClusterFirst

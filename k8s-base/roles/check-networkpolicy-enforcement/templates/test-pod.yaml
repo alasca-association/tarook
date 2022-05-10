@@ -6,7 +6,7 @@ metadata:
   namespace: "{{ check_networkpolicy_namespace }}"
 spec:
   containers:
-  - image: curlimages/curl:latest
+  - image: registry.gitlab.com/yaook/images/k8s-debian:main
     imagePullPolicy: IfNotPresent
     name: curl
     command:

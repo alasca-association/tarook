@@ -8,7 +8,7 @@ spec:
   template:
     spec:
       containers:
-      - image: debian
+      - image: registry.gitlab.com/yaook/images/k8s-debian:main
         name: debian
         command: ["true"]
       restartPolicy: Never
