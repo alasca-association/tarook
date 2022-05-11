@@ -39,6 +39,10 @@ alertmanager:
 ##
 grafana:
   enabled: {{ monitoring_use_grafana | bool }}
+  admin:
+    existingSecret: {{ monitoring_grafana_admin_secret_name }}
+    userKey: admin-user
+    passwordKey: admin-password
 {% if monitoring_scheduling_key %}
   tolerations:
     - key: "{{ monitoring_scheduling_key }}"

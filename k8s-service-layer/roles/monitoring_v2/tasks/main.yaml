@@ -17,6 +17,33 @@
       fail_on_error: yes
       strict: yes
 
+- name: Check if admin secret for Grafana already exists
+  k8s_info:
+    api_version: v1
+    kind: Secret
+    name: "{{ monitoring_grafana_admin_secret_name }}"
+    namespace: "{{ monitoring_namespace }}"
+  register: grafana_admin
+
+- name: Create default admin secret for Grafana
+  when: not grafana_admin.resources
+  k8s:
+    state: present
+    apply: yes
+    definition: |
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ monitoring_grafana_admin_secret_name }}"
+        namespace: "{{ monitoring_namespace }}"
+      data:
+        # admin:prom-operator, default credentials
+        admin-user: YWRtaW4=
+        admin-password: cHJvbS1vcGVyYXRvcg==
+    validate:
+      fail_on_error: yes
+      strict: yes
+
 # Install the prometheus stack
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall KSL monitoring stack"
   community.kubernetes.helm:
