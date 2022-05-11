@@ -41,12 +41,12 @@ variable "keypair" {
 
 variable "default_master_image_name" {
   type    = string
-  default = "Ubuntu 18.04 LTS x64"
+  default = "Ubuntu 20.04 LTS x64"
 }
 
 variable "default_worker_image_name" {
   type    = string
-  default = "Ubuntu 18.04 LTS x64"
+  default = "Ubuntu 20.04 LTS x64"
 }
 
 variable "gateway_image_name" {
