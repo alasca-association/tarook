@@ -9,6 +9,12 @@ spec:
   selector:
     matchLabels:
       app: ch-k8s-lbaas-controller
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # we don't want to have two of them running in parallel.
+      maxUnavailable: 100%
+      maxSurge: 0
   template:
     metadata:
       labels:
