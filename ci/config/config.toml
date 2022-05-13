@@ -40,7 +40,7 @@ ident   = "gitlab-ci-runner"
 [ch-k8s-lbaas]
 enabled       = true
 shared_secret = "IYeOlEFO1h3uc9x1bdw9thNNgmn1gm8dmzos3f04PLmFjt3d"
-version       = "0.3.3"
+version       = "0.4.0"
 agent_port    = 15203
 
 [kubernetes]
