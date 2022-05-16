@@ -8,7 +8,8 @@
 ```console
 # managed-k8s system package dependencies
 $ sudo apt install python3-pip python3-venv \
-  python3-toml moreutils jq wireguard pass
+  python3-toml python3-cryptography moreutils \
+  jq wireguard pass
 ```
 </details>
 
