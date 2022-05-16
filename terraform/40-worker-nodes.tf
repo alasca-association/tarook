@@ -1,6 +1,20 @@
+locals {
+  workers = {
+    for idx in range(var.workers) :
+    "${var.cluster_name}-worker-${try(var.worker_names[idx], idx)}" => {
+      flavor                   = try(var.worker_flavors[idx], var.default_worker_flavor),
+      image                    = try(var.worker_images[idx], var.default_worker_image_name),
+      az                       = var.enable_az_management ? try(var.worker_azs[idx], var.azs[idx % length(var.azs)]) : null
+      join_anti_affinity_group = try(var.worker_join_anti_affinity_group[idx], false)
+      root_disk_size           = try(var.worker_root_disk_sizes[idx], var.default_worker_root_disk_size)
+      volume_name              = "${var.cluster_name}-worker-volume-${try(var.worker_names[idx], idx)}"
+    }
+  }
+}
+
 resource "openstack_networking_port_v2" "worker" {
-  count = var.workers
-  name = "${var.cluster_name}-worker-${try(var.worker_names[count.index], count.index)}"
+  for_each = local.workers
+  name = each.key
 
   network_id = openstack_networking_network_v2.cluster_network.id
 
@@ -25,22 +39,22 @@ resource "openstack_compute_servergroup_v2" "server_group" {
 }
 
 data "openstack_compute_flavor_v2" "worker" {
-  count = var.workers
-  name  = try(var.worker_flavors[count.index], var.default_worker_flavor)
+  for_each = local.workers
+  name     = each.value.flavor
 }
 
 data "openstack_images_image_v2" "worker" {
-  count = var.workers
-  name  = try(var.worker_images[count.index], var.default_worker_image_name)
+  for_each = local.workers
+  name     = each.value.image
 }
 
 resource "openstack_blockstorage_volume_v2" "worker-volume" {
-  count = var.create_root_disk_on_volume == true ? var.workers : 0
-  name        = "${var.cluster_name}-worker-volume-${try(var.worker_names[count.index], count.index)}"
-  size        = (data.openstack_compute_flavor_v2.worker[count.index].disk > 0) ? data.openstack_compute_flavor_v2.worker[count.index].disk : try(var.worker_root_disk_sizes[count.index], var.default_worker_root_disk_size)
-  image_id    = data.openstack_images_image_v2.worker[count.index].id
+  for_each = var.create_root_disk_on_volume == true ? local.workers : {}
+  name        = each.value.volume_name
+  size        = (data.openstack_compute_flavor_v2.worker[each.key].disk > 0) ? data.openstack_compute_flavor_v2.worker[each.key].disk : each.value.root_disk_size
+  image_id    = data.openstack_images_image_v2.worker[each.key].id
   volume_type = var.root_disk_volume_type
-  availability_zone = var.enable_az_management ? try(var.worker_azs[count.index], var.azs[count.index % length(var.azs)]) : null
+  availability_zone = each.value.az
 
   timeouts {
     create = var.timeout_time
@@ -53,18 +67,18 @@ resource "openstack_blockstorage_volume_v2" "worker-volume" {
 }
 
 resource "openstack_compute_instance_v2" "worker" {
-  count = var.workers
-  name  = openstack_networking_port_v2.worker[count.index].name
+  for_each = openstack_networking_port_v2.worker
+  name     = each.value.name
 
-  availability_zone = var.enable_az_management ? try(var.worker_azs[count.index], var.azs[count.index % length(var.azs)]) : null
-  flavor_id         = data.openstack_compute_flavor_v2.worker[count.index].id
-  image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.worker[count.index].id : null
+  availability_zone = local.workers[each.key].az
+  flavor_id         = data.openstack_compute_flavor_v2.worker[each.key].id
+  image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.worker[each.key].id : null
   key_pair          = var.keypair
   config_drive      = true
 
   dynamic scheduler_hints {
     # Abusing 'for_each' as a conditional
-    for_each = try(var.worker_join_anti_affinity_group[count.index], false) == true ? ["dummy"] : []
+    for_each = local.workers[each.key].join_anti_affinity_group == true ? ["dummy"] : []
       content {
         group = openstack_compute_servergroup_v2.server_group.id
       }
@@ -74,7 +88,7 @@ resource "openstack_compute_instance_v2" "worker" {
     # Using "for_each" for check the conditional "create_root_disk_on_volume". It's not working as a loop. "dummy" should make this just more visible.
     for_each = var.create_root_disk_on_volume == true ? ["dummy"] : []
       content {
-        uuid                  = openstack_blockstorage_volume_v2.worker-volume[count.index].id
+        uuid                  = openstack_blockstorage_volume_v2.worker-volume[each.key].id
         source_type           = "volume"
         boot_index            = 0
         destination_type      = "volume"
@@ -83,7 +97,7 @@ resource "openstack_compute_instance_v2" "worker" {
   }
 
   network {
-    port = openstack_networking_port_v2.worker[count.index].id
+    port = each.value.id
   }
 
   # Ignoring 'scheduler_hints' here for existing VMs because otherwise tf would destroy and recreate them.
