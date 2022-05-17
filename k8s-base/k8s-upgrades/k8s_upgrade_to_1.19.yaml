@@ -1,6 +1,10 @@
 # This upgrade file is only for the k8s version 1.19.
 # For now we keep for every minor update a separate upgrade file
 # to avoid accidental major changes of old upgrade files.
+#
+# The upgrade v1.18->v1.19 differs from the previous ones as there
+# is a dependency between kubelet and kubeadm and kubelet needs to
+# to be updated prior to kubeadm.
 
 - name: Detect user
   hosts: k8s_nodes
@@ -31,6 +35,11 @@
   roles:
     - name: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"
+      # kubeadm v1.19 depends on kubelet >=v1.19
+    - name: kubeadm-upgrade-kubelet
+      when: "not (k8s_upgrade_done | default(False))"
+      vars:
+        k8s_kubelet_disable_customizations: true
     - name: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-apply
@@ -50,26 +59,17 @@
   roles:
     - name: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"
+      # kubeadm v1.19 depends on kubelet >=v1.19
+    - name: kubeadm-upgrade-kubelet
+      when: "not (k8s_upgrade_done | default(False))"
+      vars:
+        k8s_kubelet_disable_customizations: true
     - name: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-node
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-uncordon-node
       when: "not (k8s_upgrade_done | default(False))"
-
-- name: Upgrade kubelet on master nodes
-  hosts: masters
-  gather_facts: false
-  any_errors_fatal: true
-  tags:
-    - kubelet-masters
-  serial: 1
-  roles:
-    - name: kubeadm-upgrade-kubelet
-      when: "not (k8s_upgrade_done | default(False))"
-      # we do not want to customize kubelet on control-plane nodes
-      vars:
-        k8s_kubelet_disable_customizations: true
 
 - name: Upgrade the worker nodes
   hosts: workers
@@ -83,11 +83,14 @@
   roles:
     - name: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"
+      # kubeadm v1.19 depends on kubelet >=v1.19
+    - name: kubeadm-upgrade-kubelet
+      when: "not (k8s_upgrade_done | default(False))"
+      vars:
+        k8s_kubelet_disable_customizations: true
     - name: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-node
-      when: "not (k8s_upgrade_done | default(False))"
-    - name: kubeadm-upgrade-kubelet
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-uncordon-node
       when: "not (k8s_upgrade_done | default(False))"
