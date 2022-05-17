@@ -117,7 +117,7 @@ vault-container-test:
           printf "%s" "$VAULT_CONFIG_HCL" > /vault/config/config.hcl
           cp /bin/vault $CI_PROJECT_DIR
           exec vault server -config=/vault/config/config.hcl
-  script: 
+  script:
     - export VAULT_ADDR=https://yaook-vault:8200
     - mkdir -p $CI_PROJECT_DIR/tls/ca
     - printf "%s" "$VAULTCA_CRT" > $CI_PROJECT_DIR/tls/ca/vaultca.crt
