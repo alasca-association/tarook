@@ -1,12 +1,48 @@
-- name: Check if the node has kubernetes installed
-  stat:
-    path: "/etc/kubernetes"
-  register: kubernetes_dir
+- name: Validate if Kubernetes is installed
+  become: yes
+  block:
+    - name: Check if kubelet.conf exists
+      stat:
+        path: /etc/kubernetes/kubelet.conf
+      register: kubelet_conf
+      failed_when: not kubelet_conf.stat.exists
 
-- name: Set fact for installation status
-  set_fact:
-    install_status: "{{ kubernetes_dir.stat.exists | ternary('installed', 'not_installed', 'installed') }}"
+    - name: Check if kubelet service is up and running
+      service:
+        name: kubelet
+        state: started
+        enabled: yes
+      check_mode: yes
+      register: kubelet_service
+      failed_when: kubelet_service.changed
 
-- name: Run groupby
+    - name: Check if the node joined already
+      # using kubectl here as openshift et al. are otherwise not installed on worker nodes.
+      # seems kinda excessive to deploy it just to check whether we need to join.
+      environment:
+        KUBECONFIG: /etc/kubernetes/kubelet.conf
+      command:
+      args:
+        argv:
+        - kubectl
+        - get
+        - node
+        - "{{ inventory_hostname }}"
+
+    - name: Check if cni config exists
+      find:
+        path: /etc/cni/net.d/
+      register: cni_dir
+      failed_when: not cni_dir.files
+
+    - name: Set fact that it is
+      set_fact:
+        install_status: "installed"
+  rescue:
+    - name: Set fact that it is not
+      set_fact:
+        install_status: "not_installed"
+
+- name: Group node by Kubernetes installation status
   group_by:
     key: node_with_k8s_{{ install_status }}

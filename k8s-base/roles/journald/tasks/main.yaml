@@ -1,10 +1,6 @@
-- name: Check if the node has kubernetes installed
-  stat:
-    path: "/etc/kubernetes"
-  register: kubernetes_dir
-
-- block:
-
+- name: Configure journald
+  when: _allow_disruption or inventory_hostname in groups["node_with_k8s_not_installed"]
+  block:
   - name: Create configuration for journald
     become: yes
     template:
@@ -19,5 +15,3 @@
       state: restarted
       daemon_reload: yes
       name: systemd-journald
-
-  when: "_allow_disruption or not kubernetes_dir.stat.exists"

@@ -4,3 +4,4 @@ galaxy_info:
   author: Yaook Authors
 dependencies:
 - net-forwarding
+- is-k8s-installed
