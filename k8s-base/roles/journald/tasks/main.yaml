@@ -1,5 +1,5 @@
 - name: Configure journald
-  when: _allow_disruption or inventory_hostname in groups["node_with_k8s_not_installed"]
+  when: _allow_disruption or install_status == 'k8s_not_installed'
   block:
   - name: Create configuration for journald
     become: yes

@@ -48,14 +48,17 @@
     tags: harden-ssh
 
 - name: Upgrade the system
-  hosts: node_with_k8s_not_installed
+  hosts: k8s_nodes
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
-  roles:
-    - update_system
-  tags:
-    - update_system
+  tasks:
+    - name: Upgrade the system
+      when: install_status == 'k8s_not_installed'
+      include_role:
+        name: update_system
+      tags:
+        - update_system
 
 - name: Detect login for gateways
   hosts: gateways

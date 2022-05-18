@@ -3,7 +3,7 @@
   become: yes
   when:
     - has_gpu
-    - _allow_disruption or inventory_hostname in groups["node_with_k8s_not_installed"]
+    - _allow_disruption or install_status == 'k8s_not_installed'
     - ansible_facts['pkg_mgr'] == "apt"
   block:
     - name: Install deps for the nvidia drivers

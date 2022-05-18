@@ -37,12 +37,8 @@
 
     - name: Set fact that it is
       set_fact:
-        install_status: "installed"
+        install_status: "k8s_installed"
   rescue:
     - name: Set fact that it is not
       set_fact:
-        install_status: "not_installed"
-
-- name: Group node by Kubernetes installation status
-  group_by:
-    key: node_with_k8s_{{ install_status }}
+        install_status: "k8s_not_installed"

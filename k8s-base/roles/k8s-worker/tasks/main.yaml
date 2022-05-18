@@ -1,5 +1,5 @@
 - name: Gather necessary cluster join information
-  when: inventory_hostname in groups["node_with_k8s_not_installed"]
+  when: install_status == 'k8s_not_installed'
   block:
   - name: Get certificate information
     become: no
