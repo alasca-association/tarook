@@ -81,7 +81,7 @@
     owner: root
     group: root
     mode: 0640
-  register: configuration_update
+  notify: Restart docker
 
 - name: Create docker proxy configuration
   become: yes
@@ -104,16 +104,7 @@
         owner: root
         group: root
         mode: 0640
-      register: configuration_update
+      notify: Restart docker
 
-- name: Restart docker
-  become: yes
-  # Only restart if something changed AND we're allowed to do the restart
-  when:
-  - configuration_update.changed # noqa no-handler
-  - _allow_disruption or not inventory_hostname in groups["node_with_k8s_not_installed"]
-  systemd:
-    enabled: yes
-    state: restarted
-    daemon_reload: yes
-    name: docker
+- name: Trigger the handlers
+  meta: flush_handlers
