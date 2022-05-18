@@ -346,6 +346,9 @@ cluster_name = "rook-ceph" # •ᴗ•
 #ceph_fs_replicated = 1
 #ceph_fs_preserve_pools_on_delete = false
 
+# Enable the encryption of OSDs
+#encrypt_osds = false
+
 # ROOK POD RESOURCE LIMITS
 # The default values are the *absolute minimum* values required by rook. Going
 # below these numbers will make rook refuse to even create the pods. See also:

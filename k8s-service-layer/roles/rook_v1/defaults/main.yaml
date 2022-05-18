@@ -25,6 +25,7 @@ rook_osd_memory_limit: "2Gi"
 rook_osd_memory_request: "{{ rook_osd_memory_limit }}"
 rook_osd_cpu_limit: "500m"
 rook_osd_cpu_request: "{{ rook_osd_cpu_limit }}"
+rook_encrypt_osds: false
 
 rook_mds_memory_limit: "4Gi"
 rook_mds_memory_request: "{{ rook_mds_memory_limit }}"
