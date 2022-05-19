@@ -135,6 +135,10 @@ if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then
 
     ln -sf ../02_trampoline/hosts inventory/99_custom/hosts
 
+    if [ ! -d "$ansible_k8s_custom_playbook/inventory" ]; then
+        cp -r "$code_repository/k8s-managed-services/inventory" "$ansible_k8s_custom_playbook/inventory"
+    fi
+
     mkdir -p "$ansible_k8s_custom_playbook/roles"
 
     if [ ! -f "$ansible_k8s_custom_playbook/main.yaml" ]; then
