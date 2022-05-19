@@ -16,5 +16,6 @@
     - kubernetes
     - kubernetes-validate
     state: latest
+  when: ansible_facts.env.VIRTUAL_ENV is not defined
   tags:
   - k8s-tools
