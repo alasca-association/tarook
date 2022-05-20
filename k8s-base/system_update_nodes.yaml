@@ -60,6 +60,12 @@
   - role: is-k8s-installed
     tags: update_system
 
+  tasks:
+    - name: Group nodes by K8s installation status
+      # Here we're doing the group_by dance because it simplifies the logic of the next two plays
+      group_by:
+        key: node_with_{{ install_status }}
+
 - name: Upgrade initialized k8s nodes
   hosts: node_with_k8s_installed
   gather_facts: false
