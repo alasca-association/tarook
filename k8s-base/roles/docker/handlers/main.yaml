@@ -1,0 +1,11 @@
+---
+- name: Restart docker
+  become: yes
+  # Only restart if something changed AND we're allowed to do the restart
+  when:
+  - _allow_disruption or install_status == 'k8s_not_installed'
+  systemd:
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
+    name: docker

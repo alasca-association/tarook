@@ -1,14 +1,9 @@
-- name: Check if the node has kubernetes installed
-  stat:
-    path: "/etc/kubernetes"
-  register: kubernetes_dir
-
-# A GPU as been detected
+# A GPU has been detected
 - name: Install GPU drivers
   become: yes
   when:
     - has_gpu
-    - "_allow_disruption or not kubernetes_dir.stat.exists"
+    - _allow_disruption or install_status == 'k8s_not_installed'
     - ansible_facts['pkg_mgr'] == "apt"
   block:
     - name: Install deps for the nvidia drivers

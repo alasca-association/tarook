@@ -1,28 +1,5 @@
-- name: Test if kubelet.conf exists
-  become: yes
-  stat:
-    path: /etc/kubernetes/kubelet.conf
-  register: kubelet_creds
-
-- name: Test if the node exists already
-  # using kubectl here as openshift et al. are otherwise not installed on worker nodes. seems kinda excessive to deploy it just to check whether we need to join.
-  become: yes
-  environment:
-    KUBECONFIG: /etc/kubernetes/kubelet.conf
-  command:
-  args:
-    argv:
-    - kubectl
-    - get
-    - node
-    - "{{ inventory_hostname }}"
-  failed_when: false
-  changed_when: false
-  when: kubelet_creds.stat.exists
-  register: node_check
-
 - name: Gather necessary cluster join information
-  when: not kubelet_creds.stat.exists or node_check.rc != 0
+  when: install_status == 'k8s_not_installed'
   block:
   - name: Get certificate information
     become: no

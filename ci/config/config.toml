@@ -10,6 +10,8 @@ haproxy_ports             = [30060]
 workers                   = 6
 # https://github.com/SovereignCloudStack/Operational-Docs/blob/main/flavor-naming-draft.MD
 worker_flavors       = ["L", "L", "L", "L", "L", "L"]
+master_images = ["Ubuntu 18.04 LTS x64"]
+worker_images = ["Ubuntu 18.04 LTS x64"]
 enable_az_management = false
 cluster_name         = "ci"
 
