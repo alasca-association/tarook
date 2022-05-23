@@ -1,0 +1,64 @@
+# A GPU has been detected
+- name: Install GPU drivers
+  become: yes
+  when:
+    - k8s_virtualize_gpu | default(False)
+    - has_gpu
+    - _allow_disruption or install_status == 'k8s_not_installed'
+    - ansible_facts['pkg_mgr'] == "apt"
+  block:
+    - name: Install deps for the nvidia drivers
+      apt:
+        state: present
+        name:
+          - "linux-headers-{{ ansible_kernel }}"
+          - build-essential
+          - manpages-dev
+
+
+    - name: Install virtual gpu manager
+      block:
+        - name: Download the nvidia vgpu driver script on the host
+          get_url:
+            url: "{{ nvidia_driver_blob_url }}/{{ nvidia_vgpu_manager_filename }}"
+            dest: "/tmp/{{ nvidia_vgpu_manager_filename }}"
+            mode: '0755'
+
+        - name: Install the virtual gpu manager
+          apt:
+            deb: '/tmp/{{ nvidia_vgpu_manager_filename }}'
+          register: installed_vgpu_manager
+
+    - name: Blacklist nouveau
+      # The installation script lies! It says: """
+      # update-initramfs: deferring update (trigger activated)
+      # A modprobe blacklist file has been created at /etc/modprobe.d to prevent Nouveau
+      # from loading. This can be reverted by deleting the following file:
+      # /etc/modprobe.d/nvidia-graphics-drivers.conf"""
+      # And guess what? That configuration file doesn't exist!
+      copy:
+        dest: /etc/modprobe.d/blacklist_nouveau.conf
+        content: |
+          {{ _auto_generated_preamble }}
+          blacklist nouveau
+          options nouveau modeset=0
+        mode: 0755
+        owner: root
+        group: root
+      register: blacklisted_nouveau
+
+    - name: Update initramfs
+      command: "update-initramfs -k {{ ansible_kernel }} -uv"
+      when: blacklisted_nouveau.changed or installed_vgpu_manager.changed
+      register: ramfs
+
+    - name: Reboot the node
+      when: ramfs.changed
+      reboot:
+
+    - name: Basic sanity check with nvidia-smi
+      # nvidia-smi -L lists all detected cards.
+      # I installed the toolchain on a host with any nvidia cards and the rc was != 0.
+      # It's therefore safe to assume that if the installation somehow failed, then this task would fail too.
+      changed_when: false
+      command: nvidia-smi -L
