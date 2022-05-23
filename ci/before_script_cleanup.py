@@ -65,7 +65,7 @@ def main():
         # do not try to delete public ipv4 network
         if network['id'] == "585ec5ec-5993-4042-93b9-264b0d82ac8e":
             continue
-        for subnet in network.subnets:
+        for subnet in network.subnet_ids:
             print(f"Delete subnet {subnet}")
             conn.network.delete_subnet(subnet)
         print(f"Delete network {network['id']}")
