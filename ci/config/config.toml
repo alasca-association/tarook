@@ -6,12 +6,11 @@
 # test ping wouldn't go through reliably. If you want to lookup the CIDR, log into the runner nodes and
 # checkout the `environment` variable in the indiviual `[[runners]]` sections.
 
-haproxy_ports             = [30060]
-workers                   = 6
-# https://github.com/SovereignCloudStack/Operational-Docs/blob/main/flavor-naming-draft.MD
-worker_flavors       = ["L", "L", "L", "L", "L", "L"]
-master_images = ["Ubuntu 18.04 LTS x64"]
-worker_images = ["Ubuntu 18.04 LTS x64"]
+haproxy_ports        = [30060]
+workers              = 6
+worker_flavors       = ["L", "L", "L", "L", "L", "SCS-4C:8:50s-GNt:1-mk8sPrivate"]
+master_images        = ["Ubuntu 18.04 LTS x64"]
+worker_images        = ["Ubuntu 18.04 LTS x64"]
 enable_az_management = false
 cluster_name         = "ci"
 
@@ -48,7 +47,7 @@ agent_port    = 15203
 [kubernetes]
 version                 = "1.21.9"
 use_podsecuritypolicies = false
-is_gpu_cluster          = false
+is_gpu_cluster          = true
 
 [kubernetes.apiserver]
 frontend_port = 8888
