@@ -236,6 +236,12 @@ plugin = "calico" # •ᴗ•
 # https://projectcalico.docs.tigera.io/networking/vxlan-ipip
 # calico_ipipmode = "Never"
 
+# Make the auto detection method variable as one downside of
+# using can-reach mechanism is that it produces additional logs about
+# other interfaces i.e. tap interfaces. Also a simpler way will be to
+# use an interface to detect ip settings i.e. interface=bond0
+# calico_ip_autodetection_method = "can-reach=www.cloudandheat.com"
+# calico_ipv6_autodetection_method = "can-reach=www.cloudandheat.com"
 # ANCHOR_END: kubernetes_network_configuration
 
 # ANCHOR: kubernetes_kubelet_configuration
