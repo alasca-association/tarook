@@ -16,6 +16,5 @@
     - kubernetes
     - kubernetes-validate
     state: latest
-    extra_args: "{{ (ansible_pkg_mgr == 'apt') | ternary('--system', '') }}"
   tags:
   - k8s-tools
