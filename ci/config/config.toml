@@ -95,6 +95,7 @@ toolbox                  = true
 ceph_fs                  = true
 mon_volume               = true
 mon_volume_storage_class = "local-storage"
+csi_plugins              = true
 
 use_host_networking = true
 

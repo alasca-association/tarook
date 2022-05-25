@@ -37,6 +37,8 @@ rook_operator_memory_request: "{{ rook_operator_memory_limit }}"
 rook_operator_cpu_limit: "100m"
 rook_operator_cpu_request: "{{ rook_operator_cpu_limit }}"
 
+rook_csi_plugins: true
+
 rook_toolbox: true
 
 rook_ceph_fs: false
