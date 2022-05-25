@@ -108,6 +108,8 @@
     failed_when: 'blocked_test_state.resources[0].status.phase == "Failed"'
 
   - name: check service is unreachable from the node
+    # In SingleNode setups, the node will be able to connect to the service
+    when: inventory_hostname != groups['masters'] | first
     command:
     args:
       warn: false
