@@ -1,0 +1,7 @@
+
+- name: Purge docker
+  apt:
+    state: absent
+    purge: yes
+    name:
+    - docker.io

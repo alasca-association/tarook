@@ -924,13 +924,16 @@ rollout = false # •ᴗ•
 # so that it can be used from within Pods.
 wireguard_on_workers = false
 
+# Configure which container runtime to use. Supported values are: "docker"
+# and "containerd".
+container_runtime = "docker"  # "•ᴗ•"
 
 # Configuration details if the cluster will be placed behind a HTTP proxy.
-# If unconfigured images will be used to setup the cluster, the updates of 
+# If unconfigured images will be used to setup the cluster, the updates of
 # package sources, the download of docker images and the initial cluster setup will fail.
 # NOTE: These chances are currently only tested for Debian-based operating systems and not for RHEL-based!
 #cluster_behind_proxy = false
-# Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or 
+# Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or
 # internal docker repositories can be added to the no_proxy config entry
 # Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
 # will be set automagically and do not have to set manually here.

@@ -4,6 +4,14 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Next release
+
+### config.toml: Introduce the mandatory option `[miscellaneous]/container_runtime`
+
+This must be set to `"docker"` for pre-existing clusters. New clusters
+should be set up with `"containerd"`. Migration of pre-existing
+clusters from docker to containerd is not yet supported.
+
 ## 2022-07-19
 
 ### [Replace count with for_each in terraform (!524)](https://gitlab.com/yaook/k8s/-/merge_requests/524)

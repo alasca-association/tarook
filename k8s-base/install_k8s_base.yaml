@@ -108,6 +108,10 @@
     tags: vgpu-support
   - role: docker
     tags: docker
+    when: container_runtime == 'docker'
+  - role: containerd
+    tags: containerd
+    when: container_runtime == 'containerd'
   - role: kubeadm
     tags: kubeadm
   - role: remove_snap
