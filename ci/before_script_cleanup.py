@@ -65,7 +65,14 @@ def main():
         # do not try to delete public ipv4 network
         if network['id'] == "585ec5ec-5993-4042-93b9-264b0d82ac8e":
             continue
-        for subnet in network.subnet_ids:
+        # getattr(network, "subnets", default=getattr(network, "subnet_ids"))
+        # throws an exception, the getattr method is overwritten by the class
+        # and therefore providing default is not working as expected.
+        try:
+            subnets = getattr(network, "subnets")
+        except AttributeError():
+            subnets = getattr(network, "subnet_ids")
+        for subnet in subnets:
             print(f"Delete subnet {subnet}")
             conn.network.delete_subnet(subnet)
         print(f"Delete network {network['id']}")
