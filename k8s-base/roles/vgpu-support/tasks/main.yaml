@@ -20,7 +20,7 @@
       block:
         - name: Download the nvidia vgpu driver script on the host
           get_url:
-            url: "{{ nvidia_driver_blob_url }}/{{ nvidia_vgpu_manager_filename }}"
+            url: "{{ nvidia_vgpu_driver_blob_url }}/{{ nvidia_vgpu_manager_filename }}"
             dest: "/tmp/{{ nvidia_vgpu_manager_filename }}"
             mode: '0755'
 

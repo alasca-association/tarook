@@ -38,6 +38,7 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "etcd-backup",
     "custom",
     "miscellaneous",
+    "nvidia"
 )
 # Mapping stages to their common names
 ANSIBLE_STAGES = {
@@ -87,6 +88,7 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "ingress": "k8s_ingress",
     "etcd-backup": "etcd_backup",
     "vault": "yaook_vault",
+    "nvidia": "nvidia",
 }
 
 
@@ -533,6 +535,20 @@ def main():
             misc_ansible_inventory_path,
             SECTION_VARIABLE_PREFIX_MAP.get("miscellaneous", "")
         )
+
+    # ---
+    # NVIDIA VGPU
+    # ---
+    print_process_state("nvidia")
+    nvidia_vgpu_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage3"] /
+            "group_vars" / "all" / "nvidia.yaml"
+    )
+    dump_to_ansible_inventory(
+        config.get("nvidia"),
+        nvidia_vgpu_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("nvidia", "")
+    )
 
     # ---
     # NODE SCHEDULING
