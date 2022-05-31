@@ -1,4 +1,5 @@
 # A GPU has been detected
+# Prerequisits: enable IOMMU
 - name: Install GPU drivers
   become: yes
   when:
@@ -7,6 +8,34 @@
     - _allow_disruption or install_status == 'k8s_not_installed'
     - ansible_facts['pkg_mgr'] == "apt"
   block:
+    - name: Get CPU information
+      command: lscpu
+      register: cpu_info
+
+    - name: look into CPU information
+      when: '"Intel" is in cpu_info.stdout'
+      set_fact:
+        cpu_type: "intel"
+
+    - name: look into CPU information
+      when: '"AMD" is in cpu_info.stdout'
+      set_fact:
+        cpu_type: "amd"
+
+    - name: Enable IOMMU
+      lineinfile:
+        path: /etc/default/grub
+        state: present
+        insertafter: GRUB_CMDLINE_LINUX
+        line: 'GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX {{ cpu_type }}_iommu=on iommu=pt .modeset=0 rd.driver.pre=vfio-pci video=vesafb:off"'
+        owner: root
+        group: root
+      register: grub_config
+
+    - name: Update GRUB
+      when: grub_config.changed
+      command: update-grub
+
     - name: Install deps for the nvidia drivers
       apt:
         state: present
@@ -52,9 +81,23 @@
       when: blacklisted_nouveau.changed or installed_vgpu_manager.changed
       register: ramfs
 
-    - name: Reboot the node
-      when: ramfs.changed
-      reboot:
+    - name: Reboot block
+      become: yes
+      when: ramfs is changed or grub_config is changed
+      block:
+
+        - name: Reboot the system (cloud-init run)
+          command:
+            argv:
+              - reboot
+              - now
+          when: ansible_connection == 'local'
+
+        # We do not need a "when" here. ansible is killed approximately immediately
+        # anyway by the above command if it is executed; If the above command is
+        # not executed, we want to execute this one.
+        - name: Reboot the system
+          reboot:
 
     - name: Basic sanity check with nvidia-smi
       # nvidia-smi -L lists all detected cards.
