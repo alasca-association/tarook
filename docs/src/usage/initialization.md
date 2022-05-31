@@ -93,6 +93,10 @@ serve as your [cluster repository](./../design/cluster-repository.md):
     - Copy a `config.toml` template to `./config/config.toml`, if no config exists in the cluster repository yet.
     - Update `.gitignore` to current standards.
 1. In the `[defaults]` section of the [ansible configuration file](./cluster-configuration.md#ansible-configuration) `./managed-k8s/ansible/ansible.cfg`, set the environment variable `private_key_file` to the path of the private key file of the keypair, which in the `./.envrc` file was specified by the `$TF_VAR_keypair` environment variable.
+1. Make sure pip is up to date (otherwise installing the dependencies might fail):
+   ```console
+   python3 -m pip install -U pip
+   ```
 1. Install the python package dependencies:
     ```console
     python3 -m pip install -r managed-k8s/requirements.txt
