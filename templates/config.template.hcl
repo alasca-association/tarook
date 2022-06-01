@@ -17,5 +17,6 @@
   "disable_mlock": "true",
   "api_addr": "http://0.0.0.0:8200",
   "ui": "true",
-  "log_level": "info"
+  "log_level": "info",
+  "max_lease_ttl": "87660h"
 }
