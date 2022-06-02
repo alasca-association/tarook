@@ -54,6 +54,7 @@ vrrp_instance VIP_1_V6 {
     virtual_ipaddress {
         {{ networking_fixed_ip_v6 }}
     }
+    unicast_src_ip {{ local_ipv6_address | ipaddr }}
     unicast_peer {
         {% for hostname in groups['frontend'] %}
         {% set peer = hostvars[hostname] %}
