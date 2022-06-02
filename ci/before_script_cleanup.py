@@ -70,7 +70,7 @@ def main():
         # and therefore providing default is not working as expected.
         try:
             subnets = getattr(network, "subnets")
-        except AttributeError():
+        except AttributeError:
             subnets = getattr(network, "subnet_ids")
         for subnet in subnets:
             print(f"Delete subnet {subnet}")
