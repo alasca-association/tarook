@@ -11,8 +11,8 @@ if [ "${WG_USAGE:-true}" == "true" ]; then
     wg_subnet_v6="$(jq -r .subnet_v6_cidr "$terraform_state_dir/config.tfvars.json")"
     # the grep is there to ignore any routes going via the interface we're going to
     # take down later either way
-    wg_existing_route="$(ip route show to "$wg_subnet" | grep -v "dev $wg_interface" || true)"
-    wg_existing_v6_route="$(ip -6 route show to "$wg_subnet_v6" | grep -v "dev $wg_interface" || true)"
+    wg_existing_route="$(ip route show to "$wg_subnet" 2>/dev/null | grep -v "dev $wg_interface" || true)"
+    wg_existing_v6_route="$(ip -6 route show to "$wg_subnet_v6" 2>/dev/null | grep -v "dev $wg_interface" || true)"
     if { [ -n "$wg_existing_route" ] || [ -n "$wg_existing_v6_route" ]; } \
             && [ -z "${MANAGED_K8S_IGNORE_WIREGUARD_ROUTE:-}" ]; then
         if [ -n "$wg_existing_route" ]; then
