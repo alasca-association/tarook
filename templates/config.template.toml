@@ -385,10 +385,10 @@ cluster_name = "rook-ceph" # •ᴗ•
 #mds_cpu_request = "{{ rook_mds_cpu_limit }}"
 
 # Rook-ceph operator limits
-#rook_operator_memory_limit: "256Mi"
-#rook_operator_memory_request: "{{ rook_operator_memory_limit }}"
-#operator_cpu_limit = "500m"
-#operator_cpu_request = "100m"
+#operator_memory_limit: "512Mi"
+#operator_memory_request: "{{ rook_operator_memory_limit }}"
+#operator_cpu_limit = "1"
+#operator_cpu_request = "{{ rook_operator_cpu_limit }}"
 
 #[[k8s-service-layer.rook.pools]]
 #name = "data"
