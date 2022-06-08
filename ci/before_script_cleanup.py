@@ -58,7 +58,8 @@ def main():
     print("---\nDelete Ports\n---")
     for port in conn.network.ports():
         print(f"Delete port {port['id']}")
-        conn.delete_port(port)
+        if not conn.delete_port(port['id']):
+            print(f"WARNING: Deletion of port {port['id']} failed.")
 
     print("---\nDelete Networks\n---")
     for network in conn.list_networks():
