@@ -37,7 +37,7 @@
       when: "ip_address == '0'"
       tags:
       - test-ccm
-  
+
 - name: Validate DualStack-Support
   hosts: k8s_nodes
   roles:
@@ -144,6 +144,7 @@
   roles:
     - role: check-block-storage
       tags: test-cinder-block-storage
+      when: on_openstack | default(True)
       vars:
         block_storage_class: csi-sc-cinderplugin
     - role: check-block-storage
