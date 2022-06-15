@@ -74,3 +74,18 @@
       metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
     retries: 60
     delay: 3
+
+- name: Check node-exporter (frontend) endpoint status
+  community.kubernetes.k8s_exec:
+    namespace: "{{ check_prometheus_scraping_namespace }}"
+    pod: prometheus-test-scraper
+    command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="prometheus-frontend-node-exporter",instance="{{ hostvars[item]["local_ipv4_address"] }}:9100"}'
+  register: metrics
+  loop: "{{ groups['frontend'] }}"
+  until: |
+    metrics.failed == false and
+    metrics.return_code == 0 and
+    metrics.stdout | from_json | json_query('status') == "success" and
+    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  retries: 60
+  delay: 3
