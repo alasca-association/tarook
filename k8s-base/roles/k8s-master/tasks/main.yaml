@@ -152,64 +152,10 @@
       dest: "{{ etc_dir }}/"
       flat: yes
 
-- name: Test if this host is member of the K8s control plane
-  block:
-    - name: Check if kubeconfig exists
-      stat:
-        path: /etc/kubernetes/admin.conf
-      register: kube_config
-    - name: Check if this node is member of the k8s control plane
-      become: true
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      when: kube_config.stat.exists
-      k8s_info:
-        api_version: v1
-        kind: Node
-        name: "{{ inventory_hostname }}"
-      register: k8s_membership
-
-- name: Detect and remove stale etcd members
-  when: kube_config.stat.exists and k8s_membership.resources
-  become: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  block:
-    - name: Get etcd members
-      kubernetes.core.k8s_exec:
-        namespace: kube-system
-        pod: "etcd-{{ inventory_hostname }}"
-        command: etcdctl --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/peer.crt --key /etc/kubernetes/pki/etcd/peer.key member list -w json
-      register: etcd_members
-    - name: Detect stale entries
-      loop: "{{ (etcd_members.stdout | from_json).members }}"
-      # tame ansible's output
-      # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#limiting-loop-output-with-label
-      loop_control:
-        label: "{{ item.name }}"
-      k8s_info:
-        api_version: v1
-        kind: Node
-        name: "{{ item.name }}"
-      register: skeleton_candidates
-    - name: Inform the user of any deletion
-      loop: "{{ skeleton_candidates.results }}"
-      loop_control:
-        label: "{{ item.item.name }}"
-      when: not item.resources # that means k8s doesn't about a node of that name
-      debug:
-        msg: "[WARNING] The LCM will remove {{ item.item.name }} as a stale entry from the etcd database."
-    - name: Delete stale entries
-      loop: "{{ skeleton_candidates.results }}"
-      loop_control:
-        label: "{{ item.item.name }}"
-      when: not item.resources # that means k8s doesn't about a node of that name
-      vars:
-        member_id: "{{ '%x' % item.item.ID }}"
-      kubernetes.core.k8s_exec:
-        namespace: kube-system
-        pod: "etcd-{{ inventory_hostname }}"
-        command: "etcdctl --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/peer.crt --key /etc/kubernetes/pki/etcd/peer.key member remove {{ member_id }}"
+- name: Test if this host can generate a token
+  stat:
+    path: /etc/kubernetes/admin.conf
+  register: kube_config
 
 - name: Create a new join token
   when: kube_config.stat.exists

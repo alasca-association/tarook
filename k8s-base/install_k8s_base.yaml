@@ -129,6 +129,14 @@
         Please set 'k8s_network_plugin' to 'calico' in your config and rerun.
     when: dualstack_support and k8s_network_plugin != "calico"
 
+- name: Clean up control plane
+  hosts: masters
+  gather_facts: true
+  serial: 1
+  roles:
+    - role: etcd-clean-stale-members
+      tags: etcd-clean-stale-members
+
 - name: Spawn the K8s control plane
   hosts: masters
   gather_facts: true
