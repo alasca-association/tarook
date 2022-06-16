@@ -4,6 +4,7 @@ import os
 import openstack
 import typing
 
+
 def create_os_connection():
     username = os.environ['OS_USERNAME']
     password = os.environ['OS_PASSWORD']
@@ -45,14 +46,14 @@ def main():
         for floating_ip in conn.list_floating_ips():
             print(f"Delete Floating IP {floating_ip['id']}")
             process_deletion_outcome(
-                conn.delete_floating_ip(floating_ip)
+                conn.delete_floating_ip(floating_ip['id'])
             )
 
         print("---\nDelete Server\n---")
         for server in conn.compute.servers():
             print(f"Delete server {server['id']}")
             process_deletion_outcome(
-                conn.compute.delete_server(server)
+                conn.compute.delete_server(server['id'])
             )
 
         print("---\nDelete Routers\n---")
@@ -65,7 +66,7 @@ def main():
                     router, port_id=router_interface['id'])
             print(f"Delete router {router['id']}")
             process_deletion_outcome(
-                conn.delete_router(router)
+                conn.delete_router(router['id'])
             )
 
         print("---\nDelete Ports\n---")
@@ -94,14 +95,14 @@ def main():
                 )
             print(f"Delete network {network['id']}")
             process_deletion_outcome(
-                conn.network.delete_network(network)
+                conn.network.delete_network(network['id'])
             )
 
         print("---\nDelete Volumes\n---")
         for volume in conn.list_volumes():
             print(f"Delete volume {volume['id']}")
             process_deletion_outcome(
-                conn.block_storage.delete_volume(volume)
+                conn.block_storage.delete_volume(volume['id'])
             )
 
         print("---\nDelete Security Groups\n---")
@@ -111,14 +112,14 @@ def main():
                 continue
             print(f"Delete security group {security_group['id']}")
             process_deletion_outcome(
-                conn.delete_security_group(security_group)
+                conn.delete_security_group(security_group['id'])
             )
 
         print("---\nDelete Server Groups\n---")
         for server_group in conn.list_server_groups():
             print(f"Delete server group {server_group['id']}")
             process_deletion_outcome(
-                conn.delete_server_group(server_group)
+                conn.delete_server_group(server_group['id'])
             )
     finally:
         print("===\nDisconnect from OpenStack\n===")
