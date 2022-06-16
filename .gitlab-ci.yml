@@ -84,47 +84,6 @@ testBook:
     paths:
       - $CARGO_HOME/bin
 
-# Tests the Vault in Docker dev deployment.
-# It mainly tests the defined config.hcl settings.
-# The certificates and config are stored within the CI vars,
-# as the service instance is limited in accessing data from the
-# repo while it's starting, so they have to be stored elsewhere.
-vault-container-test:
-  stage: deploy
-  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
-  variables:
-    GIT_CLEAN_FLAGS: -ffd $CI_PROJECT_DIR -e vault
-    VAULT_TLS_DIR: $CI_PROJECT_DIR/ci/vault/tls
-    VAULT_KEY: $ci_cert_vault_key
-    VAULTCA_CRT: $ci_cert_vaultca_crt
-    VAULTCHAIN_CRT: $ci_cert_vaultchain_crt
-    VAULT_CONFIG_HCL: $ci_vault_config_hcl
-  services:
-    - name: vault:1.11.0
-      alias: yaook-vault
-      entrypoint: ["sh", "-c"]
-      command:
-        - |
-          export VAULT_ADDR=https://127.0.0.1:8200
-          mkdir -p /vault/config /vault/tls/ca
-          printf "%s" "$VAULT_KEY" > /vault/tls/vault.key
-          printf "%s" "$VAULTCHAIN_CRT" > /vault/tls/vaultchain.crt
-          printf "%s" "$VAULT_CONFIG_HCL" > /vault/config/config.hcl
-          cp /bin/vault $CI_PROJECT_DIR
-          exec vault server -config=/vault/config/config.hcl
-  script: 
-    - export VAULT_ADDR=https://yaook-vault:8200
-    - mkdir -p $CI_PROJECT_DIR/tls/ca
-    - printf "%s" "$VAULTCA_CRT" > $CI_PROJECT_DIR/tls/ca/vaultca.crt
-    - export VAULT_CACERT="$CI_PROJECT_DIR/tls/ca/vaultca.crt"
-    - vault operator init -key-shares=1 -key-threshold=1 -format=json > $CI_PROJECT_DIR/vault_init.out
-    - jq .root_token -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/root.key
-    - jq .unseal_keys_b64[0] -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/unseal.key
-    - vault operator unseal $(cat $CI_PROJECT_DIR/unseal.key)
-    - vault login $(cat $CI_PROJECT_DIR/root.key)
-  tags:
-  - docker
-
 .prepare_spawn_test_cleanup_k8s_cluster:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
   variables:
