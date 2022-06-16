@@ -151,7 +151,7 @@ vault-container-test:
       # Note that this is basically a dummy keypair that is not used to protect any significant data
     - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
       # Ensure that the project is clean
-    - python3 before_script_cleanup.py
+    - python3 clean-up-os-project.py
 
     # Creates a psk for ipsec. IPSEC_EAP_PSK must be set as `Variable` input in the GitLab CI/CD
     # variables of the repository.
