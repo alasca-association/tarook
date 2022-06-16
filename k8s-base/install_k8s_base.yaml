@@ -5,6 +5,7 @@
   - vars/etc.yaml
   roles:
     - validate_configuration
+    - vault-migrated
 
 - name: Initial node bootstrap
   hosts: k8s_nodes

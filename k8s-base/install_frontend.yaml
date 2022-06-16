@@ -5,6 +5,7 @@
   - vars/etc.yaml
   roles:
     - validate_configuration
+    - vault-migrated
 
 - name: Establish connectivity to the nodes
   hosts: frontend

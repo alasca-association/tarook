@@ -93,12 +93,13 @@
   block:
     - name: Load private key
       set_fact:
-        wg_gw_priv_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name))).data.data.privkey }}"
+        wg_gw_priv_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name))).data.data.private_key }}"
     - name: Derive public key
       command: "wg pubkey"
       args:
         stdin: "{{ wg_gw_priv_key }}"
       register: wg_pubkey
+      changed_when: false
     - name: Write public key to disk
       copy:
         content: "{{ wg_pubkey.stdout }}"
