@@ -3,3 +3,6 @@ collections:
   - name: 'devsec.hardening'
     src: git+https://gitlab.cloudandheat.com/lcm/ansible-mirrors/ansible-collection-hardening.git
     version: 7.5.0
+  # If you read this, please check whether you can remove it without ansible-lint failing.
+  # community.hashi_vault should be part of ansible upstream by now.
+  - name: 'community.hashi_vault'
