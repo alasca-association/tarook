@@ -30,6 +30,8 @@
     tags: monitoring-system-update-status
   - role: disable-swap
     tags: disable-swap
+  - role: vault-onboarded
+    tags: vault-onboarded
 
 - name: Disable SELinux
   hosts: k8s_nodes

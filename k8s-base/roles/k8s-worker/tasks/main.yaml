@@ -1,19 +1,100 @@
+# We don't want to assert mode here
+- name: Create parent directories for PKI directories
+  become: yes
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: u=rwx,go=rx
+  loop:
+  - /etc/kubernetes
+  - /var/lib/kubelet
+
+# The focus of the following two tasks is on fixing the permissions.
+- name: Create PKI directories
+  become: yes
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: u=rwx,go-rwx
+  loop:
+  - /etc/kubernetes/pki
+  - /etc/kubernetes/pki/etcd
+  - /var/lib/kubelet/pki
+
+- name: Read role-id
+  become: yes
+  command:
+  args:
+    argv:
+    - cat
+    - /etc/vault/role-id
+  register: cat_role_id
+  changed_when: false
+
+- name: Read secret-id
+  become: yes
+  command:
+  args:
+    argv:
+    - cat
+    - /etc/vault/secret-id
+  register: cat_secret_id
+  changed_when: false
+
+- name: Obtain kubelet kubeconfig
+  environment:
+    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+  block:
+  - name: Obtain kubelet kubeconfig
+    include_role:
+      name: k8s-master
+      tasks_from: mkkubeconfig
+    vars:
+      vault_role_id: "{{ cat_role_id.stdout }}"
+      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      kubeconfig_title: kubelet
+      kubeconfig_destination: /etc/kubernetes/kubelet.conf
+      kubeconfig_issuer: system-nodes_node
+      kubeconfig_user: "system:node:{{ inventory_hostname }}"
+      kubeconfig_external: true
+      kubeconfig_keypair_path: /var/lib/kubelet/pki/kubelet-client-current.pem
+      kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
+
 - name: Gather necessary cluster join information
   when: install_status == 'k8s_not_installed'
+  environment:
+    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
   block:
+  - name: Write k8s CA file
+    become: yes
+    copy:
+      dest: /etc/kubernetes/pki/ca.crt
+      owner: root
+      group: root
+      mode: ugo=r
+      content: "{{ lookup('community.hashi_vault.vault_read', '%s/%s/k8s-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=cat_role_id.stdout, secret_id=cat_secret_id.stdout, mount_point=vault_nodes_approle).data.ca_chain }}"
+
+  - name: Write k8s front proxy CA file
+    become: yes
+    copy:
+      dest: /etc/kubernetes/pki/front-proxy-ca.crt
+      owner: root
+      group: root
+      mode: ugo=r
+      content: "{{ lookup('community.hashi_vault.vault_read', '%s/%s/k8s-front-proxy-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=cat_role_id.stdout, secret_id=cat_secret_id.stdout, mount_point=vault_nodes_approle).data.ca_chain }}"
+
   - name: Get certificate information
-    become: no
-    delegate_to: localhost
+    become: yes
     community.crypto.x509_certificate_info:
-      path: "{{ etc_dir }}/ca.crt"
+      path: "/etc/kubernetes/pki/ca.crt"
     register: ca_cert
 
   - name: Join the k8s cluster steps
     become: yes
     block:
     - name: Create kubeadm-join-config.yaml
-      vars:
-        kubeadm_join_token: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
       template:
         src: kubeadm-join-config.yaml.j2
         dest: /tmp/kubeadm-join-config.yaml
@@ -23,7 +104,7 @@
 
     - name: Join the k8s cluster as another worker
       # XXX: ansible command module does not support setting the umask
-      shell: "umask 077 && kubeadm join --node-name {{ inventory_hostname | quote }} --config=/tmp/kubeadm-join-config.yaml"
+      shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml --ignore-preflight-errors=FileAvailable--etc-kubernetes-kubelet.conf --ignore-preflight-errors=FileAvailable--etc-kubernetes-pki-ca.crt"
 
     - name: Remove kubeadm-join-config.yaml
       file:

@@ -44,6 +44,18 @@
       fail_on_error: yes
       strict: yes
 
+- name: Copy CA file from kube-system namespace
+  k8s:
+    apply: yes
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: front-proxy-ca
+        namespace: "{{ monitoring_namespace }}"
+      data:
+        front-proxy-ca.crt: "{{ lookup('kubernetes.core.k8s', api_version='v1', kind='ConfigMap', namespace='kube-system', resource_name='cluster-ca-certs').data['front-proxy-ca.crt'] }}"
+
 # Install the prometheus stack
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall KSL monitoring stack"
   community.kubernetes.helm:

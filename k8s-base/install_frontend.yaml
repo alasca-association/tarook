@@ -23,6 +23,15 @@
   - role: is-frontend-initialized
     tags: update_system
 
+- name: Prepare Vault
+  hosts: frontend
+  gather_facts: true
+  vars_files:
+  - vars/etc.yaml
+  roles:
+  - role: vault-onboarded
+    tags: vault-onboarded
+
 - name: Disable SELinux
   hosts: frontend
   roles:

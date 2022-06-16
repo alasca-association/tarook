@@ -31,3 +31,15 @@ rules:
             resource: pod
       containerLabel: container
     window: 3m
+
+extraArguments:
+- "--requestheader-client-ca-file=/mnt/certs/front-proxy-ca.crt"
+
+extraVolumes:
+- name: front-proxy-ca
+  configMap:
+    name: front-proxy-ca
+
+extraVolumeMounts:
+- name: front-proxy-ca
+  mountPath: /mnt/certs/

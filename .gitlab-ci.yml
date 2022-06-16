@@ -117,20 +117,39 @@ vault-container-test:
     - mkdir -p $CI_PROJECT_DIR/tls/ca
     - printf "%s" "$VAULTCA_CRT" > $CI_PROJECT_DIR/tls/ca/vaultca.crt
     - export VAULT_CACERT="$CI_PROJECT_DIR/tls/ca/vaultca.crt"
-    - $CI_PROJECT_DIR/vault operator init -key-shares=1 -key-threshold=1 -format=json > $CI_PROJECT_DIR/vault_init.out
+    - vault operator init -key-shares=1 -key-threshold=1 -format=json > $CI_PROJECT_DIR/vault_init.out
     - jq .root_token -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/root.key
     - jq .unseal_keys_b64[0] -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/unseal.key
-    - $CI_PROJECT_DIR/vault operator unseal $(cat $CI_PROJECT_DIR/unseal.key)
-    - $CI_PROJECT_DIR/vault login $(cat $CI_PROJECT_DIR/root.key)
+    - vault operator unseal $(cat $CI_PROJECT_DIR/unseal.key)
+    - vault login $(cat $CI_PROJECT_DIR/root.key)
   tags:
   - docker
 
 .prepare_spawn_test_cleanup_k8s_cluster:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
   variables:
+    GIT_CLEAN_FLAGS: -ffd $CI_PROJECT_DIR -e vault
+    VAULT_TLS_DIR: $CI_PROJECT_DIR/ci/vault/tls
+    VAULT_KEY: $ci_cert_vault_key
+    VAULTCA_CRT: $ci_cert_vaultca_crt
+    VAULTCHAIN_CRT: $ci_cert_vaultchain_crt
+    VAULT_CONFIG_HCL: $ci_vault_config_hcl
     WG_COMPANY_USERS: "false"
     PASS_COMPANY_USERS: "false"
     SSH_COMPANY_USERS: "false"
+  services:
+    - name: vault:1.10.3
+      alias: yaook-vault
+      entrypoint: ["sh", "-c"]
+      command:
+        - |
+          export VAULT_ADDR=https://127.0.0.1:8200
+          mkdir -p /vault/config /vault/tls/ca
+          printf "%s" "$VAULT_KEY" > /vault/tls/vault.key
+          printf "%s" "$VAULTCHAIN_CRT" > /vault/tls/vaultchain.crt
+          printf "%s" "$VAULT_CONFIG_HCL" > /vault/config/config.hcl
+          cp /bin/vault $CI_PROJECT_DIR
+          exec vault server -config=/vault/config/config.hcl
   before_script:
     - "export wg_conf_name=wg0"
     # id_rsa must be set as `File` input in the GitLab CI/CD variables of the
@@ -161,6 +180,17 @@ vault-container-test:
     - unset PASSWORD_STORE_DIR
 
   script:
+    - export VAULT_ADDR=https://yaook-vault:8200
+    - mkdir -p $CI_PROJECT_DIR/tls/ca
+    - printf "%s" "$VAULTCA_CRT" > $CI_PROJECT_DIR/tls/ca/vaultca.crt
+    - export VAULT_CACERT="$CI_PROJECT_DIR/tls/ca/vaultca.crt"
+    - vault operator init -key-shares=1 -key-threshold=1 -format=json > $CI_PROJECT_DIR/vault_init.out
+    - jq .root_token -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/root.key
+    - jq .unseal_keys_b64[0] -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/unseal.key
+    - vault operator unseal $(cat $CI_PROJECT_DIR/unseal.key)
+    - vault login $(cat $CI_PROJECT_DIR/root.key)
+    - bash ./managed-k8s/tools/vault-init.sh
+    - bash ./managed-k8s/tools/vault-mkcluster.sh k8s.ci.yaook.cloud
     - pip3 install -r managed-k8s/requirements.txt
     - ./managed-k8s/actions/apply-terraform.sh
     - ./reachability-or-recreate.sh

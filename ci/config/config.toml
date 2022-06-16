@@ -190,3 +190,8 @@ wireguard_on_workers = false
 
 custom_chrony_configuration = true
 custom_ntp_servers = [ "0.de.pool.ntp.org", "1.de.pool.ntp.org", "2.de.pool.ntp.org", "3.de.pool.ntp.org"]
+
+vault_cluster_name = "k8s.ci.yaook.cloud"
+vault_policy_prefix = "yaook"
+vault_path_prefix = "yaook"
+vault_nodes_approle = "yaook/nodes"
