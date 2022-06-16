@@ -39,3 +39,6 @@
     when: k8s_ingress_enabled
     tags:
     - mk8s-sl/ingress
+
+  - role: etcd-backup
+    when: etcd_backup_enabled

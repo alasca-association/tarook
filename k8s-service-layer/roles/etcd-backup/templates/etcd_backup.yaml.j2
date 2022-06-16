@@ -1,0 +1,12 @@
+schedule: "{{ etcd_backup_schedule }}"
+
+namespace: "{{ etcd_backup_namespace }}"
+
+targets:
+    s3:
+      endpoint: "{{ endpoint_url }}"
+      bucket: "{{ etcd_backup_bucket_name }}" 
+      addressingStyle: path
+      filePrefix: "{{ etcd_backup_file_prefix }}"
+      credentialRef:
+        name: "{{ etcd_backup_secret_name }}"
