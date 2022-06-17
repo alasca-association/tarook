@@ -59,10 +59,10 @@
 
 - name: Set vault server DNS names
   set_fact:
-    yaook_vault_cert_dnsnames_complete: |
+    yaook_vault_dnsnames_complete: |
       [
         {{ "vault.%s.svc.cluster.local" | format(yaook_vault_namespace) | to_json }}
-        , {{ yaook_vault_cert_dnsname | to_json }}
+        , {{ yaook_vault_dnsname | to_json }}
       ]
 
 - name: Create Vault Certificate
@@ -85,7 +85,7 @@
         duration: 72h
         renewBefore: 24h
         ipAddresses: "{{ yaook_vault_worker_ips + ['127.0.0.1', '::1'] }}"
-        dnsNames: "{{ yaook_vault_cert_dnsnames_complete }}"
+        dnsNames: "{{ yaook_vault_dnsnames_complete }}"
     validate:
       fail_on_error: yes
       strict: yes
@@ -107,7 +107,7 @@
       server:
         tls:
           enabled: true
-          hosts: "{{ yaook_vault_cert_dnsnames_complete }}"
+          hosts: "{{ yaook_vault_dnsnames_complete }}"
           secretName:
           - vault-cert
         ingress:
@@ -118,7 +118,9 @@
             nginx.ingress.kubernetes.io/backend-protocol: HTTPS
             infra-bare-metal.yaook.cloud/dns-ip: "{{ yaook_vault_worker_ips | join(',') }}"
           hosts:
-          - host: "{{ yaook_vault_cert_dnsname }}"
+          - host: "{{ yaook_vault_dnsname }}"
+        authDelegator:
+          enabled: false
         standalone:
           enabled: true
           config: |
@@ -131,12 +133,23 @@
             storage "file" {
               path = "/vault/data"
             }
+        shareProcessNamespace: true
+        extraContainers:
+        - name: service-reload
+          image: registry.gitlab.com/yaook/images/service-reload/service-reload:feature-vault
+          volumeMounts:
+          - name: userconfig-vault-cert
+            mountPath: /data
+          env:
+          - name: YAOOK_SERVICE_RELOAD_MODULE
+            value: vault
+          - name: TINI_SUBREAPER
+            value: "1"
+          args:
+          - /data/
         extraVolumes:
         - type: secret
           name: vault-cert
-        service:
-          type: NodePort
-          nodePort: 32000
       ui:
         enabled: false
 
