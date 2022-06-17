@@ -151,6 +151,9 @@ ci-worker-4 = ["{{ scheduling_key_prefix }}/storage=true"]
 
 [node-scheduling.taints]
 ci-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+# explicitly test a node with explicit request for no taints (to check the
+# templates more than anything else)
+ci-worker-1 = []
 ci-worker-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 ci-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 
