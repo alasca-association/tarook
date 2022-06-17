@@ -135,6 +135,9 @@ enabled = true
 [k8s-service-layer.ingress]
 enabled = true
 
+[k8s-service-layer.vault]
+enabled = true
+
 [testing.test-nodes]
 "ci-worker-1" = "worker0"
 "ci-worker-3" = "worker1"

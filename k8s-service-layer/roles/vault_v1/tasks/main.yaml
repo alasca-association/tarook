@@ -11,6 +11,21 @@
       fail_on_error: yes
       strict: yes
 
+- name: Create Vault CA selfsigned issuer
+  community.kubernetes.k8s:
+    apply: yes
+    definition:
+      apiVersion: cert-manager.io/v1
+      kind: Issuer
+      metadata:
+        name: selfsigned-issuer
+        namespace: "{{ yaook_vault_namespace }}"
+      spec:
+        selfSigned: {}
+    validate:
+      fail_on_error: yes
+      strict: yes
+
 - name: Create Vault CA
   community.kubernetes.k8s:
     apply: yes
@@ -62,13 +77,13 @@
     yaook_vault_dnsnames_complete: |
       [
         {{ "vault.%s.svc.cluster.local" | format(yaook_vault_namespace) | to_json }}
-        , {{ yaook_vault_dnsname | to_json }}
+        {% for name in yaook_vault_dnsnames %}, {{ name | to_json }}{% endfor %}
       ]
 
 - name: Create Vault Certificate
   # This needs to be valid for:
   # - the cluster service name
-  # - all worker IP addresses
+  # - all worker IP addresses (if management cluster integration)
   # - possibly a fun public DNS name
   community.kubernetes.k8s:
     apply: yes
@@ -84,13 +99,15 @@
         secretName: vault-cert
         duration: 72h
         renewBefore: 24h
-        ipAddresses: "{{ yaook_vault_worker_ips + ['127.0.0.1', '::1'] }}"
+        ipAddresses: "{{ yaook_vault_management_cluster_integration | ternary(yaook_vault_worker_ips, []) + ['127.0.0.1', '::1'] }}"
         dnsNames: "{{ yaook_vault_dnsnames_complete }}"
     validate:
       fail_on_error: yes
       strict: yes
 
 - name: Deploy Vault
+  vars:
+    scheduling_key: "{{ yaook_vault_scheduling_key }}"
   community.kubernetes.helm:
     chart_ref: vault
     chart_repo_url: https://helm.releases.hashicorp.com
@@ -105,20 +122,24 @@
       injector:
         enabled: false
       server:
+        affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}"
+        tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}"
         tls:
           enabled: true
           hosts: "{{ yaook_vault_dnsnames_complete }}"
           secretName:
           - vault-cert
         ingress:
-          enabled: true
+          enabled: "{{ yaook_vault_dnsnames | bool }}"
           annotations:
             kubernetes.io/ingress.class: nginx
             nginx.ingress.kubernetes.io/ssl-passthrough: "true"
             nginx.ingress.kubernetes.io/backend-protocol: HTTPS
             infra-bare-metal.yaook.cloud/dns-ip: "{{ yaook_vault_worker_ips | join(',') }}"
-          hosts:
-          - host: "{{ yaook_vault_dnsname }}"
+          hosts: |
+            [
+              {% for name in yaook_vault_dnsnames %}{% if loop.index0 > 0 %}, {% endif %}{ "host": {{ name | to_json }} }{% endfor %}
+            ]
         authDelegator:
           enabled: false
         standalone:
@@ -134,9 +155,13 @@
               path = "/vault/data"
             }
         shareProcessNamespace: true
+        dataStorage:
+          enabled: true
+          size: "{{ yaook_vault_storage_size }}"
+          storageClass: "{{ yaook_vault_storage_class }}"
         extraContainers:
         - name: service-reload
-          image: registry.gitlab.com/yaook/images/service-reload/service-reload:feature-vault
+          image: registry.gitlab.com/yaook/images/service-reload/service-reload:devel
           volumeMounts:
           - name: userconfig-vault-cert
             mountPath: /data
@@ -171,8 +196,11 @@
     container: vault
     command: "sh -c {{ 'VAULT_CAPATH=/vault/userconfig/vault-cert/ca.crt vault status -format=json' | quote }}"
   # not found or other fatal signals
-  failed_when: 'vault_status.return_code >= 128 or vault_status.stdout == ""'
+  until: '(vault_status.rc | default(255)) < 128 and vault_status.stdout != ""'
+  failed_when: '(vault_status.rc | default(255)) >= 128 or vault_status.stdout == ""'
   register: vault_status
+  retries: 10
+  delay: 5
 
 - name: Initialize Vault in first pod if not initialized
   when: 'not (vault_status.stdout | from_json).initialized'
@@ -183,7 +211,7 @@
       pod: "{{ vault_pods.resources[0].metadata.name }}"
       container: vault
       command: "sh -c {{ 'VAULT_CAPATH=/vault/userconfig/vault-cert/ca.crt vault operator init -key-shares=%s -key-threshold=%s -format=json' | format(yaook_vault_init_key_shares | quote, yaook_vault_init_key_threshold | quote) | quote }}"
-    failed_when: 'vault_init.return_code != 0'
+    failed_when: 'vault_init.rc != 0'
     register: vault_init
 
   - name: 'SENSITIVE: UNSEAL KEYS'
@@ -204,5 +232,5 @@
       container: vault
       command: "sh -c {{ 'VAULT_CAPATH=/vault/userconfig/vault-cert/ca.crt vault operator unseal %s' | format(item) | quote }}"
     loop: "{{ init_data.unseal_keys_b64[:init_data.unseal_threshold] }}"
-    failed_when: 'vault_unseal.return_code != 0'
+    failed_when: 'vault_unseal.rc != 0'
     register: vault_unseal

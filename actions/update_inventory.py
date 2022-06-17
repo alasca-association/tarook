@@ -86,6 +86,7 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "cert-manager": "k8s_cert_manager",
     "ingress": "k8s_ingress",
     "etcd-backup": "etcd_backup",
+    "vault": "yaook_vault",
 }
 
 
@@ -476,6 +477,18 @@ def main():
         config["k8s-service-layer"].get("ingress"),
         kubernetes_service_ingress_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("ingress", "")
+    )
+
+    # KUBERNETES SERVICE LAYER: VAULT
+    print_process_state("KSL - VAULT")
+    kubernetes_service_ingress_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
+        "vault.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("vault"),
+        kubernetes_service_ingress_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("vault", "")
     )
 
     # KUBERNETES SERVICE LAYER: ETCD-BACKUP

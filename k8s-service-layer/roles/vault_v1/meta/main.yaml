@@ -1,3 +1,4 @@
 ---
-dependencies:
-- tls_infra_v1
+galaxy_info:
+  license: Apache-2.0
+  author: Yaook Authors

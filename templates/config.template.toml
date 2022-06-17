@@ -614,6 +614,65 @@ enabled = false # •ᴗ•
 
 # ANCHOR_END: etcd_backup_configuration
 
+# ANCHOR: ksl_vault_configuration
+# --- KUBERNETES SERVICE LAYER : HASHICORP VAULT ---
+# ansible prefix: "yaook_vault_"
+[k8s-service-layer.vault]
+# Enable HashiCorp Vault management.
+# WARNING: This is *NOT* production ready at the time of writing. The following
+# shortcomings exist:
+# - There are no backups.
+# - There are no replicas.
+# NOTE: On the first run, the unseal keys and the root token will be printed IN
+# PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
+# LOCATION to use the Vault instance in the future!
+#enabled = false # •ᴗ•
+
+# Version of the Helm Chart to use
+#chart_version = "0.20.1"
+
+# Namespace to deploy the vault in (will be created if it does not exist, but
+# never deleted).
+#namespace = "k8s-svc-vault"
+
+# Extra DNS names for which certificates should be prepared. Enabling this
+# enables the ingress for vault.
+# NOTE: to work correctly, there must exist an ingress of class `nginx` and it
+# must allow ssl passthrough.
+#dnsnames = [..]
+
+# If set to true, the Vault is configured to be exposed via yaook/operator
+# infra-ironic, that is, via the integrated DNSmasq to all nodes associated.
+# The default is false. This can be enabled in non-infra-ironic clusters,
+# without significant damage.
+# NOTE: To work in infra-ironic clusters, this requires the vault to be in the
+# same namespace as the infra-ironic instance.
+#management_cluster_integration = false
+
+# Number of unseal key shares to generate upon vault initialization.
+# NOTE: On the first run, the unseal keys and the root token will be printed IN
+# PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
+# LOCATION to use the Vault instance in the future!
+#init_key_shares = 5
+
+# Threshold for the Shamir's Secret Sharing Scheme used for unsealing, i.e. the
+# number of shares required to unseal the vault after a restart
+# NOTE: On the first run, the unseal keys and the root token will be printed IN
+# PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
+# LOCATION to use the Vault instance in the future!
+#init_key_threshold = 2
+
+# Scheduling key for the vault instance and its resources. Has no default.
+#scheduling_key =
+
+# Storage class for the vault file storage backend.
+#storage_class = "csi-sc-cinderplugin"
+
+# Storage size for the vault file storage backend.
+#storage_size = "8Gi"
+
+# ANCHOR_END: ksl_vault_configuration
+
 # ANCHOR: node_scheduling_configuration
 # --- NODE SCHEDULING ---
 # ansible prefix: /
