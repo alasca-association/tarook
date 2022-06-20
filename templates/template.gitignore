@@ -5,6 +5,8 @@
 !/inventory/03_k8s_base/hosts
 /inventory/04_k8s_service_layer
 /inventory/05_k8s_managed_service
+/inventory/99_custom/*
+!/inventory/99_custom/hosts
 /inventory/.etc/ssh_known_hosts
 /inventory/.etc/kubeadm_token
 /wg*.conf

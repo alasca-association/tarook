@@ -304,6 +304,19 @@ from different nodes. This is disabled by default as it requires some prethinkin
 ```
 </details>
 
+## Custom Configuration
+
+Since yaook/k8s allows to [execute custom playbook(s)](./../design/abstraction-layers.md#customization),
+the following section allows you to specify your own custom variables to be used in these.
+
+<details>
+<summary>config.toml: Custom Configuration</summary>
+
+```toml
+{{#include ../templates/config.template.toml:custom_configuration}}
+```
+</details>
+
 ## Miscellaneous Configuration
 
 This section contains various configuration options for special use cases.

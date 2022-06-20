@@ -35,6 +35,7 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "wireguard",
     "ipsec",
     "cah-users",
+    "custom",
     "miscellaneous",
 )
 # Mapping stages to their common names
@@ -42,7 +43,8 @@ ANSIBLE_STAGES = {
     "stage2": "02_trampoline",
     "stage3": "03_k8s_base",
     "stage4": "04_k8s_service_layer",
-    "stage5": "05_k8s_managed_service"
+    "stage5": "05_k8s_managed_service",
+    "custom": "99_custom",
 }
 # The k8s managed services layer is special because it requires only
 # a subset of variables of services / sections. This Map defines which
@@ -600,6 +602,23 @@ def main():
             config.get("cah-users", dict()),
             cah_users_ansible_inventory_path,
             SECTION_VARIABLE_PREFIX_MAP.get("cah-users", "")
+        )
+
+    # ---
+    # CUSTOM
+    # ---
+    # only if custom stage is used
+    if (os.getenv('K8S_CUSTOM_STAGE_USAGE', 'false') == 'true'):
+        print_process_state("CUSTOM")
+        stage = ANSIBLE_STAGES["custom"]
+        custom_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / stage / "group_vars" / "all" /
+            "custom.yaml"
+        )
+        dump_to_ansible_inventory(
+            config.get("custom", dict()),
+            custom_ansible_inventory_path,
+            ""  # don't append prefix, we don't use vars from other sections
         )
 
     # ---

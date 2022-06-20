@@ -2,6 +2,9 @@
 set -euo pipefail
 actions_dir="$(dirname "$0")"
 
+# Ensure that the latest config is deployed to the inventory
+python3 "$actions_dir/update_inventory.py"
+
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
@@ -13,4 +16,4 @@ ANSIBLE_ROLES_PATH="$ansible_k8s_base_playbook/roles:$ansible_k8s_sl_playbook/ro
 export ANSIBLE_ROLES_PATH
 
 cd "$ansible_k8s_custom_playbook"
-ansible_playbook -i "$ansible_inventoryfile_custom" main.yaml "$@"
+ansible_playbook -i "inventory/default.yaml" -i "$ansible_inventoryfile_custom" main.yaml "$@"
