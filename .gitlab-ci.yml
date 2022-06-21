@@ -100,7 +100,7 @@ vault-container-test:
     VAULTCHAIN_CRT: $ci_cert_vaultchain_crt
     VAULT_CONFIG_HCL: $ci_vault_config_hcl
   services:
-    - name: vault:1.10.3
+    - name: vault:1.10.4
       alias: yaook-vault
       entrypoint: ["sh", "-c"]
       command:
