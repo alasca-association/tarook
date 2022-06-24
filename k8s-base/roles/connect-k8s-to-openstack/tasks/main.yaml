@@ -32,6 +32,8 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
+  vars:
+    template_folder: "{{ ('k8s-v' + k8s_version_minor + '/') }}"
   block:
     - name: Prepare PodSecurityPolicy configuration
       k8s:
@@ -42,7 +44,29 @@
           fail_on_error: yes
           strict: yes
 
-    - name: Deploy the CCM and its RBAC
+    # https://github.com/kubernetes/cloud-provider-openstack/blob/8ea8cfb8321246d3f05fcbedab668aa330028575/docs/openstack-cloud-controller-manager/using-openstack-cloud-controller-manager.md
+    - name: Deploy RBAC resources of CCM
+      k8s:
+        state: present
+        apply: yes
+        definition: "{{ lookup('template', template_folder + 'cloud-controller-manager/rbac/' + item) }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
+      loop:
+        - cloud-controller-manager-roles.yaml.j2
+        - cloud-controller-manager-role-bindings.yaml.j2
+
+    - name: Deploy Cloud-Controller-Manger
+      k8s:
+        state: present
+        apply: yes
+        definition: "{{ lookup('template', template_folder + 'cloud-controller-manager/openstack-cloud-controller-manager-ds.yaml.j2') }}"
+        validate:
+          fail_on_error: yes
+          strict: yes
+
+    - name: Start the Cinder CSI driver plugin
       k8s:
         state: present
         apply: yes
@@ -50,30 +74,16 @@
         validate:
           fail_on_error: yes
           strict: yes
-      loop:
-      - controller-manager/openstack-cloud-controller-manager-ds.yaml
-      - rbac/cloud-controller-manager-roles.yaml
-      - rbac/cloud-controller-manager-role-bindings.yaml
-
-    - name: Start the Cinder CSI driver plugin
-      k8s:
-        state: present
-        apply: yes
-        definition: "{{ lookup('template', 'cinder-csi-plugin/' + item) }}"
-        validate:
-          fail_on_error: yes
-          strict: yes
-      loop:
-      - cinder-csi-controllerplugin-rbac.yaml
-      - cinder-csi-controllerplugin.yaml
-      - cinder-csi-nodeplugin-rbac.yaml
-      - cinder-csi-nodeplugin.yaml
+      # loop over all template-files in the respective directory
+      # the number/names of template-files may differ between versions
+      with_fileglob:
+      - "templates/{{ template_folder }}cinder-csi-plugin/*.yaml.j2"
 
     - name: Create cinder storage class (hdd)
       k8s:
         state: present
         apply: yes
-        definition: "{{ lookup('file', 'cinder_storage_class.yaml') }}"
+        definition: "{{ lookup('file', 'cinder/cinder_storage_class.yaml') }}"
         validate:
           fail_on_error: yes
           strict: yes
@@ -83,7 +93,7 @@
       k8s:
         state: present
         apply: yes
-        definition: "{{ lookup('file', 'cinder_nvme_storage_class.yaml') }}"
+        definition: "{{ lookup('file', 'cinder/cinder_nvme_storage_class.yaml') }}"
         validate:
           fail_on_error: yes
           strict: yes
