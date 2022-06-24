@@ -20,6 +20,26 @@
   tags:
     - kubernetes-upgrade-preflight-checks
 
+- name: Update OpenStack cloud provider integration components
+  hosts: masters
+  run_once: true # to avoid redundant appliance
+  vars_files:
+    - ../vars/auto_generated_preamble.yaml # needed for the cloud.config secret
+  roles:
+    # Setup Update Preliminaries
+    - name: connect-k8s-to-openstack
+      when: on_openstack | default(False) | bool
+      tasks_from: k8s_upgrade_to_1.22.yaml
+    # Install updated components
+    - name: connect-k8s-to-openstack
+      when: on_openstack | default(False) | bool
+      # To reduce disruption, we apply the v1.22 OpenStack-Kubernetes
+      # connection setup procedure prior to the actual Kubernetes Upgrade
+      # by pretending to be already on the new k8s version for this role.
+      # This reduces complexity in the role itself.
+      vars:
+        k8s_version: "{{ next_k8s_version }}"
+
 - name: Upgrade the first master node
   hosts: "{{ (groups['masters'] | sort)[0] }}"
   gather_facts: false
