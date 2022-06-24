@@ -1,0 +1,19 @@
+- name: Patch the K8s controller manager to mount the cloud-config
+  script: "{{ playbook_dir }}/utils/patch_kube_controller.py -i -f /etc/kubernetes/manifests/kube-controller-manager.yaml"
+  args:
+    executable: python3
+
+- name: Force restart of kube-controller-manager
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    state: absent
+    api_version: v1
+    kind: Pod
+    namespace: kube-system
+    name: "kube-controller-manager-{{ inventory_hostname }}"
+    wait: no
+    validate:
+      fail_on_error: yes
+      strict: yes
