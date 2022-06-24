@@ -136,8 +136,8 @@ spec:
   # To control where various services will be scheduled by kubernetes, use the placement configuration sections below.
   # The example under 'all' would have all services scheduled on kubernetes nodes labeled with 'role=storage-node' and
   # tolerate taints with a key of 'storage-node'.
-{% if rook_scheduling_key %}
   placement:
+{% if rook_scheduling_key %}
     all:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -150,13 +150,35 @@ spec:
         operator: Exists
 {% endif %}
 # The above placement information can also be specified for mon, osd, and mgr components
-#    mon:
+{% if rook_mon_scheduling_key %}
+    mon:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: {{ rook_mon_scheduling_key | to_json }}
+              operator: Exists
+      tolerations:
+      - key: {{ rook_mon_scheduling_key | to_json }}
+        operator: Exists
+{% endif %}
 # Monitor deployments may contain an anti-affinity rule for avoiding monitor
 # collocation on the same node. This is a required rule when host network is used
 # or when AllowMultiplePerNode is false. Otherwise this anti-affinity rule is a
 # preferred rule with weight: 50.
 #    osd:
-#    mgr:
+{% if rook_mgr_scheduling_key %}
+    mgr:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: {{ rook_mgr_scheduling_key | to_json }}
+              operator: Exists
+      tolerations:
+      - key: {{ rook_mgr_scheduling_key | to_json }}
+        operator: Exists
+{% endif %}
 #    cleanup:
 #  annotations:
 #    all:

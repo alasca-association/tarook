@@ -103,6 +103,8 @@ rook_ceph_version_map:
 rook_ceph_versions: "{{ rook_ceph_version_map[rook_version] }}"
 
 rook_scheduling_key: null
+rook_mon_scheduling_key: null
+rook_mgr_scheduling_key: null
 
 # If OSDs are not replicated, the rook-ceph-operator will reject
 # to perform upgrades, because OSDs will become unavailable.

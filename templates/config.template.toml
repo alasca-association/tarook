@@ -329,6 +329,12 @@ cluster_name = "rook-ceph" # •ᴗ•
 # (For example if the ceph cluster is used for an OpenStack cluster)
 #csi_plugins=true
 
+# Additionally it is possible to schedule mons and mgrs pods specifically.
+# NOTE: Rook does not merge scheduling rules set in 'all' and the ones in 'mon' and 'mgr',
+# but will use the most specific one for scheduling.
+#mon_scheduling_key = "{{ scheduling_key_prefix }}/rook-mon"
+#mgr_scheduling_key = "{{ scheduling_key_prefix }}/rook-mgr"
+
 # Number of mons to run.
 # Default is 3 and is the minimum to ensure high-availability!
 # The number of mons has to be uneven.
