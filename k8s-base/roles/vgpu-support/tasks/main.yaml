@@ -105,3 +105,29 @@
       # It's therefore safe to assume that if the installation somehow failed, then this task would fail too.
       changed_when: false
       command: nvidia-smi -L
+
+    - name: Ensure group "libvirt" exists with correct gid
+      ansible.builtin.group:
+        name: libvirt
+        state: present
+        gid: 2500009
+
+    - name: Create udev rule for vfio devices
+      become: yes
+      template:
+        src: 50-vfio.rules.j2
+        dest: /etc/udev/rules.d/50-vfio.rules
+        owner: root
+        group: root
+        mode: 0644
+      register: udev_vfio_rule
+
+    - name: Reload udev rules on the node
+      # nvidia-smi -L lists all detected cards.
+      # I installed the toolchain on a host with any nvidia cards and the rc was != 0.
+      # It's therefore safe to assume that if the installation somehow failed, then this task would fail too.
+      when: udev_vfio_rule.changed
+      command: "{{ item }}"
+      with_items:
+        - udevadm control --reload-rules
+        - udevadm trigger
