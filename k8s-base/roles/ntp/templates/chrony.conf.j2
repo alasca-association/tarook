@@ -28,7 +28,11 @@ pool {{ custom_server }} iburst
 
 # This directive specify the location of the file containing ID/key pairs for
 # NTP authentication.
+{% if ansible_os_family == 'Debian' %}
 keyfile /etc/chrony/chrony.keys
+{% elif ansible_os_family == 'RedHat' %}
+keyfile /etc/chrony.keys
+{% endif %}
 
 # This directive specify the file into which chronyd will store the rate
 # information.
