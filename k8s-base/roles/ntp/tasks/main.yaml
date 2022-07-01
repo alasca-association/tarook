@@ -18,49 +18,52 @@
     - chrony
     state: present
 
-- name: Configure chrony (Debian based)
+- name: Configure chrony
   become: true
-  when: ansible_os_family == "Debian"
+  when: custom_chrony_configuration | bool
   block:
 
-    - name: Create custom configuration (Debian)
-      template:
-        src: chrony.conf.j2
-        dest: /etc/chrony/chrony.conf
-        owner: root
-        group: root
-        mode: 0644
-      register: configuration_update_debian
+    - name: Configure chrony (Debian based)
+      when: ansible_os_family == "Debian"
+      block:
 
-    - name: Restart chrony # noqa no-handler
-      when: configuration_update_debian.changed
-      systemd:
-        name: chrony
-        enabled: true
-        state: restarted
-        daemon_reload: true
+        - name: Create custom configuration (Debian)
+          template:
+            src: chrony.conf.j2
+            dest: /etc/chrony/chrony.conf
+            owner: root
+            group: root
+            mode: 0644
+          register: configuration_update_debian
 
-- name: Configure chrony (RHEL like)
-  become: true
-  when: ansible_os_family == "RedHat"
-  block:
+        - name: Restart chrony # noqa no-handler
+          when: configuration_update_debian.changed
+          systemd:
+            name: chrony
+            enabled: true
+            state: restarted
+            daemon_reload: true
 
-    - name: Create custom configuration (RHEL like)
-      template:
-        src: chrony.conf.j2
-        dest: /etc/chrony.conf
-        owner: root
-        group: root
-        mode: 0644
-      register: configuration_update_rhel
+    - name: Configure chrony (RHEL like)
+      when: ansible_os_family == "RedHat"
+      block:
 
-    - name: Restart chronyd # noqa no-handler
-      when: configuration_update_rhel.changed
-      systemd:
-        name: chronyd
-        enabled: true
-        state: restarted
-        daemon_reload: true
+        - name: Create custom configuration (RHEL like)
+          template:
+            src: chrony.conf.j2
+            dest: /etc/chrony.conf
+            owner: root
+            group: root
+            mode: 0644
+          register: configuration_update_rhel
+
+        - name: Restart chronyd # noqa no-handler
+          when: configuration_update_rhel.changed
+          systemd:
+            name: chronyd
+            enabled: true
+            state: restarted
+            daemon_reload: true
 
 - name: ensure chrony is running
   become: yes
