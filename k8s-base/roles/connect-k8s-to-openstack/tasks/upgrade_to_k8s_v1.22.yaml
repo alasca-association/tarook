@@ -1,0 +1,16 @@
+# Special steps when updating Kubernetes to v1.22.x
+
+# Previously, it was a StatefulSet. Now it is a Deployment.
+# Prevent interference by removing the StatefulSet prior to
+# creating the Deployment.
+- name: Delete old Cinder CSI Controllerplugin
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  k8s:
+    state: absent
+    apply: yes
+    definition: "{{ lookup('template', 'k8s-v1.21/cinder-csi-plugin/cinder-csi-controllerplugin.yaml.j2') }}"
+    validate:
+      fail_on_error: yes
+      strict: yes

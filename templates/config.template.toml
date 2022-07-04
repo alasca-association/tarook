@@ -88,8 +88,8 @@ agent_port    = 15203
 # --- KUBERNETES: BASIC CLUSTER CONFIGURATION ---
 # ansible prefix: "k8s_"
 [kubernetes]
-# Kubernetes version. Currently, we support from 1.17.* to 1.21.*.
-version = "1.21.4" # •ᴗ•
+# Kubernetes version. Currently, we support from 1.17.* to 1.22.*.
+version = "1.22.11" # •ᴗ•
 
 # Enforce the use of pod security policies inside the cluster.
 # NOTE: PSPs are being deprecated by k8s and they will be removed from the LCM soon.

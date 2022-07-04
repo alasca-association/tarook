@@ -7,6 +7,6 @@ managed-k8s layer (if any).
 It provides the following extensions to the standard Kubernetes API:
 
 - Certificate management (`cert-manager.io/v1`)
-- Ingress (`networking.k8s.io/v1beta1`)
+- Ingress (`networking.k8s.io/v1`)
 - Persistent Volumes using Rook
 - Prometheus management (kube-prometheus, various APIs)

@@ -195,7 +195,7 @@
   run_once: yes
   roles:
     - role: connect-k8s-to-openstack
-      tags: openstack
+      tags: connect-k8s-to-openstack
       when: on_openstack | default(False) | bool
     - role: ch-k8s-lbaas-controller
       tags:

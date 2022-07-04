@@ -1,0 +1,132 @@
+# This upgrade file is only for the k8s version 1.22.
+# For now we keep for every minor update a separate upgrade file
+# to avoid accidental major changes of old upgrade files.
+
+- name: Detect user
+  hosts: k8s_nodes
+  gather_facts: false
+  # we need *all* hosts.
+  any_errors_fatal: true
+  vars_files:
+    - ../vars/etc.yaml
+  roles:
+  - detect_user
+
+- name: Run pre-flight checks on all nodes
+  hosts: k8s_nodes
+  gather_facts: true
+  roles:
+    - kubernetes-upgrade-info
+  tags:
+    - kubernetes-upgrade-preflight-checks
+
+- name: Update OpenStack cloud provider integration components
+  hosts: masters
+  run_once: true # to avoid redundant appliance
+  vars_files:
+    - ../vars/auto_generated_preamble.yaml # needed for the cloud.config secret
+  tasks:
+    - name: Purge the csi-sc-cinder-controllerplugin Statefulset
+      when: on_openstack | default(False) | bool
+      include_role:
+        name: connect-k8s-to-openstack
+        tasks_from: upgrade_to_k8s_v1.22.yaml
+    - name: Install updated components
+      when: on_openstack | default(False) | bool
+      include_role:
+        name: connect-k8s-to-openstack
+      # To reduce disruption, we apply the v1.22 OpenStack-Kubernetes
+      # connection setup procedure prior to the actual Kubernetes Upgrade
+      # by pretending to be already on the new k8s version for this role.
+      # This reduces complexity in the role itself.
+      vars:
+        k8s_version: "{{ next_k8s_version }}"
+
+- name: Upgrade the first master node
+  hosts: "{{ (groups['masters'] | sort)[0] }}"
+  gather_facts: false
+  any_errors_fatal: true
+  vars_files:
+    - ../vars/disruption.yaml
+  tags:
+    - kubeadm-first-master
+  roles:
+    - name: kubeadm-drain-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-kubeadm
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-apply
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-uncordon-node
+      when: "not (k8s_upgrade_done | default(False))"
+
+- name: Upgrade the residual master nodes
+  hosts: "{{ (groups['masters'] | sort)[1:] }}"
+  gather_facts: false
+  serial: 1
+  any_errors_fatal: true
+  vars_files:
+    - ../vars/disruption.yaml
+  tags:
+    - kubeadm-other-masters
+  roles:
+    - name: kubeadm-drain-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-kubeadm
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-uncordon-node
+      when: "not (k8s_upgrade_done | default(False))"
+
+- name: Upgrade kubelet on master nodes
+  hosts: masters
+  gather_facts: false
+  any_errors_fatal: true
+  tags:
+    - kubelet-masters
+  serial: 1
+  roles:
+    - name: kubeadm-upgrade-kubelet
+      when: "not (k8s_upgrade_done | default(False))"
+      # we do not want to customize kubelet on control-plane nodes
+      vars:
+        k8s_kubelet_disable_customizations: true
+
+- name: Upgrade the worker nodes
+  hosts: workers
+  gather_facts: false
+  any_errors_fatal: true
+  vars_files:
+    - ../vars/disruption.yaml
+  tags:
+    - workers
+  serial: 1
+  roles:
+    - name: kubeadm-drain-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-kubeadm
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-upgrade-kubelet
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: kubeadm-uncordon-node
+      when: "not (k8s_upgrade_done | default(False))"
+
+- name: Final upgrade note
+  gather_facts: false
+  hosts: "{{ (groups['masters'] | sort)[0] }}"
+  tasks:
+  - name: Final upgrade note
+    delegate_to: localhost
+    debug:
+      msg: |
+        🥳 Congratulations! 🎉
+
+          \o/  The upgrade to
+           |      {{ next_k8s_version }}
+          / \  is complete.
+
+        You can now change the k8s_version variable to
+        {{ next_k8s_version | to_json }}.

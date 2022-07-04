@@ -19,6 +19,7 @@ supported_k8s_versions:
   - '1.19'
   - '1.20'
   - '1.21'
+  - '1.22'
 
 # Minor version of k8s, e.g., '1.18.9' becomes '1.18'.
 k8s_version_minor: '{{ k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") }}'
@@ -123,6 +124,39 @@ image_version_map:
       csi_snapshotter: "v1.2.2"
       local_volume_provisioner: "v2.3.4"
       openstack_cloud_controller_manager: "v1.19.1"
+    rook:
+      ceph: "v14.2.6"
+      operator: "v1.2.3"
+      toolbox: "v1.2.3"
     calico_version: "3.19.0" # Version of Calico binaries and images to be deployed
-    
+
+  "1.22":
+    local_volume:
+      local_volume_provisioner: "v2.3.4"
+    kube_router:
+      kube_router: "v1.1.0"
+    openstack:
+      # https://github.com/kubernetes/cloud-provider-openstack/releases/tag/v1.24.2
+      cinder_csi_plugin: "v1.24.2"
+      openstack_cloud_controller_manager: "v1.24.2"
+      # https://github.com/kubernetes-csi/external-attacher/releases/tag/v3.4.0
+      csi_attacher: "v3.4.0"
+      # https://github.com/kubernetes-csi/node-driver-registrar/releases/tag/v2.5.1
+      csi_node_driver_registrar: "v2.5.1"
+      # https://github.com/kubernetes-csi/external-provisioner/releases/tag/v3.1.1
+      csi_provisioner: "v3.1.1"
+      # https://github.com/kubernetes-csi/external-resizer/releases/tag/v1.5.0
+      csi_resizer: "v1.5.0"
+      # https://github.com/kubernetes-csi/external-resizer/releases/tag/v1.5.0
+      csi_snapshotter: "v6.0.1"
+      # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.6.0
+      csi_livenessprobe: "v2.6.0"
+      # https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/releases/tag/v2.4.0
+      local_volume_provisioner: "v2.4.0"
+    rook:
+      ceph: "v14.2.6"
+      operator: "v1.2.3"
+      toolbox: "v1.2.3"
+    calico_version: "3.19.0"
+
 image_versions: "{{ image_version_map[k8s_version_minor] }}"
