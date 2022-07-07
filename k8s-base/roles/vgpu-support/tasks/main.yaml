@@ -131,3 +131,13 @@
       with_items:
         - udevadm control --reload-rules
         - udevadm trigger
+
+    - name: install nvidia_sriov_manage systemd unit file
+      template: src=nvidia_sriov_manage.service.j2 dest=/etc/systemd/system/nvidia_sriov_manage.service
+
+    - name: start nvidia_sriov_manage
+      ansible.builtin.systemd:
+        state=started 
+        enabled=yes
+        name=nvidia_sriov_manage
+        daemon_reload=yes
