@@ -321,7 +321,9 @@ def main():
     )
     if mandatory_diff:
         raise ValueError(
-            "missing mandatory variables:\n\t- {}".format(
+            "missing mandatory variables:\n\t- {}\n"
+            "Please look up the exact path in `templates/config.template.toml`."
+            .format(
                 "\n\t- ".join(mandatory_diff),
             )
         )
