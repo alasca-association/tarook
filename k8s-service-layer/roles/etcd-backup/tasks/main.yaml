@@ -29,7 +29,6 @@
     EC2_ACCESS_KEY: "{{ access_key }}"
     EC2_SECRET_KEY: "{{ secret_key }}"
     EC2_URL: "{{ endpoint_url }}"
-    EC2_REGION: "{{ region }}"
   block:
     - name: Check if bucket exists
       aws_s3_bucket_info:
