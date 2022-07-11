@@ -605,6 +605,7 @@ enabled = false # •ᴗ•
 # and should be protected via some mechanism. This is a mandatory 
 # variable, if etcd_backup_enabled is set to True. A template for such a file can be found at 
 # managed-k8s/templates/etcd_backup_s3_config.yaml
+# **IMPORTANT:** This file contains credentials in plain text so make sure its appropriately secured (git-crypt, etc)
 #s3_config_name = "etcd_backup_s3_config.yaml"
 
 # Number of days after which individual items in the bucket are dropped. Enforced by S3 lifecyle rules which
