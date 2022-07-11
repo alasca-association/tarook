@@ -42,3 +42,5 @@
 
   - role: etcd-backup
     when: etcd_backup_enabled
+    tags:
+    - mk8s-sl/etcd-backup
