@@ -607,6 +607,10 @@ enabled = false # •ᴗ•
 # managed-k8s/templates/etcd_backup_s3_config.yaml
 #s3_config_name = "etcd_backup_s3_config.yaml"
 
+# Number of days after which individual items in the bucket are dropped. Enforced by S3 lifecyle rules which
+# are also implemented by Ceph's RGW.
+#etcd_backup_days_of_retention = 30
+
 # ANCHOR_END: etcd_backup_configuration
 
 # ANCHOR: node_scheduling_configuration

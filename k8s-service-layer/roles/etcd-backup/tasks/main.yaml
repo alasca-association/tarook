@@ -36,10 +36,10 @@
         name: "{{ etcd_backup_bucket_name }}"
       register: bucket_info
 
-    - name: Configure a lifecycle rule on a bucket to expire (delete) items after 30 days
+    - name: "Configure a lifecycle rule on a bucket to expire (delete) items after {{ etcd_backup_days_of_retention }}"
       s3_lifecycle:
         name: "{{ etcd_backup_bucket_name }}"
-        expiration_days: 30
+        expiration_days: "{{ etcd_backup_days_of_retention }}"
         prefix: "{{ etcd_backup_file_prefix }}"
         status: enabled
         state: present

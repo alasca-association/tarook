@@ -6,3 +6,4 @@ etcd_backup_file_prefix: "backups"
 etcd_backup_schedule: "21 */12 * * *"
 etcd_backup_chart_version: "0.20220627.0-alpha.T081547.g29bb02228"
 etcd_backup_config_path: "{{ ksl_vars_directory }}/../../config/{{ etcd_backup_s3_config_name }}"
+etcd_backup_days_of_retention: 30
