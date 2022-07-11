@@ -604,8 +604,8 @@ enabled = false # •ᴗ•
 # Configure s3 config yaml name. The file MUST be kept under `config` dir 
 # and should be protected via some mechanism. This is a mandatory 
 # variable, if etcd_backup_enabled is set to True. A template for such a file can be found at 
-# managed-k8s/k8s-service-layer/roles/etcd-backup/templates/s3_config.template.yaml
-#s3_config_name = "config.yaml" 
+# managed-k8s/templates/etcd_backup_s3_config.yaml
+#s3_config_name = "etcd_backup_s3_config.yaml"
 
 # ANCHOR_END: etcd_backup_configuration
 
