@@ -34,7 +34,7 @@ if [ -z "$vault_status" ]; then
         -v "$vault_dir/tls":/vault/tls \
         -e VAULT_ADDR="https://127.0.0.1:8200" \
         -e VAULT_CACERT="/vault/tls/ca/vaultca.crt" \
-        vault:1.10.3 server
+        vault:1.11.0 server
 elif [ "$vault_status" = "exited" ]; then
     run docker start "$vault_container_name" > /dev/null
 fi
