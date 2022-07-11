@@ -29,7 +29,10 @@ vault secrets tune -max-lease-ttl="$pki_root_ttl" "$k8s_front_proxy_pki_path"
 vault secrets tune -max-lease-ttl="$pki_root_ttl" "$calico_pki_path"
 vault secrets tune -max-lease-ttl="$pki_root_ttl" "$etcd_pki_path"
 
-vault write "$k8s_pki_path/root/generate/internal" common_name="$cluster Kubernetes Root CA" ttl="$pki_root_ttl"
+vault write "$k8s_pki_path/root/generate/internal" \
+    common_name="$cluster Kubernetes Root CA" \
+    ttl="$pki_root_ttl" \
+    key_type=ed25519
 vault write "$k8s_pki_path/roles/system-masters_admin" \
     max_ttl="$pki_ttl" \
     ttl=72h \
@@ -40,7 +43,8 @@ vault write "$k8s_pki_path/roles/system-masters_admin" \
     organization=system:masters \
     allow_any_name=true \
     require_cn=false \
-    allow_ip_sans=false
+    allow_ip_sans=false \
+    key_type=rsa
 vault write "$k8s_pki_path/roles/system-masters_apiserver" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -53,7 +57,8 @@ vault write "$k8s_pki_path/roles/system-masters_apiserver" \
     allowed_domains_template=true \
     allow_bare_domains=true \
     allow_subdomains=false \
-    allow_ip_sans=false
+    allow_ip_sans=false \
+    key_type=rsa
 vault write "$k8s_pki_path/roles/apiserver" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -61,7 +66,8 @@ vault write "$k8s_pki_path/roles/apiserver" \
     enforce_hostnames=true \
     server_flag=true \
     allow_any_name=true \
-    allow_ip_sans=true
+    allow_ip_sans=true \
+    key_type=rsa
 vault write "$k8s_pki_path/roles/system-masters_controllers" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -73,7 +79,8 @@ vault write "$k8s_pki_path/roles/system-masters_controllers" \
     allowed_domains_template=true \
     allow_bare_domains=true \
     allow_subdomains=false \
-    allow_ip_sans=false
+    allow_ip_sans=false \
+    key_type=rsa
 vault write "$k8s_pki_path/roles/system-nodes_node" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -86,7 +93,8 @@ vault write "$k8s_pki_path/roles/system-nodes_node" \
     allowed_domains_template=true \
     allow_bare_domains=true \
     allow_subdomains=false \
-    allow_ip_sans=false
+    allow_ip_sans=false \
+    key_type=rsa
 vault write "$k8s_pki_path/roles/system-nodes_admin" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -95,7 +103,8 @@ vault write "$k8s_pki_path/roles/system-nodes_admin" \
     client_flag=true \
     server_flag=true \
     organization=system:nodes \
-    allow_any_name=true
+    allow_any_name=true \
+    key_type=rsa
 vault write "$k8s_pki_path/roles/calico-cni" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -106,9 +115,13 @@ vault write "$k8s_pki_path/roles/calico-cni" \
     allowed_domains="calico-cni" \
     allow_bare_domains=true \
     allow_subdomains=false \
-    allow_ip_sans=false
+    allow_ip_sans=false \
+    key_type=rsa
 
-vault write "$etcd_pki_path/root/generate/internal" common_name="$cluster Kubernetes  etcd Root CA" ttl=87660h
+vault write "$etcd_pki_path/root/generate/internal" \
+    common_name="$cluster Kubernetes etcd Root CA" \
+    ttl="$pki_root_ttl" \
+    key_type=ed25519
 vault write "$etcd_pki_path/roles/server" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -119,7 +132,8 @@ vault write "$etcd_pki_path/roles/server" \
     allowed_domains="{{identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_hostname}},127.0.0.1,::1,{{identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_primary_ipv4}},{{identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_primary_ipv6}},localhost" \
     allowed_domains_template=true \
     allow_bare_domains=true \
-    allow_subdomains=false
+    allow_subdomains=false \
+    key_type=rsa
 vault write "$etcd_pki_path/roles/peer" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -130,7 +144,8 @@ vault write "$etcd_pki_path/roles/peer" \
     allowed_domains="{{identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_hostname}},127.0.0.1,::1,{{identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_primary_ipv4}},{{identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_primary_ipv6}},localhost" \
     allowed_domains_template=true \
     allow_bare_domains=true \
-    allow_subdomains=false
+    allow_subdomains=false \
+    key_type=rsa
 vault write "$etcd_pki_path/roles/healthcheck" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -141,7 +156,8 @@ vault write "$etcd_pki_path/roles/healthcheck" \
     allowed_domains="{{identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_hostname}},{{identity.entity.aliases.$nodes_approle_accessor.metadata.role_name}}" \
     allowed_domains_template=true \
     allow_bare_domains=true \
-    allow_subdomains=false
+    allow_subdomains=false \
+    key_type=rsa
 vault write "$etcd_pki_path/roles/kube-apiserver" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -153,9 +169,13 @@ vault write "$etcd_pki_path/roles/kube-apiserver" \
     allowed_domains="{{identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_hostname}},{{identity.entity.aliases.$nodes_approle_accessor.metadata.role_name}}" \
     allowed_domains_template=true \
     allow_bare_domains=true \
-    allow_subdomains=false
+    allow_subdomains=false \
+    key_type=rsa
 
-vault write "$k8s_front_proxy_pki_path/root/generate/internal" common_name="$cluster Kubernetes Front Proxy Root CA" ttl="$pki_root_ttl"
+vault write "$k8s_front_proxy_pki_path/root/generate/internal" \
+    common_name="$cluster Kubernetes Front Proxy Root CA" \
+    ttl="$pki_root_ttl" \
+    key_type=ed25519
 vault write "$k8s_front_proxy_pki_path/roles/apiserver" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -166,9 +186,13 @@ vault write "$k8s_front_proxy_pki_path/roles/apiserver" \
     allowed_domains="{{identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_hostname}},{{identity.entity.aliases.$nodes_approle_accessor.metadata.role_name}}" \
     allowed_domains_template=true \
     allow_any_name=true \
-    allow_ip_sans=true
+    allow_ip_sans=true \
+    key_type=rsa
 
-vault write "$calico_pki_path/root/generate/internal" common_name="$cluster Calico Internal Root CA" ttl=87660h
+vault write "$calico_pki_path/root/generate/internal" \
+    common_name="$cluster Calico Internal Root CA" \
+    ttl="$pki_root_ttl" \
+    key_type=ed25519
 vault write "$calico_pki_path/roles/node" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -179,7 +203,8 @@ vault write "$calico_pki_path/roles/node" \
     allowed_domains="calico-node" \
     allow_bare_domains=true \
     allow_subdomains=false \
-    allow_ip_sans=false
+    allow_ip_sans=false \
+    key_type=rsa
 vault write "$calico_pki_path/roles/typha" \
     max_ttl="$pki_ttl" \
     ttl="$pki_ttl" \
@@ -190,4 +215,5 @@ vault write "$calico_pki_path/roles/typha" \
     allowed_domains="calico-typha" \
     allow_bare_domains=true \
     allow_subdomains=false \
-    allow_ip_sans=false
+    allow_ip_sans=false \
+    key_type=rsa
