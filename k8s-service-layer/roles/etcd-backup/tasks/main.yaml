@@ -1,0 +1,70 @@
+- name: Include S3 secrets config file
+  include_vars:
+    file: "{{ etcd_backup_config_path }}"
+    name: etcd_backup_s3
+
+- name: Create a Secret to save s3 credentials
+  k8s:
+    state: present
+    apply: true
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ etcd_backup_secret_name }}"
+        namespace: "{{ etcd_backup_namespace }}"
+      data:
+        access: "{{ etcd_backup_s3.access_key | b64encode }}"
+        secret: "{{ etcd_backup_s3.secret_key | b64encode }}"
+    validate:
+      fail_on_error: true
+
+- name: Install required packages for s3
+  ansible.builtin.pip:
+    name:
+      - boto3
+      - botocore
+
+- name: Manage the backup bucket
+  environment:
+    EC2_ACCESS_KEY: "{{ etcd_backup_s3.access_key }}"
+    EC2_SECRET_KEY: "{{ etcd_backup_s3.secret_key }}"
+    EC2_URL: "{{ etcd_backup_s3.endpoint_url }}"
+  block:
+    - name: Check if bucket exists
+      aws_s3_bucket_info:
+        name: "{{ etcd_backup_bucket_name }}"
+      register: bucket_info
+
+    - name: Create bucket if it does not exist
+      s3_bucket:
+        name: "{{ etcd_backup_bucket_name }}"
+        # Even if the etcd-backup role is disabled afterwards we will not delete the bucket automatically
+        state: present
+        # By default, we're using RGW so only use a subset of the S3 API
+        ceph: yes
+        # Make sure that no one can read the dumps without authentication
+        delete_public_access: yes
+        # That's the default. Added the flag to make it explicit that no S3 server-side encryption takes place
+        encryption: none
+        # Needed when in ceph compat mode
+        s3_url: "{{ etcd_backup_s3.endpoint_url }}"
+
+    - name: "Configure a lifecycle rule on the bucket to expire (delete) items after {{ etcd_backup_days_of_retention }}"
+      s3_lifecycle:
+        name: "{{ etcd_backup_bucket_name }}"
+        expiration_days: "{{ etcd_backup_days_of_retention }}"
+        prefix: "{{ etcd_backup_file_prefix }}"
+        status: enabled
+        state: present
+
+- name: Deploy yaook operator etcd backup chart
+  community.kubernetes.helm:
+    chart_ref: etcdbackup
+    chart_repo_url: https://charts.yaook.cloud/operator/stable/
+    chart_version: "{{ etcd_backup_chart_version }}"
+    release_namespace: "{{ etcd_backup_namespace }}"
+    release_name: "{{ etcd_backup_name }}"
+    release_state: present
+    values: "{{ lookup('template', 'etcd_backup.yaml.j2') | from_yaml }}"
+  when: bucket_info.buckets | length > 0
