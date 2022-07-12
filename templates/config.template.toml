@@ -589,7 +589,7 @@ enabled = false # •ᴗ•
 # --- KUBERNETES SERVICE LAYER : ETCD-BACKUP ---
 # ansible prefix: "etcd_backup_"
 [k8s-service-layer.etcd-backup]
-enabled = false # •ᴗ•
+#enabled = false
 
 # Configure value for the cron job schedule for etcd backups. If not set it will be 
 # set to default value of  21 */12 * * *
