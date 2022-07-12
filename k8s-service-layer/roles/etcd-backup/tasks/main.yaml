@@ -24,7 +24,7 @@
       - boto3
       - botocore
 
-- name: Apply retention policy on bucket
+- name: Manage the backup bucket
   environment:
     EC2_ACCESS_KEY: "{{ access_key }}"
     EC2_SECRET_KEY: "{{ secret_key }}"
@@ -35,16 +35,27 @@
         name: "{{ etcd_backup_bucket_name }}"
       register: bucket_info
 
-    - name: "Configure a lifecycle rule on a bucket to expire (delete) items after {{ etcd_backup_days_of_retention }}"
+    - name: Create bucket if it does not exist
+      s3_bucket:
+        name: "{{ etcd_backup_bucket_name }}"
+        # Even if the etcd-backup role is disabled afterwards we will not delete the bucket automatically
+        state: present
+        # By default, we're using RGW so only use a subset of the S3 API
+        ceph: yes
+        # Make sure that no one can read the dumps without authentication
+        delete_public_access: yes
+        # That's the default. Added the flag to make it explicit that no S3 server-side encryption takes place
+        encryption: none
+        # Needed when in ceph compat mode
+        s3_url: "{{ endpoint_url }}"
+
+    - name: "Configure a lifecycle rule on the bucket to expire (delete) items after {{ etcd_backup_days_of_retention }}"
       s3_lifecycle:
         name: "{{ etcd_backup_bucket_name }}"
         expiration_days: "{{ etcd_backup_days_of_retention }}"
         prefix: "{{ etcd_backup_file_prefix }}"
         status: enabled
         state: present
-      register: retention
-      changed_when: retention.changed == true
-      when: bucket_info.buckets | length > 0
 
 - name: Deploy yaook operator etcd backup chart
   community.kubernetes.helm:

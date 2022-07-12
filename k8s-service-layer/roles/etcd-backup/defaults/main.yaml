@@ -1,4 +1,4 @@
-etcd_backup_secret_name: "backup-s3-secret"
+etcd_backup_secret_name: "etcd-backup-s3-credentials"
 etcd_backup_namespace: "kube-system"
 etcd_backup_name: "etcd-backup"
 etcd_backup_bucket_name: "etcd-backup"
