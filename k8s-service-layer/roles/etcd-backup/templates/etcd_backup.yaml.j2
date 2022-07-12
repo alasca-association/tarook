@@ -4,7 +4,7 @@ namespace: "{{ etcd_backup_namespace }}"
 
 targets:
     s3:
-      endpoint: "{{ endpoint_url }}"
+      endpoint: "{{ etcd_backup_s3.endpoint_url }}"
       bucket: "{{ etcd_backup_bucket_name }}" 
       addressingStyle: path
       filePrefix: "{{ etcd_backup_file_prefix }}"

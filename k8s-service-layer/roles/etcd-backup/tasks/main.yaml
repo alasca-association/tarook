@@ -1,6 +1,7 @@
 - name: Include S3 secrets config file
   include_vars:
     file: "{{ etcd_backup_config_path }}"
+    name: etcd_backup_s3
 
 - name: Create a Secret to save s3 credentials
   k8s:
@@ -13,8 +14,8 @@
         name: "{{ etcd_backup_secret_name }}"
         namespace: "{{ etcd_backup_namespace }}"
       data:
-        access: "{{ access_key | b64encode }}"
-        secret: "{{ secret_key | b64encode }}"
+        access: "{{ etcd_backup_s3.access_key | b64encode }}"
+        secret: "{{ etcd_backup_s3.secret_key | b64encode }}"
     validate:
       fail_on_error: true
 
@@ -26,9 +27,9 @@
 
 - name: Manage the backup bucket
   environment:
-    EC2_ACCESS_KEY: "{{ access_key }}"
-    EC2_SECRET_KEY: "{{ secret_key }}"
-    EC2_URL: "{{ endpoint_url }}"
+    EC2_ACCESS_KEY: "{{ etcd_backup_s3.access_key }}"
+    EC2_SECRET_KEY: "{{ etcd_backup_s3.secret_key }}"
+    EC2_URL: "{{ etcd_backup_s3.endpoint_url }}"
   block:
     - name: Check if bucket exists
       aws_s3_bucket_info:
@@ -47,7 +48,7 @@
         # That's the default. Added the flag to make it explicit that no S3 server-side encryption takes place
         encryption: none
         # Needed when in ceph compat mode
-        s3_url: "{{ endpoint_url }}"
+        s3_url: "{{ etcd_backup_s3.endpoint_url }}"
 
     - name: "Configure a lifecycle rule on the bucket to expire (delete) items after {{ etcd_backup_days_of_retention }}"
       s3_lifecycle:
