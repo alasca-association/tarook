@@ -23,13 +23,10 @@
         cpu_type: "amd"
 
     - name: Enable IOMMU
-      lineinfile:
-        path: /etc/default/grub
-        state: present
-        insertafter: GRUB_CMDLINE_LINUX
-        line: 'GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX {{ cpu_type }}_iommu=on iommu=pt .modeset=0 rd.driver.pre=vfio-pci video=vesafb:off"'
-        owner: root
-        group: root
+      copy:
+        dest: /etc/default/grub.d/enable_iommu.cfg
+        content: |
+          GRUB_CMDLINE_LINUX="{{ cpu_type }}_iommu=on iommu=pt .modeset=0 rd.driver.pre=vfio-pci video=vesafb:off"
       register: grub_config
 
     - name: Update GRUB
