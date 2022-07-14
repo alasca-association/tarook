@@ -19,7 +19,12 @@
         strict: yes
       state: present
 
-  - name: Create ServiceAccount, RBAC, PSP, and DaemonSet for calico-busybox-test
+  - name: Collect Information about number of Nodes
+    k8s_info:
+      kind: Node
+    register: k8s_nodes_list
+  
+  - name: Create ServiceAccount, RBAC, PSP, and Deployment for calico-busybox-test
     k8s:
       definition: "{{ lookup('template', item) }}"
       apply: yes
@@ -31,7 +36,7 @@
     with_items:
     - busybox_serviceaccount.yaml.j2
     - busybox-psp.yaml.j2
-    - calico-busybox-daemonset.yaml.j2
+    - busybox-deployment.yaml.j2
 
   - name: Collect (calico-)BusyBox Pod Resource Information
     k8s_info:
@@ -91,7 +96,7 @@
     poll: 0
 
   # Using a Deamonset ensures that a Pod is created on each node
-  - name: Delete the (calico-)BusyBox DaemonSet, ServiceAccount and PSP
+  - name: Delete the (calico-)BusyBox Deployment, ServiceAccount and PSP
     k8s:
       definition: "{{ lookup('template', item) }}"
       apply: yes
@@ -100,7 +105,7 @@
         fail_on_error: yes
         strict: yes
     with_items:
-    - calico-busybox-daemonset.yaml.j2
+    - busybox-deployment.yaml.j2
     - busybox_serviceaccount.yaml.j2
     - busybox-psp.yaml.j2
     tags:
