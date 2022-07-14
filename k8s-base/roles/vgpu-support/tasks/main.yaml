@@ -129,12 +129,24 @@
         - udevadm control --reload-rules
         - udevadm trigger
 
-    - name: install nvidia_sriov_manage systemd unit file
-      template: src=nvidia_sriov_manage.service.j2 dest=/etc/systemd/system/nvidia_sriov_manage.service
+    - name: run sriov-manage once to create VFs
+      # executing the variant of the reboot systemd service during installation does not work properly we
+      # rather run the command once after installation and just enable the systemd service to run for consecutive reboots
+      command: "/usr/lib/nvidia/sriov-manage -e ALL"
 
-    - name: start nvidia_sriov_manage
+    - name: install nvidia-sriov-manage systemd unit file
+      template: src=nvidia-sriov-manage.service.j2 dest=/etc/systemd/system/nvidia-sriov-manage.service
+
+    - name: create sriov-loop script (used by nvidia-sriov-manage systemd unit)
+      template:
+        src: nvidia-sriov-startup-loop.sh.j2
+        dest: /usr/local/bin/nvidia-sriov-startup-loop.sh
+        owner: root
+        group: root
+        mode: 0744
+
+    - name: enable nvidia-sriov-manage
       ansible.builtin.systemd:
-        state=started 
-        enabled=yes
-        name=nvidia_sriov_manage
-        daemon_reload=yes
+        enabled: yes
+        name: nvidia-sriov-manage.service
+        daemon_reload: yes
