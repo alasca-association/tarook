@@ -12,22 +12,34 @@ pki_root_ttl=43830h
 init_cluster_secrets_engines "$pki_root_ttl"
 
 vault write "$k8s_pki_path/root/generate/internal" \
-    common_name="$cluster Kubernetes Root CA" \
+    common_name="Kubernetes Cluster Root CA $year" \
+    ou="$ou" \
+    organization="$organization" \
+    country="$country" \
     ttl="$pki_root_ttl" \
     key_type=ed25519
 
 vault write "$etcd_pki_path/root/generate/internal" \
-    common_name="$cluster Kubernetes etcd Root CA" \
+    common_name="Kubernetes etcd Root CA $year" \
+    ou="$ou" \
+    organization="$organization" \
+    country="$country" \
     ttl="$pki_root_ttl" \
     key_type=ed25519
 
 vault write "$k8s_front_proxy_pki_path/root/generate/internal" \
-    common_name="$cluster Kubernetes Front Proxy Root CA" \
+    common_name="Kubernetes Front Proxy Root CA $year" \
+    ou="$ou" \
+    organization="$organization" \
+    country="$country" \
     ttl="$pki_root_ttl" \
     key_type=ed25519
 
 vault write "$calico_pki_path/root/generate/internal" \
-    common_name="$cluster Calico Internal Root CA" \
+    common_name="Kubernetes calico Root CA $year" \
+    ou="$ou" \
+    organization="$organization" \
+    country="$country" \
     ttl="$pki_root_ttl" \
     key_type=ed25519
 

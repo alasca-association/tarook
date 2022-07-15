@@ -5,6 +5,11 @@ common_policy_prefix="${YAOOK_K8S_VAULT_POLICY_PREFIX:-yaook}"
 nodes_approle_name="${YAOOK_K8S_VAULT_NODES_APPROLE_NAME:-${common_path_prefix}/nodes}"
 nodes_approle_path="auth/$nodes_approle_name"
 
+year="$(date +%Y)"
+ou="$cluster"
+organization="${YAOOK_K8S_CA_ORGANIZATION_OVERRIDE:-CLOUD&HEAT Technologies GmbH}"
+country="${YAOOK_K8S_CA_COUNTRY_OVERRIDE:-DE}"
+
 if [ -n "${cluster:-}" ]; then
     cluster_path="$common_path_prefix/$cluster"
 
