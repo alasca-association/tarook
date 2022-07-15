@@ -71,7 +71,7 @@
       owner: "{{ get_cert_owner }}"
       group: "{{ get_cert_group | default(get_cert_owner) }}"
       mode: u=rw,go=r
-      content: "{{ get_cert.data.data.certificate }}{{ '\n' }}{{ get_cert.data.data.issuing_ca }}"
+      content: "{{ get_cert.data.data.certificate }}{{ '\n' }}{{ get_cert.data.data.ca_chain | join('\n') }}{{ '\n' }}"
 
   - name: "{{ get_cert_title }}: Write private key"
     become: yes
@@ -81,4 +81,4 @@
       owner: "{{ get_cert_owner }}"
       group: "{{ get_cert_group | default(get_cert_owner) }}"
       mode: u=r
-      content: "{{ get_cert.data.data.private_key }}"
+      content: "{{ get_cert.data.data.private_key }}{{ '\n' }}"

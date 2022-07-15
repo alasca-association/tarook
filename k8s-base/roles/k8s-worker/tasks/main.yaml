@@ -74,7 +74,7 @@
       owner: root
       group: root
       mode: ugo=r
-      content: "{{ lookup('community.hashi_vault.vault_read', '%s/%s/k8s-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=cat_role_id.stdout, secret_id=cat_secret_id.stdout, mount_point=vault_nodes_approle).data.ca_chain }}"
+      content: "{{ '' }}-----BEGIN CERTIFICATE-----{{ '\n' }}{{ lookup('community.hashi_vault.vault_read', '%s/%s/k8s-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=cat_role_id.stdout, secret_id=cat_secret_id.stdout, mount_point=vault_nodes_approle).data.ca_chain.split('-----BEGIN CERTIFICATE-----')[-1] }}"
 
   - name: Write k8s front proxy CA file
     become: yes
@@ -83,7 +83,7 @@
       owner: root
       group: root
       mode: ugo=r
-      content: "{{ lookup('community.hashi_vault.vault_read', '%s/%s/k8s-front-proxy-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=cat_role_id.stdout, secret_id=cat_secret_id.stdout, mount_point=vault_nodes_approle).data.ca_chain }}"
+      content: "{{ '' }}-----BEGIN CERTIFICATE-----{{ '\n' }}{{ lookup('community.hashi_vault.vault_read', '%s/%s/k8s-front-proxy-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=cat_role_id.stdout, secret_id=cat_secret_id.stdout, mount_point=vault_nodes_approle).data.ca_chain.split('-----BEGIN CERTIFICATE-----')[-1] }}"
 
   - name: Get certificate information
     become: yes
