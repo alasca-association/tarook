@@ -1,16 +1,17 @@
 #!/bin/bash
 set -euo pipefail
-common_path_prefix="${YAOOK_K8S_VAULT_PATH_PREFIX:-yaook}"
-common_policy_prefix="${YAOOK_K8S_VAULT_POLICY_PREFIX:-yaook}"
-nodes_approle_name="${YAOOK_K8S_VAULT_NODES_APPROLE_NAME:-${common_path_prefix}/nodes}"
-nodes_approle_path="auth/$nodes_approle_name"
+# shellcheck source=tools/vault/lib.sh
+. "$(dirname "$0")/lib.sh"
 
-if ! vault read -field="$nodes_approle_name/" sys/auth >/dev/null 2>/dev/null; then
+if [ -z "${nodes_approle_accessor:-}" ]; then
     echo "approle auth at $nodes_approle_name not initialized yet, creating"
     vault auth enable -path="$nodes_approle_name" approle
 fi
 
-nodes_approle_accessor=$(vault read -field="$nodes_approle_name/" -format=json sys/auth | jq -r .accessor)
+# reload the lib to update the vars after initializing the approle
+# shellcheck source=tools/vault/lib.sh
+. "$(dirname "$0")/lib.sh"
+
 
 function write_policy() {
     name="$1"

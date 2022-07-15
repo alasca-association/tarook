@@ -1,14 +1,8 @@
 #!/bin/bash
 set -euo pipefail
-common_path_prefix="${YAOOK_K8S_VAULT_PATH_PREFIX:-yaook}"
 cluster="$1"
-cluster_path="$common_path_prefix/$cluster"
-
-ssh_ca_path="$cluster_path/ssh-ca"
-k8s_pki_path="$cluster_path/k8s-pki"
-k8s_front_proxy_pki_path="$cluster_path/k8s-front-proxy-pki"
-calico_pki_path="$cluster_path/calico-pki"
-etcd_pki_path="$cluster_path/etcd-pki"
+# shellcheck source=tools/vault/lib.sh
+. "$(dirname "$0")/lib.sh"
 
 echo 'This will REMOVE all data stored in vault related to the cluster'
 echo

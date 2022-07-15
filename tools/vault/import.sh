@@ -1,15 +1,11 @@
 #!/bin/bash
 set -euo pipefail
-common_path_prefix="${YAOOK_K8S_VAULT_PATH_PREFIX:-yaook}"
 cluster="$1"
-cluster_path="$common_path_prefix/$cluster"
+# shellcheck source=tools/vault/lib.sh
+. "$(dirname "$0")/lib.sh"
+
 inventory_etc=inventory/.etc
 flag_file="$inventory_etc/migrated-to-vault"
-
-k8s_pki_path="$cluster_path/k8s-pki"
-k8s_front_proxy_pki_path="$cluster_path/k8s-front-proxy-pki"
-calico_pki_path="$cluster_path/calico-pki"
-etcd_pki_path="$cluster_path/etcd-pki"
 
 if [ ! -d 'inventory/.etc' ]; then
     echo "$0: inventory/.etc does not exist. are you running this from the right place?" >&2
