@@ -48,6 +48,7 @@
   - [ch-k8s-lbaas](./managed-services/load-balancing/ch-k8s-lbaas.md)
 - [NGINX Ingress Controller]() <!-- ./managed-services/nginx-ingress-controller.md -->
 - [Cert-Manager]() <!-- ./managed-services/cert-manager.md -->
+- [HashiCorp Vault](./managed-services/vault.md)
  
 ---
 
