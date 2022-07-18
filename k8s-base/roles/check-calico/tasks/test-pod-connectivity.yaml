@@ -23,7 +23,7 @@
     k8s_info:
       kind: Node
     register: k8s_nodes_list
-  
+
   - name: Create ServiceAccount, RBAC, PSP, and Deployment for calico-busybox-test
     k8s:
       definition: "{{ lookup('template', item) }}"
