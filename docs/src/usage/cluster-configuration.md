@@ -20,6 +20,22 @@ You'll need to adjust these values if you e.g. want to enable [rook](./../manage
 
 Note: Right now there is a variable `masters` to configure the k8s controller server count and `workers` for the k8s node count. However there is no explicit variable for the gateway node count! This is implicitly defined by the number of elements in the `azs` array.
 
+Please not that with the introduction of `for_each` in our terraform module, you can delete individual nodes. Consider the following example:
+
+```
+[terraform]
+workers = 3
+worker_names = ["0", "1", "2"]
+```
+
+In order to delete any of the nodes, decrease the `workers` count and remove the suffix of the worker from the list. After removing, i.e., "1", your config would look like this:
+
+```
+[terraform]
+workers = 2
+worker_names = ["0", "2"]
+```
+
 <details>
 <summary>All Terraform variables and their defaults</summary>
 
