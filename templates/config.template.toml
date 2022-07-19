@@ -608,7 +608,7 @@ enabled = false # •ᴗ•
 [k8s-service-layer.etcd-backup]
 #enabled = false
 
-# Configure value for the cron job schedule for etcd backups. If not set it will be 
+# Configure value for the cron job schedule for etcd backups. If not set it will be
 # set to default value of  21 */12 * * *
 #schedule = "21 * * * *"
 
@@ -618,9 +618,9 @@ enabled = false # •ᴗ•
 # Name of the folder to keep the backup files. It defaults to `etcd-backup`
 #file_prefix = "backup"
 
-# Configure s3 config yaml name. The file MUST be kept under `config` dir 
-# and should be protected via some mechanism. This is a mandatory 
-# variable, if etcd_backup_enabled is set to True. A template for such a file can be found at 
+# Configure s3 config yaml name. The file MUST be kept under `config` dir
+# and should be protected via some mechanism. This is a mandatory
+# variable, if etcd_backup_enabled is set to True. A template for such a file can be found at
 # managed-k8s/templates/etcd_backup_s3_config.yaml
 # **IMPORTANT:** This file contains credentials in plain text so make sure its appropriately secured (git-crypt, etc)
 #s3_config_name = "etcd_backup_s3_config.yaml"
