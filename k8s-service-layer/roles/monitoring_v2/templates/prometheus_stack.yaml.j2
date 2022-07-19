@@ -320,6 +320,29 @@ prometheus:
         {{ label_key | to_json }}: {{ label_value | to_json }}
 {% endfor %}
 {% endif %}
+    additionalAlertManagerConfigs:
+    - kubernetes_sd_configs:
+      - role: service
+        namespaces:
+          names:
+          - {{ monitoring_namespace }}
+        selectors:
+        # Fetch endpoints of services with matching labels and treat them
+        # as (additional) AlertManager instances to send alerts to
+        - role: service
+          label:
+            alertmanager = external-am
+{% if monitoring_common_labels %}
+      relabel_configs:
+{%   for label_key, label_value in monitoring_common_labels.items() %}
+      - source_labels:
+        # Replace '-', '.' and '/'
+        # https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set
+        - __meta_kubernetes_service_label_{{ label_key | regex_replace('\-|\.|\/', '_') }}
+        regex: {{ label_value }}
+        action: keep
+{%   endfor %}
+{% endif %}
 {% if monitoring_use_thanos | bool %}
     thanos:
       objectStorageConfig:
