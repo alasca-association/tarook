@@ -629,6 +629,10 @@ enabled = false # •ᴗ•
 # are also implemented by Ceph's RGW.
 #days_of_retention = 30
 
+# etcdbackup chart version to install.
+# If this is not specified, the latest version is installed.
+#chart_version=""
+
 # ANCHOR_END: etcd_backup_configuration
 
 # ANCHOR: ksl_vault_configuration
