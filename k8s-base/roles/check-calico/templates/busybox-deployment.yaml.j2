@@ -29,8 +29,8 @@ spec:
                 - calico-busybox-test
             topologyKey: "kubernetes.io/hostname"
       tolerations:
-      - key: node-role.kubernetes.io/master
-        effect: NoSchedule
+      - key: ""
+        operator: Exists
       containers:
       - name: calico-busybox-test
         image: registry.gitlab.com/yaook/images/k8s-debian:main
