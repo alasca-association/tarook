@@ -81,52 +81,45 @@ This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`)
    *next* (supported) minor release. The managed-k8s cluster
    configuration template states all supported versions. If in doubt,
    all supported rook releases are also stated in the `k8s-config`
-   role as well as in the `k8s-rook` role (and in this doc file).
+   role as well as in the `k8s-service-layer/rook_v1` role (and in this doc file).
 
-5. Set `version` in the `[k8s-service-layer.rook]` section to the
-   *next* (supported) minor release of rook.
+5. Set `version` in the
+   [rook configuration section](../../usage/cluster-configuration.md#rook-configuration)
+   to the **next** (supported) minor release of rook.
    ```toml
    [...]
    [k8s-service-layer.rook]
    [...]
-   # Enable rook deployment
-   rook = true
-   #
-   # rook version. Currently we do support:
+   # Currently we support the following rook versions:
    # v1.2.3, v1.3.11, v1.4.9, v1.5.12, v1.6.7
-   rook_version = "v1.6.7"
+   version = "v1.6.7"
    [...]
    ```
 
-6. Execute the `toml_helper`
-   ```shell
-   python3 managed-k8s/jenkins/toml_helper.py
-   ```
-
-7. Execute `stage3`, or at least the `k8s-rook` tasks. As the upgrade is
-   disruptive (at least for a short amount of time) disruption needs to be enabled.
+6. Execute `stage4`, or at least the `rook_v1` role.
+   > **NOTE:** As the upgrade is disruptive (at least for a short amount of time)
+   > disruption needs to be enabled.
    ```shell
    # Trigger stage 3
-   MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage3.sh
+   MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage4.sh
    # Trigger only k8s-rook
-   export AFLAGS='--diff --tags mk8s-sl/rook'
-   MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage3.sh
+   AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage4.sh
    ```
 
-8. Get yourself your favorite (non-alcoholic) drink and watch with
+7. Get yourself your favorite (non-alcoholic) drink and watch with
    fascinating enthusiasm how your rook-based ceph cluster gets upgraded.
    (Can take several minutes (up to hours)).
 
-9. After the upgrade has been proceeded, check that your managed-k8s
+8. After the upgrade has been proceeded, check that your managed-k8s
     cluster still is in a sane state via the smoke tests.
     ```shell
     bash managed-k8s/actions/test.sh
     ```
 
-10. Continue with steps `{1,3..11}` until you have reached your final
+9.  Continue with steps `{1,3..10}` until you have reached your final
     target rook version.
 
-11. Celebrate that everything worked out `ᕕ( ᐛ )ᕗ`
+10. Celebrate that everything worked out `ᕕ( ᐛ )ᕗ`
 
 
 ### Updating rook manually
