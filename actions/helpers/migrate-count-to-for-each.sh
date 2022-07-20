@@ -1,17 +1,13 @@
-# shellcheck shell=bash
-set -euo pipefail
-actions_dir="$(dirname "$0")/../"
+# shellcheck shell=bash enable=check-extra-masked-returns
 
-# shellcheck source=actions/lib.sh
-. "$actions_dir/lib.sh"
-
+# shellcheck disable=SC2154
 terraform_console_remove_quotes () {
   echo "$1" | terraform -chdir="$terraform_module" console -var-file="$terraform_state_dir"/config.tfvars.json | sed -e 's/^"//' -e 's/"$//'
 }
 
 terraform_migrate_foreach() {
 
-  cd "$terraform_state_dir"
+  cd "$terraform_state_dir" || exit
   export TF_DATA_DIR="$terraform_state_dir/.terraform"
 
   # Read the name of the cluster and instances.
