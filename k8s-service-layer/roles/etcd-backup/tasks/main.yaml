@@ -1,7 +1,13 @@
-- name: Include S3 secrets config file
-  include_vars:
-    file: "{{ etcd_backup_config_path }}"
-    name: etcd_backup_s3
+- name: Read S3 secrets from Vault
+  environment:
+    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+    ANSIBLE_HASHI_VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
+    ANSIBLE_HASHI_VAULT_ROLE_ID: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
+    ANSIBLE_HASHI_VAULT_SECRET_ID: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
+    ANSIBLE_HASHI_VAULT_AUTH_METHOD: "{{ lookup('env', 'VAULT_TOKEN') | ternary('approle', 'token') }}"
+  set_fact:
+    etcd_backup_s3: "{{ lookup('community.hashi_vault.vault_kv2_get', etcd_backup_vault_path, engine_mount_point=etcd_backup_vault_mount_point).data.data }}"
 
 - name: Create a Secret to save s3 credentials
   k8s:

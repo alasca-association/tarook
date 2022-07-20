@@ -37,6 +37,7 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "cah-users",
     "etcd-backup",
     "custom",
+    "vault",
     "miscellaneous",
 )
 # Mapping stages to their common names
@@ -86,6 +87,7 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "cert-manager": "k8s_cert_manager",
     "ingress": "k8s_ingress",
     "etcd-backup": "etcd_backup",
+    "vault": "vault",
 }
 
 
@@ -349,6 +351,21 @@ def main():
         tf_config["monitoring_use_thanos"] = \
             config["k8s-service-layer"].get("prometheus").get("use_thanos")
         terraform_helper.deploy_terraform_config(tf_config)
+
+    # ---
+    # VAULT
+    # ---
+    print_process_state("Vault")
+    for stage in ["stage2", "stage3", "stage4"]:
+        vault_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES[stage] /
+            "group_vars" / "all" / "vault.yaml"
+        )
+        dump_to_ansible_inventory(
+            config["vault"],
+            vault_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("vault", "")
+        )
 
     # ---
     # WIREGUARD

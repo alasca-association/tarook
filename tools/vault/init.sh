@@ -254,4 +254,8 @@ path "$common_path_prefix/+/k8s-pki/issue/system-nodes_admin" {
 path "$common_path_prefix/+/kv/data/ipmi/*" {
     capabilities = ["read"]
 }
+
+path "$common_path_prefix/+/kv/data/k8s/etcdbackup" {
+    capabilities = ["read"]
+}
 EOF
