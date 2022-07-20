@@ -28,8 +28,6 @@ spec:
       enabled: true
 {% endif %}
   storage:
-    config:
-      encryptedDevice: "{{ rook_encrypt_osds }}"
    storageClassDeviceSets:
     - name: cinder
       count: {{ rook_nosds | to_json }}
