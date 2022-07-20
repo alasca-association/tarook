@@ -100,6 +100,12 @@ use_podsecuritypolicies = false # •ᴗ•
 # and surrounding framework is deployed.
 is_gpu_cluster = false # •ᴗ•
 
+# Set this variable to virtualize Nvidia GPUs on worker nodes.
+# It will install a VGPU manager on the worker node and split the GPU according to chosen vgpu type.
+# Note: This will not install Nvidia drivers to utilize vGPU guest VMs!!
+# If set to true, please set further variables in the [miscellaneous] section.
+#virtualize_gpu = false
+
 [kubernetes.apiserver]
 frontend_port = 8888 # •ᴗ•
 
@@ -946,5 +952,13 @@ wireguard_on_workers = false
 #custom_chrony_configuration = false
 #custom_ntp_pools = [ "0.pool.ntp.example.org", "1.pool.ntp.example.org"]
 #custom_ntp_servers = [ "0.server.ntp.example.org", "1.server.ntp.example.org"]
+
+[nvidia.vgpu]
+# vGPU Support
+# If virtualize_gpu in the [kubernetes] section is set to true, please also set these variables:
+# driver_blob_url should point to a object store or otherwise web server, where the vGPU Manager installation file is available.
+# driver_blob_url= "..."
+# manager_filename should hold the name of the vGPU Manager installation file.
+# manager_filename = "..."
 
 # ANCHOR_END: miscellaneous_configuration

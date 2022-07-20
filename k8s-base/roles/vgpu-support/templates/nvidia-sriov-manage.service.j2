@@ -1,0 +1,9 @@
+[Unit]
+    Description=Service to enable SR-IOV for Nvidia GPUs after reboot
+    Before=kubelet.service
+[Service]
+    Type=oneshot
+    StandardOutput=journal
+    ExecStart=/usr/local/bin/nvidia-sriov-startup-loop.sh
+[Install]
+    WantedBy=multi-user.target
