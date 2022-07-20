@@ -16,3 +16,4 @@
 /terraform/plan.tfplan
 .envrc
 /.direnv
+terraform/02-moved-instances.tf
