@@ -3,7 +3,4 @@ galaxy_info:
   license: Apache-2.0
   author: Yaook Authors
 dependencies:
-- wireguard-support
-- net-forwarding
-- bird
 - vault-config

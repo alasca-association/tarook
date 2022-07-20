@@ -19,6 +19,7 @@ If you are having problems, please visit our [FAQ](./faq.md).
             - Please also ensure that your gpg keyring is up-to-date.
         - You need to add your (public) wireguard key to the [wireguard peer configuration](./usage/cluster-configuration.md#wireguard-configuration).
         - If your cluster runs on top of OpenStack, you can enable the [`ch-k8s-lbaas` loadbalancing.](./usage/cluster-configuration.md#configuring-load-balancing) If you do, you also need to create the `ch-k8s-lbaas.shared_secret` secret.
+1. [Initialize the Vault secret store.](./usage/initialization.md#initialize-vault-for-a-development-setup)
 1. Deploy cluster by executing the [`apply.sh`](./operation/actions-references.md#applysh) script.
     ```console
     $ ./managed-k8s/actions/apply.sh

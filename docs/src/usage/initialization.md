@@ -102,6 +102,33 @@ serve as your [cluster repository](./../design/cluster-repository.md):
     python3 -m pip install -r managed-k8s/requirements.txt
     ```
 
+## Initialize Vault for a Development Setup
+
+As of Summer 2022, yaook/k8s exclusively supports [HashiCorp Vault](https://vaultproject.io) as backend for storing secrets.
+Previously, passwordstore was used.
+For details on the use of Vault in yaook/k8s, please see the [Use of HashiCorp Vault in yaook/k8s](./../operation/vault.md) section.
+
+To initialize a **local** Vault instance for **development purposes**, do the following:
+
+1. Start the docker container:
+
+    ```console
+    ./managed-k8s/actions/vault.sh
+    ```
+
+    **Note:** This is not suited for productive deployments or production use,
+    for many reasons!
+
+2. Ensure that `vault_env.sh` is part of your `.envrc`.
+    Run the `vault login` command it asks you to run
+    (you may have to leave and enter the directory after you have run `vault.sh`
+    for `vault_env.sh` to work).
+
+3. Run `./managed-k8s/tools/vault/init.sh`
+
+4. Run `./managed-k8s/tools/vault/mkcluster-root.sh devcluster`
+
+
 ## Appendix
 
 ### Allowed cryptographic algorithms for SSH

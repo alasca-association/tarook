@@ -32,6 +32,18 @@ dualstack_support = false # "•ᴗ•"
 
 # ANCHOR_END: terraform_config
 
+# ANCHOR: vault_configuration
+# --- VAULT BACKEND ---
+# ansible prefix: vault_
+[vault]
+# Name of the cluster inside Vault. The secrets engines are searched for
+# relative to $path_prefix/$cluster_name/.
+# This name must be unique within a single vault instance and cannot be
+# reasonably changed after a cluster has been spawned.
+cluster_name = "devcluster" # "•ᴗ•"
+
+# ANCHOR_END: vault_configuration
+
 # ANCHOR: load-balancing_config
 # --- LOAD-BALANCING ---
 # ansible prefix: /

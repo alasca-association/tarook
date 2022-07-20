@@ -5,3 +5,4 @@ galaxy_info:
 dependencies:
 - net-forwarding
 - is-k8s-installed
+- vault-config

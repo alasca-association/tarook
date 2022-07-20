@@ -1,0 +1,4 @@
+---
+vault_policy_prefix: yaook
+vault_path_prefix: yaook
+vault_nodes_approle: yaook/nodes
