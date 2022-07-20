@@ -25,13 +25,18 @@ nodes_approle_accessor=$(vault read -field="$nodes_approle_name/" -format=json s
 
 function init_cluster_secrets_engines() {
     local pki_root_ttl="$1"
+    local allow_existing="${2:-true}"
 
-    vault secrets enable -path="$cluster_path/kv" -version=2 kv || true
-    ( vault secrets enable -path="$ssh_ca_path" ssh && vault write "$ssh_ca_path/config/ca" generate_signing_key=true ) || true
-    vault secrets enable -path="$k8s_pki_path" pki || true
-    vault secrets enable -path="$k8s_front_proxy_pki_path" pki || true
-    vault secrets enable -path="$calico_pki_path" pki || true
-    vault secrets enable -path="$etcd_pki_path" pki || true
+    if [ "$allow_existing" != 'true' ]; then
+        allow_existing=false
+    fi
+
+    vault secrets enable -path="$cluster_path/kv" -version=2 kv || $allow_existing
+    ( vault secrets enable -path="$ssh_ca_path" ssh && vault write "$ssh_ca_path/config/ca" generate_signing_key=true ) || $allow_existing
+    vault secrets enable -path="$k8s_pki_path" pki || $allow_existing
+    vault secrets enable -path="$k8s_front_proxy_pki_path" pki || $allow_existing
+    vault secrets enable -path="$calico_pki_path" pki || $allow_existing
+    vault secrets enable -path="$etcd_pki_path" pki || $allow_existing
     vault secrets tune -max-lease-ttl="$pki_root_ttl" "$k8s_pki_path"
     vault secrets tune -max-lease-ttl="$pki_root_ttl" "$k8s_front_proxy_pki_path"
     vault secrets tune -max-lease-ttl="$pki_root_ttl" "$calico_pki_path"
