@@ -204,10 +204,10 @@ vault-container-test:
   - export AFLAGS="$AFLAGS_BASE -e k8s_version=1.20.15"
     # install ingress after upgrading to k8s v1.20
   - AFLAGS="-t mk8s-sl/ingress" ./managed-k8s/actions/apply-stage4.sh
-    # Upgrade cluster to k8s v1.21.10
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.21.12
+    # Upgrade cluster to k8s v1.21.14
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.21.14
     # Update k8s version
-  - export AFLAGS="$AFLAGS_BASE -e k8s_version=1.21.12"
+  - export AFLAGS="$AFLAGS_BASE -e k8s_version=1.21.14"
     # Retest the cluster
   - ./managed-k8s/actions/test.sh
   after_script:
