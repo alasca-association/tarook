@@ -195,13 +195,15 @@ vault-container-test:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
   script:
   # Set k8s version to minimal supported version
-  - export AFLAGS="$AFLAGS_BASE -e k8s_version=1.19.16"
+  - export AFLAGS="$AFLAGS_BASE -e k8s_version=1.19.16 -e k8s_ingress_enabled=false"
   # Spawn and test cluster
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
     # Upgrade cluster to k8s v1.20.15
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.20.15
     # Update k8s version
   - export AFLAGS="$AFLAGS_BASE -e k8s_version=1.20.15"
+    # install ingress after upgrading to k8s v1.20
+  - AFLAGS="-t mk8s-sl/ingress" ./managed-k8s/actions/apply-stage4.sh
     # Upgrade cluster to k8s v1.21.10
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.21.12
     # Update k8s version
