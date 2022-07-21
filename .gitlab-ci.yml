@@ -208,6 +208,10 @@ vault-container-test:
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.21.14
     # Update k8s version
   - export AFLAGS="$AFLAGS_BASE -e k8s_version=1.21.14"
+    # Upgrade cluster to k8s v1.22.12
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.22.12
+    # Update k8s version
+  - export AFLAGS="$AFLAGS_BASE -e k8s_version=1.22.12"
     # Retest the cluster
   - ./managed-k8s/actions/test.sh
   after_script:
