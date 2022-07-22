@@ -63,6 +63,8 @@
       when: not (k8s_skip_upgrade_checks | bool)
     - name: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"
+    - name: update_system
+      when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-apply
@@ -91,6 +93,8 @@
       delegate_to: localhost
       when: not (k8s_skip_upgrade_checks | bool)
     - name: kubeadm-drain-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: update_system
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
@@ -134,6 +138,8 @@
       delegate_to: localhost
       when: not (k8s_skip_upgrade_checks | bool)
     - name: kubeadm-drain-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: update_system
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
