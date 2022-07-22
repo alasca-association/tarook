@@ -308,17 +308,6 @@
     with_items:
     - typha-serviceaccount.yaml
 
-  - name: Create Typha PodSecurityPolicy
-    k8s:
-      definition: "{{ lookup('file', item) }}"
-      apply: yes
-      state: "present"
-      validate:
-        fail_on_error: yes
-        strict: yes
-    with_items:
-    - typha-psp.yaml
-
   - name: Deploy Typha Deployment
     k8s:
       definition: "{{ lookup('template', item) }}"

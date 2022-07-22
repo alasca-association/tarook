@@ -51,7 +51,7 @@ apiServer:
   extraArgs:
     service-account-issuer: kubernetes.default.svc
     service-account-signing-key-file: /etc/kubernetes/pki/sa.key
-    enable-admission-plugins: NodeRestriction{% if k8s_use_podsecuritypolicies %},PodSecurityPolicy{% endif %}
+    enable-admission-plugins: NodeRestriction
 
 controllerManager:
     extraArgs:

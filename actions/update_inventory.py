@@ -68,10 +68,6 @@ K8S_MANAGED_SERVICES_VAR_MAP = {
             # in the near future
         ]
     },
-    # "kubernetes": [                       # now exported by a
-    #     "use_podsecuritypolicies",        # workaround ...
-    #     "version"
-    # ]
 }
 # This maps defines the prefix that is assigned to each
 # variable of a section

@@ -28,8 +28,6 @@
       defaultBackend:
         affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') }}"
         tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') }}"
-      podSecurityPolicy:
-        enabled: "{{ k8s_use_podsecuritypolicies }}"
       controller:
         service:
           type: "{{ k8s_ingress_service_type }}"

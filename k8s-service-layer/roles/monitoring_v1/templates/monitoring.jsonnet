@@ -1,4 +1,3 @@
-{% set generate_psp = k8s_use_podsecuritypolicies %}
 {% from "jsonnet-tools.j2" import resource_constraints %}
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
 
@@ -61,77 +60,6 @@ local kp =
       },
 
     nodeExporter+:: {
-{% if generate_psp | bool %}
-      "00-podSecurityPolicy":
-        local podSecurityPolicy = k.policy.v1beta1.podSecurityPolicy;
-
-        podSecurityPolicy.new() +
-        podSecurityPolicy.mixin.metadata.withName('node-exporter') +
-        podSecurityPolicy.mixin.metadata.withNamespace($._config.namespace) +
-        podSecurityPolicy.mixin.spec.withHostIpc(false) +
-        podSecurityPolicy.mixin.spec.withHostPid(true) +
-        podSecurityPolicy.mixin.spec.withHostNetwork(true) +
-        podSecurityPolicy.mixin.spec.withHostPorts([
-          {
-            min: 9100,
-            max: 9100,
-          }
-        ]) +
-        podSecurityPolicy.mixin.spec.withVolumes(["hostPath", "secret"]) +
-        podSecurityPolicy.mixin.spec.withAllowedHostPaths([
-          {
-            pathPrefix: "/",
-            readOnly: true,
-          },
-          {
-            pathPrefix: "/proc",
-            readOnly: false,
-          },
-          {
-            pathPrefix: "/sys",
-            readOnly: false,
-          },
-        ]) +
-        podSecurityPolicy.mixin.spec.withPrivileged(false) +
-        podSecurityPolicy.mixin.spec.withAllowPrivilegeEscalation(false) +
-        podSecurityPolicy.mixin.spec.fsGroup.withRule("RunAsAny") +
-        podSecurityPolicy.mixin.spec.supplementalGroups.withRule("MayRunAs").withRanges({"min": 1, "max": 65535}) +
-        podSecurityPolicy.mixin.spec.runAsGroup.withRule("MustRunAs").withRanges({"min": 1, "max": 65535}) +
-        podSecurityPolicy.mixin.spec.runAsUser.withRule("MustRunAsNonRoot") +
-        podSecurityPolicy.mixin.spec.seLinux.withRule("RunAsAny"),
-
-      "00-pspRole":
-        local role = k.rbac.v1.role;
-        local policyRule = role.rulesType;
-
-        local pspRule = policyRule.new() +
-                        policyRule.withApiGroups(["policy"]) +
-                        policyRule.withVerbs(["use"]) +
-                        policyRule.withResources(["podsecuritypolicies"]) +
-                        policyRule.withResourceNames(["node-exporter"]);
-
-        role.new() +
-        role.mixin.metadata.withName("node-exporter-psp") +
-        role.mixin.metadata.withNamespace($._config.namespace) +
-        role.withRules([pspRule]),
-
-      "00-pspRoleBinding":
-        local roleBinding = k.rbac.v1.roleBinding;
-
-        roleBinding.new() +
-        roleBinding.mixin.metadata.withName("node-exporter-psp") +
-        roleBinding.mixin.metadata.withNamespace($._config.namespace) +
-        roleBinding.mixin.roleRef.withApiGroup("rbac.authorization.k8s.io") +
-        roleBinding.mixin.roleRef.withName("node-exporter-psp") +
-        roleBinding.mixin.roleRef.mixinInstance({ kind: "Role" }) +
-        roleBinding.withSubjects([
-          {
-            kind: 'ServiceAccount',
-            name: 'node-exporter',
-            namespace: $._config.namespace
-          }
-        ]),
-{% endif %}
       daemonset+: {
         spec+: {
           template+: {
@@ -151,58 +79,6 @@ local kp =
     },
 
     prometheusOperator+:: {
-{% if generate_psp | bool %}
-      "00-podSecurityPolicy":
-        local podSecurityPolicy = k.policy.v1beta1.podSecurityPolicy;
-
-        podSecurityPolicy.new() +
-        podSecurityPolicy.mixin.metadata.withName('prometheus-operator') +
-        podSecurityPolicy.mixin.metadata.withNamespace($._config.namespace) +
-        podSecurityPolicy.mixin.spec.withPrivileged(false) +
-        podSecurityPolicy.mixin.spec.withAllowPrivilegeEscalation(false) +
-        podSecurityPolicy.mixin.spec.withVolumes(["secret"]) +
-        podSecurityPolicy.mixin.spec.withHostPid(false) +
-        podSecurityPolicy.mixin.spec.withHostIpc(false) +
-        podSecurityPolicy.mixin.spec.withHostNetwork(false) +
-        podSecurityPolicy.mixin.spec.fsGroup.withRule("RunAsAny") +
-        podSecurityPolicy.mixin.spec.runAsUser.withRule("MustRunAsNonRoot") +
-        podSecurityPolicy.mixin.spec.supplementalGroups.withRule("MayRunAs").withRanges({"min": 1, "max": 65535}) +
-        podSecurityPolicy.mixin.spec.runAsGroup.withRule("MustRunAs").withRanges({"min": 1, "max": 65535}) +
-        podSecurityPolicy.mixin.spec.seLinux.withRule("RunAsAny"),
-
-      "00-pspRole":
-        local role = k.rbac.v1.role;
-        local policyRule = role.rulesType;
-
-        local pspRule = policyRule.new() +
-                        policyRule.withApiGroups(["policy"]) +
-                        policyRule.withVerbs(["use"]) +
-                        policyRule.withResources(["podsecuritypolicies"]) +
-                        policyRule.withResourceNames(["prometheus-operator"]);
-
-        role.new() +
-        role.mixin.metadata.withName("prometheus-operator-psp") +
-        role.mixin.metadata.withNamespace($._config.namespace) +
-        role.withRules([pspRule]),
-
-      "00-pspRoleBinding":
-        local roleBinding = k.rbac.v1.roleBinding;
-
-        roleBinding.new() +
-        roleBinding.mixin.metadata.withName("prometheus-operator-psp") +
-        roleBinding.mixin.metadata.withNamespace($._config.namespace) +
-        roleBinding.mixin.roleRef.withApiGroup("rbac.authorization.k8s.io") +
-        roleBinding.mixin.roleRef.withName("prometheus-operator-psp") +
-        roleBinding.mixin.roleRef.mixinInstance({ kind: "Role" }) +
-        roleBinding.withSubjects([
-          {
-            kind: 'ServiceAccount',
-            name: 'prometheus-operator',
-            namespace: $._config.namespace
-          }
-        ]),
-{% endif %}
-
       // For the following resources, the creationTimestamp field is present in the
       // base files, but has the value "null". This breaks the Kubernetes validation of
       // the manifest files. Thus, the field is made hidden in the following resources.
@@ -258,57 +134,6 @@ local kp =
     },
 
     kubeStateMetrics+:: {
-{% if generate_psp | bool %}
-      "00-podSecurityPolicy":
-        local podSecurityPolicy = k.policy.v1beta1.podSecurityPolicy;
-
-        podSecurityPolicy.new() +
-        podSecurityPolicy.mixin.metadata.withName('kube-state-metrics') +
-        podSecurityPolicy.mixin.metadata.withNamespace($._config.namespace) +
-        podSecurityPolicy.mixin.spec.withPrivileged(false) +
-        podSecurityPolicy.mixin.spec.withAllowPrivilegeEscalation(false) +
-        podSecurityPolicy.mixin.spec.withVolumes(["secret"]) +
-        podSecurityPolicy.mixin.spec.withHostPid(false) +
-        podSecurityPolicy.mixin.spec.withHostIpc(false) +
-        podSecurityPolicy.mixin.spec.withHostNetwork(false) +
-        podSecurityPolicy.mixin.spec.fsGroup.withRule("RunAsAny") +
-        podSecurityPolicy.mixin.spec.runAsUser.withRule("MustRunAsNonRoot") +
-        podSecurityPolicy.mixin.spec.supplementalGroups.withRule("MayRunAs").withRanges({"min": 1, "max": 65535}) +
-        podSecurityPolicy.mixin.spec.runAsGroup.withRule("MustRunAs").withRanges({"min": 1, "max": 65535}) +
-        podSecurityPolicy.mixin.spec.seLinux.withRule("RunAsAny"),
-
-      "00-pspRole":
-        local role = k.rbac.v1.role;
-        local policyRule = role.rulesType;
-
-        local pspRule = policyRule.new() +
-                        policyRule.withApiGroups(["policy"]) +
-                        policyRule.withVerbs(["use"]) +
-                        policyRule.withResources(["podsecuritypolicies"]) +
-                        policyRule.withResourceNames(["kube-state-metrics"]);
-
-        role.new() +
-        role.mixin.metadata.withName("kube-state-metrics-psp") +
-        role.mixin.metadata.withNamespace($._config.namespace) +
-        role.withRules([pspRule]),
-
-      "00-pspRoleBinding":
-        local roleBinding = k.rbac.v1.roleBinding;
-
-        roleBinding.new() +
-        roleBinding.mixin.metadata.withName("kube-state-metrics-psp") +
-        roleBinding.mixin.metadata.withNamespace($._config.namespace) +
-        roleBinding.mixin.roleRef.withApiGroup("rbac.authorization.k8s.io") +
-        roleBinding.mixin.roleRef.withName("kube-state-metrics-psp") +
-        roleBinding.mixin.roleRef.mixinInstance({ kind: "Role" }) +
-        roleBinding.withSubjects([
-          {
-            kind: 'ServiceAccount',
-            name: 'kube-state-metrics',
-            namespace: $._config.namespace
-          }
-        ]),
-{% endif %}
       deployment+: {
         spec+: {
           template+: {
