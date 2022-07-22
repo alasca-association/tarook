@@ -131,22 +131,3 @@ function ansible_playbook() {
     # shellcheck disable=SC2086
     (export ANSIBLE_CONFIG="$ansible_directory/ansible.cfg" && run ansible-playbook $ansible_flags "$@")
 }
-
-function cleanup_test_on_failure() {
-    [ ! "${MANAGED_K8S_TEST_NO_CLEANUP_ON_FAILURE:-}" == 'true' ]
-}
-
-# Function was moved here because trap doesn't switch back its context to test.sh but remains in this file
-function do_cleanup_test_on_failure() {
-    errorf "ansible_playbook -i $ansible_inventoryfile_03 04_tests.yaml failed"
-    if cleanup_test_on_failure; then
-        warningf 'Removing test resources. Set "MANAGED_K8S_TEST_NO_CLEANUP_ON_FAILURE=true" to keep them'
-        # Note: we're invoking `ansible-playbook` directly to not inherit any values of `AFLAGS`.
-        # Consider the case in which a developer wants to run only a single test via `AFLAGS="-t test-blah" 04_test.sh`.
-        # When the task fails and this clause is reached, both the failing task and `test-cleanup` would be invoked.
-        pushd "$ansible_playbook" || exit 2
-        ansible-playbook -i "$ansible_inventoryfile_03" --diff -f42 -t test-cleanup 04_tests.yaml
-        popd || exit 2
-        # TODO: test ksm and ksl
-    fi
-}
