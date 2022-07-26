@@ -10,8 +10,8 @@ serviceMonitor:
 {% for target in monitoring_internet_probe_targets %}
     - name: {{ target.name | to_json }}
       url: {{ target.url | to_json }}
-      interval: {{ target.interval | to_json | default("60s") }}
-      scrapeTimeout: {{ target.scrapeTimeout | to_json | default("60s") }}
+      interval: {{ target.interval | default("60s") | to_json }}
+      scrapeTimeout: {{ target.scrapeTimeout | default("60s") | to_json }}
 {% endfor %}
 
 ## Custom PrometheusRules to be defined
