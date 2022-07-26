@@ -528,6 +528,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 # url="http://example.com/healthz"  # The URL that blackbox will scrape
 # interval="60s"                    # Scraping interval. Overrides value set in `defaults`
 # scrapeTimeout="60s"               # Scrape timeout. Overrides value set in `defaults`
+# module = "http_2xx"               # module to be used. Can either be "http_2xx" (default) or "icmp".
 
 # ANCHOR_END: ksl_prometheus_configuration
 
