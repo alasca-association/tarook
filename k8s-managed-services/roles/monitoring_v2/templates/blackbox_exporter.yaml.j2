@@ -1,4 +1,5 @@
 serviceMonitor:
+  enabled: true
   targets:
 #    - name: example                    # Human readable URL that will appear in Prometheus / AlertManager
 #      url: http://example.com/healthz  # The URL that blackbox will scrape
@@ -13,6 +14,8 @@ serviceMonitor:
       interval: {{ target.interval | to_json | default("60s") }}
       scrapeTimeout: {{ target.scrapeTimeout | to_json | default("60s") }}
 {% endfor %}
+
+pspEnabled: false
 
 ## Custom PrometheusRules to be defined
 ## ref: https://github.com/coreos/prometheus-operator#customresourcedefinitions
