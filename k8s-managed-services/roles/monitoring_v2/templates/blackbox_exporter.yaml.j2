@@ -1,3 +1,20 @@
+config:
+  modules:
+    http_2xx:
+      prober: http
+      timeout: 5s
+      http:
+        valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+        follow_redirects: true
+        preferred_ip_protocol: "ip4"
+    icmp:
+      prober: icmp
+      timeout: 5s
+      icmp:
+          preferred_ip_protocol: "ip4"
+
+allowIcmp: true
+
 serviceMonitor:
   enabled: true
   targets:
@@ -11,8 +28,9 @@ serviceMonitor:
 {% for target in monitoring_internet_probe_targets %}
     - name: {{ target.name | to_json }}
       url: {{ target.url | to_json }}
-      interval: {{ target.interval | to_json | default("60s") }}
-      scrapeTimeout: {{ target.scrapeTimeout | to_json | default("60s") }}
+      interval: {{ target.interval | default("60s") | to_json }}
+      scrapeTimeout: {{ target.scrapeTimeout | default("60s") | to_json }}
+      module: {{ target.module | default("http_2xx") | to_json }}
 {% endfor %}
 
 pspEnabled: false
