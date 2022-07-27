@@ -141,8 +141,9 @@ def cleanup_ansible_inventory(
 
 def flatten_config(
     config: typing.MutableMapping,
+    unflat_keys: typing.List[str],
     parent_key: str = "",
-    sep: str = "_"
+    sep: str = "_",
 ) -> typing.MutableMapping:
     """
     Flatten a dictionary/configuration. This is necessary if a key
@@ -153,9 +154,12 @@ def flatten_config(
     """
     items = dict()
     for key, value in config.items():
+        if key in unflat_keys:
+            items.update({key: value})
+            continue
         new_key = (parent_key + sep + key) if parent_key else key
         if isinstance(value, collections.abc.MutableMapping):
-            items.update(flatten_config(value, new_key, sep=sep).items())
+            items.update(flatten_config(value, unflat_keys, new_key, sep=sep).items())
         else:
             items.update({new_key: value})
     return dict(items)
@@ -192,14 +196,15 @@ def write_to_inventory(
 def dump_to_ansible_inventory(
     config: typing.MutableMapping,
     ansible_inventory_path: pathlib.Path,
-    key_prefix: str
+    key_prefix: str,
+    unflat_keys: typing.List[str] = []
 ):
     # Ensure config is not empty
     if not config:
         return
 
     # Flatten the config
-    final_config = flatten_config(config)
+    final_config = flatten_config(config, unflat_keys)
 
     # Apply key prefix
     if key_prefix:
@@ -447,7 +452,8 @@ def main():
         dump_to_ansible_inventory(
             config["k8s-service-layer"].get("prometheus"),
             kubernetes_service_monitoring_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("prometheus", "")
+            SECTION_VARIABLE_PREFIX_MAP.get("prometheus", ""),
+            ["common_labels"]
         )
 
     # ---

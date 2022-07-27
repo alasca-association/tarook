@@ -530,6 +530,15 @@ cluster_name = "rook-ceph" # •ᴗ•
 # scrapeTimeout="60s"               # Scrape timeout. Overrides value set in `defaults`
 # module = "http_2xx"               # module to be used. Can either be "http_2xx" (default) or "icmp".
 
+# If at least one common_label is defined, Prometheus will be created with selectors
+# matching these labels and only ServiceMonitors that meet the criteria of the selector,
+# i.e. are labeled accordingly, are included by Prometheus.
+# The LCM takes care that all ServiceMonitor created by itself are labeled accordingly.
+# The key can not be "release" as that one is already used by the Prometheus helm chart.
+#
+#[k8s-service-layer.prometheus.common_labels]
+#managed-by = "yaook-k8s-monitoring"
+
 # ANCHOR_END: ksl_prometheus_configuration
 
 # ANCHOR: ksl_cert_manager_configuration

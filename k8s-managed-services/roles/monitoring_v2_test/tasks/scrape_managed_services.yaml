@@ -7,7 +7,7 @@
   loop: "{{ groups['frontend'] }}"
   until: |
     metrics.failed == false and
-    metrics.return_code == 0 and
+    metrics.rc == 0 and
     metrics.stdout | from_json | json_query('status') == "success" and
     metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
@@ -22,7 +22,7 @@
   loop: "{{ groups['frontend'] }}"
   until: |
     metrics.failed == false and
-    metrics.return_code == 0 and
+    metrics.rc == 0 and
     metrics.stdout | from_json | json_query('status') == "success" and
     metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
@@ -37,7 +37,7 @@
   when: "k8s_storage_rook_enabled"
   until: |
     metrics.failed == false and
-    metrics.return_code == 0 and
+    metrics.rc == 0 and
     metrics.stdout | from_json | json_query('status') == "success" and
     metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
@@ -54,7 +54,7 @@
     register: metrics
     until: |
       metrics.failed == false and
-      metrics.return_code == 0 and
+      metrics.rc == 0 and
       metrics.stdout | from_json | json_query('status') == "success" and
       metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
     retries: 60
@@ -69,7 +69,7 @@
     loop: "{{ groups['frontend'] }}"
     until: |
       metrics.failed == false and
-      metrics.return_code == 0 and
+      metrics.rc == 0 and
       metrics.stdout | from_json | json_query('status') == "success" and
       metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
     retries: 60
@@ -84,7 +84,7 @@
   loop: "{{ groups['frontend'] }}"
   until: |
     metrics.failed == false and
-    metrics.return_code == 0 and
+    metrics.rc == 0 and
     metrics.stdout | from_json | json_query('status') == "success" and
     metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60

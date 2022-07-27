@@ -1,3 +1,12 @@
+## Labels to apply to all resources
+##
+{% if monitoring_common_labels %}
+commonLabels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+  {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
+
 ##
 defaultRules:
   create: true
@@ -78,6 +87,12 @@ grafana:
         foldersFromFilesStructure: true
   serviceMonitor:
     enabled: true
+{% if monitoring_common_labels %}
+    labels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+      {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
     # https://github.com/prometheus-community/helm-charts/issues/1776
     interval: "30s"
     relabelings:
@@ -189,7 +204,7 @@ kubeProxy:
         targetLabel: nodename
         replacement: $1
         action: replace
-    
+
 ##
 kubeStateMetrics:
   enabled: true
@@ -206,6 +221,13 @@ kubeStateMetrics:
 kube-state-metrics:
   rbac:
     create: true
+    pspEnabled: false
+{% if monitoring_common_labels %}
+  customLabels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+    {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
 
 ##
 nodeExporter:
@@ -227,6 +249,12 @@ prometheus-node-exporter:
   prometheus:
     monitor:
       enabled: true
+{% if monitoring_common_labels %}
+      additionalLabels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+        {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
       relabelings:
         - sourceLabels: [__meta_kubernetes_pod_node_name]
           separator: ;
@@ -281,7 +309,14 @@ prometheus:
         replacement: $1
         action: replace
   prometheusSpec:
-    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: {{  monitoring_common_labels | ternary(true, false) }}
+{% if monitoring_common_labels %}
+    serviceMonitorSelector:
+      matchLabels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+        {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
 {% if monitoring_use_thanos | bool %}
     thanos:
       objectStorageConfig:

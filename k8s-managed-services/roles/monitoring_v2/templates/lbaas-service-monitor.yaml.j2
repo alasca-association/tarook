@@ -21,6 +21,12 @@ kind: ServiceMonitor
 metadata:
   name: ch-k8s-lbaas-controller
   namespace: kube-system
+{% if monitoring_common_labels %}
+  labels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+    {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
 spec:
   namespaceSelector:
     matchNames:
@@ -38,6 +44,12 @@ kind: ServiceMonitor
 metadata:
   name: ch-k8s-lbaas-agent
   namespace: kube-system
+{% if monitoring_common_labels %}
+  labels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+    {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
 spec:
   namespaceSelector:
     matchNames:
