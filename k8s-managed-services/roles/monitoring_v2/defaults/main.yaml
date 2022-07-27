@@ -7,3 +7,5 @@ monitoring_internet_probe: false
 monitoring_internet_probe_targets: []
 
 kms_blackbox_exporter_release_name: "kms-blackbox"
+
+monitoring_common_labels: []

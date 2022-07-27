@@ -127,6 +127,8 @@ url           = "https://yaook.cloud/" # The URL that blackbox will scrape
 interval      = "60s"                  # Scraping interval. Overrides value set in `defaults`
 scrapeTimeout = "60s"                  # Scrape timeout. Overrides value set in `defaults`
 
+[k8s-service-layer.prometheus.common_labels]
+managed-by = "yaook-k8s-monitoring"
 
 [k8s-service-layer.cert-manager]
 enabled = true

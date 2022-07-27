@@ -4,6 +4,13 @@ prometheus:
   port: 9090
   path: ""
 
+{% if monitoring_common_labels %}
+podLabels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+  {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
+
 rules:
   resource:
     cpu:
