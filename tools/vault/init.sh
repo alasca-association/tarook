@@ -178,7 +178,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
 EOF
 
 write_policy gateway <<EOF
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/k8s/wireguard-key" {
+path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/wireguard-key" {
     capabilities = ["create", "update", "read"]
 }
 EOF
@@ -236,9 +236,9 @@ path "$nodes_approle_path/role/+/secret-id" {
     capabilities = ["create", "update"]
     required_parameters = ["metadata"]
     allowed_parameters = {
-        "metadata" = ["yaook_deployment=*"],
+        "metadata" = [],
     }
-    min_wrapping_ttl = "1h"
+    min_wrapping_ttl = "60s"
     max_wrapping_ttl = "3h"
 }
 
@@ -257,5 +257,9 @@ path "$common_path_prefix/+/kv/data/ipmi/*" {
 
 path "$common_path_prefix/+/kv/data/etcdbackup" {
     capabilities = ["read"]
+}
+
+path "$common_path_prefix/+/kv/data/wireguard-key" {
+    capabilities = ["create", "update", "read"]
 }
 EOF
