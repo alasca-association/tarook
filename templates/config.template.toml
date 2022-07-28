@@ -431,6 +431,10 @@ cluster_name = "rook-ceph" # •ᴗ•
 # Enable grafana
 #use_grafana = true
 
+# If this variable is defined, Grafana will store its data in a PersistentVolume
+# in the defined StorageClass. Otherwise, persistence is disabled for Grafana.
+# The value has to be a valid StorageClass available in your cluster.
+#grafana_persistent_storage_class=""
 
 # Enable use of Thanos
 # Important: Currently Thanos will not work with OpenStack application credentials [0]. If you use OpenStack

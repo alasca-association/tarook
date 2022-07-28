@@ -26,3 +26,5 @@ monitoring_prometheus_stack_version: "33.2.0"
 monitoring_prometheus_adapter_version: "3.2.0"
 
 monitoring_common_labels: []
+
+monitoring_grafana_persistent_storage_class: ""
