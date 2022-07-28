@@ -4,12 +4,13 @@
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
-    ANSIBLE_HASHI_VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
-    ANSIBLE_HASHI_VAULT_ROLE_ID: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
-    ANSIBLE_HASHI_VAULT_SECRET_ID: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
-    ANSIBLE_HASHI_VAULT_AUTH_METHOD: "{{ lookup('env', 'VAULT_TOKEN') | ternary('approle', 'token') }}"
   community.hashi_vault.vault_read:
     path: auth/token/lookup-self
+    mount_point: "{{ vault_caller_auth_mount_point }}"
+    auth_method: "{{ vault_caller_auth_method }}"
+    token: "{{ vault_caller_token }}"
+    role_id: "{{ vault_caller_role_id }}"
+    secret_id: "{{ vault_caller_secret_id }}"
     token_validate: false
   register: token_info
 
@@ -57,10 +58,6 @@
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
-    ANSIBLE_HASHI_VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
-    ANSIBLE_HASHI_VAULT_ROLE_ID: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
-    ANSIBLE_HASHI_VAULT_SECRET_ID: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
-    ANSIBLE_HASHI_VAULT_AUTH_METHOD: "{{ lookup('env', 'VAULT_TOKEN') | ternary('approle', 'token') }}"
   block:
   - name: Configure policies
     block:
@@ -91,6 +88,11 @@
     delegate_to: localhost
     community.hashi_vault.vault_write:
       path: "auth/{{ vault_nodes_approle }}/role/{{ vault_node_name }}"
+      mount_point: "{{ vault_caller_auth_mount_point }}"
+      auth_method: "{{ vault_caller_auth_method }}"
+      token: "{{ vault_caller_token }}"
+      role_id: "{{ vault_caller_role_id }}"
+      secret_id: "{{ vault_caller_secret_id }}"
       token_validate: false
       data:
         token_ttl: 10m
@@ -103,6 +105,11 @@
     delegate_to: localhost
     community.hashi_vault.vault_write:
       path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/ssh-ca/roles/{{ vault_node_name }}"
+      mount_point: "{{ vault_caller_auth_mount_point }}"
+      auth_method: "{{ vault_caller_auth_method }}"
+      token: "{{ vault_caller_token }}"
+      role_id: "{{ vault_caller_role_id }}"
+      secret_id: "{{ vault_caller_secret_id }}"
       token_validate: false
       data:
         key_type: ca
@@ -116,6 +123,11 @@
     delegate_to: localhost
     community.hashi_vault.vault_read:
       path: "auth/{{ vault_nodes_approle }}/role/{{ vault_node_name }}/role-id"
+      mount_point: "{{ vault_caller_auth_mount_point }}"
+      auth_method: "{{ vault_caller_auth_method }}"
+      token: "{{ vault_caller_token }}"
+      role_id: "{{ vault_caller_role_id }}"
+      secret_id: "{{ vault_caller_secret_id }}"
       token_validate: false
     register: approle_role_id
 
@@ -123,6 +135,11 @@
     delegate_to: localhost
     community.hashi_vault.vault_write:
       path: "auth/{{ vault_nodes_approle }}/role/{{ vault_node_name }}/secret-id"
+      mount_point: "{{ vault_caller_auth_mount_point }}"
+      auth_method: "{{ vault_caller_auth_method }}"
+      token: "{{ vault_caller_token }}"
+      role_id: "{{ vault_caller_role_id }}"
+      secret_id: "{{ vault_caller_secret_id }}"
       token_validate: false
       data:
         metadata: '{"yaook_deployment": {{ vault_cluster_name | to_json }}, "yaook_hostname": {{ inventory_hostname | to_json }}, "yaook_primary_ipv4": {{ local_ipv4_address | default("127.0.0.1") | to_json }}, "yaook_primary_ipv6": {{ local_ipv6_address | default("::1") | to_json }}}'
@@ -174,23 +191,23 @@
 
 - name: Write role-id from env if not written
   become: yes
-  when: "not has_vault_orchestrator_role and lookup('env', 'VAULT_ROLE_ID')"
+  when: "not has_vault_orchestrator_role and vault_caller_role_id and vault_caller_secret_id"
   copy:
     dest: /etc/vault/role-id
     owner: root
     group: root
     mode: ugo=r
-    content: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
+    content: "{{ vault_caller_role_id }}"
 
 - name: Write secret-id from env if not written
   become: yes
-  when: "not has_vault_orchestrator_role and lookup('env', 'VAULT_SECRET_ID')"
+  when: "not has_vault_orchestrator_role and vault_caller_role_id and vault_caller_secret_id"
   copy:
     dest: /etc/vault/secret-id
     owner: root
     group: root
     mode: ugo=r
-    content: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
+    content: "{{ vault_caller_secret_id }}"
 
 - name: Read role id
   become: yes

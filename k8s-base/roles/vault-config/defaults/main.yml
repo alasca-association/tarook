@@ -2,3 +2,11 @@
 vault_policy_prefix: yaook
 vault_path_prefix: yaook
 vault_nodes_approle: yaook/nodes
+
+vault_caller_auth_mount_point: "{{ lookup('env', 'VAULT_AUTH_PATH') }}"
+# not using | default() here, because lookup always returns a value, but it
+# might be empty
+vault_caller_auth_method: "{{ lookup('env', 'VAULT_METHOD') or (lookup('env', 'VAULT_TOKEN') | ternary('token', 'approle')) }}"
+vault_caller_token: "{{ lookup('env', 'VAULT_TOKEN') }}"
+vault_caller_role_id: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
+vault_caller_secret_id: "{{ lookup('env', 'VAULT_SECRET_ID') }}"

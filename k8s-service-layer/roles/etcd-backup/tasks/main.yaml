@@ -2,12 +2,14 @@
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
-    ANSIBLE_HASHI_VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
-    ANSIBLE_HASHI_VAULT_ROLE_ID: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
-    ANSIBLE_HASHI_VAULT_SECRET_ID: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
-    ANSIBLE_HASHI_VAULT_AUTH_METHOD: "{{ lookup('env', 'VAULT_TOKEN') | ternary('approle', 'token') }}"
+  vars:
+    vault_auth_mount_point: "{{ lookup('env', 'VAULT_AUTH_PATH') }}"
+    vault_auth_method: "{{ lookup('env', 'VAULT_AUTH_METHOD') or (lookup('env', 'VAULT_TOKEN') | ternary('token', 'approle')) }}"
+    vault_token: "{{ lookup('env', 'VAULT_TOKEN') }}"
+    vault_role_id: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
+    vault_secret_id: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
   set_fact:
-    etcd_backup_s3: "{{ lookup('community.hashi_vault.vault_kv2_get', etcd_backup_vault_path, engine_mount_point=etcd_backup_vault_mount_point).data.data }}"
+    etcd_backup_s3: "{{ lookup('community.hashi_vault.vault_kv2_get', etcd_backup_vault_path, engine_mount_point=etcd_backup_vault_mount_point, mount_point=vault_auth_mount_point, auth_method=vault_auth_method, token=vault_token, role_id=vault_role_id, secret_id=vault_secret_id).data.data }}"
 
 - name: Create a Secret to save s3 credentials
   k8s:

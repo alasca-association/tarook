@@ -28,10 +28,6 @@
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
-    ANSIBLE_HASHI_VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
-    ANSIBLE_HASHI_VAULT_ROLE_ID: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
-    ANSIBLE_HASHI_VAULT_SECRET_ID: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
-    ANSIBLE_HASHI_VAULT_AUTH_METHOD: "{{ lookup('env', 'VAULT_TOKEN') | ternary('approle', 'token') }}"
   become: no
   delegate_to: localhost
   run_once: yes
@@ -40,7 +36,7 @@
       ignore_errors: yes
       # Check if the key exists
       set_fact:
-        wg_gw_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name))).data.data.private_key }}"
+        wg_gw_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_caller_auth_mount_point, auth_method=vault_caller_auth_method, token=vault_caller_token, role_id=vault_caller_role_id, secret_id=vault_caller_secret_id).data.data.private_key }}"
 
     - name: Fail if wg0.conf exists but key is not in passwordstore
       fail:
@@ -74,6 +70,11 @@
       when: "not wg0_conf.stat.exists and (wg_gw_key is not defined)"
       community.hashi_vault.vault_write:
         path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv/data/wireguard-key"
+        mount_point: "{{ vault_caller_auth_mount_point }}"
+        auth_method: "{{ vault_caller_auth_method }}"
+        token: "{{ vault_caller_token }}"
+        role_id: "{{ vault_caller_role_id }}"
+        secret_id: "{{ vault_caller_secret_id }}"
         token_validate: false
         data:
           data:
@@ -86,14 +87,10 @@
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
-    ANSIBLE_HASHI_VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
-    ANSIBLE_HASHI_VAULT_ROLE_ID: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
-    ANSIBLE_HASHI_VAULT_SECRET_ID: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
-    ANSIBLE_HASHI_VAULT_AUTH_METHOD: "{{ lookup('env', 'VAULT_TOKEN') | ternary('approle', 'token') }}"
   block:
     - name: Load private key
       set_fact:
-        wg_gw_priv_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name))).data.data.private_key }}"
+        wg_gw_priv_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_caller_auth_mount_point, auth_method=vault_caller_auth_method, token=vault_caller_token, role_id=vault_caller_role_id, secret_id=vault_caller_secret_id).data.data.private_key }}"
     - name: Derive public key
       command: "wg pubkey"
       args:
