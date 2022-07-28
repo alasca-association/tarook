@@ -242,6 +242,10 @@ path "$nodes_approle_path/role/+/secret-id" {
     max_wrapping_ttl = "3h"
 }
 
+path "$nodes_approle_path/role/+/secret-id/destroy" {
+    capabilities = ["create", "update"]
+}
+
 path "$common_path_prefix/+/k8s-pki/issue/system-nodes_admin" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]

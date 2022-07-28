@@ -131,6 +131,16 @@
       token_validate: false
     register: approle_role_id
 
+  - name: Read current secret ID
+    become: yes
+    command:
+    args:
+      argv:
+      - cat
+      - /etc/vault/secret-id
+    register: approle_secret_id_file
+    ignore_errors: true
+
   - name: Regenerate secret ID
     delegate_to: localhost
     community.hashi_vault.vault_write:
@@ -200,6 +210,21 @@
       group: root
       mode: u=r
       content: "{{ approle_secret_id.data.data.secret_id }}"
+
+  - name: Revoke old secret ID
+    delegate_to: localhost
+    when: approle_secret_id_file is not failed
+    community.hashi_vault.vault_write:
+      path: "auth/{{ vault_nodes_approle }}/role/{{ vault_node_name }}/secret-id/destroy"
+      mount_point: "{{ vault_caller_auth_mount_point }}"
+      auth_method: "{{ vault_caller_auth_method }}"
+      token: "{{ vault_caller_token }}"
+      role_id: "{{ vault_caller_role_id }}"
+      secret_id: "{{ vault_caller_secret_id }}"
+      token_validate: false
+      data:
+        secret_id: "{{ approle_secret_id_file.stdout }}"
+    register: approle_role_id
 
 - name: Write role-id from env if not written
   become: yes
