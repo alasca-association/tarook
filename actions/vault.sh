@@ -30,8 +30,12 @@ if [ -z "$vault_status" ]; then
         --name "$vault_container_name" \
         -p 8200 \
         --cap-add=IPC_LOCK \
+        -e SKIP_CHOWN=yes \
+        -e SKIP_SETCAP=yes \
+        -u "$(id -u):$(id -g)" \
         -v "$vault_dir/config":/vault/config \
         -v "$vault_dir/tls":/vault/tls \
+        -v "$vault_dir/data":/vault/file \
         -e VAULT_ADDR="https://127.0.0.1:8200" \
         -e VAULT_CACERT="/vault/tls/ca/vaultca.crt" \
         vault:1.11.0 server

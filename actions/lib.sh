@@ -19,8 +19,22 @@ ansible_inventoryfile_03="$ansible_inventory_base/03_k8s_base/hosts"
 ansible_inventoryfile_custom="$ansible_inventory_base/99_custom/hosts"
 ansible_k8s_sl_vars_base="$ansible_inventory_base/04_k8s_service_layer"
 ansible_k8s_ms_vars_base="$ansible_inventory_base/05_k8s_managed_service"
-vault_container_name="yaook-vault"
 vault_dir="${VAULT_DIR:-$cluster_repository/vault}"
+
+# We assign to each repository a unique container name. We need to have
+# different container names per repository in order to ensure that a dev can
+# run multiple vault instances in parallel and without conflict *and* that the
+# data is still located in the corresponding repository for committing with
+# git.
+# While the latter is not strictly sensible for development, we'll need this
+# during executing the upgrade path from pass to Vault.
+if [ -e "$vault_dir/container-name" ]; then
+    vault_container_name="$(cat "$vault_dir/container-name")"
+else
+    mkdir -p "$vault_dir"
+    vault_container_name="yaook-vault-$(uuidgen --random | cut -d'-' -f1-3)"
+    echo "$vault_container_name" > "$vault_dir/container-name"
+fi
 
 if [ "${WG_USAGE:-true}" == "true" ]; then
     wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
