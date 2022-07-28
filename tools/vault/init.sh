@@ -255,7 +255,7 @@ path "$common_path_prefix/+/kv/data/ipmi/*" {
     capabilities = ["read"]
 }
 
-path "$common_path_prefix/+/kv/data/k8s/etcdbackup" {
+path "$common_path_prefix/+/kv/data/etcdbackup" {
     capabilities = ["read"]
 }
 EOF
