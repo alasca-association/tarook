@@ -25,7 +25,9 @@ fi
 vault_status="$(docker inspect -f '{{.State.Status}}' "$vault_container_name" 2>/dev/null || true)"
 
 # Create Vault container
-if [ -z "$vault_status" ]; then
+if [ -z "$vault_status" ] || [ "$vault_status" = 'exited' ]; then
+    # always upgrade vault when it's not running
+    run docker rm -f "$vault_container_name" >/dev/null || true
     run docker run -d \
         --name "$vault_container_name" \
         -p 8200 \
@@ -39,8 +41,6 @@ if [ -z "$vault_status" ]; then
         -e VAULT_ADDR="https://127.0.0.1:8200" \
         -e VAULT_CACERT="/vault/tls/ca/vaultca.crt" \
         vault:1.11.0 server
-elif [ "$vault_status" = "exited" ]; then
-    run docker start "$vault_container_name" > /dev/null
 fi
 
 vault_initialized=false
