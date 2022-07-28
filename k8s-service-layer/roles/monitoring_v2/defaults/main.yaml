@@ -23,7 +23,7 @@ monitoring_use_thanos: false
 monitoring_grafana_admin_secret_name: "cah-grafana-admin"
 
 monitoring_prometheus_stack_version: "38.0.3"
-monitoring_prometheus_adapter_version: "3.2.0"
+monitoring_prometheus_adapter_version: "3.3.1"
 
 monitoring_common_labels: []
 
