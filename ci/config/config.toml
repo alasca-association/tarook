@@ -117,6 +117,7 @@ mgr_scheduling_key = "{{ scheduling_key_prefix }}/rook-mgr"
 [k8s-service-layer.prometheus]
 use_thanos                          = true
 use_grafana                         = true
+grafana_persistent_storage_class    = "rook-ceph-cephfs"
 thanos_objectstorage_container_name = "ci-monitoring-thanos-data"
 scheduling_key                      = "{{ scheduling_key_prefix }}/monitoring"
 
