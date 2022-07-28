@@ -15,7 +15,7 @@
   k8s_info:
     kind: Pod
     namespace: "{{ rook_namespace }}"
-    wait_timeout: 120
+    wait_timeout: 10
     wait: yes
     label_selectors:
       - app != rook-ceph-osd-prepare
