@@ -52,7 +52,9 @@ for attempt in $(seq 1 60) ; do
     printf "Initialization status: %s\n" "$vault_init_status"
     
     if [ "$vault_init_status" = "false" ]; then
-        docker exec "$vault_container_name" vault operator init -key-shares=1 -key-threshold=1 -format=json >"$vault_dir/init.out" || true
+        init_out="$(docker exec "$vault_container_name" vault operator init -key-shares=1 -key-threshold=1 -format=json)"
+        jq .unseal_keys_b64[0] -cr <<<"$init_out" > "$vault_dir/unseal.key"
+        jq ".root_token" -cr <<<"$init_out" >"$vault_dir/root.key"
         vault_initialized=true
     fi
     if [ "$vault_init_status" = "true" ]; then
@@ -72,9 +74,7 @@ fi
 vault_sealed_status="$( (docker exec "$vault_container_name" vault status --format=json || true) | jq -r .sealed)"
 
 if [ "$vault_sealed_status" = "true" ]; then
-    VAULT_UNSEAL_KEY="$(jq .unseal_keys_b64[0] -c "$vault_dir/init.out" -r | tee "$vault_dir/unseal.key")"
-    docker exec "$vault_container_name" vault operator unseal "$VAULT_UNSEAL_KEY" >/dev/null
+    unseal_key="$(cat "$vault_dir/unseal.key")"
+    docker exec "$vault_container_name" vault operator unseal "$unseal_key" >/dev/null
     printf "Vault has been unsealed 🔓 ✅\n"
 fi
-
-jq ".root_token" "$vault_dir/init.out" -r >"$vault_dir/root.key"
