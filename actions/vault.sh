@@ -40,7 +40,7 @@ if [ -z "$vault_status" ] || [ "$vault_status" = 'exited' ]; then
         -v "$vault_dir/data":/vault/file \
         -e VAULT_ADDR="https://127.0.0.1:8200" \
         -e VAULT_CACERT="/vault/tls/ca/vaultca.crt" \
-        vault:1.11.0 server
+        vault:1.11.1 server
 fi
 
 vault_initialized=false
