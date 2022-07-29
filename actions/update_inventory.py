@@ -39,6 +39,7 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "custom",
     "vault",
     "miscellaneous",
+    "nvidia"
 )
 # Mapping stages to their common names
 ANSIBLE_STAGES = {
@@ -68,10 +69,6 @@ K8S_MANAGED_SERVICES_VAR_MAP = {
             # in the near future
         ]
     },
-    # "kubernetes": [                       # now exported by a
-    #     "use_podsecuritypolicies",        # workaround ...
-    #     "version"
-    # ]
 }
 # This maps defines the prefix that is assigned to each
 # variable of a section
@@ -87,6 +84,8 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "cert-manager": "k8s_cert_manager",
     "ingress": "k8s_ingress",
     "etcd-backup": "etcd_backup",
+    "vault": "yaook_vault",
+    "nvidia": "nvidia",
     "vault_backend": "vault",
 }
 
@@ -144,8 +143,9 @@ def cleanup_ansible_inventory(
 
 def flatten_config(
     config: typing.MutableMapping,
+    unflat_keys: typing.List[str],
     parent_key: str = "",
-    sep: str = "_"
+    sep: str = "_",
 ) -> typing.MutableMapping:
     """
     Flatten a dictionary/configuration. This is necessary if a key
@@ -156,9 +156,12 @@ def flatten_config(
     """
     items = dict()
     for key, value in config.items():
+        if key in unflat_keys:
+            items.update({key: value})
+            continue
         new_key = (parent_key + sep + key) if parent_key else key
         if isinstance(value, collections.abc.MutableMapping):
-            items.update(flatten_config(value, new_key, sep=sep).items())
+            items.update(flatten_config(value, unflat_keys, new_key, sep=sep).items())
         else:
             items.update({new_key: value})
     return dict(items)
@@ -195,14 +198,15 @@ def write_to_inventory(
 def dump_to_ansible_inventory(
     config: typing.MutableMapping,
     ansible_inventory_path: pathlib.Path,
-    key_prefix: str
+    key_prefix: str,
+    unflat_keys: typing.List[str] = []
 ):
     # Ensure config is not empty
     if not config:
         return
 
     # Flatten the config
-    final_config = flatten_config(config)
+    final_config = flatten_config(config, unflat_keys)
 
     # Apply key prefix
     if key_prefix:
@@ -465,7 +469,8 @@ def main():
         dump_to_ansible_inventory(
             config["k8s-service-layer"].get("prometheus"),
             kubernetes_service_monitoring_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("prometheus", "")
+            SECTION_VARIABLE_PREFIX_MAP.get("prometheus", ""),
+            ["common_labels"]
         )
 
     # ---
@@ -493,6 +498,18 @@ def main():
         config["k8s-service-layer"].get("ingress"),
         kubernetes_service_ingress_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("ingress", "")
+    )
+
+    # KUBERNETES SERVICE LAYER: VAULT
+    print_process_state("KSL - VAULT")
+    kubernetes_service_ingress_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
+        "vault.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("vault"),
+        kubernetes_service_ingress_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("vault", "")
     )
 
     # KUBERNETES SERVICE LAYER: ETCD-BACKUP
@@ -537,6 +554,20 @@ def main():
             misc_ansible_inventory_path,
             SECTION_VARIABLE_PREFIX_MAP.get("miscellaneous", "")
         )
+
+    # ---
+    # NVIDIA VGPU
+    # ---
+    print_process_state("nvidia")
+    nvidia_vgpu_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage3"] /
+            "group_vars" / "all" / "nvidia.yaml"
+    )
+    dump_to_ansible_inventory(
+        config.get("nvidia"),
+        nvidia_vgpu_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("nvidia", "")
+    )
 
     # ---
     # NODE SCHEDULING

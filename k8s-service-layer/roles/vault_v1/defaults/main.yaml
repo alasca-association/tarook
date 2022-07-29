@@ -1,0 +1,13 @@
+---
+yaook_vault_enabled: false
+yaook_vault_namespace: k8s-svc-vault
+yaook_vault_chart_version: 0.20.1
+yaook_vault_ca_issuer_kind: Issuer
+yaook_vault_ca_issuer: selfsigned-issuer
+yaook_vault_init_key_shares: 5
+yaook_vault_init_key_threshold: 2
+yaook_vault_management_cluster_integration: false
+yaook_vault_dnsnames: []
+yaook_vault_scheduling_key: null
+yaook_vault_storage_class: csi-sc-cinderplugin
+yaook_vault_storage_size: 8Gi

@@ -44,3 +44,8 @@
     when: etcd_backup_enabled
     tags:
     - mk8s-sl/etcd-backup
+
+  - role: vault_v1
+    when: yaook_vault_enabled
+    tags:
+    - mk8s-sl/vault

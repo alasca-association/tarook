@@ -103,14 +103,15 @@ agent_port    = 15203
 # Kubernetes version. Currently, we support from 1.17.* to 1.22.*.
 version = "1.22.11" # •ᴗ•
 
-# Enforce the use of pod security policies inside the cluster.
-# NOTE: PSPs are being deprecated by k8s and they will be removed from the LCM soon.
-# They are not tested anymore and things may break.
-use_podsecuritypolicies = false # •ᴗ•
-
 # Uncomment if this cluster contains a worker with GPU access so that the driver
 # and surrounding framework is deployed.
 is_gpu_cluster = false # •ᴗ•
+
+# Set this variable to virtualize Nvidia GPUs on worker nodes.
+# It will install a VGPU manager on the worker node and split the GPU according to chosen vgpu type.
+# Note: This will not install Nvidia drivers to utilize vGPU guest VMs!!
+# If set to true, please set further variables in the [miscellaneous] section.
+#virtualize_gpu = false
 
 [kubernetes.apiserver]
 frontend_port = 8888 # •ᴗ•
@@ -442,6 +443,10 @@ cluster_name = "rook-ceph" # •ᴗ•
 # Enable grafana
 #use_grafana = true
 
+# If this variable is defined, Grafana will store its data in a PersistentVolume
+# in the defined StorageClass. Otherwise, persistence is disabled for Grafana.
+# The value has to be a valid StorageClass available in your cluster.
+#grafana_persistent_storage_class=""
 
 # Enable use of Thanos
 # Important: Currently Thanos will not work with OpenStack application credentials [0]. If you use OpenStack
@@ -539,6 +544,16 @@ cluster_name = "rook-ceph" # •ᴗ•
 # url="http://example.com/healthz"  # The URL that blackbox will scrape
 # interval="60s"                    # Scraping interval. Overrides value set in `defaults`
 # scrapeTimeout="60s"               # Scrape timeout. Overrides value set in `defaults`
+# module = "http_2xx"               # module to be used. Can either be "http_2xx" (default) or "icmp".
+
+# If at least one common_label is defined, Prometheus will be created with selectors
+# matching these labels and only ServiceMonitors that meet the criteria of the selector,
+# i.e. are labeled accordingly, are included by Prometheus.
+# The LCM takes care that all ServiceMonitor created by itself are labeled accordingly.
+# The key can not be "release" as that one is already used by the Prometheus helm chart.
+#
+#[k8s-service-layer.prometheus.common_labels]
+#managed-by = "yaook-k8s-monitoring"
 
 # ANCHOR_END: ksl_prometheus_configuration
 
@@ -560,6 +575,23 @@ enabled = false # •ᴗ•
 # Scheduling key for the cert manager instance and its resources. Has no
 # default.
 #scheduling_key =
+
+# If given, a *cluster wide* Let's Encrypt issuer with that email address will
+# be generated. Requires an ingress to work correctly.
+# DO NOT ENABLE THIS IN CUSTOMER CLUSTERS, BECAUSE THEY SHOULD NOT CREATE
+# CERTIFICATES UNDER OUR NAME. Customers are supposed to deploy their own
+# ACME/Let's Encrypt issuer.
+#letsencrypt_email = "..."
+
+# By default, the ACME issuer will let the server choose the certificate chain
+# to use for the certificate. This can be used to override it.
+#letsencrypt_preferred_chain = "..."
+
+# The ingress class to use for responding to the ACME challenge.
+# The default value works for the default k8s-service-layer.ingress
+# configuration and may need to be adapted in case a different ingress is to be
+# used.
+#letsencrypt_ingress = "nginx"
 
 # ANCHOR_END: ksl_cert_manager_configuration
 
@@ -603,7 +635,7 @@ enabled = false # •ᴗ•
 [k8s-service-layer.etcd-backup]
 #enabled = false
 
-# Configure value for the cron job schedule for etcd backups. If not set it will be 
+# Configure value for the cron job schedule for etcd backups. If not set it will be
 # set to default value of  21 */12 * * *
 #schedule = "21 * * * *"
 
@@ -613,18 +645,81 @@ enabled = false # •ᴗ•
 # Name of the folder to keep the backup files. It defaults to `etcd-backup`
 #file_prefix = "backup"
 
-# Configure s3 config yaml name. The file MUST be kept under `config` dir 
-# and should be protected via some mechanism. This is a mandatory 
-# variable, if etcd_backup_enabled is set to True. A template for such a file can be found at 
+# Configure s3 config yaml name. The file MUST be kept under `config` dir
+# and should be protected via some mechanism. This is a mandatory
+# variable, if etcd_backup_enabled is set to True. A template for such a file can be found at
 # managed-k8s/templates/etcd_backup_s3_config.yaml
 # **IMPORTANT:** This file contains credentials in plain text so make sure its appropriately secured (git-crypt, etc)
 #s3_config_name = "etcd_backup_s3_config.yaml"
 
 # Number of days after which individual items in the bucket are dropped. Enforced by S3 lifecyle rules which
 # are also implemented by Ceph's RGW.
-#etcd_backup_days_of_retention = 30
+#days_of_retention = 30
+
+# etcdbackup chart version to install.
+# If this is not specified, the latest version is installed.
+#chart_version=""
 
 # ANCHOR_END: etcd_backup_configuration
+
+# ANCHOR: ksl_vault_configuration
+# --- KUBERNETES SERVICE LAYER : HASHICORP VAULT ---
+# ansible prefix: "yaook_vault_"
+[k8s-service-layer.vault]
+# Enable HashiCorp Vault management.
+# WARNING: This is *NOT* production ready at the time of writing. The following
+# shortcomings exist:
+# - There are no backups.
+# - There are no replicas.
+# NOTE: On the first run, the unseal keys and the root token will be printed IN
+# PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
+# LOCATION to use the Vault instance in the future!
+#enabled = false # •ᴗ•
+
+# Version of the Helm Chart to use
+#chart_version = "0.20.1"
+
+# Namespace to deploy the vault in (will be created if it does not exist, but
+# never deleted).
+#namespace = "k8s-svc-vault"
+
+# Extra DNS names for which certificates should be prepared. Enabling this
+# enables the ingress for vault.
+# NOTE: to work correctly, there must exist an ingress of class `nginx` and it
+# must allow ssl passthrough.
+#dnsnames = [..]
+
+# If set to true, the Vault is configured to be exposed via yaook/operator
+# infra-ironic, that is, via the integrated DNSmasq to all nodes associated.
+# The default is false. This can be enabled in non-infra-ironic clusters,
+# without significant damage.
+# NOTE: To work in infra-ironic clusters, this requires the vault to be in the
+# same namespace as the infra-ironic instance.
+#management_cluster_integration = false
+
+# Number of unseal key shares to generate upon vault initialization.
+# NOTE: On the first run, the unseal keys and the root token will be printed IN
+# PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
+# LOCATION to use the Vault instance in the future!
+#init_key_shares = 5
+
+# Threshold for the Shamir's Secret Sharing Scheme used for unsealing, i.e. the
+# number of shares required to unseal the vault after a restart
+# NOTE: On the first run, the unseal keys and the root token will be printed IN
+# PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
+# LOCATION to use the Vault instance in the future!
+#init_key_threshold = 2
+
+# Scheduling key for the vault instance and its resources. Has no default.
+#scheduling_key =
+
+# Storage class for the vault file storage backend.
+#storage_class = "csi-sc-cinderplugin"
+
+# Storage size for the vault file storage backend.
+#storage_size = "8Gi"
+
+# ANCHOR_END: ksl_vault_configuration
 
 # ANCHOR: node_scheduling_configuration
 # --- NODE SCHEDULING ---
@@ -878,5 +973,13 @@ wireguard_on_workers = false
 #custom_chrony_configuration = false
 #custom_ntp_pools = [ "0.pool.ntp.example.org", "1.pool.ntp.example.org"]
 #custom_ntp_servers = [ "0.server.ntp.example.org", "1.server.ntp.example.org"]
+
+[nvidia.vgpu]
+# vGPU Support
+# If virtualize_gpu in the [kubernetes] section is set to true, please also set these variables:
+# driver_blob_url should point to a object store or otherwise web server, where the vGPU Manager installation file is available.
+# driver_blob_url= "..."
+# manager_filename should hold the name of the vGPU Manager installation file.
+# manager_filename = "..."
 
 # ANCHOR_END: miscellaneous_configuration

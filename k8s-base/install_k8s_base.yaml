@@ -108,6 +108,8 @@
     tags: ntp
   - role: gpu-support
     tags: gpu-support
+  - role: vgpu-support
+    tags: vgpu-support
   - role: docker
     tags: docker
   - role: kubeadm

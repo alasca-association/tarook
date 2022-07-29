@@ -104,16 +104,6 @@
       - test-dualstack
       when: (openstack_lbaas | default(False)) or ch_k8s_lbaas_enabled
 
-- name: Test enforcement of PodSecurityPolicies
-  hosts: masters[0]
-  become: no
-  gather_facts: no
-  roles:
-  - role: check-psp-enforcement
-    tags:
-    - test-check-psp-enforcement
-    when: "k8s_use_podsecuritypolicies"
-
 - name: Test enforcement of NetworkPolicies
   hosts: masters[0]
   become: no

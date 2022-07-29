@@ -1,7 +1,7 @@
 # https://github.com/rook/rook/releases/tag/v1.4.9
 # $YOUR_ROOK_REPO/cluster/examples/kubernetes/ceph/
 
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephclusters.ceph.rook.io
@@ -216,7 +216,7 @@ spec:
       description: Ceph Health
       JSONPath: .status.ceph.health
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephclients.ceph.rook.io
@@ -239,7 +239,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephrbdmirrors.ceph.rook.io
@@ -264,7 +264,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephfilesystems.ceph.rook.io
@@ -374,7 +374,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephnfses.ceph.rook.io
@@ -410,7 +410,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephobjectstores.ceph.rook.io
@@ -518,7 +518,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephobjectstoreusers.ceph.rook.io
@@ -537,7 +537,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephobjectrealms.ceph.rook.io
@@ -553,7 +553,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephobjectzonegroups.ceph.rook.io
@@ -569,7 +569,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephobjectzones.ceph.rook.io
@@ -585,7 +585,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephblockpools.ceph.rook.io
@@ -644,7 +644,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: volumes.rook.io
@@ -662,7 +662,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: objectbuckets.objectbucket.io
@@ -684,7 +684,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: objectbucketclaims.objectbucket.io

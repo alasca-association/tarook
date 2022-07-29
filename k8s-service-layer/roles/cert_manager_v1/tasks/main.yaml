@@ -31,3 +31,24 @@
       webhook:
         affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') }}"
         tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') }}"
+
+- name: "{{ (k8s_cert_manager_install and k8s_cert_manager_letsencrypt_email) | ternary('I', 'Uni') }}nstall Let's Encrypt cluster issuer"
+  community.kubernetes.k8s:
+    apply: yes
+    state: "{{ k8s_cert_manager_letsencrypt_email | ternary('present', 'absent') }}"
+    definition:
+      apiVersion: v1
+      kind: ClusterIssuer
+      metadata:
+        name: k8s-letsencrypt
+      spec:
+        acme:
+          email: "{{ k8s_cert_manager_letsencrypt_email }}"
+          preferredChain: "{{ k8s_cert_manager_letsencrypt_preferred_chain }}"
+          privateKeySecretRef:
+            name: letsencrypt-default-issuer-account-key
+          server: https://acme-v02.api.letsencrypt.org/directory
+          solvers:
+          - http01:
+              ingress:
+                class: "{{ k8s_cert_manager_letsencrypt_ingress }}"

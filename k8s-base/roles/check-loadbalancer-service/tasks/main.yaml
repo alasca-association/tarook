@@ -14,7 +14,7 @@
         fail_on_error: yes
         strict: yes
 
-  - name: Create k8s preliminaries (ServiceAccount,RBAC,PSP,echo-Deployment)
+  - name: Create k8s preliminaries (ServiceAccount, RBAC, echo-Deployment)
     k8s:
       definition: "{{ lookup('template', 'preliminaries.yaml.j2') }}"
       state: present
@@ -73,7 +73,7 @@
     when: dualstack_support
     include_tasks: dualstack-lb-services.yaml
 
-  - name: Clean up k8s preliminaries (ServiceAccount,RBAC,PSP,echo-Deployment)
+  - name: Clean up k8s preliminaries (ServiceAccount, RBAC, echo-Deployment)
     k8s:
       definition: "{{ lookup('template', 'preliminaries.yaml.j2') }}"
       state: absent

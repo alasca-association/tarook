@@ -88,8 +88,6 @@ spec:
     # deployed) to set rulesNamespace for all the clusters. Otherwise, you will get duplicate alerts with multiple alert definitions.
     rulesNamespace: "{{ rook_namespace }}"
   storage:
-    config:
-      encryptedDevice: "{{ rook_encrypt_osds }}"
     storageClassDeviceSets:
     - name: cinder
       count: {{ rook_nosds }}

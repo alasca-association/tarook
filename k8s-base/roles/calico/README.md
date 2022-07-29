@@ -21,7 +21,7 @@ These tasks basically follow the [Calico the hard way](https://docs.projectcalic
 * The CNI plugin is installed and configured on every kubernetes node
   * refer [Install CNI plugin](https://docs.projectcalico.org/getting-started/kubernetes/hardway/install-cni-plugin)
   * (including the certificate setup)
-* RBAC and PSP support and configuration
+* RBAC support and configuration
 
 ## Calico Datastore
 

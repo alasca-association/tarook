@@ -24,9 +24,9 @@ fi
 minor_version="$(echo "$target_version" | cut -d'.' -f1-2)"
 playbook="k8s-upgrades/k8s_upgrade_to_${minor_version}.yaml"
 
-if [ ! -e "$ansible_k8s_base_playbook/$playbook" ]; then
+if [ ! -e "${ansible_k8s_base_playbook}/${playbook}" ]; then
     errorf 'cannot find an upgrade playbook for target minor version %q' "$minor_version"
-    hintf 'I looked for %q' "$ansible_playbook/$playbook"
+    hintf 'I looked for %q' "${ansible_k8s_base_playbook}/${playbook}"
     exit 2
 fi
 

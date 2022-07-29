@@ -387,20 +387,6 @@
       value: 1
       state: present
 
-  - name: Configure initial PodSecurityPolicy objects
-    become: yes
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s:
-      definition: "{{ lookup('file', item) }}"
-      apply: yes
-      state: "{{ k8s_use_podsecuritypolicies | ternary('present', 'absent') }}"
-      validate:
-        fail_on_error: yes
-        strict: yes
-    loop:
-    - psp.yaml
-
   - name: Copy kubeconfig to localhost
     fetch:
       src: /etc/kubernetes/admin.conf

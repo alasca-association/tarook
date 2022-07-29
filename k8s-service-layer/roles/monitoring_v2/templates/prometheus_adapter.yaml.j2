@@ -1,8 +1,15 @@
 replicas: 1
 prometheus:
-  url: "http://prometheus-stack-kube-prom-prometheus.{{ monitoring_namespace }}.svc" 
+  url: "http://prometheus-stack-kube-prom-prometheus.{{ monitoring_namespace }}.svc"
   port: 9090
   path: ""
+
+{% if monitoring_common_labels %}
+podLabels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+  {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
 
 rules:
   resource:
@@ -31,6 +38,21 @@ rules:
             resource: pod
       containerLabel: container
     window: 3m
+
+{% if monitoring_scheduling_key %}
+tolerations:
+  - key: "{{ monitoring_scheduling_key }}"
+    operator: Exists
+    effect: NoSchedule
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: "{{ monitoring_scheduling_key }}"
+              operator: Exists
+{% endif %}
 
 extraArguments:
 - "--requestheader-client-ca-file=/mnt/certs/front-proxy-ca.crt"

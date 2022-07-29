@@ -97,7 +97,7 @@ testBook:
     PASS_COMPANY_USERS: "false"
     SSH_COMPANY_USERS: "false"
   services:
-    - name: vault:1.10.3
+    - name: vault:1.11.1
       alias: yaook-vault
       entrypoint: ["sh", "-c"]
       command:
@@ -153,12 +153,12 @@ testBook:
     - pip3 install -r managed-k8s/requirements.txt
     - ./managed-k8s/actions/apply-terraform.sh
     - ./reachability-or-recreate.sh
-    - ./retry_and_timeout.sh ./managed-k8s/actions/apply-stage2.sh 2 40m
-    - ./retry_and_timeout.sh ./managed-k8s/actions/apply-stage3.sh 2 80m
-    - ./retry_and_timeout.sh ./managed-k8s/actions/apply-stage4.sh 2 30m
-    - ./retry_and_timeout.sh ./managed-k8s/actions/apply-stage5.sh 2 30m
+    - ./managed-k8s/actions/apply-stage2.sh
+    - ./managed-k8s/actions/apply-stage3.sh
+    - ./managed-k8s/actions/apply-stage4.sh
+    - ./managed-k8s/actions/apply-stage5.sh
     - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/system_update_nodes.sh
-    - ./retry_and_timeout.sh ./managed-k8s/actions/test.sh 2 30m
+    - ./managed-k8s/actions/test.sh
   after_script:
     - cd ci/
     - ./after_script_cleanup.sh

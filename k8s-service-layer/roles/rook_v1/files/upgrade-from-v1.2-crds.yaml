@@ -4,7 +4,7 @@
 # Latest custom resource definitions
 # Do NOT apply this until after all Rook-Ceph clusters have been updated
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephclusters.ceph.rook.io
@@ -194,7 +194,7 @@ spec:
       description: Ceph Health
       JSONPath: .status.ceph.health
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephclients.ceph.rook.io
@@ -217,7 +217,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephfilesystems.ceph.rook.io
@@ -325,7 +325,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephnfses.ceph.rook.io
@@ -361,7 +361,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephobjectstores.ceph.rook.io
@@ -451,7 +451,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephobjectstoreusers.ceph.rook.io
@@ -470,7 +470,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: cephblockpools.ceph.rook.io
@@ -523,7 +523,7 @@ spec:
   subresources:
     status: {}
 ---
-apiVersion: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: volumes.rook.io

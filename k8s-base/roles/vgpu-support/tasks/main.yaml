@@ -1,0 +1,152 @@
+# A GPU has been detected
+# Prerequisits: enable IOMMU
+- name: Install GPU drivers
+  become: yes
+  when:
+    - k8s_virtualize_gpu | default(False)
+    - has_gpu
+    - _allow_disruption or install_status == 'k8s_not_installed'
+    - ansible_facts['pkg_mgr'] == "apt"
+  block:
+    - name: Get CPU information
+      command: lscpu
+      register: cpu_info
+
+    - name: look into CPU information
+      when: '"Intel" is in cpu_info.stdout'
+      set_fact:
+        cpu_type: "intel"
+
+    - name: look into CPU information
+      when: '"AMD" is in cpu_info.stdout'
+      set_fact:
+        cpu_type: "amd"
+
+    - name: Enable IOMMU
+      copy:
+        dest: /etc/default/grub.d/enable_iommu.cfg
+        content: |
+          GRUB_CMDLINE_LINUX="{{ cpu_type }}_iommu=on iommu=pt .modeset=0 rd.driver.pre=vfio-pci video=vesafb:off"
+      register: grub_config
+
+    - name: Update GRUB
+      when: grub_config.changed
+      command: update-grub
+
+    - name: Install deps for the nvidia drivers
+      apt:
+        state: present
+        name:
+          - "linux-headers-{{ ansible_kernel }}"
+          - build-essential
+          - manpages-dev
+
+
+    - name: Install virtual gpu manager
+      block:
+        - name: Download the nvidia vgpu driver script on the host
+          get_url:
+            url: "{{ nvidia_vgpu_driver_blob_url }}/{{ nvidia_vgpu_manager_filename }}"
+            dest: "/tmp/{{ nvidia_vgpu_manager_filename }}"
+            mode: '0755'
+
+        - name: Install the virtual gpu manager
+          apt:
+            deb: '/tmp/{{ nvidia_vgpu_manager_filename }}'
+          register: installed_vgpu_manager
+
+    - name: Blacklist nouveau
+      # The installation script lies! It says: """
+      # update-initramfs: deferring update (trigger activated)
+      # A modprobe blacklist file has been created at /etc/modprobe.d to prevent Nouveau
+      # from loading. This can be reverted by deleting the following file:
+      # /etc/modprobe.d/nvidia-graphics-drivers.conf"""
+      # And guess what? That configuration file doesn't exist!
+      copy:
+        dest: /etc/modprobe.d/blacklist_nouveau.conf
+        content: |
+          {{ _auto_generated_preamble }}
+          blacklist nouveau
+          options nouveau modeset=0
+        mode: 0755
+        owner: root
+        group: root
+      register: blacklisted_nouveau
+
+    - name: Update initramfs
+      command: "update-initramfs -k {{ ansible_kernel }} -uv"
+      when: blacklisted_nouveau.changed or installed_vgpu_manager.changed
+      register: ramfs
+
+    - name: Reboot block
+      become: yes
+      when: ramfs is changed or grub_config is changed
+      block:
+
+        - name: Reboot the system (cloud-init run)
+          command:
+            argv:
+              - reboot
+              - now
+          when: ansible_connection == 'local'
+
+        # We do not need a "when" here. ansible is killed approximately immediately
+        # anyway by the above command if it is executed; If the above command is
+        # not executed, we want to execute this one.
+        - name: Reboot the system
+          reboot:
+
+    - name: Basic sanity check with nvidia-smi
+      # nvidia-smi -L lists all detected cards.
+      # I installed the toolchain on a host with any nvidia cards and the rc was != 0.
+      # It's therefore safe to assume that if the installation somehow failed, then this task would fail too.
+      changed_when: false
+      command: nvidia-smi -L
+
+    - name: Ensure group "libvirt" exists with correct gid
+      ansible.builtin.group:
+        name: libvirt
+        state: present
+        gid: 2500009
+
+    - name: Create udev rule for vfio devices
+      become: yes
+      template:
+        src: 50-vfio.rules.j2
+        dest: /etc/udev/rules.d/50-vfio.rules
+        owner: root
+        group: root
+        mode: 0644
+      register: udev_vfio_rule
+
+    - name: Reload udev rules on the node
+      # nvidia-smi -L lists all detected cards.
+      # I installed the toolchain on a host with any nvidia cards and the rc was != 0.
+      # It's therefore safe to assume that if the installation somehow failed, then this task would fail too.
+      when: udev_vfio_rule.changed
+      command: "{{ item }}"
+      with_items:
+        - udevadm control --reload-rules
+        - udevadm trigger
+
+    - name: run sriov-manage once to create VFs
+      # executing the variant of the reboot systemd service during installation does not work properly we
+      # rather run the command once after installation and just enable the systemd service to run for consecutive reboots
+      command: "/usr/lib/nvidia/sriov-manage -e ALL"
+
+    - name: install nvidia-sriov-manage systemd unit file
+      template: src=nvidia-sriov-manage.service.j2 dest=/etc/systemd/system/nvidia-sriov-manage.service
+
+    - name: create sriov-loop script (used by nvidia-sriov-manage systemd unit)
+      template:
+        src: nvidia-sriov-startup-loop.sh.j2
+        dest: /usr/local/bin/nvidia-sriov-startup-loop.sh
+        owner: root
+        group: root
+        mode: 0744
+
+    - name: enable nvidia-sriov-manage
+      ansible.builtin.systemd:
+        enabled: yes
+        name: nvidia-sriov-manage.service
+        daemon_reload: yes
