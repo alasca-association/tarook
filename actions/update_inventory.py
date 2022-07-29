@@ -87,7 +87,7 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "cert-manager": "k8s_cert_manager",
     "ingress": "k8s_ingress",
     "etcd-backup": "etcd_backup",
-    "vault": "vault",
+    "vault_backend": "vault",
 }
 
 
@@ -364,7 +364,7 @@ def main():
         dump_to_ansible_inventory(
             config["vault"],
             vault_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("vault", "")
+            SECTION_VARIABLE_PREFIX_MAP.get("vault_backend", "")
         )
 
     # ---
