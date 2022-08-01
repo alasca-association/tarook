@@ -31,6 +31,7 @@
 - [GPU and vGPU Support](./operation/gpu-and-vgpu.md)
 - [Resetting Kubernetes]() <!-- ./operation/resetting-kubernetes.md -->
 - [Backups](./operation/backups.md)
+- [Vault secret store](./operation/vault.md)
 
 ---
 
