@@ -7,8 +7,6 @@ actions_dir="$(pwd)/managed-k8s/"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/actions/lib.sh"
 
-vault_status="$(docker inspect -f '{{.State.Status}}' "$vault_container_name" 2>/dev/null || true)"
-
 # attempt to start vault right away
 if ! "$actions_dir/actions/vault.sh"; then
     echo "Failed to ensure vault is up & running.."
