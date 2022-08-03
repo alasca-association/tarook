@@ -29,12 +29,6 @@
         - node
         - "{{ inventory_hostname }}"
 
-    - name: Check if cni config exists
-      find:
-        path: /etc/cni/net.d/
-      register: cni_dir
-      failed_when: not cni_dir.files
-
     - name: Set fact that it is
       set_fact:
         install_status: "k8s_installed"
