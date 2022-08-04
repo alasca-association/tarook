@@ -161,6 +161,25 @@ disable safety checks or give consent to potentially dangerous operations.
   X.509 identities for CAs (root and intermediate) created by the Vault
   tooling.
 
+- `VAULT_TOKEN`: Standard environment variable where the Vault CLI, all scripts
+  and the LCM look for a ready-to-use token. Note that the LCM (and only the
+  LCM, i.e. the ansible roles) ignores this variable if `VAULT_AUTH_METHOD` is
+  set to a value different than `token`.
+
+- `VAULT_AUTH_METHOD` (LCM only, default: `token`): The authentication method
+  to use for all orchestrator-controlled Vault operations. The only other
+  supported value is `approle`, which requires `VAULT_AUTH_PATH`,
+  `VAULT_ROLE_ID` and `VAULT_SECRET_ID` to be set.
+
+- `VAULT_AUTH_PATH` (LCM only, no default): Path to the authentication
+  engine to use. Only used for non-`token` `VAULT_AUTH_METHOD`.
+
+- `VAULT_ROLE_ID` (LCM only, no default): If `VAULT_AUTH_METHOD` is set to
+  `approle`, this must be set to the role ID to authenticate with.
+
+- `VAULT_SECRET_ID` (LCM only, no default): If `VAULT_AUTH_METHOD` is set to
+  `approle`, this must be the secret ID to authenticate with.
+
 - `YAOOK_K8S_VAULT_PATH_PREFIX` (default: `yaook`): Vault URI path prefix to be
   used for all secrets engines used by yaook/k8s. Changing this is not fully
   supported and at your own risk.

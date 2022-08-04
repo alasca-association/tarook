@@ -138,11 +138,46 @@ older than 20.04 LTS
 (and probably other operating systems)
 due to lack of support in the respective `python3-cryptography` package.
 
+## On policies
+
+The `vault/init.sh` script (see below) creates Vault policies
+which are used for and by the LCM.
+There are separate policies for k8s nodes, k8s control plane nodes, gateway
+nodes, common nodes and the orchestrator.
+
+All except the orchestrator role are used by machines provisioned by the LCM.
+The orchestrator role is designed to be used to *run* and use the LCM.
+It has sufficient privileges to execute all scripts listed below,
+except the `init.sh` script,
+but including the `mkcluster-*.sh` and `import.sh` scripts.
+
+Hence, this role is rather powerful,
+but it's still better than a root token.
+
+Using a token or approle account with the orchestrator role
+is the recommended way to invoke the LCM.
+For development setups,
+the LCM defaults to running with the root token.
+
+To run the LCM with a custom token,
+set the `VAULT_TOKEN` environment variable.
+To run the LCM with a custom approle,
+set the `VAULT_AUTH_PATH`, `VAULT_AUTH_METHOD=approle`, `VAULT_ROLE_ID` and `VAULT_SECRET_ID` environment variables (see also [Vault tooling variables](../usage/environmental-variables.md#vault-tooling-variables)).
+
+**Note:** Currently, only `approle` is supported as an auth method besides `token`.
+Additional auth methods could be implemented as needed.
+
+**Note:** The approle-related environment variables described above are only supported by the ansible LCM.
+They are not supported by the `vault` CLI tool or the vault scripts.
+To use different privileges with those,
+manually log into Vault using the CLI
+and export the resulting token via the `VAULT_TOKEN` environment variable.
+
 ## Managing Clusters in Vault
 
 The following scripts are provided in order to manage a Vault instance for yaook/k8s.
 
-Please see [Vault tooling variables](../usage/environmental-variables.md#vault-tooling-variabes)
+Please see [Vault tooling variables](../usage/environmental-variables.md#vault-tooling-variables)
 for additional environment variables accepted by these tools.
 
 - `tools/vault/init.sh`:
@@ -181,6 +216,16 @@ for additional environment variables accepted by these tools.
     These files must contain two certificates:
     the signed intermediate certificate and, following that,
     the complete chain of trust up to the root CA, in this order.
+
+- `tools/vault/dev-mkorchestrator.sh`:
+    Creates an approle with the orchestrator policy.
+    As this abuses the nodes approle auth plugin,
+    this should not be used on productive clusters.
+    In addition, every time this script is invoked,
+    a new secret ID is generated
+    without cleaning up the old one.
+    This is generally fine for dev setups,
+    but it's another reason not to run this against productive clusters.
 
 - `tools/vault/rmcluster.sh CLUSTERNAME`:
     Deletes all data associated with the cluster from Vault.
