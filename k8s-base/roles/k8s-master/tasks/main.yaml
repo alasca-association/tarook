@@ -346,6 +346,15 @@
         common_name: "{{ inventory_hostname }}"
         ttl: 8784h
 
+- name: Delete secret data which is now in Vault
+  file:
+    state: absent
+    path: /etc/kubernetes/pki/{{ item }}
+  loop:
+  - ca.key
+  - front-proxy-ca.key
+  - etcd/ca.key
+
 - name: Ensure that /var/lib/etcd exists
   become: yes
   file:

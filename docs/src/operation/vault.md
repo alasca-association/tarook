@@ -154,10 +154,6 @@ There are two choices to migrate your cluster to Vault:
 - Root CA only
 - With Intermediate CA
 
-**Warning:** No matter which migration mode you choose,
-the existing CA keys stored on the Kubernetes nodes
-are **not** removed.
-
 ### Root CA only
 
 In this mode, the existing root CA keys will be copied into Vault.
