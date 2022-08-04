@@ -43,13 +43,6 @@
       register: wg_genkey
       when: "not wg0_conf.stat.exists and (wg_gw_key is not defined)"
 
-    - name: Ensure that the output of `wg genkey` contains no whitespace
-      fail:
-        msg: |
-          The output of `wg genkey` contains whitespace for an unknown reason. The passwordstore lookup plugin cannot cope with that so
-          please check what went wrong.
-      when: "wg_genkey.changed and (wg_genkey.stdout | regex_search('\\s'))"
-
     - name: Store generated key in vault
       when: "not wg0_conf.stat.exists and (wg_gw_key is not defined)"
       community.hashi_vault.vault_write:
@@ -75,12 +68,14 @@
     - name: Load private key
       set_fact:
         wg_gw_priv_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_caller_auth_mount_point, auth_method=vault_caller_auth_method, token=vault_caller_token, role_id=vault_caller_role_id, secret_id=vault_caller_secret_id).data.data.private_key }}"
+
     - name: Derive public key
       command: "wg pubkey"
       args:
         stdin: "{{ wg_gw_priv_key }}"
       register: wg_pubkey
       changed_when: false
+
     - name: Write public key to disk
       copy:
         content: "{{ wg_pubkey.stdout }}"
