@@ -406,18 +406,17 @@
 
 - name: Join the K8s control plane
   when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed"
+  become: yes
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
   block:
     - name: Get certificate information
-      become: yes
       community.crypto.x509_certificate_info:
         path: "/etc/kubernetes/pki/ca.crt"
       register: ca_cert
 
     - name: Create kubeadm-join-config.yaml
-      become: yes
       vars:
         kubeadm_join_token: "{{ join_token_vault_entry.data.data.data.token }}"
       template:
@@ -428,12 +427,10 @@
         mode: 0600
 
     - name: Join the existing cluster as another control plane node
-      become: yes
       # XXX: ansible command module does not support setting the umask
       shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml --ignore-preflight-errors=FileAvailable--etc-kubernetes-kubelet.conf"
 
     - name: Remove kubeadm-join-config.yaml
-      become: yes
       file:
         path: /tmp/kubeadm-join-config.yaml
         state: absent
