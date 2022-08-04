@@ -155,8 +155,8 @@
 
   - name: Fetch CA certificates
     set_fact:
-      k8s_ca_cert: "{{ '' }}-----BEGIN CERTIFICATE-----{{ lookup('community.hashi_vault.vault_read', '%s/%s/k8s-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=cat_role_id.stdout, secret_id=cat_secret_id.stdout, mount_point=vault_nodes_approle).data.ca_chain.split('-----BEGIN CERTIFICATE-----')[-1] }}"
-      k8s_front_proxy_ca_cert: "{{ '' }}-----BEGIN CERTIFICATE-----{{ lookup('community.hashi_vault.vault_read', '%s/%s/k8s-front-proxy-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=cat_role_id.stdout, secret_id=cat_secret_id.stdout, mount_point=vault_nodes_approle).data.ca_chain.split('-----BEGIN CERTIFICATE-----')[-1] }}"
+      k8s_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-pki'}) }}"
+      k8s_front_proxy_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-front-proxy-pki'}) }}"
 
   - name: Write k8s CA file
     become: yes
@@ -178,12 +178,14 @@
 
   - name: Write etcd CA file
     become: yes
-    copy:
+    vars:
+      ca_pki_name: etcd-pki
+    template:
+      src: ca.crt.j2
       dest: /etc/kubernetes/pki/etcd/ca.crt
       owner: root
       group: root
       mode: ugo=r
-      content: "{{ '' }}-----BEGIN CERTIFICATE-----{{ lookup('community.hashi_vault.vault_read', '%s/%s/etcd-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=cat_role_id.stdout, secret_id=cat_secret_id.stdout, mount_point=vault_nodes_approle).data.ca_chain.split('-----BEGIN CERTIFICATE-----')[-1] }}"
 
   - name: Generate controller-manager kubeconfig
     include_tasks: mkkubeconfig.yaml
