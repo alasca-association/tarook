@@ -5,6 +5,8 @@ actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
+vault_image="$(bash "$actions_dir/detect-vault-image.sh")"
+
 # Create vault folders
 # shellcheck disable=SC2154
 mkdir -p "$vault_dir/config"
@@ -40,7 +42,7 @@ if [ -z "$vault_status" ] || [ "$vault_status" = 'exited' ]; then
         -v "$vault_dir/data":/vault/file \
         -e VAULT_ADDR="https://127.0.0.1:8200" \
         -e VAULT_CACERT="/vault/tls/ca/vaultca.crt" \
-        vault:1.11.1 server
+        "$vault_image" server
 fi
 
 vault_initialized=false

@@ -30,6 +30,14 @@ shellcheck:
   tags:
     - docker
 
+detect-vault-image:
+  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
+  stage: lint
+  script:
+    - bash ./actions/detect-vault-image.sh
+  tags:
+    - docker
+
 ansible-lint:
   variables:
     ANSIBLE_LINT_IMAGE_TAG: 5
