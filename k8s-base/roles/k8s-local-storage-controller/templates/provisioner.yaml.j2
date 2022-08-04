@@ -23,7 +23,7 @@ metadata:
     app.kubernetes.io/version: {{ k8s_local_storage_static_version | to_json }}
 data:
   storageClassMap: |
-    local-storage:
+    {{ k8s_local_storage_static_storageclass_name | to_json  }}:
        hostDir: {{ k8s_local_storage_static_discovery_directory | to_json }}
        mountDir: {{ k8s_local_storage_static_discovery_directory | to_json }}
        blockCleanerCommand:
