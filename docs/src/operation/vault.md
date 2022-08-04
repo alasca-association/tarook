@@ -1,5 +1,7 @@
 # Use of HashiCorp Vault in yaook/k8s
 
+<!-- This file uses https://rhodesmill.org/brandon/2012/one-sentence-per-line/ -->
+
 As of Summer 2022, yaook/k8s exclusively supports [HashiCorp Vault](https://vaultproject.io) as backend for storing secrets.
 Previously, passwordstore was used.
 Vault supports many different kinds of secrets
@@ -64,15 +66,23 @@ where `$cluster_name` is configured in `config.toml` (`vault.cluster_name`).
 
 The following six secrets engines are used:
 
-- `yaook/$cluster_name/kv`, a KV2 engine for generic secrets (wireguard key, service account signing key, ...)
-- `yaook/$cluster_name/k8s-pki`, a CA to issue identities within the Kubernetes cluster (e.g. API server, nodes)
-- `yaook/$cluster_name/k8s-front-proxy-pki`, a CA to prove the identity of the Kubernetes API server for API extensions
-- `yaook/$cluster_name/etcd-pki`, a CA to issue identities within the etcd cluster (e.g. cluster peers, clients)
-- `yaook/$cluster_name/calico-pki`, a CA to issue identities within calico (typha and nodes)
-- `yaook/$cluster_name/ssh-ca`, an SSH certificate authority to allow verifying node SSH keys without prior knowledge
+- `yaook/$cluster_name/kv`, a KV2 engine for generic secrets
+  (wireguard key, service account signing key, ...)
+- `yaook/$cluster_name/k8s-pki`, a CA to issue identities within the Kubernetes cluster
+  (e.g. API server, nodes)
+- `yaook/$cluster_name/k8s-front-proxy-pki`, a CA to prove the identity of the Kubernetes API server
+  for API extensions
+- `yaook/$cluster_name/etcd-pki`, a CA to issue identities within the etcd cluster
+  (e.g. cluster peers, clients)
+- `yaook/$cluster_name/calico-pki`, a CA to issue identities within calico
+  (typha and nodes)
+- `yaook/$cluster_name/ssh-ca`, an SSH certificate authority to allow verifying node SSH keys
+  without prior knowledge
 
-In addition to the secrets engines, yaook/k8s has a shared `approle` authentication method at `yaook/nodes`.
-This auth method is used to provide credentials for the individual nodes of all clusters.
+In addition to the secrets engines,
+yaook/k8s has a shared `approle` authentication method at `yaook/nodes`.
+This auth method is used to provide credentials
+for the individual nodes of all clusters.
 
 ## Managing Clusters in Vault
 
