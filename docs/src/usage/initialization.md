@@ -119,10 +119,7 @@ To initialize a **local** Vault instance for **development purposes**, do the fo
     **Note:** This is not suited for productive deployments or production use,
     for many reasons!
 
-2. Ensure that `vault_env.sh` is part of your `.envrc`.
-    Run the `vault login` command it asks you to run
-    (you may have to leave and enter the directory after you have run `vault.sh`
-    for `vault_env.sh` to work).
+2. Ensure that sourcing `vault_env.sh` is part of your `.envrc`.
 
 3. Run `./managed-k8s/tools/vault/init.sh`
 
