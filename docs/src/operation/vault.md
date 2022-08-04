@@ -105,11 +105,7 @@ The following scripts are provided in order to manage a Vault instance for yaook
 - `tools/vault/import.sh CLUSTERNAME`:
     Prepare a new cluster inside Vault by importing existing secrets from `inventory/.etc`.
     Conceptually, this setup is identical to the setup provided by `mkcluster-root.sh`.
-    If you wish to transform your cluster to a setup using an intermediate CA,
-    run `mkcluster-intermediate.sh` with the same name after this script,
-    sign the CSR files and load the signed certificates using the normal procedure.
-    You must then [delete the imported issuers](https://www.vaultproject.io/api-docs/secret/pki#delete-issuer) from the Vault,
-    in order to remove the Root CA keys from Vaults storage.
+    Please see [Migrating an existing cluster to Vault](#migrating-an-existing-cluster-to-vault) for details.
 
 - `tools/vault/mkcluster-intermediate.sh CLUSTERNAME`:
     Prepare a new cluster inside Vault,
@@ -132,3 +128,74 @@ The following scripts are provided in order to manage a Vault instance for yaook
 - `tools/vault/rmcluster.sh CLUSTERNAME`:
     Deletes all data associated with the cluster from Vault.
     EXCEPTIONALLY DANGEROUS, so it always requires manual confirmation.
+
+## Migrating an existing cluster to Vault
+
+There are two choices to migrate your cluster to Vault:
+
+- Root CA only
+- With Intermediate CA
+
+**Warning:** No matter which migration mode you choose,
+the existing CA keys stored on the Kubernetes nodes
+are **not** removed.
+
+### Root CA only
+
+In this mode, the existing root CA keys will be copied into Vault.
+This is the simplest mode of operation,
+but may not be compliant with your security requirements,
+as the root CA keys are held "online" within Vault.
+
+Conceptually, this mode is similar to running `mkcluster-root.sh` (see above).
+
+To run a migration in this mode, call:
+
+```console
+$ managed-k8s/tools/import.sh $clustername no-intermediates
+```
+
+### With Intermediate CA
+
+In this mode, a fresh intermediate CA key pair is created within Vault.
+The root CA keys are *not* imported into Vault.
+The import script generates Certificate Sign Requests
+for each intermediate CA.
+Before the cluster can be managed with Vault,
+it is thus required to sign the CSRs
+and load the signed certificates using
+`load-signed-intermediates.sh`.
+
+Conceptually, this mode is similar to running `mkcluster-intemediate.sh` (see above).
+
+To start a migration in this mode, call:
+
+```console
+$ managed-k8s/tools/import.sh $clustername with-intermediates
+```
+
+This will print a message
+indicating that the CSRs have been written
+and to which files they have been written.
+
+In addition,
+like the `no-intermediates` mode,
+this mode takes care that the root CA files are actually usable as CAs
+(this is not ensured by the pre-vault LCM but somehow nothing cared).
+
+You now must use the CA key and certificates stored in `inventory/`
+to sign the respective CAs.
+How you do this is out of scope for this document,
+as it'll highly depend on your organizations security policy requirements.
+
+Please see the documentation of `load-signed-intermediates.sh` above
+for details on the files expected by that script
+in order to load the signed certificates.
+
+Once you have provided the files, run:
+
+```console
+$ managed-k8s/tools/load-signed-intermediates.sh $clustername
+```
+
+to load the signed intermediate CA certificates into Vault.

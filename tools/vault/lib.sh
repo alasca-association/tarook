@@ -235,3 +235,39 @@ function init_k8s_calico_pki_roles() {
         allow_ip_sans=false \
         key_type=rsa
 }
+
+function mkcsrs() {
+    local ttl="$1"
+
+    vault write -field=csr "$k8s_pki_path/intermediate/generate/internal" \
+        common_name="Kubernetes Cluster Intermediate CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$ttl" \
+        key_type=ed25519 > k8s-cluster.csr
+
+    vault write -field=csr "$etcd_pki_path/intermediate/generate/internal" \
+        common_name="Kubernetes etcd Intermediate CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$ttl" \
+        key_type=ed25519 > k8s-etcd.csr
+
+    vault write -field=csr "$k8s_front_proxy_pki_path/intermediate/generate/internal" \
+        common_name="Kubernetes Front Proxy Intermediate CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$ttl" \
+        key_type=ed25519 > k8s-front-proxy.csr
+
+    vault write -field=csr "$calico_pki_path/intermediate/generate/internal" \
+        common_name="Kubernetes calico Intermediate CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$ttl" \
+        key_type=ed25519 > k8s-calico.csr
+}

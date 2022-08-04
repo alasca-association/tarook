@@ -1,6 +1,29 @@
 #!/bin/bash
 set -euo pipefail
+
+function usage() {
+    echo "usage: $0 CLUSTERNAME [no-intermediates|with-intermediates]" >&2
+    echo >&2
+    echo "Arguments:" >&2
+    echo "    CLUSTERNAME" >&2
+    echo "        The name of the cluster, inside Vault, to use." >&2
+    echo >&2
+    echo "    no-intermediates" >&2
+    echo "        Import the existing root CA keys into Vault directly as if" >&2
+    echo "        using mkcluster-root.sh" >&2
+    echo "    with-intermediates" >&2
+    echo "        Do not import the existing root CA keys, requiring you to" >&2
+    echo "        use them to issue intermediates using them as if using" >&2
+    echo "        mkcluster-intermediate.sh" >&2
+}
+
+if [ "$#" -ne 2 ]; then
+    usage
+    exit 2
+fi
+
 cluster="$1"
+mode="$2"
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 scriptdir="$(dirname "$0")"
@@ -24,6 +47,23 @@ if vault kv get "$cluster_path/kv/k8s/service-account-key" >/dev/null 2>/dev/nul
     echo "$0: refusing to continue." >&2
     exit 2
 fi
+
+import_roots=1
+case "$mode" in
+    no-intermediates)
+        # 5yrs
+        pki_ca_ttl=43830h
+        ;;
+    with-intermediates)
+        import_roots=0
+        # 1.5yrs
+        pki_ca_ttl=13176h
+        ;;
+    *)
+        usage
+        exit 2
+        ;;
+esac
 
 echo "NOTE: This script is only intended to be used for non-IaaS clusters."
 echo "Use with C&H IaaS clusters is **not compliant** with policies."
@@ -55,16 +95,25 @@ upgrade_ca "$inventory_etc/calico/typhaca.crt" "$inventory_etc/calico/typhaca.ke
 upgrade_ca "$inventory_etc/etcd/ca.crt" "$inventory_etc/etcd/ca.key"
 
 pki_ttl=8784h
-pki_root_ttl=43830h
 
-init_cluster_secrets_engines "$pki_root_ttl" 'false'
+init_cluster_secrets_engines "$pki_ca_ttl" 'false'
 
-echo "Importing CA bundles ..."
+if [ "$import_roots" -eq 1 ]; then
+    echo "Importing CA bundles ..."
 
-cat "$inventory_etc/ca.crt" "$inventory_etc/ca.key" | vault write "$k8s_pki_path/config/ca" pem_bundle=-
-cat "$inventory_etc/front-proxy-ca.crt" "$inventory_etc/front-proxy-ca.key" | vault write "$k8s_front_proxy_pki_path/config/ca" pem_bundle=-
-cat "$inventory_etc/calico/typhaca.crt" "$inventory_etc/calico/typhaca.key" | vault write "$calico_pki_path/config/ca" pem_bundle=-
-cat "$inventory_etc/etcd/ca.crt" "$inventory_etc/etcd/ca.key" | vault write "$etcd_pki_path/config/ca" pem_bundle=-
+    cat "$inventory_etc/ca.crt" "$inventory_etc/ca.key" | vault write "$k8s_pki_path/config/ca" pem_bundle=-
+    cat "$inventory_etc/front-proxy-ca.crt" "$inventory_etc/front-proxy-ca.key" | vault write "$k8s_front_proxy_pki_path/config/ca" pem_bundle=-
+    cat "$inventory_etc/calico/typhaca.crt" "$inventory_etc/calico/typhaca.key" | vault write "$calico_pki_path/config/ca" pem_bundle=-
+    cat "$inventory_etc/etcd/ca.crt" "$inventory_etc/etcd/ca.key" | vault write "$etcd_pki_path/config/ca" pem_bundle=-
+else
+    echo "NOT importing CA bundles because invoked with with-intermediates"
+    echo "  Make sure to sign the CSRs and load the signed certificates using"
+    echo "  load-signed-intermediates.sh"
+
+    mkcsrs "$pki_ca_ttl"
+
+    echo "NOTE: CSRs have been written to k8s-{cluster,etcd,front-proxy,calico}.csr."
+fi
 
 echo "Importing other secrets ..."
 

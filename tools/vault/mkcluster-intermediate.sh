@@ -11,39 +11,7 @@ pki_intermediate_ttl=13176h
 
 init_cluster_secrets_engines "$pki_intermediate_ttl"
 
-year="$(date +%Y)"
-
-vault write -field=csr "$k8s_pki_path/intermediate/generate/internal" \
-    common_name="Kubernetes Cluster Intermediate CA $year" \
-    ou="$ou" \
-    organization="$organization" \
-    country="$country" \
-    ttl="$pki_intermediate_ttl" \
-    key_type=ed25519 > k8s-cluster.csr
-
-vault write -field=csr "$etcd_pki_path/intermediate/generate/internal" \
-    common_name="Kubernetes etcd Intermediate CA $year" \
-    ou="$ou" \
-    organization="$organization" \
-    country="$country" \
-    ttl="$pki_intermediate_ttl" \
-    key_type=ed25519 > k8s-etcd.csr
-
-vault write -field=csr "$k8s_front_proxy_pki_path/intermediate/generate/internal" \
-    common_name="Kubernetes Front Proxy Intermediate CA $year" \
-    ou="$ou" \
-    organization="$organization" \
-    country="$country" \
-    ttl="$pki_intermediate_ttl" \
-    key_type=ed25519 > k8s-front-proxy.csr
-
-vault write -field=csr "$calico_pki_path/intermediate/generate/internal" \
-    common_name="Kubernetes calico Intermediate CA $year" \
-    ou="$ou" \
-    organization="$organization" \
-    country="$country" \
-    ttl="$pki_intermediate_ttl" \
-    key_type=ed25519 > k8s-calico.csr
+mkcsrs "$pki_intermediate_ttl"
 
 init_k8s_cluster_pki_roles "$k8s_pki_path" "$pki_ttl"
 init_k8s_etcd_pki_roles "$etcd_pki_path" "$pki_ttl"
