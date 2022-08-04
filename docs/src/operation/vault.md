@@ -104,7 +104,10 @@ due to lack of support in the respective `python3-cryptography` package.
 
 ## Managing Clusters in Vault
 
-The following scripts are provided in order to manage a Vault instance for yaook/k8s:
+The following scripts are provided in order to manage a Vault instance for yaook/k8s.
+
+Please see [Vault tooling variables](../usage/environmental-variables.md#vault-tooling-variabes)
+for additional environment variables accepted by these tools.
 
 - `tools/vault/init.sh`:
     Create policies and initialize the shared approle auth method.

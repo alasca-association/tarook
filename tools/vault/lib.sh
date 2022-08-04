@@ -10,7 +10,7 @@ if [ -n "${cluster:-}" ]; then
 
     year="$(date +%Y)"
     ou="$cluster"
-    organization="${YAOOK_K8S_CA_ORGANIZATION_OVERRIDE:-CLOUD&HEAT Technologies GmbH}"
+    organization="${YAOOK_K8S_CA_ORGANIZATION_OVERRIDE:-A Company that Makes Everything (ACME)}"
     country="${YAOOK_K8S_CA_COUNTRY_OVERRIDE:-DE}"
 
     ssh_ca_path="$cluster_path/ssh-ca"
