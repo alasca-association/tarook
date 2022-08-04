@@ -417,8 +417,6 @@
       register: ca_cert
 
     - name: Create kubeadm-join-config.yaml
-      vars:
-        kubeadm_join_token: "{{ join_token_vault_entry.data.data.data.token }}"
       template:
         src: kubeadm-join-config.yaml.j2
         dest: /tmp/kubeadm-join-config.yaml
