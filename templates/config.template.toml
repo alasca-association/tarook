@@ -272,31 +272,6 @@ plugin = "calico" # •ᴗ•
 
 # ANCHOR_END: kubernetes_kubelet_configuration
 
-# ANCHOR: kubernetes_continuous_join_key_configuration
-# --- KUBERNETES: CONTINUOUS JOIN KEY ---
-# ansible prefix: "k8s_continuous_join_key"
-[kubernetes.continuous_join_key]
-# This section controls a systemd timer which periodically publishes a fresh
-# Kubernetes join key into a HashiCorp Vault server. At the time of writing,
-# the primary use case is integration with the scripts provided to every node
-# deployed via the Yaook Metal Controller.
-enabled = false # •ᴗ•
-
-# Absolute path to an executable which prints a fresh, revokable vault token
-# to stdout. This token must be privileged enough to write the given vault path
-# below.
-#vault_token_script =
-
-# Path to a Vault key/value object where the join key data should be written
-# to.
-#vault_path =
-
-# Path to a file which should be loaded as additional environment to the token
-# renewal script.
-#env_path = "/dev/null"
-
-# ANCHOR_END: kubernetes_continuous_join_key_configuration
-
 # --- KUBERNETES SERVICE LAYER ---
 # ANCHOR: ksl_rook_configuration
 # --- KUBERNETES SERVICE LAYER : ROOK (STORAGE) ---

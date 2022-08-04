@@ -142,18 +142,6 @@ The LCM supports the customization of certain variables of `kubelet` for (meta-)
 ```
 </details>
 
-#### Continuous Join Key Configuration
-
-Currently, this is only needed for yk8s clusters created via the yaook/metal-controller on bare metal.
-
-<details>
-<summary>config.toml: Kubernetes - Continuous Join Key Configuration</summary>
-
-```toml
-{{#include ../templates/config.template.toml:kubernetes_continuous_join_key_configuration}}
-```
-</details>
-
 ### KSL - Kubernetes Service Layer
 
 #### Rook Configuration
