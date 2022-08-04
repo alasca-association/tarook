@@ -84,6 +84,42 @@ yaook/k8s has a shared `approle` authentication method at `yaook/nodes`.
 This auth method is used to provide credentials
 for the individual nodes of all clusters.
 
+## Vault UI
+
+Vault comes with a web user interface.
+In order to access the web interface,
+enter the cluster repository and run:
+
+```console
+$ sensible-browser "$VAULT_ADDR/ui/"
+```
+
+The `VAULT_ADDR` environment variable is automatically provided
+if you have `actions/vault_env.sh` sourced in your `.envrc`,
+as is recommended.
+`sensible-browser` is a Debian-ism.
+On non-Debian distributions,
+you may want to `echo "$VAULT_ADDR/ui/"` instead
+and just open that link.
+
+After opening the web UI page,
+you need to log in.
+You can log in as root
+using the root token.
+The root token can be displayed using:
+
+```console
+$ echo "$VAULT_TOKEN"
+```
+
+Or copied into the (X) clipboard using
+(does not work on Wayland,
+most likely):
+
+```console
+$ echo "$VAULT_TOKEN" | xsel -bi
+```
+
 ## On the use of Ed25519 keys
 
 By default,
