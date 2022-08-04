@@ -98,13 +98,18 @@ spec:
     matchLabels:
       app.kubernetes.io/name: local-storage
       app.kubernetes.io/instance: local-storage
-      app.kubernetes.io/version: {{ k8s_local_storage_static_version | to_json }}
+      app.kubernetes.io/version: v2.3.4
   template:
     metadata:
       labels:
         app.kubernetes.io/name: local-storage
         app.kubernetes.io/instance: local-storage
-        app.kubernetes.io/version: {{ k8s_local_storage_static_version | to_json }}
+        app.kubernetes.io/version: v2.3.4
+{# unfortunately, we made a mistake: we put the /version in the selector.
+as the selector is immutable, we cannot change the version field without causing
+massive chaos. As a workaround, we freeze the version field of the pods and
+add a new actually-version field for informational purposes. #}
+        app.kubernetes.io/actually-version: {{ k8s_local_storage_static_version | to_json }}
     spec:
       serviceAccountName: local-storage
 {% if k8s_local_storage_static_nodeplugin_toleration %}
@@ -115,7 +120,7 @@ spec:
 {% endif %}
 {% endif %}
       containers:
-        - image: "quay.io/external_storage/local-volume-provisioner:v2.3.4"
+        - image: {{ "quay.io/external_storage/local-volume-provisioner:%s" | format (k8s_local_storage_static_version) | to_json }}
           name: provisioner
           securityContext:
             privileged: true
