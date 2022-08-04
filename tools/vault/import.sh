@@ -42,6 +42,18 @@ if [ -e "$flag_file" ]; then
     exit 2
 fi
 
+if [ ! -e 'inventory/.etc/passwordstore/wg_gw_key.gpg' ] && [ "${WG_USAGE:-true}" == 'true' ]; then
+    echo "$0: couldn't find wg_gw_key.gpg despite \$WG_USAGE being set to true" >&2
+    echo "$0: refusing to continue, this does not look like an up-to-date, spawned cluster" >&2
+    exit 2
+fi
+
+if [ ! -e 'inventory/.etc/sa.key' ]; then
+    echo "$0: couldn't find sa.key" >&2
+    echo "$0: refusing to continue, this does not look like an up-to-date, spawned cluster" >&2
+    exit 2
+fi
+
 if vault kv get "$cluster_path/kv/k8s/service-account-key" >/dev/null 2>/dev/null; then
     echo "$0: service account key already present in vault. does this cluster alreay exist?" >&2
     echo "$0: refusing to continue." >&2

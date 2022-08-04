@@ -38,22 +38,6 @@
       set_fact:
         wg_gw_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_caller_auth_mount_point, auth_method=vault_caller_auth_method, token=vault_caller_token, role_id=vault_caller_role_id, secret_id=vault_caller_secret_id).data.data.private_key }}"
 
-    - name: Fail if wg0.conf exists but key is not in passwordstore
-      fail:
-        msg: |
-          This task fails because the private wireguard key of the gateway should no longer be stored in plain text in the file system of the workstation.
-          Previously the key was not included in the git repository to mitigate the risk of leaking sensitive credentials.
-          The role didn't warn you about a missing key, however, but overwrote it happily. Mercy on those who do not use '--diff'.
-          We're using pass to store the credentials from now on. Here is what to do:
-          1.) Fetch the current wireguard private key of the gateways. Likely spots are:
-            - inventory/.etc/wg_gw_priv.key
-            - /etc/wireguard/wg0.conf (on the gateways)
-          2.) If you haven't done so already, install `pass` on your workstation. (https://www.passwordstore.org/)
-          3.) Insert the key into the database: `PASSWORD_STORE_DIR="$(pwd)/inventory/.etc/passwordstore" pass insert wg_gw_key`
-          4.) Compare the output of `PASSWORD_STORE_DIR="$(pwd)/inventory/.etc/passwordstore" pass show wg_gw_key`
-              with the current wireguard private key of the gateway and make sure that they match.
-      when: "wg0_conf.stat.exists and (wg_gw_key is not defined)"
-
     - name: Create new wireguard private key of the gateway
       command: wg genkey
       register: wg_genkey
