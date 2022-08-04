@@ -645,12 +645,17 @@ enabled = false # •ᴗ•
 # Name of the folder to keep the backup files. It defaults to `etcd-backup`
 #file_prefix = "backup"
 
-# Configure s3 config yaml name. The file MUST be kept under `config` dir
-# and should be protected via some mechanism. This is a mandatory
-# variable, if etcd_backup_enabled is set to True. A template for such a file can be found at
-# managed-k8s/templates/etcd_backup_s3_config.yaml
-# **IMPORTANT:** This file contains credentials in plain text so make sure its appropriately secured (git-crypt, etc)
-#s3_config_name = "etcd_backup_s3_config.yaml"
+# Configure the location of the Vault kv2 storage where the credentials can
+# be found. This location is the default location used by import.sh and is
+# recommended.
+#vault_mount_point = "yaook/{{ vault_cluster_name }}/kv"
+
+# Configure the kv2 key under which the credentials are found. This location is
+# the default location used by import.sh and is recommended.
+#
+# The role expects a JSON object with `access_key` and `secret_key` keys,
+# containing the corresponding S3 credentials.
+#vault_path = "etcdbackup"
 
 # Number of days after which individual items in the bucket are dropped. Enforced by S3 lifecyle rules which
 # are also implemented by Ceph's RGW.

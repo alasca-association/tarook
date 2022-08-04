@@ -215,7 +215,8 @@ The used Cert-Manager controller setup will be explained in more detail soon :)
 
 Automated etcd backups can be configured in this section. When enabled it periodically creates snapshots of etcd database and store it in a object storage using s3. It uses the helm chart [etcdbackup](https://gitlab.com/yaook/operator/-/tree/devel/yaook/helm_builder/Charts/etcd-backup) present in yaook operator helm chart repository. The object storage retains data for 30 days then deletes it.
 
-The usage of it is disabled by default but can be enabled (and configured) in the following section. The s3 config yaml file name **Must** be set when etcd backups are enabled. The file should be kept under `config/` dir and should be protected.
+The usage of it is disabled by default but can be enabled (and configured) in the following section.
+The credentials are stored in Vault. By default, they are searched for in the cluster's kv storage (at `yaook/$clustername/kv`) under `etcdbackup`. They must be in the form of a JSON object/dict with the keys `access_key` and `secret_key`.
 
 > ***Note:*** To enable etcd-backup, `k8s-service-layer.etcd-backup.enabled` needs to be set to `true`.
 <details>
