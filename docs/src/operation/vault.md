@@ -84,6 +84,24 @@ yaook/k8s has a shared `approle` authentication method at `yaook/nodes`.
 This auth method is used to provide credentials
 for the individual nodes of all clusters.
 
+## On the use of Ed25519 keys
+
+By default,
+all scripts in this repository generate Ed25519 key pairs
+for CA-level keys.
+
+The reason for this is that elliptic curve keys are generally smaller
+and thus easier to store offline,
+if your policies require such treatment.
+Ed25519 is preferred over NIST-ECDSA,
+simply because based on implementation issues in the recent years
+it seems to be the more robust algorithm for long-term must-not-be-exposed secrets.
+
+The downside is that this renders the setup incompatible with Ubuntu versions
+older than 20.04 LTS
+(and probably other operating systems)
+due to lack of support in the respective `python3-cryptography` package.
+
 ## Managing Clusters in Vault
 
 The following scripts are provided in order to manage a Vault instance for yaook/k8s:
