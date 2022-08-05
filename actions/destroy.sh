@@ -62,7 +62,7 @@ fi
 # before the end of stage 2.
 if [ -n "${wg_conf:-}" ] && [ -e "${wg_conf}" ]; then
     # only take the interface down if it is currently up
-    if [ "$(run wg show interfaces | grep -q $wg_conf)" ]; then
+    if run wg show interfaces | grep -q "$wg_conf"; then
         run wg-quick down "$wg_conf"
     fi
 fi
@@ -71,3 +71,6 @@ fi
 # Otherwise the playbook would load the same keys.
 rm -f inventory/.etc/wg_gw_priv.key
 rm -f inventory/.etc/wg_gw_pub.key
+
+# Clear known hosts file
+cat /dev/null > "$ssh_cluster_known_hosts"

@@ -1,26 +1,60 @@
 ---
-- name: Make sure 'etc_dir' exists
+# We're aware that TOFU is not ideal.
+# Signing host keys with a SSH CA and the verification of hosts
+# via it is already on our road map.
+
+- name: Manage known hosts
   delegate_to: localhost
   become: false
-  run_once: true
-  ansible.builtin.file:
-    path: "{{ etc_dir }}"
-    state: directory
-    mode: 0755
+  block:
+  - name: Make sure {{ ssh_known_hosts_file }} exists
+    run_once: true
+    ansible.builtin.file:
+      path: "{{ ssh_known_hosts_file }}"
+      state: touch
+      mode: 0644
 
-# TODO: do not use shell but proper ansible
-# TODO: ssh-keygen -F might be preferable in case the entry is hashed
-- name: Ensure host is in known_hosts file
-  delegate_to: localhost
-  become: false
-  ansible.builtin.shell: |
-    if ! grep -q '^{{ ansible_host }}' {{ ssh_known_hosts_file }}; then
-      ssh-keyscan {{ ansible_host }} >> {{ ssh_known_hosts_file }};
-    fi
-  changed_when: false  # TODO: this could be made proper...
+  - name: Scan for SSH host keys.
+    ansible.builtin.command: "ssh-keyscan {{ ansible_host }}"
+    changed_when: false
+    register: ssh_keyscan
 
-- name: Test the connection
-  become: false
-  ansible.builtin.raw: "/bin/true"
-  changed_when: false
+  - name: Check if {{ inventory_hostname }} is already known
+    ansible.builtin.known_hosts:
+      name: "{{ ansible_host }}"
+      path: "{{ ssh_known_hosts_file }}"
+      state: absent
+    check_mode: true
+    register: ssh_host_present
+
+  - name: Check for key diffs
+    ansible.builtin.known_hosts:
+      name: "{{ ansible_host }}"
+      key: "{{ inventory_hostname }},{{ item }}"
+      path: "{{ ssh_known_hosts_file }}"
+      state: present
+    with_items: "{{ ssh_keyscan.stdout_lines }}"
+    register: ssh_host_update
+    check_mode: true
+
+  - name: Fail if a already known host changed
+    with_items: "{{ ssh_host_update.results }}"
+    loop_control:
+      label: "{{ item.item }}"
+    when:
+    - (item.changed | bool) and (ssh_host_present.changed | bool)
+    - not allow_host_key_changes
+    ansible.builtin.fail:
+      msg: |
+        THE FOLLOWING HOST KEY HAS CHANGED
+
+        "{{ item.item }}"
+
+  - name: Update known hosts
+    ansible.builtin.known_hosts:
+      name: "{{ ansible_host }}"
+      key: "{{ inventory_hostname }},{{ item }}"
+      path: "{{ ssh_known_hosts_file }}"
+      state: present
+    with_items: "{{ ssh_keyscan.stdout_lines }}"
 ...

@@ -22,6 +22,8 @@ ansible_k8s_ms_vars_base="$ansible_inventory_base/05_k8s_managed_service"
 vault_container_name="yaook-vault"
 vault_dir="${VAULT_DIR:-$cluster_repository/vault}"
 
+ssh_cluster_known_hosts="$ansible_inventory_base/.etc/ssh_known_hosts"
+
 if [ "${WG_USAGE:-true}" == "true" ]; then
     wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
     wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
@@ -102,7 +104,7 @@ function run() {
         printf ' %q' "$arg"
     done
     printf '\n\n'
-    "$cmd" "$@"
+    eval "$cmd" "$@"
 }
 
 function validate_wireguard() {
@@ -119,7 +121,16 @@ function validate_wireguard() {
 }
 
 function ansible_playbook() {
-    ansible_flags="${AFLAGS:---diff -f42}"
+    # ansible_flags
+    # Has to split into pieces because the --ssh-common-args have
+    # to be put into single quotes as they contain a whitespace.
+    # However, we need to expand $ssh_cluster_known_hosts inside
+    # these single quotes.
+    ansible_flags_0="${AFLAGS:---diff -f42} "
+    # shellcheck disable=SC2089
+    ansible_flags_1="--ssh-common-args='-o UserKnownHostsFile="
+    ansible_flags_2="${ssh_cluster_known_hosts}'"
+    ansible_flags="$ansible_flags_0$ansible_flags_1$ansible_flags_2"
 
     if disruption_allowed; then
         warningf 'allowing ansible to perform disruptive actions' >&2
@@ -128,6 +139,6 @@ function ansible_playbook() {
         ansible_flags="${ansible_flags} --extra-vars release_the_kraken=true"
     fi
 
-    # shellcheck disable=SC2086
+    # shellcheck disable=SC2086,SC2090
     (export ANSIBLE_CONFIG="$ansible_directory/ansible.cfg" && run ansible-playbook $ansible_flags "$@")
 }

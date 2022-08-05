@@ -11,4 +11,6 @@ detect_user_warn:
 - ubuntu
 - fedora
 - rhel
+
+ssh_known_hosts_file: "{{ etc_dir }}/ssh_known_hosts"
 ...

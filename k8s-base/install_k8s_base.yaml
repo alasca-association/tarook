@@ -18,8 +18,6 @@
   roles:
   - role: detect_user
     tags: detect_user
-  - role: ssh-known-hosts
-    tags: ssh-known-hosts
   - role: prepare-node
     tags: prepare-node
   - role: journald
@@ -43,10 +41,27 @@
 - name: Harden SSH
   hosts: k8s_nodes
   become: true
+  vars_files:
+  - vars/ssh-hardening.yaml
+  - vars/etc.yaml
   roles:
   # https://github.com/dev-sec/ansible-collection-hardening/
   - role: devsec.hardening.ssh_hardening
     tags: harden-ssh
+
+- name: Update SSH known hosts after SSH hardening
+  hosts: k8s_nodes
+  serial: 1
+  become: true
+  vars_files:
+  - vars/etc.yaml
+  roles:
+  - role: ssh-known-hosts
+    # the devsec hardening role tinkers with them
+    allow_host_key_changes: true
+    tags:
+    - harden-ssh
+    - ssh-known-hosts
 
 - name: Upgrade the system
   hosts: k8s_nodes

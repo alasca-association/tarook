@@ -5,11 +5,15 @@
 ### "How do I ssh into my cluster nodes?"
 
 ```console
-$ ssh -i <path to private key> <username>@<ip address>
+$ ssh -i <path to private key> -o UserKnownHostsFile=<path to known hosts file> <username>@<ip address>
 ```
 
 - **`<path to private key>`**
     - This should be the path to your private key matching the keypair specified by the environment variable `TF_VAR_keypair`.
+- **`<path to known hosts file>`**
+    - This should be the path to the cluster specific known hosts file.
+      The known hosts file is managed by the LCM.
+      It is located in your cluster specific inventory at `$(pwd)/inventory/.etc/ssh_known_hosts`.
 - **`<username>`**
     - This should be the default user of the image you are deploying.
     - By default this is `debian` for the gateway nodes and `ubuntu` for the master and worker nodes.
@@ -23,6 +27,9 @@ $ ssh -i <path to private key> <username>@<ip address>
             ```console
             $ ./managed-k8s/actions/wg-up.sh
             ```
+
+> ***Note:*** Under normal circumstances, the host key of a node is not expected to change.
+> However, you can enforce allowing host key changes by passing `-e allow_host_key_changes=true` (via [AFLAGS](./usage/environmental-variables.html#behavior-altering-variables).
 
 ### "How can I test my yk8s-Cluster?"
 
