@@ -13,7 +13,6 @@ spec:
   selector:
     app.kubernetes.io/name: local-storage
     app.kubernetes.io/instance: local-storage
-    app.kubernetes.io/version: {{ k8s_local_storage_static_version | to_json }}
   ports:
   - name: metrics
     port: 8080
