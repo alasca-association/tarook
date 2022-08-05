@@ -20,11 +20,14 @@ export TF_DATA_DIR="$terraform_state_dir/.terraform"
 run terraform -chdir="$terraform_module" init
 
 # Prepare possible migration steps
-
 # count -> foreach migration
 # shellcheck source=actions/helpers/migrate-count-to-for-each.sh
-source "$actions_dir"/helpers/migrate-count-to-for-each.sh
-run terraform_migrate_foreach "$terraform_module/02-moved-instances.tf"
+
+if [ -f "$terraform_state_dir"/terraform.tfstate ]; then
+  # Only attempt to migrate if we have a terraform state in first place
+  source "$actions_dir"/helpers/migrate-count-to-for-each.sh
+  run terraform_migrate_foreach "$terraform_module/02-moved-instances.tf"
+fi
 
 run terraform -chdir="$terraform_module" plan --var-file="$var_file" --out "$terraform_plan"
 # strict mode terminates the execution of this script immediately
