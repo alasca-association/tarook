@@ -15,3 +15,5 @@
 /terraform/config.tfvars.json
 /terraform/plan.tfplan
 .envrc
+/.direnv
+terraform/02-moved-instances.tf
