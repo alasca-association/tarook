@@ -61,7 +61,10 @@ fi
 # it not existing can be the case if the cluster is being destroyed
 # before the end of stage 2.
 if [ -n "${wg_conf:-}" ] && [ -e "${wg_conf}" ]; then
-    run wg-quick down "$wg_conf"
+    # only take the interface down if it is currently up
+    if [ "$(run wg show interfaces | grep -q $wg_conf)" ]; then
+        run wg-quick down "$wg_conf"
+    fi
 fi
 
 # Purge wireguard keys of the gateway to ensure re-creation on new setup.
