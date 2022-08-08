@@ -45,6 +45,20 @@
       - kubelet
       - kubectl
 
+# Remove me when dropping support for
+# k8s v1.18, v1.19, v1.20, v1.21 & v1.22
+- name: Remove featureGates for >= v1.23
+  become: yes
+  lineinfile:
+    path: /var/lib/kubelet/config.yaml
+    state: absent
+    search_string: "IPv6DualStack:"
+    owner: root
+    group: root
+    mode: 0600
+  when:
+    - next_k8s_version is defined and next_k8s_version is version('1.23', '>=')
+
 - name: Configure and restart kubelet
   include_role:
     name: kubelet-configuration

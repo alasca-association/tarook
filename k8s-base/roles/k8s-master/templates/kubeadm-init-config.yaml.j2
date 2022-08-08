@@ -61,13 +61,15 @@ scheduler:
     extraArgs:
         "bind-address" : "0.0.0.0"
 
-{% if dualstack_support %}
-# enabled by defaul since v1.21
 featureGates:
+# remove it when we do not support < v1.23
+# enabled by default since v1.21
+{% if k8s_version is version('1.23', '<') %}
+{% if dualstack_support %}
   IPv6DualStack: true
 {% else %}
-featureGates:
   IPv6DualStack: false
+{% endif %}
 {% endif %}
 
 ---
