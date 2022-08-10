@@ -8,18 +8,27 @@
       when: kms_vars_directory is defined
       include_vars:
         dir: "{{ kms_vars_directory }}"
+  tags:
+  - test-mk8s-ms
+  - check-mk8s-ms
   roles:
   - role: monitoring_v1_test
     tags:
-    - test-monitoring
+    - test-mk8s-ms/monitoring_v1
+    - check-mk8s-ms/monitoring_v1
+    - monitoring_v1_test
     when: k8s_monitoring_enabled and (monitoring_use_jsonnet_setup | default(False))
 
   - role: monitoring_v2_test
     tags:
-    - test-monitoring
+    - test-mk8s-ms/monitoring_v2
+    - check-mk8s-ms/monitoring_v2
+    - monitoring_v2_test
     when: k8s_monitoring_enabled and not (monitoring_use_jsonnet_setup | default(False))
 
   - role: device_plugin_v1_test
     tags:
-    - test-gpu-support
+    - test-mk8s-ms/gpu-support
+    - check-mk8s-ms/gpu-support
+    - device_plugin_v1_test
     when: "k8s_is_gpu_cluster"
