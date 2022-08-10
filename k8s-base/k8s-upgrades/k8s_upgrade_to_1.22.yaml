@@ -43,7 +43,7 @@
         k8s_version: "{{ next_k8s_version }}"
 
 - name: Upgrade the first master node
-  hosts: "{{ (groups['masters'] | sort)[0] }}"
+  hosts: (masters | sort)[0]
   gather_facts: false
   any_errors_fatal: true
   vars_files:
@@ -61,7 +61,7 @@
       when: "not (k8s_upgrade_done | default(False))"
 
 - name: Upgrade the residual master nodes
-  hosts: "{{ (groups['masters'] | sort)[1:] }}"
+  hosts: (['masters'] | sort)[1:]
   gather_facts: false
   serial: 1
   any_errors_fatal: true
@@ -116,7 +116,7 @@
 
 - name: Final upgrade note
   gather_facts: false
-  hosts: "{{ (groups['masters'] | sort)[0] }}"
+  hosts: (masters | sort)[0]
   tasks:
   - name: Final upgrade note
     delegate_to: localhost
