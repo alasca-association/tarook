@@ -31,10 +31,8 @@ shellcheck:
     - docker
 
 ansible-lint:
-  variables:
-    ANSIBLE_LINT_IMAGE_TAG: 5
   image:
-    name: cytopia/ansible-lint:$ANSIBLE_LINT_IMAGE_TAG
+    name: cytopia/ansible-lint:5
     entrypoint: ["/bin/sh", "-c"]
   stage: lint
   script:
