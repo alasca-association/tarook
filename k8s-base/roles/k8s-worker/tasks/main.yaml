@@ -21,26 +21,6 @@
   - /etc/kubernetes/pki/etcd
   - /var/lib/kubelet/pki
 
-- name: Read role-id
-  become: yes
-  command:
-  args:
-    argv:
-    - cat
-    - /etc/vault/role-id
-  register: cat_role_id
-  changed_when: false
-
-- name: Read secret-id
-  become: yes
-  command:
-  args:
-    argv:
-    - cat
-    - /etc/vault/secret-id
-  register: cat_secret_id
-  changed_when: false
-
 - name: Obtain kubelet kubeconfig
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
@@ -51,8 +31,8 @@
       name: k8s-master
       tasks_from: mkkubeconfig
     vars:
-      vault_role_id: "{{ cat_role_id.stdout }}"
-      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      vault_role_id: "{{ vault_node_role_id }}"
+      vault_secret_id: "{{ vault_node_secret_id }}"
       kubeconfig_title: kubelet
       kubeconfig_destination: /etc/kubernetes/kubelet.conf
       kubeconfig_issuer: system-nodes_node

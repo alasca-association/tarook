@@ -1,23 +1,3 @@
-- name: Read role-id
-  become: yes
-  command:
-  args:
-    argv:
-    - cat
-    - /etc/vault/role-id
-  register: cat_role_id
-  changed_when: false
-
-- name: Read secret-id
-  become: yes
-  command:
-  args:
-    argv:
-    - cat
-    - /etc/vault/secret-id
-  register: cat_secret_id
-  changed_when: false
-
 - name: Create /etc/cni/net.d/
   become: yes
   file:
@@ -32,8 +12,8 @@
     name: k8s-master
     tasks_from: mkkubeconfig
   vars:
-    vault_role_id: "{{ cat_role_id.stdout }}"
-    vault_secret_id: "{{ cat_secret_id.stdout }}"
+    vault_role_id: "{{ vault_node_role_id }}"
+    vault_secret_id: "{{ vault_node_secret_id }}"
     kubeconfig_title: calico
     kubeconfig_destination: /etc/cni/net.d/calico-kubeconfig
     kubeconfig_issuer: calico-cni

@@ -22,24 +22,6 @@
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
   block:
-  - name: Read role-id
-    become: yes
-    command:
-    args:
-      argv:
-      - cat
-      - /etc/vault/role-id
-    register: cat_role_id
-
-  - name: Read secret-id
-    become: yes
-    command:
-    args:
-      argv:
-      - cat
-      - /etc/vault/secret-id
-    register: cat_secret_id
-
   - name: Upload calico CA certificate from vault
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
@@ -52,7 +34,7 @@
           name: calico-typha-ca
           namespace: kube-system
         data:
-          typhaca.crt: "{{ lookup('community.hashi_vault.vault_read', '%s/%s/calico-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=cat_role_id.stdout, secret_id=cat_secret_id.stdout, mount_point=vault_nodes_approle).data.ca_chain }}"
+          typhaca.crt: "{{ lookup('community.hashi_vault.vault_read', '%s/%s/calico-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id, mount_point=vault_nodes_approle).data.ca_chain }}"
       validate:
         fail_on_error: yes
         strict: yes

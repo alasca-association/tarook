@@ -1,28 +1,8 @@
-- name: Read role-id
-  become: yes
-  command:
-  args:
-    argv:
-    - cat
-    - /etc/vault/role-id
-  register: cat_role_id
-  changed_when: false
-
-- name: Read secret-id
-  become: yes
-  command:
-  args:
-    argv:
-    - cat
-    - /etc/vault/secret-id
-  register: cat_secret_id
-  changed_when: false
-
 - name: Update calico-node certificate
   include_tasks: get_cert_in_k8s.yaml
   vars:
-    vault_role_id: "{{ cat_role_id.stdout }}"
-    vault_secret_id: "{{ cat_secret_id.stdout }}"
+    vault_role_id: "{{ vault_node_role_id }}"
+    vault_secret_id: "{{ vault_node_secret_id }}"
     get_cert_k8s_title: calico-node
     get_cert_k8s_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/calico-pki/issue/node"
     get_cert_k8s_vault_data:

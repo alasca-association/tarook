@@ -70,31 +70,13 @@
   vars:
     kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ hostvars[available_frontend]['k8s_apiserver_frontend_port'] }}"
   block:
-  - name: Read role-id
-    become: yes
-    command:
-    args:
-      argv:
-      - cat
-      - /etc/vault/role-id
-    register: cat_role_id
-
-  - name: Read secret-id
-    become: yes
-    command:
-    args:
-      argv:
-      - cat
-      - /etc/vault/secret-id
-    register: cat_secret_id
-
   # This is based on the k8s best practices
   # https://kubernetes.io/docs/setup/best-practices/certificates/
 
   - name: Load service account key from Vault # noqa ignore-errors
     ignore_errors: yes
     set_fact:
-      service_account_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'k8s/service-account-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=cat_role_id.stdout, secret_id=cat_secret_id.stdout).data.data.private_key | b64decode }}"
+      service_account_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'k8s/service-account-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key | b64decode }}"
 
   - name: Generate private key if necessary
     when: service_account_key is not defined
@@ -118,8 +100,8 @@
     community.hashi_vault.vault_write:
       auth_method: approle
       mount_point: "{{ vault_nodes_approle }}"
-      role_id: "{{ cat_role_id.stdout }}"
-      secret_id: "{{ cat_secret_id.stdout }}"
+      role_id: "{{ vault_node_role_id }}"
+      secret_id: "{{ vault_node_secret_id }}"
       path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv/data/k8s/service-account-key"
       data:
         data:
@@ -190,8 +172,8 @@
   - name: Generate controller-manager kubeconfig
     include_tasks: mkkubeconfig.yaml
     vars:
-      vault_role_id: "{{ cat_role_id.stdout }}"
-      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      vault_role_id: "{{ vault_node_role_id }}"
+      vault_secret_id: "{{ vault_node_secret_id }}"
       kubeconfig_title: controller-manager
       kubeconfig_destination: /etc/kubernetes/controller-manager.conf
       kubeconfig_issuer: system-masters_controllers
@@ -200,8 +182,8 @@
   - name: Generate scheduler kubeconfig
     include_tasks: mkkubeconfig.yaml
     vars:
-      vault_role_id: "{{ cat_role_id.stdout }}"
-      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      vault_role_id: "{{ vault_node_role_id }}"
+      vault_secret_id: "{{ vault_node_secret_id }}"
       kubeconfig_title: scheduler
       kubeconfig_destination: /etc/kubernetes/scheduler.conf
       kubeconfig_issuer: system-masters_controllers
@@ -210,8 +192,8 @@
   - name: Generate kubelet kubeconfig
     include_tasks: mkkubeconfig.yaml
     vars:
-      vault_role_id: "{{ cat_role_id.stdout }}"
-      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      vault_role_id: "{{ vault_node_role_id }}"
+      vault_secret_id: "{{ vault_node_secret_id }}"
       kubeconfig_title: kubelet
       kubeconfig_destination: /etc/kubernetes/kubelet.conf
       kubeconfig_issuer: system-nodes_node
@@ -222,8 +204,8 @@
   - name: Generate admin kubeconfig
     include_tasks: mkkubeconfig.yaml
     vars:
-      vault_role_id: "{{ cat_role_id.stdout }}"
-      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      vault_role_id: "{{ vault_node_role_id }}"
+      vault_secret_id: "{{ vault_node_secret_id }}"
       kubeconfig_title: admin
       kubeconfig_destination: /etc/kubernetes/admin.conf
       kubeconfig_issuer: system-masters_admin
@@ -234,8 +216,8 @@
       name: vault-onboarded
       tasks_from: get_cert
     vars:
-      vault_role_id: "{{ cat_role_id.stdout }}"
-      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      vault_role_id: "{{ vault_node_role_id }}"
+      vault_secret_id: "{{ vault_node_secret_id }}"
       get_cert_title: etcd server certificate
       get_cert_destination_crt: /etc/kubernetes/pki/etcd/server.crt
       get_cert_destination_key: /etc/kubernetes/pki/etcd/server.key
@@ -252,8 +234,8 @@
       name: vault-onboarded
       tasks_from: get_cert
     vars:
-      vault_role_id: "{{ cat_role_id.stdout }}"
-      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      vault_role_id: "{{ vault_node_role_id }}"
+      vault_secret_id: "{{ vault_node_secret_id }}"
       get_cert_title: etcd peer certificate
       get_cert_destination_crt: /etc/kubernetes/pki/etcd/peer.crt
       get_cert_destination_key: /etc/kubernetes/pki/etcd/peer.key
@@ -270,8 +252,8 @@
       name: vault-onboarded
       tasks_from: get_cert
     vars:
-      vault_role_id: "{{ cat_role_id.stdout }}"
-      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      vault_role_id: "{{ vault_node_role_id }}"
+      vault_secret_id: "{{ vault_node_secret_id }}"
       get_cert_title: etcd healthcheck certificate
       get_cert_destination_crt: /etc/kubernetes/pki/etcd/healthcheck-client.crt
       get_cert_destination_key: /etc/kubernetes/pki/etcd/healthcheck-client.key
@@ -287,8 +269,8 @@
       name: vault-onboarded
       tasks_from: get_cert
     vars:
-      vault_role_id: "{{ cat_role_id.stdout }}"
-      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      vault_role_id: "{{ vault_node_role_id }}"
+      vault_secret_id: "{{ vault_node_secret_id }}"
       get_cert_title: apiserver etcd client certificate
       get_cert_destination_crt: /etc/kubernetes/pki/apiserver-etcd-client.crt
       get_cert_destination_key: /etc/kubernetes/pki/apiserver-etcd-client.key
@@ -303,8 +285,8 @@
       name: vault-onboarded
       tasks_from: get_cert
     vars:
-      vault_role_id: "{{ cat_role_id.stdout }}"
-      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      vault_role_id: "{{ vault_node_role_id }}"
+      vault_secret_id: "{{ vault_node_secret_id }}"
       get_cert_title: apiserver frontend certificate
       get_cert_destination_crt: /etc/kubernetes/pki/apiserver.crt
       get_cert_destination_key: /etc/kubernetes/pki/apiserver.key
@@ -321,8 +303,8 @@
       name: vault-onboarded
       tasks_from: get_cert
     vars:
-      vault_role_id: "{{ cat_role_id.stdout }}"
-      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      vault_role_id: "{{ vault_node_role_id }}"
+      vault_secret_id: "{{ vault_node_secret_id }}"
       get_cert_title: apiserver kubelet client certificate
       get_cert_destination_crt: /etc/kubernetes/pki/apiserver-kubelet-client.crt
       get_cert_destination_key: /etc/kubernetes/pki/apiserver-kubelet-client.key
@@ -337,8 +319,8 @@
       name: vault-onboarded
       tasks_from: get_cert
     vars:
-      vault_role_id: "{{ cat_role_id.stdout }}"
-      vault_secret_id: "{{ cat_secret_id.stdout }}"
+      vault_role_id: "{{ vault_node_role_id }}"
+      vault_secret_id: "{{ vault_node_secret_id }}"
       get_cert_title: apiserver front proxy client certificate
       get_cert_destination_crt: /etc/kubernetes/pki/front-proxy-client.crt
       get_cert_destination_key: /etc/kubernetes/pki/front-proxy-client.key
