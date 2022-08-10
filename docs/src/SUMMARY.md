@@ -63,6 +63,7 @@
 # Development & Contribution
 
 - [Coding Guide](./development/coding-guide.md)
+- [Developing with Vault](./development/vault.md)
 
 ---
 
