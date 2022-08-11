@@ -1,4 +1,4 @@
-check_prometheus_scraping_namespace: monitoring-kms-checks-a49f875c-07fc-486a-b0b5-8be51dbf44ba
+check_prometheus_scraping_namespace: yaook-k8s-tests-2cdd393b-2f8a-4ffa-8bd8-4e636e5154ec
 
 monitoring_prometheus_operator_release_name: "prometheus-operator"
 monitoring_prometheus_stack_release_name: "prometheus-stack"

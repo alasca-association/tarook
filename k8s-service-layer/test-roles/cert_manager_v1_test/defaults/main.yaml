@@ -1,2 +1,2 @@
 ---
-k8s_cert_manager_test_namespace: test-fc17924e-03a5-40b3-92cb-67d06ce2973f-cert-manager
+k8s_cert_manager_test_namespace: yaook-k8s-tests-2cdd393b-2f8a-4ffa-8bd8-4e636e5154ec
