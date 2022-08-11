@@ -4,6 +4,13 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## 2022-07-19
+
+### [Replace count with for_each in terraform (!524)](https://gitlab.com/yaook/k8s/-/merge_requests/524)
+
+terraform now uses `for_each` to manage instances which allows the user to delete instances of any index without extraordinary terraform black-magic.
+The LCM auto-magically orchestrates the migration.
+
 ## 2022-02-24
 
 ### [Add action for system updates of initialized nodes (!429)](https://gitlab.com/yaook/k8s/-/merge_requests/429)

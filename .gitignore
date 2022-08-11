@@ -10,3 +10,4 @@ cloud-configs/
 .idea/
 *.key
 docs/sites
+terraform/02-moved-instances.tf

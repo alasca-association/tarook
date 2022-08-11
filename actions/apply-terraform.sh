@@ -13,10 +13,23 @@ if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraf
     exit 5
 fi
 
+var_file="$terraform_state_dir/config.tfvars.json"
+
 cd "$terraform_state_dir"
 export TF_DATA_DIR="$terraform_state_dir/.terraform" 
 run terraform -chdir="$terraform_module" init
-run terraform -chdir="$terraform_module" plan --var-file="$terraform_state_dir/config.tfvars.json" --out "$terraform_plan"
+
+# Prepare possible migration steps
+# count -> foreach migration
+# shellcheck source=actions/helpers/migrate-count-to-for-each.sh
+
+if [ -f "$terraform_state_dir"/terraform.tfstate ]; then
+  # Only attempt to migrate if we have a terraform state in first place
+  source "$actions_dir"/helpers/migrate-count-to-for-each.sh
+  run terraform_migrate_foreach "$terraform_module/02-moved-instances.tf"
+fi
+
+run terraform -chdir="$terraform_module" plan --var-file="$var_file" --out "$terraform_plan"
 # strict mode terminates the execution of this script immediately
 set +e
 terraform -chdir="$terraform_module" show -json "$terraform_plan" | python3 "$actions_dir/helpers/check_plan.py"

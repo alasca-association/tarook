@@ -72,7 +72,7 @@ variable "default_worker_flavor" {
 variable "azs" {
   type    = list(string)
   default = ["AZ1", "AZ2", "AZ3"]
-  description = "If 'enable_az_management=true' defines which availability zones of your cloud to use to distribute the spawned server for better HA. Additionally the count of the array will define how many gateway server will be spawned. The naming of the elements doesn't matter if 'enable_az_management=false'."
+  description = "If 'enable_az_management=true' defines which availability zones of your cloud to use to distribute the spawned server for better HA. Additionally the count of the array will define how many gateway server will be spawned. The naming of the elements doesn't matter if 'enable_az_management=false'. It is also used for unique naming of gateways."
 }
 
 variable "masters" {
@@ -100,6 +100,7 @@ variable "worker_azs" {
   default = []
 }
 
+// It can be used to uniquely identify workers
 variable "worker_names" {
   type    = list(string)
   default = []
@@ -120,6 +121,7 @@ variable "master_azs" {
   default = []
 }
 
+// It can be used to uniquely identify masters
 variable "master_names" {
   type    = list(string)
   default = []

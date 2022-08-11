@@ -2,7 +2,7 @@ k8s_local_storage_static_storageclass_name: local-storage
 k8s_local_storage_static_namespace: kube-system
 k8s_local_storage_static_discovery_directory: /mnt/mk8s-disks
 k8s_local_storage_static_data_directory: /mnt/data
-k8s_local_storage_static_version: v2.3.4
+k8s_local_storage_static_version: v2.5.0
 k8s_local_storage_static_nodeplugin_toleration: "{{ k8s_storage_nodeplugin_toleration }}"
 
 dump_k8s_manifests: False

@@ -105,7 +105,7 @@ testBook:
     PASS_COMPANY_USERS: "false"
     SSH_COMPANY_USERS: "false"
   services:
-    - name: vault:1.11.1
+    - name: vault:1.11.2
       alias: yaook-vault
       entrypoint: ["sh", "-c"]
       command:

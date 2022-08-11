@@ -1,6 +1,19 @@
+locals {
+  masters = {
+    for idx in range(var.masters) :
+    "${var.cluster_name}-master-${try(var.master_names[idx], idx)}" => {
+      flavor         = try(var.master_flavors[idx], var.default_master_flavor),
+      image          = try(var.master_images[idx], var.default_master_image_name),
+      az             = var.enable_az_management ? try(var.master_azs[idx], var.azs[idx % length(var.azs)]) : null
+      root_disk_size = try(var.master_root_disk_sizes[idx], var.default_master_root_disk_size)
+      volume_name    = "${var.cluster_name}-master-volume-${try(var.master_names[idx], idx)}"
+    }
+  }
+}
+
 resource "openstack_networking_port_v2" "master" {
-  count = var.masters
-  name = "${var.cluster_name}-master-${try(var.master_names[count.index], count.index)}"
+  for_each = local.masters
+  name = each.key
 
   network_id = openstack_networking_network_v2.cluster_network.id
 
@@ -19,24 +32,24 @@ resource "openstack_networking_port_v2" "master" {
 }
 
 data "openstack_compute_flavor_v2" "master" {
-  count = var.masters
-  name  = try(var.master_flavors[count.index], var.default_master_flavor)
+  for_each = local.masters
+  name     = each.value.flavor
 }
 
 data "openstack_images_image_v2" "master" {
-  count = var.masters
-  name  = try(var.master_images[count.index], var.default_master_image_name)
+  for_each = local.masters
+  name     = each.value.image
 
 }
 
 resource "openstack_blockstorage_volume_v2" "master-volume" {
-  count = var.create_root_disk_on_volume == true ? var.masters : 0
+  for_each = var.create_root_disk_on_volume == true ? local.masters : {}
 
-  name        = "${var.cluster_name}-master-volume-${try(var.master_names[count.index], count.index)}"
-  size        = (data.openstack_compute_flavor_v2.master[count.index].disk > 0) ? data.openstack_compute_flavor_v2.master[count.index].disk : try(var.master_root_disk_sizes[count.index], var.default_master_root_disk_size)
-  image_id    = data.openstack_images_image_v2.master[count.index].id
+  name        = each.value.volume_name
+  size        = (data.openstack_compute_flavor_v2.master[each.key].disk > 0) ? data.openstack_compute_flavor_v2.master[each.key].disk : each.value.root_disk_size
+  image_id    = data.openstack_images_image_v2.master[each.key].id
   volume_type = var.root_disk_volume_type
-  availability_zone = var.enable_az_management ? try(var.master_azs[count.index], var.azs[count.index % length(var.azs)]) : null
+  availability_zone = each.value.az
 
   timeouts {
     create = var.timeout_time
@@ -49,20 +62,20 @@ resource "openstack_blockstorage_volume_v2" "master-volume" {
 }
 
 resource "openstack_compute_instance_v2" "master" {
-  count = var.masters
-  name  = openstack_networking_port_v2.master[count.index].name
+  for_each = openstack_networking_port_v2.master
+  name     = each.value.name
 
-  availability_zone = var.enable_az_management ? try(var.master_azs[count.index], var.azs[count.index % length(var.azs)]) : null
+  availability_zone = local.masters[each.key].az
   config_drive      = true
-  flavor_id         = data.openstack_compute_flavor_v2.master[count.index].id
-  image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.master[count.index].id : null
+  flavor_id         = data.openstack_compute_flavor_v2.master[each.key].id
+  image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.master[each.key].id : null
   key_pair          = var.keypair
 
   dynamic block_device {
     # Using "for_each" for check the conditional "create_root_disk_on_volume". It's not working as a loop. "dummy" should make this just more visible.
     for_each = var.create_root_disk_on_volume == true ? ["dummy"] : []
       content {
-        uuid                  = openstack_blockstorage_volume_v2.master-volume[count.index].id
+        uuid                  = openstack_blockstorage_volume_v2.master-volume[each.key].id
         source_type           = "volume"
         boot_index            = 0
         destination_type      = "volume"
@@ -71,7 +84,7 @@ resource "openstack_compute_instance_v2" "master" {
   }
 
   network {
-    port = openstack_networking_port_v2.master[count.index].id
+    port = each.value.id
   }
 
   lifecycle {

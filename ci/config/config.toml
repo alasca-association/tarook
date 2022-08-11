@@ -57,7 +57,7 @@ nodeplugin_toleration = true
 
 [kubernetes.local_storage.static]
 enabled           = true
-storageclass_name = "local-storage"
+storageclass_name = "local-storage-static"
 
 [kubernetes.local_storage.dynamic]
 enabled           = true
@@ -90,7 +90,7 @@ encrypt_osds             = true
 toolbox                  = true
 ceph_fs                  = true
 mon_volume               = true
-mon_volume_storage_class = "local-storage"
+mon_volume_storage_class = "local-storage-static"
 csi_plugins              = true
 
 use_host_networking = true
