@@ -1,6 +1,7 @@
 # Prometheus
 
 yaook/k8s uses the kube-prometheus-stack helm chart with an additional abstraction layer. To figure out the version, you could use `helm ls -n monitoring`. Take a look at the `values.yaml` files of the individual helm charts to see what you can (or cannot) potentially modified. Note that not all values might be exposed in the `config.toml`. The data path is `config.toml -> inventory/prometheus.yaml -> monitoring_v2 -> templates/prometheus_stack.yaml.j2`. If a field that you need isn't listed in `prometheus_stack.yaml` or statically configured, please [open an issue](https://gitlab.com/yaook/k8s/-/issues) or, even preferable, [submit a merge request :)](https://gitlab.com/yaook/k8s/-/merge_requests). yaook/k8s' developer guide can be found [here.](https://yaook.gitlab.io/meta/01-developing.html#workflow)
+yaook/k8s also allows the upgrade of this kube-prometheus-stack. The upgrade routine can be triggered by changing the value of `monitoring_prometheus_stack_version` in `monitoring_v2 -> defaults/main.yaml`. Currently it supports upgrade from version 33.x to 39.x.
 
 ## Grafana
 
