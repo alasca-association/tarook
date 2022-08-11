@@ -147,7 +147,7 @@
       - "-sS"
       - "-w"
       - "\\n%{http_code}\\n"
-      - "http://{{ item }}"
+      - "http://{{ item }}:8080"
     register: curl_result
     until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
     loop: "{{ service_pod_ips }}"

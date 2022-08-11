@@ -11,11 +11,16 @@ spec:
   selector:
     matchLabels:
       k8s-app: calico-busybox-test
-  template: 
+  template:
     metadata:
       labels:
         k8s-app: calico-busybox-test
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 24635
+        runAsGroup: 24635
+        fsGroup: 24635
       nodeSelector:
         kubernetes.io/os: linux
       affinity:

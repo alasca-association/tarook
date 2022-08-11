@@ -48,6 +48,7 @@
       kind: Namespace
       state: absent
       name: "{{ check_services_namespace }}"
+      wait: true
       validate:
         fail_on_error: yes
         strict: yes

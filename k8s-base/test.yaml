@@ -71,16 +71,13 @@
 
 # Ugly: assuming naming scheme here.
 - name: Annotate worker nodes
-  hosts: masters[0]
+  hosts: localhost
   become: no
   gather_facts: false
   tags:
     - label
   tasks:
     - name: Annotate the worker nodes # noqa no-changed-when
-      # TODO: local delegation -> KUBECONFIG must be set correctly
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
       command: "kubectl label --overwrite nodes {{ item['worker'] }} name={{ item['name'] }}"
       loop: "{{ test_worker_nodes }}"
       tags:
@@ -186,14 +183,12 @@
       - check-local-storage-dynamic
 
 - name: Remove worker node annotation
-  hosts: masters[0]
+  hosts: localhost
   become: no
   gather_facts: false
   tags: label
   tasks:
       - name: Remove annotation of worker nodes # noqa no-changed-when
-        environment:
-          KUBECONFIG: /etc/kubernetes/admin.conf
         command: "kubectl label --overwrite nodes {{ item['worker'] }} name-"
         loop: "{{ test_worker_nodes }}"
         tags:

@@ -13,8 +13,8 @@ spec:
   ports:
     - protocol: TCP
       nodePort: {{ deprecated_nodeport_lb_test_port }}
-      port: 80
-      targetPort: 80
+      port: 8080
+      targetPort: 8080
   type: NodePort
 
 ---
@@ -26,6 +26,11 @@ metadata:
   name: nginx-dual-stack
   namespace: {{ check_services_namespace | to_json }}
 spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 24635
+    runAsGroup: 24635
+    fsGroup: 24635
   containers:
   - image: registry.gitlab.com/yaook/images/k8s-nginx:main
     name: nginx-dual-stack

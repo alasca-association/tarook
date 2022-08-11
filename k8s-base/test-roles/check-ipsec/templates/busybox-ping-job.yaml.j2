@@ -9,6 +9,11 @@ metadata:
 spec:
   nodeSelector:
     kubernetes.io/os: linux
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 24635
+    runAsGroup: 24635
+    fsGroup: 24635
   containers:
   - name: ipsec-test-busybox
     image: registry.gitlab.com/yaook/images/k8s-debian:main

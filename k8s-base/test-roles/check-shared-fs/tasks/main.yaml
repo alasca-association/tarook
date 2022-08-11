@@ -61,6 +61,7 @@
       api_version: v1
       kind: Namespace
       name: "{{ check_shared_filesystem_namespace }}"
+      wait: true
       validate:
         fail_on_error: yes
         strict: yes

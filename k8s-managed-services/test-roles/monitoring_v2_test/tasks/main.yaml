@@ -64,6 +64,7 @@
       name: "{{ check_prometheus_scraping_namespace }}"
       kind: Namespace
       state: absent
+      wait: true
       validate:
         fail_on_error: yes
         strict: yes

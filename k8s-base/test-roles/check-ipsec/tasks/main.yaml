@@ -41,6 +41,7 @@
       kind: Namespace
       name: "{{ check_ipsec_namespace }}"
       state: absent
+      wait: true
       validate:
         fail_on_error: yes
         strict: yes

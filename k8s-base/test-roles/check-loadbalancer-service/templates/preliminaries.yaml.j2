@@ -20,9 +20,14 @@ spec:
       labels:
         app: echo
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 24635
+        runAsGroup: 24635
+        fsGroup: 24635
       containers:
       - name: echo
         image: registry.gitlab.com/yaook/images/k8s-nginx:main
         ports:
-        - containerPort: 80
+        - containerPort: 8080
       serviceAccountName: test

@@ -9,8 +9,8 @@ spec:
   ports:
     - protocol: TCP
       nodePort: {{ deprecated_nodeport_lb_test_port }}
-      port: 80
-      targetPort: 80
+      port: 8080
+      targetPort: 8080
   type: NodePort
 ---
 apiVersion: v1
@@ -21,8 +21,13 @@ metadata:
   name: nginx
   namespace: {{ check_services_namespace | to_json }}
 spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
   containers:
-  - image: registry.gitlab.com/yaook/images/k8s-nginx:main
+  - image: registry.gitlab.com/yaook/images/k8s-nginx:use-unprivileged-nginx
     name: nginx
     resources: {}
   dnsPolicy: ClusterFirst
