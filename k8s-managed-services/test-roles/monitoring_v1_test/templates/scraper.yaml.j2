@@ -14,6 +14,9 @@ spec:
     runAsUser: 24635
     runAsGroup: 24635
     fsGroup: 24635
+  tolerations:
+  - key: ""
+    operator: Exists
   containers:
   - name: node-exporter-scraper
     image: registry.gitlab.com/yaook/images/k8s-debian:main

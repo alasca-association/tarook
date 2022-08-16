@@ -30,6 +30,13 @@ spec:
     runAsUser: 24635
     runAsGroup: 24635
     fsGroup: 24635
+  tolerations:
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: Exists
+    effect: NoSchedule
+  - key: "node-role.kubernetes.io/master"
+    operator: Exists
+    effect: NoSchedule
   containers:
   - image: registry.gitlab.com/yaook/images/k8s-nginx:main
     name: nginx-single-stack-v4
