@@ -71,3 +71,14 @@
         strict: yes
     tags:
       - node-exporter-service-monitor
+
+- name: "{{ k8s_is_gpu_cluster | ternary('I', 'Uni') }}nstall NVIDIA DCGM exporter"
+  community.kubernetes.helm:
+    chart_ref: dcgm-exporter
+    chart_repo_url: https://nvidia.github.io/dcgm-exporter/helm-charts
+    chart_version: 2.6.10
+    release_namespace: "{{ monitoring_namespace }}"
+    release_name: "nvidia-dcgm-exporter"
+    release_state: "{{ k8s_is_gpu_cluster | ternary('present', 'absent') }}"
+    values: "{{ lookup('template', 'nvidia_dcgm_exporter.yaml.j2') | from_yaml }}"
+    wait: yes
