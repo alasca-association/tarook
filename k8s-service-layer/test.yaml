@@ -10,8 +10,11 @@
       - always
   tags:
   - test-mk8s-sl
+  - check-mk8s-sl
   roles:
   - role: cert_manager_v1_test
     when: k8s_cert_manager_enabled
     tags:
     - test-mk8s-sl/cert-manager
+    - check-mk8s-sl/cert-manager
+    - cert_manager_v1_test

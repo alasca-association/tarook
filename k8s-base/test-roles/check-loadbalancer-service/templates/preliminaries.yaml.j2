@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test
+  namespace: "{{ check_loadbalancer_service_namespace }}"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-deployment
+  namespace: "{{ check_loadbalancer_service_namespace }}"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: echo
+  template:
+    metadata:
+      labels:
+        app: echo
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 24635
+        runAsGroup: 24635
+        fsGroup: 24635
+      containers:
+      - name: echo
+        image: registry.gitlab.com/yaook/images/k8s-nginx:main
+        ports:
+        - containerPort: 8080
+      serviceAccountName: test

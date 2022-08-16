@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: reader-test
+  name: reader-test
+  namespace: {{ check_block_storage_namespace | to_json }}
+spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 24635
+    runAsGroup: 24635
+    fsGroup: 24635
+  containers:
+  - image: registry.gitlab.com/yaook/images/k8s-debian:main
+    imagePullPolicy: IfNotPresent
+    name: debian
+    command: ["bash", "-c", "set -euo pipefail; cd /mnt; test -e noise; sha256sum -c SHA256SUMS"]
+    volumeMounts:
+      - mountPath: /mnt
+        name: block-storage-test
+  volumes:
+  - name: block-storage-test
+    persistentVolumeClaim:
+      claimName: block-storage-test
+      readOnly: false
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        preference:
+          matchFields:
+          - key: metadata.name
+            operator: NotIn
+            values:
+            - {{ writer_pod_node_name }}
+{% if test_worker_nodes|length > 0 %}
+  nodeSelector:
+    name: {{ test_worker_nodes[0].name }}
+{% endif %}
+  restartPolicy: Never

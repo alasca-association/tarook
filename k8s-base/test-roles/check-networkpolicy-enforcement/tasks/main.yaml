@@ -1,0 +1,169 @@
+---
+- name: execute test
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+  block:
+  - name: create test namespace
+    k8s:
+      definition:
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: "{{ check_networkpolicy_namespace }}"
+          labels:
+            test: "{{ check_networkpolicy_namespace }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+      state: present
+
+  - name: create service
+    k8s:
+      definition: "{{ lookup('template', 'service.yaml') }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: get pod IPs
+    k8s_info:
+      api_version: v1
+      kind: Pod
+      label_selectors:
+      - app=echo
+      namespace: "{{ check_networkpolicy_namespace }}"
+    register: service_pods
+    until: |
+      (service_pods.resources | default(False) and
+       not service_pods.resources | rejectattr('status') | list and
+       not service_pods.resources | map(attribute='status') | rejectattr('phase', 'eq', 'Running') | list and
+       not service_pods.resources | map(attribute='status') | rejectattr('podIP') | list)
+    retries: 60
+    delay: 1
+
+  - name: store pod IPs
+    set_fact:
+      service_pod_ips: "{{ service_pods.resources | map(attribute='status') | map(attribute='podIP') | list }}"
+
+  - name: start blocked-test
+    vars:
+      pod_name: blocked-test
+    k8s:
+      definition: "{{ lookup('template', 'test-pod.yaml') }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: fetch blocked-test pod completion state
+    k8s_info:
+      api_version: v1
+      kind: Pod
+      name: blocked-test
+      namespace: "{{ check_networkpolicy_namespace }}"
+    register: blocked_test_state
+    until: "blocked_test_state.resources and (blocked_test_state.resources[0].status | default(False)) and (blocked_test_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
+    delay: 1
+    retries: 60
+
+  - name: check blocked-test pod failure
+    debug:
+      msg: "Blocked test pod is in condition {{ blocked_test_state.resources[0].status.phase }}"
+    failed_when: 'blocked_test_state.resources[0].status.phase != "Failed"'
+
+  - name: unblock for sources from the same namespace
+    k8s:
+      definition: "{{ lookup('template', 'unblock-same-namespace.yaml') }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: start unblocked-test
+    vars:
+      pod_name: unblocked-test
+    k8s:
+      definition: "{{ lookup('template', 'test-pod.yaml') }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: fetch unblocked-test pod completion state
+    k8s_info:
+      api_version: v1
+      kind: Pod
+      name: unblocked-test
+      namespace: "{{ check_networkpolicy_namespace }}"
+    register: blocked_test_state
+    until: "blocked_test_state.resources and (blocked_test_state.resources[0].status | default(False)) and (blocked_test_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
+    delay: 1
+    retries: 60
+
+  - name: check unblocked-test pod succeeded
+    debug:
+      msg: "Blocked test pod is in condition {{ blocked_test_state.resources[0].status.phase }}"
+    failed_when: 'blocked_test_state.resources[0].status.phase == "Failed"'
+
+  - name: check service is unreachable from the node
+    # In SingleNode setups, the node will be able to connect to the service
+    when: inventory_hostname != groups['masters'] | first
+    command:
+    args:
+      warn: false
+      argv:
+      - curl
+      - "-sS"
+      - "--connect-timeout"
+      - "10"
+      - "--retry"
+      - "3"
+      - "--retry-delay"
+      - "1"
+      - "-w"
+      - "\\n%{http_code}\\n"
+      - "http://{{ item }}"
+    register: curl_result
+    loop: "{{ service_pod_ips }}"
+    changed_when: False
+    failed_when: "curl_result.rc not in [7,28]"
+
+  - name: unblock access from everywhere
+    k8s:
+      definition: "{{ lookup('template', 'unblock-all.yaml') }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: check service is reachable from the node
+    command:
+    args:
+      warn: false
+      argv:
+      - curl
+      - "-sS"
+      - "-w"
+      - "\\n%{http_code}\\n"
+      - "http://{{ item }}:8080"
+    register: curl_result
+    until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
+    loop: "{{ service_pod_ips }}"
+    delay: 1
+    retries: 60
+    changed_when: False
+
+  - name: delete test namespace
+    k8s:
+      api_version: v1
+      name: "{{ check_networkpolicy_namespace }}"
+      kind: Namespace
+      state: absent
+      wait: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+    tags:
+    - test-cleanup
