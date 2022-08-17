@@ -8,3 +8,4 @@ etcd_backup_schedule: "21 */12 * * *"
 etcd_backup_chart_version: ""
 etcd_backup_config_path: "{{ ksl_vars_directory }}/../../config/{{ etcd_backup_s3_config_name }}"
 etcd_backup_days_of_retention: 7
+etcd_backup_metrics_port: 19100

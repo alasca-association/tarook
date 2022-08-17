@@ -2,6 +2,8 @@ schedule: "{{ etcd_backup_schedule }}"
 
 namespace: "{{ etcd_backup_namespace }}"
 
+metrics_port : etcd_backup_metrics_port
+
 targets:
     s3:
       endpoint: "{{ etcd_backup_s3.endpoint_url }}"
