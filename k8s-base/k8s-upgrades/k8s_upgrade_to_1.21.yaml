@@ -28,7 +28,17 @@
     - ../vars/disruption.yaml
   tags:
     - kubeadm-first-master
+  pre_tasks:
+    - name: include ksl vars
+      when: ksl_vars_directory is defined
+      include_vars:
+        dir: "{{ ksl_vars_directory }}"
+      tags:
+        - always
   roles:
+    - name: cluster-health-verification
+      delegate_to: localhost
+      when: not (k8s_skip_upgrade_checks | bool)
     - name: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-kubeadm
@@ -47,7 +57,17 @@
     - ../vars/disruption.yaml
   tags:
     - kubeadm-other-masters
+  pre_tasks:
+    - name: include ksl vars
+      when: ksl_vars_directory is defined
+      include_vars:
+        dir: "{{ ksl_vars_directory }}"
+      tags:
+        - always
   roles:
+    - name: cluster-health-verification
+      delegate_to: localhost
+      when: not (k8s_skip_upgrade_checks | bool)
     - name: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-kubeadm
@@ -80,7 +100,17 @@
   tags:
     - workers
   serial: 1
+  pre_tasks:
+    - name: include ksl vars
+      when: ksl_vars_directory is defined
+      include_vars:
+        dir: "{{ ksl_vars_directory }}"
+      tags:
+        - always
   roles:
+    - name: cluster-health-verification
+      delegate_to: localhost
+      when: not (k8s_skip_upgrade_checks | bool)
     - name: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-kubeadm
