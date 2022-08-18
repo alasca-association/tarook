@@ -274,37 +274,6 @@ calico-rook-dualstack-manual:
     AFLAGS: "-e k8s_network_plugin=calico"
     TF_VAR_dualstack_support: "true"
 
-# Spawn a cluster and test the k8s upgrade path (w/ kube-router)
-k8s-upgrade-kube-router:
-  environment:
-    name: spawn-cluster
-  rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: never
-    - if: $CI_COMMIT_REF_NAME == 'devel'
-      when: never
-    - if: $CI_COMMIT_REF_NAME == 'stable'
-      when: never
-    - when: on_success
-  extends: .test_upgrade_path_k8s_cluster
-  stage: cluster-upgrades
-
-# Manually spawn a cluster and test the k8s upgrade path (w/ kube-router)
-k8s-upgrade-kube-router-manual:
-  environment:
-    name: spawn-cluster
-  rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: manual
-    - if: $CI_COMMIT_REF_NAME == 'devel'
-      when: manual
-    - if: $CI_COMMIT_REF_NAME == 'stable'
-      when: manual
-    - when: never
-  extends: .test_upgrade_path_k8s_cluster
-  stage: cluster-upgrades
-  allow_failure: true
-
 # Spawn a cluster and test the k8s upgrade path (w/ calico)
 k8s-upgrade-calico:
   environment:
