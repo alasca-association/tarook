@@ -89,3 +89,27 @@
     metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
+
+- name: Do we have any gpu nodes?
+  when: "k8s_is_gpu_cluster | default(False)"
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Node
+    label_selectors:
+      - yaook-k8s-has-gpu=true
+  register: gpu_nodes
+
+- name: Check dcgm-gpu-exporter endpoint status
+  when: "(k8s_is_gpu_cluster | default(False)) and ((gpu_nodes.resources | length) > 0)"
+  community.kubernetes.k8s_exec:
+    namespace: "{{ check_prometheus_scraping_namespace }}"
+    pod: prometheus-test-scraper
+    command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="nvidia-dcgm-exporter"}'
+  register: metrics
+  until: |
+    metrics.failed == false and
+    metrics.rc == 0 and
+    metrics.stdout | from_json | json_query('status') == "success" and
+    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  retries: 60
+  delay: 3
