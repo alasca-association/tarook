@@ -8,6 +8,9 @@ nodeRegistration:
     node-ip: {{ local_ipv4_address | to_json }}
 {% endif %}
 {% set labels = k8s_node_labels[inventory_hostname] | default([]) %}
+{% if has_gpu is defined and has_gpu %}
+{{ labels.append("yaook-k8s-has-gpu=true") }}
+{% endif %}
 {% if labels %}
     node-labels: {{ labels | join(",") | to_json }}
 {% endif %}
