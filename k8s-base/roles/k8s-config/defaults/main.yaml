@@ -12,7 +12,6 @@ k8s_network_bgp_gateway_as: 65000
 k8s_network_calico_ipipmode: "Never"
 
 supported_k8s_versions:
-  # - '1.16'
   - '1.17'
   - '1.18'
   - '1.19'
