@@ -254,3 +254,56 @@
       when: "vm_max_map_count is defined"
       tags:
         - vm-max-map-count
+
+- name: Restart kubelet after the initial installation as workaround
+  hosts: k8s_nodes
+  gather_facts: false
+  serial: 1
+  vars_files:
+  - vars/disruption.yaml
+  tasks:
+    # This is required for the k8s node to come up after the installation
+    # of calico – but only when using containerd, go figure!  When
+    # disruption is allowed we also restart on changes of the config, as
+    # we can assume it is not properly reloaded (if initial loading does
+    # not work).
+    - name: Get the kubernetes node info
+      become: yes
+      environment:
+        KUBECONFIG: /etc/kubernetes/kubelet.conf
+      command:
+      args:
+        argv:
+          - kubectl
+          - get
+          - node
+          - -o
+          - json
+          - "{{ inventory_hostname }}"
+      register: kubectl_get_node
+      changed_when: false
+      tags: containerd
+
+    - name: Restart containerd
+      become: yes
+      systemd:
+        enabled: yes
+        name: containerd
+        state: restarted
+      tags: containerd
+      when: container_runtime == 'containerd' and 'cni plugin not initialized' in kubectl_get_node.stdout
+
+    - name: Restart kubelet
+      become: yes
+      systemd:
+        enabled: yes
+        name: kubelet
+        state: restarted
+      tags: containerd
+      when: container_runtime == 'containerd' and 'cni plugin not initialized' in kubectl_get_node.stdout
+
+    - name: Let things settle after the restart
+      pause:
+        seconds: 30
+      tags: containerd
+      when: container_runtime == 'containerd' and 'cni plugin not initialized' in kubectl_get_node.stdout
