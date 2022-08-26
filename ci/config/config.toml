@@ -192,7 +192,7 @@ rollout = false
 
 [miscellaneous]
 wireguard_on_workers = false
-container_runtime = "containerd"
+container_runtime = "docker"
 
 custom_chrony_configuration = true
 custom_ntp_servers = [ "0.de.pool.ntp.org", "1.de.pool.ntp.org", "2.de.pool.ntp.org", "3.de.pool.ntp.org"]
