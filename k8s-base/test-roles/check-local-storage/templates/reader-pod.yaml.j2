@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: reader-test
+  name: reader-test
+  namespace: {{ check_local_storage_namespace | to_json }}
+spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 24635
+    runAsGroup: 24635
+    fsGroup: 24635
+  containers:
+  - image: registry.gitlab.com/yaook/images/k8s-debian:main
+    imagePullPolicy: IfNotPresent
+    name: debian
+    command: ["bash", "-c", "set -euo pipefail; cd /mnt; test -e noise; sha256sum -c SHA256SUMS"]
+    volumeMounts:
+      - mountPath: /mnt
+        name: local-storage-test
+  volumes:
+  - name: local-storage-test
+    persistentVolumeClaim:
+      claimName: {{ check_local_storage_pvc_name | to_json }}
+      readOnly: false
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - {{ writer_pod_node_name }}
+  restartPolicy: Never

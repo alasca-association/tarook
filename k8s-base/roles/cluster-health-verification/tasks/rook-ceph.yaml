@@ -1,0 +1,27 @@
+- name: Wait until Ceph is healthy
+  block:
+  - name: Set retry count
+    set_fact:
+      retry_count: "{{ 0 if retry_count is undefined else (retry_count | int) + 1 }}"
+
+  - name: Include Rook/Ceph cluster health verification
+    include_role:
+      name: rook_v1
+      tasks_from: cluster_health_verification
+
+  rescue:
+  - name: Fail if the cluster did not converge
+    fail:
+      msg: "Rook components did not converge after the upgrade ({{ retry_count }} retries)"
+    when: (retry_count | int) == 360
+
+  - name: Pause for 10 seconds, give the cluster more time to converge
+    pause:
+      seconds: 10
+
+  # Recheck if retry_count limit has not been reached, yet
+  - include_tasks: rook-ceph.yaml
+
+- name: Print completion message
+  debug:
+    msg: "The Ceph cluster looks happy!"

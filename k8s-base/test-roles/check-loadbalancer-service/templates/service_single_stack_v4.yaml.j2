@@ -1,0 +1,21 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: echo-service-single-stack-v4
+  namespace: "{{ check_loadbalancer_service_namespace }}"
+  annotations:
+    service.beta.kubernetes.io/openstack-internal-load-balancer: "false"
+spec:
+  selector:
+    app: echo
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: {{ check_loadbalancer_service_port }}
+    targetPort: 8080
+{% if k8s_version is version('1.21', operator='ge') %}
+  ipFamilyPolicy: SingleStack
+  ipFamilies:
+  - IPv4
+{% endif %}

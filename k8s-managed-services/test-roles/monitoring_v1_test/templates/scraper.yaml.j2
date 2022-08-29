@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: node-exporter-scraper
+  namespace: "{{ check_node_exporter_namespace }}"
+  labels:
+    k8s-app: node-exporter-scraper
+spec:
+  nodeSelector:
+    kubernetes.io/os: linux
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 24635
+    runAsGroup: 24635
+    fsGroup: 24635
+  containers:
+  - name: node-exporter-scraper
+    image: registry.gitlab.com/yaook/images/k8s-debian:main
+    command:
+    - sleep
+    - infinity
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200

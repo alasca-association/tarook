@@ -1,0 +1,47 @@
+- name: Check reachability of remote endpoint
+  vars:
+    gateway: "{{ (groups['gateways'] | first) if ('gateways' in groups) else False }}"
+    ipsec_enabled: "{{ hostvars[gateway]['ipsec_enabled']  | default(False) }}"
+    ipsec_test_enabled: "{{ hostvars[gateway]['ipsec_test_enabled']  | default(False) }}"
+    ipsec_remote_private_addrs: "{{ hostvars[gateway]['ipsec_remote_private_addrs'] }}"
+  block:
+  - name: create namespace
+    k8s:
+      api_version: v1
+      kind: Namespace
+      name: "{{ check_ipsec_namespace }}"
+      state: present
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: create a busybox Pod
+    k8s:
+      state: present
+      definition: "{{ lookup('template', 'busybox-ping-job.yaml.j2') }}"
+      wait: yes
+      apply: yes
+      validate:
+        fail_on_error: yes
+        strict: yes
+
+  - name: Try to ping test-node via IPsec
+    community.kubernetes.k8s_exec:
+      namespace: "{{ check_ipsec_namespace }}"
+      pod: ipsec-test-busybox
+      command: ping -c 1 {{ ipsec_remote_private_addrs }}
+    register: ipsec_test_vm_ping
+    delay: 5
+    retries: 20
+    until: ipsec_test_vm_ping.rc == 0
+
+  - name: delete namespace
+    k8s:
+      api_version: v1
+      kind: Namespace
+      name: "{{ check_ipsec_namespace }}"
+      state: absent
+      wait: true
+      validate:
+        fail_on_error: yes
+        strict: yes

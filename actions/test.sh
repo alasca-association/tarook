@@ -19,18 +19,26 @@ export KUBECONFIG="$cluster_repository/inventory/.etc/admin.conf"
 
 # Test k8s-service-layer
 pushd "$ansible_k8s_sl_playbook"
-ansible_playbook -i "inventory/default.yaml" -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" test.yaml
+ANSIBLE_ROLES_PATH="$ansible_k8s_sl_playbook/test-roles/" \
+    ansible_playbook -i "inventory/default.yaml" \
+    -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" \
+    test.yaml
 popd
 
 # Test k8s-managed-service layer
 pushd "$ansible_k8s_ms_playbook"
-ansible_playbook -i "inventory/default.yaml" -i "$ansible_inventoryfile_03" -e "kms_vars_directory=$ansible_k8s_ms_vars_base" test.yaml
+ANSIBLE_ROLES_PATH="$ansible_k8s_ms_playbook/test-roles/" \
+    ansible_playbook -i "inventory/default.yaml" \
+    -i "$ansible_inventoryfile_03" \
+    -e "kms_vars_directory=$ansible_k8s_ms_vars_base" \
+    test.yaml
 popd
 
 # Test k8s-base
 # Please unclutter me
 # shellcheck disable=2086
-ansible_playbook -i "$ansible_inventoryfile_03" \
+ANSIBLE_ROLES_PATH="$ansible_k8s_base_playbook/test-roles/" \
+    ansible_playbook -i "$ansible_inventoryfile_03" \
     -i "$ansible_inventoryfile_02" \
     -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" \
     -e "ksl_playbook_directory=$ansible_k8s_sl_playbook" \

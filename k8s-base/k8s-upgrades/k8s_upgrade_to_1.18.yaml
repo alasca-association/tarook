@@ -21,15 +21,27 @@
     - kubernetes-upgrade-preflight-checks
 
 - name: Upgrade the first master node
-  hosts: "{{ (groups['masters'] | sort)[0] }}"
+  hosts: masters[0]
   gather_facts: false
   any_errors_fatal: true
   vars_files:
     - ../vars/disruption.yaml
   tags:
     - kubeadm-first-master
+  pre_tasks:
+    - name: include ksl vars
+      when: ksl_vars_directory is defined
+      include_vars:
+        dir: "{{ ksl_vars_directory }}"
+      tags:
+        - always
   roles:
+    - name: cluster-health-verification
+      delegate_to: localhost
+      when: not (k8s_skip_upgrade_checks | bool)
     - name: kubeadm-drain-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: update_system
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
@@ -39,7 +51,7 @@
       when: "not (k8s_upgrade_done | default(False))"
 
 - name: Upgrade the residual master nodes
-  hosts: "{{ (groups['masters'] | sort)[1:] }}"
+  hosts: masters[1:]
   gather_facts: false
   serial: 1
   any_errors_fatal: true
@@ -47,8 +59,20 @@
     - ../vars/disruption.yaml
   tags:
     - kubeadm-other-masters
+  pre_tasks:
+    - name: include ksl vars
+      when: ksl_vars_directory is defined
+      include_vars:
+        dir: "{{ ksl_vars_directory }}"
+      tags:
+        - always
   roles:
+    - name: cluster-health-verification
+      delegate_to: localhost
+      when: not (k8s_skip_upgrade_checks | bool)
     - name: kubeadm-drain-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: update_system
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
@@ -80,8 +104,20 @@
   tags:
     - workers
   serial: 1
+  pre_tasks:
+    - name: include ksl vars
+      when: ksl_vars_directory is defined
+      include_vars:
+        dir: "{{ ksl_vars_directory }}"
+      tags:
+        - always
   roles:
+    - name: cluster-health-verification
+      delegate_to: localhost
+      when: not (k8s_skip_upgrade_checks | bool)
     - name: kubeadm-drain-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: update_system
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
@@ -94,10 +130,9 @@
 
 - name: Final upgrade note
   gather_facts: false
-  hosts: "{{ (groups['masters'] | sort)[0] }}"
+  hosts: masters[0]
   tasks:
   - name: Final upgrade note
-    delegate_to: localhost
     debug:
       msg: |
         🥳 Congratulations! 🎉

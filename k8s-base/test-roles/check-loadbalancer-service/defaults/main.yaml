@@ -1,0 +1,3 @@
+check_loadbalancer_service_namespace: yaook-k8s-tests-2cdd393b-2f8a-4ffa-8bd8-4e636e5154ec
+# Some random port which hopefully isn't used yet s.t. lbaas can re-use an existing floating ip
+check_loadbalancer_service_port: 48972

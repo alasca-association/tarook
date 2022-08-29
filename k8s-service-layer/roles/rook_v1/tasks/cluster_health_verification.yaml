@@ -15,7 +15,7 @@
   k8s_info:
     kind: Pod
     namespace: "{{ rook_namespace }}"
-    wait_timeout: 120
+    wait_timeout: 10
     wait: yes
     label_selectors:
       - app != rook-ceph-osd-prepare
@@ -49,6 +49,8 @@
       kind: CephCluster
       namespace: "{{ rook_namespace }}"
       name: "{{ rook_cluster_name }}"
+      api_version: ceph.rook.io/v1
+    failed_when: "(ceph_cluster_info.resources | length) == 0"
     register: ceph_cluster_info
 
   - name: Verify the ceph cluster status information

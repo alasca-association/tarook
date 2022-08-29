@@ -2,7 +2,7 @@
 
 # shellcheck disable=SC2154
 terraform_console_remove_quotes () {
-  echo "$1" | terraform -chdir="$terraform_module" console -var-file="$terraform_state_dir"/config.tfvars.json | sed -e 's/^"//' -e 's/"$//'
+  echo "$1" | terraform -chdir="$terraform_module" console -var-file="$terraform_state_dir"/config.tfvars.json | tail -1 | sed -e 's/^"//' -e 's/"$//'
 }
 
 terraform_migrate_foreach() {

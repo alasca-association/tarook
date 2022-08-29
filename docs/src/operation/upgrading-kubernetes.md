@@ -39,3 +39,18 @@
    [kubernetes]
    version="1.18.1"
    ```
+
+## Skip Intermittent Cluster Health Verification
+
+Simply said, during a Kubernetes upgrade, all nodes get tainted, upgraded and uncordoned.
+The nodes do get processed quickly one after another.
+In between the node upgrades, the `cluster_health_verification`-role is executed.
+This role contains tasks to verify the cluster has converged before tainting the next node.
+
+These intermediate tasks can be circumvented by passing `-s` to the [`upgrade.sh'-script](../operation/actions-references.md#upgradesh).
+The flag has to be passed between the script path and the target version.
+
+```console
+# Triggering a Kubernetes upgrade and skip health verification tasks
+$ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh -s 1.22.11
+```
