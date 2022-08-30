@@ -1,0 +1,12 @@
+- name: Validate the shared secret
+  # Split validation into two tasks to improve error messaging
+  block:
+  - name: Attempt to decode the shared secret
+    set_fact:
+      _: "{{ ch_k8s_lbaas_shared_secret | b64decode }}"
+    ignore_errors: true
+
+  - name: Fail if the shared secret couldn't be decoded
+    when: _ | default('') | length < 1
+    fail:
+      msg: "[ch-k8s-lbaas] Ensure that the `shared_secret` is base64 encoded."
