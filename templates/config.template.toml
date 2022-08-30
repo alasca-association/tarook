@@ -648,6 +648,11 @@ enabled = false # •ᴗ•
 # If this is not specified, the latest version is installed.
 #chart_version=""
 
+# Metrics port on which the backup-shifter Pod will provide metrics.
+# Please note that the etcd-backup deployment runs in host network mode
+# for easier access to the etcd cluster.
+#metrics_port: 19100
+
 # ANCHOR_END: etcd_backup_configuration
 
 # ANCHOR: ksl_vault_configuration
