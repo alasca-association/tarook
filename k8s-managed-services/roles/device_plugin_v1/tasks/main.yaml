@@ -1,8 +1,10 @@
 - name: Install k8s nvidia-device-plugin
+  vars:
+    definition_file: "{{ 'nvidia-device-plugin-v' ~ nvidia_device_plugin_version ~ '.yml' }}"
   k8s:
     state: present
     apply: yes
-    definition: "{{ lookup('template', 'nvidia-device-plugin.yml') }}"
+    definition: "{{ lookup('template', definition_file) }}"
     validate:
       fail_on_error: yes
       strict: yes

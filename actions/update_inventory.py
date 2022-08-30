@@ -541,16 +541,34 @@ def main():
     # ---
     # NVIDIA VGPU
     # ---
-    print_process_state("nvidia")
+    key = "vgpu"
+    print_process_state(f"nvidia {key}")
     nvidia_vgpu_ansible_inventory_path = (
             ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage3"] /
             "group_vars" / "all" / "nvidia.yaml"
     )
-    dump_to_ansible_inventory(
-        config.get("nvidia"),
-        nvidia_vgpu_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("nvidia", "")
+    if key in config.get("nvidia"):
+        dump_to_ansible_inventory(
+            {key: config.get("nvidia")[key]},
+            nvidia_vgpu_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("nvidia", "")
+        )
+
+    # ---
+    # NVIDIA DEVICE PLUGIN
+    # ---
+    key = "device_plugin"
+    print_process_state(f"nvidia {key}")
+    nvidia_device_plugin_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage5"] /
+            "group_vars" / "all" / "nvidia.yaml"
     )
+    if key in config.get("nvidia"):
+        dump_to_ansible_inventory(
+            {key: config.get("nvidia")[key]},
+            nvidia_device_plugin_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("nvidia", "")
+        )
 
     # ---
     # NODE SCHEDULING

@@ -970,4 +970,10 @@ wireguard_on_workers = false
 # manager_filename should hold the name of the vGPU Manager installation file.
 # manager_filename = "..."
 
+[nvidia.device_plugin]
+# Device plugin needed for GPU pass through support
+# Changing that version might disrupt running GPU related workloads:
+# https://github.com/NVIDIA/k8s-device-plugin#upgrading-kubernetes-with-the-device-plugin
+# version = "1.0.0-beta4"
+
 # ANCHOR_END: miscellaneous_configuration
