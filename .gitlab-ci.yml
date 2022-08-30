@@ -195,26 +195,26 @@ vault-container-test:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
   script:
     # Set k8s version to minimal supported version: v1.19.16
-  - 'python3 patch_config.py "{\"kubernetes\":{\"version\":\"1.19.16\"}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.19.16\"}}"'
     # Disable Ingress (Requires k8s >= v1.20)
-  - 'python3 patch_config.py "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"false\"}}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"false\"}}}"'
     # Spawn and test cluster
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
     # Upgrade cluster to k8s v1.20.15
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.20.15
     # Update k8s version
-  - 'python3 patch_config.py "{\"kubernetes\":{\"version\":\"1.20.15\"}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.20.15\"}}"'
     # Install ingress after upgrading to k8s v1.20
-  - 'python3 patch_config.py "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"true\"}}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"true\"}}}"'
   - AFLAGS="-t mk8s-sl/ingress" ./managed-k8s/actions/apply-stage4.sh
     # Upgrade cluster to k8s v1.21.14
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.21.14
     # Update k8s version
-  - 'python3 patch_config.py "{\"kubernetes\":{\"version\":\"1.21.14\"}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.21.14\"}}"'
     # Upgrade cluster to k8s v1.22.12
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.22.12
     # Update k8s version
-  - 'python3 patch_config.py "{\"kubernetes\":{\"version\":\"1.22.12\"}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.22.12\"}}"'
     # Retest the cluster
   - ./managed-k8s/actions/test.sh
   after_script:
