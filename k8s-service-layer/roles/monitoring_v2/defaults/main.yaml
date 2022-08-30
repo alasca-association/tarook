@@ -18,7 +18,7 @@ monitoring_prometheus_stack_release_name: "prometheus-stack"
 monitoring_prometheus_adapter_release_name: "prometheus-adapter"
 
 monitoring_use_grafana: true
-monitoring_use_thanos: true
+monitoring_use_thanos: false
 
 monitoring_grafana_admin_secret_name: "cah-grafana-admin"
 

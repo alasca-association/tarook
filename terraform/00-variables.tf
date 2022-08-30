@@ -202,6 +202,7 @@ variable "network_mtu" {
 
 variable "monitoring_use_thanos" {
   type = bool
+  default = false
   description = "Create an object storage container for thanos."
 }
 
