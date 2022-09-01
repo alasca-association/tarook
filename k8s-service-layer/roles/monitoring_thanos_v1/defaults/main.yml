@@ -1,7 +1,7 @@
 ---
 monitoring_namespace: 'monitoring'
 
-monitoring_use_thanos: true
+monitoring_use_thanos: false
 monitoring_thanos_objectstorage_auth_url: "{{ lookup('env', 'OS_AUTH_URL') }}"
 monitoring_thanos_objectstorage_username: "{{ lookup('env', 'OS_USERNAME') }}"
 monitoring_thanos_objectstorage_user_domain_name: "{{ lookup('env', 'OS_USER_DOMAIN_NAME') }}"

@@ -350,8 +350,10 @@ def main():
         # and cannot be made available easily to tf except for making the user
         # provide an additional variable. Therefore we're picking it here and
         # insert it ourselves.
-        tf_config["monitoring_use_thanos"] = \
-            config["k8s-service-layer"].get("prometheus").get("use_thanos")
+        # Note: terraform provides a default so let's not impose any on our side
+        if "use_thanos" in config["k8s-service-layer"].get("prometheus"):
+            tf_config["monitoring_use_thanos"] = \
+                config["k8s-service-layer"].get("prometheus").get("use_thanos")
         terraform_helper.deploy_terraform_config(tf_config)
 
     # ---
