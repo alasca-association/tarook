@@ -231,9 +231,12 @@ calico-rook-dualstack:
       when: never
     - when: on_success
   extends: .prepare_spawn_test_cleanup_k8s_cluster
+  script:
+    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"docker\"}}"'
+    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":true}}"'
+    - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   stage: spawn-cluster
   variables:
-    AFLAGS: "-e k8s_network_plugin=calico"
     TF_VAR_dualstack_support: "true"
 
 # Manually spawn a cluster with calico as CNI and rook enabled (MR only)
@@ -259,11 +262,7 @@ k8s-upgrade-calico:
     - when: on_success
   extends: .test_upgrade_path_k8s_cluster
   stage: cluster-upgrades
-  script:
-    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"docker\"}}"'
-    - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   variables:
-    AFLAGS: "-e k8s_network_plugin=calico"
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
     # so we need to reference the default vars here (only one level of nesting is allowed)
     WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
@@ -301,10 +300,8 @@ calico-rook-containerd-dualstack:
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   stage: spawn-cluster
   script:
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":false}}"'
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   variables:
-    AFLAGS: "-e k8s_network_plugin=calico"
     TF_VAR_dualstack_support: "true"
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
     # so we need to reference the default vars here (only one level of nesting is allowed)

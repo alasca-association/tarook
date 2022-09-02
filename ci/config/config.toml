@@ -46,7 +46,7 @@ agent_port    = 15203
 
 [kubernetes]
 version                 = "1.22.11"
-is_gpu_cluster          = true
+is_gpu_cluster          = false
 
 [kubernetes.apiserver]
 frontend_port = 8888
@@ -72,7 +72,7 @@ nodeport      = 31911
 nodeport_name = "ch-k8s-global-monitoring"
 
 [kubernetes.network]
-plugin         = "kube-router"
+plugin         = "calico"
 pod_subnet     = "10.244.0.0/16"
 service_subnet = "10.96.0.0/12"
 
