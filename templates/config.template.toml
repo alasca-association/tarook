@@ -93,6 +93,7 @@ version = "1.22.11" # •ᴗ•
 
 # Uncomment if this cluster contains a worker with GPU access so that the driver
 # and surrounding framework is deployed.
+# You must set the container_runtime to "docker" for GPU clusters.
 is_gpu_cluster = false # •ᴗ•
 
 # Set this variable to virtualize Nvidia GPUs on worker nodes.
