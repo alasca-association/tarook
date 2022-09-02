@@ -924,9 +924,11 @@ rollout = false # •ᴗ•
 # so that it can be used from within Pods.
 wireguard_on_workers = false
 
-# Configure which container runtime to use. Supported values are: "docker"
-# and "containerd".
-container_runtime = "docker"  # "•ᴗ•"
+# Configure which container runtime to use.
+# Supported values are: "docker" and "containerd".
+# For now migrating the container runtime of existing clusters is not
+# supported.
+container_runtime = "containerd"  # "•ᴗ•"
 
 # Configuration details if the cluster will be placed behind a HTTP proxy.
 # If unconfigured images will be used to setup the cluster, the updates of

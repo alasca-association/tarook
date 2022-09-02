@@ -259,6 +259,9 @@ k8s-upgrade-calico:
     - when: on_success
   extends: .test_upgrade_path_k8s_cluster
   stage: cluster-upgrades
+  script:
+    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"docker\"}}"'
+    - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   variables:
     AFLAGS: "-e k8s_network_plugin=calico"
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
@@ -298,7 +301,6 @@ calico-rook-containerd-dualstack:
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   stage: spawn-cluster
   script:
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"containerd\"}}"'
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":false}}"'
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   variables:
