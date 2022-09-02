@@ -1,3 +1,14 @@
+- name: Obtain installed packages
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Fail when docker is installed
+  fail:
+    msg: |
+      Docker is installed on this node!
+      A migration path from docker to containerd is not yet provided.
+  when: "'docker.io' in ansible_facts.packages"
+
 - name: Prevent installing containerd for GPU cluster
   fail:
     msg: Trying to used containerd in a GPU cluster – this does not work.
@@ -24,9 +35,6 @@
     name:
     - containerd
   register: package_install
-
-- name: Purge docker
-  include_tasks: purge_docker.yaml
 
 - name: Create containerd daemon configuration
   become: yes
