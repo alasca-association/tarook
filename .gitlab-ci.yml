@@ -235,15 +235,12 @@ kuberouter-rook:
 
 # Manually spawn a cluster with kube-router as CNI and rook enabled (MR only)
 kuberouter-rook-manual:
-  environment:
-    name: spawn-cluster
   rules:
     - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
       when: manual
     - when: never
-  extends: .prepare_spawn_test_cleanup_k8s_cluster
+  extends: kuberouter-rook
   allow_failure: true
-  stage: spawn-cluster
 
 # Spawn a cluster with calico as CNI and rook enabled
 calico-rook-dualstack:
@@ -261,18 +258,12 @@ calico-rook-dualstack:
 
 # Manually spawn a cluster with calico as CNI and rook enabled (MR only)
 calico-rook-dualstack-manual:
-  environment:
-    name: spawn-cluster
   rules:
     - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
       when: manual
     - when: never
-  extends: .prepare_spawn_test_cleanup_k8s_cluster
+  extends: calico-rook-dualstack
   allow_failure: true
-  stage: spawn-cluster
-  variables:
-    AFLAGS: "-e k8s_network_plugin=calico"
-    TF_VAR_dualstack_support: "true"
 
 # Spawn a cluster and test the k8s upgrade path (w/ calico)
 k8s-upgrade-calico:
@@ -300,8 +291,6 @@ k8s-upgrade-calico:
 
 # Manually spawn a cluster and test the k8s upgrade path (w/ calico)
 k8s-upgrade-calico-manual:
-  environment:
-    name: spawn-cluster
   rules:
     - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
       when: manual
@@ -310,18 +299,8 @@ k8s-upgrade-calico-manual:
     - if: $CI_COMMIT_REF_NAME == 'stable'
       when: manual
     - when: never
-  extends: .test_upgrade_path_k8s_cluster
-  stage: cluster-upgrades
+  extends: k8s-upgrade-calico
   allow_failure: true
-  variables:
-    AFLAGS: "-e k8s_network_plugin=calico"
-    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
-    # so we need to reference the default vars here (only one level of nesting is allowed)
-    WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
-    PASS_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, PASS_COMPANY_USERS]
-    SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
-    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
-    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
 
 # Spawn a cluster with calico as CNI, containerd as CRI and
 # rook enabled (MR only)
