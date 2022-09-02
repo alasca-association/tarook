@@ -222,26 +222,6 @@ vault-container-test:
   artifacts: !reference [.prepare_spawn_test_cleanup_k8s_cluster, artifacts]
   tags: !reference [.prepare_spawn_test_cleanup_k8s_cluster, tags]
 
-# Spawn a cluster with kube-router as CNI and rook enabled
-kuberouter-rook:
-  environment:
-    name: spawn-cluster
-  rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: never
-    - when: on_success
-  extends: .prepare_spawn_test_cleanup_k8s_cluster
-  stage: spawn-cluster
-
-# Manually spawn a cluster with kube-router as CNI and rook enabled (MR only)
-kuberouter-rook-manual:
-  rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: manual
-    - when: never
-  extends: kuberouter-rook
-  allow_failure: true
-
 # Spawn a cluster with calico as CNI and rook enabled
 calico-rook-dualstack:
   environment:
