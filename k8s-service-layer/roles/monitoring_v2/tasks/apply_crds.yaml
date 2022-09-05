@@ -1,0 +1,49 @@
+# AppVersion determines the version of CRDs that are to be applied
+# There is no equivalent of `helm show chart` in any Ansible Helm modules
+# therefore we have to use command instead of helm module 
+- name: "Get AppVersion from Helm chart for major version: {{ item }}"
+  command:
+  args:
+    argv:
+    - helm
+    - show
+    - chart
+    - prometheus-community/kube-prometheus-stack
+    - --version
+    - "{{ item }}"
+  register: helm_chart
+  changed_when: false
+
+# Apply CRDs of specific app version
+# The reason for not using the ansible k8s module to apply CRDs is an issue regarding 
+# the 'altermanagerconfigs' CRD. This yaml contains an enum `- =` which is not processed 
+# by pyyaml and it throws an error https://github.com/yaml/pyyaml/issues/89. Therefore the 
+# from_yaml filter fails and we cannot read the yaml file. 
+# There is also a pending pull request regarding the update of this CRD. 
+# https://github.com/prometheus-operator/prometheus-operator/pull/4897
+# Once this request is approved, This task can be updated to use k8s module instead of command.
+- name: "Apply CRDs for appversion: {{ app_version }}"
+  vars:
+    app_version: "{{ (helm_chart.stdout | from_yaml).appVersion }}"
+  command:
+  args:
+    argv:
+    - kubectl
+    - apply
+    - --server-side
+    - --force-conflicts
+    - -f
+    - "https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/\
+        v{{ app_version }}/example/prometheus-operator-crd/monitoring.coreos.com_{{ inner_item }}.yaml"
+  loop:
+  - alertmanagerconfigs
+  - alertmanagers
+  - podmonitors
+  - probes
+  - prometheuses
+  - prometheusrules
+  - servicemonitors
+  - thanosrulers
+  loop_control:
+    loop_var: inner_item
+  changed_when: false
