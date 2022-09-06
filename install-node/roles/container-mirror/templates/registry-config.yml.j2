@@ -1,0 +1,22 @@
+version: 0.1
+
+storage:
+  filesystem:
+    rootdirectory: /var/lib/registry
+
+http:
+  addr: 0.0.0.0:5000
+  tls:
+     certificate: /etc/ssl/private/cert.pem
+     key: /etc/ssl/private/private.key
+
+{% if install_node_online_mode %}
+proxy:
+  remoteurl: {{ item.remoteurl | to_json }}
+{%   if 'username' in item %}
+  username: {{ item.mirror.username | to_json }}
+{%   endif %}
+{%   if 'password' in item %}
+  password: {{ item.mirror.password | to_json }}
+{%   endif %}
+{% endif %}

@@ -1,0 +1,8 @@
+
+- name: Setup the node
+  hosts: install_node
+  become: yes
+  gather_facts: true
+  roles:
+  - role: container-mirror
+    tags: container-mirror

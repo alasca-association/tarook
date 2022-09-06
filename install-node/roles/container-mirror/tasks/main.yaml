@@ -1,0 +1,54 @@
+
+- name: Create the registry config directory
+  file:
+    path: /etc/install-node/registry/
+    owner: root
+    group: root
+    mode: 0770
+    state: directory
+
+- name: Create the registry TLS config directory
+  file:
+    path: /etc/install-node/registry/tls
+    owner: root
+    group: root
+    mode: 0770
+    state: directory
+
+- name: Create the private key for the registry
+  community.crypto.openssl_privatekey:
+    path: /etc/install-node/registry/tls/private.key
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Create the CSR for the registry
+  community.crypto.openssl_csr:
+    path: /etc/install-node/registry/tls/request.csr
+    privatekey_path: /etc/install-node/registry/tls/private.key
+    subject:
+      C: DE
+      O: Cloud&Heat GmbH
+      OU: Offline Installation
+      CN: registry.install-node
+    subjectAltName:
+    - "DNS:registry.install-node"
+    - "IP:{{ ansible_default_ipv4.address }}"
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Sign the CSR
+  community.crypto.x509_certificate:
+    path: /etc/install-node/registry/tls/cert.pem
+    privatekey_path: /etc/install-node/registry/tls/private.key
+    csr_path: /etc/install-node/registry/tls/request.csr
+    provider: selfsigned
+    mode: 0444
+    owner: root
+    group: root
+
+# assert the docker image is there!
+- name: Setup image mirrors
+  include_tasks: setup_image_mirror.yaml
+  loop: "{{ install_node_mirrored_registries }}"
