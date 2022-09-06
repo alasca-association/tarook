@@ -1,3 +1,9 @@
+- name: Update the helm repository cache
+  kubernetes.core.helm:
+    name: dummy  
+    namespace: kube-system
+    state: absent
+    update_repo_cache: true
 # AppVersion determines the version of CRDs that are to be applied
 # There is no equivalent of `helm show chart` in any Ansible Helm modules
 # therefore we have to use command instead of helm module 
