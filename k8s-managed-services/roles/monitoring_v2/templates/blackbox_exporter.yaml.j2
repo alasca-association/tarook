@@ -22,8 +22,33 @@ allowIcmp: true
 
 serviceMonitor:
   enabled: true
-{% if monitoring_common_labels %}
   defaults:
+    additionalRelabeling:
+    # nodename
+    - action: replace
+      regex: ^(.*)$
+      replacement: $1
+      separator: ;
+      sourceLabels:
+        - "__meta_kubernetes_pod_node_name"
+      targetLabel: nodename
+    # target
+    - action: replace
+      regex: ^(.*)$
+      replacement: $1
+      separator: ;
+      sourceLabels:
+        - "__param_target"
+      targetLabel: target
+    # module
+    - action: replace
+      regex: ^(.*)$
+      replacement: $1
+      separator: ;
+      sourceLabels:
+        - "__param_module"
+      targetLabel: module
+{% if monitoring_common_labels %}
     labels:
 {% for label_key, label_value in monitoring_common_labels.items() %}
       {{ label_key | to_json }}: {{ label_value | to_json }}
