@@ -1,5 +1,6 @@
 - name: Validate the shared secret
   # Split validation into two tasks to improve error messaging
+  when: ch_k8s_lbaas_enabled
   block:
   - name: Attempt to decode the shared secret
     set_fact:
