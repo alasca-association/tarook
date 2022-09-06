@@ -37,10 +37,11 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "etcd-backup",
     "custom",
     "miscellaneous",
-    "nvidia"
+    "nvidia",
 )
 # Mapping stages to their common names
 ANSIBLE_STAGES = {
+    "install-node": "00_install_node",
     "stage2": "02_trampoline",
     "stage3": "03_k8s_base",
     "stage4": "04_k8s_service_layer",
@@ -499,7 +500,12 @@ def main():
     # Including both stage2 and stage3 because at least `journald_storage` is
     # used in both.
     print_process_state("Miscellaneous")
-    for stage in [ANSIBLE_STAGES["stage2"], ANSIBLE_STAGES["stage3"]]:
+
+    misc_stages = [ANSIBLE_STAGES["stage2"], ANSIBLE_STAGES["stage3"]]
+    if os.getenv('K8S_INSTALL_NODE_USAGE', 'false') == 'true':
+        misc_stages.append(ANSIBLE_STAGES["install-node"])
+
+    for stage in misc_stages:
         misc_ansible_inventory_path = (
             ANSIBLE_INVENTORY_BASEPATH / stage /
             "group_vars" / "all" / "miscellaneous.yaml"

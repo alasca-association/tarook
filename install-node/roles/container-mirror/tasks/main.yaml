@@ -1,0 +1,14 @@
+---
+- name: Create the registry config directory
+  ansible.builtin.file:
+    path: /etc/install-node/registry/
+    owner: root
+    group: root
+    mode: 0770
+    state: directory
+
+# assert the docker image is there!
+- name: Setup image mirrors
+  ansible.builtin.include_tasks: setup_image_mirror.yaml
+  loop: "{{ container_mirrors }}"
+...
