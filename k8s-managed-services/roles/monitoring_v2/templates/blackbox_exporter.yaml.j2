@@ -13,7 +13,7 @@ config:
       prober: icmp
       timeout: 5s
       icmp:
-          preferred_ip_protocol: "ip4"
+        preferred_ip_protocol: "ip4"
     tcp_connect:
       prober: tcp
       timeout: 5s
@@ -38,11 +38,11 @@ serviceMonitor:
 #      module: http_2xx                 # Module used for scraping. Overrides value set in `defaults`
 #      additionalMetricsRelabels: {}    # Map of metric labels and values to add
 {% for target in monitoring_internet_probe_targets %}
-    - name: {{ target.name | to_json }}
-      url: {{ target.url | to_json }}
-      interval: {{ target.interval | default("60s") | to_json }}
-      scrapeTimeout: {{ target.scrapeTimeout | default("60s") | to_json }}
-      module: {{ target.module | default("http_2xx") | to_json }}
+      - name: {{ target.name | to_json }}
+        url: {{ target.url | to_json }}
+        interval: {{ target.interval | default("60s") | to_json }}
+        scrapeTimeout: {{ target.scrapeTimeout | default("60s") | to_json }}
+        module: {{ target.module | default("http_2xx") | to_json }}
 {% endfor %}
 
 pspEnabled: false
