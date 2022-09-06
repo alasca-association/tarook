@@ -10,4 +10,4 @@ kms_blackbox_exporter_release_name: "kms-blackbox"
 
 monitoring_common_labels: []
 
-monitoring_blackbox_version: "5.3.1"
+monitoring_blackbox_version: "7.0.0"

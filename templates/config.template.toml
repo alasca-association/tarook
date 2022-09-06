@@ -565,7 +565,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 
 # Deploy a specific blackbox exporter version
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
-#blackbox_version = "5.3.1"
+#blackbox_version = "7.0.0"
 
 #[[k8s-service-layer.prometheus.internet_probe_targets]]
 # name="example"                    # Human readable URL that will appear in Prometheus / AlertManager
