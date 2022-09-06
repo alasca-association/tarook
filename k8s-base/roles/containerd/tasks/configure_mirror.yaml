@@ -1,0 +1,14 @@
+- name: Create the host namespace directory
+  file:
+    path: "/etc/containerd/certs.d/{{ item.host_namespace }}"
+    state: directory
+
+- name: Create the host config file
+  template:
+    src: hosts.toml.j2
+    path: "/etc/containerd/certs.d/{{ item.host_namespace }}/hosts.toml"
+    mode: 0755
+    owner: root
+    group: root
+
+# TODO: support for TLS certificate configuration

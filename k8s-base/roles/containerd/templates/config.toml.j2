@@ -16,7 +16,11 @@ oom_score = 0
   # tcp address!
   address = "127.0.0.1:1234"
 
+# container registry override configuration
+[plugins."io.containerd.grpc.v1.cri".registry]
+  config_path = "/etc/containerd/certs.d"
 
+# configure the runc runtime
 [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
 
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
