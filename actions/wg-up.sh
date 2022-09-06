@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 if [ "${WG_USAGE:-true}" == "true" ]; then
     actions_dir="$(dirname "$0")"

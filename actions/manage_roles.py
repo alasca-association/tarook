@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 """This script can be used to init or update skeleton of ansible roles.
 Ansible role skeleton is initialized or updated based on :param:`action`.

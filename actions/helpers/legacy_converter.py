@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import typing    # needed for type hints
 import toml      # needed to dump the new configuration
