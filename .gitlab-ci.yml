@@ -223,7 +223,7 @@ vault-container-test:
   tags: !reference [.prepare_spawn_test_cleanup_k8s_cluster, tags]
 
 # Spawn a cluster with calico as CNI and rook enabled
-calico-rook-dualstack:
+docker:
   environment:
     name: spawn-cluster
   rules:
@@ -237,20 +237,18 @@ calico-rook-dualstack:
     - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   stage: spawn-cluster
   retry: 2
-  variables:
-    TF_VAR_dualstack_support: "true"
 
 # Manually spawn a cluster with calico as CNI and rook enabled (MR only)
-calico-rook-dualstack-manual:
+docker-manual:
   rules:
     - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
       when: manual
     - when: never
-  extends: calico-rook-dualstack
+  extends: docker
   allow_failure: true
 
 # Spawn a cluster and test the k8s upgrade path (w/ calico)
-k8s-upgrade-calico:
+containerd-k8s-upgrade:
   environment:
     name: spawn-cluster
   rules:
@@ -274,7 +272,7 @@ k8s-upgrade-calico:
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
 
 # Manually spawn a cluster and test the k8s upgrade path (w/ calico)
-k8s-upgrade-calico-manual:
+containerd-k8s-upgrade-manual:
   rules:
     - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
       when: manual
@@ -283,7 +281,7 @@ k8s-upgrade-calico-manual:
     - if: $CI_COMMIT_REF_NAME == 'stable'
       when: manual
     - when: never
-  extends: k8s-upgrade-calico
+  extends: containerd-k8s-upgrade
   allow_failure: true
 
 # Spawn a cluster with calico as CNI, containerd as CRI and
@@ -292,7 +290,7 @@ k8s-upgrade-calico-manual:
 # containerd-GPU-clusters don't work and error out loudly).
 # The ugly formatting of the config patches is necessary due to the
 # way gitlab CI passes the commands to the shell.
-calico-rook-containerd-dualstack:
+containerd:
   environment:
     name: spawn-cluster
   rules:
@@ -305,7 +303,6 @@ calico-rook-containerd-dualstack:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   retry: 2
   variables:
-    TF_VAR_dualstack_support: "true"
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
     # so we need to reference the default vars here (only one level of nesting is allowed)
     WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
@@ -316,13 +313,54 @@ calico-rook-containerd-dualstack:
 
 # Manually spawn a cluster with calico as CNI, containerd as CRI and
 # rook enabled (MR only)
-calico-rook-containerd-dualstack-manual:
+containerd-manual:
   rules:
     - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
       when: manual
     - when: never
   allow_failure: true
-  extends: calico-rook-containerd-dualstack
+  extends: containerd
+
+# Spawn a cluster and test the k8s upgrade path (w/ calico)
+docker-k8s-upgrade:
+  environment:
+    name: spawn-cluster
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      when: never
+    - if: $CI_COMMIT_REF_NAME == 'devel'
+      when: never
+    - if: $CI_COMMIT_REF_NAME == 'stable'
+      when: never
+    - when: on_success
+  script:
+    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"docker\"}}"'
+    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":true}}"'
+    - !reference [.test_upgrade_path_k8s_cluster, script]
+  extends: .test_upgrade_path_k8s_cluster
+  stage: cluster-upgrades
+  retry: 2
+  variables:
+    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
+    # so we need to reference the default vars here (only one level of nesting is allowed)
+    WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
+    PASS_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, PASS_COMPANY_USERS]
+    SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
+    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
+    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+
+# Manually spawn a cluster and test the k8s upgrade path (w/ calico)
+docker-k8s-upgrade-manual:
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      when: manual
+    - if: $CI_COMMIT_REF_NAME == 'devel'
+      when: manual
+    - if: $CI_COMMIT_REF_NAME == 'stable'
+      when: manual
+    - when: never
+  extends: docker-k8s-upgrade
+  allow_failure: true
 
 pages:
   stage: deploy
