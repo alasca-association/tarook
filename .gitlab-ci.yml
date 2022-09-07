@@ -236,6 +236,7 @@ calico-rook-dualstack:
     - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":true}}"'
     - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   stage: spawn-cluster
+  retry: 2
   variables:
     TF_VAR_dualstack_support: "true"
 
@@ -262,6 +263,7 @@ k8s-upgrade-calico:
     - when: on_success
   extends: .test_upgrade_path_k8s_cluster
   stage: cluster-upgrades
+  retry: 2
   variables:
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
     # so we need to reference the default vars here (only one level of nesting is allowed)
@@ -301,6 +303,7 @@ calico-rook-containerd-dualstack:
   stage: spawn-cluster
   script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
+  retry: 2
   variables:
     TF_VAR_dualstack_support: "true"
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
