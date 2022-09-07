@@ -13,7 +13,6 @@ from copy import deepcopy
 from helpers import terraform_helper
 from helpers import pass_helper
 from helpers import wireguard_helper
-from helpers.legacy_converter import convert_legacy_config, prune
 
 # Path to the main configuration
 CONFIG_PATH = pathlib.Path("config/config.toml")
@@ -86,6 +85,22 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "vault": "yaook_vault",
     "nvidia": "nvidia",
 }
+
+
+def prune(
+    dictionary: typing.MutableMapping
+) -> typing.MutableMapping:
+    """
+    # Strip down a dictionary. This function removes all empty "branches"
+    # of a "dictionary tree", but keeps branches containing information
+    """
+    new_dictionary = {}
+    for key, value in dictionary.items():
+        if isinstance(value, dict):
+            value = prune(value)
+        if value not in (u'', None, {}):
+            new_dictionary[key] = value
+    return new_dictionary
 
 
 def cleanup_ansible_inventory(
@@ -295,20 +310,6 @@ def main():
     # Load the template config.template.toml
     with CONFIG_TEMPLATE_PATH.open("r") as fin:
         config_template = toml.load(fin)
-
-    # Check whether the config is in the legacy format
-    legacy_sections = ["ansible", "terraform", "secrets"]
-    if (set(config.keys()) == set(legacy_sections)):
-        print(
-            # "\N{older adult} "
-            "Looks like your config is past prime. "
-            "Taking care of the elderly now. Trying to rejuvenate it.")
-        # Start to process the legacy config
-        config = convert_legacy_config(
-            config,
-            CONFIG_PATH,
-            CONFIG_TEMPLATE_PATH
-        )
 
     # Check that the config contains only valid top sections
     unallowed_keys = set(config.keys()) - set(ALLOWED_TOP_LEVEL_SECTIONS)
