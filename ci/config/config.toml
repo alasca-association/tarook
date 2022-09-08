@@ -46,7 +46,7 @@ agent_port    = 15203
 
 [kubernetes]
 version                 = "1.22.11"
-is_gpu_cluster          = true
+is_gpu_cluster          = false
 
 [kubernetes.apiserver]
 frontend_port = 8888
@@ -72,7 +72,7 @@ nodeport      = 31911
 nodeport_name = "ch-k8s-global-monitoring"
 
 [kubernetes.network]
-plugin         = "kube-router"
+plugin         = "calico"
 pod_subnet     = "10.244.0.0/16"
 service_subnet = "10.96.0.0/12"
 
@@ -192,6 +192,7 @@ rollout = false
 
 [miscellaneous]
 wireguard_on_workers = false
+container_runtime = "containerd"
 
 custom_chrony_configuration = true
 custom_ntp_servers = [ "0.de.pool.ntp.org", "1.de.pool.ntp.org", "2.de.pool.ntp.org", "3.de.pool.ntp.org"]
