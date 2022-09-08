@@ -19,6 +19,7 @@
 #enable_az_management = false
 
 # Enable DualStack support
+# WARNING: DualStack support is not stable yet, see https://gitlab.com/yaook/k8s/-/issues/502
 dualstack_support = false # "•ᴗ•"
 # If you enabled DualStack-support you may want to adjust the IPv6 subnet
 #subnet_v6_cidr = "fd00::/120"
