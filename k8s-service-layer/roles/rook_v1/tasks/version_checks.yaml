@@ -14,7 +14,7 @@
   - name: Fail if the configured rook version is not supported
     vars:
       supported_rook_releases: "{{ rook_supported_releases | map(attribute='rook_release') }}"
-    fail: 
+    fail:
       msg: |
         The configured rook version is not supported. Please adjust your configuration.
         Configured version: {{ rook_conf_maj_min_version }}
