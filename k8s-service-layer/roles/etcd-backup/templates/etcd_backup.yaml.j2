@@ -2,7 +2,7 @@ schedule: "{{ etcd_backup_schedule }}"
 
 namespace: "{{ etcd_backup_namespace }}"
 
-metrics_port : etcd_backup_metrics_port
+metrics_port : "{{ etcd_backup_metrics_port }}"
 
 targets:
     s3:
