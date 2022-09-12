@@ -103,10 +103,12 @@ This triggers system updates of the host nodes (harbour infrastructure layer).
 That includes updates of the frontend nodes and as well as Kubernetes nodes.
 As this may be a disruptive action, you have to explicitly allow system updates by setting [`MANAGED_K8S_RELEASE_THE_KRAKEN`](./../usage/environmental-variables.md#behavior-altering-variables).
 Nodes will get updated one after another if they are already initialized.
+Between the node updates, it is verified that the cluster is healthy.
+These verification checks can be skipped by passing `-s`.
 
 ```console
 # Trigger system updates of nodes
-$ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/system_update_nodes.sh
+$ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/system_update_nodes.sh [-s]
 ```
 
 ## `destroy.sh`
