@@ -4,6 +4,18 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Support for Kubernetes v1.23
+
+The LCM now supports Kubernetes v1.23.
+One can either directly create a new cluster with that version or upgrade an existing one as usual via:
+
+```shell
+# Replace the patch version
+MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.23.11
+```
+
+Further information are given in the [Upgrading Kubernetes documentation](https://yaook.gitlab.io/k8s/operation/upgrading-kubernetes.html).
+
 ## config.toml: Introduce the mandatory option `[miscellaneous]/container_runtime`
 
 This must be set to `"docker"` for pre-existing clusters. New clusters
