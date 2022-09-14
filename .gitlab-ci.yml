@@ -251,6 +251,7 @@ docker-manual:
     - when: never
   extends: docker
   allow_failure: true
+  retry: 0
 
 # Spawn a cluster and test the k8s upgrade path (w/ calico)
 containerd-k8s-upgrade:
@@ -288,6 +289,7 @@ containerd-k8s-upgrade-manual:
     - when: never
   extends: containerd-k8s-upgrade
   allow_failure: true
+  retry: 0
 
 # Spawn a cluster with calico as CNI, containerd as CRI and
 # rook enabled (MR only)
@@ -325,6 +327,7 @@ containerd-manual:
     - when: never
   allow_failure: true
   extends: containerd
+  retry: 0
 
 # Spawn a cluster and test the k8s upgrade path (w/ calico)
 docker-k8s-upgrade:
@@ -366,6 +369,7 @@ docker-k8s-upgrade-manual:
     - when: never
   extends: docker-k8s-upgrade
   allow_failure: true
+  retry: 0
 
 pages:
   stage: deploy
