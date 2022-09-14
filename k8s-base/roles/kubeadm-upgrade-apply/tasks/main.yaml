@@ -36,3 +36,45 @@
       include_role:
         name: k8s-master
         tasks_from: remove_kube-proxy
+
+    - name: Remove featureGates for kube-proxy >= v1.23
+      become: yes
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      when:
+        - next_k8s_version is defined and next_k8s_version is version('1.23', '>=')
+      block:
+      - name: Patch kube-proxy to remove featureGates
+        k8s_info:
+          kind: ConfigMap
+          namespace: kube-system
+          name: kube-proxy
+        register: kube_proxy_configmap_old
+
+      - name: Patch the kube-proxy ConfigMap
+        vars:
+          kube_proxy_config_patched: "{{ kube_proxy_configmap_old['resources'][0]['data']['config.conf'] | replace('IPv6DualStack: false', '') }}"
+        k8s:
+          definition:
+            apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: kube-proxy
+              namespace: kube-system
+            data:
+              config.conf: |
+                {{ kube_proxy_config_patched }}
+        register: kube_proxy_configmap
+
+      - name: Trigger rollout restart kube-proxy
+        when: kube_proxy_configmap.changed
+        command:
+          argv:
+            - kubectl
+            - rollout
+            - restart
+            - ds
+            - kube-proxy
+            - -n
+            - kube-system
+
