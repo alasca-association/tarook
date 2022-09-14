@@ -4,6 +4,11 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## [Enable host key validation](https://gitlab.com/yaook/k8s/-/merge_requests/586)
+
+From now on, host keys will be validated.
+The known hosts file is cluster specific and stored in `$CLUSTER_REPO/inventory/.etc/ssh_known_hosts`.
+
 ## Implement automated docker to containerd migration
 
 A migration path to change the container runtime on each node of a cluster from docker to containerd has been added.
