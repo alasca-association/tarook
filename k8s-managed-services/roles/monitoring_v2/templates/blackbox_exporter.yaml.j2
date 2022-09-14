@@ -18,8 +18,6 @@ config:
       prober: tcp
       timeout: 5s
 
-allowIcmp: true
-
 serviceMonitor:
   enabled: true
   defaults:
@@ -94,3 +92,15 @@ prometheusRule:
       for: 1m
       labels:
         severity: warning
+
+## User and Group to run blackbox-exporter container as
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+# Add NET_RAW to enable ICMP
+    add: ["NET_RAW"]
