@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 actions_dir="$(realpath "$(dirname "$0")")"
 
