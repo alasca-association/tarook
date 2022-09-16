@@ -115,6 +115,7 @@
     release_namespace: "{{ yaook_vault_namespace }}"
     release_name: vault
     release_state: present
+    update_repo_cache: yes
     values:
       global:
         enabled: true

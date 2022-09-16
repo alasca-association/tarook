@@ -84,6 +84,7 @@
     release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'prometheus_stack.yaml.j2') | from_yaml }}"
     wait: no
+    update_repo_cache: yes
 
 # Install prometheus-adapter, a metrics-server implementation
 # It enables commands like `k top nodes`
@@ -97,6 +98,7 @@
     release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'prometheus_adapter.yaml.j2') | from_yaml }}"
     wait: no
+    update_repo_cache: yes
 
 
 - name: Install thanos

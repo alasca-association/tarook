@@ -9,6 +9,7 @@
     release_state: "{{ monitoring_internet_probe | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'blackbox_exporter.yaml.j2') | from_yaml }}"
     wait: yes
+    update_repo_cache: yes
 
 - name: Expose Prometheus with a NodePort
   when: k8s_monitoring_enabled and k8s_global_monitoring_enabled
@@ -82,3 +83,4 @@
     release_state: "{{ k8s_is_gpu_cluster | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'nvidia_dcgm_exporter.yaml.j2') | from_yaml }}"
     wait: yes
+    update_repo_cache: yes
