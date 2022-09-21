@@ -72,6 +72,33 @@ remove the suffix of the worker from the list. After removing, i.e.,
 For an auto-generated complete list of variables, please refer to
 :doc:`Terraform docs </usage/terraform-docs>`.
 
+To activate automatic migration of Terraform backup files to Gitlab,
+adapt the Terraform section of your ``config.toml``:
+set `gitlab_backend` to True,
+set the URL of the Gitlab project, and
+optionally change the name of the Gitlab state object.
+
+.. code:: toml
+
+   [terraform]
+   gitlab_backend    = true
+   gitlab_base_url   = "https://gitlab.com"
+   gitlab_project_id = "012345678"
+   gitlab_state_name = "tf-state"
+
+Put your Gitlab username and access token
+into the ``~/.config/yaook-k8s/env``.
+Your Gitlab access token must have
+at least Maintainer role and
+read/write access to the API.
+Please see GitLab documentation for creating a
+`personal access token <https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html>`__.
+
+.. code:: toml
+
+   export TF_HTTP_USERNAME="<gitlab-username>"
+   export TF_HTTP_PASSWORD="<gitlab-access-token>"
+
 Excerpt from ``templates/config.template-toml``:
 
 .. raw:: html

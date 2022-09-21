@@ -31,6 +31,22 @@ dualstack_support = false # "•ᴗ•"
 # Volume type that is used if `create_root_disk_on_volume` is true.
 #root_disk_volume_type = "three_times_replicated"
 
+# Enable GitLab-managed Terraform backend
+# If true, the Terraform state will be stored inside the provided gitlab project.
+# If set, the environment variables `TF_HTTP_USERNAME` and `TF_HTTP_PASSWORD`
+# must be configured in a separate file `~/.config/yaook-k8s/env`.
+#gitlab_backend = false
+
+# The base URL of your GitLab project.
+#gitlab_base_url = "https://gitlab.com"
+
+# The unique ID of your GitLab project.
+#gitlab_project_id = "01234567"
+
+# The name of the Gitlab state object in which to store the Terraform state.
+# Optional, defaults to "tf-state"
+#gitlab_state_name = "tf-state"
+
 # ANCHOR_END: terraform_config
 
 # ANCHOR: vault_configuration

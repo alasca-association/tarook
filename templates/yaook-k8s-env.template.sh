@@ -27,4 +27,11 @@ export TF_VAR_keypair='firstnamelastname-hostname-gendate'
 
 # Set to true if you are using rootless docker or podman
 #VAULT_IN_DOCKER_USE_ROOTLESS=true
+
+# Terraform backup on Gitlab: To store the state remotely in a gitlab repo,
+# Gitlab username and Gitlab token must be configured here.
+# The token needs API scope and at least maintainer permissions.
+#export TF_HTTP_USERNAME="<gitlab-username>"
+#export TF_HTTP_PASSWORD="<gitlab-access-token>"
+
 # Optional: You can also source your openrc from here.

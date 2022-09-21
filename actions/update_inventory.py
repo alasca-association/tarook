@@ -7,7 +7,7 @@ import os
 import collections
 import typing
 import errno
-
+import re
 from mergedeep import merge
 
 from helpers import terraform_helper
@@ -311,6 +311,19 @@ def main():
             )
         tf_config["monitoring_manage_thanos_bucket"] = use_thanos and \
             manage_thanos_bucket
+
+        if 'gitlab_backend' in tf_config and tf_config['gitlab_backend'] is True:
+            for var in ('TF_HTTP_USERNAME', 'TF_HTTP_PASSWORD'):
+                if var not in os.environ:
+                    raise ValueError(f"gitlab_backend is true, but {var} unset")
+
+            for var in ('gitlab_base_url', 'gitlab_project_id'):
+                if var not in tf_config:
+                    raise ValueError(f"gitlab_backend is true, but {var} unset")
+
+            if not re.match(r"https?:\/\/.*[^\/]$", tf_config['gitlab_base_url']):
+                raise ValueError("Provided gitlab_base_url is misformed.")
+
         terraform_helper.deploy_terraform_config(tf_config)
         # Pass the cluster name to inventory
         for stage in ["stage2", "stage3", "stage4"]:
