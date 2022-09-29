@@ -1,4 +1,4 @@
-{% from "jsonnet-tools.j2" import resource_constraints %}
+{% from "jsonnet-tools.j2" import resource_constraints, set_common_labels %}
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
 local sts = k.apps.v1.statefulSet;
 local deployment = k.apps.v1.deployment;
@@ -66,16 +66,10 @@ local affinity = {
   },
 } + tolerations;
 
-//local b = t.bucket + commonConfig + {
-//  config+:: {
-//    name: 'thanos-bucket',
-//    replicas: 1,
-//  },
-//};
-//
 local c = t.compact + t.compact.withVolumeClaimTemplate + t.compact.withServiceMonitor + t.compact.withRetention + t.compact.withResources + commonConfig + {
   config+:: {
     name: 'thanos-compact',
+{{ set_common_labels(monitoring_common_labels) }}
     replicas: 1,
     retentionResolutionRaw: '{{ monitoring_thanos_retention_resolution_raw }}',
     retentionResolution5m: '{{ monitoring_thanos_retention_resolution_5m }}',
@@ -120,25 +114,10 @@ local patched_compact = c + {
   },
 };
 
-//
-//local re = t.receive + t.receive.withVolumeClaimTemplate + t.receive.withServiceMonitor + commonConfig + {
-//  config+:: {
-//    name: 'thanos-receive',
-//    replicas: 1,
-//    replicationFactor: 1,
-//  },
-//};
-//
-//local ru = t.rule + t.rule.withVolumeClaimTemplate + t.rule.withServiceMonitor + commonConfig + {
-//  config+:: {
-//    name: 'thanos-rule',
-//    replicas: 1,
-//  },
-//};
-
 local s = t.store + t.store.withVolumeClaimTemplate + t.store.withServiceMonitor + t.store.withResources + commonConfig + {
   config+:: {
     name: 'thanos-store',
+{{ set_common_labels(monitoring_common_labels) }}
     replicas: 1,
     resources: {
       {% call resource_constraints(
@@ -163,6 +142,7 @@ local s = t.store + t.store.withVolumeClaimTemplate + t.store.withServiceMonitor
 local q = t.query + t.query.withServiceMonitor + t.query.withResources + commonConfig + {
   config+:: {
     name: 'thanos-query',
+{{ set_common_labels(monitoring_common_labels) }}
     replicas: 1,
     stores: [
       'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
@@ -189,15 +169,6 @@ local q = t.query + t.query.withServiceMonitor + t.query.withResources + commonC
   },
 };
 
-//local finalRu = ru {
-//  config+:: {
-//    queriers: ['dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [q.service.metadata.name, q.service.metadata.namespace]],
-//  },
-//};
-
-//{ ['thanos-bucket-' + name]: b[name] for name in std.objectFields(b) } +
 { ['thanos-compact-' + name]: patched_compact[name] for name in std.objectFields(c) } +
-//{ ['thanos-receive-' + name]: re[name] for name in std.objectFields(re) } +
-//{ ['thanos-rule-' + name]: finalRu[name] for name in std.objectFields(finalRu) } +
 { ['thanos-store-' + name]: s[name] for name in std.objectFields(s) } +
 { ['thanos-query-' + name]: q[name] for name in std.objectFields(q) }

@@ -16,3 +16,13 @@ limits+: {
 {% endif %}
 },
 {% endmacro %}
+
+{% macro set_common_labels(monitoring_common_labels) %}
+{% if monitoring_common_labels %}
+    commonLabels+: {
+{% for label_key, label_value in monitoring_common_labels.items() %}
+      {{ label_key | to_json }}: {{ label_value | to_json }},
+{% endfor %}
+    },
+{% endif %}
+{% endmacro %}

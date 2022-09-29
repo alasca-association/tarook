@@ -303,6 +303,8 @@ prometheus:
   enabled: true
   thanosService:
     enabled: {{ monitoring_use_thanos | bool }}
+  thanosServiceMonitor:
+    enabled: {{ monitoring_use_thanos | bool }}
   serviceMonitor:
     relabelings:
       - sourceLabels: [__meta_kubernetes_pod_node_name]
