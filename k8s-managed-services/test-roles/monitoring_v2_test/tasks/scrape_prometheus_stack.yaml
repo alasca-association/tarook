@@ -159,3 +159,29 @@
   retries: 60
   delay: 3
   loop: "{{ groups['k8s_nodes'] }}"
+
+- name: Check thanos endpoints
+  when: monitoring_use_thanos | bool
+  community.kubernetes.k8s_exec:
+    namespace: "{{ check_prometheus_scraping_namespace }}"
+    pod: prometheus-test-scraper
+    command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job={{ item.job | to_json }},container={{ item.container | to_json }}}'
+  register: metrics
+  until: |
+    metrics.failed == false and
+    metrics.rc == 0 and
+    metrics.stdout | from_json | json_query('status') == "success" and
+    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  retries: 60
+  delay: 3
+  loop:
+  # Look for both job and container. The thanos-sidecar is to blame because I don't consider 'prometheus-stack-kube-prom-thanos-discovery'
+  # to be a descriptive name for a ServiceMonitor :)
+    - job: thanos-compact
+      container: thanos-compact
+    - job: thanos-query
+      container: thanos-query
+    - job: thanos-store
+      container: thanos-store
+    - job: prometheus-stack-kube-prom-thanos-discovery
+      container: thanos-sidecar
