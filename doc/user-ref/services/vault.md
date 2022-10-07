@@ -15,7 +15,10 @@ and **must be stored safely and manually**, otherwise they're lost forever.
 
 ## Vault Configuraton
 
-```toml
-{{#include ../templates/config.template.toml:ksl_vault_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: ksl_vault_configuration"
+end-before: "# ANCHOR_END: ksl_vault_configuration"
+language: toml
+---
 ```
-

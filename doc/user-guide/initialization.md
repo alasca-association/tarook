@@ -106,8 +106,10 @@ serve as your [cluster repository](./../design/cluster-repository.md):
 
 ### Allowed cryptographic algorithms for SSH
 
-```yaml
-{{#include ./../templates/ssh-hardening-vars.yaml}}
+```{include} ./../templates/ssh-hardening-vars.yaml
+---
+code: yaml
+---
 ```
 
 ### SSH key generation

@@ -1,4 +1,4 @@
-# yk8s-Cluster Configuration
+# Configuration Reference
 
 The [environment variables](./environmental-variables.md) affect the [action scripts](./../operation/actions-references.md). The `config/config.toml` however is the main configuration file and can be adjusted to customize the yk8s cluster to fit your needs. It also contains operational flags which can trigger operational tasks. After [initializing a cluster repository](./initialization.md), the `config/config.toml` contains necessary (default) values to create a cluster. However, you'll still need to adjust some of them before triggering a cluster creation.
 
@@ -39,16 +39,24 @@ worker_names = ["0", "2"]
 <details>
 <summary>All Terraform variables and their defaults</summary>
 
-```
-{{#include ../templates/terraform_variables.tf:terraform_variables}}
+```{literalinclude} ../templates/terraform_variables.tf
+---
+start-after: "# ANCHOR: terraform_variables"
+end-before: "# ANCHOR_END: terraform_variables"
+language: terraform
+---
 ```
 </details>
 
 <details>
 <summary>config.toml: Terraform configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:terraform_config}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: terraform_config"
+end-before: "# ANCHOR_END: terraform_config"
+language: toml
+---
 ```
 </details>
 
@@ -63,8 +71,12 @@ The following section contains legacy load-balancing options which will probably
 <details>
 <summary>config.toml: Historic load-balancing configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:load-balancing_config}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: load-balancing_config"
+end-before: "# ANCHOR_END: load-balancing_config"
+language: toml
+---
 ```
 </details>
 
@@ -76,8 +88,12 @@ This section contains generic information about the Kubernetes cluster configura
 <details>
 <summary>config.toml: Kubernetes basic cluster configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:kubernetes_basic_cluster_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: kubernetes_basic_cluster_configuration"
+end-before: "# ANCHOR_END: kubernetes_basic_cluster_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -86,24 +102,36 @@ This section contains generic information about the Kubernetes cluster configura
 <details>
 <summary>config.toml: Kubernetes - Basic Storage Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:storage_base_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: storage_base_configuration"
+end-before: "# ANCHOR_END: storage_base_configuration"
+language: toml
+---
 ```
 </details>
 
 <details>
 <summary>config.toml: Kubernetes - Static Local Storage Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:storage_local_static_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: storage_local_static_configuration"
+end-before: "# ANCHOR_END: storage_local_static_configuration"
+language: toml
+---
 ```
 </details>
 
 <details>
 <summary>config.toml: Kubernetes - Dynamic Local Storage Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:storage_local_dynamic_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: storage_local_dynamic_configuration"
+end-before: "# ANCHOR_END: storage_local_dynamic_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -112,8 +140,12 @@ This section contains generic information about the Kubernetes cluster configura
 <details>
 <summary>config.toml: Kubernetes - Monitoring Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:kubernetes_monitoring_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: kubernetes_monitoring_configuration"
+end-before: "# ANCHOR_END: kubernetes_monitoring_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -122,25 +154,37 @@ This section contains generic information about the Kubernetes cluster configura
 It is possible to connect the monitoring stack of your yk8s-cluster to an external endpoint like e.g.
 a monitoring-cluster. The following section can be used to enable and configure that.
 
-> ***Note:*** This requires changes and therefore the (re-)appliance of all layers.
+```{Note}
+This requires changes and therefore the (re-)appliance of all layers.
+````
 
 <details>
 <summary>config.toml: Kubernetes - Global Monitoring Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:kubernetes_global_monitoring_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: kubernetes_global_monitoring_configuration"
+end-before: "# ANCHOR_END: kubernetes_global_monitoring_configuration"
+language: toml
+---
 ```
 </details>
 
 #### Network Configuration
 
-> ***Note:*** To enable the calico network plugin, `kubernetes.network.plugin` needs to be set to `calico`.
+```{Note}
+To enable the calico network plugin, `kubernetes.network.plugin` needs to be set to `calico`.
+````
 
 <details>
 <summary>config.toml: Kubernetes - Network Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:kubernetes_network_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: kubernetes_network_configuration"
+end-before: "# ANCHOR_END: kubernetes_network_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -148,13 +192,19 @@ a monitoring-cluster. The following section can be used to enable and configure 
 
 The LCM supports the customization of certain variables of `kubelet` for (meta-)worker nodes.
 
-> ***Note:*** Applying changes requires to enable [disruptive actions](./environmental-variables.md#behavior-altering-variables).
+```{Note}
+Applying changes requires to enable [disruptive actions](./environmental-variables.md#behavior-altering-variables).
+````
 
 <details>
 <summary>config.toml: Kubernetes - kubelet Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:kubernetes_kubelet_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: kubernetes_kubelet_configuration"
+end-before: "# ANCHOR_END: kubernetes_kubelet_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -165,8 +215,12 @@ Currently, this is only needed for yk8s clusters created via the yaook/metal-con
 <details>
 <summary>config.toml: Kubernetes - Continuous Join Key Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:kubernetes_continuous_join_key_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: kubernetes_continuous_join_key_configuration"
+end-before: "# ANCHOR_END: kubernetes_continuous_join_key_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -176,13 +230,19 @@ Currently, this is only needed for yk8s clusters created via the yaook/metal-con
 
 The used rook setup is explained in more detail [here](./../managed-services/rook/overview.md).
 
-> ***Note:*** To enable rook in a cluster on top of OpenStack, you need to set both `k8s-service-layer.rook.nosds` and `k8s-service-layer.rook.osd_volume_size`, as well as enable [`kubernetes.storage.rook_enabled` and either `kubernetes.local_storage.dynamic.enabled` or `kubernetes.local_storage.static.enabled` local storage](#storage-configuration) (or both).
+```{Note}
+To enable rook in a cluster on top of OpenStack, you need to set both `k8s-service-layer.rook.nosds` and `k8s-service-layer.rook.osd_volume_size`, as well as enable [`kubernetes.storage.rook_enabled` and either `kubernetes.local_storage.dynamic.enabled` or `kubernetes.local_storage.static.enabled` local storage](#storage-configuration) (or both).
+````
 
 <details>
 <summary>config.toml: KSL - Rook Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:ksl_rook_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: ksl_rook_configuration"
+end-before: "# ANCHOR_END: ksl_rook_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -190,13 +250,19 @@ The used rook setup is explained in more detail [here](./../managed-services/roo
 
 The used prometheus-based monitoring setup will be explained in more detail soon :)
 
-> ***Note:*** To enable prometheus, `k8s-serice-layer.prometheus.install` and `kubernetes.monitoring.enabled` need to be set to `true`.
+```{Note}
+To enable prometheus, `k8s-serice-layer.prometheus.install` and `kubernetes.monitoring.enabled` need to be set to `true`.
+````
 
 <details>
 <summary>config.toml: KSL - Prometheus Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:ksl_prometheus_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: ksl_prometheus_configuration"
+end-before: "# ANCHOR_END: ksl_prometheus_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -204,13 +270,19 @@ The used prometheus-based monitoring setup will be explained in more detail soon
 
 The used NGINX ingress controller setup will be explained in more detail soon :)
 
-> ***Note:*** To enable an ingress controller, `k8s-service-layer.ingress.enabled` needs to be set to `true`.
+```{Note}
+To enable an ingress controller, `k8s-service-layer.ingress.enabled` needs to be set to `true`.
+````
 
 <details>
 <summary>config.toml: KSL - NGINX Ingress Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:ksl_ingress_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: ksl_ingress_configuration"
+end-before: "# ANCHOR_END: ksl_ingress_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -218,12 +290,18 @@ The used NGINX ingress controller setup will be explained in more detail soon :)
 
 The used Cert-Manager controller setup will be explained in more detail soon :)
 
-> ***Note:*** To enable cert-manager, `k8s-service-layer.cert-manager.enabled` needs to be set to `true`.
+```{Note}
+To enable cert-manager, `k8s-service-layer.cert-manager.enabled` needs to be set to `true`.
+````
 <details>
 <summary>config.toml: KSL - Cert-Manager Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:ksl_cert_manager_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: ksl_cert_manager_configuration"
+end-before: "# ANCHOR_END: ksl_cert_manager_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -233,12 +311,18 @@ Automated etcd backups can be configured in this section. When enabled it period
 
 The usage of it is disabled by default but can be enabled (and configured) in the following section. The s3 config yaml file name **Must** be set when etcd backups are enabled. The file should be kept under `config/` dir and should be protected.
 
-> ***Note:*** To enable etcd-backup, `k8s-service-layer.etcd-backup.enabled` needs to be set to `true`.
+```{Note}
+To enable etcd-backup, `k8s-service-layer.etcd-backup.enabled` needs to be set to `true`.
+````
 <details>
 <summary>config.toml: KSL - Etcd-backup Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:etcd_backup_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: etcd_backup_configuration"
+end-before: "# ANCHOR_END: etcd_backup_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -250,8 +334,12 @@ More details about the labels and taints configuration can be found [here](./../
 <details>
 <summary>config.toml: KSL - Node-Scheduling: Labels and Taints Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:node_scheduling_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: node_scheduling_configuration"
+end-before: "# ANCHOR_END: node_scheduling_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -269,8 +357,12 @@ companies and organizations.
 <details>
 <summary>config.toml: Wireguard Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:wireguard_config}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: wireguard_config"
+end-before: "# ANCHOR_END: wireguard_config"
+language: toml
+---
 ```
 </details>
 
@@ -281,8 +373,12 @@ More details about the IPsec setup can be found [here](./../vpn/ipsec.md).
 <details>
 <summary>config.toml: IPsec Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:ipsec_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: ipsec_configuration"
+end-before: "# ANCHOR_END: ipsec_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -301,8 +397,12 @@ organizations.
 <details>
 <summary>config.toml: Passwordstore Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:passwordstore_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: passwordstore_configuration"
+end-before: "# ANCHOR_END: passwordstore_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -315,8 +415,12 @@ enabled (and configured) in the following section or via an [environment variabl
 <details>
 <summary>config.toml: ch-role-users Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:ch-role-users_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: ch-role-users_configuration"
+end-before: "# ANCHOR_END: ch-role-users_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -330,8 +434,12 @@ from different nodes. This is disabled by default as it requires some prethinkin
 <details>
 <summary>config.toml: Testing Nodes Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:testing_test_nodes_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: testing_test_nodes_configuration"
+end-before: "# ANCHOR_END: testing_test_nodes_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -343,8 +451,12 @@ the following section allows you to specify your own custom variables to be used
 <details>
 <summary>config.toml: Custom Configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:custom_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: custom_configuration"
+end-before: "# ANCHOR_END: custom_configuration"
+language: toml
+---
 ```
 </details>
 
@@ -356,8 +468,12 @@ You won't need to enable and adjust any of these under normal circumstances.
 <details>
 <summary>Miscellaneous configuration</summary>
 
-```toml
-{{#include ../templates/config.template.toml:miscellaneous_configuration}}
+```{literalinclude} ../templates/config.template.toml
+---
+start-after: "# ANCHOR: miscellaneous_configuration"
+end-before: "# ANCHOR_END: miscellaneous_configuration"
+language: toml
+---
 ```
 </details>
 
