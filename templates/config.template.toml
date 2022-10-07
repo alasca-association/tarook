@@ -974,6 +974,14 @@ container_runtime = "containerd"  # "•ᴗ•"
 #custom_ntp_pools = [ "0.pool.ntp.example.org", "1.pool.ntp.example.org"]
 #custom_ntp_servers = [ "0.server.ntp.example.org", "1.server.ntp.example.org"]
 
+# OpenStack credential checks
+# Terrible things will happen when certain tasks are run and OpenStack credentials are not sourced.
+# Okay, maybe not so terrible after all, but the templates do not check if certain values exist.
+# Hence config files with empty credentials are written. The LCM will execute a simple check to see
+# if you provided valid credentials as a sanity check iff you're on openstack and the flag below is set
+# to True.
+#check_openstack_credentials = True
+
 [nvidia.vgpu]
 # vGPU Support
 # If virtualize_gpu in the [kubernetes] section is set to true, please also set these variables:
