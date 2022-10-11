@@ -1,0 +1,47 @@
+---
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: etcd-metrics-proxy
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: etcd-proxy-metrics
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: etcd-proxy-metrics
+    spec:
+      tolerations:
+        - operator: Exists
+      hostNetwork: true
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+      containers:
+        - name: proxy
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+          image: "alpine/socat"
+          args:
+            - openssl-listen:12381,fork,reuseaddr,cert=/certs/server.crt,key=/certs/server.key,cafile=/certs/client.crt
+            - TCP4:127.0.0.1:2381
+          imagePullPolicy: "IfNotPresent"
+          ports: []
+          volumeMounts:
+            - name: certs
+              mountPath: /certs
+              readOnly: true
+      volumes:
+        - name: certs
+          secret:
+            secretName: etcd-metrics-proxy
+            items:
+              - key: client.crt
+                path: client.crt
+              - key: server.key
+                path: server.key
+              - key: server.crt
+                path: server.crt
+---

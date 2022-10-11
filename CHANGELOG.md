@@ -4,6 +4,10 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Observation of etcd
+
+Our monitoring stack now includes the observation of etcd. To fetch the metrics securely (cert-auth based), a thin socat-based proxy is installed inside the kube-system namespace.
+
 ## Support for Kubernetes v1.23
 
 The LCM now supports Kubernetes v1.23.
