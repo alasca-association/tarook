@@ -444,7 +444,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 # LCM will kindly throw an error message into your face in stage 4 and abort :).
 #
 # [0] https://gitlab.com/yaook/k8s/-/issues/436#note_873556688
-#use_thanos = true
+#use_thanos = false
 
 # Thanos uses local storage to keep a copy of the metadata from the object store
 # for faster access. The size and storage class for that volume can be
