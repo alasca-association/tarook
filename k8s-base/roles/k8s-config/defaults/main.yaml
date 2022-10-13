@@ -32,8 +32,6 @@ calico_version_minor: '{{ image_version_map[k8s_version_minor].calico_version | 
 # of versioning.
 image_version_map:
   "1.17":
-    local_volume:
-      local_volume_provisioner: "v2.3.4"
     kube_router:
       kube_router: "v1.1.0"
     openstack:
@@ -43,7 +41,6 @@ image_version_map:
       csi_provisioner: "v1.4.0"
       csi_resizer: "v0.3.0"
       csi_snapshotter: "v1.2.2"
-      local_volume_provisioner: "v2.3.4"
       openstack_cloud_controller_manager: "v1.19.1"
     rook:
       ceph: "v14.2.6"
@@ -52,8 +49,6 @@ image_version_map:
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.17.1') }}" # Version of Calico binaries and images to be deployed
 
   "1.18":
-    local_volume:
-      local_volume_provisioner: "v2.3.4"
     kube_router:
       kube_router: "v1.1.0"
     openstack:
@@ -63,7 +58,6 @@ image_version_map:
       csi_provisioner: "v1.4.0"
       csi_resizer: "v0.3.0"
       csi_snapshotter: "v1.2.2"
-      local_volume_provisioner: "v2.3.4"
       openstack_cloud_controller_manager: "v1.19.1"
     rook:
       ceph: "v14.2.6"
@@ -72,8 +66,6 @@ image_version_map:
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.17.1') }}" # Version of Calico binaries and images to be deployed
 
   "1.19":
-    local_volume:
-      local_volume_provisioner: "v2.3.4"
     kube_router:
       kube_router: "v1.1.0"
     openstack:
@@ -83,7 +75,6 @@ image_version_map:
       csi_provisioner: "v1.4.0"
       csi_resizer: "v0.3.0"
       csi_snapshotter: "v1.2.2"
-      local_volume_provisioner: "v2.3.4"
       openstack_cloud_controller_manager: "v1.19.1"
     rook:
       ceph: "v14.2.6"
@@ -92,8 +83,6 @@ image_version_map:
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.19.0') }}" # Version of Calico binaries and images to be deployed
 
   "1.20":
-    local_volume:
-      local_volume_provisioner: "v2.3.4"
     kube_router:
       kube_router: "v1.1.0"
     openstack:
@@ -103,7 +92,6 @@ image_version_map:
       csi_provisioner: "v1.4.0"
       csi_resizer: "v0.3.0"
       csi_snapshotter: "v1.2.2"
-      local_volume_provisioner: "v2.3.4"
       openstack_cloud_controller_manager: "v1.19.1"
     rook:
       ceph: "v14.2.6"
@@ -112,8 +100,6 @@ image_version_map:
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.19.0') }}" # Version of Calico binaries and images to be deployed
 
   "1.21":
-    local_volume:
-      local_volume_provisioner: "v2.3.4"
     kube_router:
       kube_router: "v1.1.0"
     openstack:
@@ -123,7 +109,6 @@ image_version_map:
       csi_provisioner: "v1.4.0"
       csi_resizer: "v0.3.0"
       csi_snapshotter: "v1.2.2"
-      local_volume_provisioner: "v2.3.4"
       openstack_cloud_controller_manager: "v1.19.1"
     rook:
       ceph: "v14.2.6"
@@ -132,8 +117,6 @@ image_version_map:
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.19.0') }}" # Version of Calico binaries and images to be deployed
 
   "1.22":
-    local_volume:
-      local_volume_provisioner: "v2.3.4"
     kube_router:
       kube_router: "v1.1.0"
     openstack:
@@ -152,8 +135,6 @@ image_version_map:
       csi_snapshotter: "v6.0.1"
       # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.6.0
       csi_livenessprobe: "v2.6.0"
-      # https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/releases/tag/v2.4.0
-      local_volume_provisioner: "v2.4.0"
     rook:
       ceph: "v14.2.6"
       operator: "v1.2.3"
@@ -161,8 +142,6 @@ image_version_map:
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.21.6') }}"
 
   "1.23":
-    local_volume:
-      local_volume_provisioner: "v2.4.0"
     kube_router:
       kube_router: "v1.5.1"
     openstack:
@@ -181,8 +160,6 @@ image_version_map:
       csi_snapshotter: "v6.0.1"
       # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.7.0
       csi_livenessprobe: "v2.7.0"
-      # https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/releases/tag/v2.5.0
-      local_volume_provisioner: "v2.5.0"
     rook:
       ceph: "v14.2.6"
       operator: "v1.2.3"
