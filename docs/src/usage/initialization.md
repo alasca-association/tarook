@@ -5,14 +5,18 @@
 <details>
 <summary>Install system package dependencies</summary>
 
-```console
-# managed-k8s system package dependencies
-$ sudo apt install python3-pip python3-venv \
-  python3-toml python3-cryptography moreutils \
-  jq wireguard pass
-```
-</details>
+yaook/k8s requires the following packages:
 
+- pip
+- jq
+- moreutils (for `sponge`)
+- wireguard
+- pass
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux)
+
+Please consult the documentation of your operation system to fulfill these dependencies.
+
+</details>
 
 <details>
 <summary>Install Jsonnet</summary>
