@@ -59,6 +59,6 @@ ANSIBLE_ROLES_PATH="$ansible_k8s_base_playbook/roles:$ansible_k8s_sl_playbook/ro
     ansible_playbook -i "$ansible_inventoryfile_03" "$playbook" \
     -e "next_k8s_version=$target_version" \
     -e "next_minor_k8s_version=$minor_version" \
-    -e '{"do_upgrade": true}' \
+    -e "do_upgrade=true" \
     -e "k8s_skip_upgrade_checks=${k8s_skip_upgrade_checks:-false}" \
     -e "ksl_vars_directory=$ansible_k8s_sl_vars_base"

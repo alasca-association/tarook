@@ -2,7 +2,7 @@
 - name: Configure and restart kubelet
   when: >
     ( _allow_disruption | default(False)
-        or do_upgrade | default(False)
+        or do_upgrade | default(False) | bool
         or _init_cluster | default(False))
     and not k8s_kubelet_disable_customizations | default(False)
   become: true

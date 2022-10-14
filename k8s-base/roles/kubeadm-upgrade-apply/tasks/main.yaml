@@ -1,7 +1,7 @@
 ---
 - name: kubeadm upgrade plan & apply
   become: true
-  when: do_upgrade
+  when: do_upgrade | bool
   block:
     - name: Run kubeadm upgrade plan  # noqa no-changed-when
       ansible.builtin.command:
