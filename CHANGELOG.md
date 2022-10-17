@@ -4,6 +4,14 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## OpenStack: Ensure that credentials are used
+
+https://gitlab.com/yaook/k8s/-/merge_requests/625 introduces the role `check-openstack-credentials` which fires a token request against the given Keystone endpoint to ensure that credentials are available. For details, check the commit messages. This sanity check can be skipped by either passing `-e check_openstack_credentials=False` to your call to `ansible-playbook` or by setting `check_openstack_credentials = True` in the `[miscellaneous]` section of your `config.toml`.
+
+## Thanos: Allow alternative object storage backends
+
+By providing `thanos_objectstorage_config_file` one can tell `thanos-{compact,store}` to use a specific (pre-configured) object storage backend (instead of using the bucket the LCM built for you). Please note that the usage of thanos still requires that the OpenStack installation provides a SWIFT backend. [That's a bug.](https://gitlab.com/yaook/k8s/-/issues/356)
+
 ## Observation of etcd
 
 Our monitoring stack now includes the observation of etcd. To fetch the metrics securely (cert-auth based), a thin socat-based proxy is installed inside the kube-system namespace.
@@ -49,3 +57,4 @@ The `init.sh`-script will move your enabled submodules into the `submodules/` di
 Otherwise at least the symlink to the [`ch-role-users`-role](k8s-base/roles/ch-role-users) will be broken.
 
 > **NOTE:** By re-executing the `init.sh`, the latest `devel` branch of the `managed-k8s`-module will be checked out under normal circumstances!
+
