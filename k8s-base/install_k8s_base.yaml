@@ -22,6 +22,8 @@
     tags: ssh-known-hosts
   - role: prepare-node
     tags: prepare-node
+  - role: configure-apt-proxy
+    tags: configure-apt-proxy
   - role: journald
     tags: journald
   - role: is-k8s-installed
