@@ -517,13 +517,24 @@ cluster_name = "rook-ceph" # •ᴗ•
 # default object store container name is set to the following.
 #thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
 
+# The following two variables are needed if you want thanos to use an object storage
+# backend which is not managed by the LCM.
+# Configuration file name which contains the credentials to access the (external) object storage
+# as backend for thanos. You can find valid configuration formats here: https://thanos.io/tip/thanos/storage.md/#supported-clients
+# NOTE: The configuration file is read relative to `thanos_objectstorage_config_path`.
+#thanos_objectstorage_config_file="thanos.yaml"
+
+# Path in which the LCM will look for your config file. Defaults to "./config/"
+# NOTE: you probably don't have to override this variable.
+#thanos_objectstorage_config_path = "{{ ksl_vars_directory }}/../../config/"
+
 # Use legacy jsonnet-based setup (monitoring_v1).
 # The jsonnet-based monitoring setup will get removed soon™
 # https://github.com/prometheus-operator/kube-prometheus
 #use_jsonnet_setup = false
 
 # Include migration tasks
-# migrate_from_v1 = false
+#migrate_from_v1 = false
 
 # Scrape external targets via blackbox exporter
 # https://github.com/helm/charts/tree/master/stable/prometheus-blackbox-exporter
@@ -973,6 +984,14 @@ container_runtime = "containerd"  # "•ᴗ•"
 #custom_chrony_configuration = false
 #custom_ntp_pools = [ "0.pool.ntp.example.org", "1.pool.ntp.example.org"]
 #custom_ntp_servers = [ "0.server.ntp.example.org", "1.server.ntp.example.org"]
+
+# OpenStack credential checks
+# Terrible things will happen when certain tasks are run and OpenStack credentials are not sourced.
+# Okay, maybe not so terrible after all, but the templates do not check if certain values exist.
+# Hence config files with empty credentials are written. The LCM will execute a simple check to see
+# if you provided valid credentials as a sanity check iff you're on openstack and the flag below is set
+# to True.
+#check_openstack_credentials = True
 
 [nvidia.vgpu]
 # vGPU Support

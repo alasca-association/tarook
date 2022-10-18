@@ -4,7 +4,6 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-
   block:
   - name: Configure LBaaS controller
     k8s:

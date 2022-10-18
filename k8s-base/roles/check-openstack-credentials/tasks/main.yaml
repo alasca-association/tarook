@@ -1,0 +1,36 @@
+- name: Check OpenStack credentials
+  when: ((on_openstack | default(False)) | bool) and ((check_openstack_credentials | default(True)) | bool)
+  delegate_to: localhost
+  run_once: yes
+  become: false
+  block:
+  - name: Are we using application credentials?
+    set_fact:
+      using_app_creds: "{{ (lookup('env', 'OS_AUTH_TYPE') | default('v3password')) == 'v3applicationcredential' }}"
+  - name: Attempt to get a keystone token to validate the existence of credentials
+    ansible.builtin.uri:
+      url: "{{ lookup('env', 'OS_AUTH_URL') }}/auth/tokens"
+      validate_certs: yes
+      return_content: yes
+      method: POST
+      status_code: 201 # "Created"
+      headers:
+        Content-Type: application/json
+      body_format: json
+      body: "{{ lookup('template', 'keystone_request.json.j2') }}"
+    register: response
+    ignore_errors: True
+  - name: Something went wrong with the token request
+    when: response.failed
+    fail:
+      msg: |
+        Something looks wrong with the OpenStack credentials you've provided because
+        the task couldn't create a keystone token. Maybe you forgot to source them?
+        If you think you know better, e.g., you know what you're doing or this is a
+        network problem, disable this check by passing `-e check_openstack_credentials=false`
+        via the CLI or by setting this flag in the `[miscellaneous]` section of your
+        config.toml.
+        Note: The keystone token is not used anywhere and its creation acts as a sanity
+        check because just checking for the existence of certain variables is cumbersome.
+        This test is necessary because otherwise certain tasks will write nonesense configs
+        if the openrc is not sourced.
