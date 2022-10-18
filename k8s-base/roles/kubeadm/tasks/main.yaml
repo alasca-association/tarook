@@ -56,7 +56,11 @@
         dest: /etc/apt/sources.list.d/kubernetes.list
         content: |
           {{ _auto_generated_preamble }}
+          {% if apt_proxy_url is defined %}
+          deb http://apt.kubernetes.io/ kubernetes-xenial main
+          {% else %}
           deb https://apt.kubernetes.io/ kubernetes-xenial main
+          {% endif %}
         owner: root
         group: root
         mode: 0640
