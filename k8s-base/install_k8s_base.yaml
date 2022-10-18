@@ -7,6 +7,22 @@
   roles:
   - validate_configuration
 
+- name: Establish connectivity to all nodes
+  hosts: all
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  roles:
+  - role: detect_user
+    tags:
+    - detect_user
+    - ssh-known-hosts
+    any_errors_fatal: true
+  - role: prepare-node
+    tags: prepare-node
+
 - name: Initial node bootstrap
   hosts: k8s_nodes
   gather_facts: false
@@ -14,13 +30,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
-  - vars/retries.yaml
   roles:
-  - role: detect_user
-    tags: detect_user
-    any_errors_fatal: true
-  - role: prepare-node
-    tags: prepare-node
   - role: journald
     tags: journald
   - role: is-k8s-installed

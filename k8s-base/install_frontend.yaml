@@ -7,7 +7,7 @@
   roles:
   - validate_configuration
 
-- name: Establish connectivity to the nodes
+- name: Establish connectivity to frontend nodes
   hosts: frontend
   gather_facts: false
   vars_files:
