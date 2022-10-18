@@ -12,11 +12,11 @@ http:
 
 {% if install_node_online_mode %}
 proxy:
-  remoteurl: {{ item.remoteurl | to_json }}
-{%   if 'username' in item %}
-  username: {{ item.mirror.username | to_json }}
+  remoteurl: {{ item.upstream | to_json }}
+{%   if 'upstream_username' in item %}
+  username: {{ item.upstream_username | to_json }}
 {%   endif %}
-{%   if 'password' in item %}
-  password: {{ item.mirror.password | to_json }}
+{%   if 'upstream_password' in item %}
+  password: {{ item.upstream_password | to_json }}
 {%   endif %}
 {% endif %}

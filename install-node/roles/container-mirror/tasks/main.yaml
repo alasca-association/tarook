@@ -48,7 +48,13 @@
     owner: root
     group: root
 
+- name: Fetch the certificate
+  fetch:
+    src: /etc/install-node/registry/tls/cert.pem
+    dest: "{{ etc_dir }}/install-node-mirror-ca.pem"
+    flat: yes
+
 # assert the docker image is there!
 - name: Setup image mirrors
   include_tasks: setup_image_mirror.yaml
-  loop: "{{ install_node_mirrored_registries }}"
+  loop: "{{ container_mirrors }}"

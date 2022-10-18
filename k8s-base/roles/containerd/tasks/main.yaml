@@ -83,6 +83,16 @@
     owner: root
     group: root
 
+- name: Store the container mirror CA
+  become: yes
+  file:
+    path: /etc/containerd/mirror-ca.pem
+    mode: 0755
+    owner: root
+    group: root
+    contents: "{{ container_mirror_ca }}"
+  when: "container_mirror_ca"
+
 - name: Configure container mirrors
   become: yes
   # NOTE: containerd need not be reloaded for changes to the mirrors
