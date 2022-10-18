@@ -18,6 +18,7 @@
   roles:
   - role: detect_user
     tags: detect_user
+    any_errors_fatal: true
   - role: prepare-node
     tags: prepare-node
   - role: journald
