@@ -42,3 +42,4 @@
             https: "{{ k8s_ingress_nodeport_https }}"
         extraArgs:
           enable-ssl-passthrough: "{{ k8s_ingress_enable_ssl_passthrough }}"
+        priorityClassName: "system-cluster-critical"

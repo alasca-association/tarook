@@ -29,6 +29,8 @@
     update_repo_cache: yes
     values:
       installCRDs: true
+      global:
+        priorityClassName: system-cluster-critical
       affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') }}"
       tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') }}"
       cainjector:

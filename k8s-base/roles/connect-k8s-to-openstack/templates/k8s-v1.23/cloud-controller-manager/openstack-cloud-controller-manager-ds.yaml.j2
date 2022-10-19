@@ -24,6 +24,7 @@ spec:
       labels:
         k8s-app: openstack-cloud-controller-manager
     spec:
+      priorityClassName: system-node-critical
       nodeSelector:
         node-role.kubernetes.io/control-plane: ""
       securityContext:

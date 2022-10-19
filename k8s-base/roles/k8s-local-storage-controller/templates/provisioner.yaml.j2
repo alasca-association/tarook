@@ -111,6 +111,7 @@ massive chaos. As a workaround, we freeze the version field of the pods and
 add a new actually-version field for informational purposes. #}
         app.kubernetes.io/actually-version: {{ k8s_local_storage_static_version | to_json }}
     spec:
+      priorityClassName: system-node-critical
       serviceAccountName: local-storage
 {% if k8s_local_storage_static_nodeplugin_toleration %}
       tolerations:

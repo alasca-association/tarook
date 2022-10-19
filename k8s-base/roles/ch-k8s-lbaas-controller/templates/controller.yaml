@@ -20,6 +20,7 @@ spec:
       labels:
         app: ch-k8s-lbaas-controller
     spec:
+      priorityClassName: system-cluster-critical
       containers:
       - name: controller
         image: {{ ch_k8s_lbaas_controller_image | to_json }}
