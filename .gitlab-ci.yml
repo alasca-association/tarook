@@ -201,16 +201,19 @@ vault-container-test:
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"false\"}}}"'
     # Disable Cert-Manager (Requires k8s >= v1.20)
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"cert-manager\":{\"enabled\":\"false\"}}}"'
+    # We can't use vault without cert-manager
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"vault\":{\"enabled\":\"false\"}}}"'
     # Spawn and test cluster
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
     # Upgrade cluster to k8s v1.20.15
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.20.15
     # Update k8s version
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.20.15\"}}"'
-    # Install ingress & cert-manager after upgrading to k8s v1.20
+    # Install ingress, cert-manager & vault after upgrading to k8s v1.20
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"true\"}}}"'
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"cert-manager\":{\"enabled\":\"true\"}}}"'
-  - AFLAGS="-t mk8s-sl/ingress,mk8s-sl/cert-manager" ./managed-k8s/actions/apply-stage4.sh
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"vault\":{\"enabled\":\"true\"}}}"'
+  - AFLAGS="-t mk8s-sl/ingress,mk8s-sl/cert-manager,mk8s-sl/vault" ./managed-k8s/actions/apply-stage4.sh
     # Upgrade cluster to k8s v1.21.14
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.21.14
     # Update k8s version
