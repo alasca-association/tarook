@@ -17,14 +17,14 @@
     - test-mk8s-ms/monitoring_v1
     - check-mk8s-ms/monitoring_v1
     - monitoring_v1_test
-    when: k8s_monitoring_enabled and (monitoring_use_jsonnet_setup | default(False))
+    when: (k8s_monitoring_enabled | bool) and (monitoring_use_jsonnet_setup | default(False))
 
   - role: monitoring_v2_test
     tags:
     - test-mk8s-ms/monitoring_v2
     - check-mk8s-ms/monitoring_v2
     - monitoring_v2_test
-    when: k8s_monitoring_enabled and not (monitoring_use_jsonnet_setup | default(False))
+    when: (k8s_monitoring_enabled | bool) and not (monitoring_use_jsonnet_setup | default(False))
 
   - role: device_plugin_v1_test
     tags:
