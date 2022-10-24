@@ -72,6 +72,17 @@ grafana:
               - key: "{{ monitoring_scheduling_key }}"
                 operator: Exists
 {% endif %}
+{% if monitoring_grafana_persistent_storage_class %}
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: "app.kubernetes.io/name"
+            operator: In
+            values:
+            - "grafana"
+        topologyKey: "kubernetes.io/hostname"
+{% endif %}
   datasources:
     datasources.yaml:
       apiVersion: 1
