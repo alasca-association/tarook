@@ -222,10 +222,10 @@ vault-container-test:
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.22.12
     # Update k8s version
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.22.12\"}}"'
-    # Upgrade cluster to k8s v1.23.9
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.23.9
+    # Upgrade cluster to k8s v1.23.13
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.23.13
     # Update k8s version
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.23.9\"}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.23.13\"}}"'
     # Retest the cluster
   - ./managed-k8s/actions/test.sh
   after_script:
