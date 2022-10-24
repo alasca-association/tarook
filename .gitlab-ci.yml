@@ -33,7 +33,7 @@ shellcheck:
 
 ansible-lint:
   image:
-    name: cytopia/ansible-lint:5
+    name: cytopia/ansible-lint:5-0.6
     entrypoint: ["/bin/sh", "-c"]
   stage: lint
   script:
