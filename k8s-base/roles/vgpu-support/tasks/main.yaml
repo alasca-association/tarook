@@ -27,6 +27,9 @@
         dest: /etc/default/grub.d/enable_iommu.cfg
         content: |
           GRUB_CMDLINE_LINUX="{{ cpu_type }}_iommu=on iommu=pt .modeset=0 rd.driver.pre=vfio-pci video=vesafb:off"
+        owner: root
+        group: root
+        mode: 0644
       register: grub_config
 
     - name: Update GRUB
@@ -135,7 +138,12 @@
       command: "/usr/lib/nvidia/sriov-manage -e ALL"
 
     - name: install nvidia-sriov-manage systemd unit file
-      template: src=nvidia-sriov-manage.service.j2 dest=/etc/systemd/system/nvidia-sriov-manage.service
+      template:
+        src: nvidia-sriov-manage.service.j2
+        dest: /etc/systemd/system/nvidia-sriov-manage.service
+        owner: root
+        group: root
+        mode: 0644
 
     - name: create sriov-loop script (used by nvidia-sriov-manage systemd unit)
       template:
