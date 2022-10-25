@@ -4,6 +4,10 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Decoupling thanos and terraform
+
+When enabling thanos, one can now prevent terraform from creating a bucket in the same OpenStack project by setting `manage_thanos_bucket=false` in the `[k8s-service-layer.prometheus]`. Then it's up to the user to manage the bucket by configuring an alternative storage backend.
+
 ## OpenStack: Ensure that credentials are used
 
 https://gitlab.com/yaook/k8s/-/merge_requests/625 introduces the role `check-openstack-credentials` which fires a token request against the given Keystone endpoint to ensure that credentials are available. For details, check the commit messages. This sanity check can be skipped by either passing `-e check_openstack_credentials=False` to your call to `ansible-playbook` or by setting `check_openstack_credentials = True` in the `[miscellaneous]` section of your `config.toml`.

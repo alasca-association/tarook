@@ -200,7 +200,7 @@ variable "network_mtu" {
   description = "MTU for the network used for the cluster."
 }
 
-variable "monitoring_use_thanos" {
+variable "monitoring_manage_thanos_bucket" {
   type = bool
   default = false
   description = "Create an object storage container for thanos."

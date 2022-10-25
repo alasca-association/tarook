@@ -446,6 +446,13 @@ cluster_name = "rook-ceph" # •ᴗ•
 # [0] https://gitlab.com/yaook/k8s/-/issues/436#note_873556688
 #use_thanos = false
 
+# Let terraform create an object storage container / bucket for you if `true`.
+# If set to `false` one must provide a value for `thanos_objectstorage_config_file` to configure an external backend.
+# NOTE: If `thanos_objectstorage_config_file` is set, then it (`thanos_objectstorage_config_file`) will take precedence, i.e.,
+#       thanos will use the external config although terraform creates the bucket. This has historic reasons [0].
+# [0] https://gitlab.com/yaook/k8s/-/merge_requests/635
+#manage_thanos_bucket = true
+
 # Thanos uses local storage to keep a copy of the metadata from the object store
 # for faster access. The size and storage class for that volume can be
 # configured:
@@ -520,9 +527,13 @@ cluster_name = "rook-ceph" # •ᴗ•
 # The following two variables are needed if you want thanos to use an object storage
 # backend which is not managed by the LCM.
 # Configuration file name which contains the credentials to access the (external) object storage
-# as backend for thanos. You can find valid configuration formats here: https://thanos.io/tip/thanos/storage.md/#supported-clients
+# as backend for thanos. You can find valid configuration formats here [0]
 # NOTE: The configuration file is read relative to `thanos_objectstorage_config_path`.
-#thanos_objectstorage_config_file="thanos.yaml"
+# NOTE: This variable takes precedence over `manage_thanos_bucket`. If it's set, then thanos will always use the credentials from this file.
+#       See the discussions in [1] for more details.
+# [0] https://thanos.io/tip/thanos/storage.md/#supported-clients
+# [1] https://gitlab.com/yaook/k8s/-/merge_requests/635
+#thanos_objectstorage_config_file=""
 
 # Path in which the LCM will look for your config file. Defaults to "./config/"
 # NOTE: you probably don't have to override this variable.

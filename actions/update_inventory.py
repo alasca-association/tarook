@@ -345,15 +345,25 @@ def main():
     if (os.getenv('TF_USAGE', 'true') == 'true'):
         print_process_state("Terraform")
         tf_config = config.get("terraform")
-        # If we want to use thanos, then terraform has to create
-        # an object storage container. This variable is set in an upper stage
+        # If we want to use thanos, then the user can decide if terraform should create
+        # an object storage container. These variables are set in an upper stage
         # and cannot be made available easily to tf except for making the user
-        # provide an additional variable. Therefore we're picking it here and
-        # insert it ourselves.
-        # Note: terraform provides a default so let's not impose any on our side
-        if "use_thanos" in config["k8s-service-layer"].get("prometheus"):
-            tf_config["monitoring_use_thanos"] = \
-                config["k8s-service-layer"].get("prometheus").get("use_thanos")
+        # provide an additional variable. Therefore we're picking them here and
+        # insert them ourselves.
+        prom_config = config["k8s-service-layer"].get("prometheus")
+        use_thanos = prom_config.get("use_thanos", False)
+        manage_thanos_bucket = prom_config.get("manage_thanos_bucket", True)
+        conf_file = prom_config.get("thanos_objectstorage_config_file", False)
+        if use_thanos and not (manage_thanos_bucket or conf_file):
+            raise ValueError(
+                "You enabled thanos (`use_thanos=true`) and you told terraform to not"
+                "create a bucket for you (`manage_thanos_bucket=false`)\n"
+                "but you didn't provide a config file to an external bucket"
+                "(`thanos_objectstorage_config_file=''`) either.\n"
+                "Where is thanos supposed to write its metrics to? ;-(\n"
+            )
+        tf_config["monitoring_manage_thanos_bucket"] = use_thanos and \
+            manage_thanos_bucket
         terraform_helper.deploy_terraform_config(tf_config)
 
     # ---
