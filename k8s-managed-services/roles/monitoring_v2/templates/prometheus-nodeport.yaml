@@ -8,8 +8,13 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - nodePort: {{ k8s_global_monitoring_nodeport | to_json }}
+    - name: prometheus
+      nodePort: {{ k8s_global_monitoring_nodeport | to_json }}
       port: 9090 # Prometheus
+      protocol: TCP
+    - name: sidecar
+      nodePort: {{ k8s_global_monitoring_nodeport_sidecar | to_json }}
+      port: 10901 # Sidecar gRPC endpoint
       protocol: TCP
   selector:
     prometheus: prometheus-stack-kube-prom-prometheus

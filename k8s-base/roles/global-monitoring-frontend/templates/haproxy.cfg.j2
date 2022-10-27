@@ -27,3 +27,29 @@ backend k8s_prometheus_back
   server {{ host }} {{ hostvars[host]['local_ipv6_address'] }}:{{ k8s_global_monitoring_nodeport }} check verify none
   {% endif %}
   {% endfor %}
+
+frontend k8s_prometheus_sidecar_front
+  bind {{ networking_fixed_ip }}:{{ k8s_global_monitoring_nodeport_sidecar }}
+  {% if dualstack_support %}
+  bind {{ networking_fixed_ip_v6 }}:{{ k8s_global_monitoring_nodeport_sidecar }} transparent
+  {% endif %}
+  mode tcp
+  log global
+  option tcplog
+  timeout client 600s
+  default_backend k8s_prometheus_sidecar_back
+
+backend k8s_prometheus_sidecar_back
+  mode tcp
+  option redispatch
+  log global
+  balance roundrobin
+  timeout connect 10s
+  timeout server 600s
+
+  {% for host in groups['masters'] %}
+  server {{ host }} {{ hostvars[host]['local_ipv4_address'] }}:{{ k8s_global_monitoring_nodeport_sidecar }} check verify none
+  {% if dualstack_support %}
+  server {{ host }} {{ hostvars[host]['local_ipv6_address'] }}:{{ k8s_global_monitoring_nodeport_sidecar }} check verify none
+  {% endif %}
+  {% endfor %}
