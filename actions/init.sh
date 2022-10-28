@@ -132,8 +132,9 @@ fi
 
 if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then
     mkdir -p "$ansible_inventory_base/99_custom"
+    mkdir -p "$ansible_k8s_custom_playbook"
 
-    ln -sf ../02_trampoline/hosts inventory/99_custom/hosts
+    ln -sf ../03_k8s_base/hosts inventory/99_custom/hosts
 
     if [ ! -d "$ansible_k8s_custom_playbook/inventory" ]; then
         cp -r "$code_repository/k8s-managed-services/inventory" "$ansible_k8s_custom_playbook/inventory"
