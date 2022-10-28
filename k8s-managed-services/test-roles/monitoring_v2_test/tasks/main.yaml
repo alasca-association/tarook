@@ -1,4 +1,7 @@
 ---
+- name: Test the metrics API
+  include_tasks: scrape_metrics_api.yaml
+
 - name: Run the test
   block:
   - name: Discover IP address of prometheus service
