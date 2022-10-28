@@ -19,18 +19,18 @@ submodule_passwordstore_users_git="${MANAGED_K8S_PASSWORDSTORE_USER_GIT:-git@git
 submodule_ch_role_users_repo_name="ch-role-users"
 submodule_ch_role_user_git="${MANAGED_CH_ROLE_USER_GIT:-git@gitlab.cloudandheat.com:operations/ansible-roles/ch-role-users.git}"
 
-if [ ! "$actions_dir" == "./managed-k8s/actions" ]; then
+if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 	if [ ! -d "$submodule_managed_k8s_name" ]; then
 		run git submodule add "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
 	else
-		pushd "$cluster_repository"/managed-k8s > /dev/null
+		pushd "$cluster_repository/$submodule_managed_k8s_name" > /dev/null
 		run git remote set-url origin "$submodule_managed_k8s_url"
 		popd > /dev/null
 	fi
 else
-	echo ""
-	notef 'Skipping managed-k8s submodule..'
-	echo ""
+	echo ''
+	notef "Skipping $submodule_managed_k8s_name submodule.."
+	echo ''
 fi
 
 # Create submodule directory
@@ -93,7 +93,7 @@ if [ "${SSH_COMPANY_USERS:-true}" == "true" ]; then
   fi
 fi
 
-if [ ! "$actions_dir" == "./managed-k8s/actions" ]; then
+if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     run git submodule update --init --recursive
 fi
 
@@ -107,8 +107,8 @@ if [ "$(realpath "$new_actions_dir")" != "$(realpath "$actions_dir")" ]; then
     else
         # huh? no executable init.sh in the cloned repository. weird, but let’s
         # continue.
-        warningf 'no executable init.sh action in the managed-k8s submodule'
-        hintf 'this means that the cloned managed-k8s submodule is unexpectedly old'
+        warningf "no executable init.sh action in the $submodule_managed_k8s_name submodule"
+        hintf "this means that the cloned $submodule_managed_k8s_name submodule is unexpectedly old"
         hintf 'we will try continue to operate using the init.sh you called initially\n\n'
 
         # reload all variables with the new base
@@ -126,7 +126,7 @@ fi
 mkdir -p config
 cp "$code_repository/templates/template.gitignore" .gitignore
 cp --no-clobber "$code_repository/templates/config.template.toml" config/config.toml
-if [ ! $actions_dir == "./managed-k8s/actions" ]; then
+if [ ! $actions_dir == "./$submodule_managed_k8s_name/actions" ]; then
 	run git add .gitignore config/config.toml
 fi
 
@@ -146,7 +146,7 @@ if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then
     fi
 fi
 
-if [ ! $actions_dir == "./managed-k8s/actions" ]; then
+if [ ! $actions_dir == "./$submodule_managed_k8s_name/actions" ]; then
 	notef 'cluster repository initialised successfully!'
 	notef 'You should now update config/config.toml as needed and '
 	notef 'then run git commit -v to check and commit your changes'
