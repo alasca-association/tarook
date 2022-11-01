@@ -128,42 +128,6 @@
     - name: kubeadm-uncordon-node
       when: "not (k8s_upgrade_done | default(False))"
 
-- name: Update Calico (Control Plane)
-  hosts: masters
-  vars_files:
-    - ../vars/disruption.yaml
-    - ../vars/auto_generated_preamble.yaml
-    - ../vars/etc.yaml
-  vars:
-    k8s_version: "{{ next_k8s_version }}"
-  roles:
-    - role: calico-control-plane
-      tags:
-      - calico
-      - calico-control-plane
-      when: k8s_network_plugin == 'calico'
-    - role: calico-worker
-      tags:
-      - calico
-      - calico-control-plane
-      - calico-worker
-      when: k8s_network_plugin == 'calico'
-
-- name: Update Calico (Worker)
-  hosts: workers
-  vars_files:
-    - ../vars/disruption.yaml
-    - ../vars/auto_generated_preamble.yaml
-    - ../vars/etc.yaml
-  vars:
-    k8s_version: "{{ next_k8s_version }}"
-  roles:
-    - role: calico-worker
-      tags:
-        - calico
-        - calico-worker
-      when: k8s_network_plugin == 'calico'
-
 - name: Final upgrade note
   gather_facts: false
   hosts: masters[0]
