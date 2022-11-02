@@ -133,13 +133,10 @@
   run_once: true # to avoid redundant appliance
   vars_files:
     - ../vars/auto_generated_preamble.yaml # needed for the cloud.config secret
-  tasks:
-    - name: Install updated components
+  roles:
+    - role: connect-k8s-to-openstack
       when: on_openstack | default(False) | bool
-      include_role:
-        name: connect-k8s-to-openstack
-      vars:
-        k8s_version: "{{ next_k8s_version }}"
+      k8s_version: "{{ next_k8s_version }}"
 
 - name: Update Calico (Control Plane)
   hosts: masters
@@ -147,20 +144,20 @@
     - ../vars/disruption.yaml
     - ../vars/auto_generated_preamble.yaml
     - ../vars/etc.yaml
-  vars:
-    k8s_version: "{{ next_k8s_version }}"
   roles:
     - role: calico-control-plane
       tags:
       - calico
       - calico-control-plane
       when: k8s_network_plugin == 'calico'
+      k8s_version: "{{ next_k8s_version }}"
     - role: calico-worker
       tags:
       - calico
       - calico-control-plane
       - calico-worker
       when: k8s_network_plugin == 'calico'
+      k8s_version: "{{ next_k8s_version }}"
 
 - name: Update Calico (Worker)
   hosts: workers
@@ -176,6 +173,7 @@
         - calico
         - calico-worker
       when: k8s_network_plugin == 'calico'
+      k8s_version: "{{ next_k8s_version }}"
 
 - name: Final upgrade note
   gather_facts: false
