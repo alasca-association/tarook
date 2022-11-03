@@ -80,7 +80,6 @@
     release_namespace: "{{ etcd_backup_namespace }}"
     release_name: "{{ etcd_backup_name }}"
     release_state: present
-    update_repo_cache: yes
     values: "{{ lookup('template', 'etcd_backup.yaml.j2') | from_yaml }}"
   when: bucket_info.buckets | length > 0
   register: task_result

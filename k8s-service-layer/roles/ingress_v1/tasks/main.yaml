@@ -27,7 +27,6 @@
     release_namespace: "{{ k8s_ingress_namespace }}"
     release_name: ingress
     release_state: "{{ k8s_ingress_install | ternary('present', 'absent') }}"
-    update_repo_cache: yes
     values:
       defaultBackend:
         affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') }}"

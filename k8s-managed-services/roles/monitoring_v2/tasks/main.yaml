@@ -9,7 +9,6 @@
     release_state: "{{ monitoring_internet_probe | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'blackbox_exporter.yaml.j2') | from_yaml }}"
     wait: yes
-    update_repo_cache: yes
   register: task_result
   until: task_result.failed == false
   retries: "{{ network_error_retries }}"
@@ -110,7 +109,6 @@
     release_state: "{{ k8s_is_gpu_cluster | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'nvidia_dcgm_exporter.yaml.j2') | from_yaml }}"
     wait: yes
-    update_repo_cache: yes
   register: task_result
   until: task_result.failed == false
   retries: "{{ network_error_retries }}"

@@ -1,13 +1,3 @@
-- name: Update the helm repository cache
-  kubernetes.core.helm:
-    name: dummy
-    namespace: kube-system
-    state: absent
-    update_repo_cache: true
-  register: task_result
-  until: task_result.failed == false
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
 # AppVersion determines the version of CRDs that are to be applied
 # There is no equivalent of `helm show chart` in any Ansible Helm modules
 # therefore we have to use command instead of helm module
@@ -18,7 +8,9 @@
     - helm
     - show
     - chart
-    - prometheus-community/kube-prometheus-stack
+    - --repo
+    - https://prometheus-community.github.io/helm-charts
+    - kube-prometheus-stack
     - --version
     - "{{ item }}"
   register: helm_chart
