@@ -244,6 +244,7 @@ docker:
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   script:
     - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"docker\"}}"'
+    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":true}}"'
     - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   stage: spawn-cluster
   retry: 2
@@ -345,6 +346,7 @@ docker-k8s-upgrade:
     - when: on_success
   script:
     - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"docker\"}}"'
+    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":true}}"'
     - !reference [.test_upgrade_path_k8s_cluster, script]
   extends: .test_upgrade_path_k8s_cluster
   stage: cluster-upgrades
