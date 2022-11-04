@@ -4,6 +4,14 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## ch-k8s-lbaas now respects NetworkPolicy objects
+
+If you are using NetworkPolicy objects, ch-k8s-lbaas will now interpret them and enforce restrictions on the frontend. That means that if you previously only allowlisted the CIDR in which the lbaas agents themselves reside, your inbound traffic will be dropped now.
+
+You have to add external CIDRs to the network policies as needed to avoid that.
+
+Clusters where NetworkPolicy objects are not in use or where filtering only happens on namespace/pod targets are not affected (as LBaaS wouldn't have worked there anyway, as it needs to be allowlisted in a CIDR already).
+
 ## Decoupling thanos and terraform
 
 When enabling thanos, one can now prevent terraform from creating a bucket in the same OpenStack project by setting `manage_thanos_bucket=false` in the `[k8s-service-layer.prometheus]`. Then it's up to the user to manage the bucket by configuring an alternative storage backend.

@@ -19,9 +19,18 @@ rules:
   resources:
   - nodes
   - services
+  - pods
 {% if ch_k8s_lbaas_use_bgp %}
   - endpoints
 {% endif %}
+- apiGroups:
+  - networking.k8s.io
+  verbs:
+  - get
+  - list
+  - watch
+  resources:
+  - networkpolicies
 - apiGroups:
   - ""
   verbs:
