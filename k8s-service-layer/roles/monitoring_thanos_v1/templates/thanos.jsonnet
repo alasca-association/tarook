@@ -145,10 +145,13 @@ local q = t.query + t.query.withServiceMonitor + t.query.withResources + commonC
 {{ set_common_labels(monitoring_common_labels) }}
     replicas: 1,
     stores: [
-      'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
-      for service in [s.service]
+      'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [s.service.metadata.name, s.service.metadata.namespace]
     ] + [
       'dnssrv+_grpc._tcp.{{ monitoring_prometheus_service_name }}.monitoring.svc.cluster.local'
+    ] + [
+{% for endpoint in monitoring_thanos_query_additional_store_endpoints %}
+      'dnssrv+_grpc._tcp.{{ endpoint }}.monitoring.svc.cluster.local',
+{% endfor %}
     ],
     replicaLabels: ['prometheus_replica', 'rule_replica'],
     resources: {
