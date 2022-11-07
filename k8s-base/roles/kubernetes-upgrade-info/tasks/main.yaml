@@ -94,6 +94,10 @@
   become: yes
   apt:
     update_cache: yes
+  register: task_result
+  until: task_result.failed == false
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
   when: ansible_pkg_mgr == 'apt'
 
 - name: Show the available k8s versions

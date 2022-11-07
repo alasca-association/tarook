@@ -10,6 +10,10 @@
       name:
         - "kubelet={{ next_k8s_version }}-00"
         - "kubectl={{ next_k8s_version }}-00"
+    register: task_result
+    until: task_result.failed == false
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
 
   - name: Re-hold kubelet
     command: apt-mark hold kubelet kubectl
@@ -34,6 +38,10 @@
       - "kubelet-{{ next_k8s_version }}-00"
       - "kubectl-{{ next_k8s_version }}-00"
       state: present
+    register: task_result
+    until: task_result.failed == false
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
 
   - name: Add versionlock on kubelet
     command:

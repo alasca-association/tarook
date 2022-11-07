@@ -1,0 +1,2 @@
+network_error_retries: 5
+network_error_delay: 3

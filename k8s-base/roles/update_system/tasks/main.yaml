@@ -73,6 +73,9 @@
   # gateways are internet-facing and highly-available
   - "_allow_disruption or not kubernetes_dir.stat.exists"
   register: upgrade_dnf
+  until: upgrade_dnf.failed == false
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Upgrade the whole system (yum) # noqa 403
   yum:
@@ -107,6 +110,10 @@
     - update
     - --allow-releaseinfo-change
     warn: false
+  register: task_result
+  until: task_result.failed == false
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Upgrade the whole system (apt) # noqa 403
   become: yes
@@ -128,6 +135,9 @@
   async: 1800
   poll: 5
   register: upgrade_apt
+  until: upgrade_apt.failed == false
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
   when:
   - ansible_pkg_mgr == 'apt'
   # gateways are internet-facing and highly-available

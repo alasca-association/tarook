@@ -43,6 +43,10 @@
           - "linux-headers-{{ ansible_kernel }}"
           - build-essential
           - manpages-dev
+        register: task_result
+        until: task_result.failed == false
+        retries: "{{ network_error_retries }}"
+        delay: "{{ network_error_delay }}"
 
 
     - name: Install virtual gpu manager
@@ -52,11 +56,18 @@
             url: "{{ nvidia_vgpu_driver_blob_url }}/{{ nvidia_vgpu_manager_filename }}"
             dest: "/tmp/{{ nvidia_vgpu_manager_filename }}"
             mode: '0755'
+          register: task_result
+          until: task_result.failed == false
+          retries: "{{ network_error_retries }}"
+          delay: "{{ network_error_delay }}"
 
         - name: Install the virtual gpu manager
           apt:
             deb: '/tmp/{{ nvidia_vgpu_manager_filename }}'
           register: installed_vgpu_manager
+          until: installed_vgpu_manager.failed == false
+          retries: "{{ network_error_retries }}"
+          delay: "{{ network_error_delay }}"
 
     - name: Blacklist nouveau
       # The installation script lies! It says: """

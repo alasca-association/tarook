@@ -4,6 +4,10 @@
   apt:
     update_cache: yes
     name: "{{ ipsec_packages }}"
+  register: task_result
+  until: task_result.failed == false
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Create ipsec subdirectory in the inventory
   become: no

@@ -13,6 +13,7 @@
   vars_files:
   - vars/disruption.yaml
   - vars/etc.yaml
+  - vars/network_error_retries.yaml
   roles:
   - role: detect_user
     tags: detect_user
@@ -28,6 +29,7 @@
   hosts: uninitialized_frontend_nodes
   vars_files:
   - vars/disruption.yaml
+  - vars/network_error_retries.yaml
   roles:
   - role: update_system
     tags: update_system
@@ -37,6 +39,7 @@
   hosts: initialized_frontend_nodes
   vars_files:
   - vars/disruption.yaml
+  - vars/network_error_retries.yaml
   serial: 1
   roles:
   - role: update_system
@@ -50,6 +53,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/network_error_retries.yaml
   roles:
   - role: detect_user
     tags: detect_user
@@ -72,6 +76,7 @@
   serial: 1
   vars_files:
   - vars/disruption.yaml
+  - vars/network_error_retries.yaml
   pre_tasks:
     - name: include ksl vars
       include_vars:
@@ -93,6 +98,7 @@
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
+  - vars/network_error_retries.yaml
   roles:
     - update_system
   tags:

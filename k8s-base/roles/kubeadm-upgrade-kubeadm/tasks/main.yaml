@@ -9,6 +9,10 @@
     apt:
       name:
         - "kubeadm={{ next_k8s_version }}-00"
+    register: task_result
+    until: task_result.failed == false
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
 
   - name: Re-hold kubeadm
     command: apt-mark hold kubeadm
@@ -34,6 +38,10 @@
       name:
       - "kubeadm-{{ next_k8s_version }}-00"
       state: present
+    register: task_result
+    until: task_result.failed == false
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
 
   - name: Add versionlock on kubeadm
     command:

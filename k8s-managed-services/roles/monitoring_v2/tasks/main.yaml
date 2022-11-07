@@ -10,6 +10,10 @@
     values: "{{ lookup('template', 'blackbox_exporter.yaml.j2') | from_yaml }}"
     wait: yes
     update_repo_cache: yes
+  register: task_result
+  until: task_result.failed == false
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Expose Prometheus with a NodePort
   when: k8s_monitoring_enabled and k8s_global_monitoring_enabled
@@ -107,3 +111,7 @@
     values: "{{ lookup('template', 'nvidia_dcgm_exporter.yaml.j2') | from_yaml }}"
     wait: yes
     update_repo_cache: yes
+  register: task_result
+  until: task_result.failed == false
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"

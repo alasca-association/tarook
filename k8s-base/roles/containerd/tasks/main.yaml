@@ -35,6 +35,9 @@
     name:
     - containerd
   register: package_install
+  until: package_install.failed == false
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Create containerd daemon configuration
   become: yes

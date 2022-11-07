@@ -37,6 +37,10 @@
       name:
         - linux-headers-cloud-amd64
         - bc
+      register: task_result
+      until: task_result.failed == false
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
 - name: Install wireguard
   become: yes
@@ -44,6 +48,10 @@
     state: present
     name:
       - wireguard
+  register: task_result
+  until: task_result.failed == false
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Modprobe the wireguard module to ensure its existence
   become: yes

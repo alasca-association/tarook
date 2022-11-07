@@ -7,6 +7,10 @@
       - curl
       - apt-transport-https
       - gnupg
+  register: task_result
+  until: task_result.failed == false
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
   when: ansible_pkg_mgr == 'apt'
 
 - name: Expand NO_PROXY configuration on Ubuntu machines
@@ -41,6 +45,10 @@
     apt_key:
       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
       state: present
+    register: task_result
+    until: task_result.failed == false
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
 
   - name: Add Google's K8s repository to sources.list
     copy:
@@ -56,6 +64,10 @@
     # Note: check available version with `apt-cache policy <package name>`
     apt:
       update_cache: yes
+    register: task_result
+    until: task_result.failed == false
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
   when: ansible_pkg_mgr == 'apt'
 
 - name: Add Google's K8s repository (yum/dnf)
@@ -93,6 +105,10 @@
     package:
       state: present
       name: "{{ packages }}"
+    register: task_result
+    until: task_result.failed == false
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
     notify: Restart kubelet
 
   - name: Prevent the k8s packages for being updated (apt)
@@ -109,6 +125,10 @@
         name:
         - 'dnf-command(versionlock)'
         state: latest
+      register: task_result
+      until: task_result.failed == false
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
     - name: Add a version lock
       command:
