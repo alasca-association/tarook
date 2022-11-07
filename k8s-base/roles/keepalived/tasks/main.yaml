@@ -4,6 +4,10 @@
     state: present
     name:
       - keepalived
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Create keepalived configuration
   become: yes

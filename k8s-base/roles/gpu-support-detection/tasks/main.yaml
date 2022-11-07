@@ -3,6 +3,10 @@
   package:
     name:
     - pciutils
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Detect (v)GPU presence
   # The command says "give me all devices by nvidia (vendor ID 10de) that you can find on the node"

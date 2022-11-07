@@ -43,3 +43,7 @@
         extraArgs:
           enable-ssl-passthrough: "{{ k8s_ingress_enable_ssl_passthrough }}"
         priorityClassName: "system-cluster-critical"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"

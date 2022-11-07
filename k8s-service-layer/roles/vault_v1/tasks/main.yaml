@@ -110,6 +110,10 @@
     name: hashicorp
     repo_url: https://helm.releases.hashicorp.com
     repo_state: "{{ k8s_ingress_install | ternary('present', 'absent') }}"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Deploy Vault
   vars:
@@ -186,6 +190,10 @@
           name: vault-cert
       ui:
         enabled: false
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Find vault pods
   kubernetes.core.k8s_info:

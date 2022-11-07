@@ -13,6 +13,7 @@
   vars_files:
   - vars/disruption.yaml
   - vars/etc.yaml
+  - vars/network_error_retries.yaml
   roles:
   - role: detect_user
     tags: detect_user
@@ -67,6 +68,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/network_error_retries.yaml
   roles:
   - role: ntp
     tags: ntp
@@ -86,6 +88,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/network_error_retries.yaml
   roles:
   - role: bird
     tags: bird

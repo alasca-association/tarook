@@ -81,6 +81,10 @@
     name: prometheus-community
     repo_url: https://prometheus-community.github.io/helm-charts
     repo_state: "{{ monitoring_install | ternary('present', 'absent') }}"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 # Install the prometheus stack
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall KSL monitoring stack"
@@ -94,6 +98,10 @@
     values: "{{ lookup('template', 'prometheus_stack.yaml.j2') | from_yaml }}"
     wait: no
     update_repo_cache: yes
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 # Install prometheus-adapter, a metrics-server implementation
 # It enables commands like `k top nodes`
@@ -108,6 +116,10 @@
     values: "{{ lookup('template', 'prometheus_adapter.yaml.j2') | from_yaml }}"
     wait: no
     update_repo_cache: yes
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Install thanos
   include_role:

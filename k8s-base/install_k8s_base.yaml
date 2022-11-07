@@ -13,6 +13,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/network_error_retries.yaml
   roles:
   - role: detect_user
     tags: detect_user
@@ -52,6 +53,7 @@
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
+  - vars/retries.yaml
   tasks:
     - name: Upgrade the system
       when: install_status == 'k8s_not_installed'
@@ -97,6 +99,7 @@
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
+  - vars/network_error_retries.yaml
   roles:
   - role: networking
     tags: networking
@@ -149,6 +152,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/network_error_retries.yaml
   # With serial we can specify the number of hosts on which the Playbook is
   # executed in parallel.
   # https://docs.ansible.com/ansible/latest/user_guide/playbooks_delegation.html
@@ -167,6 +171,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/network_error_retries.yaml
   roles:
     - role: calico-control-plane
       tags:
@@ -187,6 +192,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/network_error_retries.yaml
   roles:
     - role: k8s-worker
       tags: k8s-worker
@@ -213,6 +219,7 @@
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
+  - vars/network_error_retries.yaml
   run_once: yes
   roles:
     - role: connect-k8s-to-openstack
@@ -229,6 +236,7 @@
   gather_facts: true
   vars_files:
   - vars/auto_generated_preamble.yaml
+  - vars/network_error_retries.yaml
   roles:
   - role: k8s-bgp
     tags:

@@ -12,18 +12,30 @@
         state: present
         name:
           - "linux-headers-{{ ansible_kernel }}"
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
     - name: Add key of nvidia's cuda repo
       apt_key:
         # presented key is the same for ubuntu1604, ubuntu1804 and ubuntu2004
         url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
         state: present
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
     - name: Add repository
       apt_repository:
         repo: deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /
         state: present
         update_cache: yes
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
     - name: Install driver
       apt:
@@ -34,6 +46,9 @@
           - nvidia-headless-450
           - nvidia-utils-450
       register: installed_driver
+      until: installed_driver is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
     - name: Blacklist nouveau
       # The installation script lies! It says: """
