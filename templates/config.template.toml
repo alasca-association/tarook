@@ -80,7 +80,7 @@ dualstack_support = false # "•ᴗ•"
 
 enabled       = true    # •ᴗ•
 shared_secret = "..."   # REPLACE ME
-version       = "0.4.2"
+version       = "0.5.0"
 agent_port    = 15203
 
 # ANCHOR_END: ch-k8s-lbaas_config
