@@ -31,6 +31,14 @@ shellcheck:
   tags:
     - docker
 
+yamllint:
+  stage: lint
+  tags:
+    - docker
+  image: registry.gitlab.com/pipeline-components/yamllint:latest
+  script:
+    - yamllint .
+
 ansible-lint:
   image:
     name: cytopia/ansible-lint:5-0.6
