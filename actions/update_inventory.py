@@ -65,6 +65,8 @@ K8S_MANAGED_SERVICES_VAR_MAP = {
         "prometheus": [
             # We probably wanna split up the monitoring variables
             # in the near future
+        ],
+        "fluxcd": [
         ]
     },
 }
@@ -81,6 +83,7 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "prometheus": "monitoring",
     "cert-manager": "k8s_cert_manager",
     "ingress": "k8s_ingress",
+    "fluxcd": "fluxcd",
     "etcd-backup": "etcd_backup",
     "vault": "yaook_vault",
     "nvidia": "nvidia",
@@ -518,6 +521,18 @@ def main():
         config["k8s-service-layer"].get("etcd-backup"),
         kubernetes_service_storage_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("etcd-backup", "")
+    )
+
+    # KUBERNETES SERVICE LAYER: FLUXCD
+    print_process_state("KSL - FLUXCD")
+    kubernetes_service_storage_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
+        "fluxcd.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("fluxcd"),
+        kubernetes_service_storage_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("fluxcd", "")
     )
 
     # ---

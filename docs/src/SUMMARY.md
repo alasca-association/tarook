@@ -50,7 +50,8 @@
 - [NGINX Ingress Controller]() <!-- ./managed-services/nginx-ingress-controller.md -->
 - [Cert-Manager]() <!-- ./managed-services/cert-manager.md -->
 - [HashiCorp Vault](./managed-services/vault.md)
- 
+- [FluxCD](./managed-services/fluxcd.md)
+
 ---
 
 # VPN

@@ -1,0 +1,28 @@
+---
+- name: Create namespace for fluxcd
+  kubernetes.core.k8s:
+    apply: true
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ k8s_fluxcd_namespace }}"
+        labels:
+          app.kubernetes.io/instance: flux-system
+          app.kubernetes.io/part-of: flux
+          pod-security.kubernetes.io/warn: restricted
+          pod-security.kubernetes.io/warn-version: latest
+    validate:
+      fail_on_error: true
+      strict: true
+
+- name: Apply the fluxcd crds
+  kubernetes.core.k8s:
+    state: present
+    template: "crds_{{ k8s_fluxcd_version }}.yaml"
+
+- name: Apply the fluxcd workload
+  kubernetes.core.k8s:
+    state: present
+    template: "workload_{{ k8s_fluxcd_version }}.yaml"
+...
