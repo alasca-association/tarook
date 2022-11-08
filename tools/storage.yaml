@@ -11,12 +11,11 @@ spec:
     requests:
       storage: 40Gi
   storageClassName: rook-ceph-data
-
 ---
 apiVersion: v1
 kind: Pod
 metadata:
-  name: debian 
+  name: debian
 spec:
   containers:
   - image: debian:stable
@@ -31,4 +30,3 @@ spec:
     persistentVolumeClaim:
       claimName: debian-test
       readOnly: false
-
