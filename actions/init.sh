@@ -145,6 +145,10 @@ if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then
     if [ ! -f "$ansible_k8s_custom_playbook/main.yaml" ]; then
         echo "# Add your roles and tasks here:" > "$ansible_k8s_custom_playbook/main.yaml"
     fi
+
+    mkdir -p "$ansible_k8s_custom_playbook/vars"
+    ln -sf "../../managed-k8s/k8s-base/vars/" "$ansible_k8s_custom_playbook/vars/k8s-base-vars"
+    ln -sf "../../managed-k8s/k8s-service-layer/vars/" "$ansible_k8s_custom_playbook/vars/ksl-vars"
 fi
 
 if [ ! $actions_dir == "./$submodule_managed_k8s_name/actions" ]; then
