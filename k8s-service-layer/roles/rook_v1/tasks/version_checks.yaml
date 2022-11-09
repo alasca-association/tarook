@@ -14,7 +14,7 @@
   - name: Fail if the configured rook version is not supported
     vars:
       supported_rook_releases: "{{ rook_supported_releases | map(attribute='rook_release') }}"
-    fail: 
+    fail:
       msg: |
         The configured rook version is not supported. Please adjust your configuration.
         Configured version: {{ rook_conf_maj_min_version }}
@@ -184,6 +184,10 @@
       - name: Include upgrade from v1.5 to v1.6 steps
         when: rook_conf_maj_min_version == "1.6" and rook_operator_maj_min_version == "1.5"
         include_tasks: upgrade_rook_from_v1.5.yaml
+
+      - name: Include upgrade from v1.6 to v1.7 steps
+        when: rook_conf_maj_min_version == "1.7" and rook_operator_maj_min_version == "1.6"
+        include_tasks: upgrade_rook_from_v1.6.yaml
 
 ######################################################################
 # Check if we need to upgrade Ceph                                   #

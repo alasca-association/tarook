@@ -4,6 +4,12 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+
+## Support for Rook 1.7 added
+
+The LCM now supports Rook v1.7.*.
+Upgrading is as easy as setting your rook version to 1.7.11, allowing to release the kraken and running stage 4.
+
 ## ch-k8s-lbaas now respects NetworkPolicy objects
 
 If you are using NetworkPolicy objects, ch-k8s-lbaas will now interpret them and enforce restrictions on the frontend. That means that if you previously only allowlisted the CIDR in which the lbaas agents themselves reside, your inbound traffic will be dropped now.
