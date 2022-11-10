@@ -1,0 +1,36 @@
+{% if using_app_creds %}
+{ "auth": {
+    "identity": {
+      "methods": ["application_credential"],
+      "application_credential": {
+        "id": {{ lookup('env', 'OS_APPLICATION_CREDENTIAL_ID') | to_json }},
+        "secret": {{ lookup('env', 'OS_APPLICATION_CREDENTIAL_SECRET') | to_json }}
+      }
+    }
+  }
+}
+{% else %}
+{ "auth": {
+    "scope" : {
+      "project": {
+        "name": {{ lookup('env', 'OS_PROJECT_NAME') | to_json }},
+        "domain": {
+          "id" : "default"
+        }
+      }
+    },
+    "identity": {
+      "methods": ["password"],
+      "password": {
+        "user": {
+          "name": {{ lookup('env', 'OS_USERNAME') | to_json }},
+          "domain" : {
+            "id" : "default"
+          },
+          "password": {{ lookup('env', 'OS_PASSWORD') | to_json }}
+        }
+      }
+    }
+  }
+}
+{% endif %}

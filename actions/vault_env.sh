@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 flags=$(shopt -po)
 set -euo pipefail
 

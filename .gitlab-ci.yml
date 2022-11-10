@@ -31,6 +31,14 @@ shellcheck:
   tags:
     - docker
 
+yamllint:
+  stage: lint
+  tags:
+    - docker
+  image: registry.gitlab.com/pipeline-components/yamllint:latest
+  script:
+    - yamllint .
+
 detect-vault-image:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
   stage: lint
@@ -41,7 +49,7 @@ detect-vault-image:
 
 ansible-lint:
   image:
-    name: cytopia/ansible-lint:5
+    name: cytopia/ansible-lint:5-0.6
     entrypoint: ["/bin/sh", "-c"]
   stage: lint
   script:
@@ -60,6 +68,7 @@ ansible-lint:
     - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.20.yaml"
     - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.21.yaml"
     - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.22.yaml"
+    - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.23.yaml"
   tags:
     - docker
 
@@ -96,44 +105,6 @@ testBook:
   cache:
     paths:
       - $CARGO_HOME/bin
-
-.prepare_spawn_test_cleanup_k8s_cluster:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
-  variables:
-    GIT_CLEAN_FLAGS: -ffd $CI_PROJECT_DIR -e vault
-    VAULT_TLS_DIR: $CI_PROJECT_DIR/ci/vault/tls
-    VAULT_KEY: $ci_cert_vault_key
-    VAULTCA_CRT: $ci_cert_vaultca_crt
-    VAULTCHAIN_CRT: $ci_cert_vaultchain_crt
-    VAULT_CONFIG_HCL: $ci_vault_config_hcl
-    WG_COMPANY_USERS: "false"
-    PASS_COMPANY_USERS: "false"
-    SSH_COMPANY_USERS: "false"
-  services:
-    - name: vault:1.11.2
-      alias: yaook-vault
-      entrypoint: ["sh", "-c"]
-      command:
-        - |
-          export VAULT_ADDR=https://127.0.0.1:8200
-          mkdir -p /vault/config /vault/tls/ca
-          printf "%s" "$VAULT_KEY" > /vault/tls/vault.key
-          printf "%s" "$VAULTCHAIN_CRT" > /vault/tls/vaultchain.crt
-          printf "%s" "$VAULT_CONFIG_HCL" > /vault/config/config.hcl
-          cp /bin/vault $CI_PROJECT_DIR
-          exec vault server -config=/vault/config/config.hcl
-  script:
-    - export VAULT_ADDR=https://yaook-vault:8200
-    - mkdir -p $CI_PROJECT_DIR/tls/ca
-    - printf "%s" "$VAULTCA_CRT" > $CI_PROJECT_DIR/tls/ca/vaultca.crt
-    - export VAULT_CACERT="$CI_PROJECT_DIR/tls/ca/vaultca.crt"
-    - $CI_PROJECT_DIR/vault operator init -key-shares=1 -key-threshold=1 -format=json > $CI_PROJECT_DIR/vault_init.out
-    - jq .root_token -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/root.key
-    - jq .unseal_keys_b64[0] -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/unseal.key
-    - $CI_PROJECT_DIR/vault operator unseal $(cat $CI_PROJECT_DIR/unseal.key)
-    - $CI_PROJECT_DIR/vault login $(cat $CI_PROJECT_DIR/root.key)
-  tags:
-  - docker
 
 .prepare_spawn_test_cleanup_k8s_cluster:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
@@ -211,26 +182,36 @@ testBook:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
   script:
     # Set k8s version to minimal supported version: v1.19.16
-  - 'python3 patch_config.py "{\"kubernetes\":{\"version\":\"1.19.16\"}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.19.16\"}}"'
     # Disable Ingress (Requires k8s >= v1.20)
-  - 'python3 patch_config.py "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"false\"}}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"false\"}}}"'
+    # Disable Cert-Manager (Requires k8s >= v1.20)
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"cert-manager\":{\"enabled\":\"false\"}}}"'
+    # We can't use vault without cert-manager
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"vault\":{\"enabled\":\"false\"}}}"'
     # Spawn and test cluster
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
     # Upgrade cluster to k8s v1.20.15
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.20.15
     # Update k8s version
-  - 'python3 patch_config.py "{\"kubernetes\":{\"version\":\"1.20.15\"}}"'
-    # Install ingress after upgrading to k8s v1.20
-  - 'python3 patch_config.py "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"true\"}}}"'
-  - AFLAGS="-t mk8s-sl/ingress" ./managed-k8s/actions/apply-stage4.sh
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.20.15\"}}"'
+    # Install ingress, cert-manager & vault after upgrading to k8s v1.20
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"true\"}}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"cert-manager\":{\"enabled\":\"true\"}}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"vault\":{\"enabled\":\"true\"}}}"'
+  - AFLAGS="-t mk8s-sl/ingress,mk8s-sl/cert-manager,mk8s-sl/vault" ./managed-k8s/actions/apply-stage4.sh
     # Upgrade cluster to k8s v1.21.14
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.21.14
     # Update k8s version
-  - 'python3 patch_config.py "{\"kubernetes\":{\"version\":\"1.21.14\"}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.21.14\"}}"'
     # Upgrade cluster to k8s v1.22.12
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.22.12
     # Update k8s version
-  - 'python3 patch_config.py "{\"kubernetes\":{\"version\":\"1.22.12\"}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.22.12\"}}"'
+    # Upgrade cluster to k8s v1.23.13
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.23.13
+    # Update k8s version
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.23.13\"}}"'
     # Retest the cluster
   - ./managed-k8s/actions/test.sh
   after_script:
@@ -238,31 +219,8 @@ testBook:
   artifacts: !reference [.prepare_spawn_test_cleanup_k8s_cluster, artifacts]
   tags: !reference [.prepare_spawn_test_cleanup_k8s_cluster, tags]
 
-# Spawn a cluster with kube-router as CNI and rook enabled
-kuberouter-rook:
-  environment:
-    name: spawn-cluster
-  rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: never
-    - when: on_success
-  extends: .prepare_spawn_test_cleanup_k8s_cluster
-  stage: spawn-cluster
-
-# Manually spawn a cluster with kube-router as CNI and rook enabled (MR only)
-kuberouter-rook-manual:
-  environment:
-    name: spawn-cluster
-  rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: manual
-    - when: never
-  extends: .prepare_spawn_test_cleanup_k8s_cluster
-  allow_failure: true
-  stage: spawn-cluster
-
 # Spawn a cluster with calico as CNI and rook enabled
-calico-rook-dualstack:
+docker:
   environment:
     name: spawn-cluster
   rules:
@@ -270,28 +228,24 @@ calico-rook-dualstack:
       when: never
     - when: on_success
   extends: .prepare_spawn_test_cleanup_k8s_cluster
+  script:
+    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"docker\"}}"'
+    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":true}}"'
+    - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   stage: spawn-cluster
-  variables:
-    AFLAGS: "-e k8s_network_plugin=calico"
-    TF_VAR_dualstack_support: "true"
+  retry: 2
 
 # Manually spawn a cluster with calico as CNI and rook enabled (MR only)
-calico-rook-dualstack-manual:
-  environment:
-    name: spawn-cluster
+docker-manual:
   rules:
     - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
       when: manual
     - when: never
-  extends: .prepare_spawn_test_cleanup_k8s_cluster
+  extends: docker
   allow_failure: true
-  stage: spawn-cluster
-  variables:
-    AFLAGS: "-e k8s_network_plugin=calico"
-    TF_VAR_dualstack_support: "true"
 
 # Spawn a cluster and test the k8s upgrade path (w/ calico)
-k8s-upgrade-calico:
+containerd-k8s-upgrade:
   environment:
     name: spawn-cluster
   rules:
@@ -304,8 +258,8 @@ k8s-upgrade-calico:
     - when: on_success
   extends: .test_upgrade_path_k8s_cluster
   stage: cluster-upgrades
+  retry: 2
   variables:
-    AFLAGS: "-e k8s_network_plugin=calico"
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
     # so we need to reference the default vars here (only one level of nesting is allowed)
     WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
@@ -315,9 +269,7 @@ k8s-upgrade-calico:
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
 
 # Manually spawn a cluster and test the k8s upgrade path (w/ calico)
-k8s-upgrade-calico-manual:
-  environment:
-    name: spawn-cluster
+containerd-k8s-upgrade-manual:
   rules:
     - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
       when: manual
@@ -326,11 +278,28 @@ k8s-upgrade-calico-manual:
     - if: $CI_COMMIT_REF_NAME == 'stable'
       when: manual
     - when: never
-  extends: .test_upgrade_path_k8s_cluster
-  stage: cluster-upgrades
+  extends: containerd-k8s-upgrade
   allow_failure: true
+
+# Spawn a cluster with calico as CNI, containerd as CRI and
+# rook enabled (MR only)
+# Note on k8s_is_gpu_cluster: This needs to be disabled (as
+# containerd-GPU-clusters don't work and error out loudly).
+# The ugly formatting of the config patches is necessary due to the
+# way gitlab CI passes the commands to the shell.
+containerd:
+  environment:
+    name: spawn-cluster
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      when: never
+    - when: on_success
+  extends: .prepare_spawn_test_cleanup_k8s_cluster
+  stage: spawn-cluster
+  script:
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
+  retry: 2
   variables:
-    AFLAGS: "-e k8s_network_plugin=calico"
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
     # so we need to reference the default vars here (only one level of nesting is allowed)
     WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
@@ -338,6 +307,57 @@ k8s-upgrade-calico-manual:
     SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
     ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+
+# Manually spawn a cluster with calico as CNI, containerd as CRI and
+# rook enabled (MR only)
+containerd-manual:
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      when: manual
+    - when: never
+  allow_failure: true
+  extends: containerd
+
+# Spawn a cluster and test the k8s upgrade path (w/ calico)
+docker-k8s-upgrade:
+  environment:
+    name: spawn-cluster
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      when: never
+    - if: $CI_COMMIT_REF_NAME == 'devel'
+      when: never
+    - if: $CI_COMMIT_REF_NAME == 'stable'
+      when: never
+    - when: on_success
+  script:
+    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"docker\"}}"'
+    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":true}}"'
+    - !reference [.test_upgrade_path_k8s_cluster, script]
+  extends: .test_upgrade_path_k8s_cluster
+  stage: cluster-upgrades
+  retry: 2
+  variables:
+    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
+    # so we need to reference the default vars here (only one level of nesting is allowed)
+    WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
+    PASS_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, PASS_COMPANY_USERS]
+    SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
+    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
+    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+
+# Manually spawn a cluster and test the k8s upgrade path (w/ calico)
+docker-k8s-upgrade-manual:
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      when: manual
+    - if: $CI_COMMIT_REF_NAME == 'devel'
+      when: manual
+    - if: $CI_COMMIT_REF_NAME == 'stable'
+      when: manual
+    - when: never
+  extends: docker-k8s-upgrade
+  allow_failure: true
 
 pages:
   stage: deploy

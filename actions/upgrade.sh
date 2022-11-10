@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh

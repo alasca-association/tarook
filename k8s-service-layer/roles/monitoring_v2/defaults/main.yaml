@@ -14,17 +14,20 @@ monitoring_prometheus_memory_request: "{{ monitoring_prometheus_memory_limit }}"
 monitoring_prometheus_cpu_limit: "1"
 monitoring_prometheus_cpu_request: "{{ monitoring_prometheus_cpu_limit }}"
 
+monitoring_prometheus_stack_chart_name: "kube-prometheus-stack"
 monitoring_prometheus_stack_release_name: "prometheus-stack"
 monitoring_prometheus_adapter_release_name: "prometheus-adapter"
 
 monitoring_use_grafana: true
-monitoring_use_thanos: true
+monitoring_use_thanos: false
 
 monitoring_grafana_admin_secret_name: "cah-grafana-admin"
 
-monitoring_prometheus_stack_version: "33.2.0"
-monitoring_prometheus_adapter_version: "3.2.0"
+monitoring_prometheus_stack_version: "38.0.3"
+monitoring_prometheus_adapter_version: "3.4.1"
 
 monitoring_common_labels: []
 
 monitoring_grafana_persistent_storage_class: ""
+
+monitoring_crds_update_required: ["34", "35", "36", "39"]

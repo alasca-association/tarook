@@ -9,3 +9,4 @@ etcd_backup_chart_version: ""
 etcd_backup_vault_mount_point: "yaook/{{ vault_cluster_name }}/kv"
 etcd_backup_vault_path: etcdbackup
 etcd_backup_days_of_retention: 7
+etcd_backup_metrics_port: 19100

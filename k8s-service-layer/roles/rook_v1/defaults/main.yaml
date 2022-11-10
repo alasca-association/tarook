@@ -91,6 +91,11 @@ rook_image_version_map:
     operator: "{{ rook_version }}"
     toolbox: "{{ rook_version }}"
 
+  "1.23":
+    ceph: "{{ rook_ceph_versions.ceph }}"
+    operator: "{{ rook_version }}"
+    toolbox: "{{ rook_version }}"
+
 rook_version: "v1.2.3" # default
 
 rook_ceph_version_map:
@@ -104,6 +109,8 @@ rook_ceph_version_map:
     ceph: "v15.2.13"
   "v1.6.7":
     ceph: "v16.2.5"
+  "v1.7.11":
+    ceph: "v16.2.6"
 
 rook_ceph_versions: "{{ rook_ceph_version_map[rook_version] }}"
 
@@ -139,3 +146,8 @@ rook_supported_releases:
       - v14
       - v15
       - v16
+  - rook_release: "v1.7"
+    supported_ceph_releases:
+      - v14 # >= 14.2.5
+      - v15 # >= 15.2.0
+      - v16 # >= 16.2.0

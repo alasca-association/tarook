@@ -18,13 +18,24 @@ Except in very rare cases where a new feature requires it, you'll need and shoul
 
 The script triggers the execution of the following scripts:
 
-  1. [`apply-terraform.sh`](#apply-terraformsh)
-  2. [`apply-stage2.sh`](#apply-stage2sh)
-  3. [`apply-stage3.sh`](#apply-stage3sh)
-  4. [`apply-stage4.sh`](#apply-stage4sh)
-  5. [`apply-stage5.sh`](#apply-stage5sh)
-  6. [`apply-custom.sh`](#apply-customsh) *([if enabled](./../design/abstraction-layers.md#customization))*
-  7. [`test.sh`](#testsh)
+- [Actions Reference](#actions-reference)
+  - [`init.sh`](#initsh)
+  - [`apply.sh`](#applysh)
+  - [`apply-terraform.sh`](#apply-terraformsh)
+  - [`apply-stage2.sh`](#apply-stage2sh)
+  - [`apply-stage3.sh`](#apply-stage3sh)
+  - [`apply-stage4.sh`](#apply-stage4sh)
+  - [`apply-stage5.sh`](#apply-stage5sh)
+  - [`apply-custom.sh`](#apply-customsh)
+  - [`test.sh`](#testsh)
+  - [`system_update_nodes.sh`](#system_update_nodessh)
+  - [`destroy.sh`](#destroysh)
+  - [`wg-up.sh`](#wg-upsh)
+  - [`manage_roles.py`](#manage_rolespy)
+    - [Examples](#examples)
+  - [`update_inventory.py`](#update_inventorypy)
+  - [`upgrade.sh`](#upgradesh)
+  - [`lib.sh`](#libsh)
 
 ## `apply-terraform.sh`
 
@@ -103,10 +114,12 @@ This triggers system updates of the host nodes (harbour infrastructure layer).
 That includes updates of the frontend nodes and as well as Kubernetes nodes.
 As this may be a disruptive action, you have to explicitly allow system updates by setting [`MANAGED_K8S_RELEASE_THE_KRAKEN`](./../usage/environmental-variables.md#behavior-altering-variables).
 Nodes will get updated one after another if they are already initialized.
+Between the node updates, it is verified that the cluster is healthy.
+These verification checks can be skipped by passing `-s`.
 
 ```console
 # Trigger system updates of nodes
-$ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/system_update_nodes.sh
+$ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/system_update_nodes.sh [-s]
 ```
 
 ## `destroy.sh`

@@ -87,4 +87,3 @@
         src: 'service.yaml.j2'
         dest: "{{ manifest_dir }}/service.yaml"
         mode: 0664
-

@@ -1,0 +1,22 @@
+---
+extends: default
+
+ignore: |
+  **/templates/**/*.yaml
+
+rules:
+  line-length: disable
+  indentation:
+    level: warning
+    indent-sequences: consistent
+  trailing-spaces:
+    level: warning
+  new-line-at-end-of-file:
+    level: warning
+  colons:
+    level: warning
+  braces:
+    level: warning
+  document-end:
+    level: warning
+...

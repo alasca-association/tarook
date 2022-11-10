@@ -1,0 +1,57 @@
+- name: Obtain installed packages
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Fail when docker is installed
+  fail:
+    msg: |
+      Docker is installed on this node!
+      A migration path from docker to containerd is not yet provided.
+  when: "'docker.io' in ansible_facts.packages"
+
+- name: Prevent installing containerd for GPU cluster
+  fail:
+    msg: Trying to used containerd in a GPU cluster – this does not work.
+  when: k8s_is_gpu_cluster | default(False)
+
+- name: Chef if the node has kubernetes installed
+  stat:
+    path: "/etc/kubernetes"
+  register: kubernetes_dir
+
+- name: Ensure /etc/containerd directory is present
+  become: yes
+  file:
+    path: /etc/containerd
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Install containerd
+  become: yes
+  apt:
+    state: present
+    name:
+    - containerd
+  register: package_install
+
+- name: Create containerd daemon configuration
+  become: yes
+  template:
+    src: config.toml.j2
+    dest: /etc/containerd/config.toml
+    owner: root
+    group: root
+    mode: 0640
+  register: configuration_update
+
+- name: Restart containerd
+  become: yes
+  # Only restart if something changed AND we're allowed to do the restart
+  when: (package_install.changed or configuration_update.changed) and (_allow_disruption or install_status == 'k8s_not_installed') # noqa no-handler
+  systemd:
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
+    name: containerd

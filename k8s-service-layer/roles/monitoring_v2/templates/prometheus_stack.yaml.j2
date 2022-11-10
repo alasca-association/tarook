@@ -171,10 +171,22 @@ coreDNS:
         replacement: $1
         action: replace
 
-# Disabled for now, because scraping
-# the etcd metrics requires authentication
+##
 kubeEtcd:
-  enabled: false
+  enabled: true
+  service:
+    enabled: true
+    port: 2381
+    targetPort: 12381
+    selector:
+      app.kubernetes.io/name: etcd-proxy-metrics
+  serviceMonitor:
+    enabled: true
+    scheme: https
+    insecureSkipVerify: false
+    caFile: /etc/prometheus/secrets/etcd-metrics-proxy/server.crt
+    certFile: /etc/prometheus/secrets/etcd-metrics-proxy/client.crt
+    keyFile: /etc/prometheus/secrets/etcd-metrics-proxy/client.key
 
 ##
 kubeScheduler:
@@ -303,6 +315,8 @@ prometheus:
   enabled: true
   thanosService:
     enabled: {{ monitoring_use_thanos | bool }}
+  thanosServiceMonitor:
+    enabled: {{ monitoring_use_thanos | bool }}
   serviceMonitor:
     relabelings:
       - sourceLabels: [__meta_kubernetes_pod_node_name]
@@ -312,6 +326,8 @@ prometheus:
         replacement: $1
         action: replace
   prometheusSpec:
+    secrets:
+      - etcd-metrics-proxy
     serviceMonitorSelectorNilUsesHelmValues: {{  monitoring_common_labels | ternary(true, false) }}
 {% if monitoring_common_labels %}
     serviceMonitorSelector:

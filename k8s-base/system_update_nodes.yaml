@@ -72,7 +72,16 @@
   serial: 1
   vars_files:
   - vars/disruption.yaml
+  pre_tasks:
+    - name: include ksl vars
+      include_vars:
+        dir: "{{ ksl_vars_directory }}"
+      tags:
+      - always
   roles:
+    - name: cluster-health-verification
+      delegate_to: localhost
+      when: not (k8s_skip_upgrade_checks | bool)
     - kubeadm-drain-node
     - update_system
     - kubeadm-uncordon-node

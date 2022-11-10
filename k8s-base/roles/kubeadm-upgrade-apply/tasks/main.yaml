@@ -36,3 +36,86 @@
       include_role:
         name: k8s-master
         tasks_from: remove_kube-proxy
+
+    - name: Remove IPv6DualStack for >= v1.23
+      become: yes
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      when:
+        - next_k8s_version is defined and next_k8s_version is version('1.23', '>=')
+      block:
+      - name: Patch kube-proxy to remove IPv6DualStack
+        k8s_info:
+          kind: ConfigMap
+          namespace: kube-system
+          name: kube-proxy
+        register: kube_proxy_configmap_old
+
+      - name: Patch the kube-proxy ConfigMap
+        vars:
+          kube_proxy_config_patched: "{{ kube_proxy_configmap_old['resources'][0]['data']['config.conf'] | replace('IPv6DualStack: false', '') | from_yaml | to_nice_yaml }}"
+        k8s:
+          definition:
+            apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: kube-proxy
+              namespace: kube-system
+            data:
+              config.conf: |
+                {{ kube_proxy_config_patched }}
+        register: kube_proxy_configmap
+
+      - name: Patch kubeadm-config to remove IPv6DualStack
+        k8s_info:
+          kind: ConfigMap
+          namespace: kube-system
+          name: kubeadm-config
+        register: kubeadm_config_configmap_old
+
+      - name: Patch the kubeadm-config ConfigMap
+        vars:
+          kubeadm_config_config_patched: "{{ kubeadm_config_configmap_old['resources'][0]['data']['ClusterConfiguration'] | replace('IPv6DualStack: false', '') | from_yaml | to_nice_yaml }}"
+        k8s:
+          definition:
+            apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: kubeadm-config
+              namespace: kube-system
+            data:
+              ClusterConfiguration: |
+                {{ kubeadm_config_config_patched }}
+
+      - name: Patch kubelet-config to remove IPv6DualStack
+        k8s_info:
+          kind: ConfigMap
+          namespace: kube-system
+          name: "kubelet-config-{{next_minor_k8s_version}}"
+        register: kubelet_config_configmap_old
+
+      - name: Patch the kubelet-config ConfigMap
+        vars:
+          kubelet_config_config_patched: "{{ kubelet_config_configmap_old['resources'][0]['data']['kubelet'] | replace('IPv6DualStack: false', '') | from_yaml | to_nice_yaml }}"
+        k8s:
+          definition:
+            apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: "kubelet-config-{{next_minor_k8s_version}}"
+              namespace: kube-system
+            data:
+              kubelet: |
+                {{ kubelet_config_config_patched }}
+
+      - name: Trigger rollout restart kube-proxy
+        when: kube_proxy_configmap.changed
+        command:
+          argv:
+            - kubectl
+            - rollout
+            - restart
+            - ds
+            - kube-proxy
+            - -n
+            - kube-system

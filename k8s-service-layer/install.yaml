@@ -15,23 +15,23 @@
   - mk8s-sl
   roles:
   - role: cert_manager_v1
-    when: k8s_cert_manager_enabled
+    when: k8s_cert_manager_enabled | bool
     tags:
     - mk8s-sl/cert-manager
 
   - role: rook_v1
-    when: k8s_storage_rook_enabled
+    when: k8s_storage_rook_enabled | bool
     tags:
     - mk8s-sl
     - mk8s-sl/rook
 
   - role: monitoring_v1
-    when: k8s_monitoring_enabled and (monitoring_use_jsonnet_setup | default(False))
+    when: (k8s_monitoring_enabled | bool) and (monitoring_use_jsonnet_setup | default(False))
     tags:
     - mk8s-sl/monitoring
 
   - role: monitoring_v2
-    when: k8s_monitoring_enabled and not (monitoring_use_jsonnet_setup | default(False))
+    when: (k8s_monitoring_enabled | bool) and not (monitoring_use_jsonnet_setup | default(False))
     tags:
     - mk8s-sl/monitoring
 
@@ -41,11 +41,11 @@
     - mk8s-sl/ingress
 
   - role: etcd-backup
-    when: etcd_backup_enabled
+    when: etcd_backup_enabled | bool
     tags:
     - mk8s-sl/etcd-backup
 
   - role: vault_v1
-    when: yaook_vault_enabled
+    when: yaook_vault_enabled | bool
     tags:
     - mk8s-sl/vault

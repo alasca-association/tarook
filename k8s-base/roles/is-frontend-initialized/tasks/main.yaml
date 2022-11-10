@@ -8,5 +8,3 @@
 - name: Group frontend nodes
   group_by:
     key: "{{ install_status }}_frontend_nodes"
-
-

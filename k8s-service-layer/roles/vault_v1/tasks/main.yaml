@@ -105,6 +105,12 @@
       fail_on_error: yes
       strict: yes
 
+- name: "{{ k8s_ingress_install | ternary('Add', 'Remove') }} Hashicorp vault Repo"
+  kubernetes.core.helm_repository:
+    name: hashicorp
+    repo_url: https://helm.releases.hashicorp.com
+    repo_state: "{{ k8s_ingress_install | ternary('present', 'absent') }}"
+
 - name: Deploy Vault
   vars:
     scheduling_key: "{{ yaook_vault_scheduling_key }}"
@@ -115,6 +121,7 @@
     release_namespace: "{{ yaook_vault_namespace }}"
     release_name: vault
     release_state: present
+    update_repo_cache: yes
     values:
       global:
         enabled: true

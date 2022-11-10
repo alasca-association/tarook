@@ -19,6 +19,7 @@
 #enable_az_management = false
 
 # Enable DualStack support
+# WARNING: DualStack support is not stable yet, see https://gitlab.com/yaook/k8s/-/issues/502
 dualstack_support = false # "•ᴗ•"
 # If you enabled DualStack-support you may want to adjust the IPv6 subnet
 #subnet_v6_cidr = "fd00::/120"
@@ -91,7 +92,7 @@ cluster_name = "devcluster" # "•ᴗ•"
 
 enabled       = true    # •ᴗ•
 shared_secret = "..."   # REPLACE ME
-version       = "0.4.2"
+version       = "0.5.0"
 agent_port    = 15203
 
 # ANCHOR_END: ch-k8s-lbaas_config
@@ -100,11 +101,12 @@ agent_port    = 15203
 # --- KUBERNETES: BASIC CLUSTER CONFIGURATION ---
 # ansible prefix: "k8s_"
 [kubernetes]
-# Kubernetes version. Currently, we support from 1.17.* to 1.22.*.
-version = "1.22.11" # •ᴗ•
+# Kubernetes version. Currently, we support from 1.17.* to 1.23.*.
+version = "1.23.9" # •ᴗ•
 
 # Uncomment if this cluster contains a worker with GPU access so that the driver
 # and surrounding framework is deployed.
+# You must set the container_runtime to "docker" for GPU clusters.
 is_gpu_cluster = false # •ᴗ•
 
 # Set this variable to virtualize Nvidia GPUs on worker nodes.
@@ -284,8 +286,8 @@ namespace    = "rook-ceph" # •ᴗ•
 cluster_name = "rook-ceph" # •ᴗ•
 
 # Currently we support the following rook versions:
-# v1.2.3, v1.3.11, v1.4.9, v1.5.12, v1.6.7
-#version = "v1.2.3"
+# v1.2.3, v1.3.11, v1.4.9, v1.5.12, v1.6.7, v1.7.11
+#version = "v1.7.11"
 
 #nodeplugin_toleration = true
 
@@ -429,7 +431,14 @@ cluster_name = "rook-ceph" # •ᴗ•
 # LCM will kindly throw an error message into your face in stage 4 and abort :).
 #
 # [0] https://gitlab.com/yaook/k8s/-/issues/436#note_873556688
-#use_thanos = true
+#use_thanos = false
+
+# Let terraform create an object storage container / bucket for you if `true`.
+# If set to `false` one must provide a value for `thanos_objectstorage_config_file` to configure an external backend.
+# NOTE: If `thanos_objectstorage_config_file` is set, then it (`thanos_objectstorage_config_file`) will take precedence, i.e.,
+#       thanos will use the external config although terraform creates the bucket. This has historic reasons [0].
+# [0] https://gitlab.com/yaook/k8s/-/merge_requests/635
+#manage_thanos_bucket = true
 
 # Thanos uses local storage to keep a copy of the metadata from the object store
 # for faster access. The size and storage class for that volume can be
@@ -502,24 +511,43 @@ cluster_name = "rook-ceph" # •ᴗ•
 # default object store container name is set to the following.
 #thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
 
+# The following two variables are needed if you want thanos to use an object storage
+# backend which is not managed by the LCM.
+# Configuration file name which contains the credentials to access the (external) object storage
+# as backend for thanos. You can find valid configuration formats here [0]
+# NOTE: The configuration file is read relative to `thanos_objectstorage_config_path`.
+# NOTE: This variable takes precedence over `manage_thanos_bucket`. If it's set, then thanos will always use the credentials from this file.
+#       See the discussions in [1] for more details.
+# [0] https://thanos.io/tip/thanos/storage.md/#supported-clients
+# [1] https://gitlab.com/yaook/k8s/-/merge_requests/635
+#thanos_objectstorage_config_file=""
+
+# Path in which the LCM will look for your config file. Defaults to "./config/"
+# NOTE: you probably don't have to override this variable.
+#thanos_objectstorage_config_path = "{{ ksl_vars_directory }}/../../config/"
+
 # Use legacy jsonnet-based setup (monitoring_v1).
 # The jsonnet-based monitoring setup will get removed soon™
 # https://github.com/prometheus-operator/kube-prometheus
 #use_jsonnet_setup = false
 
 # Include migration tasks
-# migrate_from_v1 = false
+#migrate_from_v1 = false
 
 # Scrape external targets via blackbox exporter
 # https://github.com/helm/charts/tree/master/stable/prometheus-blackbox-exporter
 #internet_probe = false
+
+# Provide a list of DNS endpoints for additional thanos store endpoints.
+# The endpoint will be extended to `dnssrv+_grpc._tcp.{{ endpoint }}.monitoring.svc.cluster.local`.
+#thanos_query_additional_store_endpoints = []
 
 #[[k8s-service-layer.prometheus.internet_probe_targets]]
 # name="example"                    # Human readable URL that will appear in Prometheus / AlertManager
 # url="http://example.com/healthz"  # The URL that blackbox will scrape
 # interval="60s"                    # Scraping interval. Overrides value set in `defaults`
 # scrapeTimeout="60s"               # Scrape timeout. Overrides value set in `defaults`
-# module = "http_2xx"               # module to be used. Can either be "http_2xx" (default) or "icmp".
+# module = "http_2xx"               # module to be used. Can be "http_2xx" (default), "icmp" or "tcp_connect".
 
 # If at least one common_label is defined, Prometheus will be created with selectors
 # matching these labels and only ServiceMonitors that meet the criteria of the selector,
@@ -639,6 +667,11 @@ enabled = false # •ᴗ•
 # etcdbackup chart version to install.
 # If this is not specified, the latest version is installed.
 #chart_version=""
+
+# Metrics port on which the backup-shifter Pod will provide metrics.
+# Please note that the etcd-backup deployment runs in host network mode
+# for easier access to the etcd cluster.
+#metrics_port: 19100
 
 # ANCHOR_END: etcd_backup_configuration
 
@@ -911,13 +944,18 @@ rollout = false # •ᴗ•
 # so that it can be used from within Pods.
 wireguard_on_workers = false
 
+# Configure which container runtime to use.
+# Supported values are: "docker" and "containerd".
+# For now migrating the container runtime of existing clusters is not
+# supported.
+container_runtime = "containerd"  # "•ᴗ•"
 
 # Configuration details if the cluster will be placed behind a HTTP proxy.
-# If unconfigured images will be used to setup the cluster, the updates of 
+# If unconfigured images will be used to setup the cluster, the updates of
 # package sources, the download of docker images and the initial cluster setup will fail.
 # NOTE: These chances are currently only tested for Debian-based operating systems and not for RHEL-based!
 #cluster_behind_proxy = false
-# Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or 
+# Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or
 # internal docker repositories can be added to the no_proxy config entry
 # Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
 # will be set automagically and do not have to set manually here.
@@ -953,6 +991,14 @@ wireguard_on_workers = false
 #custom_chrony_configuration = false
 #custom_ntp_pools = [ "0.pool.ntp.example.org", "1.pool.ntp.example.org"]
 #custom_ntp_servers = [ "0.server.ntp.example.org", "1.server.ntp.example.org"]
+
+# OpenStack credential checks
+# Terrible things will happen when certain tasks are run and OpenStack credentials are not sourced.
+# Okay, maybe not so terrible after all, but the templates do not check if certain values exist.
+# Hence config files with empty credentials are written. The LCM will execute a simple check to see
+# if you provided valid credentials as a sanity check iff you're on openstack and the flag below is set
+# to True.
+#check_openstack_credentials = True
 
 [nvidia.vgpu]
 # vGPU Support
