@@ -19,6 +19,4 @@ rules:
     level: warning
   document-end:
     level: warning
-  key-duplicates:
-    level: warning
 ...
