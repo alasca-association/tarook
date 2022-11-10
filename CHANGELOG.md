@@ -18,6 +18,13 @@ You have to add external CIDRs to the network policies as needed to avoid that.
 
 Clusters where NetworkPolicy objects are not in use or where filtering only happens on namespace/pod targets are not affected (as LBaaS wouldn't have worked there anyway, as it needs to be allowlisted in a CIDR already).
 
+## [Add Priority Class to esssential cluster components (!633) · Merge requests · YAOOK / k8s · GitLab](https://gitlab.com/yaook/k8s/-/merge_requests/633)
+
+The [priority classes](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/) `system-cluster-critical` and `system-node-critical` have been added to all managed and therefore essential services and components.
+There is no switch to avoid that.
+For existing clusters, all managed components will therefore be restarted/updated once during the next application of the LCM.
+This is considered not disruptive.
+
 ## Decoupling thanos and terraform
 
 When enabling thanos, one can now prevent terraform from creating a bucket in the same OpenStack project by setting `manage_thanos_bucket=false` in the `[k8s-service-layer.prometheus]`. Then it's up to the user to manage the bucket by configuring an alternative storage backend.
