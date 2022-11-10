@@ -563,6 +563,10 @@ cluster_name = "rook-ceph" # •ᴗ•
 # The endpoint will be extended to `dnssrv+_grpc._tcp.{{ endpoint }}.monitoring.svc.cluster.local`.
 #thanos_query_additional_store_endpoints = []
 
+# Deploy a specific blackbox exporter version
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
+#blackbox_version = "5.3.1"
+
 #[[k8s-service-layer.prometheus.internet_probe_targets]]
 # name="example"                    # Human readable URL that will appear in Prometheus / AlertManager
 # url="http://example.com/healthz"  # The URL that blackbox will scrape
