@@ -198,6 +198,14 @@
       - calico-worker
       when: k8s_network_plugin == 'calico'
 
+- name: Cleanup Calico binaries
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: calico-cleanup
+      tags: calico-cleanup
+      when: k8s_network_plugin == 'calico'
+
 - name: Spawn the OpenStack k8s Control Plane
   hosts: masters
   become: yes

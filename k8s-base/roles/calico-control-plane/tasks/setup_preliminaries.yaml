@@ -115,4 +115,4 @@
       fail_on_error: yes
       strict: yes
   loop:
-    - calico-cni-user.yaml
+    - "{{ calico_versions_folder }}/calico-cni-user.yaml"
