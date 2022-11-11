@@ -13,8 +13,14 @@
 #
 # A word on certificates. We cannot rely on cert-manager because its deployment is optional thusfar
 # and if we would want to make it mandatory, then we'd have to tread carefully not to interfere with
-# any user-controlled cert-manager instance. Neither do we have a working vault setup. Therefore we're
-# stuck with our poor man's PKI in ansible.
+# any user-controlled cert-manager instance.
+# Even though we now have support for Vault, we chose not to handle this in Vault, for one simple
+# reason: Golang does not support CRLs. Without setting up and making reachable an OCSP endpoint,
+# using a CA actually degrades security over (even irregularly) rotated keypairs: A keypair will
+# stay valid for its entire lifetime and there's no way to stop it from being valid. To invalidate
+# a keypair, we'd have to rotate *and replace* the associated CA, and with that we're back to square
+# one and can just go ahead and have a "manually" managed self-signed and explicitly trusted keypair.
+#
 # This role creates two self-signed certificates ("server" -> socat, "client" -> monitoring). The client cert acts as
 # CA on the server-side and vice versa.
 # Rotation: There's no need to expire a certificate because there's no common CA. Just delete either of the
