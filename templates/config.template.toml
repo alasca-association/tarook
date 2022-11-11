@@ -227,12 +227,10 @@ pod_subnet = "10.244.0.0/16" # •ᴗ•
 # This is the subnet used by Kubernetes for Services.
 service_subnet = "10.96.0.0/12" # •ᴗ•
 
-# Pick a networking plugin:
-# - kube-router: High-performance, low-overhead implementation with support
-#   for NetworkPolicy objects (DEPRACTED: Support will be dropped in the near future)
-# - calico: High-performance, pure IP networking, policy engine. Calico provides
-#   layer 3 networking capabilities and associates a virtual router with each node.
-#   Allows the establishment of zone boundaries through BGP
+# calico:
+# High-performance, pure IP networking, policy engine. Calico provides
+# layer 3 networking capabilities and associates a virtual router with each node.
+# Allows the establishment of zone boundaries through BGP
 plugin = "calico" # •ᴗ•
 
 # Pick a Calico version:

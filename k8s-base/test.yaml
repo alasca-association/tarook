@@ -132,7 +132,7 @@
     tags:
     - test-networkpolicy-enforcement
     - check-networkpolicy-enforcement
-    when: "k8s_network_plugin in ['kube-router', 'calico']"
+    when: "k8s_network_plugin in ['calico']"
 
 # Same line for argumentation: especially rook is known to take a bit more time to boot up
 - name: Check storage services
