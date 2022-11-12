@@ -97,6 +97,7 @@ export OS_IDENTITY_API_VERSION=3
 | `MANAGED_K8S_WG_USER_GIT`            | `gitlab.cloudandheat.com:lcm/wg_user`                                | Git URL to a repository with wireguard keys to provision. Can be enabled by setting `WG_COMPANY_USERS` (see below).                            |
 | `MANAGED_K8S_PASSWORDSTORE_USER_GIT` | `gitlab.cloudandheat.com:lcm/mk8s-passwordstore-users`               | Git URL to a repository with users to grant access to cluster secrets. Can be enabled by setting `PASS_COMPANY_USERS` (see below).             |
 | `MANAGED_CH_ROLE_USER_GIT`           | `gitlab.cloudandheat.com:operations/ansible-roles/ch-role-users.git` | URL to the ch-role-users role submodule. Can be enabled by setting `SSH_COMPANY_USERS` (see below).                                            |
+| `TERRAFORM_MODULE_PATH`              | `../terraform`                                                   | Path to the Terraform root module to change the working directory for the execution of the Terraform commands.                                 |
 
 ## Secret Management
 
