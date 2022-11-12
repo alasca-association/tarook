@@ -17,6 +17,7 @@ spec:
       labels:
         app: csi-cinder-nodeplugin
     spec:
+      priorityClassName: system-node-critical
       tolerations:
         - operator: Exists
       serviceAccount: csi-cinder-node-sa

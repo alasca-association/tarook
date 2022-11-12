@@ -13,6 +13,7 @@ spec:
       labels:
         app.kubernetes.io/name: etcd-proxy-metrics
     spec:
+      priorityClassName: system-node-critical
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

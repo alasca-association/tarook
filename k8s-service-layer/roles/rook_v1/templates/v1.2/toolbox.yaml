@@ -15,6 +15,7 @@ spec:
       labels:
         app: {{ "%s-tools" | format(rook_cluster_name) | to_json }}
     spec:
+      priorityClassName: system-cluster-critical
       dnsPolicy: ClusterFirstWithHostNet
 {% if rook_scheduling_key %}
       affinity:

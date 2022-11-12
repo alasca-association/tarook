@@ -71,6 +71,7 @@ spec:
       labels:
         app: local-path-provisioner
     spec:
+      priorityClassName: system-cluster-critical
       serviceAccountName: local-path-provisioner-service-account
 {% if k8s_local_storage_dynamic_nodeplugin_toleration %}
       tolerations:
