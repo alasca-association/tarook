@@ -8,11 +8,15 @@
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes
+  vars:
+    calicoctl_command_blocks:
+      - "/usr/local/bin/calicoctl"
+      - "apply"
+        # During Kubernetes upgrades, version mismatches are expected. Otherwise they are not.
+      - "{{ next_k8s_version | default(False)| ternary('--allow-version-mismatch','') }}"
+      - "--filename=-"
   command:
-    argv:
-      - /usr/local/bin/calicoctl
-      - apply
-      - --filename=-
+    argv: "{{ calicoctl_command_blocks | select }}"
     stdin: '{{ lookup("template", "ippools.yaml.j2") }}'
   register: ippool_creation
   changed_when: "'Successfully applied' in ippool_creation.stdout and 'IPPool' in ippool_creation.stdout"

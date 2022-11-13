@@ -10,6 +10,11 @@ Nonetheless, as we're having a continuously growing user base, some important no
 The LCM now supports Rook v1.7.*.
 Upgrading is as easy as setting your rook version to 1.7.11, allowing to release the kraken and running stage 4.
 
+## Support for Calico v3.21.6
+
+We now added support for Calico v3.21.6, which is tested against Kubernetes `v1.20, v1.21 and v1.22` by the Calico project team.
+We also added the possibility to specify one of our supported Calico versions (`v3.17.1, v3.19.0, v3.21.6`) through a `config.toml` variable: `calico_custom_version`.
+
 ## ch-k8s-lbaas now respects NetworkPolicy objects
 
 If you are using NetworkPolicy objects, ch-k8s-lbaas will now interpret them and enforce restrictions on the frontend. That means that if you previously only allowlisted the CIDR in which the lbaas agents themselves reside, your inbound traffic will be dropped now.

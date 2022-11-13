@@ -21,6 +21,11 @@ calicoctl_binary_checksums:
 
 calicoctl_binary_checksum: "{{ calicoctl_binary_checksums[image_versions.calico_version] | default('invalid checksum') }}"
 
+calico_release_checksums:
+  "3.21.6": "sha256:888b80f33a73fd4788dd474c774e1071768324b84d5a47dbe8f9ac160e82e2cf"
+
+calico_release_checksum: "{{ calico_release_checksums[image_versions.calico_version] | default('invalid checksum') }}"
+
 # Paths for key-material
 own_ca_crt_path: "{{ etc_dir }}/ca.crt"
 own_ca_key_path: "{{ etc_dir }}/ca.key"
