@@ -12,7 +12,7 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Namespace
   register: gather_namespaces
   ignore_errors: yes
@@ -25,7 +25,7 @@
   when: not gather_namespaces.failed
   block:
     - name: Ensure all kube-router resources are absent
-      k8s:
+      kubernetes.core.k8s:
         definition: "{{ lookup('template', 'kube-router_resources.yaml.j2') }}"
         apply: yes
         state: "absent"

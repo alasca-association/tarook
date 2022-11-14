@@ -1,5 +1,5 @@
 # https://kubernetes.io/docs/tasks/network/validate-dual-stack/
-# 
+#
 # https://kubernetes.io/docs/tasks/network/validate-dual-stack/#validate-pod-addressing
 # --> is implicitly checked in "check-calico/test-pod-connectivity"
 #
@@ -13,7 +13,7 @@
   delegate_to: "{{ groups['masters'] | first }}"
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Node
     name: "{{ inventory_hostname }}"
   register: k8s_node_info

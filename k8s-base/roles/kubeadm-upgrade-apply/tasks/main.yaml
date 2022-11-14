@@ -45,7 +45,7 @@
         - next_k8s_version is defined and next_k8s_version is version('1.23', '>=')
       block:
       - name: Patch kube-proxy to remove IPv6DualStack
-        k8s_info:
+        kubernetes.core.k8s_info:
           kind: ConfigMap
           namespace: kube-system
           name: kube-proxy
@@ -54,7 +54,7 @@
       - name: Patch the kube-proxy ConfigMap
         vars:
           kube_proxy_config_patched: "{{ kube_proxy_configmap_old['resources'][0]['data']['config.conf'] | replace('IPv6DualStack: false', '') | from_yaml | to_nice_yaml }}"
-        k8s:
+        kubernetes.core.k8s:
           definition:
             apiVersion: v1
             kind: ConfigMap
@@ -67,7 +67,7 @@
         register: kube_proxy_configmap
 
       - name: Patch kubeadm-config to remove IPv6DualStack
-        k8s_info:
+        kubernetes.core.k8s_info:
           kind: ConfigMap
           namespace: kube-system
           name: kubeadm-config
@@ -76,7 +76,7 @@
       - name: Patch the kubeadm-config ConfigMap
         vars:
           kubeadm_config_config_patched: "{{ kubeadm_config_configmap_old['resources'][0]['data']['ClusterConfiguration'] | replace('IPv6DualStack: false', '') | from_yaml | to_nice_yaml }}"
-        k8s:
+        kubernetes.core.k8s:
           definition:
             apiVersion: v1
             kind: ConfigMap
@@ -88,7 +88,7 @@
                 {{ kubeadm_config_config_patched }}
 
       - name: Patch kubelet-config to remove IPv6DualStack
-        k8s_info:
+        kubernetes.core.k8s_info:
           kind: ConfigMap
           namespace: kube-system
           name: "kubelet-config-{{next_minor_k8s_version}}"
@@ -97,7 +97,7 @@
       - name: Patch the kubelet-config ConfigMap
         vars:
           kubelet_config_config_patched: "{{ kubelet_config_configmap_old['resources'][0]['data']['kubelet'] | replace('IPv6DualStack: false', '') | from_yaml | to_nice_yaml }}"
-        k8s:
+        kubernetes.core.k8s:
           definition:
             apiVersion: v1
             kind: ConfigMap

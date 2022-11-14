@@ -2,7 +2,7 @@
 - name: Run the test
   block:
   - name: discover IP address of prometheus service
-    k8s_info:
+    kubernetes.core.k8s_info:
       namespace: monitoring
       name: prometheus-k8s
       api_version: v1
@@ -25,7 +25,7 @@
   - name: Scrape the endpoints
     block:
     - name: Create the node-exporter-scraper namespace
-      k8s:
+      kubernetes.core.k8s:
         definition:
           apiVersion: v1
           kind: Namespace
@@ -39,7 +39,7 @@
         state: present
 
     - name: Create the node-exporter scraper Pod
-      k8s:
+      kubernetes.core.k8s:
         definition: "{{ lookup('template', 'scraper.yaml.j2') }}"
         apply: yes
         state: "present"
@@ -50,7 +50,7 @@
       register: scraper_info
 
     - name: check node exporter scrape endpoint status
-      community.kubernetes.k8s_exec:
+      kubernetes.core.k8s_exec:
         namespace: "{{ check_node_exporter_namespace }}"
         pod: node-exporter-scraper
         command: curl -g "http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job='node-exporter',instance='{{ item }}'}"
@@ -65,7 +65,7 @@
       loop: "{{ groups['k8s_nodes'] }}"
 
     - name: check keepalived exporter scrape endpoint status
-      community.kubernetes.k8s_exec:
+      kubernetes.core.k8s_exec:
         namespace: "{{ check_node_exporter_namespace }}"
         pod: node-exporter-scraper
         command: curl -g 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="prometheus-keepalived",instance="{{ hostvars[item]["local_ipv4_address"] }}:9650"}'
@@ -80,7 +80,7 @@
       delay: 3
 
     - name: check haproxy exporter scrape endpoint status
-      community.kubernetes.k8s_exec:
+      kubernetes.core.k8s_exec:
         namespace: "{{ check_node_exporter_namespace }}"
         pod: node-exporter-scraper
         command: curl -g 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="prometheus-haproxy",instance="{{ hostvars[item]["local_ipv4_address"] }}:9101"}'
@@ -95,7 +95,7 @@
       delay: 3
 
     - name: check ceph mgr scrape endpoint status
-      community.kubernetes.k8s_exec:
+      kubernetes.core.k8s_exec:
           namespace: "{{ check_node_exporter_namespace }}"
           pod: node-exporter-scraper
           command: curl -g 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="rook-ceph-mgr"}'
@@ -110,7 +110,7 @@
       delay: 3
 
     - name: check LBaaS controller scrape endpoint status
-      community.kubernetes.k8s_exec:
+      kubernetes.core.k8s_exec:
         namespace: "{{ check_node_exporter_namespace }}"
         pod: node-exporter-scraper
         command: curl -g 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="ch-k8s-lbaas-controller"}'
@@ -125,7 +125,7 @@
       delay: 3
 
     - name: check LBaaS agent scrape endpoint status
-      community.kubernetes.k8s_exec:
+      kubernetes.core.k8s_exec:
         namespace: "{{ check_node_exporter_namespace }}"
         pod: node-exporter-scraper
         command: curl -g 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="ch-k8s-lbaas-agent",instance="{{ hostvars[item]["local_ipv4_address"] }}:{{ ch_k8s_lbaas_agent_port }}"}'
@@ -141,7 +141,7 @@
       delay: 3
 
   - name: Delete Namespace
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       name: "{{ check_node_exporter_namespace }}"
       kind: Namespace

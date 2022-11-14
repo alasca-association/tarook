@@ -1,7 +1,7 @@
 - name: Check dual stack lb service functionality
   block:
   - name: Create DualStack load-balanced service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_dual_stack.yaml.j2') }}"
       state: present
       validate:
@@ -9,7 +9,7 @@
         strict: yes
 
   - name: require service to have ingress IP address set
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Service
       namespace: "{{ check_loadbalancer_service_namespace }}"
@@ -37,7 +37,7 @@
     changed_when: False
 
   - name: Remove DualStack load-balanced service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_dual_stack.yaml.j2') }}"
       state: absent
       wait: yes
@@ -49,7 +49,7 @@
   when: false # Currently we do not support IPv6 single stack load balanced services (refer to the dualstack docs)
   block:
   - name: Create SingleStack IPv6 load-balanced service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_single_stack_v6.yaml.j2') }}"
       state: present
       validate:
@@ -57,7 +57,7 @@
         strict: yes
 
   - name: require service to have ingress IP address set
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Service
       namespace: "{{ check_loadbalancer_service_namespace }}"
@@ -85,7 +85,7 @@
     changed_when: False
 
   - name: Remove SingleStack IPv6 load-balanced service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_single_stack_v6.yaml.j2') }}"
       state: absent
       wait: yes

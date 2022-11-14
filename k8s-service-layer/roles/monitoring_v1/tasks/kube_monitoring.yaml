@@ -23,7 +23,7 @@
   changed_when: false
 
 - name: apply manifests
-  k8s:
+  kubernetes.core.k8s:
     state: present
     apply: yes
     definition: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/' + item) }}"
@@ -34,7 +34,7 @@
   no_log: true # blasts the output
 
 - name: create rook service monitor
-  k8s:
+  kubernetes.core.k8s:
     state: present
     apply: yes
     definition: "{{ lookup('template', 'rook-service-monitor.yaml') }}"

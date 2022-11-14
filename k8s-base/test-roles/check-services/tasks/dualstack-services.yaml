@@ -1,7 +1,7 @@
 - name: Check dual stack service functionality
   block:
   - name: Apply the nginx+service manifest (DualStack)
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_dual_stack.yaml.j2') }}"
       state: present
       wait: yes
@@ -18,7 +18,7 @@
     failed_when: curl_result.status != 200
 
   - name: Get the DualStack Service information
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Service
       name: nginx-service-dual-stack
@@ -40,7 +40,7 @@
     when: nginx_service_cluster_ips | ipv6 | length==0
 
   - name: Remove the DualStack service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_dual_stack.yaml.j2') }}"
       state: absent
       wait: yes
@@ -51,7 +51,7 @@
 - name: Check SingleStack IPv4 service functionality
   block:
   - name: Apply the nginx+service manifest (SingleStack IPv4)
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_single_stack_v4.yaml.j2') }}"
       state: present
       wait: yes
@@ -68,7 +68,7 @@
     failed_when: curl_result.status != 200
 
   - name: Get the SingleStack IPv4 service information
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Service
       name: nginx-service-single-stack-v4
@@ -90,7 +90,7 @@
     when: nginx_service_cluster_ips | ipv6 | length>0
 
   - name: Remove the SingleStack IPv4 service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_single_stack_v4.yaml.j2') }}"
       state: absent
       wait: yes
@@ -101,7 +101,7 @@
 - name: Check SingleStack IPv6 service functionality
   block:
   - name: Apply the nginx+service manifest (SingleStack IPv6)
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_single_stack_v6.yaml.j2') }}"
       state: present
       wait: yes
@@ -118,7 +118,7 @@
     failed_when: curl_result.status != 200
 
   - name: Get the SingleStack IPv6 service information
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Service
       name: nginx-service-single-stack-v6
@@ -140,7 +140,7 @@
     when: nginx_service_cluster_ips | ipv6 | length==0
 
   - name: Remove the SingleStack IPv6 service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_single_stack_v6.yaml.j2') }}"
       state: absent
       wait: yes

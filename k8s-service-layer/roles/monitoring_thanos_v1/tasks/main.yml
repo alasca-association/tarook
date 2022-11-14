@@ -27,7 +27,7 @@
       name: check-openstack-credentials
 
 - name: Create namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: v1
@@ -42,7 +42,7 @@
   - thanos
 
 - name: Create thanos secret
-  k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: v1

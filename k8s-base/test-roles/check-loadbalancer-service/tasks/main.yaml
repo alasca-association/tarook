@@ -5,7 +5,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: create test namespace
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       name: "{{ check_loadbalancer_service_namespace }}"
       kind: Namespace
@@ -15,7 +15,7 @@
         strict: yes
 
   - name: Create k8s preliminaries (ServiceAccount, RBAC, echo-Deployment)
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'preliminaries.yaml.j2') }}"
       state: present
       wait: yes
@@ -24,7 +24,7 @@
         strict: yes
 
   - name: Create SingleStack IPv4 load-balanced service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_single_stack_v4.yaml.j2') }}"
       state: present
       validate:
@@ -32,7 +32,7 @@
         strict: yes
 
   - name: require service to have ingress IP address set
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Service
       namespace: "{{ check_loadbalancer_service_namespace }}"
@@ -61,7 +61,7 @@
     changed_when: False
 
   - name: Remove SingleStack IPv4 load-balanced service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_single_stack_v4.yaml.j2') }}"
       state: absent
       wait: yes
@@ -74,7 +74,7 @@
     include_tasks: dualstack-lb-services.yaml
 
   - name: Clean up k8s preliminaries (ServiceAccount, RBAC, echo-Deployment)
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'preliminaries.yaml.j2') }}"
       state: absent
       validate:
@@ -84,7 +84,7 @@
     - test-cleanup
 
   - name: delete test namespace
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       name: "{{ check_loadbalancer_service_namespace }}"
       kind: Namespace

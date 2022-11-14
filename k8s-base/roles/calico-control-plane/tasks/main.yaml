@@ -55,7 +55,7 @@
   run_once: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
+  kubernetes.core.k8s:
     definition: "{{ lookup('template', item) }}"
     apply: yes
     validate:

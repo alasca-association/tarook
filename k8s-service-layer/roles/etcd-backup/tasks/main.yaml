@@ -4,7 +4,7 @@
     name: etcd_backup_config
 
 - name: Create a Secret to save s3 credentials
-  k8s:
+  kubernetes.core.k8s:
     state: present
     apply: true
     definition:
@@ -65,7 +65,7 @@
     repo_state: "{{ etcd_backup_enabled | ternary('present', 'absent') }}"
 
 - name: Deploy yaook operator etcd backup chart
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     chart_ref: etcdbackup
     chart_repo_url: https://charts.yaook.cloud/operator/stable/
     chart_version: "{{ etcd_backup_chart_version }}"

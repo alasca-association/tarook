@@ -6,7 +6,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: Create Namespace for calico Pod-to-Pod Connectivity-Check
-    k8s:
+    kubernetes.core.k8s:
       definition:
         apiVersion: v1
         kind: Namespace
@@ -20,12 +20,12 @@
       state: present
 
   - name: Collect Information about number of Nodes
-    k8s_info:
+    kubernetes.core.k8s_info:
       kind: Node
     register: k8s_nodes_list
 
   - name: Create ServiceAccount, RBAC, and Deployment for calico-busybox-test
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', item) }}"
       apply: yes
       state: "present"
@@ -38,7 +38,7 @@
     - busybox-deployment.yaml.j2
 
   - name: Collect (calico-)BusyBox Pod Resource Information
-    k8s_info:
+    kubernetes.core.k8s_info:
       kind: Pod
       label_selectors:
       - k8s-app=calico-busybox-test
@@ -96,7 +96,7 @@
 
   # Using a Deamonset ensures that a Pod is created on each node
   - name: Delete the (calico-)BusyBox DaemonSet and ServiceAccount
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', item) }}"
       apply: yes
       state: absent
@@ -110,7 +110,7 @@
       - test-cleanup
 
   - name: Delete Namespace for calico Pod-to-Pod Connectivity-Check
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       name: "{{ check_calico_namespace }}"
       kind: Namespace

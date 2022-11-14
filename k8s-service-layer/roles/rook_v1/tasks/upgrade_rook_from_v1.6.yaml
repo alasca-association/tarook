@@ -8,7 +8,7 @@
 - name: Configure k8s resources
   block:
     - name: Apply updated common resources
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', 'v1.7/common.yaml') }}"
@@ -17,7 +17,7 @@
           strict: yes
 
     - name: Apply updated Custom Resource Definitions (CRDs)
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', 'v1.7/crds.yaml') }}"
@@ -26,7 +26,7 @@
           strict: yes
 
     - name: Apply new rook-ceph-operator manifest (v1.7)
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', 'v1.7/operator.yaml') }}"

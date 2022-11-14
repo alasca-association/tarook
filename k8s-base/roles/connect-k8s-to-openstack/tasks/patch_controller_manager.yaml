@@ -7,7 +7,7 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     api_version: v1
     kind: Pod

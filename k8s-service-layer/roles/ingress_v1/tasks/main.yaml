@@ -1,7 +1,7 @@
 ---
 - name: Create namespace
   when: k8s_ingress_install
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: v1
@@ -21,7 +21,7 @@
 - name: Install NGINX ingress
   vars:
     scheduling_key: "{{ k8s_ingress_scheduling_key }}"
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     chart_ref: ingress-nginx
     chart_repo_url: https://kubernetes.github.io/ingress-nginx
     release_namespace: "{{ k8s_ingress_namespace }}"

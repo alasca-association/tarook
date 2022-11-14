@@ -25,7 +25,7 @@
     become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Secret
       name: calico-node-certs
@@ -77,7 +77,7 @@
 # - certificate expires soon
 - name: Generate calico/node certificate and create the Secret on k8s
   block:
-  # The calico/node private key is regenerated, if the calico/node certificate is short to expire. 
+  # The calico/node private key is regenerated, if the calico/node certificate is short to expire.
   # This will also lead to the recreation of the calico/node certificate. The certificate is also
   # recreated if the Typha CA certificate has changed.
   - name: Regenerate (force) private key of calico/node certificate if it is short to expire
@@ -126,7 +126,7 @@
     become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s:
+    kubernetes.core.k8s:
       apply: yes
       definition:
         apiVersion: v1
@@ -151,7 +151,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: Create ServiceAccount for calico/node, configure RBAC, ClusterRole, ClusterRoleBinding
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
       state: "present"
@@ -166,7 +166,7 @@
   # BIRD: - Distribution of routing information via the BGP protocol
   # confd: - watches Calico datastore for config changes and updates BIRDs config files
   - name: Deploy Calico node DaemonSet
-    k8s:
+    kubernetes.core.k8s:
       apply: yes
       definition: "{{ lookup('template', item) }}"
       validate:

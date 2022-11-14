@@ -6,7 +6,7 @@
     ipsec_remote_private_addrs: "{{ hostvars[gateway]['ipsec_remote_private_addrs'] }}"
   block:
   - name: create namespace
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       kind: Namespace
       name: "{{ check_ipsec_namespace }}"
@@ -16,7 +16,7 @@
         strict: yes
 
   - name: create a busybox Pod
-    k8s:
+    kubernetes.core.k8s:
       state: present
       definition: "{{ lookup('template', 'busybox-ping-job.yaml.j2') }}"
       wait: yes
@@ -26,7 +26,7 @@
         strict: yes
 
   - name: Try to ping test-node via IPsec
-    community.kubernetes.k8s_exec:
+    kubernetes.core.k8s_exec:
       namespace: "{{ check_ipsec_namespace }}"
       pod: ipsec-test-busybox
       command: ping -c 1 {{ ipsec_remote_private_addrs }}
@@ -36,7 +36,7 @@
     until: ipsec_test_vm_ping.rc == 0
 
   - name: delete namespace
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       kind: Namespace
       name: "{{ check_ipsec_namespace }}"

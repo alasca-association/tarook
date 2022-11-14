@@ -11,7 +11,7 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: v1
@@ -36,7 +36,7 @@
     template_folder: "{{ ('k8s-v' + k8s_version_minor + '/') }}"
   block:
     - name: Deploy the CCM and its RBAC
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', template_folder + 'cloud-controller-manager/rbac/' + item) }}"
@@ -48,7 +48,7 @@
         - cloud-controller-manager-role-bindings.yaml.j2
 
     - name: Deploy Cloud-Controller-Manger
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', template_folder + 'cloud-controller-manager/openstack-cloud-controller-manager-ds.yaml.j2') }}"
@@ -57,7 +57,7 @@
           strict: yes
 
     - name: Start the Cinder CSI driver plugin
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', item) }}"
@@ -70,7 +70,7 @@
       - "templates/{{ template_folder }}cinder-csi-plugin/*.yaml.j2"
 
     - name: Create cinder storage class (hdd)
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('file', 'cinder/cinder_storage_class.yaml') }}"
@@ -80,7 +80,7 @@
 
     - name: Create cinder storage class (nvme)
       when: openstack_cinder_nvme
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('file', 'cinder/cinder_nvme_storage_class.yaml') }}"

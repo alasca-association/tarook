@@ -28,7 +28,7 @@
   run_once: yes
   block:
     - name: Create storage class
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', 'sc.yaml.j2') }}"
@@ -37,7 +37,7 @@
           strict: yes
 
     - name: Create provisioner
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', 'provisioner.yaml.j2') }}"
@@ -46,7 +46,7 @@
           strict: yes
 
     - name: Create service
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', 'service.yaml.j2') }}"
