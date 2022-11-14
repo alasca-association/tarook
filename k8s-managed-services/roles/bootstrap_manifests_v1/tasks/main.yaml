@@ -1,0 +1,7 @@
+---
+- name: Apply bootstrap manifests
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ item }}"
+  with_fileglob: "{{ bootstrap_manifests_paths }}"
+...

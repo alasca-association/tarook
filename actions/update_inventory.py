@@ -37,7 +37,8 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "etcd-backup",
     "custom",
     "miscellaneous",
-    "nvidia"
+    "nvidia",
+    "bootstrap-manifests"
 )
 # Mapping stages to their common names
 ANSIBLE_STAGES = {
@@ -84,6 +85,7 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "etcd-backup": "etcd_backup",
     "vault": "yaook_vault",
     "nvidia": "nvidia",
+    "bootstrap-manifests": "bootstrap_manifests"
 }
 
 
@@ -518,6 +520,26 @@ def main():
         config["k8s-service-layer"].get("etcd-backup"),
         kubernetes_service_storage_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("etcd-backup", "")
+    )
+
+    # ---
+    # BOOTSTRAP-MANIFESTS
+    # ---
+    print_process_state("BOOTSTRAP-MANIFESTS")
+    kubernetes_bootstrap_manifests_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage5"] /
+        "bootstrap_manifests.yaml"
+    )
+    boostrap_manifest_config = config.get("bootstrap-manifests")
+    if "paths" in boostrap_manifest_config:
+        boostrap_manifest_config["paths"] = list(map(
+            lambda manifest_path: os.path.abspath(manifest_path),
+            boostrap_manifest_config.get("paths")
+        ))
+    dump_to_ansible_inventory(
+        boostrap_manifest_config,
+        kubernetes_bootstrap_manifests_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("bootstrap-manifests", "")
     )
 
     # ---

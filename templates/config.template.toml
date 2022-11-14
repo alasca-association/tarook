@@ -754,6 +754,17 @@ enabled = false # •ᴗ•
 
 # ANCHOR_END: ksl_vault_configuration
 
+# ANCHOR: bootstrap_manifests
+# --- KUBERNETES MANAGED SERVICES : BOOTSTRAP-MANIFESTS ---
+# ansible prefix: "bootstrap_manifests"
+[bootstrap-manifests]
+# List of kubernetes manifest files to apply to the cluster (will be created / updated
+# if it does not exist, but never deleted). This can be the absolute file path or an
+# absolute / relative (to the surrounding cluster directory) glob.
+# paths = []
+
+# ANCHOR_END: bootstrap_manifests
+
 # ANCHOR: node_scheduling_configuration
 # --- NODE SCHEDULING ---
 # ansible prefix: /

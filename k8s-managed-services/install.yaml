@@ -26,3 +26,7 @@
     when: k8s_is_gpu_cluster
     tags:
     - mk8s-ms/nvidia-device-plugin
+
+  - role: bootstrap_manifests_v1
+    tags:
+    - mk8s-ms/bootstrap-manifests
