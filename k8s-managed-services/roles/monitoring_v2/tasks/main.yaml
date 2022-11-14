@@ -73,6 +73,17 @@
     tags:
       - node-exporter-service-monitor
 
+  - name: Create service monitors for calico
+    k8s:
+      state: present
+      apply: yes
+      definition: "{{ lookup('template', 'calico-monitoring.yaml.j2') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+    tags:
+      - calico-service-monitor
+
 - name: "{{ k8s_is_gpu_cluster | ternary('I', 'Uni') }}nstall NVIDIA DCGM exporter"
   kubernetes.core.helm:
     chart_ref: dcgm-exporter
