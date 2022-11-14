@@ -127,6 +127,11 @@ name          = "yaook"                # Human readable URL that will appear in 
 url           = "https://yaook.cloud/" # The URL that blackbox will scrape
 interval      = "60s"                  # Scraping interval. Overrides value set in `defaults`
 scrapeTimeout = "60s"                  # Scrape timeout. Overrides value set in `defaults`
+[[k8s-service-layer.prometheus.internet_probe_targets]]
+name = "quad-9"               # Human readable URL that will appear in Prometheus / AlertManager
+url = "9.9.9.9" # The URL that blackbox will scrape
+module = "icmp"
+
 
 [k8s-service-layer.prometheus.common_labels]
 managed-by = "yaook-k8s-monitoring"
