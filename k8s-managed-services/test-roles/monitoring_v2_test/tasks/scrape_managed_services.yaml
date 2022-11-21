@@ -121,7 +121,7 @@
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{target="{{ item.url }}",job="kms-blackbox-prometheus-blackbox-exporter"}'
   register: metrics
-  loop: "{{ monitoring_internet_probe_targets }}"
+  loop: "{{ monitoring_internet_probe_targets | default([]) }}"
   loop_control:
     label: "{{ item.name }} - {{ item.url }}"
   until: |
