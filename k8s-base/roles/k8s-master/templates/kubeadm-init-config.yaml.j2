@@ -4,6 +4,9 @@ apiVersion: kubeadm.k8s.io/v1beta2
 kind: InitConfiguration
 nodeRegistration:
   kubeletExtraArgs:
+{% if on_openstack %}
+    cloud-provider: "external"
+{% endif %}
 {% if dualstack_support %}
     node-ip: {{ [local_ipv4_address, local_ipv6_address] | join(",") | to_json }}
 {% else %}
@@ -55,11 +58,11 @@ apiServer:
 
 controllerManager:
     extraArgs:
-        "bind-address" : "0.0.0.0"
+      bind-address: "0.0.0.0"
 
 scheduler:
     extraArgs:
-        "bind-address" : "0.0.0.0"
+      "bind-address" : "0.0.0.0"
 
 featureGates:
 # remove it when we do not support < v1.23
