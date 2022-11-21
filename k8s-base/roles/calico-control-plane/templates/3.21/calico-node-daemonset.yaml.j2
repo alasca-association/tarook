@@ -116,6 +116,9 @@ spec:
             # Location of the client certificate key for connecting to Typha; volume mount
             - name: FELIX_TYPHAKEYFILE
               value: /calico-node-certs/calico-node.key
+            # Tell Felix to expose metrics for prometheus, by default on 0.0.0.0:9091
+            - name: FELIX_PROMETHEUSMETRICSENABLED
+              value: "true"
           securityContext:
             privileged: true
           resources:
