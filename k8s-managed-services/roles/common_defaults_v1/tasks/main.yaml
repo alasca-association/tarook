@@ -3,7 +3,7 @@
   block:
 
   - name: Fetch all nodes
-    community.kubernetes.k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Node
     register: k8s_nodes

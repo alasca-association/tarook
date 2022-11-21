@@ -6,7 +6,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: Configure LBaaS controller
-    k8s:
+    kubernetes.core.k8s:
       apply: yes
       definition:
         apiVersion: v1
@@ -24,7 +24,7 @@
     - restart ch-k8s-lbaas-controller
 
   - name: Deploy LBaaS controller
-    k8s:
+    kubernetes.core.k8s:
       apply: yes
       definition: "{{ lookup('template', item) }}"
       validate:

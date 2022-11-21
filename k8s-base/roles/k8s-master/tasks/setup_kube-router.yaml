@@ -5,7 +5,7 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
+  kubernetes.core.k8s:
     definition: "{{ lookup('template', 'kubeadm-kuberouter.yaml') }}"
     apply: yes
     state: "present"
@@ -17,7 +17,7 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: Node
   register: nodes
@@ -26,7 +26,7 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: apps/v1
     kind: DaemonSet
     namespace: kube-system

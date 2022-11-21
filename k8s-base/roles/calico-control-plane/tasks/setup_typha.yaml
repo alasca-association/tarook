@@ -25,7 +25,7 @@
     become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: ConfigMap
       name: calico-typha-ca
@@ -128,7 +128,7 @@
     become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s:
+    kubernetes.core.k8s:
       apply: yes
       definition:
         apiVersion: v1
@@ -170,7 +170,7 @@
     become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Secret
       name: calico-typha-certs
@@ -242,7 +242,7 @@
       path: "{{ typha_key_path }}"
       size: 4096
 
-  # The certificate presents the Common Name (CN) as calico-typha. 
+  # The certificate presents the Common Name (CN) as calico-typha.
   # calico/node will be configured to verify this name.
   - name: Generate Certificate Signing Request for Typha certificate
     delegate_to: localhost
@@ -273,7 +273,7 @@
     become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s:
+    kubernetes.core.k8s:
       apply: yes
       definition:
         apiVersion: v1
@@ -298,7 +298,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: Create ServiceAccount for calico-typha, configure RBAC, ClusterRole, ClusterRoleBinding
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
       state: "present"
@@ -309,7 +309,7 @@
     - "{{ calico_versions_folder }}/typha-serviceaccount.yaml"
 
   - name: Deploy Typha Deployment
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', item) }}"
       apply: yes
       validate:
@@ -319,7 +319,7 @@
     - "{{ calico_versions_folder }}/typha-deployment.yaml.j2"
 
   - name: Deploy Typha service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
       validate:

@@ -1,5 +1,5 @@
 - name: Check prometheus endpoint status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='{{ monitoring_prometheus_stack_release_name }}-kube-prom-prometheus'}"
@@ -13,7 +13,7 @@
   delay: 3
 
 - name: Check alertmanager endpoint status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{service='{{ monitoring_prometheus_stack_release_name }}-kube-prom-alertmanager'}"
@@ -28,7 +28,7 @@
 
 - name: Check grafana endpoint status
   when: monitoring_use_grafana
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{service='{{ monitoring_prometheus_stack_release_name }}-grafana'}"
@@ -43,7 +43,7 @@
 
 - name: Check k8s API endpoints status
   when: monitoring_use_grafana
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='apiserver',service='kubernetes',instance='kubernetes.default.svc:443'}"
@@ -57,7 +57,7 @@
   delay: 3
 
 - name: Check the kubelet endpoints status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='kubelet',node='{{ item }}'}"
@@ -72,7 +72,7 @@
   loop: "{{ groups['k8s_nodes'] }}"
 
 - name: Check the kube controller manager endpoints status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='kube-controller-manager',nodename='{{ item }}'}"
@@ -87,7 +87,7 @@
   loop: "{{ groups['masters'] }}"
 
 - name: Check the coreDNS endpoint status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='coredns',service='{{ monitoring_prometheus_stack_release_name }}-kube-prom-coredns'}"
@@ -101,7 +101,7 @@
   delay: 3
 
 - name: Check the kube scheduler endpoints status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='kube-scheduler',nodename='{{ item }}'}"
@@ -117,7 +117,7 @@
 
 - name: Check the kube proxy endpoints status
   when: k8s_network_plugin in ['calico']
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='kube-proxy',nodename='{{ item }}'}"
@@ -132,7 +132,7 @@
   loop: "{{ groups['k8s_nodes'] }}"
 
 - name: Check the kube-state-metrics endpoint status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='kube-state-metrics'}"
@@ -146,7 +146,7 @@
   delay: 3
 
 - name: Check k8s node exporters endpoints status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='node-exporter',nodename='{{ item }}'}"
@@ -161,7 +161,7 @@
   loop: "{{ groups['k8s_nodes'] }}"
 
 - name: Check scraping of etcd (kube-etcd)
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='kube-etcd'}"
@@ -176,7 +176,7 @@
 
 - name: Check thanos endpoints
   when: monitoring_use_thanos | bool
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job={{ item.job | to_json }},container={{ item.container | to_json }}}'

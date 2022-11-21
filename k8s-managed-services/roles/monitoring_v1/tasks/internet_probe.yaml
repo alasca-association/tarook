@@ -1,5 +1,5 @@
 - name: apply manifests
-  k8s:
+  kubernetes.core.k8s:
     state: present
     apply: yes
     definition: "{{ lookup('template', 'internet_probe.yaml') }}"

@@ -8,7 +8,7 @@
 - name: Configure k8s resources
   block:
     - name: Delete obsolete privileges (RBAC)
-      k8s:
+      kubernetes.core.k8s:
         state: absent
         apply: yes
         definition: "{{ lookup('template', 'upgrade-from-v1.3-delete-RBAC.yaml') }}"
@@ -17,7 +17,7 @@
           strict: yes
 
     - name: Apply modified privileges (RBAC)
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', 'upgrade-from-v1.3-apply-RBAC.yaml') }}"
@@ -26,7 +26,7 @@
           strict: yes
 
     - name: Apply modified Custom Resource Definitions (CRDs)
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('file', 'upgrade-from-v1.3-crds.yaml') }}"
@@ -35,7 +35,7 @@
           strict: yes
 
     - name: Apply new rook-ceph-operator manifest (v1.4)
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', 'v1.4/operator.yaml') }}"

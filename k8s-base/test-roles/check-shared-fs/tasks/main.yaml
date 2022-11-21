@@ -10,7 +10,7 @@
 
   block:
   - name: create namespace
-    k8s:
+    kubernetes.core.k8s:
       state: present
       api_version: v1
       kind: Namespace
@@ -20,7 +20,7 @@
         strict: yes
 
   - name: create PVC
-    k8s:
+    kubernetes.core.k8s:
       state: present
       definition: "{{ lookup('template', 'pvc.yaml') }}"
       validate:
@@ -28,7 +28,7 @@
         strict: yes
 
   - name: start worker pods
-    k8s:
+    kubernetes.core.k8s:
       state: present
       definition: "{{ lookup('template', 'pod.yaml') }}"
       validate:
@@ -38,7 +38,7 @@
     register: worker_pods
 
   - name: fetch worker pod completion state
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Pod
       name: "shared-fs-test-{{ item.item }}"
@@ -56,7 +56,7 @@
     loop: "{{ worker_state.results }}"
 
   - name: delete namespace
-    k8s:
+    kubernetes.core.k8s:
       state: absent
       api_version: v1
       kind: Namespace

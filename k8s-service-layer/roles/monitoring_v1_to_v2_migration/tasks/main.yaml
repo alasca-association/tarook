@@ -15,7 +15,7 @@
           * if the migration is cancelled before it's been completed you will be in a world of pain and you will probably have to deal with admission- and mutating web hooks.
           I have decided against additional safety measures (do the manifests exist? is the operator already running?) because they would be too complex. Just be aware of what you're doing.
     - name: Delete old jsonnet manifests (managed-layer)
-      k8s:
+      kubernetes.core.k8s:
         state: absent
         apply: yes
         definition: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/' + item) }}"
@@ -25,7 +25,7 @@
       loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json', errors='strict' if (k8s_monitoring_enabled and monitoring_use_jsonnet_setup) else 'warn') | default(' [] ', true) | from_json | sort(reverse=true) }}" # noqa 204
 
     - name: Delete old jsonnet manifests (service-layer)
-      k8s:
+      kubernetes.core.k8s:
         state: absent
         apply: yes
         definition: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/' + item) }}"

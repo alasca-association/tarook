@@ -20,7 +20,7 @@
   changed_when: false
 
 - name: check if configmap for customer dashboards exists
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: ConfigMap
     name: "{{ monitoring_grafana_customer_dashboards_configmap }}"
@@ -29,7 +29,7 @@
 
 - name: create an empty configmap for customer dashboards
   when: monitoring_grafana_customer_dashboards and not customer_dashboard.resources
-  k8s:
+  kubernetes.core.k8s:
     state: present
     apply: yes
     definition: |
@@ -43,7 +43,7 @@
       strict: yes
 
 - name: apply manifests
-  k8s:
+  kubernetes.core.k8s:
     state: present
     apply: yes
     definition: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/' + item) }}"
@@ -53,7 +53,7 @@
   loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json', errors='strict' if (k8s_monitoring_enabled and monitoring_use_jsonnet_setup) else 'warn') | default(' [] ', true) | from_json }}" # noqa 204
 
 - name: create haproxy service monitor (gateway)
-  k8s:
+  kubernetes.core.k8s:
     state: present
     apply: yes
     definition: "{{ lookup('template', 'haproxy-service-monitor.yaml') }}"
@@ -64,7 +64,7 @@
     - haproxy-service-monitor
 
 - name: create keepalived service monitor (gateway)
-  k8s:
+  kubernetes.core.k8s:
     state: present
     apply: yes
     definition: "{{ lookup('template', 'keepalived-service-monitor.yaml') }}"
@@ -75,7 +75,7 @@
     - keepalived-service-monitor
 
 - name: create node-exporter service monitor (gateway)
-  k8s:
+  kubernetes.core.k8s:
     state: present
     apply: yes
     definition: "{{ lookup('template', 'node-exporter-service-monitor.yaml') }}"
@@ -86,7 +86,7 @@
     - node-exporter-service-monitor
 
 - name: create LBaaS component service monitors (gateway)
-  k8s:
+  kubernetes.core.k8s:
     definition: "{{ lookup('template', item) }}"
     apply: yes
     validate:

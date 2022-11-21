@@ -1,5 +1,5 @@
 - name: Check keepalived exporter scrape endpoint status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="prometheus-keepalived",instance="{{ hostvars[item]["local_ipv4_address"] }}:9650"}'
@@ -14,7 +14,7 @@
   delay: 3
 
 - name: Check HAProxy exporter scrape endpoint status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="prometheus-haproxy",instance="{{ hostvars[item]["local_ipv4_address"] }}:9101"}'
@@ -29,7 +29,7 @@
   delay: 3
 
 - name: Check ceph mgr scrape endpoint status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
       namespace: "{{ check_prometheus_scraping_namespace }}"
       pod: prometheus-test-scraper
       command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="rook-ceph-mgr"}'
@@ -47,7 +47,7 @@
   when: ch_k8s_lbaas_enabled
   block:
   - name: Check LBaaS controller scrape endpoint status
-    community.kubernetes.k8s_exec:
+    kubernetes.core.k8s_exec:
       namespace: "{{ check_prometheus_scraping_namespace }}"
       pod: prometheus-test-scraper
       command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="ch-k8s-lbaas-controller"}'
@@ -61,7 +61,7 @@
     delay: 3
 
   - name: Check LBaaS agent scrape endpoint status
-    community.kubernetes.k8s_exec:
+    kubernetes.core.k8s_exec:
       namespace: "{{ check_prometheus_scraping_namespace }}"
       pod: prometheus-test-scraper
       command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="ch-k8s-lbaas-agent",instance="{{ hostvars[item]["local_ipv4_address"] }}:{{ ch_k8s_lbaas_agent_port }}"}'
@@ -76,7 +76,7 @@
     delay: 3
 
 - name: Check node-exporter (frontend) endpoint status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="prometheus-frontend-node-exporter",instance="{{ hostvars[item]["local_ipv4_address"] }}:9100"}'
@@ -101,7 +101,7 @@
 
 - name: Check dcgm-gpu-exporter endpoint status
   when: "(k8s_is_gpu_cluster | default(False)) and ((gpu_nodes.resources | length) > 0)"
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="nvidia-dcgm-exporter"}'
@@ -116,7 +116,7 @@
 
 - name: Check blackbox-exporter endpoint status
   when: monitoring_internet_probe
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{target="{{ item.url }}",job="kms-blackbox-prometheus-blackbox-exporter"}'

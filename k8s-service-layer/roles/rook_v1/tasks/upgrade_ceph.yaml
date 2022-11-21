@@ -9,7 +9,7 @@
 
 - name: Patch the image version of the Ceph Cluster (< v16.2.6)
   when: rook_image_versions.ceph is version('v16.2.6', operator='<')
-  k8s:
+  kubernetes.core.k8s:
     definition:
       kind: CephCluster
       metadata:
@@ -21,7 +21,7 @@
 
 - name: Patch the image version of the Ceph Cluster (>= v16.2.6)
   when: rook_image_versions.ceph is version('v16.2.6', operator='>=')
-  k8s:
+  kubernetes.core.k8s:
     definition:
       kind: CephCluster
       metadata:

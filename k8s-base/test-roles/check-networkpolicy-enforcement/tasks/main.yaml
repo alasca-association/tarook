@@ -6,7 +6,7 @@
 
   block:
   - name: create test namespace
-    k8s:
+    kubernetes.core.k8s:
       definition:
         apiVersion: v1
         kind: Namespace
@@ -20,7 +20,7 @@
       state: present
 
   - name: create service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service.yaml') }}"
       state: present
       validate:
@@ -28,7 +28,7 @@
         strict: yes
 
   - name: get pod IPs
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Pod
       label_selectors:
@@ -50,7 +50,7 @@
   - name: start blocked-test
     vars:
       pod_name: blocked-test
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'test-pod.yaml') }}"
       state: present
       validate:
@@ -58,7 +58,7 @@
         strict: yes
 
   - name: fetch blocked-test pod completion state
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Pod
       name: blocked-test
@@ -74,7 +74,7 @@
     failed_when: 'blocked_test_state.resources[0].status.phase != "Failed"'
 
   - name: unblock for sources from the same namespace
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'unblock-same-namespace.yaml') }}"
       state: present
       validate:
@@ -84,7 +84,7 @@
   - name: start unblocked-test
     vars:
       pod_name: unblocked-test
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'test-pod.yaml') }}"
       state: present
       validate:
@@ -92,7 +92,7 @@
         strict: yes
 
   - name: fetch unblocked-test pod completion state
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Pod
       name: unblocked-test
@@ -131,7 +131,7 @@
     failed_when: "curl_result.rc not in [7,28]"
 
   - name: unblock access from everywhere
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'unblock-all.yaml') }}"
       state: present
       validate:
@@ -156,7 +156,7 @@
     changed_when: False
 
   - name: delete test namespace
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       name: "{{ check_networkpolicy_namespace }}"
       kind: Namespace

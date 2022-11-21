@@ -8,7 +8,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: create namespace
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       kind: Namespace
       name: "{{ check_local_storage_namespace }}"
@@ -18,7 +18,7 @@
         strict: yes
 
   - name: create PVC
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'pvc.yaml.j2') }}"
       state: present
       validate:
@@ -26,7 +26,7 @@
         strict: yes
 
   - name: start writer pod
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'writer-pod.yaml.j2') }}"
       state: present
       validate:
@@ -34,7 +34,7 @@
         strict: yes
 
   - name: fetch writer pod completion state
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Pod
       name: writer-test
@@ -52,7 +52,7 @@
   - name: run reader pod
     vars:
       writer_pod_node_name: "{{ writer_state.resources[0].spec.nodeName }}"
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'reader-pod.yaml.j2') }}"
       state: present
       validate:
@@ -60,7 +60,7 @@
         strict: yes
 
   - name: fetch reader pod completion state
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Pod
       name: reader-test
@@ -76,7 +76,7 @@
     failed_when: 'reader_state.resources[0].status.phase == "Failed"'
 
   - name: Get the PVC
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: PersistentVolumeClaim
       name: "{{ check_local_storage_pvc_name }}"
@@ -86,7 +86,7 @@
       - test-cleanup
 
   - name: delete namespace
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       kind: Namespace
       name: "{{ check_local_storage_namespace }}"
@@ -100,7 +100,7 @@
 
   - name: delete PV
     when: "(pvc_info.resources | length) > 0"
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       kind: PersistentVolume
       name: "{{ pvc_info.resources[0].spec.volumeName }}"

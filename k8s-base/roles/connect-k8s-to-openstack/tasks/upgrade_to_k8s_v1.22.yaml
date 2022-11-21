@@ -7,7 +7,7 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
+  kubernetes.core.k8s:
     state: absent
     apply: yes
     definition: "{{ lookup('template', 'k8s-v1.21/cinder-csi-plugin/cinder-csi-controllerplugin.yaml.j2') }}"

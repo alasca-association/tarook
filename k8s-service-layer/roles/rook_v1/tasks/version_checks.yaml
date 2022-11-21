@@ -37,7 +37,7 @@
 # Check if we need to upgrade rook                                   #
 ######################################################################
 - name: Gather information about the rook-ceph-operator Deployment
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Deployment
     namespace: "{{ rook_namespace }}"
     name: rook-ceph-operator
@@ -193,7 +193,7 @@
 # Check if we need to upgrade Ceph                                   #
 ######################################################################
 - name: Gather information about the Ceph Cluster
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: CephCluster
     namespace: "{{ rook_namespace }}"
     name: "{{ rook_cluster_name }}"

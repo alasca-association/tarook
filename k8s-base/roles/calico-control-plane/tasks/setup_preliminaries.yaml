@@ -9,7 +9,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   vars:
     crd_file: "{{ 'crds/calico-crds-v%s.yaml' | format(image_versions.calico_version) }}"
-  k8s:
+  kubernetes.core.k8s:
     definition: "{{ lookup('file', crd_file) }}"
     apply: yes
     state: present
@@ -107,7 +107,7 @@
   run_once: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
+  kubernetes.core.k8s:
     definition: "{{ lookup('file', item) }}"
     apply: yes
     state: "present"
