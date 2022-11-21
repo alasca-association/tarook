@@ -8,9 +8,11 @@ priorityClassName: "system-cluster-critical"
 
 targets:
     s3:
-      endpoint: "{{ etcd_backup_s3.endpoint_url }}"
+      endpoint: "{{ etcd_backup_config.endpoint_url }}"
       bucket: "{{ etcd_backup_bucket_name }}"
       addressingStyle: path
       filePrefix: "{{ etcd_backup_file_prefix }}"
       credentialRef:
         name: "{{ etcd_backup_secret_name }}"
+
+certRef: {{ etcd_backup_config.certRef | to_yaml }}
