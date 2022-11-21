@@ -9,10 +9,10 @@ metadata:
   namespace: kube-system
 spec:
   ports:
-  - port: 9091
+  - port: 9092
     name: metrics
     protocol: TCP
-    targetPort: 9091
+    targetPort: 9092
   selector:
     app.kubernetes.io/component: calico-typha
     app.kubernetes.io/name: calico
@@ -57,10 +57,10 @@ metadata:
   namespace: kube-system
 spec:
   ports:
-  - port: 9091
+  - port: 9092
     name: metrics
     protocol: TCP
-    targetPort: 9091
+    targetPort: 9092
   selector:
     app.kubernetes.io/component: calico-node
     app.kubernetes.io/name: calico

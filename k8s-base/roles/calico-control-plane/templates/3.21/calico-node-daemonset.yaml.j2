@@ -119,6 +119,9 @@ spec:
             # Tell Felix to expose metrics for prometheus, by default on 0.0.0.0:9091
             - name: FELIX_PROMETHEUSMETRICSENABLED
               value: "true"
+            # TCP port that the Prometheus metrics server should bind to. [Default: 9091]
+            - name: FELIX_PROMETHEUSMETRICSPORT
+              value: "9092"
           securityContext:
             privileged: true
           resources:
