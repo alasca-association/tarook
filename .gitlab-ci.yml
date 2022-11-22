@@ -71,7 +71,7 @@ flake8:
   before_script:
     - poetry install --with ci --sync
   script:
-    - 'python3 -m flake8 --max-line-length 88 --filename="*.py"'
+    - 'python3 -m flake8'
   stage: lint
   tags:
     - docker

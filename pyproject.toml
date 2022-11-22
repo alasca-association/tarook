@@ -21,6 +21,7 @@ toml = "^0.10.2"
 kubernetes-validate = "^1.26.0"
 hvac = "^1.1.1"
 boto3 = "^1.26.155"
+pre-commit = "^3.3.3"
 
 [tool.poetry.group.ci]
 optional = true
