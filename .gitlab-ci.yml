@@ -70,7 +70,7 @@ flake8:
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3"
   script:
     - "pip3 install flake8"
-    - 'python3 -m flake8 --max-line-length 88 --filename="*.py"'
+    - 'python3 -m flake8'
   stage: lint
   tags:
     - docker
