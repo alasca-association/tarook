@@ -27,7 +27,7 @@
   - name: create PVC
     kubernetes.core.k8s:
       state: present
-      definition: "{{ lookup('template', 'pvc.yaml') }}"
+      definition: "{{ lookup('template', 'pvc.yaml.j2') }}"
       validate:
         fail_on_error: yes
         strict: yes
@@ -40,7 +40,7 @@
   - name: start worker pods
     kubernetes.core.k8s:
       state: present
-      definition: "{{ lookup('template', 'pod.yaml') }}"
+      definition: "{{ lookup('template', 'pod.yaml.j2') }}"
       validate:
         fail_on_error: yes
         strict: yes

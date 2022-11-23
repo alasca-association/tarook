@@ -23,7 +23,7 @@
   # Starting with rook v1.5, the CRDs are not in common.yaml anymore
   - name: Create Custom Resource Definitions (CRDs) (rook >= v1.5)
     vars:
-      crds_template: "{{ '%s/crds.yaml' | format(rook_conf_maj_min_version) }}"
+      crds_template: "{{ '%s/crds.yaml.j2' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
       apply: yes
@@ -40,7 +40,7 @@
 
   - name: Create common resource definitions
     vars:
-      common_template: "{{ '%s/common.yaml' | format(rook_conf_maj_min_version) }}"
+      common_template: "{{ '%s/common.yaml.j2' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
       apply: yes
@@ -56,7 +56,7 @@
 
   - name: Create the operator
     vars:
-      operator_template: "{{ '%s/operator.yaml' | format(rook_conf_maj_min_version) }}"
+      operator_template: "{{ '%s/operator.yaml.j2' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
       apply: yes
@@ -72,7 +72,7 @@
 
   - name: Create the cluster
     vars:
-      cluster_template: "{{ '%s/cluster.yaml' | format(rook_conf_maj_min_version) }}"
+      cluster_template: "{{ '%s/cluster.yaml.j2' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
       apply: yes
@@ -122,7 +122,7 @@
 
   - name: Setup toolbox
     vars:
-      toolbox_template: "{{ '%s/toolbox.yaml' | format(rook_conf_maj_min_version) }}"
+      toolbox_template: "{{ '%s/toolbox.yaml.j2' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: "{{ rook_toolbox | ternary('present', 'absent') }}"
       apply: yes
@@ -138,7 +138,7 @@
 
   - name: Create ceph pools
     vars:
-      pool_template: "{{ '%s/pool.yaml' | format(rook_conf_maj_min_version) }}"
+      pool_template: "{{ '%s/pool.yaml.j2' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
       apply: yes
@@ -155,7 +155,7 @@
 
   - name: Create pool storage classes
     vars:
-      block_storage_class_template: "{{ '%s/block_storage_class.yaml' | format(rook_conf_maj_min_version) }}"
+      block_storage_class_template: "{{ '%s/block_storage_class.yaml.j2' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
       apply: yes
@@ -173,7 +173,7 @@
 
   - name: Create shared filesystem
     vars:
-      fs_template: "{{ '%s/filesystem.yaml' | format(rook_conf_maj_min_version) }}"
+      fs_template: "{{ '%s/filesystem.yaml.j2' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: "{{ rook_ceph_fs | ternary('present', 'absent') }}"
       apply: yes
@@ -189,7 +189,7 @@
 
   - name: Create shared filesystem storage class
     vars:
-      cephfs_storage_class_template: "{{ '%s/cephfs_storage_class.yaml' | format(rook_conf_maj_min_version) }}"
+      cephfs_storage_class_template: "{{ '%s/cephfs_storage_class.yaml.j2' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: "{{ rook_ceph_fs | ternary('present', 'absent') }}"
       apply: yes

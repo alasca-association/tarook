@@ -2,7 +2,7 @@
   kubernetes.core.k8s:
     state: present
     apply: yes
-    definition: "{{ lookup('template', 'nvidia-device-plugin.yml') }}"
+    definition: "{{ lookup('template', 'nvidia-device-plugin.yml.j2') }}"
     validate:
       fail_on_error: yes
       strict: yes

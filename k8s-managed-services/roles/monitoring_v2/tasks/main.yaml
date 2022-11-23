@@ -22,7 +22,7 @@
     - ch-k8s-global-monitoring-nodeport
   kubernetes.core.k8s:
     apply: yes
-    definition: "{{ lookup('template', 'prometheus-nodeport.yaml') }}"
+    definition: "{{ lookup('template', 'prometheus-nodeport.yaml.j2') }}"
     validate:
       fail_on_error: yes
       strict: yes
@@ -95,7 +95,7 @@
     kubernetes.core.k8s:
       state: present
       apply: yes
-      definition: "{{ lookup('template', 'node-exporter-service-monitor.yaml') }}"
+      definition: "{{ lookup('template', 'node-exporter-service-monitor.yaml.j2') }}"
       validate:
         fail_on_error: yes
         strict: yes

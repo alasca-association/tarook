@@ -13,7 +13,7 @@
         kind: Secret
         type: Opaque
         data:
-          controller-config.toml: "{{ lookup('template', 'controller-config.toml') | b64encode }}"
+          controller-config.toml: "{{ lookup('template', 'controller-config.toml.j2') | b64encode }}"
         metadata:
           name: ch-k8s-lbaas-controller-config
           namespace: kube-system
@@ -36,8 +36,8 @@
         fail_on_error: yes
         strict: yes
     with_items:
-    - controller-rbac.yaml
-    - controller.yaml
+    - controller-rbac.yaml.j2
+    - controller.yaml.j2
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

@@ -28,7 +28,7 @@
 - name: Store id tag
   become: yes
   template:
-    src: archive_id_tag
+    src: archive_id_tag.j2
     dest: /etc/prometheus-keepalived-exporter/version
     owner: root
     group: root

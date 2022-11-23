@@ -2,7 +2,7 @@
   tags:
     - k8s-monitoring-build
   template:
-    src: thanos.jsonnet
+    src: thanos.jsonnet.j2
     dest: "{{ monitoring_jsonnet_dir_thanos }}/config.jsonnet"
     mode: 0664
 

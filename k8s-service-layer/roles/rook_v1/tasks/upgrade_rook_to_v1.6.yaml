@@ -27,7 +27,7 @@
     # https://github.com/rook/rook/issues/7659
     - name: Create temporary CRD manifest in /tmp/rook-crds.yaml
       template:
-        src: "v1.6/crds.yaml"
+        src: "v1.6/crds.yaml.j2"
         dest: "/tmp/rook-crds.yaml"
         mode: 0600
 
@@ -46,7 +46,7 @@
       kubernetes.core.k8s:
         state: present
         apply: yes
-        definition: "{{ lookup('template', 'v1.6/crds.yaml') }}"
+        definition: "{{ lookup('template', 'v1.6/crds.yaml.j2') }}"
         validate:
           fail_on_error: yes
           strict: yes
@@ -70,7 +70,7 @@
       kubernetes.core.k8s:
         state: present
         apply: yes
-        definition: "{{ lookup('template', 'v1.6/cluster.yaml') }}"
+        definition: "{{ lookup('template', 'v1.6/cluster.yaml.j2') }}"
         validate:
           fail_on_error: yes
           strict: yes

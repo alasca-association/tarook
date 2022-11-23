@@ -2,7 +2,7 @@
   tags:
     - k8s-monitoring-build
   template:
-    src: monitoring.jsonnet
+    src: monitoring.jsonnet.j2
     dest: "{{ monitoring_jsonnet_dir_monitoring }}/{{ k8s_sl_monitoring_jsonnet_config_file }}"
     mode: u=rw,go-rwx
 
@@ -42,7 +42,7 @@
   kubernetes.core.k8s:
     state: present
     apply: yes
-    definition: "{{ lookup('template', 'rook-service-monitor.yaml') }}"
+    definition: "{{ lookup('template', 'rook-service-monitor.yaml.j2') }}"
     validate:
       fail_on_error: yes
       strict: yes

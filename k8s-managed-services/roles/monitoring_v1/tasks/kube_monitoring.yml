@@ -2,7 +2,7 @@
   tags:
     - k8s-monitoring-build
   template:
-    src: monitoring.jsonnet
+    src: monitoring.jsonnet.j2
     dest: "{{ monitoring_jsonnet_dir_monitoring }}/config.jsonnet"
     mode: 0664
 
@@ -66,7 +66,7 @@
   kubernetes.core.k8s:
     state: present
     apply: yes
-    definition: "{{ lookup('template', 'haproxy-service-monitor.yaml') }}"
+    definition: "{{ lookup('template', 'haproxy-service-monitor.yaml.j2') }}"
     validate:
       fail_on_error: yes
       strict: yes
@@ -82,7 +82,7 @@
   kubernetes.core.k8s:
     state: present
     apply: yes
-    definition: "{{ lookup('template', 'keepalived-service-monitor.yaml') }}"
+    definition: "{{ lookup('template', 'keepalived-service-monitor.yaml.j2') }}"
     validate:
       fail_on_error: yes
       strict: yes
@@ -98,7 +98,7 @@
   kubernetes.core.k8s:
     state: present
     apply: yes
-    definition: "{{ lookup('template', 'node-exporter-service-monitor.yaml') }}"
+    definition: "{{ lookup('template', 'node-exporter-service-monitor.yaml.j2') }}"
     validate:
       fail_on_error: yes
       strict: yes

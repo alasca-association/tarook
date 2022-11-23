@@ -21,7 +21,7 @@
 
   - name: Apply the nginx+service manifest
     kubernetes.core.k8s:
-      definition: "{{ lookup('template', 'nginx.yaml') }}"
+      definition: "{{ lookup('template', 'nginx.yaml.j2') }}"
       state: present
       wait: yes
       validate:
@@ -41,7 +41,7 @@
 
   - name: Remove the Service
     kubernetes.core.k8s:
-      definition: "{{ lookup('template', 'nginx.yaml') }}"
+      definition: "{{ lookup('template', 'nginx.yaml.j2') }}"
       state: absent
       wait: yes
       validate:

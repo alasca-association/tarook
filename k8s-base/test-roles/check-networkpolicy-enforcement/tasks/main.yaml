@@ -26,7 +26,7 @@
 
   - name: create service
     kubernetes.core.k8s:
-      definition: "{{ lookup('template', 'service.yaml') }}"
+      definition: "{{ lookup('template', 'service.yaml.j2') }}"
       state: present
       validate:
         fail_on_error: yes
@@ -61,7 +61,7 @@
     vars:
       pod_name: blocked-test
     kubernetes.core.k8s:
-      definition: "{{ lookup('template', 'test-pod.yaml') }}"
+      definition: "{{ lookup('template', 'test-pod.yaml.j2') }}"
       state: present
       validate:
         fail_on_error: yes
@@ -90,7 +90,7 @@
 
   - name: unblock for sources from the same namespace
     kubernetes.core.k8s:
-      definition: "{{ lookup('template', 'unblock-same-namespace.yaml') }}"
+      definition: "{{ lookup('template', 'unblock-same-namespace.yaml.j2') }}"
       state: present
       validate:
         fail_on_error: yes
@@ -105,7 +105,7 @@
     vars:
       pod_name: unblocked-test
     kubernetes.core.k8s:
-      definition: "{{ lookup('template', 'test-pod.yaml') }}"
+      definition: "{{ lookup('template', 'test-pod.yaml.j2') }}"
       state: present
       validate:
         fail_on_error: yes
@@ -155,7 +155,7 @@
 
   - name: unblock access from everywhere
     kubernetes.core.k8s:
-      definition: "{{ lookup('template', 'unblock-all.yaml') }}"
+      definition: "{{ lookup('template', 'unblock-all.yaml.j2') }}"
       state: present
       validate:
         fail_on_error: yes

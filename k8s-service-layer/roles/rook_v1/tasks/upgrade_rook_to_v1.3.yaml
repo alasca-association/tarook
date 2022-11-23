@@ -11,7 +11,7 @@
       kubernetes.core.k8s:
         state: present
         apply: yes
-        definition: "{{ lookup('template', 'upgrade-from-v1.2-apply-RBAC.yaml') }}"
+        definition: "{{ lookup('template', 'upgrade-from-v1.2-apply-RBAC.yaml.j2') }}"
         validate:
           fail_on_error: yes
           strict: yes
@@ -25,7 +25,7 @@
       kubernetes.core.k8s:
         state: present
         apply: yes
-        definition: "{{ lookup('file', 'upgrade-from-v1.2-crds.yaml') }}"
+        definition: "{{ lookup('file', 'upgrade-from-v1.2-crds.yaml.j2') }}"
         validate:
           fail_on_error: yes
           strict: yes
@@ -42,7 +42,7 @@
       kubernetes.core.k8s:
         state: present
         apply: yes
-        definition: "{{ lookup('template', 'v1.3/cluster.yaml') }}"
+        definition: "{{ lookup('template', 'v1.3/cluster.yaml.j2') }}"
         validate:
           fail_on_error: yes
           strict: yes
@@ -56,7 +56,7 @@
       kubernetes.core.k8s:
         state: present
         apply: yes
-        definition: "{{ lookup('template', 'v1.3/operator.yaml') }}"
+        definition: "{{ lookup('template', 'v1.3/operator.yaml.j2') }}"
         validate:
           fail_on_error: yes
           strict: yes

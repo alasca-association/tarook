@@ -14,7 +14,7 @@
 - name: configure bird
   become: yes
   template:
-    src: bird.conf
+    src: bird.conf.j2
     dest: /etc/bird/bird.conf
     owner: bird
     group: bird
@@ -52,7 +52,7 @@
   block:
   - name: Create config for bird6 in /etc/bird/
     template:
-      src: bird6.conf
+      src: bird6.conf.j2
       dest: /etc/bird/bird6.conf
       owner: bird
       group: bird

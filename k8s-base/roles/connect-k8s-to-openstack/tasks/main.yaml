@@ -18,7 +18,7 @@
       kind: Secret
       type: Opaque
       data:
-        cloud.conf: "{{ lookup('template', 'os_cloud_config.ini') | b64encode }}"
+        cloud.conf: "{{ lookup('template', 'os_cloud_config.ini.j2') | b64encode }}"
       metadata:
         name: cloud-config
         namespace: kube-system

@@ -89,7 +89,7 @@
 - name: Configure bird
   become: yes
   template:
-    src: bird.conf
+    src: bird.conf.j2
     dest: /etc/bird.d/10-ipsec-vpn.conf
     owner: root
     group: bird
@@ -99,7 +99,7 @@
 - name: Configure nftables
   become: yes
   template:
-    src: nftables.conf
+    src: nftables.conf.j2
     dest: /etc/nft.d/10-ipsec-vpn.conf
     owner: root
     group: root

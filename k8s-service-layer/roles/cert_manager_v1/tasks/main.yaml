@@ -40,14 +40,14 @@
       installCRDs: true
       global:
         priorityClassName: system-cluster-critical
-      affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') }}"
-      tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') }}"
+      affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json.j2') }}"
+      tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json.j2') }}"
       cainjector:
-        affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') }}"
-        tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') }}"
+        affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json.j2') }}"
+        tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json.j2') }}"
       webhook:
-        affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') }}"
-        tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') }}"
+        affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json.j2') }}"
+        tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json.j2') }}"
 
 - name: "{{ (k8s_cert_manager_install and k8s_cert_manager_letsencrypt_email) | ternary('I', 'Uni') }}nstall Let's Encrypt cluster issuer"
   kubernetes.core.k8s:

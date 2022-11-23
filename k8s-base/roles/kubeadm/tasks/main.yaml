@@ -73,7 +73,7 @@
 - name: Add Google's K8s repository (yum/dnf)
   become: yes
   template:
-    src: kubernetes.repo
+    src: kubernetes.repo.j2
     dest: /etc/yum.repos.d/kubernetes.repo
     owner: root
     group: root

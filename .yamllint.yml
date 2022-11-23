@@ -1,9 +1,6 @@
 ---
 extends: default
 
-ignore: |
-  **/templates/**/*.yaml
-
 rules:
   line-length: disable
   indentation:

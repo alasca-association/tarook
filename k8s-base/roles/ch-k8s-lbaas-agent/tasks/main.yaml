@@ -24,7 +24,7 @@
   # re-download exactly when necessary.
   - name: Store id tag
     template:
-      src: binary_id_tag
+      src: binary_id_tag.j2
       dest: /etc/ch-k8s-lbaas-agent/version
       owner: root
       group: root
@@ -49,7 +49,7 @@
 
   - name: Configure service
     template:
-      src: agent-config.toml
+      src: agent-config.toml.j2
       dest: /etc/ch-k8s-lbaas-agent/config.toml
       owner: root
       group: "{{ ch_k8s_lbaas_agent_user }}"
@@ -59,7 +59,7 @@
 
   - name: Configure sudoers
     template:
-      src: sudoers
+      src: sudoers.j2
       dest: /etc/sudoers.d/lbaas
       owner: root
       group: root
@@ -68,8 +68,8 @@
 
   - name: Define service
     template:
-      src: ch-k8s-lbaas-agent.service
-      dest: /etc/systemd/system/
+      src: ch-k8s-lbaas-agent.service.j2
+      dest: /etc/systemd/system/ch-k8s-lbaas-agent.service
       owner: root
       group: root
       mode: u=rw,go=r

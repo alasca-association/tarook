@@ -25,7 +25,7 @@
 
   - name: create PVC
     kubernetes.core.k8s:
-      definition: "{{ lookup('template', 'pvc.yaml') }}"
+      definition: "{{ lookup('template', 'pvc.yaml.j2') }}"
       state: present
       validate:
         fail_on_error: yes
@@ -38,7 +38,7 @@
 
   - name: start writer pod
     kubernetes.core.k8s:
-      definition: "{{ lookup('template', 'writer-pod.yaml') }}"
+      definition: "{{ lookup('template', 'writer-pod.yaml.j2') }}"
       state: present
       validate:
         fail_on_error: yes
@@ -69,7 +69,7 @@
     vars:
       writer_pod_node_name: "{{ writer_state.resources[0].spec.nodeName }}"
     kubernetes.core.k8s:
-      definition: "{{ lookup('template', 'reader-pod.yaml') }}"
+      definition: "{{ lookup('template', 'reader-pod.yaml.j2') }}"
       state: present
       validate:
         fail_on_error: yes
