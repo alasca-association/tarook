@@ -84,6 +84,18 @@
     tags:
       - calico-service-monitor
 
+  - name: Create a pod monitor for fluxcd
+    when: (fluxcd_enabled | default (False)) | bool
+    kubernetes.core.k8s:
+      state: present
+      apply: yes
+      definition: "{{ lookup('template', 'fluxcd_podmonitor.yaml.j2') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+    tags:
+      - fluxcd
+
 - name: "{{ k8s_is_gpu_cluster | ternary('I', 'Uni') }}nstall NVIDIA DCGM exporter"
   kubernetes.core.helm:
     chart_ref: dcgm-exporter

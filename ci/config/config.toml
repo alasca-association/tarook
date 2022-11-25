@@ -145,6 +145,9 @@ enabled = true
 [k8s-service-layer.vault]
 enabled = true
 
+[k8s-service-layer.fluxcd]
+enabled = true
+
 [testing.test-nodes]
 "ci-worker-1" = "worker0"
 "ci-worker-3" = "worker1"
