@@ -24,7 +24,7 @@
     failed_when: |
       (item.status.replicas != item.status.updatedReplicas)
       or (item.status.replicas != item.status.readyReplicas)
-      or (rook_image_versions.ceph[1:] not in item.metadata.labels['ceph-version'])
+      or (rook_ceph_version[1:] not in item.metadata.labels['ceph-version'])
     # the Ceph version gets an additional build tag, the "-n" suffix, and is missing the leading "v" :/
     with_items: "{{ rook_deployments_info.resources }}"
     loop_control:

@@ -1,16 +1,13 @@
-- name: Detect image versions
-  set_fact:
-    rook_image_versions: "{{ rook_image_version_map[k8s_version_minor] }}"
-
 - name: Include version checks and updates
   include_tasks: version_checks.yaml
 
 - name: Configure k8s resources
   when: k8s_storage_rook_enabled | bool
   vars:
-    rook_conf_major_version: "{{ rook_image_versions.operator.split('.')[0] }}"
-    rook_conf_minor_version: "{{ rook_image_versions.operator.split('.')[1] }}"
+    rook_conf_major_version: "{{ rook_version.split('.')[0] }}"
+    rook_conf_minor_version: "{{ rook_version.split('.')[1] }}"
     rook_conf_maj_min_version: "{{ '%s.%s' | format(rook_conf_major_version,rook_conf_minor_version) }}" # ugly
+    rook_ceph_version: "{{ rook_ceph_version_map[rook_version]['ceph'] }}"
   block:
   - name: Check that mon volume storage class exists
     kubernetes.core.k8s_info:
@@ -38,7 +35,7 @@
       validate:
         fail_on_error: yes
         strict: yes
-    when: rook_image_versions.operator is version('v1.5.0', operator='ge')
+    when: rook_version is version('v1.5.0', operator='ge')
 
   - name: Create common resource definitions
     vars:
