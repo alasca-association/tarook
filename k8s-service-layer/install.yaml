@@ -49,3 +49,8 @@
     when: yaook_vault_enabled | bool
     tags:
     - mk8s-sl/vault
+
+  - role: fluxcd2_v1
+    when: (fluxcd_enabled is defined) and (fluxcd_enabled | bool)
+    tags:
+    - mk8s-sl/fluxcd

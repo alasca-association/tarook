@@ -149,3 +149,19 @@
    - calico-node-monitoring
    - calico-typha-monitoring
   delay: 3
+
+- name: Check fluxcd's monitoring endpoints
+  when: (fluxcd_enabled | default(False)) | bool
+  vars:
+    job_name: "{{ k8s_fluxcd_namespace | default('k8s-svc-flux-system') }}/flux-system"
+  community.kubernetes.k8s_exec:
+    namespace: "{{ check_prometheus_scraping_namespace }}"
+    pod: prometheus-test-scraper
+    command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job={{ job_name | to_json }}}'
+  register: metrics
+  until: |
+    metrics.failed == false and
+    metrics.rc == 0 and
+    metrics.stdout | from_json | json_query('status') == "success" and
+    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  delay: 3
