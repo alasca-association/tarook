@@ -234,7 +234,6 @@ spec:
   rook_mon_memory_limit,
   rook_mon_cpu_limit) %}{% endcall %}
     }
-{% if not rook_on_openstack %}
     osd: {
 {% call resource_constraints(
   rook_osd_memory_request,
@@ -242,7 +241,6 @@ spec:
   rook_osd_memory_limit,
   rook_osd_cpu_limit) %}{% endcall %}
     }
-{% endif %}
 # For OSD it also is a possible to specify requests/limits based on device class
 #    osd-hdd:
 #    osd-ssd:
@@ -291,7 +289,8 @@ spec:
 {% endfor %}
 {% endif %}
 {% endif %}
-      config: {{ node_cfg.config | default({}) | to_nice_yaml }}
+      config:
+        {{ node.config | default({}) | to_nice_yaml | indent(8) }}
 {% endfor %}
 {% endif %}
 #    - name: "172.17.4.201"

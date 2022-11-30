@@ -136,3 +136,10 @@ spec:
   rook_mgr_memory_limit,
   rook_mgr_cpu_limit) %}{% endcall %}
     }
+    osd: {
+{% call resource_constraints(
+  rook_osd_memory_request,
+  rook_osd_cpu_request,
+  rook_osd_memory_limit,
+  rook_osd_cpu_limit) %}{% endcall %}
+    }
