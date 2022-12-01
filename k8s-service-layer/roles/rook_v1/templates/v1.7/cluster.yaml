@@ -1,3 +1,5 @@
+#jinja2:lstrip_blocks: True
+
 # https://github.com/rook/rook/releases/tag/v1.7.11
 # $YOUR_ROOK_REPO/cluster/examples/kubernetes/ceph/
 
@@ -262,8 +264,13 @@ spec:
 #    osd: rook-ceph-osd-priority-class
 #    mgr: rook-ceph-mgr-priority-class
   storage: # cluster level storage configuration and selection
+{% if rook_on_openstack %}
     useAllNodes: false
     useAllDevices: false
+{% else %}
+    useAllNodes: {{ rook_use_all_available_nodes }}
+    useAllDevices: {{ rook_use_all_available_devices }}
+{% endif %}
     #deviceFilter:
     config:
       # crushRoot: "custom-root" # specify a non-default root label for the CRUSH map
@@ -274,6 +281,24 @@ spec:
       encryptedDevice: "{{ rook_encrypt_osds }}" # the default value for this option is "false"
 # Individual nodes and their config can be specified as well, but 'useAllNodes' above must be set to false. Then, only the named
 # nodes below will be used as storage resources.  Each node's 'name' field should match their 'kubernetes.io/hostname' label.
+{% if not rook_on_openstack and not rook_use_all_available_nodes %}
+    nodes:
+{% for node in rook_nodes %}
+    - name: {{ node.name | to_json }}
+{% if not rook_use_all_available_devices %}
+{% if node.devices %}
+      devices:
+{% for device_name, device_cfg in node.devices.items() %}
+      - name: {{ device_name | to_json }}
+        config:
+          {{ device_cfg.config | default({}) | to_nice_yaml | indent(10) }}
+{% endfor %}
+{% endif %}
+{% endif %}
+      config:
+        {{ node.config | default({}) | to_nice_yaml | indent(8) }}
+{% endfor %}
+{% endif %}
     # nodes:
     #   - name: "172.17.4.201"
     #     devices: # specific devices to use for storage can be specified for each node
