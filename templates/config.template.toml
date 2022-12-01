@@ -413,6 +413,26 @@ cluster_name = "rook-ceph" # •ᴗ•
 #operator_cpu_limit = "1"
 #operator_cpu_request = "{{ rook_operator_cpu_limit }}"
 
+# Custom storage configuration
+# For non-OpenStack deployments it is possible to provide a custom configuration for Rook.
+# Especially because with non-OpenStack it is not possible to use the cinder storageclass to
+# set up OSDs.
+# HINT: This will only work for Rook v1.6 and upwards!
+#rook_on_openstack = false
+# If the disks of the worker nodes should be used as OSDs of the Rook-Ceph-Cluster, it can either
+# be specified to use all available devices on all possible nodes via:
+#use_all_available_devices = true
+#[k8s-service-layer.rook.nodes."managed-k8s-worker-1".config]
+# we want to use a specific metadata device here
+#metadataDevice = "/dev/disk/by-id/fnord"
+
+#[k8s-service-layer.rook.nodes."managed-k8s-worker-1".devices."/dev/disk/by-id/x".config]
+#encryptedDevice = true
+
+# if no device config is needed and we just announce its presence, we omit the `.config` suffix
+#[k8s-service-layer.rook.nodes."managed-k8s-worker-1".devices."/dev/disk/by-id/y"]
+
+
 #[[k8s-service-layer.rook.pools]]
 #name = "data"
 #create_storage_class = "block"
