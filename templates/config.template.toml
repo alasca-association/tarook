@@ -413,30 +413,45 @@ cluster_name = "rook-ceph" # •ᴗ•
 #operator_cpu_limit = "1"
 #operator_cpu_request = "{{ rook_operator_cpu_limit }}"
 
-# Custom storage configuration
-# For non-OpenStack deployments it is possible to provide a custom configuration for Rook.
-# Especially because with non-OpenStack it is not possible to use the cinder storageclass to
-# set up OSDs.
-# HINT: This will only work for Rook v1.6 and upwards!
-#rook_on_openstack = false
-# If the disks of the worker nodes should be used as OSDs of the Rook-Ceph-Cluster, it can either
-# be specified to use all available devices on all possible nodes via:
-#use_all_available_devices = true
-#[k8s-service-layer.rook.nodes."managed-k8s-worker-1".config]
-# we want to use a specific metadata device here
-#metadataDevice = "/dev/disk/by-id/fnord"
-
-#[k8s-service-layer.rook.nodes."managed-k8s-worker-1".devices."/dev/disk/by-id/x".config]
-#encryptedDevice = true
-
-# if no device config is needed and we just announce its presence, we omit the `.config` suffix
-#[k8s-service-layer.rook.nodes."managed-k8s-worker-1".devices."/dev/disk/by-id/y"]
-
-
 #[[k8s-service-layer.rook.pools]]
 #name = "data"
 #create_storage_class = "block"
 #replicated = 1
+
+# Custom storage configuration (i.e. on Bare Metal)
+#
+# For non-OpenStack deployments it is possible to provide a custom configuration for Rook.
+# Especially because with non-OpenStack it is not possible to use the cinder storageclass to
+# set up OSDs.
+# HINT: This will only work for Rook v1.6 and upwards!
+# Set this to false if you're running on bare metal.
+# If this is true, all the following custom storage configuration won't take effect.
+#rook_on_openstack = true
+#
+# If the disks of the worker nodes should be used as OSDs of the Rook-Ceph-Cluster, it can either
+# be specified to use all available devices on all possible nodes by adjusting the following:
+#use_all_available_devices = true
+# and
+#use_all_available_nodes = true
+#
+# If you want to configure the nodes and optionally their devices manually instead,
+# you can use the following template for each node.
+# The node configuration will only take effect if use_all_available_nodes is set to false.
+# The devices configuration will only take effect if use_all_available_devices is set to false.
+# First node:
+#[[k8s-service-layer.rook.nodes]]
+#name = "HOSTNAME_OF_NODE_1"
+#[k8s-service-layer.rook.nodes.devices."/dev/disk/by-id/x".config]
+#metadataDevice = "nvme0n1"
+#[k8s-service-layer.rook.nodes.devices."/dev/disk/by-id/x".config]
+#encryptedDevice = true
+#metadataDevice = "nvme0n1"
+#
+# Another node
+#[[k8s-service-layer.rook.nodes]]
+#name = "HOSTNAME_OF_NODE_2"
+#[k8s-service-layer.rook.nodes.devices."/dev/disk/by-id/x".config]
+#metadataDevice = "nvme0n1"
 
 # ANCHOR_END: ksl_rook_configuration
 
