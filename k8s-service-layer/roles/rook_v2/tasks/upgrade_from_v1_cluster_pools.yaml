@@ -1,0 +1,29 @@
+---
+- name: Adopt BlockPool
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: "ceph.rook.io/v1"
+      kind: "CephBlockPool"
+      metadata:
+        namespace: "{{ rook_namespace }}"
+        name: "{{ blockpool.name }}"
+        annotations:
+          "meta.helm.sh/release-namespace": "{{ rook_namespace }}"
+          "meta.helm.sh/release-name": "{{ rook_helm_release_name_cluster }}"
+        labels:
+          "app.kubernetes.io/managed-by": "Helm"
+- name: Adopt StorageClass
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: "storage.k8s.io/v1"
+      kind: "StorageClass"
+      metadata:
+        namespace: "{{ rook_namespace }}"
+        name: "rook-ceph-{{ blockpool.name }}"
+        annotations:
+          "meta.helm.sh/release-namespace": "{{ rook_namespace }}"
+          "meta.helm.sh/release-name": "{{ rook_helm_release_name_cluster }}"
+        labels:
+          "app.kubernetes.io/managed-by": "Helm"
+  when: blockpool.create_storage_class
+...

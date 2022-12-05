@@ -10,6 +10,7 @@ as well as the corresponding ceph version that will be deployed.
 The mapping of a rook to a ceph version is done in the `k8s-config`
 role.
 
+### role rook_v1 (manifest based)
 <center>
 
 | rook version | ceph version |
@@ -19,6 +20,15 @@ role.
 | `v1.4.9`     | `v15.2.13`   |
 | `v1.5.12`    | `v15.2.13`   |
 | `v1.6.7`     | `v16.2.5`    |
+| `v1.7.11`    | `v16.2.6`    |
+
+</center>
+
+### role rook_v2 (Helm based)
+<center>
+
+| rook version | ceph version |
+| :----------- | :----------- |
 | `v1.7.11`    | `v16.2.6`    |
 
 </center>
@@ -49,6 +59,20 @@ cluster configuration via the variable `version` in the
 `[k8s-service-layer.rook]` section.
 
 This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`).
+
+## Upgrade to rook_v2 (Helm-based installation)
+
+1. Make sure rook is at v1.7.11 as that's the only overlap between both roles. (See below for the upgrade procedure)
+2. Set use_helm=true in the `[k8s-service-layer.rook]` section
+3. Execute `stage4`, or at least the `rook_v1/2` role.
+   > **NOTE:** As the upgrade is disruptive (at least for a short amount of time)
+   > disruption needs to be enabled.
+   ```shell
+   # Trigger stage 4
+   MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage4.sh
+   # Trigger only k8s-rook
+   AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage4.sh
+   ```
 
 ### Steps to perform an upgrade
 
@@ -92,16 +116,16 @@ This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`)
    [k8s-service-layer.rook]
    [...]
    # Currently we support the following rook versions:
-   # v1.2.3, v1.3.11, v1.4.9, v1.5.12, v1.6.7
+   # v1.2.3, v1.3.11, v1.4.9, v1.5.12, v1.6.7, v1.7.11
    version = "v1.6.7"
    [...]
    ```
 
-6. Execute `stage4`, or at least the `rook_v1` role.
+6. Execute `stage4`, or at least the `rook_v1/2` role.
    > **NOTE:** As the upgrade is disruptive (at least for a short amount of time)
    > disruption needs to be enabled.
    ```shell
-   # Trigger stage 3
+   # Trigger stage 4
    MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage4.sh
    # Trigger only k8s-rook
    AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage4.sh
@@ -166,15 +190,11 @@ Check for new releases in the [rook Github repository](https://github.com/rook/r
 Read the corresponding upgrade page at the [rook Docs](https://rook.io/docs/rook/).
 **Especially check the `Considerations` section there**.
 
-* Download the source code of the new rook release from the [rook Github repository](https://github.com/rook/rook/releases)
-  * The source code contains the updated manifests in `cluster/examples/kubernetes/ceph/`
-* Create a new subdirectory for the manifest templates in the `k8s-rook`
-  role (e.g. `v1.42`)
-* Copy the necessary templates to the subdirectory
-  * **You need to adjust/modify these manifests before applying them**
-  * `diff` is your friend :)
-* Implement the actual upgrade steps described in the [rook Docs](https://rook.io/docs/rook/)
-  into a new task file which you should call `upgrade_rook_from_v1.42.yaml`
+* Most upgrade steps will be taken care of by Helm
+* In case any changes need to be made to the values of one of the charts, add 
+  them inside {% if .. is version %} .. {% endif %}
+* Implement any additional steps described in the [rook Docs](https://rook.io/docs/rook/)
+  into a new task file which you should call `upgrade_rook_from_v1.xx.yaml`
   * Please also include the cluster health verification task prior and subsequent
     to the actual upgrade steps. As the `ceph status` update can slightly
     differ from release to release, you may need to adjust the cluster
@@ -209,12 +229,12 @@ This way we ensure that existing clusters will not be accidentally upgraded
 (to a new ceph release).
 
 ## References
-
 * [Rook-Ceph Upgrade Docs `v1.2`](https://rook.io/docs/rook/v1.2/ceph-upgrade)
 * [Rook-Ceph Upgrade Docs `v1.3`](https://rook.io/docs/rook/v1.3/ceph-upgrade)
 * [Rook-Ceph Upgrade Docs `v1.4`](https://rook.io/docs/rook/v1.4/ceph-upgrade)
 * [Rook-Ceph Upgrade Docs `v1.5`](https://rook.io/docs/rook/v1.5/ceph-upgrade)
 * [Rook-Ceph Upgrade Docs `v1.6`](https://rook.io/docs/rook/v1.6/ceph-upgrade)
+* [Rook-Ceph Upgrade Docs `v1.7`](https://rook.io/docs/rook/v1.6/ceph-upgrade)
 * [Rook Repository (Github)](https://github.com/rook/rook)
 * [Ceph Docker Images](https://hub.docker.com/r/ceph/ceph)
 * [Ceph Health Checks Docs](https://docs.ceph.com/en/latest/rados/operations/health-checks/)

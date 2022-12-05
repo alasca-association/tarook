@@ -1,0 +1,13 @@
+---
+- name: Apply cluster chart
+  kubernetes.core.helm:
+    chart_ref: rook-ceph-cluster
+    chart_repo_url: https://charts.rook.io/release/
+    chart_version: "{{ rook_version }}"
+    release_namespace: "{{ rook_namespace }}"
+    release_name: "{{ rook_helm_release_name_cluster }}"
+    release_state: present
+    values: "{{ lookup('template', 'cluster-values.yaml.j2') | from_yaml }}"
+    wait: true
+  register: cluster_status
+...
