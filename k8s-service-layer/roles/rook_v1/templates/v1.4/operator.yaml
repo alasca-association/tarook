@@ -295,7 +295,7 @@ spec:
       serviceAccountName: rook-ceph-system
       containers:
       - name: rook-ceph-operator
-        image: "rook/ceph:{{ rook_image_versions.operator }}"
+        image: "rook/ceph:{{ rook_version }}"
         args: ["ceph", "operator"]
         volumeMounts:
         - mountPath: /var/lib/rook

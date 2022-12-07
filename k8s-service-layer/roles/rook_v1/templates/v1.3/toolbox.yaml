@@ -34,7 +34,7 @@ spec:
 {% endif %}
       containers:
       - name: "{{ rook_cluster_name }}-tools"
-        image: "rook/ceph:{{ rook_image_versions.toolbox }}"
+        image: "rook/ceph:{{ rook_version }}"
         command: ["/tini"]
         args: ["-g", "--", "/usr/local/bin/toolbox.sh"]
         imagePullPolicy: IfNotPresent

@@ -7,7 +7,7 @@ metadata:
 spec:
   cephVersion:
     # see the "Cluster Settings" section below for more details on which image of ceph to run
-    image: {{ "ceph/ceph:%s" | format(rook_image_versions.ceph) | to_json }}
+    image: {{ "ceph/ceph:%s" | format(rook_ceph_version) | to_json }}
   dataDirHostPath: /var/lib/rook
   skipUpgradeChecks: {{ rook_skip_upgrade_checks | to_json }}
   mon:
