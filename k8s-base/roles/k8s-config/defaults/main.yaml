@@ -12,8 +12,6 @@ k8s_network_bgp_gateway_as: 65000
 k8s_network_calico_ipipmode: "Never"
 
 supported_k8s_versions:
-  - '1.17'
-  - '1.18'
   - '1.19'
   - '1.20'
   - '1.21'
@@ -31,40 +29,6 @@ calico_version_minor: '{{ image_version_map[k8s_version_minor].calico_version | 
 # is not included here because `kube-prometheus` comes with its own type
 # of versioning.
 image_version_map:
-  "1.17":
-    kube_router:
-      kube_router: "v1.1.0"
-    openstack:
-      cinder_csi_plugin: "v1.19.0"
-      csi_attacher: "v2.0.0"
-      csi_node_driver_registrar: "v1.1.0"
-      csi_provisioner: "v1.4.0"
-      csi_resizer: "v0.3.0"
-      csi_snapshotter: "v1.2.2"
-      openstack_cloud_controller_manager: "v1.19.1"
-    rook:
-      ceph: "v14.2.6"
-      operator: "v1.2.3"
-      toolbox: "v1.2.3"
-    calico_version: "{{ k8s_network_calico_custom_version  | default('3.17.1') }}" # Version of Calico binaries and images to be deployed
-
-  "1.18":
-    kube_router:
-      kube_router: "v1.1.0"
-    openstack:
-      cinder_csi_plugin: "v1.19.0"
-      csi_attacher: "v2.0.0"
-      csi_node_driver_registrar: "v1.1.0"
-      csi_provisioner: "v1.4.0"
-      csi_resizer: "v0.3.0"
-      csi_snapshotter: "v1.2.2"
-      openstack_cloud_controller_manager: "v1.19.1"
-    rook:
-      ceph: "v14.2.6"
-      operator: "v1.2.3"
-      toolbox: "v1.2.3"
-    calico_version: "{{ k8s_network_calico_custom_version  | default('3.17.1') }}" # Version of Calico binaries and images to be deployed
-
   "1.19":
     kube_router:
       kube_router: "v1.1.0"
