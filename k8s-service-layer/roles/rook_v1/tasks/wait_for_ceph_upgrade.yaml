@@ -1,4 +1,4 @@
-# Before moving on, the rook/ceph cluster’s core (RADOS) components 
+# Before moving on, the rook/ceph cluster’s core (RADOS) components
 # (i.e., mons, mgrs, and OSDs) must be fully updated.
 
 - name: Wait until Ceph upgrade completes
@@ -8,7 +8,7 @@
       retry_count: "{{ 0 if retry_count is undefined else (retry_count | int) + 1 }}"
 
   - name: Gather information about rook deployments
-    k8s_info:
+    kubernetes.core.k8s_info:
       kind: Deployment
       namespace: "{{ rook_namespace }}"
       label_selectors:
@@ -24,7 +24,7 @@
     failed_when: |
       (item.status.replicas != item.status.updatedReplicas)
       or (item.status.replicas != item.status.readyReplicas)
-      or (rook_image_versions.ceph[1:] not in item.metadata.labels['ceph-version'])
+      or (rook_ceph_version[1:] not in item.metadata.labels['ceph-version'])
     # the Ceph version gets an additional build tag, the "-n" suffix, and is missing the leading "v" :/
     with_items: "{{ rook_deployments_info.resources }}"
     loop_control:

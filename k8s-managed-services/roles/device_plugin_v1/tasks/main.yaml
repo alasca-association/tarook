@@ -1,5 +1,5 @@
 - name: Install k8s nvidia-device-plugin
-  k8s:
+  kubernetes.core.k8s:
     state: present
     apply: yes
     definition: "{{ lookup('template', 'nvidia-device-plugin.yml') }}"

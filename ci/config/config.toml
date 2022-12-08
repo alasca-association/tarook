@@ -9,8 +9,8 @@
 haproxy_ports        = [30060]
 workers              = 6
 worker_flavors       = ["L", "L", "L", "L", "L", "SCS-4C:8:50s-GNt:1-mk8sPrivate"]
-master_images        = ["Ubuntu 18.04 LTS x64"]
-worker_images        = ["Ubuntu 18.04 LTS x64"]
+master_images        = ["Ubuntu 18.04 LTS x64", "Ubuntu 22.04 LTS x64"]
+worker_images        = ["Ubuntu 18.04 LTS x64", "Ubuntu 22.04 LTS x64"]
 enable_az_management = false
 cluster_name         = "ci"
 
@@ -124,6 +124,11 @@ name          = "yaook"                # Human readable URL that will appear in 
 url           = "https://yaook.cloud/" # The URL that blackbox will scrape
 interval      = "60s"                  # Scraping interval. Overrides value set in `defaults`
 scrapeTimeout = "60s"                  # Scrape timeout. Overrides value set in `defaults`
+[[k8s-service-layer.prometheus.internet_probe_targets]]
+name = "quad-9"               # Human readable URL that will appear in Prometheus / AlertManager
+url = "9.9.9.9" # The URL that blackbox will scrape
+module = "icmp"
+
 
 [k8s-service-layer.prometheus.common_labels]
 managed-by = "yaook-k8s-monitoring"
@@ -135,6 +140,9 @@ enabled = true
 enabled = true
 
 [k8s-service-layer.vault]
+enabled = true
+
+[k8s-service-layer.fluxcd]
 enabled = true
 
 [testing.test-nodes]

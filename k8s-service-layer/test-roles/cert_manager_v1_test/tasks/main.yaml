@@ -1,6 +1,6 @@
 ---
 - name: Create namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: v1
@@ -12,7 +12,7 @@
       strict: yes
 
 - name: Create issuer
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: cert-manager.io/v1
@@ -27,7 +27,7 @@
       strict: yes
 
 - name: Require issuer to be ready
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: cert-manager.io/v1
     kind: Issuer
     namespace: "{{ k8s_cert_manager_test_namespace }}"
@@ -38,7 +38,7 @@
   retries: 60
 
 - name: Delete namespace
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ k8s_cert_manager_test_namespace }}"

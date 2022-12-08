@@ -1,11 +1,11 @@
 ---
 - name: "{{ monitoring_internet_probe | ternary('I', 'Uni') }}nstall blackbox-exporter"
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     chart_ref: prometheus-blackbox-exporter
     chart_repo_url: https://prometheus-community.github.io/helm-charts
-    chart_version: 5.3.1
+    chart_version: "{{ monitoring_blackbox_version }}"
     release_namespace: "{{ monitoring_namespace }}"
-    release_name: "{{ kms_blackbox_exporter_release_name }}"
+    release_name: "kms-blackbox"
     release_state: "{{ monitoring_internet_probe | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'blackbox_exporter.yaml.j2') | from_yaml }}"
     wait: yes
@@ -16,7 +16,7 @@
   tags:
     - ch-k8s-global-monitoring
     - ch-k8s-global-monitoring-nodeport
-  k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition: "{{ lookup('template', 'prometheus-nodeport.yaml') }}"
     validate:
@@ -26,7 +26,7 @@
 - name: Create architecture-specific service monitors
   block:
   - name: Create keepalived service monitor (frontend)
-    k8s:
+    kubernetes.core.k8s:
       state: present
       apply: yes
       definition: "{{ lookup('template', 'keepalived-service-monitor.yaml.j2') }}"
@@ -35,7 +35,7 @@
         strict: yes
 
   - name: Create HAProxy service monitor (frontend)
-    k8s:
+    kubernetes.core.k8s:
       state: present
       apply: yes
       definition: "{{ lookup('template', 'haproxy-service-monitor.yaml.j2') }}"
@@ -44,7 +44,7 @@
         strict: yes
 
   - name: Create ch-k8s-LBaaS service monitors (frontend)
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'lbaas-service-monitor.yaml.j2') }}"
       apply: yes
       validate:
@@ -53,7 +53,7 @@
     when: ch_k8s_lbaas_enabled
 
   - name: Create rook-ceph-mgr service monitor
-    k8s:
+    kubernetes.core.k8s:
       state: present
       apply: yes
       definition: "{{ lookup('template', 'rook-service-monitor.yaml.j2') }}"
@@ -63,7 +63,7 @@
     when: k8s_storage_rook_enabled
 
   - name: Create service monitor node-exporters (frontend)
-    k8s:
+    kubernetes.core.k8s:
       state: present
       apply: yes
       definition: "{{ lookup('template', 'node-exporter-service-monitor.yaml') }}"
@@ -73,8 +73,31 @@
     tags:
       - node-exporter-service-monitor
 
+  - name: Create service monitors for calico
+    k8s:
+      state: present
+      apply: yes
+      definition: "{{ lookup('template', 'calico-monitoring.yaml.j2') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+    tags:
+      - calico-service-monitor
+
+  - name: Create a pod monitor for fluxcd
+    when: (fluxcd_enabled | default (False)) | bool
+    kubernetes.core.k8s:
+      state: present
+      apply: yes
+      definition: "{{ lookup('template', 'fluxcd_podmonitor.yaml.j2') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+    tags:
+      - fluxcd
+
 - name: "{{ k8s_is_gpu_cluster | ternary('I', 'Uni') }}nstall NVIDIA DCGM exporter"
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     chart_ref: dcgm-exporter
     chart_repo_url: https://nvidia.github.io/dcgm-exporter/helm-charts
     chart_version: 2.6.10

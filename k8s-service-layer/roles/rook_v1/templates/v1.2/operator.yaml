@@ -43,7 +43,7 @@ spec:
       serviceAccountName: rook-ceph-system
       containers:
       - name: rook-ceph-operator
-        image: {{ "rook/ceph:%s" | format(rook_image_versions.operator) | to_json }}
+        image: {{ "rook/ceph:%s" | format(rook_version) | to_json }}
         args: ["ceph", "operator"]
         volumeMounts:
         - mountPath: /var/lib/rook
@@ -83,8 +83,8 @@ spec:
               key: {{ rook_scheduling_key | to_json }}
 {% endif %}
         # (Optional) Rook Agent priority class name to set on the pod(s)
-        # - name: AGENT_PRIORITY_CLASS_NAME
-        #   value: "<PriorityClassName>"
+        - name: AGENT_PRIORITY_CLASS_NAME
+          value: "system-node-critical"
         # (Optional) Rook Agent NodeAffinity.
         # - name: AGENT_NODE_AFFINITY
         #   value: "role=storage-node; storage=rook,ceph"

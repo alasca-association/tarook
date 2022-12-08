@@ -5,7 +5,7 @@
 - name: Run the test
   block:
   - name: Discover IP address of prometheus service
-    k8s_info:
+    kubernetes.core.k8s_info:
       namespace: monitoring
       name: prometheus-operated
       api_version: v1
@@ -31,7 +31,7 @@
   - name: Scrape prometheus endpoints
     block:
     - name: Create the prometheus test scraper namespace
-      k8s:
+      kubernetes.core.k8s:
         definition:
           apiVersion: v1
           kind: Namespace
@@ -45,7 +45,7 @@
         state: present
 
     - name: Create the prometheus test scraper Pod
-      k8s:
+      kubernetes.core.k8s:
         definition: "{{ lookup('template', 'scraper.yaml.j2') }}"
         apply: yes
         state: "present"
@@ -62,7 +62,7 @@
       include_tasks: scrape_managed_services.yaml
 
   - name: Delete Namespace
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       name: "{{ check_prometheus_scraping_namespace }}"
       kind: Namespace

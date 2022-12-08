@@ -101,7 +101,7 @@ agent_port    = 15203
 # --- KUBERNETES: BASIC CLUSTER CONFIGURATION ---
 # ansible prefix: "k8s_"
 [kubernetes]
-# Kubernetes version. Currently, we support from 1.17.* to 1.23.*.
+# Kubernetes version. Currently, we support from 1.19.* to 1.23.*.
 version = "1.23.9" # •ᴗ•
 
 # Uncomment if this cluster contains a worker with GPU access so that the driver
@@ -246,6 +246,14 @@ service_subnet = "10.96.0.0/12" # •ᴗ•
 #   layer 3 networking capabilities and associates a virtual router with each node.
 #   Allows the establishment of zone boundaries through BGP
 plugin = "calico" # •ᴗ•
+
+# Pick a Calico version:
+# Be aware that not all combinations of Kubernetes and Calico versions are recommended:
+# https://projectcalico.docs.tigera.io/getting-started/kubernetes/requirements
+# We provide Calico in version: 3.17.1, 3.19.0, 3.21.6.
+# If not specified here, a predefined Calico version will be matched against
+# the above specified Kubernetes version.
+# calico_custom_version = "3.21.6"
 
 # Define if the IP-in-IP encapsulation of calico should be activated
 # https://projectcalico.docs.tigera.io/networking/vxlan-ipip
@@ -397,6 +405,12 @@ cluster_name = "rook-ceph" # •ᴗ•
 #create_storage_class = "block"
 #replicated = 1
 
+# Custom storage configuration is documented at
+# docs/src/managed-services/rook/custom-storage.md
+#rook_on_openstack = true
+#use_all_available_devices = true
+#use_all_available_nodes = true
+
 # ANCHOR_END: ksl_rook_configuration
 
 # ANCHOR: ksl_prometheus_configuration
@@ -541,6 +555,10 @@ cluster_name = "rook-ceph" # •ᴗ•
 # Provide a list of DNS endpoints for additional thanos store endpoints.
 # The endpoint will be extended to `dnssrv+_grpc._tcp.{{ endpoint }}.monitoring.svc.cluster.local`.
 #thanos_query_additional_store_endpoints = []
+
+# Deploy a specific blackbox exporter version
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
+#blackbox_version = "7.0.0"
 
 #[[k8s-service-layer.prometheus.internet_probe_targets]]
 # name="example"                    # Human readable URL that will appear in Prometheus / AlertManager
@@ -733,6 +751,20 @@ enabled = false # •ᴗ•
 #storage_size = "8Gi"
 
 # ANCHOR_END: ksl_vault_configuration
+
+# ANCHOR: ksl_fluxcd_configuration
+# --- KUBERNETES SERVICE LAYER : FLUXCD ---
+# ansible prefix: "fluxcd_"
+[k8s-service-layer.fluxcd]
+# Enable Flux management.
+#enabled = false
+
+# Version of fluxcd to be deployed. Currently supported is `v0.36.0`.
+#version = "v0.36.0"
+
+# Namespace to deploy the flux-system in (will be created if it does not exist, but
+# never deleted).
+#namespace = "k8s-svc-flux-system"
 
 # ANCHOR: node_scheduling_configuration
 # --- NODE SCHEDULING ---

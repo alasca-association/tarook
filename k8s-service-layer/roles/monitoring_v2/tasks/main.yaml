@@ -6,7 +6,7 @@
 
 - name: Create namespace
   when: k8s_monitoring_enabled | bool
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: v1
@@ -22,7 +22,7 @@
     name: etcd-metrics-proxy
 
 - name: Check if admin secret for Grafana already exists
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: Secret
     name: "{{ monitoring_grafana_admin_secret_name }}"
@@ -31,7 +31,7 @@
 
 - name: Create default admin secret for Grafana
   when: not grafana_admin.resources
-  k8s:
+  kubernetes.core.k8s:
     state: present
     apply: yes
     definition: |
@@ -62,7 +62,7 @@
 
 # Checking the KSL monitoring chart version if its already deployed
 - name: Get deployed KSL monitoring stack version
-  community.kubernetes.helm_info:
+  kubernetes.core.helm_info:
     release_name: "{{ monitoring_prometheus_stack_release_name }}"
     release_namespace: "{{ monitoring_namespace }}"
   when: monitoring_install
@@ -96,7 +96,7 @@
 
 # Install the prometheus stack
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall KSL monitoring stack"
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     chart_ref: "{{ monitoring_prometheus_stack_chart_name }}"
     chart_repo_url: https://prometheus-community.github.io/helm-charts
     chart_version: "{{ monitoring_prometheus_stack_version }}"
@@ -110,7 +110,7 @@
 # Install prometheus-adapter, a metrics-server implementation
 # It enables commands like `k top nodes`
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall Prometheus adapter"
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     chart_ref: prometheus-adapter
     chart_repo_url: https://prometheus-community.github.io/helm-charts
     chart_version: "{{ monitoring_prometheus_adapter_version }}"

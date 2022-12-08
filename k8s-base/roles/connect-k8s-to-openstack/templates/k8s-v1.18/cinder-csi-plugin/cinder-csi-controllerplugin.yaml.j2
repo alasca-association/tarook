@@ -32,6 +32,7 @@ spec:
       labels:
         app: csi-cinder-controllerplugin
     spec:
+      priorityClassName: system-cluster-critical
       nodeSelector:
         node-role.kubernetes.io/master: ""
       tolerations:

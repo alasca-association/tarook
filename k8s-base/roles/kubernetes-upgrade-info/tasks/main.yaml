@@ -23,7 +23,7 @@
     become: yes
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: v1
       kind: Node
       name: "{{ inventory_hostname }}"

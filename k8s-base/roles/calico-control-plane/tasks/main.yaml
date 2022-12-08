@@ -38,6 +38,10 @@
         one if you want to update calico.
     when: calico_cluster_version is version(calico_conf_version, operator='gt')
 
+- name: Define template folder based on chosen Calico version
+  set_fact:
+    calico_versions_folder: "{{ image_versions.calico_version is version('3.21.3', '<') | ternary('3.19', calico_version_minor) }}"
+
 - name: Setup Preliminaries
   run_once: yes
   include_tasks: setup_preliminaries.yaml
@@ -51,14 +55,14 @@
   run_once: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
+  kubernetes.core.k8s:
     definition: "{{ lookup('template', item) }}"
     apply: yes
     validate:
       fail_on_error: yes
       strict: yes
   with_items:
-  - calico-kube-controller.yaml.j2
+  - "{{ calico_versions_folder }}/calico-kube-controller.yaml.j2"
 
 - name: Setup Calico Typha
   run_once: yes

@@ -15,7 +15,7 @@
       delegate_to: "{{ groups['masters'] | first }}"
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
-      k8s_info:
+      kubernetes.core.k8s_info:
         kind: node
         name: "{{ inventory_hostname }}"
       register: result

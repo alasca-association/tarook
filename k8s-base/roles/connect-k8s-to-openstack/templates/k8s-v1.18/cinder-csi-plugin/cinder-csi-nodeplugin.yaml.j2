@@ -15,6 +15,7 @@ spec:
       labels:
         app: csi-cinder-nodeplugin
     spec:
+      priorityClassName: system-node-critical
       serviceAccount: csi-cinder-node-sa
       hostNetwork: true
 {% if cinder_storage_nodeplugin_toleration %}

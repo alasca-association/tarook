@@ -2,7 +2,7 @@
 # https://rook.github.io/docs/rook/v1.2/ceph-upgrade.html#health-verification
 
 - name: Check if the rook namespace already exists
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Namespace
     name: "{{ rook_namespace }}"
   register: rook_ns
@@ -12,7 +12,7 @@
   when: rook_ns.resources is defined and rook_ns.resources | length != 0
   retries: 3
   delay: 5
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Pod
     namespace: "{{ rook_namespace }}"
     wait_timeout: 10
@@ -27,7 +27,7 @@
   when: rook_ns.resources is defined and rook_ns.resources | length != 0
   block:
   - name: Determine the rook-ceph-tools pod
-    k8s_info:
+    kubernetes.core.k8s_info:
       kind: Pod
       namespace: "{{ rook_namespace }}"
       label_selectors:
@@ -35,7 +35,7 @@
     register: rook_ceph_tools_pod_info
 
   - name: Gather ceph cluster status information via the rook-ceph-tools Pod
-    community.kubernetes.k8s_exec:
+    kubernetes.core.k8s_exec:
       namespace: "{{ rook_namespace }}"
       pod: "{{ rook_ceph_tools_pod_info.resources[0].metadata.name }}"
       command: ceph status -f json
@@ -45,7 +45,7 @@
   # The following tasks check the cluster health depending on the deployed
   # ceph version. Versions tested: v14.2.5, v14.2.8, v14.2.21, v15.2.13
   - name: Gather information about the Ceph Cluster
-    k8s_info:
+    kubernetes.core.k8s_info:
       kind: CephCluster
       namespace: "{{ rook_namespace }}"
       name: "{{ rook_cluster_name }}"

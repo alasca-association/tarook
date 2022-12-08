@@ -8,7 +8,7 @@ import collections
 import typing
 import errno
 
-from copy import deepcopy
+from mergedeep import merge
 
 from helpers import terraform_helper
 from helpers import pass_helper
@@ -66,6 +66,8 @@ K8S_MANAGED_SERVICES_VAR_MAP = {
         "prometheus": [
             # We probably wanna split up the monitoring variables
             # in the near future
+        ],
+        "fluxcd": [
         ]
     },
 }
@@ -82,6 +84,7 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "prometheus": "monitoring",
     "cert-manager": "k8s_cert_manager",
     "ingress": "k8s_ingress",
+    "fluxcd": "fluxcd",
     "etcd-backup": "etcd_backup",
     "vault": "yaook_vault",
     "nvidia": "nvidia",
@@ -231,55 +234,6 @@ def dump_to_ansible_inventory(
     write_to_inventory(final_config, ansible_inventory_path)
 
 
-def recursive_diff(data: dict, temp_data: dict, diff=None, parents=None):
-    """Recursively compares two configs and produces a diff between them.
-
-    Template config :param:`temp_data` contains mandatory keys and values.
-    The user defined config :param:`data` should be a superset of
-    :param:`temp_data`. This function recursively compares if all
-    mandatory keys and values from :param:`temp_data` are listed in
-    :param:`data`. The diff is stored in list.
-
-    The diff is fulfilled based on following conditions:
-    1. If key from :param:`temp_data` is not listed in :param:`data`
-    2. If value of corresponding key from :param:`temp_data` not equal value
-       of corresponding key in :param:`data` and value in :param:`data`
-       was replaced (vanished) by "", [] or {}.
-    """
-    if diff is None:
-        diff = []
-    if parents is None:
-        parents = []
-
-    for key in temp_data.keys():
-        if key not in data:
-            diff.append(f"mandatory key {'.'.join(parents)}.{key} is missing")
-            continue
-
-        if data[key] != temp_data[key] and data[key] in ([], {}, ""):
-            diff.append(
-                f"value for mandatory key {'.'.join(parents)}.{key} is missing"
-            )
-            continue
-
-        if isinstance(temp_data[key], list):
-            for item_data, item_temp_data in zip(data[key], temp_data[key]):
-                parents.append(key)
-                recursive_diff(
-                    item_data, item_temp_data, diff=diff, parents=parents
-                )
-                parents = []
-
-        if isinstance(temp_data[key], dict):
-            parents.append(key)
-            recursive_diff(
-                data[key], temp_data[key], diff=diff, parents=parents
-            )
-            parents = []
-
-    return diff
-
-
 def print_process_state(
     section: str
 ):
@@ -322,18 +276,7 @@ def main():
                 ALLOWED_TOP_LEVEL_SECTIONS)
         )
 
-    # Check that the config contains all mandatory variables
-    mandatory_diff = recursive_diff(
-        prune(deepcopy(config)), prune(deepcopy(config_template))
-    )
-    if mandatory_diff:
-        raise ValueError(
-            "missing mandatory variables:\n\t- {}\n"
-            "Please look up the exact path in `templates/config.template.toml`."
-            .format(
-                "\n\t- ".join(mandatory_diff),
-            )
-        )
+    config = merge(config_template, config)
 
     # Config looks good on first sight, be brave and cleanup the inventory
     print(
@@ -535,6 +478,18 @@ def main():
         config["k8s-service-layer"].get("etcd-backup"),
         kubernetes_service_storage_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("etcd-backup", "")
+    )
+
+    # KUBERNETES SERVICE LAYER: FLUXCD
+    print_process_state("KSL - FLUXCD")
+    kubernetes_service_storage_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
+        "fluxcd.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("fluxcd"),
+        kubernetes_service_storage_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("fluxcd", "")
     )
 
     # ---

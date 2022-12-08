@@ -1,6 +1,6 @@
 ---
 - name: Ensure namespace exists
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: v1
@@ -12,7 +12,7 @@
       strict: yes
 
 - name: Create Vault CA selfsigned issuer
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: cert-manager.io/v1
@@ -27,7 +27,7 @@
       strict: yes
 
 - name: Create Vault CA
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: cert-manager.io/v1
@@ -47,7 +47,7 @@
       strict: yes
 
 - name: Create Vault Issuer
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: cert-manager.io/v1
@@ -63,7 +63,7 @@
       strict: yes
 
 - name: Enumerate workers
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: Node
   register: nodes
@@ -85,7 +85,7 @@
   # - the cluster service name
   # - all worker IP addresses (if management cluster integration)
   # - possibly a fun public DNS name
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: cert-manager.io/v1
@@ -114,7 +114,7 @@
 - name: Deploy Vault
   vars:
     scheduling_key: "{{ yaook_vault_scheduling_key }}"
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     chart_ref: vault
     chart_repo_url: https://helm.releases.hashicorp.com
     chart_version: "{{ yaook_vault_chart_version }}"
@@ -128,7 +128,9 @@
         tlsDisable: false
       injector:
         enabled: false
+        priorityClassName: "system-cluster-critical"
       server:
+        priorityClassName: "system-cluster-critical"
         affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}"
         tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}"
         tls:
@@ -186,7 +188,7 @@
         enabled: false
 
 - name: Find vault pods
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     namespace: "{{ yaook_vault_namespace }}"
     kind: Pod
@@ -197,7 +199,7 @@
   delay: 5
 
 - name: Obtain vault status
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ yaook_vault_namespace }}"
     pod: "{{ vault_pods.resources[0].metadata.name }}"
     container: vault
@@ -213,7 +215,7 @@
   when: 'not (vault_status.stdout | from_json).initialized'
   block:
   - name: Initialize Vault
-    community.kubernetes.k8s_exec:
+    kubernetes.core.k8s_exec:
       namespace: "{{ yaook_vault_namespace }}"
       pod: "{{ vault_pods.resources[0].metadata.name }}"
       container: vault
@@ -233,7 +235,7 @@
   - name: Unseal Vault pod
     vars:
       init_data: "{{ vault_init.stdout | from_json }}"
-    community.kubernetes.k8s_exec:
+    kubernetes.core.k8s_exec:
       namespace: "{{ yaook_vault_namespace }}"
       pod: "{{ vault_pods.resources[0].metadata.name }}"
       container: vault

@@ -18,7 +18,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: Create ServiceAccount for calico-typha, configure RBAC, ClusterRole, ClusterRoleBinding
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
       state: "present"
@@ -26,20 +26,20 @@
         fail_on_error: yes
         strict: yes
     with_items:
-    - typha-serviceaccount.yaml
+    - "{{ calico_versions_folder }}/typha-serviceaccount.yaml"
 
   - name: Deploy Typha Deployment
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', item) }}"
       apply: yes
       validate:
         fail_on_error: yes
         strict: yes
     with_items:
-    - typha-deployment.yaml.j2
+    - "{{ calico_versions_folder }}/typha-deployment.yaml.j2"
 
   - name: Deploy Typha service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
       validate:

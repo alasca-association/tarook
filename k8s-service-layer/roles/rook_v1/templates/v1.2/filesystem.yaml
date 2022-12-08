@@ -34,6 +34,7 @@ spec:
       - key: {{ rook_scheduling_key | to_json }}
         operator: Exists
 {% endif %}
+    priorityClassName: system-cluster-critical
     resources: {
 {% call resource_constraints(
   rook_mds_memory_request,

@@ -16,4 +16,4 @@ ANSIBLE_ROLES_PATH="$ansible_k8s_base_playbook/roles:$ansible_k8s_sl_playbook/ro
 export ANSIBLE_ROLES_PATH
 
 cd "$ansible_k8s_custom_playbook"
-ansible_playbook -i "inventory/default.yaml" -i "$ansible_inventoryfile_custom" main.yaml "$@"
+ansible_playbook -i "$ansible_inventoryfile_custom" -i "inventory/default.yaml" main.yaml "$@"

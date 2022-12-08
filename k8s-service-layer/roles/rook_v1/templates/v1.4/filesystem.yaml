@@ -106,7 +106,7 @@ spec:
     #  requests:
     #    cpu: "500m"
     #    memory: "1024Mi"
-    # priorityClassName: my-priority-class
+    priorityClassName: system-cluster-critical
     resources: {
 {% call resource_constraints(
   rook_mds_memory_request,

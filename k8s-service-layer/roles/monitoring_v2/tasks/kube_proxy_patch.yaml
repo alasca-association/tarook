@@ -2,7 +2,7 @@
   when: (k8s_network_plugin in ['calico'])
   block:
   - name: Get current kube-proxy ConfigMap
-    k8s_info:
+    kubernetes.core.k8s_info:
       kind: ConfigMap
       namespace: kube-system
       name: kube-proxy
@@ -11,7 +11,7 @@
   - name: Patch the kube-proxy ConfigMap
     vars:
       kube_proxy_config_patched: "{{ kube_proxy_configmap_old['resources'][0]['data']['config.conf'] | from_yaml | combine({'metricsBindAddress': '0.0.0.0:10249'}, recursive=True)  }}"
-    k8s:
+    kubernetes.core.k8s:
       definition:
         apiVersion: v1
         kind: ConfigMap

@@ -15,6 +15,7 @@ spec:
       labels:
         app: {{ "%s-tools" | format(rook_cluster_name) | to_json }}
     spec:
+      priorityClassName: system-cluster-critical
       dnsPolicy: ClusterFirstWithHostNet
 {% if rook_scheduling_key %}
       affinity:
@@ -31,7 +32,7 @@ spec:
       containers:
       - name: {{ "%s-tools" | format(rook_cluster_name) | to_json }}
         resources: {}
-        image: {{ "rook/ceph:%s" | format(rook_image_versions.toolbox) | to_json }}
+        image: {{ "rook/ceph:%s" | format(rook_version) | to_json }}
         command: ["/tini"]
         args: ["-g", "--", "/usr/local/bin/toolbox.sh"]
         imagePullPolicy: IfNotPresent

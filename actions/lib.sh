@@ -4,7 +4,7 @@ code_repository="$(realpath "$actions_dir/../")"
 
 terraform_min_version="0.14.0"
 terraform_state_dir="$cluster_repository/terraform"
-terraform_module="$code_repository/terraform"
+terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"
 terraform_plan="$terraform_state_dir/plan.tfplan"
 ansible_directory="$code_repository/ansible"
 

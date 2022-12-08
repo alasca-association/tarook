@@ -215,12 +215,17 @@ The used Cert-Manager controller setup will be explained in more detail soon :)
 ```
 </details>
 
-#### Etcd-backup Configuration
+#### etcd-backup Configuration
 
-Automated etcd backups can be configured in this section. When enabled it periodically creates snapshots of etcd database and store it in a object storage using s3. It uses the helm chart [etcdbackup](https://gitlab.com/yaook/operator/-/tree/devel/yaook/helm_builder/Charts/etcd-backup) present in yaook operator helm chart repository. The object storage retains data for 30 days then deletes it.
+Automated etcd backups can be configured in this section.
+When enabled it periodically creates snapshots of etcd database and store it in a object storage using s3.
+It uses the helm chart [etcdbackup](https://gitlab.com/yaook/operator/-/tree/devel/yaook/helm_builder/Charts/etcd-backup) present in yaook operator helm chart repository.
+The object storage retains data for 30 days then deletes it.
 
 The usage of it is disabled by default but can be enabled (and configured) in the following section.
-The credentials are stored in Vault. By default, they are searched for in the cluster's kv storage (at `yaook/$clustername/kv`) under `etcdbackup`. They must be in the form of a JSON object/dict with the keys `access_key` and `secret_key`.
+The credentials are stored in Vault.
+By default, they are searched for in the cluster's kv storage (at `yaook/$clustername/kv`) under `etcdbackup`.
+They must be in the form of a JSON object/dict with the keys `access_key` and `secret_key`.
 
 > ***Note:*** To enable etcd-backup, `k8s-service-layer.etcd-backup.enabled` needs to be set to `true`.
 <details>
@@ -231,6 +236,34 @@ The credentials are stored in Vault. By default, they are searched for in the cl
 ```
 </details>
 
+The following values need to be set:
+
+| Variable         | Description                           |
+| :--------------- | :------------------------------------ |
+| `access_key`     | `Identifier for your S3 endpoint`     |
+| `secret_key`     | `Credential for your S3 endpoint`     |
+| `endpoint_url`   | `URL of your S3 endpoint`             |
+| `endpoint_cacrt` | `Certificate bundle of the endpoint.` |
+
+<details>
+<summary> etcd-backup configuration template</summary>
+
+```yaml
+{{#include ../templates/etcd_backup_s3_config.template.yaml}}
+```
+</details>
+
+<details>
+<summary>Generate/Figure out etcd-backup configuration values</summary>
+
+```
+# Generate access and secret key on OpenStack
+openstack ec2 credentials create
+
+# Get certificate bundle of url
+openssl s_client -connect ENDPOINT_URL:PORT -showcerts 2>&1 < /dev/null | sed -n '/-----BEGIN/,/-----END/p'
+```
+</details>
 
 ### Node-Scheduling: Labels and Taints Configuration
 

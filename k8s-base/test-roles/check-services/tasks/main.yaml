@@ -5,7 +5,7 @@
 
   block:
   - name: create namespace
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       kind: Namespace
       state: present
@@ -15,7 +15,7 @@
         strict: yes
 
   - name: Apply the nginx+service manifest
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx.yaml') }}"
       state: present
       wait: yes
@@ -30,7 +30,7 @@
     failed_when: curl_result.status != 200
 
   - name: Remove the Service
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx.yaml') }}"
       state: absent
       wait: yes
@@ -43,7 +43,7 @@
     include_tasks: dualstack-services.yaml
 
   - name: delete namespace
-    k8s:
+    kubernetes.core.k8s:
       api_version: v1
       kind: Namespace
       state: absent

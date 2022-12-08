@@ -3,7 +3,7 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: apps/v1`
     namespace: kube-system
     name: kube-proxy
@@ -19,7 +19,7 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
+  kubernetes.core.k8s:
     api_version: apps/v1
     kind: DaemonSet
     namespace: kube-system

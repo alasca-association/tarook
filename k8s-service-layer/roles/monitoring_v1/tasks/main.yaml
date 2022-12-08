@@ -1,6 +1,6 @@
 - name: Create namespace
   when: k8s_monitoring_enabled
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition:
       apiVersion: v1

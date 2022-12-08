@@ -44,15 +44,21 @@ spec:
       terminationGracePeriodSeconds: 0
       priorityClassName: system-node-critical
       containers:
-        # Runs calico-node container on each Kubernetes node.  This
+        # Runs calico-node container on each Kubernetes node. This
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: {{ "%s/calico/node:v%s" | format(calico_image_registry, image_versions.calico_version) | to_json }}
+          image: {{ "calico/node:v%s" | format(image_versions.calico_version) | to_json }}
+          envFrom:
+          - configMapRef:
+              # Allow KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT to be overridden for eBPF mode.
+              name: kubernetes-services-endpoint
+              optional: true
           env:
             # Use Kubernetes API as the backing datastore.
             - name: DATASTORE_TYPE
               value: "kubernetes"
+            # Typha support: controlled by the ConfigMap.
             - name: FELIX_TYPHAK8SSERVICENAME
               value: calico-typha
             # Wait for the datastore.
@@ -73,14 +79,14 @@ spec:
             - name: IP
               value: "autodetect"
             - name: IP_AUTODETECTION_METHOD
-              value: "{{ k8s_network_calico_ip_autodetection_method | default('can-reach=www.cloudandheat.com') }}"
+              value: "can-reach=www.cloudandheat.com"
             {% if dualstack_support -%}
             - name: IP6
               value: "autodetect"
             - name: IP6_AUTODETECTION_METHOD
-              value: "{{ k8s_network_calico_ipv6_autodetection_method | default('can-reach=www.cloudandheat.com') }}"
+              value: "can-reach=www.cloudandheat.com"
             {% endif -%}
-            # Disable file logging so kubectl logs works.
+            # Disable file logging so `kubectl logs` works.
             - name: CALICO_DISABLE_FILE_LOGGING
               value: "true"
             # Set Felix endpoint to host default action to ACCEPT.
@@ -110,27 +116,46 @@ spec:
             # Location of the client certificate key for connecting to Typha; volume mount
             - name: FELIX_TYPHAKEYFILE
               value: /calico-node-certs/calico-node.key
+            # Tell Felix to expose metrics for prometheus, by default on 0.0.0.0:9091
+            - name: FELIX_PROMETHEUSMETRICSENABLED
+              value: "true"
+            # TCP port that the Prometheus metrics server should bind to. [Default: 9091]
+            - name: FELIX_PROMETHEUSMETRICSPORT
+              value: "9092"
           securityContext:
             privileged: true
           resources:
             requests:
               cpu: 250m
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - /bin/calico-node
+                - -shutdown
           livenessProbe:
-            httpGet:
-              path: /liveness
-              port: 9099
-              host: localhost
+            exec:
+              command:
+              - /bin/calico-node
+              - -felix-live
+              - -bird-live
             periodSeconds: 10
             initialDelaySeconds: 10
             failureThreshold: 6
+            timeoutSeconds: 10
           readinessProbe:
             exec:
               command:
               - /bin/calico-node
-              - -bird-ready
               - -felix-ready
+              - -bird-ready
             periodSeconds: 10
+            timeoutSeconds: 10
           volumeMounts:
+            # For maintaining CNI plugin API credentials.
+            - mountPath: /host/etc/cni/net.d
+              name: cni-net-dir
+              readOnly: false
             - mountPath: /lib/modules
               name: lib-modules
               readOnly: true
@@ -143,14 +168,20 @@ spec:
             - mountPath: /var/lib/calico
               name: var-lib-calico
               readOnly: false
-            - mountPath: /var/run/nodeagent
-              name: policysync
+            - name: policysync
+              mountPath: /var/run/nodeagent
+            # For eBPF mode, we need to be able to mount the BPF filesystem at /sys/fs/bpf so we mount in the
+            # parent directory.
+            - name: sysfs
+              mountPath: /sys/fs/
+              # Bidirectional means that, if we mount the BPF filesystem at /sys/fs/bpf it will propagate to the host.
+              # If the host is known to mount that filesystem already then Bidirectional can be omitted.
+              mountPropagation: Bidirectional
             - mountPath: "/calico-typha-ca"
               name: calico-typha-ca
               readOnly: true
             - mountPath: /calico-node-certs
               name: calico-node-certs
-              readOnly: true
       volumes:
         # Used by calico-node.
         - name: lib-modules
@@ -170,6 +201,9 @@ spec:
           hostPath:
             path: /sys/fs/
             type: DirectoryOrCreate
+        - name: cni-net-dir
+          hostPath:
+            path: /etc/cni/net.d
         # Used to create per-pod Unix Domain Sockets
         - name: policysync
           hostPath:

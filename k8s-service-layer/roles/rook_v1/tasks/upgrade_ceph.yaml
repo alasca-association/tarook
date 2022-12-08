@@ -8,8 +8,8 @@
   include_tasks: cluster_health_verification.yaml
 
 - name: Patch the image version of the Ceph Cluster (< v16.2.6)
-  when: rook_image_versions.ceph is version('v16.2.6', operator='<')
-  k8s:
+  when: rook_ceph_version is version('v16.2.6', operator='<')
+  kubernetes.core.k8s:
     definition:
       kind: CephCluster
       metadata:
@@ -17,11 +17,11 @@
         name: "{{ rook_cluster_name }}"
       spec:
         cephVersion:
-          image: "ceph/ceph:{{ rook_image_versions.ceph }}"
+          image: "ceph/ceph:{{ rook_ceph_version }}"
 
 - name: Patch the image version of the Ceph Cluster (>= v16.2.6)
-  when: rook_image_versions.ceph is version('v16.2.6', operator='>=')
-  k8s:
+  when: rook_ceph_version is version('v16.2.6', operator='>=')
+  kubernetes.core.k8s:
     definition:
       kind: CephCluster
       metadata:
@@ -29,7 +29,7 @@
         name: "{{ rook_cluster_name }}"
       spec:
         cephVersion:
-          image: "quay.io/ceph/ceph:{{ rook_image_versions.ceph }}"
+          image: "quay.io/ceph/ceph:{{ rook_ceph_version }}"
 
 # The upgrade will take at least 5 minutes
 # We are pausing here to prevent spamming the output with failures

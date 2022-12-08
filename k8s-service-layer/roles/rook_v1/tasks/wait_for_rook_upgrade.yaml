@@ -1,4 +1,4 @@
-# Before moving on, the rook/ceph cluster’s core (RADOS) components 
+# Before moving on, the rook/ceph cluster’s core (RADOS) components
 # (i.e., mons, mgrs, and OSDs) must be fully updated.
 
 - name: Wait until rook upgrade completes
@@ -8,7 +8,7 @@
       retry_count: "{{ 0 if retry_count is undefined else (retry_count | int) + 1 }}"
 
   - name: Gather information about rook deployments
-    k8s_info:
+    kubernetes.core.k8s_info:
       kind: Deployment
       namespace: "{{ rook_namespace }}"
       label_selectors:

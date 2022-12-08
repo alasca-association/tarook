@@ -1,3 +1,5 @@
+priorityClassName: "system-cluster-critical"
+
 config:
   modules:
     http_2xx:
@@ -11,17 +13,40 @@ config:
       prober: icmp
       timeout: 5s
       icmp:
-          preferred_ip_protocol: "ip4"
+        preferred_ip_protocol: "ip4"
     tcp_connect:
       prober: tcp
       timeout: 5s
 
-allowIcmp: true
-
 serviceMonitor:
   enabled: true
-{% if monitoring_common_labels %}
   defaults:
+    additionalRelabeling:
+    # nodename
+    - action: replace
+      regex: ^(.*)$
+      replacement: $1
+      separator: ;
+      sourceLabels:
+        - "__meta_kubernetes_pod_node_name"
+      targetLabel: nodename
+    # target
+    - action: replace
+      regex: ^(.*)$
+      replacement: $1
+      separator: ;
+      sourceLabels:
+        - "__param_target"
+      targetLabel: target
+    # module
+    - action: replace
+      regex: ^(.*)$
+      replacement: $1
+      separator: ;
+      sourceLabels:
+        - "__param_module"
+      targetLabel: module
+{% if monitoring_common_labels %}
     labels:
 {% for label_key, label_value in monitoring_common_labels.items() %}
       {{ label_key | to_json }}: {{ label_value | to_json }}
@@ -36,11 +61,11 @@ serviceMonitor:
 #      module: http_2xx                 # Module used for scraping. Overrides value set in `defaults`
 #      additionalMetricsRelabels: {}    # Map of metric labels and values to add
 {% for target in monitoring_internet_probe_targets %}
-    - name: {{ target.name | to_json }}
-      url: {{ target.url | to_json }}
-      interval: {{ target.interval | default("60s") | to_json }}
-      scrapeTimeout: {{ target.scrapeTimeout | default("60s") | to_json }}
-      module: {{ target.module | default("http_2xx") | to_json }}
+      - name: {{ target.name | to_json }}
+        url: {{ target.url | to_json }}
+        interval: {{ target.interval | default("60s") | to_json }}
+        scrapeTimeout: {{ target.scrapeTimeout | default("60s") | to_json }}
+        module: {{ target.module | default("http_2xx") | to_json }}
 {% endfor %}
 
 pspEnabled: false
@@ -67,3 +92,15 @@ prometheusRule:
       for: 1m
       labels:
         severity: warning
+
+## User and Group to run blackbox-exporter container as
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+# Add NET_RAW to enable ICMP
+    add: ["NET_RAW"]

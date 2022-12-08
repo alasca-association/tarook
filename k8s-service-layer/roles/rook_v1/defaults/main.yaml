@@ -27,6 +27,10 @@ rook_osd_cpu_limit: "500m"
 rook_osd_cpu_request: "{{ rook_osd_cpu_limit }}"
 rook_encrypt_osds: false
 
+rook_use_all_available_devices: true
+rook_use_all_available_nodes: true
+rook_on_openstack: true
+
 rook_mds_memory_limit: "4Gi"
 rook_mds_memory_request: "{{ rook_mds_memory_limit }}"
 rook_mds_cpu_limit: "1"
@@ -54,47 +58,6 @@ rook_pools:
 rook_nodeplugin_toleration: true
 
 rook_use_host_networking: false
-
-# ToDo: REMOVE ME after refactoring service layer inventories/variables
-# hack because k8s-config is not available on this layer
-k8s_version_minor: "1.18"
-
-# TODO: remove this as it is does nothing of use
-rook_image_version_map:
-  "1.17":
-    ceph: "{{ rook_ceph_versions.ceph }}"
-    operator: "{{ rook_version }}"
-    toolbox: "{{ rook_version }}"
-
-  "1.18":
-    ceph: "{{ rook_ceph_versions.ceph }}"
-    operator: "{{ rook_version }}"
-    toolbox: "{{ rook_version }}"
-
-  "1.19":
-    ceph: "{{ rook_ceph_versions.ceph }}"
-    operator: "{{ rook_version }}"
-    toolbox: "{{ rook_version }}"
-
-  "1.20":
-    ceph: "{{ rook_ceph_versions.ceph }}"
-    operator: "{{ rook_version }}"
-    toolbox: "{{ rook_version }}"
-
-  "1.21":
-    ceph: "{{ rook_ceph_versions.ceph }}"
-    operator: "{{ rook_version }}"
-    toolbox: "{{ rook_version }}"
-
-  "1.22":
-    ceph: "{{ rook_ceph_versions.ceph }}"
-    operator: "{{ rook_version }}"
-    toolbox: "{{ rook_version }}"
-
-  "1.23":
-    ceph: "{{ rook_ceph_versions.ceph }}"
-    operator: "{{ rook_version }}"
-    toolbox: "{{ rook_version }}"
 
 rook_version: "v1.2.3" # default
 

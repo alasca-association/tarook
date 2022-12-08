@@ -26,7 +26,7 @@
 # Rotation: There's no need to expire a certificate because there's no common CA. Just delete either of the
 # secrets and the LCM will create a fresh pair.
 - name: Check if the etcd-metrics-proxy cert secret already exists (kube-system)
-  k8s_info:
+  kubernetes.core.k8s_info:
       api_version: v1
       kind: Secret
       namespace: kube-system
@@ -34,7 +34,7 @@
   register: server_cert_state
 
 - name: Check if the etcd-metrics-proxy cert secret already exists (monitoring)
-  k8s_info:
+  kubernetes.core.k8s_info:
       api_version: v1
       kind: Secret
       namespace: monitoring
@@ -52,7 +52,7 @@
       vars:
         old: node-role.kubernetes.io/master
         new: node-role.kubernetes.io/control-plane
-      k8s_info:
+      kubernetes.core.k8s_info:
         api_version: v1
         kind: Node
         # K8s v1.20 introduces "node-role.kubernetes.io/control-plane" as a new label to denote controller denotes.
@@ -103,7 +103,7 @@
       register: client_cert
 
     - name: Create the secret for the etcd-metrics-proxy endpoint
-      k8s:
+      kubernetes.core.k8s:
         apply: yes
         definition:
           apiVersion: v1
@@ -121,7 +121,7 @@
           strict: yes
 
     - name: Create the secret for the prometheus scraper
-      k8s:
+      kubernetes.core.k8s:
         apply: yes
         definition:
           apiVersion: v1
@@ -150,7 +150,7 @@
     - name: Restart prometheus
       block:
         - name: Is prometheus already deployed?
-          k8s_info:
+          kubernetes.core.k8s_info:
             kind: StatefulSet
             namespace: monitoring
             name: prometheus-prometheus-stack-kube-prom-prometheus
@@ -163,7 +163,7 @@
     - name: Restart etcd-metrics-proxy
       block:
         - name: Is the etcd-metrics-proxy already deployed?
-          k8s_info:
+          kubernetes.core.k8s_info:
             kind: DaemonSet
             namespace: kube-system
             name: etcd-metrics-proxy
@@ -174,7 +174,7 @@
           command: "kubectl rollout restart daemonset -n kube-system etcd-metrics-proxy"
 
 - name: Deploy the proxy
-  k8s:
+  kubernetes.core.k8s:
     state: present
     apply: yes
     definition: "{{ lookup('template', 'proxy.yaml' ) }}"

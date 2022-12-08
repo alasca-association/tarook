@@ -18,7 +18,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: Create ServiceAccount for calico/node, configure RBAC, ClusterRole, ClusterRoleBinding
-    k8s:
+    kubernetes.core.k8s:
       definition: "{{ lookup('file', item) }}"
       apply: yes
       state: "present"
@@ -26,14 +26,14 @@
         fail_on_error: yes
         strict: yes
     with_items:
-    - calico-node-serviceaccount.yaml
+    - "{{ calico_versions_folder }}/calico-node-serviceaccount.yaml"
 
   # Install calico/node Daemon-Set
   # Felix: - Calico per-node daemon
   # BIRD: - Distribution of routing information via the BGP protocol
   # confd: - watches Calico datastore for config changes and updates BIRDs config files
   - name: Deploy Calico node DaemonSet
-    k8s:
+    kubernetes.core.k8s:
       apply: yes
       definition: "{{ lookup('template', item) }}"
       validate:
@@ -41,7 +41,7 @@
         strict: yes
       wait: yes
     with_items:
-    - calico-node-daemonset.yaml.j2
+    - "{{ calico_versions_folder }}/calico-node-daemonset.yaml.j2"
 
 - name: Restart calico/node Pods on certificate renewal
   become: yes

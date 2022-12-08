@@ -8,7 +8,7 @@
 - name: Configure k8s resources
   block:
     - name: Apply modified privileges (RBAC)
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', 'upgrade-from-v1.2-apply-RBAC.yaml') }}"
@@ -17,7 +17,7 @@
           strict: yes
 
     - name: Apply modified Custom Resource Definitions (CRDs)
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('file', 'upgrade-from-v1.2-crds.yaml') }}"
@@ -29,7 +29,7 @@
     # not ceph-data. otherwise, the operator will not update the osds
     # because it claims it is missing the data template
     - name: Apply new cluster manifest (v1.3)
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', 'v1.3/cluster.yaml') }}"
@@ -38,7 +38,7 @@
           strict: yes
 
     - name: Apply new rook-ceph-operator manifest (v1.3)
-      k8s:
+      kubernetes.core.k8s:
         state: present
         apply: yes
         definition: "{{ lookup('template', 'v1.3/operator.yaml') }}"

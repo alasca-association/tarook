@@ -7,9 +7,10 @@
 
 - name: Fail if the configured rook version does not support the configured ceph version
   vars:
-    rook_conf_major_version: "{{ rook_image_versions.operator.split('.')[0] }}"
-    rook_conf_minor_version: "{{ rook_image_versions.operator.split('.')[1] }}"
+    rook_conf_major_version: "{{ rook_version.split('.')[0] }}"
+    rook_conf_minor_version: "{{ rook_version.split('.')[1] }}"
     rook_conf_maj_min_version: "{{ '%s.%s' | format(rook_conf_major_version,rook_conf_minor_version) }}" # ugly
+    rook_ceph_version: "{{ rook_ceph_version_map[rook_version]['ceph'] }}"
   block:
   - name: Fail if the configured rook version is not supported
     vars:
@@ -24,7 +25,7 @@
   - name: Fail if the configured ceph major version is not supported by the configured rook version
     vars:
       supported_ceph_releases: "{{ rook_supported_releases | selectattr('rook_release','equalto',rook_conf_maj_min_version) | map(attribute='supported_ceph_releases') | flatten }}"
-      ceph_conf_maj_version: "{{ rook_image_versions.ceph.split('.')[0] }}"
+      ceph_conf_maj_version: "{{ rook_ceph_version.split('.')[0] }}"
     fail:
       msg: |
         The configured ceph version is not supported by the configured rook version.
@@ -37,7 +38,7 @@
 # Check if we need to upgrade rook                                   #
 ######################################################################
 - name: Gather information about the rook-ceph-operator Deployment
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Deployment
     namespace: "{{ rook_namespace }}"
     name: rook-ceph-operator
@@ -52,7 +53,7 @@
   when: rook_operator_info.resources is defined and rook_operator_info.resources | length != 0
   vars:
     rook_operator_version: "{{ rook_operator_info.resources[0]['spec']['template']['spec']['containers'][0]['image'].split(':') | last | default(None) }}"
-    rook_conf_version: "{{ rook_image_versions.operator }}"
+    rook_conf_version: "{{ rook_version }}"
   block:
   - name: Check if configured and deployed rook version do equal
     debug:
@@ -193,7 +194,7 @@
 # Check if we need to upgrade Ceph                                   #
 ######################################################################
 - name: Gather information about the Ceph Cluster
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: CephCluster
     namespace: "{{ rook_namespace }}"
     name: "{{ rook_cluster_name }}"
@@ -204,7 +205,7 @@
   when: ceph_cluster_info.resources is defined and ceph_cluster_info.resources | length != 0
   vars:
     ceph_cluster_version: "{{ ceph_cluster_info.resources[0]['spec']['cephVersion']['image'].split(':') | last | default(None) }}"
-    ceph_conf_version: "{{ rook_image_versions.ceph }}"
+    ceph_conf_version: "{{ rook_ceph_version_map[rook_version]['ceph'] }}"
   block:
   # Downgrading Ceph is theoretically possible, but we do not want to cover automated downgrades
   - name: Fail if configured ceph version is older than the deployed one

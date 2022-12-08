@@ -156,6 +156,21 @@ optional arguments:
   -h, --help     show this help message and exit
 ```
 
+## `manual-terraform.sh`
+
+This is a thin wrapper around Terraform. The arguments are passed on
+to Terraform, and the environment for it is set to use the same module
+and state as when run from `apply-terraform.sh`.
+
+This is useful for operational interventions, debugging and
+development work (e.g. to inspect the state or to taint a resource in
+order to have it rebuilt when running `apply.sh`).
+
+Example usage:
+```
+$ ./managed-k8s/actions/manual-terraform.sh taint 'openstack_compute_instance_v2.master["managed-k8s-master-1"]'
+```
+
 ### Examples
 
 Creating a new role into the k8s-base directory:

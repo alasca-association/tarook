@@ -25,7 +25,7 @@ spec:
     # versions running within the cluster. See tags available at https://hub.docker.com/r/ceph/ceph/tags/.
     # If you want to be more precise, you can always use a timestamp tag such ceph/ceph:v15.2.11-20200419
     # This tag might not contain a new Ceph version, just security fixes from the underlying operating system, which will reduce vulnerabilities
-    image: "ceph/ceph:{{ rook_image_versions.ceph }}"
+    image: "ceph/ceph:{{ rook_ceph_version }}"
     # Whether to allow unsupported versions of Ceph. Currently `nautilus` and `octopus` are supported.
     # Future versions such as `pacific` would require this to be set to `true`.
     # Do not set to true in production.
@@ -223,6 +223,13 @@ spec:
   rook_mon_memory_limit,
   rook_mon_cpu_limit) %}{% endcall %}
     }
+    osd: {
+{% call resource_constraints(
+  rook_osd_memory_request,
+  rook_osd_cpu_request,
+  rook_osd_memory_limit,
+  rook_osd_cpu_limit) %}{% endcall %}
+    }
 #    osd:
 #    prepareosd:
 #    crashcollector:
@@ -230,8 +237,8 @@ spec:
 #    cleanup:
   # The option to automatically remove OSDs that are out and are safe to destroy.
   removeOSDsIfOutAndSafeToRemove: {{ rook_osd_autodestroy_safe }}
-#  priorityClassNames:
-#    all: rook-ceph-default-priority-class
+  priorityClassNames:
+    all: system-cluster-critical
 #    mon: rook-ceph-mon-priority-class
 #    osd: rook-ceph-osd-priority-class
 #    mgr: rook-ceph-mgr-priority-class
