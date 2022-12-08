@@ -42,6 +42,7 @@
   - [Reducing the number of OSDs](./managed-services/rook/removing-osds.md)
   - [Resizing an OSD](./managed-services/rook/resizing-osds.md)
   - [Upgrading Rook and Ceph](./managed-services/rook/upgrades.md)
+  - [Custom Storage Configuration](./managed-services/rook/custom-storage.md)
 - [Monitoring]() <!-- ./managed-services/prometheus/overview.md -->
   - [Prometheus-based Monitoring Stack](./managed-services/prometheus/prometheus-stack.md)
   - [Global Monitoring]() <!-- ./managed-services/prometheus/global-monitoring.md -->

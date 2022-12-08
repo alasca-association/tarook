@@ -418,6 +418,12 @@ cluster_name = "rook-ceph" # •ᴗ•
 #create_storage_class = "block"
 #replicated = 1
 
+# Custom storage configuration is documented at
+# docs/src/managed-services/rook/custom-storage.md
+#rook_on_openstack = true
+#use_all_available_devices = true
+#use_all_available_nodes = true
+
 # ANCHOR_END: ksl_rook_configuration
 
 # ANCHOR: ksl_prometheus_configuration

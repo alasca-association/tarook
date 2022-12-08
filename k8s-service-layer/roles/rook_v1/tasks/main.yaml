@@ -22,6 +22,7 @@
       kind: StorageClass
       name: "{{ rook_osd_storage_class }}"
     register: osd_storage_class
+    when: rook_on_openstack
     failed_when: "not osd_storage_class.resources"
 
   # Starting with rook v1.5, the CRDs are not in common.yaml anymore
