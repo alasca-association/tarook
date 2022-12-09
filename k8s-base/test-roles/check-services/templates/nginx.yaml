@@ -26,6 +26,9 @@ spec:
     runAsUser: 1000
     runAsGroup: 1000
     fsGroup: 1000
+  tolerations:
+  - key: ""
+    operator: Exists
   containers:
   - image: registry.gitlab.com/yaook/images/k8s-nginx:use-unprivileged-nginx
     name: nginx
