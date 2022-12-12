@@ -1,4 +1,9 @@
 - name: Include version checks and updates
+  vars:
+    rook_conf_major_version: "{{ rook_version.split('.')[0] }}"
+    rook_conf_minor_version: "{{ rook_version.split('.')[1] }}"
+    rook_conf_maj_min_version: "{{ '%s.%s' | format(rook_conf_major_version,rook_conf_minor_version) }}" # ugly
+    rook_ceph_version: "{{ rook_ceph_version_map[rook_version]['ceph'] }}"
   include_tasks: version_checks.yaml
 
 - name: Configure k8s resources
