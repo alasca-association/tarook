@@ -19,6 +19,7 @@ spec:
       labels:
         app: "{{ rook_cluster_name }}-tools"
     spec:
+      priorityClassName: system-cluster-critical
       dnsPolicy: ClusterFirstWithHostNet
 {% if rook_scheduling_key %}
       affinity:

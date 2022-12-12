@@ -258,8 +258,8 @@ spec:
 #    cleanup:
   # The option to automatically remove OSDs that are out and are safe to destroy.
   removeOSDsIfOutAndSafeToRemove: {{ rook_osd_autodestroy_safe }}
-#  priorityClassNames:
-#    all: rook-ceph-default-priority-class
+  priorityClassNames:
+    all: system-cluster-critical
 #    mon: rook-ceph-mon-priority-class
 #    osd: rook-ceph-osd-priority-class
 #    mgr: rook-ceph-mgr-priority-class
