@@ -119,9 +119,6 @@
     tags: kubeadm
   - role: remove_snap
     tags: remove_snap
-  - role: wireguard-support
-    tags: wireguard
-    when: wireguard_on_workers
 
 # If DualStack is enabled, the k8s cluster needs to use calico as CNI plugin
 # In Ansible, it is not possible to overwrite inventory variables, therefore we need to fail here
