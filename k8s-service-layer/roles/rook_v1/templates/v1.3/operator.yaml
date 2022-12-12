@@ -108,6 +108,7 @@ spec:
         operator: Exists
 {% endif %}
       serviceAccountName: rook-ceph-system
+      priorityClassName: system-cluster-critical
       containers:
       - name: rook-ceph-operator
         image: "rook/ceph:{{ rook_version }}"
