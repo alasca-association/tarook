@@ -280,6 +280,16 @@ plugin = "calico" # •ᴗ•
 # calico_ipv6_autodetection_method = "can-reach=www.cloudandheat.com"
 # ANCHOR_END: kubernetes_network_configuration
 
+# ANCHOR: calico_configuration
+[calico]
+# There is a migration path from the existing "hard way setup" towards the tigera
+# operator setup, but not the other way around. So, if you want to get back to the
+# "hard way setup" you need to do several manual steps.
+# use_tigera_operator = false
+# installation_resource_file_path = "path-to-a-custom/installation.yaml"
+# apiserver_resource_file_path = "path-to-a-custom/apiserver.yaml"
+# ANCHOR_END: calico_configuration
+
 # ANCHOR: kubernetes_kubelet_configuration
 # --- KUBERNETES: KUBELET CONFIGURATION (WORKERS) ---
 # ansible prefix: "k8s_kubelet"

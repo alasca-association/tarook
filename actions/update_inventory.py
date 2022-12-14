@@ -26,6 +26,7 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "load-balancing",
     "ch-k8s-lbaas",
     "kubernetes",
+    "calico",
     "node-scheduling",
     "k8s-service-layer",
     "testing",
@@ -75,6 +76,7 @@ K8S_MANAGED_SERVICES_VAR_MAP = {
 SECTION_VARIABLE_PREFIX_MAP = {
     "ch-k8s-lbaas": "ch_k8s_lbaas",
     "kubernetes": "k8s",
+    "calico": "calico",
     "passwordstore": "passwordstore",
     "wireguard": "wg",
     "ipsec": "ipsec",
@@ -382,6 +384,32 @@ def main():
             kubernetes_ansible_inventory_path,
             SECTION_VARIABLE_PREFIX_MAP.get("kubernetes", "")
         )
+
+    # ---
+    # CALICO
+    # ---
+    print_process_state("Calico")
+    kubernetes_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage3"] /
+        "group_vars" / "all" / "calico.yaml"
+    )
+
+    calico_config = config.get("calico")
+    if "installation_resource_file_path" in calico_config:
+        calico_config["installation_resource_file_path"] = os.path.abspath(
+            calico_config["installation_resource_file_path"]
+        )
+
+    if "apiserver_resource_file_path" in calico_config:
+        calico_config["apiserver_resource_file_path"] = os.path.abspath(
+            calico_config["apiserver_resource_file_path"]
+        )
+
+    dump_to_ansible_inventory(
+        calico_config,
+        kubernetes_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("calico", "")
+    )
 
     # ---
     # KUBERNETES SERVICE LAYER

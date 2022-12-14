@@ -1,0 +1,117 @@
+---
+- name: Define Calico download folder
+  become: true
+  become_user: root
+  ansible.builtin.set_fact:
+    calico_cache_dir: "{% if lookup('env', 'XDG_CACHE_HOME') == '' %}{{ lookup('env', 'HOME') + '/.cache' + '/yaook-k8s-ansible/calico-binaries' }}{% else %}{{ lookup('env', 'XDG_CACHE_HOME')  + '/yaook-k8s-ansible/calico-binaries' }}{% endif %}"
+
+- name: "Ensure that {{ calico_cache_dir }} is removed"
+  become: true
+  become_user: root
+  ansible.builtin.file:
+    state: absent
+    path: "{{ calico_cache_dir }}"
+
+- name: Install calico as a network driver
+  become: true
+  become_user: root
+  run_once: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+    - name: Create tigera-operator Namespace
+      kubernetes.core.k8s:
+        name: tigera-operator
+        api_version: v1
+        kind: Namespace
+        state: present
+        validate:
+          fail_on_error: true
+          strict: true
+
+    - name: Download tigera-operator manifest to the cluster
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/projectcalico/calico/{{ tigera_operator_version }}/manifests/tigera-operator.yaml"
+        dest: /tmp/tigera-operator.yaml
+        mode: '0664'
+
+    - name: Apply tigera-operator manifest to the cluster
+      kubernetes.core.k8s:
+        state: present
+        src: /tmp/tigera-operator.yaml
+
+    - name: Create the Calico Installation Resource
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', calico_installation_resource_file_path) | from_yaml }}"
+
+    - name: Create the Calico APIServer Resource
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', calico_apiserver_resource_file_path) | from_yaml }}"
+
+    - name: Remove calico node DaemonSet
+      kubernetes.core.k8s:
+        state: absent
+        api_version: apps/v1
+        kind: DaemonSet
+        namespace: kube-system
+        name: calico-node
+
+    - name: Remove calico-kube-controllers Deployment
+      kubernetes.core.k8s:
+        state: absent
+        api_version: apps/v1
+        kind: Deployment
+        namespace: kube-system
+        name: calico-kube-controllers
+
+    - name: Remove calico typha Deployment
+      kubernetes.core.k8s:
+        state: absent
+        api_version: apps/v1
+        kind: Deployment
+        namespace: kube-system
+        name: calico-typha
+
+- name: Restart the tigera operator
+  become: true
+  become_user: root
+  run_once: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+    - name: Search for all tigera operator Pods
+      kubernetes.core.k8s_info:
+        kind: Pod
+        label_selectors:
+          - k8s-app = tigera-operator
+      register: tigera_operator_pods
+
+    - name: Restart tigera operator Pods
+      kubernetes.core.k8s:
+        state: absent
+        api_version: v1
+        kind: Pod
+        namespace: "{{ item['metadata']['namespace'] }}"
+        name: "{{ item['metadata']['name'] }}"
+      loop: "{{ tigera_operator_pods['resources'] }}"
+
+    - name: Get a list of all nodes
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Node
+      register: k8s_nodes
+
+    - name: Remove projectcalico.org/operator-node-migration label
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Node
+          metadata:
+            name: "{{ item.metadata.name }}"
+            labels:
+              projectcalico.org/operator-node-migration: null
+      loop: "{{ k8s_nodes.resources }}"
+...

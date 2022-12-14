@@ -8,21 +8,40 @@
     DATASTORE_TYPE: kubernetes
 
   block:
-  - name: Check running and readiness status of calico-node pods
+  - name: Check running and readiness status of calico pods
     kubernetes.core.k8s_info:
       kind: Pod
       label_selectors:
       - app.kubernetes.io/name=calico
-      - app.kubernetes.io/component=calico-node
-    register: pod_calico_node
-    failed_when: ( pod_calico_node.resources[0].status.phase != "Running" ) and ( pod_calico_node.resources[0].status.containerStatuses[0].ready != true )
+      - app.kubernetes.io/component={{ item }}
+    register: pod_info
+    when: k8s_network_plugin == 'calico' and not (calico_use_tigera_operator | default(False) | bool)
+    failed_when: ( pod_info.resources[0].status.phase != "Running" ) and ( pod_info.resources[0].status.containerStatuses[0].ready != true )
+    with_items:
+    - calico-node
+    - calico-typha
 
-  - name: Check running and readiness status of calico-typha pods
+  - name: Check running and readiness status of the tigera operator
     kubernetes.core.k8s_info:
       kind: Pod
       label_selectors:
-      - app.kubernetes.io/name=calico
-      - app.kubernetes.io/component=calico-typha
-    register: pod_calico_tpyha
-    failed_when: ( pod_calico_node.resources[0].status.phase != "Running" ) and ( pod_calico_node.resources[0].status.containerStatuses[0].ready != true )
+      - k8s-app=tigera-operator
+    register: pod_info
+    when: k8s_network_plugin == 'calico' and (calico_use_tigera_operator | default(False) | bool)
+    failed_when: ( pod_info.resources[0].status.phase != "Running" ) and ( pod_info.resources[0].status.containerStatuses[0].ready != true )
+
+  - name: Check running and readiness status of calico pods
+    kubernetes.core.k8s_info:
+      kind: Pod
+      label_selectors:
+      - app.kubernetes.io/name={{ item }}
+    register: pod_info
+    when: k8s_network_plugin == 'calico' and (calico_use_tigera_operator | default(False) | bool)
+    failed_when: ( pod_info.resources[0].status.phase != "Running" ) and ( pod_info.resources[0].status.containerStatuses[0].ready != true )
+    with_items:
+    - calico-node
+    - calico-typha
+    - calico-apiserver
+    - calico-kube-controllers
+    - csi-node-driver
 ...
