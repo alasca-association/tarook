@@ -104,7 +104,7 @@ spec:
 {% if rook_use_host_networking %}
   network:
     # enable host networking
-    #provider: host
+    provider: host
     # enable the Multus network provider
     #provider: multus
     #selectors:
