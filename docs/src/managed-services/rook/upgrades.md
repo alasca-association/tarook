@@ -58,7 +58,7 @@ This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`)
 
 2. Determine which rook version is currently deployed. It should be
    the currently configured rook version in your managed-k8s cluster
-   configuration file. To be sure you can check the actual deployed
+   configuration file. To be sure, you can check the actual deployed
    version with the following commands:
     ```shell
     # Determine the actual rook-ceph-operator Pod name
@@ -70,7 +70,7 @@ This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`)
     -o jsonpath='{.spec.containers[0].image}'
     ```
 
-3. (Optional)
+3. (Optional, but informative)
 
    Determine which ceph version is currently deployed:
    ```shell
@@ -79,10 +79,10 @@ This variable currently defaults to `v1.2.3` (which is mapped to ceph `v14.2.5`)
    ```
 
 4. Depending on the currently deployed rook version, determine the
-   *next* (supported) minor release. The managed-k8s cluster
+   *next* (supported) minor release.The managed-k8s cluster
    configuration template states all supported versions. If in doubt,
-   all supported rook releases are also stated in the `k8s-config`
-   role as well as in the `k8s-service-layer/rook_v1` role (and in this doc file).
+   all supported rook releases are also stated in the `k8s-service-layer/rook_v1` role
+   and at [the top of this document](#supported-rookceph-versions-in-mk8s).
 
 5. Set `version` in the
    [rook configuration section](../../usage/cluster-configuration.md#rook-configuration)
