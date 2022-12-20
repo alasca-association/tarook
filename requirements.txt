@@ -1,7 +1,7 @@
 ansible~=7.1.0
 kubernetes
 openshift
-toml~=0.10.0
+toml
 kubernetes-validate
 python-openstackclient
 
