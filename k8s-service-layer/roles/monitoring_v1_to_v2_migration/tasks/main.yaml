@@ -23,6 +23,11 @@
           fail_on_error: yes
           strict: yes
       loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json', errors='strict' if (k8s_monitoring_enabled and monitoring_use_jsonnet_setup) else 'warn') | default(' [] ', true) | from_json | sort(reverse=true) }}" # noqa 204
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Delete old jsonnet manifests (service-layer)
       kubernetes.core.k8s:
@@ -33,3 +38,8 @@
           fail_on_error: yes
           strict: yes
       loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/service-layer.files.json', errors='strict' if (k8s_monitoring_enabled and monitoring_use_jsonnet_setup) else 'warn') | default(' [] ', true) | from_json | sort(reverse=true) }}" # noqa 204
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"

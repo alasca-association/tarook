@@ -15,6 +15,11 @@
         validate:
           fail_on_error: yes
           strict: yes
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Apply updated Custom Resource Definitions (CRDs)
       kubernetes.core.k8s:
@@ -24,6 +29,11 @@
         validate:
           fail_on_error: yes
           strict: yes
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Apply new rook-ceph-operator manifest (v1.5)
       kubernetes.core.k8s:
@@ -33,6 +43,11 @@
         validate:
           fail_on_error: yes
           strict: yes
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
 # The upgrade will take at least 5 minutes
 # We are pausing here to prevent spamming the output with failures

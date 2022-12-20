@@ -142,6 +142,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
 # ------------------------------------------------ #
 # The following part checks the Typha certificate. #
@@ -287,6 +292,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
 # --------------------------------- #
 # The following part deploys Typha. #
@@ -307,6 +317,11 @@
         strict: yes
     with_items:
     - "{{ calico_versions_folder }}/typha-serviceaccount.yaml"
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Deploy Typha Deployment
     kubernetes.core.k8s:
@@ -317,6 +332,11 @@
         strict: yes
     with_items:
     - "{{ calico_versions_folder }}/typha-deployment.yaml.j2"
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Deploy Typha service
     kubernetes.core.k8s:
@@ -328,6 +348,11 @@
       wait: yes
     with_items:
     - typha-service.yaml
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
 - name: Restart Typha Pods on certificate_renewal
   become: yes

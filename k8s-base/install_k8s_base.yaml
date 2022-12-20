@@ -250,6 +250,7 @@
   hosts: k8s_nodes
   vars_files:
   - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
   roles:
     - role: k8s-local-storage-controller
       tags: lsc

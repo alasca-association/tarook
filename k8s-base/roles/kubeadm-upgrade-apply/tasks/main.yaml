@@ -65,6 +65,10 @@
               config.conf: |
                 {{ kube_proxy_config_patched }}
         register: kube_proxy_configmap
+        # Retry this task on failures
+        until: kube_proxy_configmap is not failed
+        retries: "{{ k8s_error_retries }}"
+        delay: "{{ k8s_error_delay }}"
 
       - name: Patch kubeadm-config to remove IPv6DualStack
         kubernetes.core.k8s_info:
@@ -86,6 +90,11 @@
             data:
               ClusterConfiguration: |
                 {{ kubeadm_config_config_patched }}
+        # Retry this task on failures
+        register: k8s_apply
+        until: k8s_apply is not failed
+        retries: "{{ k8s_error_retries }}"
+        delay: "{{ k8s_error_delay }}"
 
       - name: Patch kubelet-config to remove IPv6DualStack
         kubernetes.core.k8s_info:
@@ -107,6 +116,11 @@
             data:
               kubelet: |
                 {{ kubelet_config_config_patched }}
+        # Retry this task on failures
+        register: k8s_apply
+        until: k8s_apply is not failed
+        retries: "{{ k8s_error_retries }}"
+        delay: "{{ k8s_error_delay }}"
 
       - name: Trigger rollout restart kube-proxy
         when: kube_proxy_configmap.changed

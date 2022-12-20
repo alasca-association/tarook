@@ -18,6 +18,11 @@
       spec:
         cephVersion:
           image: "ceph/ceph:{{ rook_ceph_version }}"
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: Patch the image version of the Ceph Cluster (>= v16.2.6)
   when: rook_ceph_version is version('v16.2.6', operator='>=')
@@ -30,6 +35,11 @@
       spec:
         cephVersion:
           image: "quay.io/ceph/ceph:{{ rook_ceph_version }}"
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 # The upgrade will take at least 5 minutes
 # We are pausing here to prevent spamming the output with failures

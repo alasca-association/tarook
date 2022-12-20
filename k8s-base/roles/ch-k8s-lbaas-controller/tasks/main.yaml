@@ -22,6 +22,11 @@
         strict: yes
     notify:
     - restart ch-k8s-lbaas-controller
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Deploy LBaaS controller
     kubernetes.core.k8s:
@@ -33,3 +38,8 @@
     with_items:
     - controller-rbac.yaml
     - controller.yaml
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"

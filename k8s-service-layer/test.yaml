@@ -2,6 +2,8 @@
 - name: Kubernetes Service Layer Tests
   hosts: orchestrator
   gather_facts: no
+  vars_files:
+  - vars/retries.yaml
   pre_tasks:
     - name: include env vars
       include_vars:

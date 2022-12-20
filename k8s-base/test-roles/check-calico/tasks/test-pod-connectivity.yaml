@@ -18,6 +18,11 @@
         fail_on_error: yes
         strict: yes
       state: present
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Collect Information about number of Nodes
     kubernetes.core.k8s_info:
@@ -36,6 +41,11 @@
     with_items:
     - busybox_serviceaccount.yaml.j2
     - busybox-deployment.yaml.j2
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Collect (calico-)BusyBox Pod Resource Information
     kubernetes.core.k8s_info:
@@ -106,6 +116,11 @@
     with_items:
     - busybox-deployment.yaml.j2
     - busybox_serviceaccount.yaml.j2
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
       - test-cleanup
 
@@ -119,5 +134,10 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
       - test-cleanup

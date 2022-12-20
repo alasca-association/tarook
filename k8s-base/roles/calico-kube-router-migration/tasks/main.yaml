@@ -33,6 +33,10 @@
           fail_on_error: yes
           strict: yes
       register: kube_router_deletion
+      # Retry this task on failures
+      until: kube_router_deletion is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Install kube-proxy
       when: kube_router_deletion.changed

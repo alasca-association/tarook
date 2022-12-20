@@ -50,6 +50,8 @@
 - name: Test Calico CNI Support
   hosts: k8s_nodes
   gather_facts: no
+  vars_files:
+  - vars/retries.yaml
   roles:
   - role: check-calico
     tags:
@@ -62,6 +64,8 @@
 - name: Validate IPSec
   hosts: localhost
   gather_facts: false
+  vars_files:
+  - vars/retries.yaml
   roles:
   - role: check-ipsec
     tags:
@@ -96,6 +100,8 @@
   hosts: masters[0]
   become: no
   gather_facts: false
+  vars_files:
+  - vars/retries.yaml
   vars:
     gateway: "{{ groups['gateways'] | first or groups['masters'] | first }}"
     deprecated_nodeport_lb_test_port: "{{ hostvars[groups['frontend'] | first ]['deprecated_nodeport_lb_test_port'] | default(0) }}"
@@ -119,6 +125,8 @@
   hosts: masters[0]
   become: no
   gather_facts: no
+  vars_files:
+  - vars/retries.yaml
   roles:
   - role: check-networkpolicy-enforcement
     tags:
@@ -131,6 +139,8 @@
   hosts: masters[0]
   become: no
   gather_facts: false
+  vars_files:
+  - vars/retries.yaml
   pre_tasks:
     # include default vars of rook
     - name: include rook defaults

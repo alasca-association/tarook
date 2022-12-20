@@ -35,6 +35,11 @@
         validate:
           fail_on_error: yes
           strict: yes
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Create provisioner
       kubernetes.core.k8s:
@@ -44,6 +49,11 @@
         validate:
           fail_on_error: yes
           strict: yes
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Create service
       kubernetes.core.k8s:
@@ -53,6 +63,11 @@
         validate:
           fail_on_error: yes
           strict: yes
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
 - name: Dump instantiated manifests
   become: no

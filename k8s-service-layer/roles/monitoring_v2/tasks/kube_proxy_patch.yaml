@@ -22,6 +22,10 @@
           config.conf: |
             {{ kube_proxy_config_patched | to_nice_yaml }}
     register: kube_proxy_configmap
+    # Retry this task on failures
+    until: kube_proxy_configmap is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Trigger rollout restart kube-proxy
     when: kube_proxy_configmap.changed

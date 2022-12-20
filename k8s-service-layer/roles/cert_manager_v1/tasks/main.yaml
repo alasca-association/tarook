@@ -11,6 +11,11 @@
     validate:
       fail_on_error: yes
       strict: yes
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: "{{ k8s_cert_manager_install | ternary('Add', 'Remove') }} Cert Manager Repo"
   kubernetes.core.helm_repository:
@@ -64,3 +69,8 @@
           - http01:
               ingress:
                 class: "{{ k8s_cert_manager_letsencrypt_ingress }}"
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
