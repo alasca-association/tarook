@@ -92,6 +92,8 @@
   tags:
     - kubelet-masters
   serial: 1
+  vars_files:
+    - ../vars/retries.yaml
   roles:
     - name: kubeadm-upgrade-kubelet
       when: "not (k8s_upgrade_done | default(False))"
@@ -138,6 +140,7 @@
   run_once: true # to avoid redundant appliance
   vars_files:
     - ../vars/auto_generated_preamble.yaml # needed for the cloud.config secret
+    - ../vars/retries.yaml
   roles:
     - role: connect-k8s-to-openstack
       when: on_openstack | default(False) | bool
@@ -149,6 +152,7 @@
     - ../vars/disruption.yaml
     - ../vars/auto_generated_preamble.yaml
     - ../vars/etc.yaml
+    - ../vars/retries.yaml
   roles:
     - role: calico-control-plane
       tags:
@@ -170,6 +174,7 @@
     - ../vars/disruption.yaml
     - ../vars/auto_generated_preamble.yaml
     - ../vars/etc.yaml
+    - ../vars/retries.yaml
   vars:
     k8s_version: "{{ next_k8s_version }}"
   roles:

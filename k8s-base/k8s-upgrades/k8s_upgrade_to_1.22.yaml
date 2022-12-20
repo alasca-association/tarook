@@ -27,6 +27,7 @@
   run_once: true # to avoid redundant appliance
   vars_files:
     - ../vars/auto_generated_preamble.yaml # needed for the cloud.config secret
+    - ../vars/retries.yaml
   pre_tasks:
     - name: Purge the csi-sc-cinder-controllerplugin Statefulset
       when: on_openstack | default(False) | bool
@@ -156,6 +157,7 @@
     - ../vars/disruption.yaml
     - ../vars/auto_generated_preamble.yaml
     - ../vars/etc.yaml
+    - ../vars/retries.yaml
   roles:
     - role: calico-control-plane
       tags:
@@ -177,6 +179,7 @@
     - ../vars/disruption.yaml
     - ../vars/auto_generated_preamble.yaml
     - ../vars/etc.yaml
+    - ../vars/retries.yaml
   vars:
     k8s_version: "{{ next_k8s_version }}"
   roles:

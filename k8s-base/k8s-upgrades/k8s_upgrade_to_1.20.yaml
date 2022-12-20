@@ -92,6 +92,8 @@
   tags:
     - kubelet-masters
   serial: 1
+  vars_files:
+    - ../vars/retries.yaml
   roles:
     - name: kubeadm-upgrade-kubelet
       when: "not (k8s_upgrade_done | default(False))"
