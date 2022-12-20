@@ -134,7 +134,7 @@
 
 - name: Check calico's monitoring endpoints
   when: k8s_network_plugin == "calico"
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job={{ item | to_json }}}'
@@ -154,7 +154,7 @@
   when: (fluxcd_enabled | default(False)) | bool
   vars:
     job_name: "{{ k8s_fluxcd_namespace | default('k8s-svc-flux-system') }}/flux-system"
-  community.kubernetes.k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job={{ job_name | to_json }}}'
