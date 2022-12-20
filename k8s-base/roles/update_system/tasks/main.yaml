@@ -103,13 +103,11 @@
 - name: Update apt cache
   when: ansible_pkg_mgr == 'apt'
   become: yes
-  command:
-  args:
+  ansible.builtin.command:
     argv:
     - apt-get
     - update
     - --allow-releaseinfo-change
-    warn: false
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"

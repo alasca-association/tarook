@@ -45,15 +45,13 @@
   - name: require service to be reachable from this machine and respond to HTTP
     delegate_to: localhost
     become: no
-    command:
-    args:
-      warn: false
+    ansible.builtin.command:
       argv:
-      - curl
-      - "-s"
-      - "-w"
-      - "\\n%{http_code}\\n"
-      - "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:{{ check_loadbalancer_service_port }}"
+        - curl
+        - "-s"
+        - "-w"
+        - "\\n%{http_code}\\n"
+        - "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:{{ check_loadbalancer_service_port }}"
     register: curl_result
     until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
     delay: 1

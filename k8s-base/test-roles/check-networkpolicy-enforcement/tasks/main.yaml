@@ -110,9 +110,7 @@
   - name: check service is unreachable from the node
     # In SingleNode setups, the node will be able to connect to the service
     when: inventory_hostname != groups['masters'] | first
-    command:
-    args:
-      warn: false
+    ansible.builtin.command:
       argv:
       - curl
       - "-sS"
@@ -139,9 +137,7 @@
         strict: yes
 
   - name: check service is reachable from the node
-    command:
-    args:
-      warn: false
+    ansible.builtin.command:
       argv:
       - curl
       - "-sS"

@@ -21,9 +21,7 @@
 
   - name: require service to be reachable from this machine and respond to HTTP
     delegate_to: localhost
-    command:
-    args:
-      warn: false
+    ansible.builtin.command:
       argv:
       - curl
       - "-s"
@@ -69,9 +67,7 @@
 
   - name: require service to be reachable from this machine and respond to HTTP
     delegate_to: localhost
-    command:
-    args:
-      warn: false
+    ansible.builtin.command:
       argv:
       - curl
       - "-s"
