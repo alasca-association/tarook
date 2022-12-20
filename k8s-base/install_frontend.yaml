@@ -13,7 +13,7 @@
   vars_files:
   - vars/disruption.yaml
   - vars/etc.yaml
-  - vars/network_error_retries.yaml
+  - vars/retries.yaml
   roles:
   - role: detect_user
     tags: detect_user
@@ -46,6 +46,7 @@
   hosts: uninitialized_frontend_nodes
   vars_files:
   - vars/disruption.yaml
+  - vars/retries.yaml
   roles:
   - role: update_system
     tags: update_system
@@ -68,7 +69,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
-  - vars/network_error_retries.yaml
+  - vars/retries.yaml
   roles:
   - role: ntp
     tags: ntp
@@ -88,7 +89,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
-  - vars/network_error_retries.yaml
+  - vars/retries.yaml
   roles:
   - role: bird
     tags: bird

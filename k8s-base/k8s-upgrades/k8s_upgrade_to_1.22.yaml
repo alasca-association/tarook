@@ -16,7 +16,7 @@
   hosts: k8s_nodes
   gather_facts: true
   vars_files:
-    - ../vars/network_error_retries.yaml
+    - ../vars/retries.yaml
   roles:
     - kubernetes-upgrade-info
   tags:
@@ -44,7 +44,7 @@
   any_errors_fatal: true
   vars_files:
     - ../vars/disruption.yaml
-    - ../vars/network_error_retries.yaml
+    - ../vars/retries.yaml
   tags:
     - kubeadm-first-master
   pre_tasks:
@@ -76,7 +76,7 @@
   any_errors_fatal: true
   vars_files:
     - ../vars/disruption.yaml
-    - ../vars/network_error_retries.yaml
+    - ../vars/retries.yaml
   tags:
     - kubeadm-other-masters
   pre_tasks:
@@ -106,7 +106,7 @@
   gather_facts: false
   any_errors_fatal: true
   vars_files:
-    - ../vars/network_error_retries.yaml
+    - ../vars/retries.yaml
   tags:
     - kubelet-masters
   serial: 1
@@ -122,7 +122,7 @@
   any_errors_fatal: true
   vars_files:
     - ../vars/disruption.yaml
-    - ../vars/network_error_retries.yaml
+    - ../vars/retries.yaml
   tags:
     - workers
   serial: 1

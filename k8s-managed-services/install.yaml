@@ -3,7 +3,7 @@
   hosts: orchestrator
   gather_facts: no
   vars_files:
-  - vars/network_error_retries.yaml
+  - vars/retries.yaml
   pre_tasks:
     - name: include env vars
       when: kms_vars_directory is defined
