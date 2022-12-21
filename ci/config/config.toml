@@ -45,7 +45,7 @@ version       = "0.5.0"
 agent_port    = 15203
 
 [kubernetes]
-version                 = "1.23.13"
+version                 = "1.23.15"
 is_gpu_cluster          = false
 
 [kubernetes.apiserver]
