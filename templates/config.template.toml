@@ -327,6 +327,10 @@ cluster_name = "rook-ceph" # •ᴗ•
 # https://rook.github.io/docs/rook/v1.3/ceph-cluster-crd.html#cluster-settings
 #skip_upgrade_checks = false
 
+# If true, the rook operator will create and manage PodDisruptionBudgets
+# for OSD, Mon, RGW, and MDS daemons.
+#rook_manage_pod_budgets = true
+
 # Scheduling keys control where services may run. A scheduling key corresponds
 # to both a node label and to a taint. In order for a service to run on a node,
 # it needs to have that label key.

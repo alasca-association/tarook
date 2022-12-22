@@ -1,3 +1,6 @@
+---
+rook_manage_pod_budgets: True
+
 rook_nmons: 3
 rook_namespace: "rook-ceph"
 rook_mon_volume: true
