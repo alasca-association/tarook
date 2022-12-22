@@ -9,6 +9,10 @@
         state: present
         name:
           - prometheus-haproxy-exporter
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
     - name: Register service user fact for prometheus-haproxy-exporter on Debian
       set_fact:
@@ -80,6 +84,10 @@
             owner: root
             group: root
             mode: ugo-rx
+          register: task_result
+          until: task_result is not failed
+          retries: "{{ network_error_retries }}"
+          delay: "{{ network_error_delay }}"
 
         - name: Extract prometheus-haproxy-exporter
           unarchive:

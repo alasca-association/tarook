@@ -32,6 +32,11 @@
       strict: yes
   loop: "{{ lookup('file', k8s_sl_monitoring_jsonnet_manifest_listing + '.json', errors='strict' if monitoring else 'warn') | default(' [] ', true) | from_json }}" # noqa 204
   no_log: true # blasts the output
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: create rook service monitor
   kubernetes.core.k8s:
@@ -42,3 +47,8 @@
       fail_on_error: yes
       strict: yes
   when: k8s_storage_rook_enabled | bool
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"

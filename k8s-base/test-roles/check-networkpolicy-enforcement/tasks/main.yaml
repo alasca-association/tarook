@@ -18,6 +18,11 @@
         fail_on_error: yes
         strict: yes
       state: present
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: create service
     kubernetes.core.k8s:
@@ -26,6 +31,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: get pod IPs
     kubernetes.core.k8s_info:
@@ -56,6 +66,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: fetch blocked-test pod completion state
     kubernetes.core.k8s_info:
@@ -80,6 +95,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: start unblocked-test
     vars:
@@ -90,6 +110,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: fetch unblocked-test pod completion state
     kubernetes.core.k8s_info:
@@ -110,9 +135,7 @@
   - name: check service is unreachable from the node
     # In SingleNode setups, the node will be able to connect to the service
     when: inventory_hostname != groups['masters'] | first
-    command:
-    args:
-      warn: false
+    ansible.builtin.command:
       argv:
       - curl
       - "-sS"
@@ -137,11 +160,14 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: check service is reachable from the node
-    command:
-    args:
-      warn: false
+    ansible.builtin.command:
       argv:
       - curl
       - "-sS"
@@ -165,5 +191,10 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
     - test-cleanup

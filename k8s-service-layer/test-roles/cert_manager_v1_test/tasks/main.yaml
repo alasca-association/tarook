@@ -10,6 +10,11 @@
     validate:
       fail_on_error: yes
       strict: yes
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: Create issuer
   kubernetes.core.k8s:
@@ -25,6 +30,11 @@
     validate:
       fail_on_error: yes
       strict: yes
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: Require issuer to be ready
   kubernetes.core.k8s_info:
@@ -44,3 +54,8 @@
     name: "{{ k8s_cert_manager_test_namespace }}"
     state: absent
     wait: yes
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"

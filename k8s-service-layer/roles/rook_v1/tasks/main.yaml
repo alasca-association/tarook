@@ -42,6 +42,11 @@
         fail_on_error: yes
         strict: yes
     when: rook_version is version('v1.5.0', operator='ge')
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create common resource definitions
     vars:
@@ -53,6 +58,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create the operator
     vars:
@@ -64,6 +74,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create the cluster
     vars:
@@ -75,6 +90,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Wait for cluster to become ready
     kubernetes.core.k8s_info:
@@ -120,6 +140,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create ceph pools
     vars:
@@ -132,6 +157,11 @@
         fail_on_error: yes
         strict: yes
     loop: "{{ rook_pools }}"
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create pool storage classes
     vars:
@@ -145,6 +175,11 @@
         strict: yes
     when: "item.create_storage_class | default(False)"
     loop: "{{ rook_pools }}"
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create shared filesystem
     vars:
@@ -156,6 +191,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create shared filesystem storage class
     vars:
@@ -167,3 +207,8 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"

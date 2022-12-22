@@ -11,6 +11,11 @@
     validate:
       fail_on_error: yes
       strict: yes
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: "{{ k8s_ingress_install | ternary('Add', 'Remove') }} ingress-nginx Repo"
   kubernetes.core.helm_repository:
@@ -43,3 +48,7 @@
         extraArgs:
           enable-ssl-passthrough: "{{ k8s_ingress_enable_ssl_passthrough }}"
         priorityClassName: "system-cluster-critical"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"

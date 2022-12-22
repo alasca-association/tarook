@@ -16,6 +16,11 @@
     validate:
       fail_on_error: yes
       strict: yes
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: Check local presence of calico-kubeconfig certificate
   run_once: yes
@@ -116,3 +121,8 @@
       strict: yes
   loop:
     - "{{ calico_versions_folder }}/calico-cni-user.yaml"
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"

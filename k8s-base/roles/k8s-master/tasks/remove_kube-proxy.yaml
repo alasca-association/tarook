@@ -30,6 +30,10 @@
       fail_on_error: yes
       strict: yes
   register: kube_proxy
+  # Retry this task on failures
+  until: kube_proxy is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: Clean up iptables rules  # noqa no-handler
   delegate_to: "{{ item }}"

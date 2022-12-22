@@ -41,6 +41,11 @@
     validate:
       fail_on_error: yes
       strict: yes
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: apply manifests
   kubernetes.core.k8s:
@@ -51,6 +56,11 @@
       fail_on_error: yes
       strict: yes
   loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json', errors='strict' if (k8s_monitoring_enabled and monitoring_use_jsonnet_setup) else 'warn') | default(' [] ', true) | from_json }}" # noqa 204
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: create haproxy service monitor (gateway)
   kubernetes.core.k8s:
@@ -60,6 +70,11 @@
     validate:
       fail_on_error: yes
       strict: yes
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
   tags:
     - haproxy-service-monitor
 
@@ -71,6 +86,11 @@
     validate:
       fail_on_error: yes
       strict: yes
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
   tags:
     - keepalived-service-monitor
 
@@ -82,6 +102,11 @@
     validate:
       fail_on_error: yes
       strict: yes
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
   tags:
     - node-exporter-service-monitor
 
@@ -95,6 +120,11 @@
   with_items:
   - lbaas-service-monitor.yaml
   when: ch_k8s_lbaas_agent_port
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
   tags:
   - ch-k8s-lbaas
   - ch-k8s-lbaas-agent

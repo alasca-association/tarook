@@ -10,6 +10,11 @@
         validate:
           fail_on_error: yes
           strict: yes
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Apply the cuda test manifest
       kubernetes.core.k8s:
@@ -19,6 +24,11 @@
         validate:
           fail_on_error: yes
           strict: yes
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Fetch cuda test completion state
       kubernetes.core.k8s_info:
@@ -48,6 +58,11 @@
             validate:
               fail_on_error: yes
               strict: yes
+          # Retry this task on failures
+          register: k8s_apply
+          until: k8s_apply is not failed
+          retries: "{{ k8s_error_retries }}"
+          delay: "{{ k8s_error_delay }}"
         - name: Delete the namespace
           kubernetes.core.k8s:
             api_version: v1
@@ -58,3 +73,8 @@
             validate:
               fail_on_error: yes
               strict: yes
+          # Retry this task on failures
+          register: k8s_apply
+          until: k8s_apply is not failed
+          retries: "{{ k8s_error_retries }}"
+          delay: "{{ k8s_error_delay }}"

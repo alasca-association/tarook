@@ -10,6 +10,10 @@
     sudo apt install -y python3 || \
     sudo dnf install -y python3 || \
     sudo yum install -y python3
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
   changed_when: false
 
 # Cannot use facts (such as ansible_distribution) here because we may not have had python yet.
@@ -29,3 +33,7 @@
     - python3-cryptography
     - zip
   when: "'rhel' in os_info.stdout and 'fedora' in os_info.stdout"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"

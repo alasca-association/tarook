@@ -37,6 +37,11 @@
           fail_on_error: yes
           strict: yes
         state: present
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Create the node-exporter scraper Pod
       kubernetes.core.k8s:
@@ -48,6 +53,10 @@
           fail_on_error: yes
           strict: yes
       register: scraper_info
+      # Retry this task on failures
+      until: scraper_info is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: check node exporter scrape endpoint status
       kubernetes.core.k8s_exec:
@@ -150,5 +159,10 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
       - test-cleanup

@@ -140,6 +140,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
 # --------------------------------------- #
 # The following part deploys calico/node. #
@@ -160,6 +165,11 @@
         strict: yes
     with_items:
     - "{{ calico_versions_folder }}/calico-node-serviceaccount.yaml"
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   # Install calico/node Daemon-Set
   # Felix: - Calico per-node daemon
@@ -175,6 +185,11 @@
       wait: yes
     with_items:
     - "{{ calico_versions_folder }}/calico-node-daemonset.yaml.j2"
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
 - name: Restart calico/node Pods on certificate renewal
   become: yes

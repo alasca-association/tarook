@@ -7,6 +7,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: require service to have ingress IP address set
     kubernetes.core.k8s_info:
@@ -21,9 +26,7 @@
 
   - name: require service to be reachable from this machine and respond to HTTP
     delegate_to: localhost
-    command:
-    args:
-      warn: false
+    ansible.builtin.command:
       argv:
       - curl
       - "-s"
@@ -44,6 +47,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
 - name: Check single stack IPv6 lb service functionality
   when: false # Currently we do not support IPv6 single stack load balanced services (refer to the dualstack docs)
@@ -55,6 +63,11 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: require service to have ingress IP address set
     kubernetes.core.k8s_info:
@@ -69,9 +82,7 @@
 
   - name: require service to be reachable from this machine and respond to HTTP
     delegate_to: localhost
-    command:
-    args:
-      warn: false
+    ansible.builtin.command:
       argv:
       - curl
       - "-s"
@@ -92,3 +103,8 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"

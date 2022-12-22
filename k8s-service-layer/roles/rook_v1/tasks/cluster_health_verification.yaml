@@ -6,7 +6,6 @@
     kind: Namespace
     name: "{{ rook_namespace }}"
   register: rook_ns
-  ignore_errors: yes
 
 - name: Verify that each rook Pod is up and healthy
   when: rook_ns.resources is defined and rook_ns.resources | length != 0

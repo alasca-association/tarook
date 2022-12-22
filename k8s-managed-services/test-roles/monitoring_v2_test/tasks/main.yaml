@@ -43,6 +43,11 @@
           fail_on_error: yes
           strict: yes
         state: present
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Create the prometheus test scraper Pod
       kubernetes.core.k8s:
@@ -54,6 +59,10 @@
           fail_on_error: yes
           strict: yes
       register: scraper_info
+      # Retry this task on failures
+      until: scraper_info is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Scrape endpoints for prometheus stack itself
       include_tasks: scrape_prometheus_stack.yaml
@@ -71,5 +80,10 @@
       validate:
         fail_on_error: yes
         strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
       - test-cleanup

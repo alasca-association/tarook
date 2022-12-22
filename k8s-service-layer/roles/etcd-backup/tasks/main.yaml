@@ -18,12 +18,21 @@
         secret: "{{ etcd_backup_config.secret_key | b64encode }}"
     validate:
       fail_on_error: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: Install required packages for s3
   ansible.builtin.pip:
     name:
       - boto3
       - botocore
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Manage the backup bucket
   environment:
@@ -63,6 +72,10 @@
     name: yaook.cloud
     repo_url: https://charts.yaook.cloud/operator/stable/
     repo_state: "{{ etcd_backup_enabled | ternary('present', 'absent') }}"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Deploy yaook operator etcd backup chart
   kubernetes.core.helm:
@@ -75,3 +88,7 @@
     update_repo_cache: yes
     values: "{{ lookup('template', 'etcd_backup.yaml.j2') | from_yaml }}"
   when: bucket_info.buckets | length > 0
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"

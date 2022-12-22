@@ -5,6 +5,10 @@
     state: present
     name:
     - python3-pip
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
   tags:
   - k8s-tools
 
@@ -16,6 +20,10 @@
     - kubernetes
     - kubernetes-validate
     state: latest
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
   when: ansible_facts.env.VIRTUAL_ENV is not defined
   tags:
   - k8s-tools

@@ -42,7 +42,7 @@
         - bgpconfiguration
         - default
         - -p
-        - '{"spec":{"asNumber": {{ k8s_network_bgp_worker_as | to_json }} }}'
+        - ' {"spec":{"asNumber":{{ k8s_network_bgp_worker_as | to_json }} }}'
     register: bgp_as_number_patch
     changed_when: "'Successfully patched' and 'BGPConfiguration' in bgp_as_number_patch.stdout"
 
@@ -55,7 +55,8 @@
         - node
         - "{{ item }}"
         - -p
-        - '{"spec":{"bgp":{"routeReflectorClusterID": {{ calico_bgp_router_id | to_json }} }}}'
+        # A leading whitespace is needed to prevent Ansible from interpreting this string as JSON
+        - ' {"spec":{"bgp":{"routeReflectorClusterID": {{ calico_bgp_router_id | to_json }} }}}'
     register: bgp_route_reflector_cluster_id_patch
     changed_when: "'Successfully patched' and 'Node' in bgp_route_reflector_cluster_id_patch.stdout"
     with_items: "{{ groups['masters'] }}"
