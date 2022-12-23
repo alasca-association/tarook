@@ -107,5 +107,3 @@
     tags: configure-automatic-system-updates
   - role: ipsec-vpn
     tags: ipsec-vpn
-  - role: wireguard-site-to-site
-    tags: wireguard-site-to-site
