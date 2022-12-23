@@ -27,16 +27,6 @@
       async: 1800
       poll: 5
 
-    # Workaround because kubeadm recreates kube-proxy and it is
-    # currently not possible to avoid that
-    - name: Remove kube-proxy
-      vars:
-        _allow_disruption: true
-      when: k8s_network_plugin == 'kube-router'
-      include_role:
-        name: k8s-master
-        tasks_from: remove_kube-proxy
-
     - name: Remove IPv6DualStack for >= v1.23
       become: yes
       environment:

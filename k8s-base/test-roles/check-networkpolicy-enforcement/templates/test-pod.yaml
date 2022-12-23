@@ -22,8 +22,7 @@ spec:
     - "-c"
     - |
       set -e
-      # we need to give kube-router a moment to push the changes to all
-      # nodes.
+      # we need to give the CNI a moment to push the changes to all nodes.
       sleep 10
       curl -sS -o /dev/null --connect-timeout 20 {% for ip in service_pod_ips %} {{ "http://%s:8080" | format(ip) | quote }}{% endfor %}
 

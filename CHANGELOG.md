@@ -4,6 +4,11 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Drop support for kube-router
+
+We're dropping support for kube-router as CNI.
+This step has been announced via our usual communication channels months ago.
+A migration path from kube-router to calico has been available quite some time and is also removed now.
 
 ## Support for Rook 1.7 added
 
