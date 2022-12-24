@@ -109,3 +109,17 @@ securityContext:
 
 extraArgs:
   - --log.level=debug
+
+{% if monitoring_scheduling_key %}
+tolerations:
+  - key: "{{ monitoring_scheduling_key }}"
+    operator: Exists
+    effect: NoSchedule
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: "{{ monitoring_scheduling_key }}"
+              operator: Exists
+{% endif %}
