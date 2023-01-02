@@ -106,6 +106,9 @@ is_gpu_cluster = false # •ᴗ•
 [kubernetes.apiserver]
 frontend_port = 8888 # •ᴗ•
 
+[kubernetes.controller_manager]
+#large_cluster_size_threshold = 50
+
 # ANCHOR_END: kubernetes_basic_cluster_configuration
 
 # ANCHOR: storage_base_configuration
