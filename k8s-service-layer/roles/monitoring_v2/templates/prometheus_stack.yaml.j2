@@ -123,6 +123,10 @@ grafana:
         action: replace
   dashboards:
     managed:
+      dashboard-calico:
+        gnetId: 12175
+        revision: 5
+        datasource: Prometheus
   dashboardProviders:
     managed-dashboard-provider.yaml:
       apiVersion: 1
