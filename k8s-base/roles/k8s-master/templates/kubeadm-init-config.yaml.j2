@@ -59,6 +59,7 @@ apiServer:
 controllerManager:
     extraArgs:
       bind-address: "0.0.0.0"
+      large-cluster-size-threshold: "{{ k8s_controller_manager_large_cluster_size_threshold | default(50) }}"
 
 scheduler:
     extraArgs:
