@@ -121,6 +121,16 @@ grafana:
         targetLabel: nodename
         replacement: $1
         action: replace
+  dashboards:
+    managed:
+  dashboardProviders:
+    managed-dashboard-provider.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'managed-dashboards'
+          folder: 'managed-dashboards'
+          options:
+            path: /var/lib/grafana/dashboards/managed
 
 ##
 kubeApiServer:
