@@ -147,7 +147,7 @@ grafana:
         revision: 4
         datasource: Prometheus
 {% endif %}
-{% if k8s_ingress_enabled %}
+{% if k8s_ingress_enabled | bool %}
       dashboard-nginx-ingress:
         gnetId: 9614
         revision: 1

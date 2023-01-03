@@ -430,15 +430,16 @@ def main():
 
     # KUBERNETES SERVICE LAYER: INGRESS
     print_process_state("KSL - INGRESS")
-    kubernetes_service_ingress_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
-        "ingress.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("ingress"),
-        kubernetes_service_ingress_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("ingress", "")
-    )
+    for stage in [ANSIBLE_STAGES["stage4"], ANSIBLE_STAGES["stage5"]]:
+        kubernetes_service_ingress_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / stage /
+            "ingress.yaml"
+        )
+        dump_to_ansible_inventory(
+            config["k8s-service-layer"].get("ingress"),
+            kubernetes_service_ingress_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("ingress", "")
+        )
 
     # KUBERNETES SERVICE LAYER: VAULT
     print_process_state("KSL - VAULT")
