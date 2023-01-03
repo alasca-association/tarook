@@ -141,6 +141,12 @@ grafana:
         revision: 5
         datasource: Prometheus
 {% endif %}
+{% if monitoring_use_thanos %}
+      dashboard-thanos:
+        gnetId: 12937
+        revision: 4
+        datasource: Prometheus
+{% endif %}
   dashboardProviders:
     managed-dashboard-provider.yaml:
       apiVersion: 1
