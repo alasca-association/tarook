@@ -417,15 +417,16 @@ def main():
     # ---
     # KUBERNETES SERVICE LAYER: CERT MANAGER
     print_process_state("KSL - CERT MANAGER")
-    kubernetes_service_cm_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
-        "cert-manager.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("cert-manager"),
-        kubernetes_service_cm_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("cert-manager", "")
-    )
+    for stage in [ANSIBLE_STAGES["stage4"], ANSIBLE_STAGES["stage5"]]:
+        kubernetes_service_cm_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / stage /
+            "cert-manager.yaml"
+        )
+        dump_to_ansible_inventory(
+            config["k8s-service-layer"].get("cert-manager"),
+            kubernetes_service_cm_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("cert-manager", "")
+        )
 
     # KUBERNETES SERVICE LAYER: INGRESS
     print_process_state("KSL - INGRESS")
