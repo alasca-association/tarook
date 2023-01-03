@@ -127,6 +127,20 @@ grafana:
         gnetId: 12175
         revision: 5
         datasource: Prometheus
+{% if k8s_storage_rook_enabled %}
+      dashboard-ceph-cluster:
+        gnetId: 2842
+        revision: 14
+        datasource: Prometheus
+      dashboard-ceph-osd-single:
+        gnetId: 5336
+        revision: 5
+        datasource: Prometheus
+      dashboard-ceph-pools:
+        gnetId: 5342
+        revision: 5
+        datasource: Prometheus
+{% endif %}
   dashboardProviders:
     managed-dashboard-provider.yaml:
       apiVersion: 1
