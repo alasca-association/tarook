@@ -480,9 +480,9 @@ def generate_wireguard_config(
     # Dump the wireguard IPAM config
     _dump_IPAM_config(assigned_wireguard_users)
 
-    wireguard_config["peers"] = [
+    wireguard_config["peers"] = sorted([
         user.todict()
         for user in assigned_wireguard_users.values()
-    ]
+    ], key=lambda p: p['ident'])
 
     return wireguard_config
