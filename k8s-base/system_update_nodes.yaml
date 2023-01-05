@@ -7,6 +7,17 @@
   roles:
   - validate_configuration
 
+- name: SSH host key validation
+  hosts: all
+  gather_facts: false
+  vars_files:
+  - vars/etc.yaml
+  roles:
+  - role: ssh-known-hosts
+    tags:
+    - ssh-known-hosts
+    - always
+
 - name: Establish connectivity to the frontend nodes
   hosts: frontend
   gather_facts: false
@@ -56,8 +67,6 @@
   roles:
   - role: detect_user
     tags: detect_user
-  - role: ssh-known-hosts
-    tags: ssh-known-hosts
   - role: prepare-node
     tags: prepare-node
   - role: is-k8s-installed

@@ -2,6 +2,18 @@
 # We keep for every minor update a separate upgrade file
 # to avoid accidental major changes of old upgrade files.
 ---
+- name: SSH host key validation
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - ../vars/etc.yaml
+  roles:
+    - role: ssh-known-hosts
+      tags:
+        - ssh-known-hosts
+        - always
+
+
 - name: Detect user
   hosts: k8s_nodes
   gather_facts: false
