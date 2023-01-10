@@ -23,6 +23,7 @@ calicoctl_binary_checksum: "{{ calicoctl_binary_checksums[image_versions.calico_
 
 calico_release_checksums:
   "3.21.6": "sha256:888b80f33a73fd4788dd474c774e1071768324b84d5a47dbe8f9ac160e82e2cf"
+  "3.24.5": "sha256:ab700d644b2dc231633fb3ecaef9e53f12721b73fb32a2785196c0c0919fcb93"
 
 calico_release_checksum: "{{ calico_release_checksums[image_versions.calico_version] | default('invalid checksum') }}"
 
