@@ -14,10 +14,6 @@
     msg: Trying to used containerd in a GPU cluster – this does not work.
   when: k8s_is_gpu_cluster | default(False)
 
-- name: Chef if the node has kubernetes installed
-  stat:
-    path: "/etc/kubernetes"
-  register: kubernetes_dir
 
 - name: Ensure /etc/containerd directory is present
   become: yes
