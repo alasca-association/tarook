@@ -100,6 +100,19 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/retries.yaml
+  pre_tasks:
+    - name: Obtain installed packages
+      ansible.builtin.package_facts:
+        manager: auto
+    - name: Fail when docker is installed but containerd configured
+      fail:
+        msg: |
+          Docker is installed on this node, but containerd is configured as CRI!
+      when: "'docker.io' in ansible_facts.packages"
+    - name: Prevent installing containerd for GPU cluster
+      fail:
+        msg: Trying to used containerd in a GPU cluster – this does not work.
+      when: k8s_is_gpu_cluster | default(False)
   roles:
   - role: networking
     tags: networking
