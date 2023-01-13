@@ -32,9 +32,11 @@ The script triggers the execution of the following scripts:
   - [`destroy.sh`](#destroysh)
   - [`wg-up.sh`](#wg-upsh)
   - [`manage_roles.py`](#manage_rolespy)
+  - [`manual-terraform.sh`](#manual-terraformsh)
     - [Examples](#examples)
   - [`update_inventory.py`](#update_inventorypy)
   - [`upgrade.sh`](#upgradesh)
+  - [`migrate-docker-containerd.sh`](#migrate-docker-containerdsh)
   - [`lib.sh`](#libsh)
 
 ## `apply-terraform.sh`
@@ -198,6 +200,21 @@ It cleans up the inventory and ensures the latest variable/value pairs from your
 
 This script can be used to trigger a Kubernetes upgrade.
 More details about that can be found [here](./upgrading-kubernetes.md).
+
+## `migrate-docker-containerd.sh`
+
+This script can be used to migrate the CRI of all nodes of a cluster from docker to containerd.
+It is a wrapper script for the `migrate-docker-to-containerd` playbook located in `k8s-base/migrate-docker-to-containerd.yaml`.
+More details about this procedure can be found in this [dedicated operation document](./../operation/migrate-docker-containerd.md).
+
+Intermediate cluster health verification tasks can be skipped via `-s`.
+This is not recommended.
+
+Disruption needs to be allowed explicitly.
+
+```console
+MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/migrate-docker-containerd.sh [-s]
+```
 
 ## `lib.sh`
 
