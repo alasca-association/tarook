@@ -26,7 +26,7 @@
       state: directory
       owner: node-exporter
       group: node-exporter
-      mode:  0755
+      mode: 0755
 
   - name: Create the node-exporter service unit
     copy:
