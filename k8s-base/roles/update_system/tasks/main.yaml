@@ -100,7 +100,7 @@
 #     E: Repository 'http://deb.debian.org/debian buster-updates InRelease'
 #     changed its 'Suite' value from 'stable-updates' to 'oldstable-updates'
 #
-- name: Update apt cache
+- name: Update apt cache # noqa command-instead-of-module
   when: ansible_pkg_mgr == 'apt'
   become: yes
   ansible.builtin.command:

@@ -26,18 +26,13 @@
 
   - name: require service to be reachable from this machine and respond to HTTP
     delegate_to: localhost
-    ansible.builtin.command:
-      argv:
-      - curl
-      - "-s"
-      - "-w"
-      - "\\n%{http_code}\\n"
-      - "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
-    register: curl_result
-    until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
+    ansible.builtin.uri:
+      url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
+      status_code: 200
+    register: uri_result
+    until: uri_result is not failed
     delay: 1
     retries: 60
-    changed_when: False
 
   - name: Remove DualStack load-balanced service
     kubernetes.core.k8s:
@@ -82,18 +77,13 @@
 
   - name: require service to be reachable from this machine and respond to HTTP
     delegate_to: localhost
-    ansible.builtin.command:
-      argv:
-      - curl
-      - "-s"
-      - "-w"
-      - "\\n%{http_code}\\n"
-      - "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
-    register: curl_result
-    until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
+    ansible.builtin.uri:
+      url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
+      status_code: 200
+    register: uri_result
+    until: uri_result is not failed
     delay: 1
     retries: 60
-    changed_when: False
 
   - name: Remove SingleStack IPv6 load-balanced service
     kubernetes.core.k8s:
