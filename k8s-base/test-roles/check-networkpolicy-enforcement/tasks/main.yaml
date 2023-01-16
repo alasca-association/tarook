@@ -135,23 +135,15 @@
   - name: check service is unreachable from the node
     # In SingleNode setups, the node will be able to connect to the service
     when: inventory_hostname != groups['masters'] | first
-    ansible.builtin.command:
-      argv:
-      - curl
-      - "-sS"
-      - "--connect-timeout"
-      - "10"
-      - "--retry"
-      - "3"
-      - "--retry-delay"
-      - "1"
-      - "-w"
-      - "\\n%{http_code}\\n"
-      - "http://{{ item }}"
-    register: curl_result
+    ansible.builtin.uri:
+      url: "http://{{ item }}:8080"
+      timeout: 10
+      status_code: -1
+    register: uri_result
+    until: uri_result is not failed
+    delay: 1
+    retries: 3
     loop: "{{ service_pod_ips }}"
-    changed_when: False
-    failed_when: "curl_result.rc not in [7,28]"
 
   - name: unblock access from everywhere
     kubernetes.core.k8s:
@@ -167,19 +159,14 @@
     delay: "{{ k8s_error_delay }}"
 
   - name: check service is reachable from the node
-    ansible.builtin.command:
-      argv:
-      - curl
-      - "-sS"
-      - "-w"
-      - "\\n%{http_code}\\n"
-      - "http://{{ item }}:8080"
-    register: curl_result
-    until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
+    ansible.builtin.uri:
+      url: "http://{{ item }}:8080"
+      status_code: 200
+    register: uri_result
+    until: uri_result is not failed
     loop: "{{ service_pod_ips }}"
     delay: 1
     retries: 60
-    changed_when: False
 
   - name: delete test namespace
     kubernetes.core.k8s:
