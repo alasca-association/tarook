@@ -1,7 +1,24 @@
 use_default_rules: true
 
 skip_list:
- - role-name      # Role name {} does not match ``^[a-z][a-z0-9_]+$`` pattern
- - meta-no-info   # meta/main.yml should contain relevant info
+  - role-name      # Role name {} does not match ``^[a-z][a-z0-9_]+$`` pattern
+  - meta-no-info   # meta/main.yml should contain relevant info
+  - command-instead-of-module  # Using command rather than module.
+  - experimental  # all rules tagged as experimental
+  - fqcn-builtins  # Use FQCN for builtin actions.
+  - no-changed-when  # Commands should not change things if nothing needs doing.
+  - no-handler  # Tasks that run when changed should likely be handlers.
+  - yaml[colons]  # Violations reported by yamllint.
+  - yaml[comments]  # Violations reported by yamllint.
+  - yaml[document-end]  # Violations reported by yamllint.
+  - yaml[document-start]  # Violations reported by yamllint.
+  - yaml[indentation]  # Violations reported by yamllint.
+  - yaml[trailing-spaces]  # Violations reported by yamllint.
+  - yaml[truthy]  # Violations reported by yamllint.
+  - package-latest  # Package installs should not use latest.
+  - var-spacing  # Jinja2 variables and filters should have spaces before and after.
+  - yaml[new-line-at-end-of-file]  # Violations reported by yamllint.
+
+
 
 verbosity: 2 # To make sure the roles are actually checked

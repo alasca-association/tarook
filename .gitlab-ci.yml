@@ -41,11 +41,12 @@ yamllint:
 
 ansible-lint:
   image:
-    name: cytopia/ansible-lint:5-0.6
-    entrypoint: ["/bin/sh", "-c"]
+    name: python:3
   stage: lint
   script:
-    - "ansible-galaxy install -r ansible/requirements.yaml" # Install requirements
+    - "pip3 install -r requirements.txt"
+    - "pip3 install ansible-lint"
+    - "ansible-galaxy install -r ansible/requirements.yaml"
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/install_frontend.yaml" # Check stage 2
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/install_k8s_base.yaml" # Check stage 3
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-service-layer/install.yaml" # Check stage 4
