@@ -1,7 +1,7 @@
 ---
 - name: Test availability of the metrics API
   block:
-      # Equivalent to `kubectl top pods -A`
+    # Equivalent to `kubectl top pods -A`
     - name: Test the availability of "/apis/metrics.k8s.io/v1beta1/pods"
       command: "kubectl get --raw '/apis/metrics.k8s.io/v1beta1/pods'"
       register: pods
@@ -13,7 +13,7 @@
           "`/apis/metrics.k8s.io/v1beta1/pods` returned no pods. Looks like the metrics API is broken."
           "Check the metrics-server / prometheus-adapter and its query expressions."
       
-      # Equivalent to `kubectl top nodes`
+    # Equivalent to `kubectl top nodes`
     - name: Test the availability of "/apis/metrics.k8s.io/v1beta1/nodes"
       command: "kubectl get --raw '/apis/metrics.k8s.io/v1beta1/nodes'"
       register: nodes

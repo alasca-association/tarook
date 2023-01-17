@@ -12,7 +12,7 @@
     calicoctl_command_blocks:
       - "/usr/local/bin/calicoctl"
       - "apply"
-        # During Kubernetes upgrades, version mismatches are expected. Otherwise they are not.
+      # During Kubernetes upgrades, version mismatches are expected. Otherwise they are not.
       - "{{ (next_k8s_version | default(False) or _allow_disruption) | ternary('--allow-version-mismatch','') }}"
       - "--filename=-"
   command:
