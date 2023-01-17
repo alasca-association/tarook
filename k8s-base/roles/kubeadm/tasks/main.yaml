@@ -121,7 +121,7 @@
       become: yes
 
       block:
-        - name: Install dnf versionlock
+        - name: Install dnf versionlock  # noqa package-latest
           ansible.builtin.dnf:
             name:
               - 'dnf-command(versionlock)'
