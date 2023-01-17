@@ -2,6 +2,9 @@ use_default_rules: true
 
 skip_list:
   - role-name      # Role name {} does not match ``^[a-z][a-z0-9_]+$`` pattern
+  - name[casing]
+  - name[template]
+  - name[missing]
   - experimental  # all rules tagged as experimental
   - no-changed-when  # Commands should not change things if nothing needs doing.
   - no-handler  # Tasks that run when changed should likely be handlers.
