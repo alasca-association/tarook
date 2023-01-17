@@ -197,7 +197,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   when: calico_node_crt_changed.changed
   block:
-  - name: Restart calico/node Pods
+  - name: Restart calico/node Pods  # noqa no-changed-when
     ansible.builtin.command:
       argv:
         - kubectl
@@ -208,7 +208,7 @@
         - -n
         - kube-system
 
-  - name: Wait for Rollout Restart of calico/node Pods to finish
+  - name: Wait for Rollout Restart of calico/node Pods to finish  # noqa no-changed-when
     ansible.builtin.command:
       argv:
         - kubectl

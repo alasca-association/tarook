@@ -12,7 +12,7 @@
 
     # Do not renew certificates here because we rolled out our own chain
     # --yes auto-confirms and makes upgrade non-interactive
-    - name: Execute the upgrade
+    - name: Execute the upgrade  # noqa no-changed-when
       ansible.builtin.command:
         argv:
           - "kubeadm"

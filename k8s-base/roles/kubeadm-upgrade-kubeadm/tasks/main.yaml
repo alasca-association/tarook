@@ -3,7 +3,7 @@
   when: ansible_pkg_mgr == 'apt'
   become: yes
   block:
-  - name: Remove the hold of kubeadm
+  - name: Remove the hold of kubeadm  # noqa no-changed-when
     ansible.builtin.command: apt-mark unhold kubeadm
 
   - name: Upgrade kubeadm
@@ -15,17 +15,17 @@
     retries: "{{ network_error_retries }}"
     delay: "{{ network_error_delay }}"
 
-  - name: Re-hold kubeadm
+  - name: Re-hold kubeadm  # noqa no-changed-when
     ansible.builtin.command: apt-mark hold kubeadm
 
-  - name: Check kubeadm's version
+  - name: Check kubeadm's version  # noqa no-changed-when
     ansible.builtin.command: kubeadm version
 
 - name: Upgrade kubeadm on dnf systems
   when: ansible_pkg_mgr == 'dnf'
   become: yes
   block:
-  - name: Remove versionlock on kubeadm
+  - name: Remove versionlock on kubeadm  # noqa no-changed-when
     ansible.builtin.command:
     args:
       argv:
@@ -44,7 +44,7 @@
     retries: "{{ network_error_retries }}"
     delay: "{{ network_error_delay }}"
 
-  - name: Add versionlock on kubeadm
+  - name: Add versionlock on kubeadm  # noqa no-changed-when
     ansible.builtin.command:
     args:
       argv:

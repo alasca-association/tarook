@@ -9,7 +9,7 @@
     - _allow_disruption or install_status == 'k8s_not_installed'
     - ansible_facts['pkg_mgr'] == "apt"
   block:
-    - name: Get CPU information
+    - name: Get CPU information  # noqa no-changed-when
       ansible.builtin.command: lscpu
       register: cpu_info
 
@@ -144,7 +144,7 @@
         - udevadm control --reload-rules
         - udevadm trigger
 
-    - name: run sriov-manage once to create VFs
+    - name: run sriov-manage once to create VFs  # noqa no-changed-when
       # executing the variant of the reboot systemd service during installation does not work properly we
       # rather run the command once after installation and just enable the systemd service to run for consecutive reboots
       ansible.builtin.command: "/usr/lib/nvidia/sriov-manage -e ALL"

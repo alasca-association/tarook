@@ -22,7 +22,7 @@
         group: root
         mode: 0640
 
-    - name: Join the k8s cluster as another worker
+    - name: Join the k8s cluster as another worker  # noqa no-changed-when
       # XXX: ansible command module does not support setting the umask
       ansible.builtin.shell: "sleep {{ 10 | random }} && umask 077 && kubeadm join --node-name {{ inventory_hostname | quote }} --config=/tmp/kubeadm-join-config.yaml"
       async: 300

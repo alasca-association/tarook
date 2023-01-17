@@ -89,7 +89,7 @@
         csr_path: /etc/kubernetes/pki/ca.csr
         provider: selfsigned
 
-  - name: Check if gcr.io can be reached
+  - name: Check if gcr.io can be reached  # noqa no-changed-when
     ansible.builtin.command: kubeadm config images pull
 
   - name: Create kubeadm-init-config.yaml
@@ -102,7 +102,7 @@
       group: root
       mode: 0600
 
-  - name: Run kubeadm init
+  - name: Run kubeadm init  # noqa no-changed-when
     # XXX: ansible command module does not support setting the umask
     ansible.builtin.shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
 
@@ -147,7 +147,7 @@
 - name: Create a new join token
   when: kube_config.stat.exists
   block:
-  - name: Get an access token and the CA hash
+  - name: Get an access token and the CA hash  # noqa no-changed-when
     become: yes
     ansible.builtin.command: kubeadm token create
     register: kubeadm_token_out
@@ -197,7 +197,7 @@
           group: root
           mode: 0600
 
-      - name: Join the initial control as another master
+      - name: Join the initial control as another master  # noqa no-changed-when
         # XXX: ansible command module does not support setting the umask
         ansible.builtin.shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml"
 

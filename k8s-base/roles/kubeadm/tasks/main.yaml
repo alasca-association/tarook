@@ -131,7 +131,7 @@
       retries: "{{ network_error_retries }}"
       delay: "{{ network_error_delay }}"
 
-    - name: Add a version lock
+    - name: Add a version lock  # noqa no-changed-when
       ansible.builtin.command:
       args:
         argv:

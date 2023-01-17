@@ -87,7 +87,7 @@
     - name: Load private key  # noqa 207
       ansible.builtin.set_fact:
         wg_gw_priv_key: "{{ lookup('passwordstore', '{{ wg_gw_priv_path }} directory={{ password_store_dir }}') }}"
-    - name: Derive public key
+    - name: Derive public key  # noqa no-changed-when
       ansible.builtin.command: "wg pubkey"
       args:
         stdin: "{{ wg_gw_priv_key }}"
@@ -174,7 +174,7 @@
         enabled: yes
         state: "{{ 'restarted' if wg0_conf is changed else 'started' }}"
   rescue:
-    - name: Collect logs of the wg-quick service
+    - name: Collect logs of the wg-quick service  # noqa no-changed-when
       ansible.builtin.shell: journalctl -u wg-quick@wg0; systemctl status wg-quick@wg0
       register: wg_logs
       ignore_errors: yes

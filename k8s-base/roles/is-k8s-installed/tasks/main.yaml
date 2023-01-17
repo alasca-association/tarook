@@ -17,7 +17,7 @@
       register: kubelet_service
       failed_when: kubelet_service.changed
 
-    - name: Check if the node joined already
+    - name: Check if the node joined already  # noqa no-changed-when
       # using kubectl here as openshift et al. are otherwise not installed on worker nodes.
       # seems kinda excessive to deploy it just to check whether we need to join.
       environment:

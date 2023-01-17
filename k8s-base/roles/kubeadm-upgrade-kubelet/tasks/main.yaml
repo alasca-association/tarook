@@ -3,7 +3,7 @@
   when: ansible_pkg_mgr == 'apt'
   become: yes
   block:
-  - name: Remove the hold of kubelet
+  - name: Remove the hold of kubelet  # noqa no-changed-when
     ansible.builtin.command: apt-mark unhold kubelet kubectl
 
   - name: Upgrade kubelet
@@ -16,14 +16,14 @@
     retries: "{{ network_error_retries }}"
     delay: "{{ network_error_delay }}"
 
-  - name: Re-hold kubelet
+  - name: Re-hold kubelet  # noqa no-changed-when
     ansible.builtin.command: apt-mark hold kubelet kubectl
 
 - name: Upgrade kubelet on dnf systems
   when: ansible_pkg_mgr == 'dnf'
   become: yes
   block:
-  - name: Remove versionlock on kubelet
+  - name: Remove versionlock on kubelet  # noqa no-changed-when
     ansible.builtin.command:
     args:
       argv:
@@ -44,7 +44,7 @@
     retries: "{{ network_error_retries }}"
     delay: "{{ network_error_delay }}"
 
-  - name: Add versionlock on kubelet
+  - name: Add versionlock on kubelet  # noqa no-changed-when
     ansible.builtin.command:
     args:
       argv:

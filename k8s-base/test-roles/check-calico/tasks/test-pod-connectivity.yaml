@@ -56,7 +56,7 @@
     register: calico_busybox_pod_information
 
   # ping each Pod from each Pod with a nested loop
-  - name: ping each BusyBox Pod from every BusyBox Pod
+  - name: ping each BusyBox Pod from every BusyBox Pod  # noqa no-changed-when
     ansible.builtin.command:
       argv:
         - kubectl

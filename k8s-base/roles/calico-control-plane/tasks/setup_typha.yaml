@@ -360,7 +360,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   when: typha_crt_changed.changed
   block:
-  - name: Restart Typha Pods
+  - name: Restart Typha Pods  # noqa no-changed-when
     ansible.builtin.command:
       argv:
         - kubectl
@@ -371,7 +371,7 @@
         - -n
         - kube-system
 
-  - name: Wait for Rollout Restart of Typha Pods to finish
+  - name: Wait for Rollout Restart of Typha Pods to finish  # noqa no-changed-when
     ansible.builtin.command:
       argv:
         - kubectl
