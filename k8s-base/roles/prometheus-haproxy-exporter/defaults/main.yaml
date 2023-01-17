@@ -11,3 +11,4 @@ prometheus_haproxy_exporter_checksums:
 prometheus_haproxy_exporter_checksum: "{{ prometheus_haproxy_exporter_checksums[prometheus_haproxy_exporter_version] | default('invalid checksum') }}"
 
 prometheus_haproxy_exporter_admin_sock: /tmp/haproxy_admin.sock
+...

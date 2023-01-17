@@ -1,3 +1,4 @@
+---
 - name: Initial sanity checks
   hosts: localhost
   gather_facts: false
@@ -107,3 +108,5 @@
     tags: configure-automatic-system-updates
   - role: ipsec-vpn
     tags: ipsec-vpn
+
+...

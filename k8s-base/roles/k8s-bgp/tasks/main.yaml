@@ -6,3 +6,4 @@
 - name: Remove BGP configuration for calico
   include_tasks: clear_calico_bgp.yaml
   when: k8s_network_plugin != 'calico'
+...

@@ -1,3 +1,4 @@
+---
 - name: Make sure 'etc_dir' exists
   delegate_to: localhost
   become: no
@@ -22,3 +23,4 @@
   become: no
   raw: "/bin/true"
   changed_when: false
+...

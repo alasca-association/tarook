@@ -1,3 +1,4 @@
+---
 - name: Check reachability of remote endpoint
   vars:
     gateway: "{{ (groups['gateways'] | first) if ('gateways' in groups) else False }}"
@@ -60,3 +61,4 @@
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
+...

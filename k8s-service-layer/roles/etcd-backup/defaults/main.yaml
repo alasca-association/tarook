@@ -1,3 +1,4 @@
+---
 etcd_backup_enabled: false
 etcd_backup_secret_name: "etcd-backup-s3-credentials"
 etcd_backup_namespace: "kube-system"
@@ -9,3 +10,4 @@ etcd_backup_chart_version: ""
 etcd_backup_config_path: "{{ ksl_vars_directory }}/../../config/{{ etcd_backup_s3_config_name }}"
 etcd_backup_days_of_retention: 7
 etcd_backup_metrics_port: 19100
+...

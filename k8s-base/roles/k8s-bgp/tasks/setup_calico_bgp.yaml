@@ -17,3 +17,4 @@
     mode: "u=rw,g=r,o-rwx"
   notify: restart bird6
   when: dualstack_support
+...

@@ -1,3 +1,4 @@
+---
 - name: Compare major and minor versions
   vars:
     prom_stack_conf_major_version: "{{ prom_stack_conf_version.split('.')[0] }}"
@@ -50,3 +51,4 @@
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
+...

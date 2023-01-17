@@ -1,3 +1,4 @@
+---
 - name: Include version checks and updates
   include_tasks: version_checks.yaml
 
@@ -202,3 +203,4 @@
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
+...

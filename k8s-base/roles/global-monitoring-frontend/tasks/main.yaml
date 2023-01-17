@@ -1,3 +1,4 @@
+---
 - name: Create nftables config for monitoring
   when: on_openstack | bool
   become: yes
@@ -19,3 +20,4 @@
     owner: root
     group: root
   notify: reload haproxy for global-monitoring-frontend
+...

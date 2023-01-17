@@ -38,3 +38,4 @@
     daemon_reload: "{{ service_unit is changed or timer_unit is changed }}"
     state: started
     enabled: yes
+...

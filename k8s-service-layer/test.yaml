@@ -26,3 +26,4 @@
     - test-mk8s-sl/fluxcd
     - check-mk8s-sl/fluxcd
     - fluxcd2_v1_test
+...

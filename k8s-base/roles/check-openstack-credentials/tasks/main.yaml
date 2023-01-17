@@ -1,3 +1,4 @@
+---
 - name: Check OpenStack credentials
   when: ((on_openstack | default(False)) | bool) and ((check_openstack_credentials | default(True)) | bool)
   delegate_to: localhost
@@ -34,3 +35,4 @@
         check because just checking for the existence of certain variables is cumbersome.
         This test is necessary because otherwise certain tasks will write nonesense configs
         if the openrc is not sourced.
+...

@@ -1,3 +1,4 @@
+---
 - name: Load admin credentials into interactive shells
   become: yes
   template:
@@ -238,3 +239,4 @@
       You chose "{{ k8s_network_plugin }}", but that did not work.
       Currently, we support only 'calico'.
   when: not k8s_network_plugin == 'calico'
+...

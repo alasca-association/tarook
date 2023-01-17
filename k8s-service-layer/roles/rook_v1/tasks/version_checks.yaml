@@ -4,7 +4,7 @@
 # (We do not care about patch version upgrades)
 # In addition, we need to check if the configured ceph version is supported
 # by the configured rook version so that the rook operator always feels responsible :)
-
+---
 - name: Fail if the configured rook version does not support the configured ceph version
   block:
   - name: Fail if the configured rook version is not supported
@@ -148,3 +148,4 @@
   - name: Upgrade Ceph if the configured version is newer
     include_tasks: upgrade_ceph.yaml
     when: ceph_conf_version is version(ceph_cluster_version, operator='gt') and _allow_disruption
+...

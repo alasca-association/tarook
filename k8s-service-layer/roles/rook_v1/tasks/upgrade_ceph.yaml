@@ -2,7 +2,7 @@
 # if it is in HEALTH_ERR it will refuse to do the upgrade.
 #
 # https://rook.github.io/docs/rook/v1.2/ceph-upgrade.html#ceph-version-upgrades
-
+---
 # Verify that the ceph cluster is healthy
 - name: Include cluster health verification
   include_tasks: cluster_health_verification.yaml
@@ -57,3 +57,4 @@
 # Verify that the ceph cluster is healthy
 - name: Include cluster health verification
   include_tasks: cluster_health_verification.yaml
+...

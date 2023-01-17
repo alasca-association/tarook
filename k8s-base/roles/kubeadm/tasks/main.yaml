@@ -1,3 +1,4 @@
+---
 - name: Install prerequisites
   become: yes
   apt:
@@ -145,3 +146,4 @@
 # kubelet should be restarted immediately
 - name: Force restart of kubelet at this point
   meta: flush_handlers
+...

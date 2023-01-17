@@ -101,3 +101,4 @@ image_version_map:
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.21.6') }}"
 
 image_versions: "{{ image_version_map[k8s_version_minor] }}"
+...

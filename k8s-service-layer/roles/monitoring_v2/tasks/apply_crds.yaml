@@ -1,3 +1,4 @@
+---
 - name: Update the helm repository cache
   kubernetes.core.helm:
     name: dummy
@@ -57,3 +58,4 @@
   loop_control:
     loop_var: inner_item
   changed_when: false
+...

@@ -2,7 +2,7 @@
 # Calico specific resources as the Calico CRDs are not designed to 
 # be used directly by kubectl. Please refer to the following issue:
 # https://github.com/projectcalico/calico/issues/2923
-
+---
 - name: Create calico BGP configuration and apply peering
   run_once: True
   become: yes
@@ -94,3 +94,4 @@
         stdin: '{{ lookup("template", "calico_bgp_peer_lb_master.yaml.j2") }}'
     register: bgp_master_to_lb
     changed_when: "'Successfully applied' and 'BGPPeer' in bgp_master_to_lb.stdout"
+...

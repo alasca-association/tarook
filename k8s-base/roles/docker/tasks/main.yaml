@@ -1,3 +1,4 @@
+---
 - name: Ensure /etc/docker directory is present
   become: yes
   file:
@@ -133,3 +134,4 @@
 
 - name: Trigger the handlers
   meta: flush_handlers
+...

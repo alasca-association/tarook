@@ -8,7 +8,7 @@
 #
 # https://kubernetes.io/docs/tasks/network/validate-dual-stack/#create-a-dual-stack-load-balanced-service
 # --> is checked in "check-loadbalancer-service"
-
+---
 - name: Get k8s node information
   delegate_to: "{{ groups['masters'] | first }}"
   environment:
@@ -58,3 +58,4 @@
       when: item | ipv6
       set_fact:
         node_has_ipv6_address_block: True
+...

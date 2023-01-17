@@ -4,7 +4,7 @@
 # not affected because the file remain on the node. "Fix" is to effectively 
 # delete local storage by passing '--delete-local-data' to the kubectl cmd.
 # IMPORTANT: this is something we have to inform the customer of!
-
+---
 - name: Drain this node
   changed_when: True
   become: yes
@@ -23,3 +23,4 @@
     - "{{ k8s_version is version('1.20', operator='ge') |
           ternary('--delete-emptydir-data=true',
                   '--delete-local-data=true') }}"
+...

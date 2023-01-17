@@ -1,7 +1,7 @@
 # This upgrade file is only for the k8s version 1.22.
 # For now we keep for every minor update a separate upgrade file
 # to avoid accidental major changes of old upgrade files.
-
+---
 - name: Detect user
   hosts: k8s_nodes
   gather_facts: false
@@ -205,3 +205,4 @@
 
         You can now change the k8s_version variable to
         {{ next_k8s_version | to_json }}.
+...

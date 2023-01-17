@@ -1,3 +1,4 @@
+---
 - name: Add in config the modules to load at boot time
   become: yes
   copy:
@@ -46,3 +47,4 @@
   yum:
     name: network-scripts
   when: ansible_os_family == 'RedHat'
+...

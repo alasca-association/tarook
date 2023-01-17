@@ -1,3 +1,4 @@
+---
 - name: Distribute calico-kubeconfig to all nodes
   become: yes
   block:
@@ -16,3 +17,4 @@
         mode: 0400
         src: "calico-kubeconfig.j2"
         dest: /etc/cni/net.d/calico-kubeconfig
+...

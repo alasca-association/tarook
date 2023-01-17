@@ -1,3 +1,4 @@
+---
 - name: Validate if Kubernetes is installed
   become: yes
   block:
@@ -36,3 +37,4 @@
     - name: Set fact that it is not
       set_fact:
         install_status: "k8s_not_installed"
+...

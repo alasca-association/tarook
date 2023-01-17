@@ -1,3 +1,4 @@
+---
 - name: Configure journald
   when: _allow_disruption or install_status == 'k8s_not_installed'
   block:
@@ -15,3 +16,4 @@
       state: restarted
       daemon_reload: yes
       name: systemd-journald
+...

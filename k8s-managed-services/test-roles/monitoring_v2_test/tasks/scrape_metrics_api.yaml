@@ -1,3 +1,4 @@
+---
 - name: Test availability of the metrics API
   block:
       # Equivalent to `kubectl top pods -A`
@@ -23,3 +24,4 @@
         msg: |
           "`/apis/metrics.k8s.io/v1beta1/nodes` returned no nodes. Looks like the metrics API is broken."
           "Check the metrics-server / prometheus-adapter and its query expressions."
+...

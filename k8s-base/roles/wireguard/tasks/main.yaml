@@ -1,3 +1,4 @@
+---
 - name: Ensure private key consistency
   become: yes
   any_errors_fatal: true
@@ -222,3 +223,4 @@
       mode: 06400
     when: dualstack_support
     notify: restart bird6
+...

@@ -1,3 +1,4 @@
+---
 - name: Uncordon the worker node
   become: yes
   environment:
@@ -15,3 +16,4 @@
   register: uncordon_result
   until: uncordon_result is successful
   changed_when: "'uncordoned' in uncordon_result.stdout"
+...

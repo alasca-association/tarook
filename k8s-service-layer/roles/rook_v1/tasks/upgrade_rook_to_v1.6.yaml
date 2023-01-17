@@ -1,6 +1,6 @@
 # Update k8s-rook from 1.5.* to 1.6.*
 # https://rook.io/docs/rook/v1.5/ceph-upgrade.html#rook-operator-upgrade-process
-
+---
 # Verify that the Ceph cluster is healthy
 - name: Include cluster health verification
   include_tasks: cluster_health_verification.yaml
@@ -109,3 +109,4 @@
 
 - name: Include cluster health verification
   include_tasks: cluster_health_verification.yaml
+...

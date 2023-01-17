@@ -1,3 +1,4 @@
+---
 - name: Gather necessary cluster join information
   when: install_status == 'k8s_not_installed'
   block:
@@ -40,3 +41,4 @@
         name: kubelet-configuration
       vars:
         _init_cluster: True # needs to be passed so that kubelet is configured & restarted
+...

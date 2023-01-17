@@ -1,3 +1,4 @@
+---
 - name: Check prometheus endpoint status
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
@@ -199,3 +200,4 @@
       container: thanos-store
     - job: prometheus-stack-kube-prom-thanos-discovery
       container: thanos-sidecar
+...

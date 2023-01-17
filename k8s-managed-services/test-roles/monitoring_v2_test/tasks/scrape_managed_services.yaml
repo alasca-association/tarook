@@ -1,3 +1,4 @@
+---
 - name: Check keepalived exporter scrape endpoint status
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
@@ -180,3 +181,4 @@
     metrics.stdout | from_json | json_query('status') == "success" and
     metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   delay: 3
+...

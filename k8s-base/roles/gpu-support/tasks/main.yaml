@@ -1,4 +1,5 @@
 # A GPU has been detected
+---
 - name: Install GPU drivers
   become: yes
   when:
@@ -83,3 +84,4 @@
       # It's therefore safe to assume that if the installation somehow failed, then this task would fail too.
       changed_when: false
       command: nvidia-smi -L
+...

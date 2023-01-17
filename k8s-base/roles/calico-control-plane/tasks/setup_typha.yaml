@@ -1,7 +1,7 @@
 # --------------------------------------------------- #
 # The following part checks the Typha CA certificate. #
 # --------------------------------------------------- #
-
+---
 - name: Check local and remote presence of Typha CA certificate
   block:
   - name: Check if Typha CA private key is locally present
@@ -384,3 +384,4 @@
 
 # TODO: Validate that Typha is using TLS?
 # https://docs.projectcalico.org/getting-started/kubernetes/hardway/install-typha#install-service
+...

@@ -10,3 +10,4 @@
   systemd:
     name: nftables
     state: reloaded
+...

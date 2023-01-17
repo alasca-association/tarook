@@ -1,3 +1,4 @@
+---
 - name: wait for ssh to become available
   delegate_to: localhost
   become: no
@@ -96,3 +97,4 @@
   tags:
   - detect-user
   - always
+...

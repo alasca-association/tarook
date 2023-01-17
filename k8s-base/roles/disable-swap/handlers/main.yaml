@@ -1,3 +1,4 @@
+---
 - name: Enable noswap service
   become: yes
   systemd:
@@ -5,3 +6,4 @@
     state: started
     enabled: true
     daemon_reload: true
+...

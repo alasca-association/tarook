@@ -1,3 +1,4 @@
+---
 - name: Define Calico download folder # noqa yaml[line-length]
   set_fact:
     calico_cache_dir: "{% if lookup('env', 'XDG_CACHE_HOME') == '' %}{{ lookup('env', 'HOME') + '/.cache' + '/yaook-k8s-ansible/calico-binaries' }}{% else %}{{ lookup('env', 'XDG_CACHE_HOME')  + '/yaook-k8s-ansible/calico-binaries' }}{% endif %}"
@@ -6,3 +7,4 @@
   file:
     path: "{{ calico_cache_dir }}/release-v{{ image_versions.calico_version }}"
     state: absent
+...

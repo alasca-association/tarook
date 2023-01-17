@@ -1,3 +1,4 @@
+---
 - name: Prepare wireguard install on Debian
   become: yes
   # wireguard is included in the bullseye (11) repos, so we only need to add 'unstable' for buster (10).
@@ -58,3 +59,4 @@
   modprobe:
     name: wireguard
     state: present
+...

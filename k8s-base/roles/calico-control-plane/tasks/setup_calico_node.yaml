@@ -1,7 +1,7 @@
 # ------------------------------------------------------ #
 # The following part checks the calico/node certificate. #
 # ------------------------------------------------------ #
-
+---
 - name: Check local and remote presence of calico/node certificate
   block:
   - name: Check if calico/node private key is locally present
@@ -218,3 +218,4 @@
         - calico-node
         - -n
         - kube-system
+...

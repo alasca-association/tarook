@@ -1,3 +1,4 @@
+---
 - name: Configure 'vm.max_map_count' (needed by applications like ElasticSearch)
   become: yes
   sysctl:
@@ -5,3 +6,4 @@
     state: present
     reload: yes
     value: "{{ vm_max_map_count }}"
+...

@@ -1,5 +1,5 @@
 # Special steps when updating Kubernetes to v1.22.x
-
+---
 # Previously, it was a StatefulSet. Now it is a Deployment.
 # Prevent interference by removing the StatefulSet prior to
 # creating the Deployment.
@@ -19,3 +19,4 @@
   until: k8s_apply is not failed
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
+...

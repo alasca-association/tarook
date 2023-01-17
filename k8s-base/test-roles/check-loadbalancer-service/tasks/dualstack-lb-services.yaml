@@ -1,3 +1,4 @@
+---
 - name: Check dual stack lb service functionality
   block:
   - name: Create DualStack load-balanced service
@@ -98,3 +99,4 @@
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
+...

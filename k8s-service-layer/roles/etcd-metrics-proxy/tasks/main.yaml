@@ -1,3 +1,4 @@
+---
 # The purpose of this role is to expose etcd's metrics in somewhat secure manner.
 # etcd offers metrics
 # - on 127.0.0.1:2381/metrics without authentication.
@@ -175,3 +176,4 @@
     validate:
       fail_on_error: yes
       strict: yes
+...

@@ -1,6 +1,6 @@
 # Verify that the Ceph cluster is in a healthy state
 # https://rook.github.io/docs/rook/v1.2/ceph-upgrade.html#health-verification
-
+---
 - name: Check if the rook namespace already exists
   kubernetes.core.k8s_info:
     kind: Namespace
@@ -132,3 +132,4 @@
         msg: "There are {{ item.count }} Placement Groups in state {{ item.state_name }}"
       failed_when: item.state_name != "active+clean"
       with_items: "{{ ceph_cluster_status_json['pgmap']['pgs_by_state'] }}"
+...

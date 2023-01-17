@@ -1,3 +1,4 @@
+---
 ipsec_enabled: false
 ipsec_local_networks:
 - "{{ subnet_cidr }}"
@@ -29,3 +30,4 @@ strongswan_service: '{{ (ansible_distribution_release == "bullseye") | ternary("
 # refactoring (ref global-monitoring-frontend preparation role (tombstone MR)).
 # Maybe that would be a cleaner solution.
 k8s_apiserver_frontend_port: 8888
+...

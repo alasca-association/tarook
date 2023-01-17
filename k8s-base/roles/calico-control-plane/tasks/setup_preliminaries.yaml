@@ -1,7 +1,7 @@
 # If you plan to upgrade calico resources:
 # curl https://docs.projectcalico.org/manifests/calico.yaml -O
 # Make sure to only apply the CustomResourceDefinitions
-
+---
 - name: Create Custom Calico Resource Definitions
   become: yes
   run_once: yes
@@ -126,3 +126,4 @@
   until: k8s_apply is not failed
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
+...

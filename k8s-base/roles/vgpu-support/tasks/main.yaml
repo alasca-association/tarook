@@ -1,5 +1,6 @@
 # A GPU has been detected
 # Prerequisits: enable IOMMU
+---
 - name: Install GPU drivers
   become: yes
   when:
@@ -169,3 +170,4 @@
         enabled: yes
         name: nvidia-sriov-manage.service
         daemon_reload: yes
+...

@@ -1,3 +1,4 @@
+---
 - name: Initial sanity checks
   hosts: localhost
   gather_facts: false
@@ -103,3 +104,4 @@
     - update_system
   tags:
     - update_system
+...

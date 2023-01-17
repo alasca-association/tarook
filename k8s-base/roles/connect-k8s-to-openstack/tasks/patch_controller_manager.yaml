@@ -1,3 +1,4 @@
+---
 - name: Patch the K8s controller manager to mount the cloud-config
   script: "{{ playbook_dir }}/utils/patch_kube_controller.py -i -f /etc/kubernetes/manifests/kube-controller-manager.yaml"
   args:
@@ -22,3 +23,4 @@
   until: k8s_apply is not failed
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
+...

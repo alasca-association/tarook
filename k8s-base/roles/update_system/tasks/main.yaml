@@ -1,3 +1,4 @@
+---
 - name: Check if the node has kubernetes installed
   stat:
     path: "/etc/kubernetes"
@@ -158,3 +159,4 @@
     # not executed, we want to execute this one.
     - name: Reboot the system
       reboot:
+...

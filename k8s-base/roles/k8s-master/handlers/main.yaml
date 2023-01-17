@@ -1,3 +1,4 @@
+---
 - name: Restart kubelet
   delegate_to: "{{ item }}"
   loop: "{{ groups['k8s_nodes'] }}"
@@ -11,3 +12,4 @@
   service:
     name: publish-join-key.service
     state: started
+...

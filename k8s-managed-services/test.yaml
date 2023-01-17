@@ -1,3 +1,4 @@
+---
 # We test the monitoring down here because we need to give Prometheus a bit of
 # time to boot and collect the first bits of data.
 - name: Check monitoring
@@ -35,3 +36,4 @@
     - check-mk8s-ms/gpu-support
     - device_plugin_v1_test
     when: "k8s_is_gpu_cluster"
+...

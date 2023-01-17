@@ -1,3 +1,4 @@
+---
 - name: Get deployed calico version
   become: yes
   environment:
@@ -80,3 +81,4 @@
 - name: Setup BGP Routing Information Distribution via BIRD
   run_once: yes
   include_tasks: setup_bgp.yaml
+...

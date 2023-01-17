@@ -28,3 +28,4 @@
     when: k8s_is_gpu_cluster
     tags:
     - mk8s-ms/nvidia-device-plugin
+...

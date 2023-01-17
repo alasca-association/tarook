@@ -55,3 +55,4 @@
     when: (fluxcd_enabled is defined) and (fluxcd_enabled | bool)
     tags:
     - mk8s-sl/fluxcd
+...

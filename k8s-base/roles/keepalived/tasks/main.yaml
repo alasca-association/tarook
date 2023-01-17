@@ -1,3 +1,4 @@
+---
 - name: Install keepalived
   become: yes
   package:
@@ -70,3 +71,4 @@
     enabled: yes
     daemon_reload: yes
     name: keepalived
+...

@@ -1,3 +1,4 @@
+---
 - name: Create namespace
   when: k8s_monitoring_enabled
   kubernetes.core.k8s:
@@ -23,3 +24,4 @@
   include_role:
     name: monitoring_thanos_v1
   when: monitoring_use_thanos
+...

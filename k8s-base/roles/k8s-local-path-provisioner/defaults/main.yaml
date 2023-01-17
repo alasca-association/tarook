@@ -1,5 +1,7 @@
+---
 k8s_local_storage_dynamic_storageclass_name: local-storage
 k8s_local_storage_dynamic_namespace: kube-system
 k8s_local_storage_dynamic_data_directory: /mnt/dynamic-data
 k8s_local_storage_dynamic_version: v0.0.20
 k8s_local_storage_dynamic_nodeplugin_toleration: "{{ storage_nodeplugin_toleration | default(False) }}"
+...

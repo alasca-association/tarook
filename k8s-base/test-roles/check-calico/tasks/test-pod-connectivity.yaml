@@ -1,3 +1,4 @@
+---
 - name: Create a Test-Pod on each k8s-node and check that each Pod can ping each other Pod
   delegate_to: "{{ groups['masters'] | first }}"
   run_once: true
@@ -141,3 +142,4 @@
     delay: "{{ k8s_error_delay }}"
     tags:
       - test-cleanup
+...

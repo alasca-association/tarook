@@ -24,3 +24,4 @@
     - "-n"
     - "{{ monitoring_namespace }}"
     - prometheus-k8s
+...

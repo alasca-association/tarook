@@ -1,3 +1,4 @@
+---
 - name: Install node-exporter
   become: yes
   apt:
@@ -27,3 +28,4 @@
     state: restarted
     enabled: yes
     daemon-reload: yes
+...

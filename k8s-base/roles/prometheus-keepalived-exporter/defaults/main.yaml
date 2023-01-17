@@ -1,6 +1,8 @@
+---
 prometheus_keepalived_exporter_version: 0.3.0
 prometheus_keepalived_exporter_checksums:
   0.3.0: "sha256:df04a46c038ce4cc994ef5d1b77dc722b04589c8648a0d3382cacc57ef63824f"
 prometheus_keepalived_exporter_checksum: "{{ prometheus_keepalived_exporter_checksums[prometheus_keepalived_exporter_version] }}"
 prometheus_keepalived_exporter_user: keepalived-exporter
 prometheus_keepalived_exporter_url: "https://github.com/gen2brain/keepalived_exporter/releases/download/{{ prometheus_keepalived_exporter_version }}/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64.tar.gz"
+...

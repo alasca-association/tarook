@@ -1,3 +1,4 @@
+---
 - name: Wait until Ceph is healthy
   block:
   - name: Set retry count
@@ -25,3 +26,4 @@
 - name: Print completion message
   debug:
     msg: "The Ceph cluster looks happy!"
+...

@@ -6,3 +6,4 @@
 - name: Deconfigure IPSec and related services
   include_tasks: cleanup_ipsec.yaml
   when: not ipsec_enabled
+...

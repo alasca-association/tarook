@@ -4,3 +4,4 @@ galaxy_info:
   license: Apache-2.0
 dependencies:
 - common_defaults_v1
+...

@@ -1,3 +1,4 @@
+---
 - name: Initial sanity checks
   hosts: localhost
   gather_facts: false
@@ -318,3 +319,4 @@
       when: "vm_max_map_count is defined"
       tags:
         - vm-max-map-count
+...

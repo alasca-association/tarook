@@ -1,3 +1,4 @@
+---
 - name: Run the test
   become: yes
   environment:
@@ -74,3 +75,4 @@
     delay: "{{ k8s_error_delay }}"
     tags:
     - test-cleanup
+...

@@ -1,3 +1,4 @@
+---
 - name: Upgrade kubelet on apt systems
   when: ansible_pkg_mgr == 'apt'
   become: yes
@@ -72,3 +73,4 @@
     name: kubelet-configuration
   vars:
     _require_kubelet_restart: True
+...

@@ -1,4 +1,5 @@
 # TODO: Only on Ubuntu ?
+---
 - name: Remove the snap service
   become: yes
   apt:
@@ -7,3 +8,4 @@
     name:
       - snapd
   when: ansible_pkg_mgr == 'apt'
+...

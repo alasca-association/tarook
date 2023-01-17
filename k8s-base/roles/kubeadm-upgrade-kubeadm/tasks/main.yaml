@@ -1,3 +1,4 @@
+---
 - name: Upgrade kubeadm on apt systems
   when: ansible_pkg_mgr == 'apt'
   become: yes
@@ -51,3 +52,4 @@
       - versionlock
       - add
       - kubeadm
+...

@@ -1,3 +1,4 @@
+---
 - name: Install k8s nvidia-device-plugin
   kubernetes.core.k8s:
     state: present
@@ -11,3 +12,4 @@
   until: k8s_apply is not failed
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
+...

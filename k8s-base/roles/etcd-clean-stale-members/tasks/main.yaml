@@ -42,3 +42,4 @@
         namespace: kube-system
         pod: "etcd-{{ inventory_hostname }}"
         command: "etcdctl --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/peer.crt --key /etc/kubernetes/pki/etcd/peer.key member remove {{ member_id }}"
+...

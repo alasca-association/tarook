@@ -1,3 +1,4 @@
+---
 - name: Check that calicoctl is installed on all master nodes
   include_tasks: test-calicoctl.yaml
 
@@ -9,3 +10,4 @@
 
 - name: Check Pod-to-Pod connectivity
   include_tasks: test-pod-connectivity.yaml
+...

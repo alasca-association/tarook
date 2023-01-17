@@ -1,3 +1,4 @@
+---
 - name: Ensure that 'etc_dir' does not contain a whitespace
   tags:
     - always
@@ -6,3 +7,4 @@
       The directory to which 'etc_dir' points must not contain a whitespace. E.g., the "passwordwordstore" lookup plugin
       relies on that fact and would break otherwise.
   when: "etc_dir | regex_search('\\s')"
+...

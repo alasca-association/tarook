@@ -7,15 +7,11 @@ skip_list:
   - no-changed-when  # Commands should not change things if nothing needs doing.
   - no-handler  # Tasks that run when changed should likely be handlers.
   - yaml[comments]  # Violations reported by yamllint.
-  - yaml[document-end]  # Violations reported by yamllint.
-  - yaml[document-start]  # Violations reported by yamllint.
   - yaml[indentation]  # Violations reported by yamllint.
   - yaml[trailing-spaces]  # Violations reported by yamllint.
   - yaml[truthy]  # Violations reported by yamllint.
   - package-latest  # Package installs should not use latest.
   - var-spacing  # Jinja2 variables and filters should have spaces before and after.
-  - yaml[new-line-at-end-of-file]  # Violations reported by yamllint.
-
 
 
 verbosity: 2 # To make sure the roles are actually checked

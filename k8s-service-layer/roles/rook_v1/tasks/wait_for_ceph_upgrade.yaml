@@ -1,6 +1,6 @@
 # Before moving on, the rook/ceph cluster’s core (RADOS) components
 # (i.e., mons, mgrs, and OSDs) must be fully updated.
-
+---
 - name: Wait until Ceph upgrade completes
   block:
   - name: Set retry count
@@ -43,3 +43,4 @@
 
   # Recheck if retry_count limit has not been reached, yet
   - include_tasks: wait_for_ceph_upgrade.yaml
+...

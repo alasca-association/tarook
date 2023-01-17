@@ -110,3 +110,4 @@
     state: "{{ ((pke_binary is changed) or (pke_unit is changed)) | ternary('restarted', 'started') }}"
     enabled: yes
     daemon-reload: yes
+...

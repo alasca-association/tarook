@@ -1,3 +1,4 @@
+---
 - name: Check dual stack service functionality
   block:
   - name: Apply the nginx+service manifest (DualStack)
@@ -177,3 +178,4 @@
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
+...

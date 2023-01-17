@@ -7,3 +7,4 @@
     state: "{{ (_allow_disruption or install_status == 'k8s_not_installed') | ternary('restarted', 'reloaded') }}"
     daemon_reload: yes
     name: docker
+...

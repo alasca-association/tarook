@@ -1,3 +1,4 @@
+---
 - name: restart bird
   become: yes
   service:
@@ -9,3 +10,4 @@
   service:
     name: bird6
     state: restarted
+...

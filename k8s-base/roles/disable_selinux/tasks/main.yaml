@@ -24,3 +24,4 @@
     # not executed, we want to execute this one.
     - name: Reboot host
       reboot:
+...

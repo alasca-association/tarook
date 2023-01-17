@@ -84,3 +84,4 @@
     name: systemd-timesyncd
     state: stopped
   when: ansible_facts.services['systemd-timesyncd'] is defined
+...

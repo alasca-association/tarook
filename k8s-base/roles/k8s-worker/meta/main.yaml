@@ -6,3 +6,4 @@ dependencies:
 - net-forwarding
 - is-k8s-installed
 - gpu-support-detection
+...

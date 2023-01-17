@@ -1,3 +1,4 @@
+---
 - name: Include sanity checks
   include_tasks: sanity_checks.yaml
 
@@ -12,3 +13,4 @@
 
 - name: Prepare Kubernetes Nodes
   include_tasks: prepare_nodes.yaml
+...

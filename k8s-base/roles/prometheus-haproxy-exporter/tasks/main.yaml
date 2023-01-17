@@ -1,3 +1,4 @@
+---
 - name: Installation on Debian
   when: ansible_os_family == 'Debian'
   block:
@@ -126,3 +127,4 @@
     state: "{{ ((phe_binary is changed) or (phe_service is changed) or (phe_default_config is changed)) | ternary('restarted', 'started') }}"
     enabled: yes
     daemon-reload: yes
+...

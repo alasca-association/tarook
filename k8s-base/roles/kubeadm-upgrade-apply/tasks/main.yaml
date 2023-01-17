@@ -1,3 +1,4 @@
+---
 - name: kubeadm upgrade plan & apply
   become: yes
   when: do_upgrade
@@ -123,3 +124,4 @@
             - kube-proxy
             - -n
             - kube-system
+...

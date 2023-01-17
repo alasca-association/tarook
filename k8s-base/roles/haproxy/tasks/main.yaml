@@ -1,3 +1,4 @@
+---
 - name: Install HAProxy
   become: yes
   package:
@@ -47,3 +48,4 @@
     state: restarted
     name: haproxy
   when: haproxy is changed or haproxy_config is changed
+...

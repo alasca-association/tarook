@@ -1,3 +1,4 @@
+---
 - name: restart ch-k8s-lbaas-controller
   become: yes
   environment:
@@ -11,3 +12,4 @@
     - "rollout"
     - "restart"
     - "deployment.apps/ch-k8s-lbaas-controller"
+...

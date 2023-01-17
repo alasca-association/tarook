@@ -1,3 +1,4 @@
+---
 - name: Install nftables package
   become: yes
   package:
@@ -47,3 +48,4 @@
     state: restarted
     enabled: yes
     masked: false
+...
