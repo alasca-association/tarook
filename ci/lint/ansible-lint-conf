@@ -14,6 +14,3 @@ skip_list:
   - yaml[truthy]  # Violations reported by yamllint.
   - package-latest  # Package installs should not use latest.
   - var-spacing  # Jinja2 variables and filters should have spaces before and after.
-
-
-verbosity: 2 # To make sure the roles are actually checked
