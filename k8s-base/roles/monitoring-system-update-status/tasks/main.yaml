@@ -3,18 +3,18 @@
   become: yes
   block:
   - name: Create node-exporter group
-    group:
+    ansible.builtin.group:
       name: node-exporter
       state: present
 
   - name: Add node-exporter user
-    user:
+    ansible.builtin.user:
       name: node-exporter
       create_home: no
       groups: node-exporter
 
   - name: Copy the collector script
-    template:
+    ansible.builtin.template:
       src: system_update_status.sh.j2
       dest: /usr/local/bin/system_update_status.sh
       owner: root
@@ -22,7 +22,7 @@
       mode: 0640
 
   - name: Create the node-exporter run directory
-    file:
+    ansible.builtin.file:
       path: "{{ monitoring_node_exporter_textfile_collector_path }}"
       state: directory
       owner: node-exporter
@@ -30,7 +30,7 @@
       mode: 0755
 
   - name: Create the node-exporter service unit
-    copy:
+    ansible.builtin.copy:
       src: node_exporter_textfile_collector.service
       dest: /etc/systemd/system/node_exporter_textfile_collector.service
       owner: root
@@ -38,7 +38,7 @@
       mode: 0640
 
   - name: Create the node-exporter timer unit
-    copy:
+    ansible.builtin.copy:
       src: node_exporter_textfile_collector.timer
       dest: /etc/systemd/system/node_exporter_textfile_collector.timer
       owner: root
@@ -46,7 +46,7 @@
       mode: 0640
 
   - name: Enable the service units
-    systemd:
+    ansible.builtin.systemd:
       name: "{{ item }}"
       state: restarted
       enabled: yes

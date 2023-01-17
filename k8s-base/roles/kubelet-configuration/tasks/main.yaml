@@ -9,7 +9,7 @@
   block:
   - name: Set the maximum number of Pods
     when: k8s_kubelet_pod_limit is defined
-    lineinfile:
+    ansible.builtin.lineinfile:
       path: /var/lib/kubelet/config.yaml
       regexp: 'maxPods:(\s+)([0-9]+)(\s*)\n?$'
       line: "maxPods: {{ k8s_kubelet_pod_limit }}"
@@ -20,12 +20,12 @@
     notify: restart kubelet
 
 - name: Force restart of kubelet if requested
-  debug:
+  ansible.builtin.debug:
     msg: It IS requested!
   changed_when: true
   notify: restart kubelet
   when: _require_kubelet_restart | default(False)
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 ...

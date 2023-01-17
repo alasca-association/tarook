@@ -1,11 +1,11 @@
 ---
 - name: Populate service facts
-  service_facts:
+  ansible.builtin.service_facts:
 
 - name: stop systemd time sync
   become: yes
   become_user: root
-  service:
+  ansible.builtin.service:
     name: systemd-timesyncd
     enabled: no
   when: ansible_facts.services['systemd-timesyncd'] is defined
@@ -13,7 +13,7 @@
 - name: install chrony
   become: yes
   become_user: root
-  package:
+  ansible.builtin.package:
     name:
     - chrony
     state: present
@@ -32,7 +32,7 @@
       block:
 
         - name: Create custom configuration (Debian)
-          template:
+          ansible.builtin.template:
             src: chrony.conf.j2
             dest: /etc/chrony/chrony.conf
             owner: root
@@ -42,7 +42,7 @@
 
         - name: Restart chrony # noqa no-handler
           when: configuration_update_debian.changed
-          systemd:
+          ansible.builtin.systemd:
             name: chrony
             enabled: true
             state: restarted
@@ -53,7 +53,7 @@
       block:
 
         - name: Create custom configuration (RHEL like)
-          template:
+          ansible.builtin.template:
             src: chrony.conf.j2
             dest: /etc/chrony.conf
             owner: root
@@ -63,7 +63,7 @@
 
         - name: Restart chronyd # noqa no-handler
           when: configuration_update_rhel.changed
-          systemd:
+          ansible.builtin.systemd:
             name: chronyd
             enabled: true
             state: restarted
@@ -72,7 +72,7 @@
 - name: ensure chrony is running
   become: yes
   become_user: root
-  service:
+  ansible.builtin.service:
     name: chronyd
     state: started
     enabled: yes
@@ -80,7 +80,7 @@
 - name: disable systemd time sync
   become: yes
   become_user: root
-  service:
+  ansible.builtin.service:
     name: systemd-timesyncd
     state: stopped
   when: ansible_facts.services['systemd-timesyncd'] is defined

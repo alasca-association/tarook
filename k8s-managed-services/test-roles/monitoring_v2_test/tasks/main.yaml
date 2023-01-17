@@ -1,6 +1,6 @@
 ---
 - name: Test the metrics API
-  include_tasks: scrape_metrics_api.yaml
+  ansible.builtin.include_tasks: scrape_metrics_api.yaml
 
 - name: Run the test
   block:
@@ -20,12 +20,12 @@
     delay: 3
 
   - name: Set prometheus cluster IP and web port
-    set_fact:
+    ansible.builtin.set_fact:
       prometheus_cluster_ip: "{{ prometheus_endpoint.resources[0].subsets[0].addresses[0].ip }}"
       prometheus_web_port: "{{ (prometheus_endpoint.resources[0].subsets[0].ports | selectattr('name', 'in', ['web','http-web']) | first).port }}"
 
   - name: information about config
-    debug:
+    ansible.builtin.debug:
       msg: "This test is going to use the prometheus at {{ prometheus_cluster_ip }}:{{ prometheus_web_port }}"
 
   - name: Scrape prometheus endpoints
@@ -65,10 +65,10 @@
       delay: "{{ k8s_error_delay }}"
 
     - name: Scrape endpoints for prometheus stack itself
-      include_tasks: scrape_prometheus_stack.yaml
+      ansible.builtin.include_tasks: scrape_prometheus_stack.yaml
 
     - name: Scrape endpoints for managed services
-      include_tasks: scrape_managed_services.yaml
+      ansible.builtin.include_tasks: scrape_managed_services.yaml
 
   - name: Delete Namespace
     kubernetes.core.k8s:

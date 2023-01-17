@@ -1,6 +1,6 @@
 ---
 - name: show test information
-  debug:
+  ansible.builtin.debug:
     msg: "This test is using the {{ storageclass }} storageClass"
 
 - name: Run the test
@@ -61,7 +61,7 @@
     retries: 60
 
   - name: check writer pod success
-    debug:
+    ansible.builtin.debug:
       msg: "Writer pod is in condition {{ writer_state.resources[0].status.phase }}"
     failed_when: 'writer_state.resources[0].status.phase == "Failed"'
 
@@ -92,7 +92,7 @@
     retries: 60
 
   - name: check reader pod success
-    debug:
+    ansible.builtin.debug:
       msg: "Reader pod is in condition {{ reader_state.resources[0].status.phase }}"
     failed_when: 'reader_state.resources[0].status.phase == "Failed"'
 

@@ -1,7 +1,7 @@
 ---
 - name: restart thanos-store
   become: yes
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - kubectl
@@ -14,7 +14,7 @@
 
 - name: restart prometheus-k8s
   become: yes
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - kubectl

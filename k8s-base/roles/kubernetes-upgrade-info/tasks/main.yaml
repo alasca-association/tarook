@@ -1,6 +1,6 @@
 ---
 - name: Show k8s version listed in playbook
-  debug:
+  ansible.builtin.debug:
     msg: |
       "Current k8s version according to the inventory is {{ k8s_version }}.
       Execute playbook with -v to see output of apt-cache policy.
@@ -16,7 +16,7 @@
   any_errors_fatal: true
   block:
   - name: Obtain installed version
-    set_fact:
+    ansible.builtin.set_fact:
       k8s_installed_version: "{{ ansible_facts.packages['kubeadm'][0]['version'].split('-')[0] }}"
 
   - name: Obtain version as per k8s database
@@ -31,11 +31,11 @@
     register: k8s_node_info
 
   - name: Extract k8s version
-    set_fact:
+    ansible.builtin.set_fact:
       k8s_running_version: "{{ k8s_node_info.resources[0].status.nodeInfo.kubeletVersion.strip('v') }}"
 
   - name: Check for failed upgrades
-    fail:
+    ansible.builtin.fail:
       msg: |
         Installed version is {{ k8s_installed_version }}, but the running
         version is {{ k8s_running_version }}. This indicates that the upgrade
@@ -44,14 +44,14 @@
     when: "k8s_running_version != k8s_installed_version"
 
   - name: Require installed version to match configuration
-    fail:
+    ansible.builtin.fail:
       msg: |
         Installed version is {{ k8s_installed_version }}, which differs from
         the configured version {{ k8s_version }} and the target version {{ next_k8s_version }}.
     when: "k8s_installed_version != k8s_version and k8s_installed_version != next_k8s_version"
 
   - name: Require upgrade to {{ next_k8s_version }}
-    fail:
+    ansible.builtin.fail:
       msg: |
         The target version was set to {{ next_k8s_version | default('') | to_json }}.
         This is not a patch version of {{ next_minor_k8s_version }} You need to set the version via
@@ -59,13 +59,13 @@
     when: "next_k8s_version is not defined or not next_k8s_version.startswith(next_minor_k8s_version)"
 
   - name: Check if the k8s version {{ next_k8s_version }} is supported
-    fail:
+    ansible.builtin.fail:
       msg: |
         Right know the highest supported k8s version is {{ supported_k8s_versions[-1] }}.x
     when: next_minor_k8s_version not in supported_k8s_versions
 
   - name: Require a iterated update step from {{ supported_k8s_versions[index_present | int] }}.x
-    fail:
+    ansible.builtin.fail:
       msg: |
         Right now there is the k8s version {{ supported_k8s_versions[index_present | int] }}.x installed.
         Kubernetes only allows upgrades between minor versions,
@@ -75,7 +75,7 @@
           next_minor_k8s_version == supported_k8s_versions[index_successor | int])
 
 - name: Detect if upgrade is already done
-  set_fact:
+  ansible.builtin.set_fact:
     # we use a boolean here instead of an expression since I’ve seen odd
     # behaviour with non-string valued set_fact statements; I’d like to be sure
     # that there is no false-positive for this flag.
@@ -83,7 +83,7 @@
   when: "next_k8s_version == k8s_installed_version"
 
 - name: Inform about skipped upgrade
-  debug:
+  ansible.builtin.debug:
     msg: |
       Installed version {{ k8s_installed_version }}
       (and running version {{ k8s_running_version }})
@@ -93,7 +93,7 @@
 
 - name: Update the package cache
   become: yes
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
   register: task_result
   until: task_result is not failed
@@ -102,7 +102,7 @@
   when: ansible_pkg_mgr == 'apt'
 
 - name: Show the available k8s versions
-  command: apt-cache policy kubeadm
+  ansible.builtin.command: apt-cache policy kubeadm
   changed_when: false
   when: ansible_pkg_mgr == 'apt'
 ...

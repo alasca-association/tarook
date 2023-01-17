@@ -42,7 +42,7 @@
       until: "cuda_state.resources and (cuda_state.resources[0].status | default(False)) and (cuda_state.resources[0].status.phase | default('') in ['Completed', 'Succeeded', 'Failed'])"
 
     - name: Check cuda test pod success
-      debug:
+      ansible.builtin.debug:
         msg: "Cuda pod is in condition {{ cuda_state.resources[0].status.phase }}"
       failed_when: 'cuda_state.resources[0].status.phase == "Failed"'
 

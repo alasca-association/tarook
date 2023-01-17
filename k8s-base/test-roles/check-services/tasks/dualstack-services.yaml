@@ -18,7 +18,7 @@
   - name: Check the connection to the DualStack service
     vars:
       svc_test_port: 30060
-    uri:
+    ansible.builtin.uri:
       url: "http://{{ hostvars[gateway]['ansible_host'] }}:{{ svc_test_port }}"
     register: curl_result
     failed_when: curl_result.status != 200
@@ -34,14 +34,14 @@
   - name: Fail if the DualStack service has no IPv4 address
     vars:
       nginx_service_cluster_ips: "{{ nginx_dual_stack_service_info['resources'][0]['spec']['clusterIPs'] }}"
-    fail:
+    ansible.builtin.fail:
       msg: "The DualStack service does not have an IPv4 Address"
     when: nginx_service_cluster_ips | ipv4 | length==0
 
   - name: Fail if the DualStack service has no IPv6 address
     vars:
       nginx_service_cluster_ips: "{{ nginx_dual_stack_service_info['resources'][0]['spec']['clusterIPs'] }}"
-    fail:
+    ansible.builtin.fail:
       msg: "The DualStack service does not have an IPv6 Address"
     when: nginx_service_cluster_ips | ipv6 | length==0
 
@@ -78,7 +78,7 @@
   - name: Check the connection to the SingleStack IPv4 service
     vars:
       svc_test_port: 30060
-    uri:
+    ansible.builtin.uri:
       url: "http://{{ hostvars[gateway]['ansible_host'] }}:{{ svc_test_port }}"
     register: curl_result
     failed_when: curl_result.status != 200
@@ -94,14 +94,14 @@
   - name: Fail if the SingleStack IPv4 service has no IPv4 address
     vars:
       nginx_service_cluster_ips: "{{ nginx_single_stack_v4_service_info['resources'][0]['spec']['clusterIPs'] }}"
-    fail:
+    ansible.builtin.fail:
       msg: "The SingleStack IPv4 service does not have an IPv4 Address"
     when: nginx_service_cluster_ips | ipv4 | length==0
 
   - name: Fail if the SingleStack IPv4 service has an IPv6 address
     vars:
       nginx_service_cluster_ips: "{{ nginx_single_stack_v4_service_info['resources'][0]['spec']['clusterIPs'] }}"
-    fail:
+    ansible.builtin.fail:
       msg: "The SingleStack IPv4 service has an IPv6 Address"
     when: nginx_service_cluster_ips | ipv6 | length>0
 
@@ -138,7 +138,7 @@
   - name: Check the connection to the SingleStack IPv6 service
     vars:
       svc_test_port: 30060
-    uri:
+    ansible.builtin.uri:
       url: "http://{{ hostvars[gateway]['ansible_host'] }}:{{ svc_test_port }}"
     register: curl_result
     failed_when: curl_result.status != 200
@@ -154,14 +154,14 @@
   - name: Fail if the SingleStack IPv6 service has an IPv4 address
     vars:
       nginx_service_cluster_ips: "{{ nginx_single_stack_v6_service_info['resources'][0]['spec']['clusterIPs'] }}"
-    fail:
+    ansible.builtin.fail:
       msg: "The SingleStack IPv6 service has an IPv4 Address"
     when: nginx_service_cluster_ips | ipv4 | length>0
 
   - name: Fail if the SingleStack IPv6 service has no IPv6 address
     vars:
       nginx_service_cluster_ips: "{{ nginx_single_stack_v6_service_info['resources'][0]['spec']['clusterIPs'] }}"
-    fail:
+    ansible.builtin.fail:
       msg: "The SingleStack IPv6 does not have an IPv6 Address"
     when: nginx_service_cluster_ips | ipv6 | length==0
 

@@ -1,11 +1,11 @@
 ---
 - name: Check if the node has kubernetes installed
-  stat:
+  ansible.builtin.stat:
     path: "/etc/kubernetes"
   register: kubernetes_dir
 
 - name: Gather facts
-  setup:
+  ansible.builtin.setup:
 
 - name: Control and create proxy configuration for Ubuntu machines
   become: yes
@@ -13,7 +13,7 @@
   block:
     - name: Ensure /etc/environment contains proxy configuration
       become: yes
-      command: grep -Fq "no_proxy" /etc/environment
+      ansible.builtin.command: grep -Fq "no_proxy" /etc/environment
       register: proxy_conf
       check_mode: no
       ignore_errors: yes
@@ -21,7 +21,7 @@
 
     - name: Expand /etc/environment with proxy configuration
       when: proxy_conf.failed
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/environment
         insertafter: EOF
         line: "{{ item }}"
@@ -40,7 +40,7 @@
 
     - name: Ensure /etc/profile.d/proxy.sh contains proxy configuration
       become: yes
-      command: grep -Fq "no_proxy" /etc/profile.d/proxy.sh
+      ansible.builtin.command: grep -Fq "no_proxy" /etc/profile.d/proxy.sh
       register: proxy_conf
       check_mode: no
       ignore_errors: yes
@@ -48,7 +48,7 @@
 
     - name: Expand /etc/profile.d/proxy.sh with proxy configuration
       when: proxy_conf.failed
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/profile.d/proxy.sh
         insertafter: EOF
         line: "{{ item }}"
@@ -63,7 +63,7 @@
 # https://ansible-tips-and-tricks.readthedocs.io/en/latest/os-dependent-tasks/installing_packages/#installing-system-updates
 - name: Upgrade the whole system (dnf) # noqa 403
   become: yes
-  dnf:
+  ansible.builtin.dnf:
     name: '*'
     state: latest
   # see the apt task for details
@@ -79,7 +79,7 @@
   delay: "{{ network_error_delay }}"
 
 - name: Upgrade the whole system (yum) # noqa 403
-  yum:
+  ansible.builtin.yum:
     name: '*'
     state: latest
     update_cache: yes
@@ -116,7 +116,7 @@
 
 - name: Upgrade the whole system (apt) # noqa 403
   become: yes
-  apt:
+  ansible.builtin.apt:
     upgrade: dist
     autoremove: yes
   # We’ve been seeing timeouts during this operation. By nudging ssh using
@@ -148,7 +148,7 @@
   block: 
 
     - name: Reboot the system (cloud-init run)
-      command:
+      ansible.builtin.command:
         argv:
         - reboot
         - now
@@ -158,5 +158,5 @@
     # anyway by the above command if it is executed; If the above command is
     # not executed, we want to execute this one.
     - name: Reboot the system
-      reboot:
+      ansible.builtin.reboot:
 ...

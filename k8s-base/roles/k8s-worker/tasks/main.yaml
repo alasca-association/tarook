@@ -15,7 +15,7 @@
     - name: Create kubeadm-join-config.yaml
       vars:
         kubeadm_join_token: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
-      template:
+      ansible.builtin.template:
         src: kubeadm-join-config.yaml.j2
         dest: /tmp/kubeadm-join-config.yaml
         owner: root
@@ -24,12 +24,12 @@
 
     - name: Join the k8s cluster as another worker
       # XXX: ansible command module does not support setting the umask
-      shell: "sleep {{ 10 | random }} && umask 077 && kubeadm join --node-name {{ inventory_hostname | quote }} --config=/tmp/kubeadm-join-config.yaml"
+      ansible.builtin.shell: "sleep {{ 10 | random }} && umask 077 && kubeadm join --node-name {{ inventory_hostname | quote }} --config=/tmp/kubeadm-join-config.yaml"
       async: 300
       poll: 5
 
     - name: Remove kubeadm-join-config.yaml
-      file:
+      ansible.builtin.file:
         path: /tmp/kubeadm-join-config.yaml
         state: absent
 
@@ -37,7 +37,7 @@
     # to pass a kubelet config file for kubeadm join
     # https://stackoverflow.com/questions/60378117/limit-the-number-of-pods-per-node
     - name: Configure kubelet
-      include_role:
+      ansible.builtin.include_role:
         name: kubelet-configuration
       vars:
         _init_cluster: True # needs to be passed so that kubelet is configured & restarted

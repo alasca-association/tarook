@@ -1,7 +1,7 @@
 ---
 - name: install bird
   become: yes
-  apt:
+  ansible.builtin.apt:
     name: bird
     state: present
   register: task_result
@@ -13,7 +13,7 @@
 
 - name: configure bird
   become: yes
-  template:
+  ansible.builtin.template:
     src: bird.conf
     dest: /etc/bird/bird.conf
     owner: bird
@@ -25,7 +25,7 @@
 
 - name: drop-in directory for bird config
   become: yes
-  file:
+  ansible.builtin.file:
     state: directory
     path: /etc/bird.d/
     owner: root
@@ -36,7 +36,7 @@
 
 - name: disable bird6
   become: yes
-  service:
+  ansible.builtin.service:
     name: bird6
     enabled: no
     state: stopped
@@ -51,7 +51,7 @@
   - bird6
   block:
   - name: Create config for bird6 in /etc/bird/
-    template:
+    ansible.builtin.template:
       src: bird6.conf
       dest: /etc/bird/bird6.conf
       owner: bird
@@ -60,7 +60,7 @@
     notify: restart bird
 
   - name: Create drop-in directory for bird6 configs
-    file:
+    ansible.builtin.file:
       state: directory
       path: /etc/birdv6.d/
       owner: root
@@ -68,7 +68,7 @@
       mode: "u=rwx,g=rx,o-rwx"
 
   - name: enable bird6
-    service:
+    ansible.builtin.service:
       name: bird6
       enabled: yes
       state: started

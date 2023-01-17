@@ -2,7 +2,7 @@
 - name: wait for ssh to become available
   delegate_to: localhost
   become: no
-  wait_for:
+  ansible.builtin.wait_for:
     host: "{{ ansible_host | default(inventory_hostname) }}"
     port: 22
     sleep: 5
@@ -17,7 +17,7 @@
   become: no
   # this is "slightly" ugly, but should take into account many possible ways
   # to tweak how ansible does things
-  shell: |
+  ansible.builtin.shell: |
     ssh \
       -o ConnectTimeout=10 \
       -o PasswordAuthentication=no \
@@ -41,7 +41,7 @@
   vars:
     valid_login_info: "{{ login_results.results | reject('failed') | reject('unreachable') | selectattr('rc', 'equalto', 0) | first | default({}) }}"
     valid_user: "{{ valid_login_info.item | default(False) }}"
-  set_fact:
+  ansible.builtin.set_fact:
     ansible_user: "{{ valid_user }}"
     cacheable: yes
   check_mode: no
@@ -50,7 +50,7 @@
   - always
 
 - name: fail if login detection did not work
-  fail:
+  ansible.builtin.fail:
     msg: "failed to detect a valid login! tried: {{ detect_user_attempts }}"
   when: "not ansible_user"
   check_mode: no
@@ -59,7 +59,7 @@
   - always
 
 - name: show login info
-  debug:
+  ansible.builtin.debug:
     msg: "will henceforth use {{ ansible_user }} to connect to {{ inventory_hostname }}"
   check_mode: no
   tags:
@@ -67,7 +67,7 @@
 
 - name: test new login
   become: no
-  raw: whoami
+  ansible.builtin.raw: whoami
   changed_when: false
   register: whoami
   check_mode: no
@@ -77,7 +77,7 @@
   - always
 
 - name: warn if a generic user is being used
-  debug:
+  ansible.builtin.debug:
     msg: |
       WARNING: The login to
 

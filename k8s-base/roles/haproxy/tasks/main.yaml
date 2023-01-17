@@ -1,7 +1,7 @@
 ---
 - name: Install HAProxy
   become: yes
-  package:
+  ansible.builtin.package:
     state: present
     name:
       - haproxy
@@ -12,7 +12,7 @@
 
 - name: Create directory for HAProxy configurations
   become: yes
-  file:
+  ansible.builtin.file:
     state: directory
     path: /etc/haproxy/conf.d/
     owner: root
@@ -21,7 +21,7 @@
 
 - name: Create HAProxy configuration
   become: yes
-  template:
+  ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/conf.d/00_haproxy.cfg
     validate: haproxy -f %s -c
@@ -32,7 +32,7 @@
 
 - name: Configure HAProxy to use the directory as config source
   become: yes
-  template:
+  ansible.builtin.template:
     src: config.cfg.j2
     dest: "{{ haproxy_service_config_map[ansible_os_family] }}"
     owner: root
@@ -42,7 +42,7 @@
 
 - name: Start the haproxy service # noqa no-handler
   become: yes
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: yes
     enabled: yes
     state: restarted

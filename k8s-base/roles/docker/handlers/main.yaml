@@ -1,7 +1,7 @@
 ---
 - name: Restart docker
   become: yes
-  systemd:
+  ansible.builtin.systemd:
     enabled: yes
     # Reload is harmless as it does not restart any containers
     state: "{{ (_allow_disruption or install_status == 'k8s_not_installed') | ternary('restarted', 'reloaded') }}"

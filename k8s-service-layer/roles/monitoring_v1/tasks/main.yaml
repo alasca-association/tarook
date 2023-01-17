@@ -17,11 +17,11 @@
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
 
-- include_tasks: kube_monitoring.yaml
+- ansible.builtin.include_tasks: kube_monitoring.yaml
   when: k8s_monitoring_enabled
 
 - name: Install thanos
-  include_role:
+  ansible.builtin.include_role:
     name: monitoring_thanos_v1
   when: monitoring_use_thanos
 ...

@@ -15,7 +15,7 @@
       # During Kubernetes upgrades, version mismatches are expected. Otherwise they are not.
       - "{{ (next_k8s_version | default(False) or _allow_disruption) | ternary('--allow-version-mismatch','') }}"
       - "--filename=-"
-  command:
+  ansible.builtin.command:
     argv: "{{ calicoctl_command_blocks | select }}"
     stdin: '{{ lookup("template", "ippools.yaml.j2") }}'
   register: ippool_creation

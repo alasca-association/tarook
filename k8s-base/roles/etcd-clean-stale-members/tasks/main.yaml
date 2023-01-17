@@ -29,7 +29,7 @@
       loop_control:
         label: "{{ item.item.name }}"
       when: not item.resources # that means k8s doesn't about a node of that name
-      debug:
+      ansible.builtin.debug:
         msg: "[WARNING] The LCM will remove {{ item.item.name }} as a stale entry from the etcd database."
     - name: Delete stale entries
       loop: "{{ skeleton_candidates.results }}"

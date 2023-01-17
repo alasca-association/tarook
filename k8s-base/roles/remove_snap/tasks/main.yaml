@@ -2,7 +2,7 @@
 ---
 - name: Remove the snap service
   become: yes
-  apt:
+  ansible.builtin.apt:
     state: absent
     purge: yes
     name:

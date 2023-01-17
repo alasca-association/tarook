@@ -89,11 +89,11 @@
   register: nodes
 
 - name: Collect worker IPs
-  set_fact:
+  ansible.builtin.set_fact:
     yaook_vault_worker_ips: "{{ (nodes.resources | map(attribute='status') | map(attribute='addresses') | flatten(levels=1) | selectattr('type', 'eq', 'InternalIP') | map(attribute='address')) }}"
 
 - name: Set vault server DNS names
-  set_fact:
+  ansible.builtin.set_fact:
     yaook_vault_dnsnames_complete: |
       [
         {{ "vault.%s.svc.cluster.local" | format(yaook_vault_namespace) | to_json }}
@@ -257,12 +257,12 @@
     register: vault_init
 
   - name: 'SENSITIVE: UNSEAL KEYS'
-    debug:
+    ansible.builtin.debug:
       msg: "{{ item }}"
     loop: "{{ (vault_init.stdout | from_json).unseal_keys_b64 }}"
 
   - name: 'SENSITIVE: ROOT TOKEN'
-    debug:
+    ansible.builtin.debug:
       msg: "{{ (vault_init.stdout | from_json).root_token }}"
 
   - name: Unseal Vault pod

@@ -1,7 +1,7 @@
 ---
 - name: Add in config the modules to load at boot time
   become: yes
-  copy:
+  ansible.builtin.copy:
     dest: /etc/modules-load.d/custom-network-conf.conf
     content: |
       {{ _auto_generated_preamble }}
@@ -20,14 +20,14 @@
 
 - name: Reload kernel modules
   become: yes
-  systemd:
+  ansible.builtin.systemd:
     enabled: yes
     state: restarted
     name: systemd-modules-load
 
 - name: Manage sysctl entries
   become: yes
-  sysctl:
+  ansible.posix.sysctl:
     name: "{{ item.key }}"
     value: "{{ item.value }}"
     state: present
@@ -44,7 +44,7 @@
 # Using yum module as this task is only targeting CentOS hosts
 - name: Install the legacy network scripts
   become: yes
-  yum:
+  ansible.builtin.yum:
     name: network-scripts
   when: ansible_os_family == 'RedHat'
 ...

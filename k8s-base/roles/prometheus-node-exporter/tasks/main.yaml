@@ -1,7 +1,7 @@
 ---
 - name: Install node-exporter
   become: yes
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
     state: present
     install_recommends: false
@@ -14,7 +14,7 @@
 
 - name: Configure node-exporter
   become: yes
-  template:
+  ansible.builtin.template:
     src: prometheus-node-exporter.j2
     dest: /etc/default/prometheus-node-exporter
     owner: root
@@ -23,7 +23,7 @@
 
 - name: Restart node-exporter
   become: yes
-  systemd:
+  ansible.builtin.systemd:
     name: prometheus-node-exporter
     state: restarted
     enabled: yes

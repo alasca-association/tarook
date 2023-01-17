@@ -26,19 +26,19 @@
       with_items:
       - "{{ k8s_node_internal_ips }}"
       when: item | ipv4
-      set_fact:
+      ansible.builtin.set_fact:
         node_has_internal_ipv4: True
 
     - name: Validate that the k8s node has an internal IPv6 address
       with_items:
       - "{{ k8s_node_internal_ips }}"
       when: item | ipv6
-      set_fact:
+      ansible.builtin.set_fact:
         node_has_internal_ipv6: True
 
     - name: Fail if the k8s node does not have an internal IPv4 and IPv6 address
       when: not node_has_internal_ipv4 or not node_has_internal_ipv6
-      fail:
+      ansible.builtin.fail:
         msg: "The k8s node does not have an Internal IPv4 and IPv6 address"
 
 - name: Validate the k8s node PodCIDR address blocks
@@ -49,13 +49,13 @@
       with_items:
       - "{{ k8s_node_address_blocks }}"
       when: item | ipv4
-      set_fact:
+      ansible.builtin.set_fact:
         node_has_ipv4_address_block: True
 
     - name: Validate that the k8s node has an IPv6 PodCIDR addressing block
       with_items:
       - "{{ k8s_node_address_blocks }}"
       when: item | ipv6
-      set_fact:
+      ansible.builtin.set_fact:
         node_has_ipv6_address_block: True
 ...

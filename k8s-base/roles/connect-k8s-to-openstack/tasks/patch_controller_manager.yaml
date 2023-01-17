@@ -1,6 +1,6 @@
 ---
 - name: Patch the K8s controller manager to mount the cloud-config
-  script: "{{ playbook_dir }}/utils/patch_kube_controller.py -i -f /etc/kubernetes/manifests/kube-controller-manager.yaml"
+  ansible.builtin.script: "{{ playbook_dir }}/utils/patch_kube_controller.py -i -f /etc/kubernetes/manifests/kube-controller-manager.yaml"
   args:
     executable: python3
 

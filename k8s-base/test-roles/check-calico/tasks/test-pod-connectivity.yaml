@@ -57,7 +57,7 @@
 
   # ping each Pod from each Pod with a nested loop
   - name: ping each BusyBox Pod from every BusyBox Pod
-    command:
+    ansible.builtin.command:
       argv:
         - kubectl
         - -n
@@ -81,7 +81,7 @@
     poll: 0
 
   - name: ping each BusyBox Pod from every BusyBox Pods (IPv6)
-    command:
+    ansible.builtin.command:
       argv:
         - kubectl
         - -n

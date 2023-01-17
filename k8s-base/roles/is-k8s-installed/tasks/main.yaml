@@ -3,13 +3,13 @@
   become: yes
   block:
     - name: Check if kubelet.conf exists
-      stat:
+      ansible.builtin.stat:
         path: /etc/kubernetes/kubelet.conf
       register: kubelet_conf
       failed_when: not kubelet_conf.stat.exists
 
     - name: Check if kubelet service is up and running
-      service:
+      ansible.builtin.service:
         name: kubelet
         state: started
         enabled: yes
@@ -22,7 +22,7 @@
       # seems kinda excessive to deploy it just to check whether we need to join.
       environment:
         KUBECONFIG: /etc/kubernetes/kubelet.conf
-      command:
+      ansible.builtin.command:
       args:
         argv:
         - kubectl
@@ -31,10 +31,10 @@
         - "{{ inventory_hostname }}"
 
     - name: Set fact that it is
-      set_fact:
+      ansible.builtin.set_fact:
         install_status: "k8s_installed"
   rescue:
     - name: Set fact that it is not
-      set_fact:
+      ansible.builtin.set_fact:
         install_status: "k8s_not_installed"
 ...

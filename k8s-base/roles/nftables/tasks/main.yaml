@@ -1,7 +1,7 @@
 ---
 - name: Install nftables package
   become: yes
-  package:
+  ansible.builtin.package:
     state: present
     name:
       - nftables
@@ -12,20 +12,20 @@
 
 - name: Remove iptables package
   become: yes
-  package:
+  ansible.builtin.package:
     state: absent
     name:
       - iptables
 
 - name: Retrieve private subnet
-  set_fact:
+  ansible.builtin.set_fact:
     priv_ip_cidr: "{{ ip | ipaddr('network/prefix') }}"
   vars:
     ip: "{{ ansible_default_ipv4.address }}/{{ ansible_default_ipv4.netmask }}"
 
 - name: Create drop-in directory for other rules
   become: yes
-  file:
+  ansible.builtin.file:
     state: directory
     path: /etc/nft.d
     owner: root
@@ -34,7 +34,7 @@
 
 - name: Configure nftables firewall
   become: yes
-  template:
+  ansible.builtin.template:
     src: "{{ role_path }}/templates/nftables.conf.j2"
     dest: /etc/nftables.conf
     owner: root
@@ -43,7 +43,7 @@
 
 - name: Start&enable nftables systemd service
   become: yes
-  systemd:
+  ansible.builtin.systemd:
     name: nftables
     state: restarted
     enabled: yes

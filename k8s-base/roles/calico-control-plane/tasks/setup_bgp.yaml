@@ -11,7 +11,7 @@
     DATASTORE_TYPE: kubernetes
   block:
   - name: BGP - Apply default calico BGP configuration
-    command:
+    ansible.builtin.command:
       argv:
         - /usr/local/bin/calicoctl
         - apply
@@ -22,7 +22,7 @@
 
   # Probably not necessary on a fresh setup, just to be sure
   - name: BGP - Disable the default BGP node-to-node mesh
-    command:
+    ansible.builtin.command:
       argv:
         - /usr/local/bin/calicoctl
         - patch
@@ -35,7 +35,7 @@
 
   # Probably not necessary, just to be sure
   - name: BGP - Change the default global AS number
-    command:
+    ansible.builtin.command:
       argv:
         - /usr/local/bin/calicoctl
         - patch
@@ -48,7 +48,7 @@
 
   # By adding a routeReflectorClusterID to the node, calico/node recognizes that it is a route reflector
   - name: BGP - Mark the k8s masters as route reflectors
-    command:
+    ansible.builtin.command:
       argv:
         - /usr/local/bin/calicoctl
         - patch
@@ -63,7 +63,7 @@
 
   # Labeling the masters easies identification
   - name: BGP - Label the k8s masters as route reflectors
-    command:
+    ansible.builtin.command:
       argv:
         - /usr/local/bin/calicoctl
         - label
@@ -75,7 +75,7 @@
     with_items: "{{ groups['masters'] }}"
 
   - name: BGP - Configure workers to peer with route reflectors (master nodes)
-    command:
+    ansible.builtin.command:
       argv:
         - /usr/local/bin/calicoctl
         - apply
@@ -85,7 +85,7 @@
     changed_when: "'Successfully applied' and 'BGPPeer' in bgp_worker_to_master_peering.stdout"
 
   - name: BGP - Configure route reflectors (master nodes) to peer with the LoadBalanced-Master Gateway
-    command:
+    ansible.builtin.command:
         argv:
           - /usr/local/bin/calicoctl
           - apply

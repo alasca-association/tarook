@@ -4,7 +4,7 @@
     # Remove me when dropping support for
     # k8s v1.19, v1.20 & v1.21
     - name: Include controller manager patch
-      include_tasks: patch_controller_manager.yaml
+      ansible.builtin.include_tasks: patch_controller_manager.yaml
       when:
         - k8s_version_minor is version('1.22', '<')
 

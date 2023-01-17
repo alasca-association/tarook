@@ -51,7 +51,7 @@
     delay: 1
 
   - name: store pod IPs
-    set_fact:
+    ansible.builtin.set_fact:
       service_pod_ips: "{{ service_pods.resources | map(attribute='status') | map(attribute='podIP') | list }}"
 
   - name: start blocked-test
@@ -81,7 +81,7 @@
     retries: 60
 
   - name: check blocked-test pod failure
-    debug:
+    ansible.builtin.debug:
       msg: "Blocked test pod is in condition {{ blocked_test_state.resources[0].status.phase }}"
     failed_when: 'blocked_test_state.resources[0].status.phase != "Failed"'
 
@@ -125,7 +125,7 @@
     retries: 60
 
   - name: check unblocked-test pod succeeded
-    debug:
+    ansible.builtin.debug:
       msg: "Blocked test pod is in condition {{ blocked_test_state.resources[0].status.phase }}"
     failed_when: 'blocked_test_state.resources[0].status.phase == "Failed"'
 

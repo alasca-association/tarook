@@ -20,12 +20,12 @@
   - monitoring
   - thanos
 
-- include: kube_monitoring.yml
+- ansible.builtin.include_tasks: kube_monitoring.yml
   when: k8s_monitoring_enabled
   tags:
   - monitoring
 
-- import_tasks: internet_probe.yaml
+- ansible.builtin.import_tasks: internet_probe.yaml
   when: k8s_monitoring_enabled and monitoring_internet_probe
   tags:
     - internet_probe

@@ -26,7 +26,7 @@
     - name: Check that all hosts are initialized by the cloud provider
       vars:
         taints: "{{ result | json_query('resources[*].spec.taints[*]') }}"
-      fail:
+      ansible.builtin.fail:
       when: "'node.cloudprovider.kubernetes.io/uninitialized' in taints"
       tags:
       - test-ccm
@@ -34,7 +34,7 @@
     - name: Check that the Internal IP address of each node is set
       vars:
         ip_address: "{{ result | json_query('resources[*].status.addresses[*].address') | count }}"
-      fail:
+      ansible.builtin.fail:
       when: "ip_address == '0'"
       tags:
       - test-ccm
@@ -83,7 +83,7 @@
     - label
   tasks:
     - name: Annotate the worker nodes # noqa no-changed-when
-      command: "kubectl label --overwrite nodes {{ item['worker'] }} name={{ item['name'] }}"
+      ansible.builtin.command: "kubectl label --overwrite nodes {{ item['worker'] }} name={{ item['name'] }}"
       loop: "{{ test_worker_nodes }}"
       tags:
       - test-services
@@ -146,13 +146,13 @@
     # include default vars of rook
     - name: include rook defaults
       when: k8s_storage_rook_enabled | bool
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ ksl_playbook_directory }}/roles/rook_v1/defaults/main.yaml"
       tags:
         - always
     - name: include ksl inventory variables
       when: ksl_vars_directory is defined
-      include_vars:
+      ansible.builtin.include_vars:
         file: "{{ ksl_vars_directory }}/rook.yaml"
       tags:
         - always
@@ -204,7 +204,7 @@
   tags: label
   tasks:
       - name: Remove annotation of worker nodes # noqa no-changed-when
-        command: "kubectl label --overwrite nodes {{ item['worker'] }} name-"
+        ansible.builtin.command: "kubectl label --overwrite nodes {{ item['worker'] }} name-"
         loop: "{{ test_worker_nodes }}"
         tags:
         - test-services

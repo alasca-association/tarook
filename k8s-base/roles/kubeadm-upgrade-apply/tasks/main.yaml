@@ -4,7 +4,7 @@
   when: do_upgrade
   block:
     - name: Run kubeadm upgrade plan # noqa no-changed-when
-      command:
+      ansible.builtin.command:
         argv:
           - "kubeadm"
           - "upgrade"
@@ -13,7 +13,7 @@
     # Do not renew certificates here because we rolled out our own chain
     # --yes auto-confirms and makes upgrade non-interactive
     - name: Execute the upgrade
-      command:
+      ansible.builtin.command:
         argv:
           - "kubeadm"
           - "upgrade"
@@ -115,7 +115,7 @@
 
       - name: Trigger rollout restart kube-proxy
         when: kube_proxy_configmap.changed
-        command:
+        ansible.builtin.command:
           argv:
             - kubectl
             - rollout

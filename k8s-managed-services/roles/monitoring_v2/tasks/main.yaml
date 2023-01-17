@@ -108,7 +108,7 @@
       - node-exporter-service-monitor
 
   - name: Create service monitors for calico
-    k8s:
+    kubernetes.core.k8s:
       state: present
       apply: yes
       definition: "{{ lookup('template', 'calico-monitoring.yaml.j2') }}"
@@ -124,7 +124,7 @@
       - calico-service-monitor
 
   - name: Create service monitor for etcd-backup
-    k8s:
+    kubernetes.core.k8s:
       state: present
       apply: yes
       definition: "{{ lookup('template', 'etcd-backup.yaml.j2') }}"

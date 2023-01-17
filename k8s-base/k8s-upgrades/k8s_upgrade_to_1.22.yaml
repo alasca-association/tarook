@@ -31,7 +31,7 @@
   pre_tasks:
     - name: Purge the csi-sc-cinder-controllerplugin Statefulset
       when: on_openstack | default(False) | bool
-      include_role:
+      ansible.builtin.include_role:
         name: connect-k8s-to-openstack
         tasks_from: upgrade_to_k8s_v1.22.yaml
   roles:
@@ -51,7 +51,7 @@
   pre_tasks:
     - name: include ksl vars
       when: ksl_vars_directory is defined
-      include_vars:
+      ansible.builtin.include_vars:
         dir: "{{ ksl_vars_directory }}"
       tags:
         - always
@@ -83,7 +83,7 @@
   pre_tasks:
     - name: include ksl vars
       when: ksl_vars_directory is defined
-      include_vars:
+      ansible.builtin.include_vars:
         dir: "{{ ksl_vars_directory }}"
       tags:
         - always
@@ -130,7 +130,7 @@
   pre_tasks:
     - name: include ksl vars
       when: ksl_vars_directory is defined
-      include_vars:
+      ansible.builtin.include_vars:
         dir: "{{ ksl_vars_directory }}"
       tags:
         - always
@@ -195,7 +195,7 @@
   hosts: masters[0]
   tasks:
   - name: Final upgrade note
-    debug:
+    ansible.builtin.debug:
       msg: |
         🥳 Congratulations! 🎉
 

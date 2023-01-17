@@ -1,7 +1,7 @@
 ---
 - name: Load admin credentials into interactive shells
   become: yes
-  template:
+  ansible.builtin.template:
     src: kubernetes-admin.sh.j2
     dest: /etc/profile.d/kubernetes-admin.sh
     owner: root
@@ -9,21 +9,21 @@
     mode: u=rw,go=r
 
 - name: Check reachability of local kube-apiserver
-  wait_for:
+  ansible.builtin.wait_for:
     port: 6443
     timeout: 5
   ignore_errors: yes
   register: local_kube_apiserver_status
 
 - name: Register the available frontend
-  set_fact:
+  ansible.builtin.set_fact:
     available_frontend: "{{ groups['frontend'] | first }}"
 
 - name: Check reachability of load-balanced kube-apiserver
   when: local_kube_apiserver_status is failed
   vars:
     host: "{{ networking_fixed_ip }}:{{ hostvars[available_frontend]['k8s_apiserver_frontend_port'] }}"
-  uri:
+  ansible.builtin.uri:
     url: "https://{{ host }}"
     status_code: 403
     validate_certs: no # self-signed certificate
@@ -36,7 +36,7 @@
 - name: Make sure 'etc_dir' exists
   delegate_to: localhost
   become: no
-  file:
+  ansible.builtin.file:
     path: "{{ etc_dir }}"
     state: directory
     mode: 0755
@@ -44,14 +44,14 @@
 # The focus of the following two tasks is on fixing the permissions.
 - name: Ensure that /etc/kubernetes/pki exists
   become: yes
-  file:
+  ansible.builtin.file:
     path: /etc/kubernetes/pki
     state: directory
     mode: u=rwx,go-rwx
 
 - name: Ensure that /var/lib/etcd exists
   become: yes
-  file:
+  ansible.builtin.file:
     path: /var/lib/etcd
     state: directory
     mode: u=rwx,go-rwx
@@ -67,10 +67,10 @@
   - name: Generate a fresh CA for the Kubernetes master
     block:
     - name: Generate OpenSSL private key for CA certificate
-      openssl_privatekey:
+      community.crypto.openssl_privatekey:
         path: /etc/kubernetes/pki/ca.key
     - name: Generate OpenSSL CA certificate signing request (CSR)
-      openssl_csr:
+      community.crypto.openssl_csr:
         path: /etc/kubernetes/pki/ca.csr
         privatekey_path: /etc/kubernetes/pki/ca.key
         common_name: "{{ inventory_hostname }}-ca"
@@ -83,19 +83,19 @@
         basic_constraints:
           - CA:TRUE
     - name: Generate OpenSSL CA certificate
-      openssl_certificate:
+      community.crypto.x509_certificate:
         path: /etc/kubernetes/pki/ca.crt
         privatekey_path: /etc/kubernetes/pki/ca.key
         csr_path: /etc/kubernetes/pki/ca.csr
         provider: selfsigned
 
   - name: Check if gcr.io can be reached
-    command: kubeadm config images pull
+    ansible.builtin.command: kubeadm config images pull
 
   - name: Create kubeadm-init-config.yaml
     vars:
       gateway: "{{ groups['gateways'] | first }}"
-    template:
+    ansible.builtin.template:
       src: kubeadm-init-config.yaml.j2
       dest: /tmp/kubeadm-init-config.yaml
       owner: root
@@ -104,21 +104,21 @@
 
   - name: Run kubeadm init
     # XXX: ansible command module does not support setting the umask
-    shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
+    ansible.builtin.shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
 
   - name: Remove kubeadm-init-config.yaml
-    file:
+    ansible.builtin.file:
       path: /tmp/kubeadm-init-config.yaml
       state: absent
 
   - name: Configure bridge-nf-call-iptables
-    sysctl:
+    ansible.posix.sysctl:
       name: net.bridge.bridge-nf-call-iptables
       value: 1
       state: present
 
   - name: Fetch certificates file and keys from the initial master to localhost
-    fetch:
+    ansible.builtin.fetch:
       src: "/etc/kubernetes/pki/{{ item }}"
       dest: "{{ etc_dir }}/"
       flat: yes
@@ -126,7 +126,7 @@
     run_once: yes
 
   - name: Fetch etcd certificates file and keys from the initial master to localhost
-    fetch:
+    ansible.builtin.fetch:
       src: "/etc/kubernetes/pki/etcd/{{ item }}"
       dest: "{{ etc_dir }}/etcd/"
       flat: yes
@@ -134,13 +134,13 @@
     run_once: yes
 
   - name: Copy kubeconfig to localhost
-    fetch:
+    ansible.builtin.fetch:
       src: /etc/kubernetes/admin.conf
       dest: "{{ etc_dir }}/"
       flat: yes
 
 - name: Test if this host can generate a token
-  stat:
+  ansible.builtin.stat:
     path: /etc/kubernetes/admin.conf
   register: kube_config
 
@@ -149,13 +149,13 @@
   block:
   - name: Get an access token and the CA hash
     become: yes
-    command: kubeadm token create
+    ansible.builtin.command: kubeadm token create
     register: kubeadm_token_out
 
   - name: Save access token locally
     delegate_to: localhost
     become: no
-    copy:
+    ansible.builtin.copy:
       content: "{{ kubeadm_token_out.stdout }}"
       dest: "{{ etc_dir }}/kubeadm_token"
       mode: 0664
@@ -167,14 +167,14 @@
   - name: Copy certificate files and keys from the initial master
     block:
       - name: Copy certificates and keys from localhost to residual masters
-        copy:
+        ansible.builtin.copy:
           src: "{{ etc_dir }}/{{ item }}"
           dest: "/etc/kubernetes/pki/"
           mode: u=rw,go-rwx
         loop: "{{ pki_cert_files }}"
 
       - name: Copy etcd certificates and keys from localhost to residual masters
-        copy:
+        ansible.builtin.copy:
           src: "{{ etc_dir }}/etcd/{{ item }}"
           dest: "/etc/kubernetes/pki/etcd/"
           mode: u=rw,go-rwx
@@ -190,7 +190,7 @@
       - name: Create kubeadm-join-config.yaml
         vars:
           kubeadm_join_token: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
-        template:
+        ansible.builtin.template:
           src: kubeadm-join-config.yaml.j2
           dest: /tmp/kubeadm-join-config.yaml
           owner: root
@@ -199,26 +199,26 @@
 
       - name: Join the initial control as another master
         # XXX: ansible command module does not support setting the umask
-        shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml"
+        ansible.builtin.shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml"
 
       - name: Remove kubeadm-join-config.yaml
-        file:
+        ansible.builtin.file:
           path: /tmp/kubeadm-join-config.yaml
           state: absent
 
 - name: Enable periodic publishing of the k8s join key
-  include_tasks: continuous_join_key.yaml
+  ansible.builtin.include_tasks: continuous_join_key.yaml
   when: k8s_continuous_join_key_enabled
 
 - name: Ensure that the 'gods' group exists
   become: yes
-  group:
+  ansible.builtin.group:
     name: "{{ k8s_admin_credentials_group }}"
     state: present
 
 - name: Make the kube config readable by gods
   become: yes
-  file:
+  ansible.builtin.file:
     state: file
     path: /etc/kubernetes/admin.conf
     owner: root
@@ -227,14 +227,14 @@
 
 - name: Ensure that the current user is allowed to read the kube config
   become: yes
-  user:
+  ansible.builtin.user:
     append: yes
     groups: "{{ k8s_admin_credentials_group }}"
     name: "{{ ansible_user }}"
   when: "ansible_user | default(False)"
 
 - name: Fail if no networking was configured
-  fail:
+  ansible.builtin.fail:
     msg: |
       You chose "{{ k8s_network_plugin }}", but that did not work.
       Currently, we support only 'calico'.

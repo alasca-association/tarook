@@ -1,7 +1,7 @@
 ---
 - name: Install prerequisites
   become: yes
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
     state: present
     name:
@@ -17,7 +17,7 @@
 - name: Expand NO_PROXY configuration on Ubuntu machines
   when: (cluster_behind_proxy | default(false)) and ansible_distribution == 'Ubuntu'
   become: yes
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/environment
     regexp: "^(.*{{ item }}.*)$"
     line: "{{ item }}={{ no_proxy }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
@@ -29,7 +29,7 @@
 - name: Expand NO_PROXY configuration on RHEL machines
   when: (cluster_behind_proxy | default(false)) and ansible_distribution == 'Red Hat Enterprise Linux'
   become: yes
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/profile.d/proxy.sh
     regexp: "^(.*{{ item }}.*)$"
     line: "{{ item }}={{ no_proxy }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
@@ -43,7 +43,7 @@
   block:
 
   - name: Add Key of Google's K8s repository
-    apt_key:
+    ansible.builtin.apt_key:
       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
       state: present
     register: task_result
@@ -52,7 +52,7 @@
     delay: "{{ network_error_delay }}"
 
   - name: Add Google's K8s repository to sources.list
-    copy:
+    ansible.builtin.copy:
       dest: /etc/apt/sources.list.d/kubernetes.list
       content: |
         {{ _auto_generated_preamble }}
@@ -63,7 +63,7 @@
 
   - name: Install kubelet, kubeadm and kubectl
     # Note: check available version with `apt-cache policy <package name>`
-    apt:
+    ansible.builtin.apt:
       update_cache: yes
     register: task_result
     until: task_result is not failed
@@ -73,7 +73,7 @@
 
 - name: Add Google's K8s repository (yum/dnf)
   become: yes
-  template:
+  ansible.builtin.template:
     src: kubernetes.repo
     dest: /etc/yum.repos.d/kubernetes.repo
     owner: root
@@ -85,7 +85,7 @@
 
   block:
   - name: Prepare list of packages to install (apt)
-    set_fact:
+    ansible.builtin.set_fact:
       packages:
         - "kubelet={{ k8s_version }}-00"
         - "kubeadm={{ k8s_version }}-00"
@@ -93,7 +93,7 @@
     when: ansible_pkg_mgr == 'apt'
 
   - name: Prepare list of packages to install (yum/dnf)
-    set_fact:
+    ansible.builtin.set_fact:
       packages:
         - "kubelet-{{ k8s_version }}-00"
         - "kubeadm-{{ k8s_version }}-00"
@@ -103,7 +103,7 @@
   - name: Install kubelet, kubeadm and kubectl
     # Note: check available version with `apt-cache policy <package name>`
     become: yes
-    package:
+    ansible.builtin.package:
       state: present
       name: "{{ packages }}"
     register: task_result
@@ -114,7 +114,7 @@
 
   - name: Prevent the k8s packages for being updated (apt)
     become: yes
-    command: apt-mark hold kubelet kubeadm kubectl
+    ansible.builtin.command: apt-mark hold kubelet kubeadm kubectl
     when: ansible_pkg_mgr == 'apt'
 
   - name: Prevent the k8s packages for being updated (dnf)
@@ -122,7 +122,7 @@
 
     block:
     - name: Install dnf versionlock
-      dnf:
+      ansible.builtin.dnf:
         name:
         - 'dnf-command(versionlock)'
         state: latest
@@ -132,7 +132,7 @@
       delay: "{{ network_error_delay }}"
 
     - name: Add a version lock
-      command:
+      ansible.builtin.command:
       args:
         argv:
         - dnf
@@ -145,5 +145,5 @@
 
 # kubelet should be restarted immediately
 - name: Force restart of kubelet at this point
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 ...

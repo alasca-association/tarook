@@ -4,14 +4,14 @@
   block:
   - name: Create configuration for journald
     become: yes
-    template:
+    ansible.builtin.template:
       src: journald.conf.j2
       dest: /etc/systemd/journald.conf
       mode: 0640
 
   - name: Restart journald
     become: yes
-    systemd:
+    ansible.builtin.systemd:
       enabled: yes
       state: restarted
       daemon_reload: yes

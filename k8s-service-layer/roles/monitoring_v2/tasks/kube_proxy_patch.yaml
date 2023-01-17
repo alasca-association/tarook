@@ -30,7 +30,7 @@
 
   - name: Trigger rollout restart kube-proxy
     when: kube_proxy_configmap.changed
-    command:
+    ansible.builtin.command:
       argv:
         - kubectl
         - rollout

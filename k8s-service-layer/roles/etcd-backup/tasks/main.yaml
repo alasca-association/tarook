@@ -1,6 +1,6 @@
 ---
 - name: Include etcd config file
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ etcd_backup_config_path }}"
     name: etcd_backup_config
 
@@ -42,12 +42,12 @@
     EC2_URL: "{{ etcd_backup_config.endpoint_url }}"
   block:
     - name: Check if bucket exists
-      aws_s3_bucket_info:
+      community.aws.s3_bucket_info:
         name: "{{ etcd_backup_bucket_name }}"
       register: bucket_info
 
     - name: Create bucket if it does not exist
-      s3_bucket:
+      amazon.aws.s3_bucket:
         name: "{{ etcd_backup_bucket_name }}"
         # Even if the etcd-backup role is disabled afterwards we will not delete the bucket automatically
         state: present
@@ -61,7 +61,7 @@
         s3_url: "{{ etcd_backup_config.endpoint_url }}"
 
     - name: "Configure a lifecycle rule on the bucket to expire (delete) items after {{ etcd_backup_days_of_retention }}"
-      s3_lifecycle:
+      community.aws.s3_lifecycle:
         name: "{{ etcd_backup_bucket_name }}"
         expiration_days: "{{ etcd_backup_days_of_retention }}"
         prefix: "{{ etcd_backup_file_prefix }}"

@@ -3,7 +3,6 @@ use_default_rules: true
 skip_list:
   - role-name      # Role name {} does not match ``^[a-z][a-z0-9_]+$`` pattern
   - experimental  # all rules tagged as experimental
-  - fqcn-builtins  # Use FQCN for builtin actions.
   - no-changed-when  # Commands should not change things if nothing needs doing.
   - no-handler  # Tasks that run when changed should likely be handlers.
   - yaml[comments]  # Violations reported by yamllint.

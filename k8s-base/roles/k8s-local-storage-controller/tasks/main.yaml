@@ -3,7 +3,7 @@
   become: yes
   block:
   - name: Create directory structure
-    file:
+    ansible.builtin.file:
       path: "{{ item }}"
       state: directory
       owner: root
@@ -14,7 +14,7 @@
       - "{{ k8s_local_storage_static_discovery_directory }}/disk"
 
   - name: Create bind mount
-    mount:
+    ansible.posix.mount:
       src: "{{ k8s_local_storage_static_data_directory }}"
       path: "{{ k8s_local_storage_static_discovery_directory }}/disk"
       state: mounted
@@ -81,25 +81,25 @@
     - dump-k8s-manifests
   block:
     - name: Create manifest directory
-      file:
+      ansible.builtin.file:
         state: directory
         path: "{{ manifest_dir }}"
         mode: 0755
 
     - name: Create provisioner manifest
-      template:
+      ansible.builtin.template:
         src: 'provisioner.yaml.j2'
         dest: "{{ manifest_dir }}/provisioner.yaml"
         mode: 0664
 
     - name: Create storage class manifest
-      template:
+      ansible.builtin.template:
         src: 'sc.yaml.j2'
         dest: "{{ manifest_dir }}/sc.yaml"
         mode: 0664
 
     - name: Create service manifest
-      template:
+      ansible.builtin.template:
         src: 'service.yaml.j2'
         dest: "{{ manifest_dir }}/service.yaml"
         mode: 0664

@@ -4,7 +4,7 @@
 - name: Wait until rook upgrade completes
   block:
   - name: Set retry count
-    set_fact:
+    ansible.builtin.set_fact:
       retry_count: "{{ 0 if retry_count is undefined else (retry_count | int) + 1 }}"
 
   - name: Gather information about rook deployments
@@ -16,7 +16,7 @@
     register: rook_deployments_info
 
   - name: Validate that the new rook version is rolled out
-    debug:
+    ansible.builtin.debug:
       msg: |
         Deployment {{ item.metadata.name }} has rook version {{ item.metadata.labels['rook-version'] }}
         Configured Replicas:  {{ item.status.replicas }}
@@ -32,14 +32,14 @@
 
   rescue:
   - name: Fail if the cluster did not converge
-    fail:
+    ansible.builtin.fail:
       msg: "Rook components did not converge after the upgrade ({{ retry_count }} retries)"
     when: (retry_count | int) == 180
 
   - name: Pause for 20 seconds, give the cluster time to converge
-    pause:
+    ansible.builtin.pause:
       seconds: 20
 
   # Recheck if retry_count limit has not been reached, yet
-  - include_tasks: wait_for_rook_upgrade.yaml
+  - ansible.builtin.include_tasks: wait_for_rook_upgrade.yaml
 ...

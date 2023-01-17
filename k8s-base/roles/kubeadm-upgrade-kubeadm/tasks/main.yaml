@@ -4,10 +4,10 @@
   become: yes
   block:
   - name: Remove the hold of kubeadm
-    command: apt-mark unhold kubeadm
+    ansible.builtin.command: apt-mark unhold kubeadm
 
   - name: Upgrade kubeadm
-    apt:
+    ansible.builtin.apt:
       name:
         - "kubeadm={{ next_k8s_version }}-00"
     register: task_result
@@ -16,17 +16,17 @@
     delay: "{{ network_error_delay }}"
 
   - name: Re-hold kubeadm
-    command: apt-mark hold kubeadm
+    ansible.builtin.command: apt-mark hold kubeadm
 
   - name: Check kubeadm's version
-    command: kubeadm version
+    ansible.builtin.command: kubeadm version
 
 - name: Upgrade kubeadm on dnf systems
   when: ansible_pkg_mgr == 'dnf'
   become: yes
   block:
   - name: Remove versionlock on kubeadm
-    command:
+    ansible.builtin.command:
     args:
       argv:
       - dnf
@@ -35,7 +35,7 @@
       - kubeadm
 
   - name: Upgrade kubeadm
-    dnf:
+    ansible.builtin.dnf:
       name:
       - "kubeadm-{{ next_k8s_version }}-00"
       state: present
@@ -45,7 +45,7 @@
     delay: "{{ network_error_delay }}"
 
   - name: Add versionlock on kubeadm
-    command:
+    ansible.builtin.command:
     args:
       argv:
       - dnf

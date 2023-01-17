@@ -2,7 +2,7 @@
 - name: configure jsonnet
   tags:
     - k8s-monitoring-build
-  template:
+  ansible.builtin.template:
     src: monitoring.jsonnet
     dest: "{{ monitoring_jsonnet_dir_monitoring }}/{{ k8s_sl_monitoring_jsonnet_config_file }}"
     mode: u=rw,go-rwx
@@ -10,7 +10,7 @@
 - name: rebuild
   tags:
     - k8s-monitoring-build
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - "make"

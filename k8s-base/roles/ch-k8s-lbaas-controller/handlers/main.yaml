@@ -3,7 +3,7 @@
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - "kubectl"

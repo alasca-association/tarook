@@ -12,7 +12,7 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
   delegate_to: "{{ (groups['masters'] | sort)[0] }}"
   when: _allow_disruption
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - kubectl

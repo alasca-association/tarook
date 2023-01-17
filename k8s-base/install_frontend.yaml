@@ -58,7 +58,7 @@
   tasks:
     - name: Rollout company users
       when: cah_users_rollout
-      include_role:
+      ansible.builtin.include_role:
         name: ch-role-users
       tags:
         - ch-role-users

@@ -8,7 +8,7 @@
   - vars/retries.yaml
   pre_tasks:
     - name: include env vars
-      include_vars:
+      ansible.builtin.include_vars:
         dir: "{{ kms_vars_directory }}"
       tags:
       - always

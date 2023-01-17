@@ -83,7 +83,7 @@
 
   - name: Validate LB-Services for DualStack-Clusters
     when: dualstack_support
-    include_tasks: dualstack-lb-services.yaml
+    ansible.builtin.include_tasks: dualstack-lb-services.yaml
 
   - name: Clean up k8s preliminaries (ServiceAccount, RBAC, echo-Deployment)
     kubernetes.core.k8s:

@@ -4,10 +4,10 @@
   become: yes
   block:
   - name: Remove the hold of kubelet
-    command: apt-mark unhold kubelet kubectl
+    ansible.builtin.command: apt-mark unhold kubelet kubectl
 
   - name: Upgrade kubelet
-    apt:
+    ansible.builtin.apt:
       name:
         - "kubelet={{ next_k8s_version }}-00"
         - "kubectl={{ next_k8s_version }}-00"
@@ -17,14 +17,14 @@
     delay: "{{ network_error_delay }}"
 
   - name: Re-hold kubelet
-    command: apt-mark hold kubelet kubectl
+    ansible.builtin.command: apt-mark hold kubelet kubectl
 
 - name: Upgrade kubelet on dnf systems
   when: ansible_pkg_mgr == 'dnf'
   become: yes
   block:
   - name: Remove versionlock on kubelet
-    command:
+    ansible.builtin.command:
     args:
       argv:
       - dnf
@@ -34,7 +34,7 @@
       - kubectl
 
   - name: Upgrade kubelet
-    dnf:
+    ansible.builtin.dnf:
       name:
       - "kubelet-{{ next_k8s_version }}-00"
       - "kubectl-{{ next_k8s_version }}-00"
@@ -45,7 +45,7 @@
     delay: "{{ network_error_delay }}"
 
   - name: Add versionlock on kubelet
-    command:
+    ansible.builtin.command:
     args:
       argv:
       - dnf
@@ -58,7 +58,7 @@
 # k8s v1.19, v1.20, v1.21 & v1.22
 - name: Remove featureGates for >= v1.23
   become: yes
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /var/lib/kubelet/config.yaml
     state: absent
     search_string: "IPv6DualStack:"
@@ -69,7 +69,7 @@
     - next_k8s_version is defined and next_k8s_version is version('1.23', '>=')
 
 - name: Configure and restart kubelet
-  include_role:
+  ansible.builtin.include_role:
     name: kubelet-configuration
   vars:
     _require_kubelet_restart: True

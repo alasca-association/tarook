@@ -6,18 +6,18 @@
   block:
   - name: Check if calico/node private key is locally present
     delegate_to: localhost
-    stat:
+    ansible.builtin.stat:
       path: "{{ calico_node_key_path }}"
     register: calico_node_key_local
 
   - name: Check if calico/node signed certificate is locally present
     delegate_to: localhost
-    stat:
+    ansible.builtin.stat:
       path: "{{ calico_node_crt_path }}"
     register: calico_node_crt_local
 
   - name: Fail if certificate but private key does not exist for calico/node
-    fail:
+    ansible.builtin.fail:
       msg: "### WARNING ###\nThe certificate of calico/node is locally present, but not the private key!"
     when: calico_node_crt_local.stat.exists and not calico_node_key_local.stat.exists
 
@@ -37,7 +37,7 @@
   block:
   - name: Collect expiration information of the calico/node crt
     delegate_to: localhost
-    openssl_certificate_info:
+    community.crypto.openssl_certificate_info:
       path: "{{ calico_node_crt_path }}"
       valid_at:
         point_1: "+35w"
@@ -46,12 +46,12 @@
 
   # ToDo send a notification
   - name: Warn if the calico/node crt expires in less than 8 months from now
-    debug:
+    ansible.builtin.debug:
       msg: "### WARNING ###\nThe calico/node certificate expires in less than 8 months from now"
     when: not calico_node_crt_valid.valid_at.point_1
 
   - name: Warn if the calico/node crt expires in less than 6 months from now
-    debug:
+    ansible.builtin.debug:
       msg: "### WARNING ###\nThe calico/node certificate expires in less than 6 months from now. It will be regenerated."
     when: not calico_node_crt_valid.valid_at.point_2
 
@@ -62,13 +62,13 @@
     vars:
       calico_node_crt_local_content: "{{ lookup('file', '{{ etc_dir }}/calico/calico-node.crt') | trim | to_json }}"
       calico_node_crt_remote_content: "{{ calico_node_crt_secret.resources[0].data['calico-node.crt'] | trim | to_json }}"
-    debug:
+    ansible.builtin.debug:
       msg: "The local calico/node certificate and the remote one (Secret) do equal!"
     when: calico_node_crt_local_content == calico_node_crt_remote_content
     register: calico_node_crt_local_remote_equality
 
   - name: Fail if the local calico/node crt and the remote one do not match
-    fail:
+    ansible.builtin.fail:
       msg: "The local calico/node and the one stored in the Secret do not equal!\nSomething is weird."
     when: not calico_node_crt_local_remote_equality
 
@@ -83,7 +83,7 @@
   - name: Regenerate (force) private key of calico/node certificate if it is short to expire
     when: not (calico_node_crt_valid.valid_at.point_2  | default('false'))
     delegate_to: localhost
-    openssl_privatekey:
+    community.crypto.openssl_privatekey:
       path: "{{ calico_node_key_path }}"
       mode: 0600
       size: 4096
@@ -92,14 +92,14 @@
   # TODO: we should protect this with a password and store it in a more secure place
   - name: Generate private key for calico/node certificate
     delegate_to: localhost
-    openssl_privatekey:
+    community.crypto.openssl_privatekey:
       path: "{{ calico_node_key_path }}"
       mode: 0600
       size: 4096
 
   - name: Generate Certificate Signing Request for calico/node certificate
     delegate_to: localhost
-    openssl_csr:
+    community.crypto.openssl_csr:
       mode: 0664
       path: "{{ calico_node_csr_path }}"
       privatekey_path: "{{ calico_node_key_path }}"
@@ -111,7 +111,7 @@
 
   - name: Sign the Certificate Signing Request of calico/node
     delegate_to: localhost
-    openssl_certificate:
+    community.crypto.openssl_certificate:
       mode: 0664
       path: "{{ calico_node_crt_path }}"
       csr_path: "{{ calico_node_csr_path }}"
@@ -198,7 +198,7 @@
   when: calico_node_crt_changed.changed
   block:
   - name: Restart calico/node Pods
-    command:
+    ansible.builtin.command:
       argv:
         - kubectl
         - rollout
@@ -209,7 +209,7 @@
         - kube-system
 
   - name: Wait for Rollout Restart of calico/node Pods to finish
-    command:
+    ansible.builtin.command:
       argv:
         - kubectl
         - rollout

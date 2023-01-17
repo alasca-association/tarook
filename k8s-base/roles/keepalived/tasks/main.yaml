@@ -1,7 +1,7 @@
 ---
 - name: Install keepalived
   become: yes
-  package:
+  ansible.builtin.package:
     state: present
     name:
       - keepalived
@@ -12,7 +12,7 @@
 
 - name: Create keepalived configuration
   become: yes
-  template:
+  ansible.builtin.template:
     src: keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf
     owner: root
@@ -22,7 +22,7 @@
 
 - name: Create keepalived/scripts/ sub directory
   become: yes
-  file:
+  ansible.builtin.file:
     path: "/etc/keepalived/scripts"
     state: directory
     owner: root
@@ -31,7 +31,7 @@
 
 - name: Copy chk_haproxy.sh
   become: yes
-  template:
+  ansible.builtin.template:
     src: chk_haproxy.sh.j2
     dest: "/etc/keepalived/chk_haproxy.sh"
     owner: root
@@ -41,7 +41,7 @@
 
 - name: Copy notifier.sh
   become: yes
-  template:
+  ansible.builtin.template:
     src: notifier.sh.j2
     dest: /etc/keepalived/notifier.sh
     owner: root
@@ -51,14 +51,14 @@
 
 - name: Enable ipv4.ip_nonlocal_bind
   become: yes
-  sysctl:
+  ansible.posix.sysctl:
     name: net.ipv4.ip_nonlocal_bind
     value: "1"
     state: present
 
 - name: Enable ipv6.ip_nonlocal_bind
   become: yes
-  sysctl:
+  ansible.posix.sysctl:
     name: net.ipv6.ip_nonlocal_bind
     value: "1"
     state: present
@@ -66,7 +66,7 @@
 
 - name: Start the keepalived service
   become: yes
-  systemd:
+  ansible.builtin.systemd:
     state: started
     enabled: yes
     daemon_reload: yes

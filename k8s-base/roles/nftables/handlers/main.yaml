@@ -1,7 +1,7 @@
 ---
 - name: reload nftables
   become: yes
-  systemd:
+  ansible.builtin.systemd:
     name: nftables
     state: reloaded
 ...

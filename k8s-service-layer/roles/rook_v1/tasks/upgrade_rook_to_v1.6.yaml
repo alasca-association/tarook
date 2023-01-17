@@ -3,7 +3,7 @@
 ---
 # Verify that the Ceph cluster is healthy
 - name: Include cluster health verification
-  include_tasks: cluster_health_verification.yaml
+  ansible.builtin.include_tasks: cluster_health_verification.yaml
 
 - name: Configure k8s resources
   block:
@@ -26,14 +26,14 @@
     # (k8s module w/ force is not working and may be disruptive)
     # https://github.com/rook/rook/issues/7659
     - name: Create temporary CRD manifest in /tmp/rook-crds.yaml
-      template:
+      ansible.builtin.template:
         src: "v1.6/crds.yaml"
         dest: "/tmp/rook-crds.yaml"
         mode: 0600
 
     # https://github.com/rook/rook/issues/7659
     - name: Replace old Custom Resource Definitions (CRDs) # noqa ignore-errors
-      command:
+      ansible.builtin.command:
       args:
         argv:
           - kubectl
@@ -58,7 +58,7 @@
 
     # https://github.com/rook/rook/issues/7659
     - name: Remove temporary CRD manifest in /tmp/rook-crds.yaml
-      file:
+      ansible.builtin.file:
         path: /tmp/rook-crds.yaml
         state: absent
 
@@ -97,16 +97,16 @@
 # The upgrade will take at least 5 minutes
 # We are pausing here to prevent spamming the output with failures
 - name: The upgrade will take several minutes, pausing ansible for 5m
-  pause:
+  ansible.builtin.pause:
     seconds: 300
 
 - name: Wait until the ceph cluster's core components are fully updated
-  include_tasks: wait_for_rook_upgrade.yaml
+  ansible.builtin.include_tasks: wait_for_rook_upgrade.yaml
 
 - name: Give the rook-based ceph cluster time (20s) to stabilize
-  pause:
+  ansible.builtin.pause:
     seconds: 20
 
 - name: Include cluster health verification
-  include_tasks: cluster_health_verification.yaml
+  ansible.builtin.include_tasks: cluster_health_verification.yaml
 ...

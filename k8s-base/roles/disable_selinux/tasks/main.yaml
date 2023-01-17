@@ -2,7 +2,7 @@
 
 - name: Put SELinux in permissive mode, logging actions that would be blocked.
   become: yes
-  selinux:
+  ansible.posix.selinux:
     policy: targeted
     state: permissive
   register: selinux_res
@@ -13,7 +13,7 @@
   block:
 
     - name: Reboot host (cloud-init run)
-      command:
+      ansible.builtin.command:
         argv:
           - reboot
           - now
@@ -23,5 +23,5 @@
     # anyway by the above command if it is executed; If the above command is
     # not executed, we want to execute this one.
     - name: Reboot host
-      reboot:
+      ansible.builtin.reboot:
 ...

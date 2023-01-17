@@ -2,7 +2,7 @@
 - name: Create nftables config for k8s API server
   become: yes
   when: on_openstack | bool
-  template:
+  ansible.builtin.template:
     src: nftables.conf.j2
     dest: /etc/nft.d/k8s_apiserver.conf
     owner: root
@@ -12,7 +12,7 @@
 
 - name: Create HAProxy config for the k8s API server
   become: yes
-  template:
+  ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/conf.d/20_k8s-apiserver.cfg
     validate: haproxy -f %s -c
