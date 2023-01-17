@@ -1,7 +1,7 @@
-# 'kubectl drain' refuses to drain nodes with pods that use local storage 
+# 'kubectl drain' refuses to drain nodes with pods that use local storage
 # (i.e. volumes of type emptyDir). An emptyDir has the same lifespan as a pod.
 # Hence, if the pod is deleted, so is the emptyDir volume. hostPath is apparently
-# not affected because the file remain on the node. "Fix" is to effectively 
+# not affected because the file remain on the node. "Fix" is to effectively
 # delete local storage by passing '--delete-local-data' to the kubectl cmd.
 # IMPORTANT: this is something we have to inform the customer of!
 ---

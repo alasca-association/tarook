@@ -145,7 +145,7 @@
 - name: Reboot block  # noqa no-handler
   become: yes
   when: upgrade_dnf is changed or upgrade_yum is changed or upgrade_apt is changed
-  block: 
+  block:
 
     - name: Reboot the system (cloud-init run)
       ansible.builtin.command:

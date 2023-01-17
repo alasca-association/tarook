@@ -12,7 +12,7 @@
         msg: |
           "`/apis/metrics.k8s.io/v1beta1/pods` returned no pods. Looks like the metrics API is broken."
           "Check the metrics-server / prometheus-adapter and its query expressions."
-      
+
     # Equivalent to `kubectl top nodes`
     - name: Test the availability of "/apis/metrics.k8s.io/v1beta1/nodes"  # noqa no-changed-when
       ansible.builtin.command: "kubectl get --raw '/apis/metrics.k8s.io/v1beta1/nodes'"

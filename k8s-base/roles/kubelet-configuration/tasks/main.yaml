@@ -1,6 +1,6 @@
 ---
 - name: Configure and restart kubelet
-  when: > 
+  when: >
     ( _allow_disruption | default(False)
         or do_upgrade | default(False)
         or _init_cluster | default(False))

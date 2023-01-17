@@ -6,7 +6,6 @@ skip_list:
   - name[template]
   - name[missing]
   - experimental  # all rules tagged as experimental
-  - yaml[trailing-spaces]  # Violations reported by yamllint.
   - yaml[truthy]  # Violations reported by yamllint.
   - package-latest  # Package installs should not use latest.
   - var-spacing  # Jinja2 variables and filters should have spaces before and after.
