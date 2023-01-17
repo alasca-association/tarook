@@ -6,7 +6,6 @@ skip_list:
   - name[template]
   - name[missing]
   - experimental  # all rules tagged as experimental
-  - no-handler  # Tasks that run when changed should likely be handlers.
   - yaml[indentation]  # Violations reported by yamllint.
   - yaml[trailing-spaces]  # Violations reported by yamllint.
   - yaml[truthy]  # Violations reported by yamllint.

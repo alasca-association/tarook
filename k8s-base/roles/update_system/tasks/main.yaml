@@ -142,7 +142,7 @@
   # gateways are internet-facing and highly-available
   - "_allow_disruption or not kubernetes_dir.stat.exists"
 
-- name: Reboot block
+- name: Reboot block  # noqa no-handler
   become: yes
   when: upgrade_dnf is changed or upgrade_yum is changed or upgrade_apt is changed
   block: 

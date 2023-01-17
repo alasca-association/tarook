@@ -354,7 +354,7 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
 
-- name: Restart Typha Pods on certificate_renewal
+- name: Restart Typha Pods on certificate_renewal  # noqa no-handler
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf

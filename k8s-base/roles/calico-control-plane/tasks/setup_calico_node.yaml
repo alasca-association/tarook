@@ -191,7 +191,7 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
 
-- name: Restart calico/node Pods on certificate renewal
+- name: Restart calico/node Pods on certificate renewal  # noqa no-handler
   become: yes
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
