@@ -86,5 +86,5 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
     tags:
-      - test-cleanup
+    - test-cleanup
 ...

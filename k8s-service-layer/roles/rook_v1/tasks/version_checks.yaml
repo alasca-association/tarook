@@ -24,8 +24,8 @@
     namespace: "{{ rook_namespace }}"
     name: rook-ceph-operator
     label_selectors:
-      - operator=rook
-      - storage-backend=ceph
+    - operator=rook
+    - storage-backend=ceph
   register: rook_operator_info
   ignore_errors: yes
 

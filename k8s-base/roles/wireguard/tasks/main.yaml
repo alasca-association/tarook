@@ -188,39 +188,39 @@
 - name: Deploy bird configuration for wireguard routes
   become: yes
   block:
-  - name: Ensure that drop-in directory for bird configs exist
-    ansible.builtin.file:
-      path: /etc/bird.d/
-      state: directory
-      owner: root
-      group: bird
-      mode: 0750
+    - name: Ensure that drop-in directory for bird configs exist
+      ansible.builtin.file:
+        path: /etc/bird.d/
+        state: directory
+        owner: root
+        group: bird
+        mode: 0750
 
-  - name: Ensure that drop-in directory for bird configs exist (IPv6)
-    ansible.builtin.file:
-      path: /etc/birdv6.d/
-      state: directory
-      owner: root
-      group: bird
-      mode: 0750
-    when: dualstack_support
+    - name: Ensure that drop-in directory for bird configs exist (IPv6)
+      ansible.builtin.file:
+        path: /etc/birdv6.d/
+        state: directory
+        owner: root
+        group: bird
+        mode: 0750
+      when: dualstack_support
 
-  - name: Create bird config for IPv4 wireguard routes
-    ansible.builtin.template:
-      src: wg_bird.conf.j2
-      dest: /etc/bird.d/00-wireguard.conf
-      owner: bird
-      group: bird
-      mode: 0640
-    notify: restart bird
+    - name: Create bird config for IPv4 wireguard routes
+      ansible.builtin.template:
+        src: wg_bird.conf.j2
+        dest: /etc/bird.d/00-wireguard.conf
+        owner: bird
+        group: bird
+        mode: 0640
+      notify: restart bird
 
-  - name: Create bird config for IPv6 wireguard routes
-    ansible.builtin.template:
-      src: wg_bird_v6.conf.j2
-      dest: /etc/birdv6.d/00-wireguard.conf
-      owner: bird
-      group: bird
-      mode: 06400
-    when: dualstack_support
-    notify: restart bird6
+    - name: Create bird config for IPv6 wireguard routes
+      ansible.builtin.template:
+        src: wg_bird_v6.conf.j2
+        dest: /etc/birdv6.d/00-wireguard.conf
+        owner: bird
+        group: bird
+        mode: 06400
+      when: dualstack_support
+      notify: restart bird6
 ...

@@ -10,7 +10,7 @@
   vars_files:
     - ../vars/etc.yaml
   roles:
-  - detect_user
+    - detect_user
 
 - name: Run pre-flight checks on all nodes
   hosts: k8s_nodes
@@ -161,15 +161,15 @@
   roles:
     - role: calico-control-plane
       tags:
-      - calico
-      - calico-control-plane
+        - calico
+        - calico-control-plane
       when: k8s_network_plugin == 'calico'
       k8s_version: "{{ next_k8s_version }}"
     - role: calico-worker
       tags:
-      - calico
-      - calico-control-plane
-      - calico-worker
+        - calico
+        - calico-control-plane
+        - calico-worker
       when: k8s_network_plugin == 'calico'
       k8s_version: "{{ next_k8s_version }}"
 
@@ -194,15 +194,15 @@
   gather_facts: false
   hosts: masters[0]
   tasks:
-  - name: Final upgrade note
-    ansible.builtin.debug:
-      msg: |
-        🥳 Congratulations! 🎉
+    - name: Final upgrade note
+      ansible.builtin.debug:
+        msg: |
+          🥳 Congratulations! 🎉
 
-          \o/  The upgrade to
-           |      {{ next_k8s_version }}
-          / \  is complete.
+            \o/  The upgrade to
+            |      {{ next_k8s_version }}
+            / \  is complete.
 
-        You can now change the k8s_version variable to
-        {{ next_k8s_version | to_json }}.
+          You can now change the k8s_version variable to
+          {{ next_k8s_version | to_json }}.
 ...

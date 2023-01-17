@@ -60,8 +60,8 @@
   block:
   - name: Check that local Typha CA equals the one in the ConfigMap
     vars:
-     typha_ca_local_content: "{{ lookup('file', '{{ etc_dir }}/calico/typhaca.crt') | trim | to_json }}"
-     typha_ca_configmap_content: "{{ typhaca_crt_configmap.resources[0].data['typhaca.crt'] | trim | to_json }}"
+      typha_ca_local_content: "{{ lookup('file', '{{ etc_dir }}/calico/typhaca.crt') | trim | to_json }}"
+      typha_ca_configmap_content: "{{ typhaca_crt_configmap.resources[0].data['typhaca.crt'] | trim | to_json }}"
     ansible.builtin.debug:
       msg: "The local Typha CA and the one remote one (ConfigMap) do equal!"
     when: typha_ca_configmap_content == typha_ca_local_content
@@ -110,7 +110,7 @@
       subject:
         CN: "Calico Typha CA"
       basic_constraints:
-        - CA:TRUE
+      - CA:TRUE
       mode: 0664
 
   - name: Sign the Certificate Signing Request of Typha CA
@@ -259,7 +259,7 @@
       subject:
         CN: calico-typha
       basic_constraints:
-        - CA:TRUE
+      - CA:TRUE
 
   - name: Sign the Certificate Signing Request of Typha
     delegate_to: localhost
@@ -363,24 +363,24 @@
   - name: Restart Typha Pods  # noqa no-changed-when
     ansible.builtin.command:
       argv:
-        - kubectl
-        - rollout
-        - restart
-        - deployment
-        - calico-typha
-        - -n
-        - kube-system
+      - kubectl
+      - rollout
+      - restart
+      - deployment
+      - calico-typha
+      - -n
+      - kube-system
 
   - name: Wait for Rollout Restart of Typha Pods to finish  # noqa no-changed-when
     ansible.builtin.command:
       argv:
-        - kubectl
-        - rollout
-        - status
-        - deployment
-        - calico-typha
-        - -n
-        - kube-system
+      - kubectl
+      - rollout
+      - status
+      - deployment
+      - calico-typha
+      - -n
+      - kube-system
 
 # TODO: Validate that Typha is using TLS?
 # https://docs.projectcalico.org/getting-started/kubernetes/hardway/install-typha#install-service

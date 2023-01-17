@@ -107,7 +107,7 @@
       subject:
         CN: calico-node
       basic_constraints:
-        - CA:TRUE
+      - CA:TRUE
 
   - name: Sign the Certificate Signing Request of calico/node
     delegate_to: localhost
@@ -200,22 +200,22 @@
   - name: Restart calico/node Pods  # noqa no-changed-when
     ansible.builtin.command:
       argv:
-        - kubectl
-        - rollout
-        - restart
-        - ds
-        - calico-node
-        - -n
-        - kube-system
+      - kubectl
+      - rollout
+      - restart
+      - ds
+      - calico-node
+      - -n
+      - kube-system
 
   - name: Wait for Rollout Restart of calico/node Pods to finish  # noqa no-changed-when
     ansible.builtin.command:
       argv:
-        - kubectl
-        - rollout
-        - status
-        - ds
-        - calico-node
-        - -n
-        - kube-system
+      - kubectl
+      - rollout
+      - status
+      - ds
+      - calico-node
+      - -n
+      - kube-system
 ...

@@ -70,9 +70,9 @@
   async: 1800
   poll: 5
   when:
-  - ansible_pkg_mgr == 'dnf'
-  # gateways are internet-facing and highly-available
-  - "_allow_disruption or not kubernetes_dir.stat.exists"
+    - ansible_pkg_mgr == 'dnf'
+    # gateways are internet-facing and highly-available
+    - "_allow_disruption or not kubernetes_dir.stat.exists"
   register: upgrade_dnf
   until: upgrade_dnf is not failed
   retries: "{{ network_error_retries }}"
@@ -87,9 +87,9 @@
   async: 1800
   poll: 5
   when:
-  - ansible_pkg_mgr == 'yum'
-  # gateways are internet-facing and highly-available
-  - "_allow_disruption or not kubernetes_dir.stat.exists"
+    - ansible_pkg_mgr == 'yum'
+    # gateways are internet-facing and highly-available
+    - "_allow_disruption or not kubernetes_dir.stat.exists"
   register: upgrade_yum
 
 # This is required to be able to do initial updates on a Debian N image just
@@ -106,9 +106,9 @@
   become: yes
   ansible.builtin.command:
     argv:
-    - apt-get
-    - update
-    - --allow-releaseinfo-change
+      - apt-get
+      - update
+      - --allow-releaseinfo-change
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
@@ -138,9 +138,9 @@
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
   when:
-  - ansible_pkg_mgr == 'apt'
-  # gateways are internet-facing and highly-available
-  - "_allow_disruption or not kubernetes_dir.stat.exists"
+    - ansible_pkg_mgr == 'apt'
+    # gateways are internet-facing and highly-available
+    - "_allow_disruption or not kubernetes_dir.stat.exists"
 
 - name: Reboot block  # noqa no-handler
   become: yes
@@ -150,8 +150,8 @@
     - name: Reboot the system (cloud-init run)
       ansible.builtin.command:
         argv:
-        - reboot
-        - now
+          - reboot
+          - now
       when: ansible_connection == 'local'
 
     # We do not need a "when" here. ansible is killed approximately immediately

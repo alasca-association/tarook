@@ -28,13 +28,13 @@
 - ansible.builtin.import_tasks: internet_probe.yaml
   when: k8s_monitoring_enabled and monitoring_internet_probe
   tags:
-    - internet_probe
+  - internet_probe
 
 - name: Expose Prometheus with a NodePort
   when: k8s_monitoring_enabled and k8s_global_monitoring_enabled
   tags:
-    - ch-k8s-global-monitoring
-    - ch-k8s-global-monitoring-nodeport
+  - ch-k8s-global-monitoring
+  - ch-k8s-global-monitoring-nodeport
   kubernetes.core.k8s:
     apply: yes
     definition: "{{ lookup('template', 'prometheus-nodeport.yaml') }}"

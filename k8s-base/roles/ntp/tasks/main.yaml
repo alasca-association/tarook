@@ -27,47 +27,47 @@
   when: custom_chrony_configuration | bool
   block:
 
-    - name: Configure chrony (Debian based)
-      when: ansible_os_family == "Debian"
-      block:
+  - name: Configure chrony (Debian based)
+    when: ansible_os_family == "Debian"
+    block:
 
-        - name: Create custom configuration (Debian)
-          ansible.builtin.template:
-            src: chrony.conf.j2
-            dest: /etc/chrony/chrony.conf
-            owner: root
-            group: root
-            mode: 0644
-          register: configuration_update_debian
+    - name: Create custom configuration (Debian)
+      ansible.builtin.template:
+        src: chrony.conf.j2
+        dest: /etc/chrony/chrony.conf
+        owner: root
+        group: root
+        mode: 0644
+      register: configuration_update_debian
 
-        - name: Restart chrony  # noqa no-handler
-          when: configuration_update_debian.changed
-          ansible.builtin.systemd:
-            name: chrony
-            enabled: true
-            state: restarted
-            daemon_reload: true
+    - name: Restart chrony  # noqa no-handler
+      when: configuration_update_debian.changed
+      ansible.builtin.systemd:
+        name: chrony
+        enabled: true
+        state: restarted
+        daemon_reload: true
 
-    - name: Configure chrony (RHEL like)
-      when: ansible_os_family == "RedHat"
-      block:
+  - name: Configure chrony (RHEL like)
+    when: ansible_os_family == "RedHat"
+    block:
 
-        - name: Create custom configuration (RHEL like)
-          ansible.builtin.template:
-            src: chrony.conf.j2
-            dest: /etc/chrony.conf
-            owner: root
-            group: root
-            mode: 0644
-          register: configuration_update_rhel
+    - name: Create custom configuration (RHEL like)
+      ansible.builtin.template:
+        src: chrony.conf.j2
+        dest: /etc/chrony.conf
+        owner: root
+        group: root
+        mode: 0644
+      register: configuration_update_rhel
 
-        - name: Restart chronyd  # noqa no-handler
-          when: configuration_update_rhel.changed
-          ansible.builtin.systemd:
-            name: chronyd
-            enabled: true
-            state: restarted
-            daemon_reload: true
+    - name: Restart chronyd  # noqa no-handler
+      when: configuration_update_rhel.changed
+      ansible.builtin.systemd:
+        name: chronyd
+        enabled: true
+        state: restarted
+        daemon_reload: true
 
 - name: ensure chrony is running
   become: yes

@@ -16,7 +16,7 @@
       group: root
       mode: 0755
     loop:
-      - "{{ k8s_local_storage_dynamic_data_directory }}"
+    - "{{ k8s_local_storage_dynamic_data_directory }}"
 
 - name: Configure k8s resources
   delegate_to: "{{ groups['masters'] | first }}"
@@ -25,31 +25,31 @@
   become: yes
   run_once: yes
   block:
-    - name: Create storage class
-      kubernetes.core.k8s:
-        state: present
-        apply: yes
-        definition: "{{ lookup('template', 'sc.yaml.j2') }}"
-        validate:
-          fail_on_error: yes
-          strict: yes
-      # Retry this task on failures
-      register: k8s_apply
-      until: k8s_apply is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
+  - name: Create storage class
+    kubernetes.core.k8s:
+      state: present
+      apply: yes
+      definition: "{{ lookup('template', 'sc.yaml.j2') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
-    - name: Create provisioner
-      kubernetes.core.k8s:
-        state: present
-        apply: yes
-        definition: "{{ lookup('template', 'provisioner.yaml.j2') }}"
-        validate:
-          fail_on_error: yes
-          strict: yes
-      # Retry this task on failures
-      register: k8s_apply
-      until: k8s_apply is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
+  - name: Create provisioner
+    kubernetes.core.k8s:
+      state: present
+      apply: yes
+      definition: "{{ lookup('template', 'provisioner.yaml.j2') }}"
+      validate:
+        fail_on_error: yes
+        strict: yes
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 ...

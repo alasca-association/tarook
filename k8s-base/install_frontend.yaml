@@ -5,7 +5,7 @@
   vars_files:
   - vars/etc.yaml
   roles:
-    - validate_configuration
+  - validate_configuration
 
 - name: Establish connectivity to the nodes
   hosts: frontend
@@ -56,12 +56,12 @@
   hosts: gateways
   gather_facts: true
   tasks:
-    - name: Rollout company users
-      when: cah_users_rollout
-      ansible.builtin.include_role:
-        name: ch-role-users
-      tags:
-        - ch-role-users
+  - name: Rollout company users
+    when: cah_users_rollout
+    ansible.builtin.include_role:
+      name: ch-role-users
+    tags:
+    - ch-role-users
 
 - name: Configure frontend server services
   hosts: frontend

@@ -104,7 +104,7 @@
       namespace: "{{ check_local_storage_namespace }}"
     register: pvc_info
     tags:
-      - test-cleanup
+    - test-cleanup
 
   - name: delete namespace
     kubernetes.core.k8s:
@@ -138,5 +138,5 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
     tags:
-      - test-cleanup
+    - test-cleanup
 ...

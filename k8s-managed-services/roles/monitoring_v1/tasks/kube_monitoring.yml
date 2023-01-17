@@ -13,10 +13,10 @@
   ansible.builtin.command:
   args:
     argv:
-    - "make"
-    - "-f"
-    - "../Makefile"
-    - "build"
+      - "make"
+      - "-f"
+      - "../Makefile"
+      - "build"
     chdir: "{{ monitoring_jsonnet_dir_monitoring }}"
   changed_when: false
 
@@ -119,7 +119,7 @@
       fail_on_error: yes
       strict: yes
   with_items:
-  - lbaas-service-monitor.yaml
+    - lbaas-service-monitor.yaml
   when: ch_k8s_lbaas_agent_port
   # Retry this task on failures
   register: k8s_apply
@@ -127,7 +127,7 @@
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
   tags:
-  - ch-k8s-lbaas
-  - ch-k8s-lbaas-agent
-  - ch-k8s-lbaas-controller
+    - ch-k8s-lbaas
+    - ch-k8s-lbaas-agent
+    - ch-k8s-lbaas-controller
 ...

@@ -25,10 +25,10 @@
       ansible.builtin.command:
       args:
         argv:
-        - kubectl
-        - get
-        - node
-        - "{{ inventory_hostname }}"
+          - kubectl
+          - get
+          - node
+          - "{{ inventory_hostname }}"
 
     - name: Set fact that it is
       ansible.builtin.set_fact:

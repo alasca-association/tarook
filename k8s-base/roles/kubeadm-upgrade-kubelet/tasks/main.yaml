@@ -9,8 +9,8 @@
   - name: Upgrade kubelet
     ansible.builtin.apt:
       name:
-        - "kubelet={{ next_k8s_version }}-00"
-        - "kubectl={{ next_k8s_version }}-00"
+      - "kubelet={{ next_k8s_version }}-00"
+      - "kubectl={{ next_k8s_version }}-00"
     register: task_result
     until: task_result is not failed
     retries: "{{ network_error_retries }}"
@@ -66,7 +66,7 @@
     group: root
     mode: 0600
   when:
-    - next_k8s_version is defined and next_k8s_version is version('1.23', '>=')
+  - next_k8s_version is defined and next_k8s_version is version('1.23', '>=')
 
 - name: Configure and restart kubelet
   ansible.builtin.include_role:

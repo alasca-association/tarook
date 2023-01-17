@@ -52,6 +52,6 @@
       enabled: yes
       daemon_reload: yes
     loop:
-      - node_exporter_textfile_collector.timer
-      - node_exporter_textfile_collector.service
+    - node_exporter_textfile_collector.timer
+    - node_exporter_textfile_collector.service
 ...

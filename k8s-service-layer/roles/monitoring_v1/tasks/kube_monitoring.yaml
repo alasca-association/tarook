@@ -13,13 +13,13 @@
   ansible.builtin.command:
   args:
     argv:
-    - "make"
-    - "-f"
-    - "../Makefile"
-    - "MANIFEST_DIR={{ k8s_sl_monitoring_jsonnet_manifest_dir_name }}"
-    - "MANIFEST_LISTING={{ k8s_sl_monitoring_jsonnet_manifest_listing }}"
-    - "CONFIG_FILE={{ k8s_sl_monitoring_jsonnet_config_file }}"
-    - "build"
+      - "make"
+      - "-f"
+      - "../Makefile"
+      - "MANIFEST_DIR={{ k8s_sl_monitoring_jsonnet_manifest_dir_name }}"
+      - "MANIFEST_LISTING={{ k8s_sl_monitoring_jsonnet_manifest_listing }}"
+      - "CONFIG_FILE={{ k8s_sl_monitoring_jsonnet_config_file }}"
+      - "build"
     chdir: "{{ monitoring_jsonnet_dir_monitoring }}"
   changed_when: false
 

@@ -95,32 +95,32 @@ rook_skip_upgrade_checks: False
 
 # Each rook release does only support certain major releases of ceph.
 rook_ceph_release_map:
-  - rook_release: "v1.2"
-    supported_ceph_releases:
-      - v13
-      - v14
-  - rook_release: "v1.3"
-    supported_ceph_releases:
-      - v14
-      - v15
-  - rook_release: "v1.4"
-    supported_ceph_releases:
-      - v14
-      - v15
-  - rook_release: "v1.5"
-    supported_ceph_releases:
-      - v14  # actually v14.2.5
-      - v15  # actually v15.2.0
-  - rook_release: "v1.6"
-    supported_ceph_releases:
-      - v14
-      - v15
-      - v16
-  - rook_release: "v1.7"
-    supported_ceph_releases:
-      - v14  # >= 14.2.5
-      - v15  # >= 15.2.0
-      - v16  # >= 16.2.0
+- rook_release: "v1.2"
+  supported_ceph_releases:
+  - v13
+  - v14
+- rook_release: "v1.3"
+  supported_ceph_releases:
+  - v14
+  - v15
+- rook_release: "v1.4"
+  supported_ceph_releases:
+  - v14
+  - v15
+- rook_release: "v1.5"
+  supported_ceph_releases:
+  - v14  # actually v14.2.5
+  - v15  # actually v15.2.0
+- rook_release: "v1.6"
+  supported_ceph_releases:
+  - v14
+  - v15
+  - v16
+- rook_release: "v1.7"
+  supported_ceph_releases:
+  - v14  # >= 14.2.5
+  - v15  # >= 15.2.0
+  - v16  # >= 16.2.0
 
 supported_rook_releases: "{{ rook_ceph_release_map | map(attribute='rook_release') }}"
 supported_ceph_releases: "{{ rook_ceph_release_map | selectattr('rook_release','equalto',rook_conf_maj_min_version) | map(attribute='supported_ceph_releases') | flatten }}"

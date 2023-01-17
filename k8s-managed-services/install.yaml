@@ -5,12 +5,12 @@
   vars_files:
   - vars/retries.yaml
   pre_tasks:
-    - name: include env vars
-      when: kms_vars_directory is defined
-      ansible.builtin.include_vars:
-        dir: "{{ kms_vars_directory }}"
-      tags:
-        - always
+  - name: include env vars
+    when: kms_vars_directory is defined
+    ansible.builtin.include_vars:
+      dir: "{{ kms_vars_directory }}"
+    tags:
+    - always
   tags:
   - mk8s-ms
   roles:

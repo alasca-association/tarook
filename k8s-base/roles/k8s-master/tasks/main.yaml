@@ -62,82 +62,82 @@
     - spawn
   become: yes
   block:
-  # TODO: we should protect this with a password and store it in a more
-  # secure place
-  - name: Generate a fresh CA for the Kubernetes master
-    block:
-    - name: Generate OpenSSL private key for CA certificate
-      community.crypto.openssl_privatekey:
-        path: /etc/kubernetes/pki/ca.key
-    - name: Generate OpenSSL CA certificate signing request (CSR)
-      community.crypto.openssl_csr:
-        path: /etc/kubernetes/pki/ca.csr
-        privatekey_path: /etc/kubernetes/pki/ca.key
-        common_name: "{{ inventory_hostname }}-ca"
-        subject:
-          C: DE
-          ST: Saxony
-          L: Dresden
-          O: Cloud&Heat Technologies GmbH
-          CN: "{{ inventory_hostname }}-ca"
-        basic_constraints:
-          - CA:TRUE
-    - name: Generate OpenSSL CA certificate
-      community.crypto.x509_certificate:
-        path: /etc/kubernetes/pki/ca.crt
-        privatekey_path: /etc/kubernetes/pki/ca.key
-        csr_path: /etc/kubernetes/pki/ca.csr
-        provider: selfsigned
+    # TODO: we should protect this with a password and store it in a more
+    # secure place
+    - name: Generate a fresh CA for the Kubernetes master
+      block:
+        - name: Generate OpenSSL private key for CA certificate
+          community.crypto.openssl_privatekey:
+            path: /etc/kubernetes/pki/ca.key
+        - name: Generate OpenSSL CA certificate signing request (CSR)
+          community.crypto.openssl_csr:
+            path: /etc/kubernetes/pki/ca.csr
+            privatekey_path: /etc/kubernetes/pki/ca.key
+            common_name: "{{ inventory_hostname }}-ca"
+            subject:
+              C: DE
+              ST: Saxony
+              L: Dresden
+              O: Cloud&Heat Technologies GmbH
+              CN: "{{ inventory_hostname }}-ca"
+            basic_constraints:
+              - CA:TRUE
+        - name: Generate OpenSSL CA certificate
+          community.crypto.x509_certificate:
+            path: /etc/kubernetes/pki/ca.crt
+            privatekey_path: /etc/kubernetes/pki/ca.key
+            csr_path: /etc/kubernetes/pki/ca.csr
+            provider: selfsigned
 
-  - name: Check if gcr.io can be reached  # noqa no-changed-when
-    ansible.builtin.command: kubeadm config images pull
+    - name: Check if gcr.io can be reached  # noqa no-changed-when
+      ansible.builtin.command: kubeadm config images pull
 
-  - name: Create kubeadm-init-config.yaml
-    vars:
-      gateway: "{{ groups['gateways'] | first }}"
-    ansible.builtin.template:
-      src: kubeadm-init-config.yaml.j2
-      dest: /tmp/kubeadm-init-config.yaml
-      owner: root
-      group: root
-      mode: 0600
+    - name: Create kubeadm-init-config.yaml
+      vars:
+        gateway: "{{ groups['gateways'] | first }}"
+      ansible.builtin.template:
+        src: kubeadm-init-config.yaml.j2
+        dest: /tmp/kubeadm-init-config.yaml
+        owner: root
+        group: root
+        mode: 0600
 
-  - name: Run kubeadm init  # noqa no-changed-when
-    # XXX: ansible command module does not support setting the umask
-    ansible.builtin.shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
+    - name: Run kubeadm init  # noqa no-changed-when
+      # XXX: ansible command module does not support setting the umask
+      ansible.builtin.shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
 
-  - name: Remove kubeadm-init-config.yaml
-    ansible.builtin.file:
-      path: /tmp/kubeadm-init-config.yaml
-      state: absent
+    - name: Remove kubeadm-init-config.yaml
+      ansible.builtin.file:
+        path: /tmp/kubeadm-init-config.yaml
+        state: absent
 
-  - name: Configure bridge-nf-call-iptables
-    ansible.posix.sysctl:
-      name: net.bridge.bridge-nf-call-iptables
-      value: 1
-      state: present
+    - name: Configure bridge-nf-call-iptables
+      ansible.posix.sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: 1
+        state: present
 
-  - name: Fetch certificates file and keys from the initial master to localhost
-    ansible.builtin.fetch:
-      src: "/etc/kubernetes/pki/{{ item }}"
-      dest: "{{ etc_dir }}/"
-      flat: yes
-    loop: "{{ pki_cert_files }}"
-    run_once: yes
+    - name: Fetch certificates file and keys from the initial master to localhost
+      ansible.builtin.fetch:
+        src: "/etc/kubernetes/pki/{{ item }}"
+        dest: "{{ etc_dir }}/"
+        flat: yes
+      loop: "{{ pki_cert_files }}"
+      run_once: yes
 
-  - name: Fetch etcd certificates file and keys from the initial master to localhost
-    ansible.builtin.fetch:
-      src: "/etc/kubernetes/pki/etcd/{{ item }}"
-      dest: "{{ etc_dir }}/etcd/"
-      flat: yes
-    loop: "{{ etcd_files }}"
-    run_once: yes
+    - name: Fetch etcd certificates file and keys from the initial master to localhost
+      ansible.builtin.fetch:
+        src: "/etc/kubernetes/pki/etcd/{{ item }}"
+        dest: "{{ etc_dir }}/etcd/"
+        flat: yes
+      loop: "{{ etcd_files }}"
+      run_once: yes
 
-  - name: Copy kubeconfig to localhost
-    ansible.builtin.fetch:
-      src: /etc/kubernetes/admin.conf
-      dest: "{{ etc_dir }}/"
-      flat: yes
+    - name: Copy kubeconfig to localhost
+      ansible.builtin.fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ etc_dir }}/"
+        flat: yes
 
 - name: Test if this host can generate a token
   ansible.builtin.stat:
@@ -147,64 +147,64 @@
 - name: Create a new join token
   when: kube_config.stat.exists
   block:
-  - name: Get an access token and the CA hash  # noqa no-changed-when
-    become: yes
-    ansible.builtin.command: kubeadm token create
-    register: kubeadm_token_out
+    - name: Get an access token and the CA hash  # noqa no-changed-when
+      become: yes
+      ansible.builtin.command: kubeadm token create
+      register: kubeadm_token_out
 
-  - name: Save access token locally
-    delegate_to: localhost
-    become: no
-    ansible.builtin.copy:
-      content: "{{ kubeadm_token_out.stdout }}"
-      dest: "{{ etc_dir }}/kubeadm_token"
-      mode: 0664
+    - name: Save access token locally
+      delegate_to: localhost
+      become: no
+      ansible.builtin.copy:
+        content: "{{ kubeadm_token_out.stdout }}"
+        dest: "{{ etc_dir }}/kubeadm_token"
+        mode: 0664
 
 - name: Join the K8s control plane
   when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed"
   become: yes
   block:
-  - name: Copy certificate files and keys from the initial master
-    block:
-      - name: Copy certificates and keys from localhost to residual masters
-        ansible.builtin.copy:
-          src: "{{ etc_dir }}/{{ item }}"
-          dest: "/etc/kubernetes/pki/"
-          mode: u=rw,go-rwx
-        loop: "{{ pki_cert_files }}"
+    - name: Copy certificate files and keys from the initial master
+      block:
+        - name: Copy certificates and keys from localhost to residual masters
+          ansible.builtin.copy:
+            src: "{{ etc_dir }}/{{ item }}"
+            dest: "/etc/kubernetes/pki/"
+            mode: u=rw,go-rwx
+          loop: "{{ pki_cert_files }}"
 
-      - name: Copy etcd certificates and keys from localhost to residual masters
-        ansible.builtin.copy:
-          src: "{{ etc_dir }}/etcd/{{ item }}"
-          dest: "/etc/kubernetes/pki/etcd/"
-          mode: u=rw,go-rwx
-        loop: "{{ etcd_files }}"
+        - name: Copy etcd certificates and keys from localhost to residual masters
+          ansible.builtin.copy:
+            src: "{{ etc_dir }}/etcd/{{ item }}"
+            dest: "/etc/kubernetes/pki/etcd/"
+            mode: u=rw,go-rwx
+          loop: "{{ etcd_files }}"
 
-      - name: Get certificate information
-        become: no
-        delegate_to: localhost
-        community.crypto.x509_certificate_info:
-          path: "{{ etc_dir }}/ca.crt"
-        register: ca_cert
+        - name: Get certificate information
+          become: no
+          delegate_to: localhost
+          community.crypto.x509_certificate_info:
+            path: "{{ etc_dir }}/ca.crt"
+          register: ca_cert
 
-      - name: Create kubeadm-join-config.yaml
-        vars:
-          kubeadm_join_token: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
-        ansible.builtin.template:
-          src: kubeadm-join-config.yaml.j2
-          dest: /tmp/kubeadm-join-config.yaml
-          owner: root
-          group: root
-          mode: 0600
+        - name: Create kubeadm-join-config.yaml
+          vars:
+            kubeadm_join_token: "{{ lookup('file', '{{ etc_dir }}/kubeadm_token') }}"
+          ansible.builtin.template:
+            src: kubeadm-join-config.yaml.j2
+            dest: /tmp/kubeadm-join-config.yaml
+            owner: root
+            group: root
+            mode: 0600
 
-      - name: Join the initial control as another master  # noqa no-changed-when
-        # XXX: ansible command module does not support setting the umask
-        ansible.builtin.shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml"
+        - name: Join the initial control as another master  # noqa no-changed-when
+          # XXX: ansible command module does not support setting the umask
+          ansible.builtin.shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml"
 
-      - name: Remove kubeadm-join-config.yaml
-        ansible.builtin.file:
-          path: /tmp/kubeadm-join-config.yaml
-          state: absent
+        - name: Remove kubeadm-join-config.yaml
+          ansible.builtin.file:
+            path: /tmp/kubeadm-join-config.yaml
+            state: absent
 
 - name: Enable periodic publishing of the k8s join key
   ansible.builtin.include_tasks: continuous_join_key.yaml

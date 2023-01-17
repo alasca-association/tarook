@@ -13,8 +13,8 @@
     path: "{{ item }}"
     state: absent
   loop:
-    - "/tmp/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64.tar.gz"
-    - "/tmp/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64"
+  - "/tmp/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64.tar.gz"
+  - "/tmp/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64"
 
 - name: Create configuration directory
   become: yes

@@ -31,9 +31,9 @@
 
 - name: Check ceph mgr scrape endpoint status
   kubernetes.core.k8s_exec:
-      namespace: "{{ check_prometheus_scraping_namespace }}"
-      pod: prometheus-test-scraper
-      command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="rook-ceph-mgr"}'
+    namespace: "{{ check_prometheus_scraping_namespace }}"
+    pod: prometheus-test-scraper
+    command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="rook-ceph-mgr"}'
   register: metrics
   when: "k8s_storage_rook_enabled"
   until: |
@@ -97,7 +97,7 @@
     api_version: v1
     kind: Node
     label_selectors:
-      - yaook-k8s-has-gpu=true
+    - yaook-k8s-has-gpu=true
   register: gpu_nodes
 
 - name: Check dcgm-gpu-exporter endpoint status
@@ -161,9 +161,9 @@
     metrics.stdout | from_json | json_query('status') == "success" and
     metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   loop:
-   - calico-kube-controllers-monitoring
-   - calico-node-monitoring
-   - calico-typha-monitoring
+  - calico-kube-controllers-monitoring
+  - calico-node-monitoring
+  - calico-typha-monitoring
   delay: 3
 
 - name: Check fluxcd's monitoring endpoints

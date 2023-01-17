@@ -32,11 +32,11 @@
     when: kube_proxy_configmap.changed
     ansible.builtin.command:
       argv:
-        - kubectl
-        - rollout
-        - restart
-        - ds
-        - kube-proxy
-        - -n
-        - kube-system
+      - kubectl
+      - rollout
+      - restart
+      - ds
+      - kube-proxy
+      - -n
+      - kube-system
 ...

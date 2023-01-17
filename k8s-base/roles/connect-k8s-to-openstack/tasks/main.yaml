@@ -27,7 +27,7 @@
       fail_on_error: yes
       strict: yes
   notify:
-  - restart CCM
+    - restart CCM
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -83,7 +83,7 @@
       # loop over all template-files in the respective directory
       # the number/names of template-files may differ between versions
       with_fileglob:
-      - "templates/{{ template_folder }}cinder-csi-plugin/*.yaml.j2"
+        - "templates/{{ template_folder }}cinder-csi-plugin/*.yaml.j2"
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed

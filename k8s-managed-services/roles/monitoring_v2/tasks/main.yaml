@@ -18,8 +18,8 @@
 - name: Expose Prometheus with a NodePort
   when: k8s_monitoring_enabled and k8s_global_monitoring_enabled
   tags:
-    - ch-k8s-global-monitoring
-    - ch-k8s-global-monitoring-nodeport
+  - ch-k8s-global-monitoring
+  - ch-k8s-global-monitoring-nodeport
   kubernetes.core.k8s:
     apply: yes
     definition: "{{ lookup('template', 'prometheus-nodeport.yaml') }}"
@@ -105,7 +105,7 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
     tags:
-      - node-exporter-service-monitor
+    - node-exporter-service-monitor
 
   - name: Create service monitors for calico
     kubernetes.core.k8s:
@@ -121,7 +121,7 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
     tags:
-      - calico-service-monitor
+    - calico-service-monitor
 
   - name: Create service monitor for etcd-backup
     kubernetes.core.k8s:
@@ -133,7 +133,7 @@
         strict: yes
     when: etcd_backup_enabled | default(False) | bool
     tags:
-      - etcd-backup-service-monitor
+    - etcd-backup-service-monitor
 
   - name: Create a pod monitor for fluxcd
     when: (fluxcd_enabled | default (False)) | bool
@@ -150,7 +150,7 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
     tags:
-      - fluxcd
+    - fluxcd
 
 - name: "{{ k8s_is_gpu_cluster | ternary('I', 'Uni') }}nstall NVIDIA DCGM exporter"
   kubernetes.core.helm:

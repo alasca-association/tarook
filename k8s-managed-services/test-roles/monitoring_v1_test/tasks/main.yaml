@@ -105,9 +105,9 @@
 
     - name: check ceph mgr scrape endpoint status
       kubernetes.core.k8s_exec:
-          namespace: "{{ check_node_exporter_namespace }}"
-          pod: node-exporter-scraper
-          command: curl -g 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="rook-ceph-mgr"}'
+        namespace: "{{ check_node_exporter_namespace }}"
+        pod: node-exporter-scraper
+        command: curl -g 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="rook-ceph-mgr"}'
       register: metrics
       when: "k8s_storage_rook_enabled"
       until: |
@@ -165,5 +165,5 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
     tags:
-      - test-cleanup
+    - test-cleanup
 ...

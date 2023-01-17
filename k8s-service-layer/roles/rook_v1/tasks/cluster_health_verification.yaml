@@ -17,7 +17,7 @@
     wait_timeout: 10
     wait: yes
     label_selectors:
-      - app != rook-ceph-osd-prepare
+    - app != rook-ceph-osd-prepare
     wait_condition:
       status: "True"
       type: "Ready"
@@ -30,7 +30,7 @@
       kind: Pod
       namespace: "{{ rook_namespace }}"
       label_selectors:
-        - app = rook-ceph-tools
+      - app = rook-ceph-tools
     register: rook_ceph_tools_pod_info
 
   - name: Gather ceph cluster status information via the rook-ceph-tools Pod
@@ -64,8 +64,8 @@
         msg: "The health status of the ceph cluster is {{ ceph_health_status }}"
       failed_when: ceph_health_status != "HEALTH_OK"
       when:
-        - ceph_cluster_version is version('v14.2.5', operator='ge')
-        - ceph_cluster_version is version('v14.2.8', operator='lt')
+      - ceph_cluster_version is version('v14.2.5', operator='ge')
+      - ceph_cluster_version is version('v14.2.8', operator='lt')
 
     - name: Verify ceph cluster health status (>= v14.2.8)
       vars:
@@ -74,7 +74,7 @@
         msg: "The health status of the ceph cluster is {{ ceph_health_status }}"
       failed_when: ceph_health_status == "HEALTH_ERR"
       when:
-        - ceph_cluster_version is version('v14.2.8', operator='ge')
+      - ceph_cluster_version is version('v14.2.8', operator='ge')
 
     - name: Verify that all mons are in the quorum list (< v14.2.8)
       vars:
@@ -84,8 +84,8 @@
         msg: "There are {{ ceph_num_mons }} mons out of which {{ ceph_num_mons_in_quorum }} are in the quorum list"
       failed_when: ceph_num_mons != ceph_num_mons_in_quorum
       when:
-        - ceph_cluster_version is version('v14.2.5', operator='ge')
-        - ceph_cluster_version is version('v14.2.8', operator='lt')
+      - ceph_cluster_version is version('v14.2.5', operator='ge')
+      - ceph_cluster_version is version('v14.2.8', operator='lt')
 
     - name: Verify that all mons are in the quorum list (>= v14.2.8)
       vars:
@@ -95,7 +95,7 @@
         msg: "There are {{ ceph_num_mons }} mons out of which {{ ceph_num_mons_in_quorum }} are in the quorum list"
       failed_when: ceph_num_mons != ceph_num_mons_in_quorum
       when:
-        - ceph_cluster_version is version('v14.2.8', operator='ge')
+      - ceph_cluster_version is version('v14.2.8', operator='ge')
 
     - name: Verify that the manager is available
       vars:
@@ -113,8 +113,8 @@
         msg: "There are {{ ceph_num_osds }} OSDs; {{ ceph_num_up_osds }} are up; {{ ceph_num_in_osds }} are in"
       failed_when: ceph_num_up_osds != ceph_num_osds or ceph_num_in_osds != ceph_num_osds
       when:
-        - ceph_cluster_version is version('v14.2.8', operator='ge')
-        - ceph_cluster_version is version('v15.2.13', operator='lt')
+      - ceph_cluster_version is version('v14.2.8', operator='ge')
+      - ceph_cluster_version is version('v15.2.13', operator='lt')
 
     - name: Verify that all OSDs are up and in (>= v15.2.13)
       vars:
@@ -125,7 +125,7 @@
         msg: "There are {{ ceph_num_osds }} OSDs; {{ ceph_num_up_osds }} are up; {{ ceph_num_in_osds }} are in"
       failed_when: ceph_num_up_osds != ceph_num_osds or ceph_num_in_osds != ceph_num_osds
       when:
-        - ceph_cluster_version is version('v15.2.13', operator='ge')
+      - ceph_cluster_version is version('v15.2.13', operator='ge')
 
     - name: Verify that all Placement Groups are active and clean
       ansible.builtin.debug:

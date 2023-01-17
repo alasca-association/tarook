@@ -19,40 +19,40 @@
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
   when:
-  - ansible_pkg_mgr == 'apt'
+    - ansible_pkg_mgr == 'apt'
 
 - name: Install docker CE (yum/dnf)
   become: yes
   when:
-  - ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf'
+    - ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf'
   block:
-  # TODO: test without
-  - name: Install pre-requisites to docker
-    ansible.builtin.yum:
-      name:
-      - yum-utils
-      - device-mapper-persistent-data
-      - lvm2
-    register: task_result
-    until: task_result is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    # TODO: test without
+    - name: Install pre-requisites to docker
+      ansible.builtin.yum:
+        name:
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
-  - name: Add Docker repo
-    ansible.builtin.get_url:
-      url: https://download.docker.com/linux/centos/docker-ce.repo
-      dest: /etc/yum.repos.d/docker-ce.repo
-    register: task_result
-    until: task_result is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    - name: Add Docker repo
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
-  - name: Install docker
-    ansible.builtin.yum:
-      name:
-      - docker-ce
-      - docker-ce-cli
-      - containerd.io
+    - name: Install docker
+      ansible.builtin.yum:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
 
 - name: Install docker nvidia runtime
   become: yes
