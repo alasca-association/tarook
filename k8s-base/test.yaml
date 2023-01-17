@@ -82,7 +82,7 @@
   tags:
     - label
   tasks:
-    - name: Annotate the worker nodes # noqa no-changed-when
+    - name: Annotate the worker nodes  # noqa no-changed-when
       ansible.builtin.command: "kubectl label --overwrite nodes {{ item['worker'] }} name={{ item['name'] }}"
       loop: "{{ test_worker_nodes }}"
       tags:
@@ -203,7 +203,7 @@
   gather_facts: false
   tags: label
   tasks:
-      - name: Remove annotation of worker nodes # noqa no-changed-when
+      - name: Remove annotation of worker nodes  # noqa no-changed-when
         ansible.builtin.command: "kubectl label --overwrite nodes {{ item['worker'] }} name-"
         loop: "{{ test_worker_nodes }}"
         tags:

@@ -40,7 +40,7 @@
             mode: 0644
           register: configuration_update_debian
 
-        - name: Restart chrony # noqa no-handler
+        - name: Restart chrony  # noqa no-handler
           when: configuration_update_debian.changed
           ansible.builtin.systemd:
             name: chrony
@@ -61,7 +61,7 @@
             mode: 0644
           register: configuration_update_rhel
 
-        - name: Restart chronyd # noqa no-handler
+        - name: Restart chronyd  # noqa no-handler
           when: configuration_update_rhel.changed
           ansible.builtin.systemd:
             name: chronyd

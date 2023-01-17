@@ -80,7 +80,7 @@
   - role: k8s-api-frontend
     tags: k8s-api-frontend
   - role: global-monitoring-frontend
-    tags: k8s-global-monitoring # ToDo: find better tag
+    tags: k8s-global-monitoring  # ToDo: find better tag
     when: k8s_global_monitoring_enabled
 
 - name: Rollout company users

@@ -50,7 +50,7 @@
     delay: "{{ k8s_error_delay }}"
 
 - name: Check single stack IPv6 lb service functionality
-  when: false # Currently we do not support IPv6 single stack load balanced services (refer to the dualstack docs)
+  when: false  # Currently we do not support IPv6 single stack load balanced services (refer to the dualstack docs)
   block:
   - name: Create SingleStack IPv6 load-balanced service
     kubernetes.core.k8s:

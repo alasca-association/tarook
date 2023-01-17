@@ -37,7 +37,7 @@
   vars:
     password_store_dir: "{{ etc_dir }}/passwordstore"
   block:
-    - name: Lookup key in passwordstore # noqa ignore-errors no-jinja-nesting
+    - name: Lookup key in passwordstore  # noqa ignore-errors no-jinja-nesting
       ignore_errors: yes
       # Check if the key exists
       ansible.builtin.set_fact:
@@ -71,7 +71,7 @@
           please check what went wrong.
       when: "wg_genkey.changed and (wg_genkey.stdout | regex_search('\\s'))"
 
-    - name: Insert key into the passwordstore # noqa 207
+    - name: Insert key into the passwordstore  # noqa 207
       # Ignoring the linter here because without nesting jinja we'd have to concat strings which is even uglier.
       ansible.builtin.set_fact:
         _: "{{ lookup('passwordstore', '{{ wg_gw_priv_path }} userpass={{ wg_genkey.stdout }} directory={{ password_store_dir }} create=True') }}"
@@ -84,7 +84,7 @@
   vars:
     password_store_dir: "{{ etc_dir }}/passwordstore"
   block:
-    - name: Load private key # noqa 207
+    - name: Load private key  # noqa 207
       ansible.builtin.set_fact:
         wg_gw_priv_key: "{{ lookup('passwordstore', '{{ wg_gw_priv_path }} directory={{ password_store_dir }}') }}"
     - name: Derive public key
@@ -144,7 +144,7 @@
     state: absent
   register: old_wg_service
 
-- name: Stop and disable old wireguard service # noqa no-handler
+- name: Stop and disable old wireguard service  # noqa no-handler
   become: yes
   ansible.builtin.service:
     name: wireguard.service
@@ -152,13 +152,13 @@
     enabled: no
   when: old_wg_service is changed
 
-- name: Reload systemd to drop old wireguard service # noqa no-handler
+- name: Reload systemd to drop old wireguard service  # noqa no-handler
   become: yes
   ansible.builtin.systemd:
     daemon_reload: yes
   when: old_wg_service is changed
 
-- name: Stop wg0 after removal of legacy service so that the new service can take over # noqa no-handler
+- name: Stop wg0 after removal of legacy service so that the new service can take over  # noqa no-handler
   become: yes
   ansible.builtin.command:
   args:

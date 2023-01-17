@@ -61,7 +61,7 @@
         - export no_proxy={{ no_proxy }}
 
 # https://ansible-tips-and-tricks.readthedocs.io/en/latest/os-dependent-tasks/installing_packages/#installing-system-updates
-- name: Upgrade the whole system (dnf) # noqa 403
+- name: Upgrade the whole system (dnf)  # noqa 403
   become: yes
   ansible.builtin.dnf:
     name: '*'
@@ -78,7 +78,7 @@
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
 
-- name: Upgrade the whole system (yum) # noqa 403
+- name: Upgrade the whole system (yum)  # noqa 403
   ansible.builtin.yum:
     name: '*'
     state: latest
@@ -101,7 +101,7 @@
 #     E: Repository 'http://deb.debian.org/debian buster-updates InRelease'
 #     changed its 'Suite' value from 'stable-updates' to 'oldstable-updates'
 #
-- name: Update apt cache # noqa command-instead-of-module
+- name: Update apt cache  # noqa command-instead-of-module
   when: ansible_pkg_mgr == 'apt'
   become: yes
   ansible.builtin.command:
@@ -114,7 +114,7 @@
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
 
-- name: Upgrade the whole system (apt) # noqa 403
+- name: Upgrade the whole system (apt)  # noqa 403
   become: yes
   ansible.builtin.apt:
     upgrade: dist

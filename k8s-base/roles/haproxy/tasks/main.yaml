@@ -40,7 +40,7 @@
     mode: 0640
   register: haproxy_config
 
-- name: Start the haproxy service # noqa no-handler
+- name: Start the haproxy service  # noqa no-handler
   become: yes
   ansible.builtin.systemd:
     daemon_reload: yes

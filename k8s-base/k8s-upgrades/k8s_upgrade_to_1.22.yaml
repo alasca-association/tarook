@@ -24,9 +24,9 @@
 
 - name: Update OpenStack cloud provider integration components
   hosts: masters
-  run_once: true # to avoid redundant appliance
+  run_once: true  # to avoid redundant appliance
   vars_files:
-    - ../vars/auto_generated_preamble.yaml # needed for the cloud.config secret
+    - ../vars/auto_generated_preamble.yaml  # needed for the cloud.config secret
     - ../vars/retries.yaml
   pre_tasks:
     - name: Purge the csi-sc-cinder-controllerplugin Statefulset

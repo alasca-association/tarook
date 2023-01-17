@@ -12,7 +12,7 @@
   tags:
   - detect-user
 
-- name: test logins # noqa 306
+- name: test logins  # noqa 306
   delegate_to: localhost
   become: no
   # this is "slightly" ugly, but should take into account many possible ways

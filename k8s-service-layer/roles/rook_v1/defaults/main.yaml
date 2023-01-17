@@ -62,15 +62,15 @@ rook_nodeplugin_toleration: true
 
 rook_use_host_networking: false
 
-rook_version: "v1.7.11" # default
+rook_version: "v1.7.11"  # default
 rook_conf_major_version: "{{ rook_version.split('.')[0] }}"
 rook_conf_minor_version: "{{ rook_version.split('.')[1] }}"
 # v1.2.3 --> v1.2
 rook_conf_maj_min_version: "{{ '%s.%s' | format(rook_conf_major_version,rook_conf_minor_version) }}"
 
 rook_ceph_version_map:
-  "v1.2.3": # default
-    ceph: "v14.2.6" # default
+  "v1.2.3":  # default
+    ceph: "v14.2.6"  # default
   "v1.3.11":
     ceph: "v14.2.21"
   "v1.4.9":
@@ -109,8 +109,8 @@ rook_ceph_release_map:
       - v15
   - rook_release: "v1.5"
     supported_ceph_releases:
-      - v14 # actually v14.2.5
-      - v15 # actually v15.2.0
+      - v14  # actually v14.2.5
+      - v15  # actually v15.2.0
   - rook_release: "v1.6"
     supported_ceph_releases:
       - v14
@@ -118,9 +118,9 @@ rook_ceph_release_map:
       - v16
   - rook_release: "v1.7"
     supported_ceph_releases:
-      - v14 # >= 14.2.5
-      - v15 # >= 15.2.0
-      - v16 # >= 16.2.0
+      - v14  # >= 14.2.5
+      - v15  # >= 15.2.0
+      - v16  # >= 16.2.0
 
 supported_rook_releases: "{{ rook_ceph_release_map | map(attribute='rook_release') }}"
 supported_ceph_releases: "{{ rook_ceph_release_map | selectattr('rook_release','equalto',rook_conf_maj_min_version) | map(attribute='supported_ceph_releases') | flatten }}"

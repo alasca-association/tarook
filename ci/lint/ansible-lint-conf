@@ -8,7 +8,6 @@ skip_list:
   - experimental  # all rules tagged as experimental
   - no-changed-when  # Commands should not change things if nothing needs doing.
   - no-handler  # Tasks that run when changed should likely be handlers.
-  - yaml[comments]  # Violations reported by yamllint.
   - yaml[indentation]  # Violations reported by yamllint.
   - yaml[trailing-spaces]  # Violations reported by yamllint.
   - yaml[truthy]  # Violations reported by yamllint.

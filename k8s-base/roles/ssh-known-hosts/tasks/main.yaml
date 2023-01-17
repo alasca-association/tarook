@@ -17,7 +17,7 @@
     if ! grep -q '^{{ ansible_host }}' {{ ssh_known_hosts_file }}; then
       ssh-keyscan {{ ansible_host }} >> {{ ssh_known_hosts_file }};
     fi
-  changed_when: false # TODO: this could be made proper...
+  changed_when: false  # TODO: this could be made proper...
 
 - name: Test the connection
   become: no

@@ -40,5 +40,5 @@
       ansible.builtin.include_role:
         name: kubelet-configuration
       vars:
-        _init_cluster: True # needs to be passed so that kubelet is configured & restarted
+        _init_cluster: True  # needs to be passed so that kubelet is configured & restarted
 ...

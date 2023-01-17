@@ -98,7 +98,7 @@
 - name: Disable LBaaS agent
   when: not ch_k8s_lbaas_enabled
   block:
-  - name: Detect LBaaS agent # noqa 303
+  - name: Detect LBaaS agent  # noqa 303
     ansible.builtin.command:
     args:
       argv:
