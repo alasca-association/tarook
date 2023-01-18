@@ -3,15 +3,15 @@
   ansible.builtin.service_facts:
 
 - name: stop systemd time sync
-  become: yes
+  become: true
   become_user: root
   ansible.builtin.service:
     name: systemd-timesyncd
-    enabled: no
+    enabled: false
   when: ansible_facts.services['systemd-timesyncd'] is defined
 
 - name: install chrony
-  become: yes
+  become: true
   become_user: root
   ansible.builtin.package:
     name:
@@ -70,15 +70,15 @@
         daemon_reload: true
 
 - name: ensure chrony is running
-  become: yes
+  become: true
   become_user: root
   ansible.builtin.service:
     name: chronyd
     state: started
-    enabled: yes
+    enabled: true
 
 - name: disable systemd time sync
-  become: yes
+  become: true
   become_user: root
   ansible.builtin.service:
     name: systemd-timesyncd

@@ -1,6 +1,6 @@
 ---
 - name: Ensure /etc/docker directory is present
-  become: yes
+  become: true
   ansible.builtin.file:
     path: /etc/docker
     state: directory
@@ -9,7 +9,7 @@
     group: root
 
 - name: Install docker CE (apt)
-  become: yes
+  become: true
   ansible.builtin.apt:
     state: present
     name:
@@ -22,7 +22,7 @@
     - ansible_pkg_mgr == 'apt'
 
 - name: Install docker CE (yum/dnf)
-  become: yes
+  become: true
   when:
     - ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf'
   block:
@@ -55,7 +55,7 @@
           - containerd.io
 
 - name: Install docker nvidia runtime
-  become: yes
+  become: true
   vars:
     # This value is the concatenation of the fields $ID and $VERSION_ID in /etc/os-release,
     # e.g., `ubuntu18.04`.
@@ -93,14 +93,14 @@
     - name: Install nvidia-docker2 package
       ansible.builtin.apt:
         name: nvidia-docker2
-        update_cache: yes
+        update_cache: true
       register: task_result
       until: task_result is not failed
       retries: "{{ network_error_retries }}"
       delay: "{{ network_error_delay }}"
 
 - name: Create docker daemon configuration
-  become: yes
+  become: true
   ansible.builtin.template:
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
@@ -110,11 +110,11 @@
   notify: Restart docker
 
 - name: Create docker proxy configuration
-  become: yes
+  become: true
   when: (cluster_behind_proxy | default(false))
   block:
     - name: Ensure directory docker service directory is present
-      become: yes
+      become: true
       ansible.builtin.file:
         path: /etc/systemd/system/docker.service.d
         state: directory
@@ -123,7 +123,7 @@
         group: root
 
     - name: Create docker service extension
-      become: yes
+      become: true
       ansible.builtin.template:
         src: http-proxy.conf.j2
         dest: /etc/systemd/system/docker.service.d/http-proxy.conf

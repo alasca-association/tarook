@@ -42,7 +42,7 @@
 
 - name: Harden SSH
   hosts: k8s_nodes
-  become: yes
+  become: true
   collections:
   - devsec.hardening
   roles:
@@ -262,13 +262,13 @@
 
 - name: Spawn the OpenStack k8s Control Plane
   hosts: masters
-  become: yes
+  become: true
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/retries.yaml
-  run_once: yes
+  run_once: true
   roles:
   - role: connect-k8s-to-openstack
     tags: connect-k8s-to-openstack
@@ -280,7 +280,7 @@
 
 - name: Configure BGP and LBaaS on the gateways
   hosts: gateways
-  become: yes
+  become: true
   gather_facts: true
   vars_files:
   - vars/auto_generated_preamble.yaml

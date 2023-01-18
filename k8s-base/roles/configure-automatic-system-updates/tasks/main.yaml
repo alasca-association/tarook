@@ -2,7 +2,7 @@
 # can cause a lot of pain
 ---
 - name: Remove unattended-upgrades
-  become: yes
+  become: true
   ansible.builtin.package:
     name: unattended-upgrades
     state: absent

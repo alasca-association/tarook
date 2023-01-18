@@ -2,7 +2,7 @@
 - name: Create a Test-Pod on each k8s-node and check that each Pod can ping each other Pod
   delegate_to: "{{ groups['masters'] | first }}"
   run_once: true
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
@@ -16,8 +16,8 @@
           labels:
             calico-test: "{{ check_calico_namespace }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
       state: present
     # Retry this task on failures
     register: k8s_apply
@@ -33,12 +33,12 @@
   - name: Create ServiceAccount, RBAC, and Deployment for calico-busybox-test
     kubernetes.core.k8s:
       definition: "{{ lookup('template', item) }}"
-      apply: yes
+      apply: true
       state: "present"
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     with_items:
     - busybox_serviceaccount.yaml.j2
     - busybox-deployment.yaml.j2
@@ -109,11 +109,11 @@
   - name: Delete the (calico-)BusyBox DaemonSet and ServiceAccount
     kubernetes.core.k8s:
       definition: "{{ lookup('template', item) }}"
-      apply: yes
+      apply: true
       state: absent
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     with_items:
     - busybox-deployment.yaml.j2
     - busybox_serviceaccount.yaml.j2
@@ -133,8 +133,8 @@
       state: absent
       wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

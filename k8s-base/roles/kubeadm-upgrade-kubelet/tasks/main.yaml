@@ -1,7 +1,7 @@
 ---
 - name: Upgrade kubelet on apt systems
   when: ansible_pkg_mgr == 'apt'
-  become: yes
+  become: true
   block:
   - name: Remove the hold of kubelet  # noqa no-changed-when
     ansible.builtin.command: apt-mark unhold kubelet kubectl
@@ -21,7 +21,7 @@
 
 - name: Upgrade kubelet on dnf systems
   when: ansible_pkg_mgr == 'dnf'
-  become: yes
+  become: true
   block:
   - name: Remove versionlock on kubelet  # noqa no-changed-when
     ansible.builtin.command:
@@ -57,7 +57,7 @@
 # Remove me when dropping support for
 # k8s v1.19, v1.20, v1.21 & v1.22
 - name: Remove featureGates for >= v1.23
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /var/lib/kubelet/config.yaml
     state: absent
@@ -72,5 +72,5 @@
   ansible.builtin.include_role:
     name: kubelet-configuration
   vars:
-    _require_kubelet_restart: True
+    _require_kubelet_restart: true
 ...

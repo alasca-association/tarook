@@ -1,6 +1,6 @@
 ---
 - name: restart CCM
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   ansible.builtin.command:
@@ -14,7 +14,7 @@
     - "daemonset.apps/openstack-cloud-controller-manager"
 
 - name: restart octavia-ingress-controller
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   ansible.builtin.command:

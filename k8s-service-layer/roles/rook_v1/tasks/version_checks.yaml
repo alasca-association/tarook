@@ -27,7 +27,7 @@
     - operator=rook
     - storage-backend=ceph
   register: rook_operator_info
-  ignore_errors: yes
+  ignore_errors: true
 
 # Checking if the versions are the same and we can save all the funny version comparison tasks
 - name: Compare the configured and the deployed rook version
@@ -117,7 +117,7 @@
     namespace: "{{ rook_namespace }}"
     name: "{{ rook_cluster_name }}"
   register: ceph_cluster_info
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Compare the configured and the deployed Ceph version
   when: ceph_cluster_info.resources is defined and ceph_cluster_info.resources | length != 0

@@ -9,7 +9,7 @@
 
 - name: Check K8s setup
   hosts: k8s_nodes
-  become: no
+  become: false
   gather_facts: false
   tasks:
   - name: Get node info
@@ -50,7 +50,7 @@
 
 - name: Test Calico CNI Support
   hosts: k8s_nodes
-  gather_facts: no
+  gather_facts: false
   vars_files:
   - vars/retries.yaml
   roles:
@@ -77,7 +77,7 @@
 # Ugly: assuming naming scheme here.
 - name: Annotate worker nodes
   hosts: localhost
-  become: no
+  become: false
   gather_facts: false
   tags:
   - label
@@ -99,7 +99,7 @@
 
 - name: Check services
   hosts: masters[0]
-  become: no
+  become: false
   gather_facts: false
   vars_files:
   - vars/retries.yaml
@@ -124,8 +124,8 @@
 
 - name: Test enforcement of NetworkPolicies
   hosts: k8s_nodes[-1]
-  become: no
-  gather_facts: no
+  become: false
+  gather_facts: false
   vars_files:
   - vars/retries.yaml
   roles:
@@ -138,7 +138,7 @@
 # Same line for argumentation: especially rook is known to take a bit more time to boot up
 - name: Check storage services
   hosts: masters[0]
-  become: no
+  become: false
   gather_facts: false
   vars_files:
   - vars/retries.yaml
@@ -199,7 +199,7 @@
 
 - name: Remove worker node annotation
   hosts: localhost
-  become: no
+  become: false
   gather_facts: false
   tags: label
   tasks:

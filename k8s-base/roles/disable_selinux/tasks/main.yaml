@@ -1,14 +1,14 @@
 ---
 
 - name: Put SELinux in permissive mode, logging actions that would be blocked.
-  become: yes
+  become: true
   ansible.posix.selinux:
     policy: targeted
     state: permissive
   register: selinux_res
 
 - name: Reboot block
-  become: yes
+  become: true
   when: selinux_res.reboot_required
   block:
 

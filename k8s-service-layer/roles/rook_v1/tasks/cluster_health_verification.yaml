@@ -15,7 +15,7 @@
     kind: Pod
     namespace: "{{ rook_namespace }}"
     wait_timeout: 10
-    wait: yes
+    wait: true
     label_selectors:
     - app != rook-ceph-osd-prepare
     wait_condition:

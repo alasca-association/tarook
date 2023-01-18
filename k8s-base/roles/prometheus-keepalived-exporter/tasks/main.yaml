@@ -1,14 +1,14 @@
 ---
 - name: create user
-  become: yes
+  become: true
   ansible.builtin.user:
-    system: yes
+    system: true
     name: "{{ prometheus_keepalived_exporter_user }}"
     home: /dev/null
-    create_home: no
+    create_home: false
 
 - name: "[Legacy] Remove residual files from /tmp"
-  become: yes
+  become: true
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
@@ -17,7 +17,7 @@
   - "/tmp/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64"
 
 - name: Create configuration directory
-  become: yes
+  become: true
   ansible.builtin.file:
     state: directory
     path: /etc/prometheus-keepalived-exporter
@@ -26,7 +26,7 @@
     mode: u=rwx,g=rx,o-rwx
 
 - name: Store id tag
-  become: yes
+  become: true
   ansible.builtin.template:
     src: archive_id_tag
     dest: /etc/prometheus-keepalived-exporter/version
@@ -36,7 +36,7 @@
   register: version
 
 - name: Fetch and install binary
-  become: yes
+  become: true
   vars:
     pke_path: /var/cache/prometheus-keepalived-exporter
   block:
@@ -66,7 +66,7 @@
     ansible.builtin.unarchive:
       src: "{{ pke_path }}/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64.tar.gz"
       dest: "{{ pke_path }}"
-      remote_src: yes
+      remote_src: true
 
   - name: Install binary to /usr/local/bin
     ansible.builtin.copy:
@@ -74,7 +74,7 @@
       dest: /usr/local/bin
       owner: keepalived-exporter
       mode: u=rx,go-rwx
-      remote_src: yes
+      remote_src: true
     register: pke_binary
 
   - name: Set capabilities
@@ -88,13 +88,13 @@
     - cap_net_admin+ep
 
 - name: Activate ip_vs kernel module
-  become: yes
+  become: true
   community.general.modprobe:
     name: ip_vs
     state: present
 
 - name: Create a systemd unit for keepalived_exporter
-  become: yes
+  become: true
   ansible.builtin.copy:
     src: "{{ role_path }}/files/prometheus-keepalived-exporter.service"
     dest: /etc/systemd/system/
@@ -104,10 +104,10 @@
   register: pke_unit
 
 - name: Start & enable the systemd unit
-  become: yes
+  become: true
   ansible.builtin.systemd:
     name: prometheus-keepalived-exporter
     state: "{{ ((pke_binary is changed) or (pke_unit is changed)) | ternary('restarted', 'started') }}"
-    enabled: yes
-    daemon-reload: yes
+    enabled: true
+    daemon-reload: true
 ...

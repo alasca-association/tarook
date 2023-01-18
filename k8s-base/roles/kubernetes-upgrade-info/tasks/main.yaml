@@ -21,7 +21,7 @@
 
   - name: Obtain version as per k8s database
     delegate_to: "{{ (groups['masters'] | sort)[0] }}"
-    become: yes
+    become: true
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     kubernetes.core.k8s_info:
@@ -92,9 +92,9 @@
   when: "k8s_upgrade_done | default(False)"
 
 - name: Update the package cache
-  become: yes
+  become: true
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"

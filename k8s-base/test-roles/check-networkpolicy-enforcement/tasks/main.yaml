@@ -12,8 +12,8 @@
           labels:
             test: "{{ check_networkpolicy_namespace }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
       state: present
     # Retry this task on failures
     register: k8s_apply
@@ -26,8 +26,8 @@
       definition: "{{ lookup('template', 'service.yaml') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -61,8 +61,8 @@
       definition: "{{ lookup('template', 'test-pod.yaml') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -90,8 +90,8 @@
       definition: "{{ lookup('template', 'unblock-same-namespace.yaml') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -105,8 +105,8 @@
       definition: "{{ lookup('template', 'test-pod.yaml') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -148,8 +148,8 @@
     definition: "{{ lookup('template', 'unblock-all.yaml') }}"
     state: present
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -173,10 +173,10 @@
     name: "{{ check_networkpolicy_namespace }}"
     kind: Namespace
     state: absent
-    wait: yes
+    wait: true
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed

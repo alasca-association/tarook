@@ -4,7 +4,7 @@
 # https://github.com/projectcalico/calico/issues/2923
 ---
 - name: Apply IPPool(s)
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes

@@ -1,6 +1,6 @@
 ---
 - name: Add node-exporter collector resources
-  become: yes
+  become: true
   block:
   - name: Create node-exporter group
     ansible.builtin.group:
@@ -10,7 +10,7 @@
   - name: Add node-exporter user
     ansible.builtin.user:
       name: node-exporter
-      create_home: no
+      create_home: false
       groups: node-exporter
 
   - name: Copy the collector script
@@ -49,8 +49,8 @@
     ansible.builtin.systemd:
       name: "{{ item }}"
       state: restarted
-      enabled: yes
-      daemon_reload: yes
+      enabled: true
+      daemon_reload: true
     loop:
     - node_exporter_textfile_collector.timer
     - node_exporter_textfile_collector.service

@@ -32,7 +32,7 @@
   when: monitoring_grafana_customer_dashboards and not customer_dashboard.resources
   kubernetes.core.k8s:
     state: present
-    apply: yes
+    apply: true
     definition: |
       apiVersion: v1
       kind: ConfigMap
@@ -40,8 +40,8 @@
         name: {{ monitoring_grafana_customer_dashboards_configmap | to_json }}
         namespace: monitoring
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -51,11 +51,11 @@
 - name: apply manifests
   kubernetes.core.k8s:
     state: present
-    apply: yes
+    apply: true
     definition: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/' + item) }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   loop: "{{ lookup('file', monitoring_jsonnet_dir_monitoring + '/manifests.files.json', errors='strict' if (k8s_monitoring_enabled and monitoring_use_jsonnet_setup) else 'warn') | default(' [] ', true) | from_json }}"  # noqa 204
   # Retry this task on failures
   register: k8s_apply
@@ -66,11 +66,11 @@
 - name: create haproxy service monitor (gateway)
   kubernetes.core.k8s:
     state: present
-    apply: yes
+    apply: true
     definition: "{{ lookup('template', 'haproxy-service-monitor.yaml') }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -82,11 +82,11 @@
 - name: create keepalived service monitor (gateway)
   kubernetes.core.k8s:
     state: present
-    apply: yes
+    apply: true
     definition: "{{ lookup('template', 'keepalived-service-monitor.yaml') }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -98,11 +98,11 @@
 - name: create node-exporter service monitor (gateway)
   kubernetes.core.k8s:
     state: present
-    apply: yes
+    apply: true
     definition: "{{ lookup('template', 'node-exporter-service-monitor.yaml') }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -114,10 +114,10 @@
 - name: create LBaaS component service monitors (gateway)
   kubernetes.core.k8s:
     definition: "{{ lookup('template', item) }}"
-    apply: yes
+    apply: true
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   with_items:
     - lbaas-service-monitor.yaml
   when: ch_k8s_lbaas_agent_port

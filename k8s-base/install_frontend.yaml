@@ -34,7 +34,7 @@
 
 - name: Harden SSH
   hosts: frontend
-  become: yes
+  become: true
   collections:
   - devsec.hardening
   vars_files:

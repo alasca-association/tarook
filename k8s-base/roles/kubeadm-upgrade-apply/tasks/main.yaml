@@ -1,6 +1,6 @@
 ---
 - name: kubeadm upgrade plan & apply
-  become: yes
+  become: true
   when: do_upgrade
   block:
     - name: Run kubeadm upgrade plan  # noqa no-changed-when
@@ -29,7 +29,7 @@
       poll: 5
 
     - name: Remove IPv6DualStack for >= v1.23
-      become: yes
+      become: true
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
       when:

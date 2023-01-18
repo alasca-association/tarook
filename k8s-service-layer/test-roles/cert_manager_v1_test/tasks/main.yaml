@@ -1,15 +1,15 @@
 ---
 - name: Create namespace
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: v1
       kind: Namespace
       metadata:
         name: "{{ k8s_cert_manager_test_namespace }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -18,7 +18,7 @@
 
 - name: Create issuer
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: cert-manager.io/v1
       kind: Issuer
@@ -28,8 +28,8 @@
       spec:
         selfSigned: {}
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -53,7 +53,7 @@
     kind: Namespace
     name: "{{ k8s_cert_manager_test_namespace }}"
     state: absent
-    wait: yes
+    wait: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed

@@ -4,9 +4,9 @@
   block:
 
     - name: Install prometheus-haproxy-exporter
-      become: yes
+      become: true
       ansible.builtin.apt:
-        update_cache: yes
+        update_cache: true
         state: present
         name:
           - prometheus-haproxy-exporter
@@ -20,7 +20,7 @@
         phe_user: "prometheus"
 
     - name: Configure the exporter
-      become: yes
+      become: true
       ansible.builtin.template:
         src: prometheus-haproxy-exporter.default
         dest: /etc/default/prometheus-haproxy-exporter
@@ -31,7 +31,7 @@
 
 
 - name: Install prometheus-haproxy-exporter
-  become: yes
+  become: true
   when: ansible_os_family == 'RedHat'
   block:
 
@@ -41,10 +41,10 @@
 
     - name: Create prometheus-haproxy-exporter user
       ansible.builtin.user:
-        system: yes
+        system: true
         name: "{{ phe_user }}"
         shell: /sbin/nologin
-        create_home: no
+        create_home: false
 
     - name: Create configuration directory
       ansible.builtin.file:
@@ -94,7 +94,7 @@
           ansible.builtin.unarchive:
             src: "{{ phe_path }}/{{ prometheus_haproxy_exporter_archive }}"
             dest: "{{ phe_path }}"
-            remote_src: yes
+            remote_src: true
 
         - name: Copy prometheus-haproxy-exporter to /usr/local/bin
           ansible.builtin.copy:
@@ -102,7 +102,7 @@
             dest: /usr/local/bin/prometheus-haproxy-exporter
             owner: "{{ phe_user }}"
             mode: u=rx,go-rwx
-            remote_src: yes
+            remote_src: true
           register: phe_binary
 
         - name: Create prometheus-haproxy-exporter service file
@@ -113,18 +113,18 @@
           register: phe_service
 
 - name: Add user prometheus to group haproxy to access admin sock
-  become: yes
+  become: true
   ansible.builtin.user:
-    append: yes
+    append: true
     name: "{{ phe_user }}"
     groups:
       - haproxy
 
 - name: Enable & restart prometheus-haproxy-exporter
-  become: yes
+  become: true
   ansible.builtin.systemd:
     name: prometheus-haproxy-exporter
     state: "{{ ((phe_binary is changed) or (phe_service is changed) or (phe_default_config is changed)) | ternary('restarted', 'started') }}"
-    enabled: yes
-    daemon-reload: yes
+    enabled: true
+    daemon-reload: true
 ...

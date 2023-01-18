@@ -40,8 +40,8 @@
             labels:
               monitoring-checks: "{{ check_prometheus_scraping_namespace }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
         state: present
       # Retry this task on failures
       register: k8s_apply
@@ -52,12 +52,12 @@
     - name: Create the prometheus test scraper Pod
       kubernetes.core.k8s:
         definition: "{{ lookup('template', 'scraper.yaml.j2') }}"
-        apply: yes
+        apply: true
         state: "present"
-        wait: yes
+        wait: true
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
       register: scraper_info
       # Retry this task on failures
       until: scraper_info is not failed
@@ -78,8 +78,8 @@
       state: absent
       wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

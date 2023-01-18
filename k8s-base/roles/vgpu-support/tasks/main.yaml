@@ -2,7 +2,7 @@
 # Prerequisits: enable IOMMU
 ---
 - name: Install GPU drivers
-  become: yes
+  become: true
   when:
     - k8s_virtualize_gpu | default(False)
     - has_gpu
@@ -94,7 +94,7 @@
       register: ramfs
 
     - name: Reboot block
-      become: yes
+      become: true
       when: ramfs is changed or grub_config is changed
       block:
 
@@ -125,7 +125,7 @@
         gid: 2500009
 
     - name: Create udev rule for vfio devices
-      become: yes
+      become: true
       ansible.builtin.template:
         src: 50-vfio.rules.j2
         dest: /etc/udev/rules.d/50-vfio.rules
@@ -167,7 +167,7 @@
 
     - name: enable nvidia-sriov-manage
       ansible.builtin.systemd:
-        enabled: yes
+        enabled: true
         name: nvidia-sriov-manage.service
-        daemon_reload: yes
+        daemon_reload: true
 ...

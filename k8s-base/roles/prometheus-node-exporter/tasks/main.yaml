@@ -1,8 +1,8 @@
 ---
 - name: Install node-exporter
-  become: yes
+  become: true
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
     state: present
     install_recommends: false
     name:
@@ -13,7 +13,7 @@
   delay: "{{ network_error_delay }}"
 
 - name: Configure node-exporter
-  become: yes
+  become: true
   ansible.builtin.template:
     src: prometheus-node-exporter.j2
     dest: /etc/default/prometheus-node-exporter
@@ -22,10 +22,10 @@
     mode: 0640
 
 - name: Restart node-exporter
-  become: yes
+  become: true
   ansible.builtin.systemd:
     name: prometheus-node-exporter
     state: restarted
-    enabled: yes
-    daemon-reload: yes
+    enabled: true
+    daemon-reload: true
 ...

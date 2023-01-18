@@ -2,15 +2,15 @@
 - name: Create namespace
   when: k8s_monitoring_enabled
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: v1
       kind: Namespace
       metadata:
         name: "{{ monitoring_namespace }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -36,11 +36,11 @@
   - ch-k8s-global-monitoring
   - ch-k8s-global-monitoring-nodeport
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition: "{{ lookup('template', 'prometheus-nodeport.yaml') }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed

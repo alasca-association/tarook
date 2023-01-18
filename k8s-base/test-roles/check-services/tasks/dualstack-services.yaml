@@ -5,10 +5,10 @@
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_dual_stack.yaml.j2') }}"
       state: present
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -49,10 +49,10 @@
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_dual_stack.yaml.j2') }}"
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -65,10 +65,10 @@
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_single_stack_v4.yaml.j2') }}"
       state: present
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -109,10 +109,10 @@
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_single_stack_v4.yaml.j2') }}"
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -125,10 +125,10 @@
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_single_stack_v6.yaml.j2') }}"
       state: present
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -169,10 +169,10 @@
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_single_stack_v6.yaml.j2') }}"
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

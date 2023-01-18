@@ -4,8 +4,8 @@
 # https://github.com/projectcalico/calico/issues/2923
 ---
 - name: Create calico BGP configuration and apply peering
-  run_once: True
-  become: yes
+  run_once: true
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes

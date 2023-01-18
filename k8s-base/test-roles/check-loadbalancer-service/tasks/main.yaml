@@ -1,6 +1,6 @@
 ---
 - name: execute test
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
@@ -11,8 +11,8 @@
       kind: Namespace
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -23,10 +23,10 @@
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'preliminaries.yaml.j2') }}"
       state: present
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -38,8 +38,8 @@
       definition: "{{ lookup('template', 'service_single_stack_v4.yaml.j2') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -71,10 +71,10 @@
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_single_stack_v4.yaml.j2') }}"
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -90,8 +90,8 @@
       definition: "{{ lookup('template', 'preliminaries.yaml.j2') }}"
       state: absent
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -106,10 +106,10 @@
       name: "{{ check_loadbalancer_service_namespace }}"
       kind: Namespace
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

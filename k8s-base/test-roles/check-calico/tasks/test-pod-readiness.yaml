@@ -2,7 +2,7 @@
 - name: Check that calico/node and typha Pods are running
   delegate_to: "{{ groups['masters'] | first }}"
   run_once: true
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes

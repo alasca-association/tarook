@@ -6,7 +6,7 @@
          k8s_local_storage_static_storageclass_name == k8s_local_storage_dynamic_storageclass_name"
 
 - name: Create mount points
-  become: yes
+  become: true
   block:
   - name: Create directory structure
     ansible.builtin.file:
@@ -22,17 +22,17 @@
   delegate_to: "{{ groups['masters'] | first }}"
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  become: yes
-  run_once: yes
+  become: true
+  run_once: true
   block:
   - name: Create storage class
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', 'sc.yaml.j2') }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -42,11 +42,11 @@
   - name: Create provisioner
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', 'provisioner.yaml.j2') }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

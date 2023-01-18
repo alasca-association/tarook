@@ -3,7 +3,7 @@
 # time to boot and collect the first bits of data.
 - name: Check monitoring
   hosts: orchestrator
-  gather_facts: no
+  gather_facts: false
   vars_files:
   - vars/retries.yaml
   pre_tasks:

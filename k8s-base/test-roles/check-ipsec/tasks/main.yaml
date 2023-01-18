@@ -13,8 +13,8 @@
       name: "{{ check_ipsec_namespace }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -25,11 +25,11 @@
     kubernetes.core.k8s:
       state: present
       definition: "{{ lookup('template', 'busybox-ping-job.yaml.j2') }}"
-      wait: yes
-      apply: yes
+      wait: true
+      apply: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -54,8 +54,8 @@
       state: absent
       wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

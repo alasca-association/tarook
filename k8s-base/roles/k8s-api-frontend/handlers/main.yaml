@@ -1,12 +1,12 @@
 ---
 - name: reload haproxy for k8s-api-frontend
-  become: yes
+  become: true
   ansible.builtin.systemd:
     name: haproxy
     state: reloaded
 
 - name: reload nftables for k8s-api-frontend
-  become: yes
+  become: true
   ansible.builtin.systemd:
     name: nftables
     state: reloaded

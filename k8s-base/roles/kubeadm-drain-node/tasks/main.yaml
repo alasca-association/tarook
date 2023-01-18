@@ -6,8 +6,8 @@
 # IMPORTANT: this is something we have to inform the customer of!
 ---
 - name: Drain this node
-  changed_when: True
-  become: yes
+  changed_when: true
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   delegate_to: "{{ (groups['masters'] | sort)[0] }}"

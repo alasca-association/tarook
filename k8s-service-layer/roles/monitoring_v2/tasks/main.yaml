@@ -7,15 +7,15 @@
 - name: Create namespace
   when: k8s_monitoring_enabled | bool
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: v1
       kind: Namespace
       metadata:
         name: "{{ monitoring_namespace }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -38,7 +38,7 @@
   when: not grafana_admin.resources
   kubernetes.core.k8s:
     state: present
-    apply: yes
+    apply: true
     definition: |
       apiVersion: v1
       kind: Secret
@@ -50,8 +50,8 @@
         admin-user: YWRtaW4=
         admin-password: cHJvbS1vcGVyYXRvcg==
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -106,8 +106,8 @@
     release_name: "{{ monitoring_prometheus_stack_release_name }}"
     release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'prometheus_stack.yaml.j2') | from_yaml }}"
-    wait: no
-    update_repo_cache: yes
+    wait: false
+    update_repo_cache: true
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
@@ -124,8 +124,8 @@
     release_name: "{{ monitoring_prometheus_adapter_release_name }}"
     release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'prometheus_adapter.yaml.j2') | from_yaml }}"
-    wait: no
-    update_repo_cache: yes
+    wait: false
+    update_repo_cache: true
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"

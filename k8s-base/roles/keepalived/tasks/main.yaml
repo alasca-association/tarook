@@ -1,6 +1,6 @@
 ---
 - name: Install keepalived
-  become: yes
+  become: true
   ansible.builtin.package:
     state: present
     name:
@@ -11,7 +11,7 @@
   delay: "{{ network_error_delay }}"
 
 - name: Create keepalived configuration
-  become: yes
+  become: true
   ansible.builtin.template:
     src: keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf
@@ -21,7 +21,7 @@
   notify: restart keepalived
 
 - name: Create keepalived/scripts/ sub directory
-  become: yes
+  become: true
   ansible.builtin.file:
     path: "/etc/keepalived/scripts"
     state: directory
@@ -30,7 +30,7 @@
     mode: "u=rwx,g=rx,o-rwx"
 
 - name: Copy chk_haproxy.sh
-  become: yes
+  become: true
   ansible.builtin.template:
     src: chk_haproxy.sh.j2
     dest: "/etc/keepalived/chk_haproxy.sh"
@@ -40,7 +40,7 @@
   notify: restart keepalived
 
 - name: Copy notifier.sh
-  become: yes
+  become: true
   ansible.builtin.template:
     src: notifier.sh.j2
     dest: /etc/keepalived/notifier.sh
@@ -50,14 +50,14 @@
   notify: restart keepalived
 
 - name: Enable ipv4.ip_nonlocal_bind
-  become: yes
+  become: true
   ansible.posix.sysctl:
     name: net.ipv4.ip_nonlocal_bind
     value: "1"
     state: present
 
 - name: Enable ipv6.ip_nonlocal_bind
-  become: yes
+  become: true
   ansible.posix.sysctl:
     name: net.ipv6.ip_nonlocal_bind
     value: "1"
@@ -65,10 +65,10 @@
   when: dualstack_support
 
 - name: Start the keepalived service
-  become: yes
+  become: true
   ansible.builtin.systemd:
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true
     name: keepalived
 ...

@@ -1,6 +1,6 @@
 ---
 - name: Validate if Kubernetes is installed
-  become: yes
+  become: true
   block:
     - name: Check if kubelet.conf exists
       ansible.builtin.stat:
@@ -12,8 +12,8 @@
       ansible.builtin.service:
         name: kubelet
         state: started
-        enabled: yes
-      check_mode: yes
+        enabled: true
+      check_mode: true
       register: kubelet_service
       failed_when: kubelet_service.changed
 

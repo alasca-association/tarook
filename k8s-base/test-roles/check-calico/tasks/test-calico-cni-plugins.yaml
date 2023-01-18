@@ -1,6 +1,6 @@
 ---
 - name: Check that calico and calico-ipam CNI binaries do exist
-  become: yes
+  become: true
 
   block:
   - name: Check /opt/cni/bin/

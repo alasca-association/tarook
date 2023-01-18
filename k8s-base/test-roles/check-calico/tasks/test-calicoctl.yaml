@@ -5,7 +5,7 @@
 ---
 - name: Check that calicoctl is installed on master nodes
   run_once: true
-  become: yes
+  become: true
 
   block:
   - name: Check /usr/local/bin/calicoctl

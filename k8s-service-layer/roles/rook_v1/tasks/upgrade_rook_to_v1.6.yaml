@@ -10,11 +10,11 @@
     - name: Apply updated common resources
       kubernetes.core.k8s:
         state: present
-        apply: yes
+        apply: true
         definition: "{{ lookup('template', 'v1.6/common.yaml') }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed
@@ -40,16 +40,16 @@
           - replace
           - -f
           - /tmp/rook-crds.yaml
-      ignore_errors: yes
+      ignore_errors: true
 
     - name: Apply updated Custom Resource Definitions (CRDs)
       kubernetes.core.k8s:
         state: present
-        apply: yes
+        apply: true
         definition: "{{ lookup('template', 'v1.6/crds.yaml') }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed
@@ -69,11 +69,11 @@
     - name: Apply new cluster manifest (v1.6)
       kubernetes.core.k8s:
         state: present
-        apply: yes
+        apply: true
         definition: "{{ lookup('template', 'v1.6/cluster.yaml') }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed
@@ -83,11 +83,11 @@
     - name: Apply new rook-ceph-operator manifest (v1.6)
       kubernetes.core.k8s:
         state: present
-        apply: yes
+        apply: true
         definition: "{{ lookup('template', 'v1.6/operator.yaml') }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed

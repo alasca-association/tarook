@@ -6,8 +6,8 @@
       definition: "{{ lookup('template', 'service_dual_stack.yaml.j2') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -39,10 +39,10 @@
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_dual_stack.yaml.j2') }}"
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -57,8 +57,8 @@
       definition: "{{ lookup('template', 'service_single_stack_v6.yaml.j2') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -90,10 +90,10 @@
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_single_stack_v6.yaml.j2') }}"
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

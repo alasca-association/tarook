@@ -52,9 +52,9 @@
         # Even if the etcd-backup role is disabled afterwards we will not delete the bucket automatically
         state: present
         # By default, we're using RGW so only use a subset of the S3 API
-        ceph: yes
+        ceph: true
         # Make sure that no one can read the dumps without authentication
-        delete_public_access: yes
+        delete_public_access: true
         # That's the default. Added the flag to make it explicit that no S3 server-side encryption takes place
         encryption: none
         # Needed when in ceph compat mode
@@ -86,7 +86,7 @@
     release_namespace: "{{ etcd_backup_namespace }}"
     release_name: "{{ etcd_backup_name }}"
     release_state: present
-    update_repo_cache: yes
+    update_repo_cache: true
     values: "{{ lookup('template', 'etcd_backup.yaml.j2') | from_yaml }}"
   when: bucket_info.buckets | length > 0
   register: task_result

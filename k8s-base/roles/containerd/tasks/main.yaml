@@ -1,6 +1,6 @@
 ---
 - name: Ensure /etc/containerd directory is present
-  become: yes
+  become: true
   ansible.builtin.file:
     path: /etc/containerd
     state: directory
@@ -61,7 +61,7 @@
     delay: "{{ network_error_delay }}"
 
 - name: Create containerd daemon configuration
-  become: yes
+  become: true
   ansible.builtin.template:
     src: config.toml.j2
     dest: /etc/containerd/config.toml
@@ -71,7 +71,7 @@
   register: configuration_update
 
 - name: Restart containerd
-  become: yes
+  become: true
   # Only restart if something changed AND we're allowed to do the restart
   when:
   - package_install.changed or containerd_remove.changed or configuration_update.changed
@@ -79,6 +79,6 @@
   ansible.builtin.systemd:
     enabled: true
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true
     name: containerd
 ...

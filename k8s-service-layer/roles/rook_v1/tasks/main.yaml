@@ -27,11 +27,11 @@
       crds_template: "{{ '%s/crds.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', crds_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     when: rook_version is version('v1.5.0', operator='ge')
     # Retry this task on failures
     register: k8s_apply
@@ -44,11 +44,11 @@
       common_template: "{{ '%s/common.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', common_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -60,11 +60,11 @@
       operator_template: "{{ '%s/operator.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', operator_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -76,11 +76,11 @@
       cluster_template: "{{ '%s/cluster.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', cluster_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -126,11 +126,11 @@
       toolbox_template: "{{ '%s/toolbox.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: "{{ rook_toolbox | ternary('present', 'absent') }}"
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', toolbox_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -142,11 +142,11 @@
       pool_template: "{{ '%s/pool.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', pool_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     loop: "{{ rook_pools }}"
     # Retry this task on failures
     register: k8s_apply
@@ -159,11 +159,11 @@
       block_storage_class_template: "{{ '%s/block_storage_class.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', block_storage_class_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     when: "item.create_storage_class | default(False)"
     loop: "{{ rook_pools }}"
     # Retry this task on failures
@@ -177,11 +177,11 @@
       fs_template: "{{ '%s/filesystem.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: "{{ rook_ceph_fs | ternary('present', 'absent') }}"
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', fs_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -193,11 +193,11 @@
       cephfs_storage_class_template: "{{ '%s/cephfs_storage_class.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: "{{ rook_ceph_fs | ternary('present', 'absent') }}"
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', cephfs_storage_class_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

@@ -3,19 +3,19 @@
 # Make sure to only apply the CustomResourceDefinitions
 ---
 - name: Create Custom Calico Resource Definitions
-  become: yes
-  run_once: yes
+  become: true
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   vars:
     crd_file: "{{ 'crds/calico-crds-v%s.yaml' | format(image_versions.calico_version) }}"
   kubernetes.core.k8s:
     definition: "{{ lookup('file', crd_file) }}"
-    apply: yes
+    apply: true
     state: present
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -23,7 +23,7 @@
   delay: "{{ k8s_error_delay }}"
 
 - name: Check local presence of calico-kubeconfig certificate
-  run_once: yes
+  run_once: true
   block:
   - name: Check if calico-kubeconfig private key is locally present
     delegate_to: localhost
@@ -43,7 +43,7 @@
     when: calico_cni_crt_local.stat.exists and not calico_cni_key_local.stat.exists
 
 - name: Validate local calico-kubeconfig crt on expiration
-  run_once: yes
+  run_once: true
   when: calico_cni_crt_local.stat.exists
   block:
   - name: Collect expiration information of the calico-kubeconfig crt
@@ -67,8 +67,8 @@
     when: not calico_cni_crt_valid.valid_at.point_2
 
 - name: Manage calico-kubeconfig private key
-  run_once: yes
-  become: no
+  run_once: true
+  become: false
   block:
   - name: Regenerate (force) private key of calico-kubeconfig if it is short to expire
     when: not (calico_cni_crt_valid.valid_at.point_2 | default('false'))
@@ -77,7 +77,7 @@
       path: "{{ calico_cni_crt_path }}"
       mode: 0600
       size: 4096
-      force: yes
+      force: true
 
   - name: Generate private key for CA certificate of calico-kubeconfig
     delegate_to: localhost
@@ -108,17 +108,17 @@
       provider: ownca
 
 - name: Create user for calico-cni, configure RBAC and create RoleBinding
-  become: yes
-  run_once: yes
+  become: true
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   kubernetes.core.k8s:
     definition: "{{ lookup('file', item) }}"
-    apply: yes
+    apply: true
     state: "present"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   loop:
   - "{{ calico_versions_folder }}/calico-cni-user.yaml"
   # Retry this task on failures

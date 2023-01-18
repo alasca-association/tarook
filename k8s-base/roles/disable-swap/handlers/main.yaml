@@ -1,6 +1,6 @@
 ---
 - name: Enable noswap service
-  become: yes
+  become: true
   ansible.builtin.systemd:
     name: noswap
     state: started

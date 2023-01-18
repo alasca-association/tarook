@@ -1,6 +1,6 @@
 ---
 - name: Distribute calico-kubeconfig to all nodes
-  become: yes
+  become: true
   block:
     - name: Ensure that /etc/cni/net.d/ exists on all k8s_nodes
       ansible.builtin.file:

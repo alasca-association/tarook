@@ -1,15 +1,15 @@
 ---
 - name: Ensure namespace exists
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: v1
       kind: Namespace
       metadata:
         name: "{{ yaook_vault_namespace }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -18,7 +18,7 @@
 
 - name: Create Vault CA selfsigned issuer
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: cert-manager.io/v1
       kind: Issuer
@@ -28,8 +28,8 @@
       spec:
         selfSigned: {}
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -38,7 +38,7 @@
 
 - name: Create Vault CA
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: cert-manager.io/v1
       kind: Certificate
@@ -53,8 +53,8 @@
         commonName: vault-ca
         isCA: true
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -63,7 +63,7 @@
 
 - name: Create Vault Issuer
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: cert-manager.io/v1
       kind: Issuer
@@ -74,8 +74,8 @@
         ca:
           secretName: vault-ca
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -106,7 +106,7 @@
   # - all worker IP addresses (if management cluster integration)
   # - possibly a fun public DNS name
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: cert-manager.io/v1
       kind: Certificate
@@ -122,8 +122,8 @@
         ipAddresses: "{{ yaook_vault_management_cluster_integration | ternary(yaook_vault_worker_ips, []) + ['127.0.0.1', '::1'] }}"
         dnsNames: "{{ yaook_vault_dnsnames_complete }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -150,7 +150,7 @@
     release_namespace: "{{ yaook_vault_namespace }}"
     release_name: vault
     release_state: present
-    update_repo_cache: yes
+    update_repo_cache: true
     values:
       global:
         enabled: true

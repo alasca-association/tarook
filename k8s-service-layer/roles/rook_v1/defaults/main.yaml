@@ -1,5 +1,5 @@
 ---
-rook_manage_pod_budgets: True
+rook_manage_pod_budgets: true
 
 rook_nmons: 3
 rook_namespace: "rook-ceph"
@@ -91,7 +91,7 @@ rook_mgr_scheduling_key: null
 # If OSDs are not replicated, the rook-ceph-operator will reject
 # to perform upgrades, because OSDs will become unavailable.
 # Set to True so rook will update even if OSDs would become unavailable
-rook_skip_upgrade_checks: False
+rook_skip_upgrade_checks: false
 
 # Each rook release does only support certain major releases of ceph.
 rook_ceph_release_map:

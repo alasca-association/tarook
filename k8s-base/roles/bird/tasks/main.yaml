@@ -1,6 +1,6 @@
 ---
 - name: install bird
-  become: yes
+  become: true
   ansible.builtin.apt:
     name: bird
     state: present
@@ -12,7 +12,7 @@
   - bird
 
 - name: configure bird
-  become: yes
+  become: true
   ansible.builtin.template:
     src: bird.conf
     dest: /etc/bird/bird.conf
@@ -24,7 +24,7 @@
   - bird
 
 - name: drop-in directory for bird config
-  become: yes
+  become: true
   ansible.builtin.file:
     state: directory
     path: /etc/bird.d/
@@ -35,17 +35,17 @@
   - bird
 
 - name: disable bird6
-  become: yes
+  become: true
   ansible.builtin.service:
     name: bird6
-    enabled: no
+    enabled: false
     state: stopped
   when: not dualstack_support
   tags:
   - bird
 
 - name: Initialize config of bird6 for IPv6 support
-  become: yes
+  become: true
   when: dualstack_support
   tags:
   - bird6
@@ -70,6 +70,6 @@
   - name: enable bird6
     ansible.builtin.service:
       name: bird6
-      enabled: yes
+      enabled: true
       state: started
 ...

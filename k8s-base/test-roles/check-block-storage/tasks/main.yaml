@@ -4,7 +4,7 @@
     msg: "This test is using the {{ block_storage_class }} storageClass"
 
 - name: Run the test
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
@@ -15,8 +15,8 @@
       name: "{{ check_block_storage_namespace }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -28,8 +28,8 @@
       definition: "{{ lookup('template', 'pvc.yaml') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -41,8 +41,8 @@
       definition: "{{ lookup('template', 'writer-pod.yaml') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -72,8 +72,8 @@
       definition: "{{ lookup('template', 'reader-pod.yaml') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -102,10 +102,10 @@
       kind: Namespace
       name: "{{ check_block_storage_namespace }}"
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

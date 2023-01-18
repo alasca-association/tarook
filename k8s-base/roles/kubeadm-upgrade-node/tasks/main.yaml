@@ -1,6 +1,6 @@
 ---
 - name: Run kubeadm upgrade node
   when: do_upgrade
-  become: yes
+  become: true
   ansible.builtin.command: kubeadm upgrade node --certificate-renewal=false
 ...

@@ -5,7 +5,7 @@
         or do_upgrade | default(False)
         or _init_cluster | default(False))
     and not k8s_kubelet_disable_customizations | default(False)
-  become: yes
+  become: true
   block:
   - name: Set the maximum number of Pods
     when: k8s_kubelet_pod_limit is defined

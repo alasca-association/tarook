@@ -1,6 +1,6 @@
 ---
 - name: Uncordon the worker node
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   delegate_to: "{{ (groups['masters'] | sort)[0] }}"

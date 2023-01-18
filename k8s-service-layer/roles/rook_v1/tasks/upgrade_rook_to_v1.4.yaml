@@ -10,11 +10,11 @@
     - name: Delete obsolete privileges (RBAC)
       kubernetes.core.k8s:
         state: absent
-        apply: yes
+        apply: true
         definition: "{{ lookup('template', 'upgrade-from-v1.3-delete-RBAC.yaml') }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed
@@ -24,11 +24,11 @@
     - name: Apply modified privileges (RBAC)
       kubernetes.core.k8s:
         state: present
-        apply: yes
+        apply: true
         definition: "{{ lookup('template', 'upgrade-from-v1.3-apply-RBAC.yaml') }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed
@@ -38,11 +38,11 @@
     - name: Apply modified Custom Resource Definitions (CRDs)
       kubernetes.core.k8s:
         state: present
-        apply: yes
+        apply: true
         definition: "{{ lookup('file', 'upgrade-from-v1.3-crds.yaml') }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed
@@ -52,11 +52,11 @@
     - name: Apply new rook-ceph-operator manifest (v1.4)
       kubernetes.core.k8s:
         state: present
-        apply: yes
+        apply: true
         definition: "{{ lookup('template', 'v1.4/operator.yaml') }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed

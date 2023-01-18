@@ -3,14 +3,14 @@
   when: install_status == 'k8s_not_installed'
   block:
   - name: Get certificate information
-    become: no
+    become: false
     delegate_to: localhost
     community.crypto.x509_certificate_info:
       path: "{{ etc_dir }}/ca.crt"
     register: ca_cert
 
   - name: Join the k8s cluster steps
-    become: yes
+    become: true
     block:
     - name: Create kubeadm-join-config.yaml
       vars:
@@ -40,5 +40,5 @@
       ansible.builtin.include_role:
         name: kubelet-configuration
       vars:
-        _init_cluster: True  # needs to be passed so that kubelet is configured & restarted
+        _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
 ...

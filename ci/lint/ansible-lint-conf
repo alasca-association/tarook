@@ -6,4 +6,3 @@ skip_list:
   - name[template]
   - name[missing]
   - experimental  # all rules tagged as experimental
-  - yaml[truthy]  # Violations reported by yamllint.

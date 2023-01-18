@@ -22,7 +22,7 @@
     when: typhaca_crt_local.stat.exists and not typhaca_key_local.stat.exists
 
   - name: Fetch Typha CA ConfigMap from k8s cluster
-    become: yes
+    become: true
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     kubernetes.core.k8s_info:
@@ -91,7 +91,7 @@
       path: "{{ typhaca_key_path }}"
       mode: 0600
       size: 4096
-      force: yes
+      force: true
 
   # TODO: we should protect this with a password and store it in a more secure place
   - name: Generate private key for Typha CA certificate
@@ -125,11 +125,11 @@
 
   # The ConfigMap should always be up-to-date
   - name: Apply local Typha CA certificate to ConfigMap
-    become: yes
+    become: true
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     kubernetes.core.k8s:
-      apply: yes
+      apply: true
       definition:
         apiVersion: v1
         data:
@@ -140,8 +140,8 @@
           name: calico-typha-ca
           namespace: kube-system
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -172,7 +172,7 @@
     when: typha_crt_local.stat.exists and not typha_key_local.stat.exists
 
   - name: Fetch Typha Secret from k8s cluster
-    become: yes
+    become: true
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     kubernetes.core.k8s_info:
@@ -237,7 +237,7 @@
       mode: 0600
       path: "{{ typha_key_path }}"
       size: 4096
-      force: yes
+      force: true
 
   # TODO: we should protect this with a password and store it in a more secure place
   - name: Generate private key for Typha certificate
@@ -275,11 +275,11 @@
 
   # The Secret should always be up-to-date
   - name: Apply Typha private key and certificate to Secret
-    become: yes
+    become: true
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     kubernetes.core.k8s:
-      apply: yes
+      apply: true
       definition:
         apiVersion: v1
         data:
@@ -290,8 +290,8 @@
           name: calico-typha-certs
           namespace: kube-system
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -303,18 +303,18 @@
 # --------------------------------- #
 
 - name: Apply Typha resources
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: Create ServiceAccount for calico-typha, configure RBAC, ClusterRole, ClusterRoleBinding
     kubernetes.core.k8s:
       definition: "{{ lookup('file', item) }}"
-      apply: yes
+      apply: true
       state: "present"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     with_items:
     - "{{ calico_versions_folder }}/typha-serviceaccount.yaml"
     # Retry this task on failures
@@ -326,10 +326,10 @@
   - name: Deploy Typha Deployment
     kubernetes.core.k8s:
       definition: "{{ lookup('template', item) }}"
-      apply: yes
+      apply: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     with_items:
     - "{{ calico_versions_folder }}/typha-deployment.yaml.j2"
     # Retry this task on failures
@@ -341,11 +341,11 @@
   - name: Deploy Typha service
     kubernetes.core.k8s:
       definition: "{{ lookup('file', item) }}"
-      apply: yes
+      apply: true
       validate:
-        fail_on_error: yes
-        strict: yes
-      wait: yes
+        fail_on_error: true
+        strict: true
+      wait: true
     with_items:
     - typha-service.yaml
     # Retry this task on failures
@@ -355,7 +355,7 @@
     delay: "{{ k8s_error_delay }}"
 
 - name: Restart Typha Pods on certificate_renewal  # noqa no-handler
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   when: typha_crt_changed.changed

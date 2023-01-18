@@ -1,6 +1,6 @@
 ---
 - name: Load admin credentials into interactive shells
-  become: yes
+  become: true
   ansible.builtin.template:
     src: kubernetes-admin.sh.j2
     dest: /etc/profile.d/kubernetes-admin.sh
@@ -12,7 +12,7 @@
   ansible.builtin.wait_for:
     port: 6443
     timeout: 5
-  ignore_errors: yes
+  ignore_errors: true
   register: local_kube_apiserver_status
 
 - name: Register the available frontend
@@ -26,16 +26,16 @@
   ansible.builtin.uri:
     url: "https://{{ host }}"
     status_code: 403
-    validate_certs: no  # self-signed certificate
+    validate_certs: false  # self-signed certificate
     timeout: 3
   register: lb_kube_apiserver_status
   until: lb_kube_apiserver_status.status == 403
   retries: 3
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Make sure 'etc_dir' exists
   delegate_to: localhost
-  become: no
+  become: false
   ansible.builtin.file:
     path: "{{ etc_dir }}"
     state: directory
@@ -43,14 +43,14 @@
 
 # The focus of the following two tasks is on fixing the permissions.
 - name: Ensure that /etc/kubernetes/pki exists
-  become: yes
+  become: true
   ansible.builtin.file:
     path: /etc/kubernetes/pki
     state: directory
     mode: u=rwx,go-rwx
 
 - name: Ensure that /var/lib/etcd exists
-  become: yes
+  become: true
   ansible.builtin.file:
     path: /var/lib/etcd
     state: directory
@@ -60,7 +60,7 @@
   when: "local_kube_apiserver_status is failed and lb_kube_apiserver_status is failed"
   tags:
     - spawn
-  become: yes
+  become: true
   block:
     # TODO: we should protect this with a password and store it in a more
     # secure place
@@ -121,23 +121,23 @@
       ansible.builtin.fetch:
         src: "/etc/kubernetes/pki/{{ item }}"
         dest: "{{ etc_dir }}/"
-        flat: yes
+        flat: true
       loop: "{{ pki_cert_files }}"
-      run_once: yes
+      run_once: true
 
     - name: Fetch etcd certificates file and keys from the initial master to localhost
       ansible.builtin.fetch:
         src: "/etc/kubernetes/pki/etcd/{{ item }}"
         dest: "{{ etc_dir }}/etcd/"
-        flat: yes
+        flat: true
       loop: "{{ etcd_files }}"
-      run_once: yes
+      run_once: true
 
     - name: Copy kubeconfig to localhost
       ansible.builtin.fetch:
         src: /etc/kubernetes/admin.conf
         dest: "{{ etc_dir }}/"
-        flat: yes
+        flat: true
 
 - name: Test if this host can generate a token
   ansible.builtin.stat:
@@ -148,13 +148,13 @@
   when: kube_config.stat.exists
   block:
     - name: Get an access token and the CA hash  # noqa no-changed-when
-      become: yes
+      become: true
       ansible.builtin.command: kubeadm token create
       register: kubeadm_token_out
 
     - name: Save access token locally
       delegate_to: localhost
-      become: no
+      become: false
       ansible.builtin.copy:
         content: "{{ kubeadm_token_out.stdout }}"
         dest: "{{ etc_dir }}/kubeadm_token"
@@ -162,7 +162,7 @@
 
 - name: Join the K8s control plane
   when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed"
-  become: yes
+  become: true
   block:
     - name: Copy certificate files and keys from the initial master
       block:
@@ -181,7 +181,7 @@
           loop: "{{ etcd_files }}"
 
         - name: Get certificate information
-          become: no
+          become: false
           delegate_to: localhost
           community.crypto.x509_certificate_info:
             path: "{{ etc_dir }}/ca.crt"
@@ -211,13 +211,13 @@
   when: k8s_continuous_join_key_enabled
 
 - name: Ensure that the 'gods' group exists
-  become: yes
+  become: true
   ansible.builtin.group:
     name: "{{ k8s_admin_credentials_group }}"
     state: present
 
 - name: Make the kube config readable by gods
-  become: yes
+  become: true
   ansible.builtin.file:
     state: file
     path: /etc/kubernetes/admin.conf
@@ -226,9 +226,9 @@
     mode: u=rw,g=r,o-rwx
 
 - name: Ensure that the current user is allowed to read the kube config
-  become: yes
+  become: true
   ansible.builtin.user:
-    append: yes
+    append: true
     groups: "{{ k8s_admin_credentials_group }}"
     name: "{{ ansible_user }}"
   when: "ansible_user | default(False)"

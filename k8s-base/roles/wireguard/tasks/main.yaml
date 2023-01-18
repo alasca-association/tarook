@@ -1,6 +1,6 @@
 ---
 - name: Ensure private key consistency
-  become: yes
+  become: true
   any_errors_fatal: true
   block:
     - name: Check for existence of private key in old location (LEGACY)
@@ -20,7 +20,7 @@
       when: "wg_gw.stat.exists"
 
 - name: Check existence of wg0.conf
-  become: yes
+  become: true
   ansible.builtin.stat:
     path: /etc/wireguard/wg0.conf
   register: wg0_conf
@@ -31,14 +31,14 @@
   # to the cluster local password store.
   #
   # [0] https://github.com/ansible-collections/community.general/blob/de8e2a83e2948eabb0b8b1d9c1a533a18fc65214/plugins/lookup/passwordstore.py#L161
-  become: no
+  become: false
   delegate_to: localhost
-  run_once: yes
+  run_once: true
   vars:
     password_store_dir: "{{ etc_dir }}/passwordstore"
   block:
     - name: Lookup key in passwordstore  # noqa ignore-errors, jinja[invalid]
-      ignore_errors: yes
+      ignore_errors: true
       # Check if the key exists
       ansible.builtin.set_fact:
         wg_gw_key: "{{ lookup('passwordstore', 'wg_gw_key directory={{ password_store_dir }}') }}"
@@ -78,9 +78,9 @@
       when: "not wg0_conf.stat.exists and (wg_gw_key is not defined)"
 
 - name: Load shared keypair
-  become: no
+  become: false
   delegate_to: localhost
-  run_once: yes
+  run_once: true
   vars:
     password_store_dir: "{{ etc_dir }}/passwordstore"
   block:
@@ -99,7 +99,7 @@
         mode: 0644
 
 - name: Create /etc/wireguard/wg0.conf on gateway side
-  become: yes
+  become: true
   ansible.builtin.template:
     src: wg0_server.conf.j2
     dest: /etc/wireguard/wg0.conf
@@ -108,16 +108,16 @@
 
 - name: Make sure wireguard directory exists in etc directory
   delegate_to: localhost
-  become: no
+  become: false
   ansible.builtin.file:
     path: "{{ etc_dir }}/wireguard"
     state: directory
     mode: 0755
 
 - name: Create a wg0.conf template for each peer
-  become: no
+  become: false
   delegate_to: localhost
-  run_once: yes
+  run_once: true
   ansible.builtin.template:
     src: wg0_client.conf.j2
     dest: "{{ wg_client_path }}"
@@ -129,8 +129,8 @@
 
 - name: Notify user about auto-generated wg.conf
   delegate_to: localhost
-  become: no
-  run_once: yes
+  become: false
+  run_once: true
   ansible.builtin.debug:
     msg: |
       The wg-* configurations were written to {{ etc_dir }}/wireguard.
@@ -138,46 +138,46 @@
       interface up before continuing.
 
 - name: Remove old service
-  become: yes
+  become: true
   ansible.builtin.file:
     path: /etc/systemd/system/wireguard.service
     state: absent
   register: old_wg_service
 
 - name: Stop and disable old wireguard service  # noqa no-handler
-  become: yes
+  become: true
   ansible.builtin.service:
     name: wireguard.service
     state: stopped
-    enabled: no
+    enabled: false
   when: old_wg_service is changed
 
 - name: Reload systemd to drop old wireguard service  # noqa no-handler
-  become: yes
+  become: true
   ansible.builtin.systemd:
-    daemon_reload: yes
+    daemon_reload: true
   when: old_wg_service is changed
 
 - name: Stop wg0 after removal of legacy service so that the new service can take over  # noqa no-handler
-  become: yes
+  become: true
   ansible.builtin.command:
   args:
     argv: ['wg-quick', 'down', 'wg0']
   when: old_wg_service is changed
 
 - name: Start and enable wireguard endpoint
-  become: yes
+  become: true
   block:
     - name: Start and enable wireguard endpoint
       ansible.builtin.service:
         name: wg-quick@wg0
-        enabled: yes
+        enabled: true
         state: "{{ 'restarted' if wg0_conf is changed else 'started' }}"
   rescue:
     - name: Collect logs of the wg-quick service  # noqa no-changed-when
       ansible.builtin.shell: journalctl -u wg-quick@wg0; systemctl status wg-quick@wg0
       register: wg_logs
-      ignore_errors: yes
+      ignore_errors: true
     - name: Print logs
       ansible.builtin.debug:
         var: wg_logs.stdout_lines
@@ -186,7 +186,7 @@
         msg: "{{ ansible_failed_result }}"
 
 - name: Deploy bird configuration for wireguard routes
-  become: yes
+  become: true
   block:
     - name: Ensure that drop-in directory for bird configs exist
       ansible.builtin.file:

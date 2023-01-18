@@ -1,8 +1,8 @@
 ---
 - name: Install prerequisites
-  become: yes
+  become: true
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
     state: present
     name:
       - curl
@@ -16,7 +16,7 @@
 
 - name: Expand NO_PROXY configuration on Ubuntu machines
   when: (cluster_behind_proxy | default(false)) and ansible_distribution == 'Ubuntu'
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/environment
     regexp: "^(.*{{ item }}.*)$"
@@ -28,7 +28,7 @@
 
 - name: Expand NO_PROXY configuration on RHEL machines
   when: (cluster_behind_proxy | default(false)) and ansible_distribution == 'Red Hat Enterprise Linux'
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/profile.d/proxy.sh
     regexp: "^(.*{{ item }}.*)$"
@@ -39,7 +39,7 @@
     - no_proxy
 
 - name: Add Google's K8s repository (apt)
-  become: yes
+  become: true
   block:
 
     - name: Add Key of Google's K8s repository
@@ -64,7 +64,7 @@
     - name: Install kubelet, kubeadm and kubectl
       # Note: check available version with `apt-cache policy <package name>`
       ansible.builtin.apt:
-        update_cache: yes
+        update_cache: true
       register: task_result
       until: task_result is not failed
       retries: "{{ network_error_retries }}"
@@ -72,7 +72,7 @@
   when: ansible_pkg_mgr == 'apt'
 
 - name: Add Google's K8s repository (yum/dnf)
-  become: yes
+  become: true
   ansible.builtin.template:
     src: kubernetes.repo
     dest: /etc/yum.repos.d/kubernetes.repo
@@ -102,7 +102,7 @@
 
     - name: Install kubelet, kubeadm and kubectl
       # Note: check available version with `apt-cache policy <package name>`
-      become: yes
+      become: true
       ansible.builtin.package:
         state: present
         name: "{{ packages }}"
@@ -113,12 +113,12 @@
       notify: Restart kubelet
 
     - name: Prevent the k8s packages for being updated (apt)
-      become: yes
+      become: true
       ansible.builtin.command: apt-mark hold kubelet kubeadm kubectl
       when: ansible_pkg_mgr == 'apt'
 
     - name: Prevent the k8s packages for being updated (dnf)
-      become: yes
+      become: true
 
       block:
         - name: Install dnf versionlock  # noqa package-latest

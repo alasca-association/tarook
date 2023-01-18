@@ -24,7 +24,7 @@
   failed_when: 'os_info.rc not in [0, 1]'
 
 - name: Required package installation on RedHat family
-  become: yes
+  become: true
   ansible.builtin.package:
     state: present
     name:

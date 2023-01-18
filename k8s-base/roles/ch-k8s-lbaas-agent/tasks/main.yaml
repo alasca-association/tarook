@@ -5,7 +5,7 @@
   block:
   - name: Create user
     ansible.builtin.user:
-      system: yes
+      system: true
       name: "{{ ch_k8s_lbaas_agent_user }}"
       home: /dev/null
       shell: /bin/false
@@ -82,7 +82,7 @@
       name: ch-k8s-lbaas-agent
       daemon_reload: "{{ agent_service is changed }}"
       state: started
-      enabled: yes
+      enabled: true
 
   # Need to do that *after* the service is started, because systemd creates the
   # /var/lib/ch-k8s-lbaas-agent/nftables directory.
@@ -113,7 +113,7 @@
     ansible.builtin.service:
       name: ch-k8s-lbaas-agent
       state: stopped
-      enabled: no
+      enabled: false
     when: agent_detect is changed
 
   - name: Remove firewall hole for agent access

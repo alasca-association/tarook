@@ -1,9 +1,9 @@
 ---
 - name: Configure 'vm.max_map_count' (needed by applications like ElasticSearch)
-  become: yes
+  become: true
   ansible.posix.sysctl:
     name: vm.max_map_count
     state: present
-    reload: yes
+    reload: true
     value: "{{ vm_max_map_count }}"
 ...

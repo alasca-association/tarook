@@ -1,6 +1,6 @@
 ---
 - name: Create nftables config for k8s API server
-  become: yes
+  become: true
   when: on_openstack | bool
   ansible.builtin.template:
     src: nftables.conf.j2
@@ -11,7 +11,7 @@
   notify: reload nftables for k8s-api-frontend
 
 - name: Create HAProxy config for the k8s API server
-  become: yes
+  become: true
   ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/conf.d/20_k8s-apiserver.cfg
