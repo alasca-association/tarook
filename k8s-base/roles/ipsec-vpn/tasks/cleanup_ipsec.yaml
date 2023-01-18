@@ -26,7 +26,7 @@
 - name: Disable strongswan
   become: yes
   ansible.builtin.systemd:
-    name: "{{ strongswan-service }}"
+    name: "{{ strongswan_service }}"
     state: stopped
     enabled: no
   when: ansible_facts.services['strongswan-swanctl.service'] is defined
