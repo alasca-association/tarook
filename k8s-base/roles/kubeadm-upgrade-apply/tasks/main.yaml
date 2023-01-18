@@ -91,7 +91,7 @@
           kubernetes.core.k8s_info:
             kind: ConfigMap
             namespace: kube-system
-            name: "kubelet-config-{{next_minor_k8s_version}}"
+            name: "kubelet-config-{{ next_minor_k8s_version }}"
           register: kubelet_config_configmap_old
 
         - name: Patch the kubelet-config ConfigMap
@@ -102,7 +102,7 @@
               apiVersion: v1
               kind: ConfigMap
               metadata:
-                name: "kubelet-config-{{next_minor_k8s_version}}"
+                name: "kubelet-config-{{ next_minor_k8s_version }}"
                 namespace: kube-system
               data:
                 kubelet: |

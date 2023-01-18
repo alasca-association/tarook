@@ -273,7 +273,7 @@
       pod: "{{ vault_pods.resources[0].metadata.name }}"
       container: vault
       command: "sh -c {{ 'VAULT_CAPATH=/vault/userconfig/vault-cert/ca.crt vault operator unseal %s' | format(item) | quote }}"
-    loop: "{{ init_data.unseal_keys_b64[:init_data.unseal_threshold] }}"
+    loop: "{{ init_data.unseal_keys_b64[:init_data.unseal_threshold] }}"  # noqa jinja[spacing]
     failed_when: 'vault_unseal.rc != 0'
     register: vault_unseal
 ...

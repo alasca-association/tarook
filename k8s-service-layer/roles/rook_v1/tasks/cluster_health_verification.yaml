@@ -101,7 +101,7 @@
       vars:
         ceph_mgr_available: "{{ ceph_cluster_status_json['mgrmap']['available'] }}"
       ansible.builtin.debug:
-        msg: "The ceph manager is {{ ceph_mgr_available | ternary('available','unavailable') }}"
+        msg: "The ceph manager is {{ ceph_mgr_available | ternary('available', 'unavailable') }}"
       failed_when: not ceph_mgr_available
 
     - name: Verify that all OSDs are up and in (< v15.2.13)

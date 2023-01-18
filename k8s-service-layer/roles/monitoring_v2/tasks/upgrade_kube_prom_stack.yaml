@@ -3,7 +3,7 @@
   vars:
     prom_stack_conf_major_version: "{{ prom_stack_conf_version.split('.')[0] }}"
     prom_stack_depl_major_version: "{{ prom_stack_depl_version.split('.')[0] }}"
-    prom_stack_version_is_equal_major: "{{ (prom_stack_conf_major_version | int) - (prom_stack_depl_major_version | int) == 0}}"
+    prom_stack_version_is_equal_major: "{{ (prom_stack_conf_major_version | int) - (prom_stack_depl_major_version | int) == 0 }}"
 
   block:
   - name: Fail if configured KSL monitoring version is older than the deployed one
@@ -36,7 +36,7 @@
   - name: Remove admission controller before upgrade
     vars:
       admission_webhook_name: "{{ (monitoring_prometheus_stack_release_name +
-       '-' + monitoring_prometheus_stack_chart_name)[:26] + '-' + 'admission'}}"
+       '-' + monitoring_prometheus_stack_chart_name)[:26] + '-' + 'admission' }}"
     when: not prom_stack_version_is_equal_major
     kubernetes.core.k8s:
       state: absent

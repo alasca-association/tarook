@@ -7,4 +7,3 @@ skip_list:
   - name[missing]
   - experimental  # all rules tagged as experimental
   - yaml[truthy]  # Violations reported by yamllint.
-  - var-spacing  # Jinja2 variables and filters should have spaces before and after.
