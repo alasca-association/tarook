@@ -37,7 +37,7 @@
   vars:
     password_store_dir: "{{ etc_dir }}/passwordstore"
   block:
-    - name: Lookup key in passwordstore  # noqa ignore-errors no-jinja-nesting
+    - name: Lookup key in passwordstore  # noqa ignore-errors, jinja[invalid]
       ignore_errors: yes
       # Check if the key exists
       ansible.builtin.set_fact:
@@ -71,7 +71,7 @@
           please check what went wrong.
       when: "wg_genkey.changed and (wg_genkey.stdout | regex_search('\\s'))"
 
-    - name: Insert key into the passwordstore  # noqa 207
+    - name: Insert key into the passwordstore
       # Ignoring the linter here because without nesting jinja we'd have to concat strings which is even uglier.
       ansible.builtin.set_fact:
         _: "{{ lookup('passwordstore', '{{ wg_gw_priv_path }} userpass={{ wg_genkey.stdout }} directory={{ password_store_dir }} create=True') }}"
@@ -84,7 +84,7 @@
   vars:
     password_store_dir: "{{ etc_dir }}/passwordstore"
   block:
-    - name: Load private key  # noqa 207
+    - name: Load private key
       ansible.builtin.set_fact:
         wg_gw_priv_key: "{{ lookup('passwordstore', '{{ wg_gw_priv_path }} directory={{ password_store_dir }}') }}"
     - name: Derive public key  # noqa no-changed-when

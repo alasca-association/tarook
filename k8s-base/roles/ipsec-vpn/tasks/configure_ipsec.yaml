@@ -18,7 +18,7 @@
     state: directory
     mode: 0750
 
-- name: Lookup ipsec_eap_psk  # noqa 207
+- name: Lookup ipsec_eap_psk  # noqa jinja[invalid]
   become: no
   delegate_to: localhost
   run_once: yes
