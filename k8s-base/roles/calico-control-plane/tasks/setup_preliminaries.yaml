@@ -48,7 +48,7 @@
   block:
   - name: Collect expiration information of the calico-kubeconfig crt
     delegate_to: localhost
-    community.crypto.openssl_certificate_info:
+    community.crypto.x509_certificate_info:
       path: "{{ calico_cni_crt_path }}"
       valid_at:
         point_1: "+104w"
@@ -98,7 +98,7 @@
 
   - name: Sign the Certificate Signing Request for calico-kubeconfig
     delegate_to: localhost
-    community.crypto.openssl_certificate:
+    community.crypto.x509_certificate:
       mode: 0664
       path: "{{ calico_cni_crt_path }}"
       csr_path: "{{ calico_cni_csr_path }}"

@@ -37,7 +37,7 @@
   block:
   - name: Collect Expiration information of the Typha CA crt
     delegate_to: localhost
-    community.crypto.openssl_certificate_info:
+    community.crypto.x509_certificate_info:
       path: "{{ typhaca_crt_path }}"
       valid_at:
         point_1: "+104w"
@@ -115,7 +115,7 @@
 
   - name: Sign the Certificate Signing Request of Typha CA
     delegate_to: localhost
-    community.crypto.openssl_certificate:
+    community.crypto.x509_certificate:
       path: "{{ typhaca_crt_path }}"
       privatekey_path: "{{ typhaca_key_path }}"
       csr_path: "{{ typhaca_csr_path }}"
@@ -187,7 +187,7 @@
   block:
   - name: Collect expiration information of the Typha crt
     delegate_to: localhost
-    community.crypto.openssl_certificate_info:
+    community.crypto.x509_certificate_info:
       path: "{{ typha_crt_path }}"
       valid_at:
         point_1: "+35w"
@@ -263,7 +263,7 @@
 
   - name: Sign the Certificate Signing Request of Typha
     delegate_to: localhost
-    community.crypto.openssl_certificate:
+    community.crypto.x509_certificate:
       mode: 0664
       path: "{{ typha_crt_path }}"
       csr_path: "{{ typha_csr_path }}"

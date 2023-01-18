@@ -37,7 +37,7 @@
   block:
   - name: Collect expiration information of the calico/node crt
     delegate_to: localhost
-    community.crypto.openssl_certificate_info:
+    community.crypto.x509_certificate_info:
       path: "{{ calico_node_crt_path }}"
       valid_at:
         point_1: "+35w"
@@ -111,7 +111,7 @@
 
   - name: Sign the Certificate Signing Request of calico/node
     delegate_to: localhost
-    community.crypto.openssl_certificate:
+    community.crypto.x509_certificate:
       mode: 0664
       path: "{{ calico_node_crt_path }}"
       csr_path: "{{ calico_node_csr_path }}"
