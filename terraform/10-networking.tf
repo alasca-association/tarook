@@ -7,10 +7,26 @@ resource "openstack_networking_network_v2" "cluster_network" {
   }
 }
 
+resource "openstack_networking_network_v2" "external_cluster_network" {
+  name = "${var.cluster_name}-external-network"
+  admin_state_up = true
+  mtu = var.network_mtu
+  lifecycle {
+    ignore_changes = [mtu]
+  }
+}
+
 resource "openstack_networking_subnet_v2" "cluster_subnet" {
   name = "${var.cluster_name}-network-v4"
   network_id = openstack_networking_network_v2.cluster_network.id
   cidr       = var.subnet_cidr
+  ip_version = 4
+}
+
+resource "openstack_networking_subnet_v2" "external_cluster_subnet" {
+  name = "${var.cluster_name}-external-network-v4"
+  network_id = openstack_networking_network_v2.external_cluster_network.id
+  cidr       = "172.40.154.0/24"
   ip_version = 4
 }
 
@@ -32,9 +48,20 @@ resource "openstack_networking_router_v2" "cluster_router" {
   external_network_id = data.openstack_networking_network_v2.public_network.id
 }
 
+resource "openstack_networking_router_v2" "external_cluster_router" {
+  name                = "${var.cluster_name}-external-router"
+  admin_state_up      = true
+  external_network_id = data.openstack_networking_network_v2.public_network.id
+}
+
 resource "openstack_networking_router_interface_v2" "cluster_router_iface" {
   router_id = openstack_networking_router_v2.cluster_router.id
   subnet_id = openstack_networking_subnet_v2.cluster_subnet.id
+}
+
+resource "openstack_networking_router_interface_v2" "cluster_external_router_iface" {
+  router_id = openstack_networking_router_v2.external_cluster_router.id
+  subnet_id = openstack_networking_subnet_v2.external_cluster_subnet.id
 }
 
 resource "openstack_networking_router_interface_v2" "cluster_router_iface_v6" {
@@ -48,9 +75,11 @@ resource "openstack_networking_router_interface_v2" "cluster_router_iface_v6" {
 resource "local_file" "final_networking" {
   content = templatefile("${path.module}/templates/final_networking.tpl", {
     subnet_id              = openstack_networking_subnet_v2.cluster_subnet.id,
+    external_subnet_id              = openstack_networking_subnet_v2.external_cluster_subnet.id,
     subnet_v6_id           = try(openstack_networking_subnet_v2.cluster_v6_subnet[0].id, null)
     floating_ip_network_id = data.openstack_networking_network_v2.public_network.id,
     subnet_cidr            = openstack_networking_subnet_v2.cluster_subnet.cidr,
+    external_subnet_cidr            = openstack_networking_subnet_v2.external_cluster_subnet.cidr,
     subnet_v6_cidr         = try(openstack_networking_subnet_v2.cluster_v6_subnet[0].cidr, null)
   })
   filename        = "../../inventory/03_k8s_base/group_vars/all/terraform_networking.yaml"

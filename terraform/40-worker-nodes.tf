@@ -100,6 +100,10 @@ resource "openstack_compute_instance_v2" "worker" {
     port = each.value.id
   }
 
+  network {
+    name = "${var.cluster_name}-external-network"
+  }
+
   # Ignoring 'scheduler_hints' here for existing VMs because otherwise tf would destroy and recreate them.
   # The initial distribution for existing clusters must therefore be enforced manually.
   lifecycle {
