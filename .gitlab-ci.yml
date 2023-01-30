@@ -40,12 +40,9 @@ yamllint:
     - yamllint .
 
 ansible-lint:
-  image:
-    name: python:3
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
   stage: lint
   script:
-    - "pip3 install -r requirements.txt"
-    - "pip3 install ansible-lint"
     - "ansible-galaxy install -r ansible/requirements.yaml"
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/install_frontend.yaml" # Check stage 2
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/install_k8s_base.yaml" # Check stage 3
