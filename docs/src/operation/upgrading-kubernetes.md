@@ -1,5 +1,22 @@
 # Upgrading Kubernetes
 
+---
+
+**Table of Contents:**
+
+- [Upgrading Kubernetes](#upgrading-kubernetes)
+  - [Upgrade implications / disruptions](#upgrade-implications-disruptions)
+  - [General procedure](#general-procedure)
+  - [Upgrading specific versions](#upgrading-specific-versions)
+    - [Upgrading to 1.18.x (from 1.17.x or 1.18.x)](#upgrading-to-118x-from-117x-or-118x)
+  - [Skip Intermittent Cluster Health Verification](#skip-intermittent-cluster-health-verification)
+  - [Kubernetes Component Versioning](#kubernetes-component-versioning)
+    - [General Information](#general-information)
+    - [Calico](#calico)
+      - [Manually Upgrade Calico](#manually-upgrade-calico)
+
+---
+
 ## Upgrade implications / disruptions
 
 - All pods will be rescheduled at least once, sometimes more often
