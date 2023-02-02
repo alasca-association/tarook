@@ -1,15 +1,15 @@
 ---
 - name: Kubernetes Service Layer Tests
   hosts: orchestrator
-  gather_facts: no
+  gather_facts: false
   vars_files:
   - vars/retries.yaml
   pre_tasks:
-    - name: include env vars
-      include_vars:
-        dir: "{{ ksl_vars_directory }}"
-      tags:
-      - always
+  - name: include env vars
+    ansible.builtin.include_vars:
+      dir: "{{ ksl_vars_directory }}"
+    tags:
+    - always
   tags:
   - test-mk8s-sl
   - check-mk8s-sl
@@ -26,3 +26,4 @@
     - test-mk8s-sl/fluxcd
     - check-mk8s-sl/fluxcd
     - fluxcd2_v1_test
+...

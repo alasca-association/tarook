@@ -6,3 +6,4 @@ k8s_cert_manager_scheduling_key: null
 k8s_cert_manager_letsencrypt_email: null
 k8s_cert_manager_letsencrypt_preferred_chain: ""
 k8s_cert_manager_letsencrypt_ingress: nginx
+...

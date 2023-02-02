@@ -2,7 +2,7 @@
 - name: Check that calico/node and typha Pods are running
   delegate_to: "{{ groups['masters'] | first }}"
   run_once: true
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes
@@ -25,3 +25,4 @@
       - app.kubernetes.io/component=calico-typha
     register: pod_calico_tpyha
     failed_when: ( pod_calico_node.resources[0].status.phase != "Running" ) and ( pod_calico_node.resources[0].status.containerStatuses[0].ready != true )
+...

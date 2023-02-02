@@ -1,6 +1,7 @@
 # A GPU has been detected
+---
 - name: Install GPU drivers
-  become: yes
+  become: true
   when:
     - k8s_is_gpu_cluster | default(False)
     - has_gpu
@@ -8,7 +9,7 @@
     - ansible_facts['pkg_mgr'] == "apt"
   block:
     - name: Install deps for the nvidia drivers
-      apt:
+      ansible.builtin.apt:
         state: present
         name:
           - "linux-headers-{{ ansible_kernel }}"
@@ -18,7 +19,7 @@
       delay: "{{ network_error_delay }}"
 
     - name: Add key of nvidia's cuda repo
-      apt_key:
+      ansible.builtin.apt_key:
         # presented key is the same for ubuntu1604, ubuntu1804 and ubuntu2004
         url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
         state: present
@@ -28,20 +29,20 @@
       delay: "{{ network_error_delay }}"
 
     - name: Add repository
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /
         state: present
-        update_cache: yes
+        update_cache: true
       register: task_result
       until: task_result is not failed
       retries: "{{ network_error_retries }}"
       delay: "{{ network_error_delay }}"
 
     - name: Install driver
-      apt:
-        update_cache: no
-        install_recommends: no
-        autoremove: yes
+      ansible.builtin.apt:
+        update_cache: false
+        install_recommends: false
+        autoremove: true
         name:
           - nvidia-headless-450
           - nvidia-utils-450
@@ -57,7 +58,7 @@
       # from loading. This can be reverted by deleting the following file:
       # /etc/modprobe.d/nvidia-graphics-drivers.conf"""
       # And guess what? That configuration file doesn't exist!
-      copy:
+      ansible.builtin.copy:
         dest: /etc/modprobe.d/blacklist_nouveau.conf
         content: |
           {{ _auto_generated_preamble }}
@@ -69,17 +70,18 @@
       register: blacklisted_nouveau
 
     - name: Update initramfs
-      command: "update-initramfs -k {{ ansible_kernel }} -uv"
+      ansible.builtin.command: "update-initramfs -k {{ ansible_kernel }} -uv"
       when: blacklisted_nouveau.changed or installed_driver.changed
       register: ramfs
 
     - name: Reboot the node
       when: ramfs.changed
-      reboot:
+      ansible.builtin.reboot:
 
     - name: Basic sanity check with nvidia-smi
       # nvidia-smi -L lists all detected cards.
       # I installed the toolchain on a host with any nvidia cards and the rc was != 0.
       # It's therefore safe to assume that if the installation somehow failed, then this task would fail too.
       changed_when: false
-      command: nvidia-smi -L
+      ansible.builtin.command: nvidia-smi -L
+...

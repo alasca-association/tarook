@@ -1,8 +1,9 @@
+---
 - name: Make sure 'etc_dir' exists
   delegate_to: localhost
-  become: no
-  run_once: yes
-  file:
+  become: false
+  run_once: true
+  ansible.builtin.file:
     path: "{{ etc_dir }}"
     state: directory
     mode: 0755
@@ -11,14 +12,15 @@
 # TODO: ssh-keygen -F might be preferable in case the entry is hashed
 - name: Ensure host is in known_hosts file
   delegate_to: localhost
-  become: no
-  shell: |
+  become: false
+  ansible.builtin.shell: |
     if ! grep -q '^{{ ansible_host }}' {{ ssh_known_hosts_file }}; then
       ssh-keyscan {{ ansible_host }} >> {{ ssh_known_hosts_file }};
     fi
-  changed_when: false # TODO: this could be made proper...
+  changed_when: false  # TODO: this could be made proper...
 
 - name: Test the connection
-  become: no
-  raw: "/bin/true"
+  become: false
+  ansible.builtin.raw: "/bin/true"
   changed_when: false
+...

@@ -1,7 +1,7 @@
 ---
 - name: Deploy continuous join key script
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: publish-join-key.sh.j2
     dest: /usr/local/bin/publish-join-key
     mode: u=rx,go-rwx
@@ -11,8 +11,8 @@
   register: publish_script
 
 - name: Deploy continuous join key systemd service
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: publish-join-key.service.j2
     dest: /etc/systemd/system/publish-join-key.service
     mode: u=rw,go=r
@@ -22,8 +22,8 @@
   register: service_unit
 
 - name: Deploy continuous join key systemd timer
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: continuous-join-key.timer.j2
     dest: /etc/systemd/system/continuous-join-key.timer
     mode: u=rw,go=r
@@ -32,9 +32,10 @@
   register: timer_unit
 
 - name: Start and enable continuous publishing
-  become: yes
-  systemd:
+  become: true
+  ansible.builtin.systemd:
     name: continuous-join-key.timer
     daemon_reload: "{{ service_unit is changed or timer_unit is changed }}"
     state: started
-    enabled: yes
+    enabled: true
+...

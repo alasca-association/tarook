@@ -1,3 +1,4 @@
+---
 - name: Update the helm repository cache
   kubernetes.core.helm:
     name: dummy
@@ -12,7 +13,7 @@
 # There is no equivalent of `helm show chart` in any Ansible Helm modules
 # therefore we have to use command instead of helm module
 - name: "Get AppVersion from Helm chart for major version: {{ item }}"
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - helm
@@ -35,7 +36,7 @@
 - name: "Apply CRDs for appversion: {{ app_version }}"
   vars:
     app_version: "{{ (helm_chart.stdout | from_yaml).appVersion }}"
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - kubectl
@@ -57,3 +58,4 @@
   loop_control:
     loop_var: inner_item
   changed_when: false
+...

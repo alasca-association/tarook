@@ -1,22 +1,23 @@
+---
 - name: wait for ssh to become available
   delegate_to: localhost
-  become: no
-  wait_for:
+  become: false
+  ansible.builtin.wait_for:
     host: "{{ ansible_host | default(inventory_hostname) }}"
     port: 22
     sleep: 5
     timeout: 300
     state: started
-  check_mode: no
+  check_mode: false
   tags:
   - detect-user
 
-- name: test logins # noqa 306
+- name: test logins  # noqa risky-shell-pipe
   delegate_to: localhost
-  become: no
+  become: false
   # this is "slightly" ugly, but should take into account many possible ways
   # to tweak how ansible does things
-  shell: |
+  ansible.builtin.shell: |
     ssh \
       -o ConnectTimeout=10 \
       -o PasswordAuthentication=no \
@@ -31,7 +32,7 @@
   failed_when: false
   changed_when: false
   register: login_results
-  check_mode: no
+  check_mode: false
   tags:
   - detect-user
   - always
@@ -40,43 +41,43 @@
   vars:
     valid_login_info: "{{ login_results.results | reject('failed') | reject('unreachable') | selectattr('rc', 'equalto', 0) | first | default({}) }}"
     valid_user: "{{ valid_login_info.item | default(False) }}"
-  set_fact:
+  ansible.builtin.set_fact:
     ansible_user: "{{ valid_user }}"
-    cacheable: yes
-  check_mode: no
+    cacheable: true
+  check_mode: false
   tags:
   - detect-user
   - always
 
 - name: fail if login detection did not work
-  fail:
+  ansible.builtin.fail:
     msg: "failed to detect a valid login! tried: {{ detect_user_attempts }}"
   when: "not ansible_user"
-  check_mode: no
+  check_mode: false
   tags:
   - detect-user
   - always
 
 - name: show login info
-  debug:
+  ansible.builtin.debug:
     msg: "will henceforth use {{ ansible_user }} to connect to {{ inventory_hostname }}"
-  check_mode: no
+  check_mode: false
   tags:
   - detect-user
 
 - name: test new login
-  become: no
-  raw: whoami
+  become: false
+  ansible.builtin.raw: whoami
   changed_when: false
   register: whoami
-  check_mode: no
+  check_mode: false
   failed_when: "ansible_user not in whoami.stdout_lines"
   tags:
   - detect-user
   - always
 
 - name: warn if a generic user is being used
-  debug:
+  ansible.builtin.debug:
     msg: |
       WARNING: The login to
 
@@ -92,7 +93,8 @@
       If this is *not* the first rollout, this indicates a problem with the
       user setup and should be investigated.
   when: "whoami.stdout in detect_user_warn"
-  check_mode: no
+  check_mode: false
   tags:
   - detect-user
   - always
+...

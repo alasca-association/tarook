@@ -1,3 +1,4 @@
+---
 - name: Add in config the modules to load at boot time
   become: yes
   copy:
@@ -43,3 +44,4 @@
   become: yes
   yum:
     name: network-scripts
+...

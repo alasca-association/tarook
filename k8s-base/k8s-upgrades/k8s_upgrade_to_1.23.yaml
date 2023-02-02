@@ -1,7 +1,7 @@
 # This upgrade file is only for the k8s version 1.23.
 # We keep for every minor update a separate upgrade file
 # to avoid accidental major changes of old upgrade files.
-
+---
 - name: Detect user
   hosts: k8s_nodes
   gather_facts: false
@@ -10,7 +10,7 @@
   vars_files:
     - ../vars/etc.yaml
   roles:
-  - detect_user
+    - detect_user
 
 - name: Run pre-flight checks on all nodes
   hosts: k8s_nodes
@@ -34,7 +34,7 @@
   pre_tasks:
     - name: include ksl vars
       when: ksl_vars_directory is defined
-      include_vars:
+      ansible.builtin.include_vars:
         dir: "{{ ksl_vars_directory }}"
       tags:
         - always
@@ -66,7 +66,7 @@
   pre_tasks:
     - name: include ksl vars
       when: ksl_vars_directory is defined
-      include_vars:
+      ansible.builtin.include_vars:
         dir: "{{ ksl_vars_directory }}"
       tags:
         - always
@@ -114,7 +114,7 @@
   pre_tasks:
     - name: include ksl vars
       when: ksl_vars_directory is defined
-      include_vars:
+      ansible.builtin.include_vars:
         dir: "{{ ksl_vars_directory }}"
       tags:
         - always
@@ -137,9 +137,9 @@
 
 - name: Update OpenStack cloud provider integration components
   hosts: masters
-  run_once: true # to avoid redundant appliance
+  run_once: true  # to avoid redundant appliance
   vars_files:
-    - ../vars/auto_generated_preamble.yaml # needed for the cloud.config secret
+    - ../vars/auto_generated_preamble.yaml  # needed for the cloud.config secret
     - ../vars/retries.yaml
   roles:
     - role: connect-k8s-to-openstack
@@ -156,15 +156,15 @@
   roles:
     - role: calico-control-plane
       tags:
-      - calico
-      - calico-control-plane
+        - calico
+        - calico-control-plane
       when: k8s_network_plugin == 'calico'
       k8s_version: "{{ next_k8s_version }}"
     - role: calico-worker
       tags:
-      - calico
-      - calico-control-plane
-      - calico-worker
+        - calico
+        - calico-control-plane
+        - calico-worker
       when: k8s_network_plugin == 'calico'
       k8s_version: "{{ next_k8s_version }}"
 
@@ -189,15 +189,16 @@
   gather_facts: false
   hosts: masters[0]
   tasks:
-  - name: Final upgrade note
-    delegate_to: localhost
-    debug:
-      msg: |
-        🥳 Congratulations! 🎉
+    - name: Final upgrade note
+      delegate_to: localhost
+      ansible.builtin.debug:
+        msg: |
+          🥳 Congratulations! 🎉
 
-          \o/  The upgrade to
-           |      {{ next_k8s_version }}
-          / \  is complete.
+            \o/  The upgrade to
+            |      {{ next_k8s_version }}
+            / \  is complete.
 
-        You can now change the k8s_version variable to
-        {{ next_k8s_version | to_json }}.
+          You can now change the k8s_version variable to
+          {{ next_k8s_version | to_json }}.
+...

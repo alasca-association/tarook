@@ -4,11 +4,11 @@
 # (We do not care about patch version upgrades)
 # In addition, we need to check if the configured ceph version is supported
 # by the configured rook version so that the rook operator always feels responsible :)
-
+---
 - name: Fail if the configured rook version does not support the configured ceph version
   block:
   - name: Fail if the configured rook version is not supported
-    fail:
+    ansible.builtin.fail:
       msg: |
         The configured rook version is not supported. Please adjust your configuration.
         Configured version: {{ rook_conf_maj_min_version }}
@@ -24,10 +24,10 @@
     namespace: "{{ rook_namespace }}"
     name: rook-ceph-operator
     label_selectors:
-      - operator=rook
-      - storage-backend=ceph
+    - operator=rook
+    - storage-backend=ceph
   register: rook_operator_info
-  ignore_errors: yes
+  ignore_errors: true
 
 # Checking if the versions are the same and we can save all the funny version comparison tasks
 - name: Compare the configured and the deployed rook version
@@ -36,7 +36,7 @@
     rook_operator_version: "{{ rook_operator_info.resources[0]['spec']['template']['spec']['containers'][0]['image'].split(':') | last | default(None) }}"
   block:
   - name: Check if configured and deployed rook version do equal
-    debug:
+    ansible.builtin.debug:
       msg: |
         The configured rook version matches the deployed one.
         Configured version: {{ rook_version }}
@@ -49,7 +49,7 @@
     when: not rook_version is version(rook_operator_version, operator='eq')
     block:
     - name: Fail if configured rook version is older than the deployed one
-      fail:
+      ansible.builtin.fail:
         msg: |
           An older rook version than the currently deployed one has been configured.
           Downgrading rook is not supported. Please adjust your configuration.
@@ -58,7 +58,7 @@
       when: rook_version is version(rook_operator_version, operator='lt')
 
     - name: Fail if configured rook version is newer than the deployed one, but disruption is forbidden
-      fail:
+      ansible.builtin.fail:
         msg: |
           A newer rook version than the currently deployed one has been configured.
           This will trigger a rook update, but disruption is forbidden. Please allow
@@ -76,7 +76,7 @@
       - name: Fail if the configured rook major version is too new
         vars:
           rook_operator_next_major_version: "{{ 'v%s.%s' | format((rook_operator_version.split('.')[0][1:] | int + 1), rook_operator_version.split('.')[1]) }}"
-        fail:
+        ansible.builtin.fail:
           msg: |
             The configured rook version does not belong to the same major release nor to the next major release!
             Please adjust your configuration such that rook is updated step by step.
@@ -87,7 +87,7 @@
       - name: Fail if configured rook minor version is too new
         vars:
           rook_operator_next_minor_version: "{{ 'v%s.%s' | format(rook_operator_version.split('.')[0][1:], (rook_operator_version.split('.')[1] | int + 2)) }}"
-        fail:
+        ansible.builtin.fail:
           msg: |
             The configured rook version is newer but not the next minor release!
             Please adjust your configuration such that rook is updated step by step.
@@ -106,7 +106,7 @@
       - name: Include upgrade steps
         vars:
           upgrade_play_file: "{{ 'upgrade_rook_to_%s.yaml' | format(rook_conf_maj_min_version) }}"
-        include_tasks: "{{ upgrade_play_file }}"
+        ansible.builtin.include_tasks: "{{ upgrade_play_file }}"
 
 ######################################################################
 # Check if we need to upgrade Ceph                                   #
@@ -117,7 +117,7 @@
     namespace: "{{ rook_namespace }}"
     name: "{{ rook_cluster_name }}"
   register: ceph_cluster_info
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Compare the configured and the deployed Ceph version
   when: ceph_cluster_info.resources is defined and ceph_cluster_info.resources | length != 0
@@ -127,7 +127,7 @@
   block:
   # Downgrading Ceph is theoretically possible, but we do not want to cover automated downgrades
   - name: Fail if configured ceph version is older than the deployed one
-    fail:
+    ansible.builtin.fail:
       msg: |
         An older ceph version than the currently deployed one has been configured.
         Downgrading ceph is not supported. Please adjust your configuration.
@@ -136,7 +136,7 @@
     when: ceph_conf_version is version(ceph_cluster_version, operator='lt')
 
   - name: Fail if configured ceph version is newer than the deployed one, but disruption is forbidden
-    fail:
+    ansible.builtin.fail:
       msg: |
         A newer ceph version than the currently deployed one has been configured.
         This will trigger a ceph update, but disruption is forbidden. Please allow
@@ -146,5 +146,6 @@
     when: ceph_conf_version is version(ceph_cluster_version, operator='gt') and not _allow_disruption
 
   - name: Upgrade Ceph if the configured version is newer
-    include_tasks: upgrade_ceph.yaml
+    ansible.builtin.include_tasks: upgrade_ceph.yaml
     when: ceph_conf_version is version(ceph_cluster_version, operator='gt') and _allow_disruption
+...

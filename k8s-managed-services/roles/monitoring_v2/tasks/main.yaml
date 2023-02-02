@@ -8,8 +8,8 @@
     release_name: "kms-blackbox"
     release_state: "{{ monitoring_internet_probe | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'blackbox_exporter.yaml.j2') | from_yaml }}"
-    wait: yes
-    update_repo_cache: yes
+    wait: true
+    update_repo_cache: true
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
@@ -18,14 +18,14 @@
 - name: Expose Prometheus with a NodePort
   when: k8s_monitoring_enabled and k8s_global_monitoring_enabled
   tags:
-    - ch-k8s-global-monitoring
-    - ch-k8s-global-monitoring-nodeport
+  - ch-k8s-global-monitoring
+  - ch-k8s-global-monitoring-nodeport
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition: "{{ lookup('template', 'prometheus-nodeport.yaml') }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -37,11 +37,11 @@
   - name: Create keepalived service monitor (frontend)
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', 'keepalived-service-monitor.yaml.j2') }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -51,11 +51,11 @@
   - name: Create HAProxy service monitor (frontend)
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', 'haproxy-service-monitor.yaml.j2') }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -65,10 +65,10 @@
   - name: Create ch-k8s-LBaaS service monitors (frontend)
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'lbaas-service-monitor.yaml.j2') }}"
-      apply: yes
+      apply: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     when: ch_k8s_lbaas_enabled
     # Retry this task on failures
     register: k8s_apply
@@ -79,11 +79,11 @@
   - name: Create rook-ceph-mgr service monitor
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', 'rook-service-monitor.yaml.j2') }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     when: k8s_storage_rook_enabled
     # Retry this task on failures
     register: k8s_apply
@@ -94,63 +94,63 @@
   - name: Create service monitor node-exporters (frontend)
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', 'node-exporter-service-monitor.yaml') }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
     tags:
-      - node-exporter-service-monitor
+    - node-exporter-service-monitor
 
   - name: Create service monitors for calico
-    k8s:
+    kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', 'calico-monitoring.yaml.j2') }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
     tags:
-      - calico-service-monitor
+    - calico-service-monitor
 
   - name: Create service monitor for etcd-backup
-    k8s:
+    kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', 'etcd-backup.yaml.j2') }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     when: etcd_backup_enabled | default(False) | bool
     tags:
-      - etcd-backup-service-monitor
+    - etcd-backup-service-monitor
 
   - name: Create a pod monitor for fluxcd
     when: (fluxcd_enabled | default (False)) | bool
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', 'fluxcd_podmonitor.yaml.j2') }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
     tags:
-      - fluxcd
+    - fluxcd
 
 - name: "{{ k8s_is_gpu_cluster | ternary('I', 'Uni') }}nstall NVIDIA DCGM exporter"
   kubernetes.core.helm:
@@ -161,9 +161,10 @@
     release_name: "nvidia-dcgm-exporter"
     release_state: "{{ k8s_is_gpu_cluster | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'nvidia_dcgm_exporter.yaml.j2') | from_yaml }}"
-    wait: yes
-    update_repo_cache: yes
+    wait: true
+    update_repo_cache: true
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
+...

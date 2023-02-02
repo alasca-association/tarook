@@ -2,6 +2,7 @@
 # Calico specific resources as the Calico CRDs are not designed to
 # be used directly by kubectl. Please refer to the following issue:
 # https://github.com/projectcalico/calico/issues/2923
+---
 
 - name: Ensure that /opt/cni/bin/ exists
   become: yes 
@@ -133,3 +134,4 @@
     mode: 0600
     src: 10-calico.conflist.j2
     dest: /etc/cni/net.d/10-calico.conflist
+...

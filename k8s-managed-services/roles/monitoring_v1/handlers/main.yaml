@@ -1,6 +1,6 @@
 ---
 - name: restart thanos-store statefulset
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - kubectl
@@ -12,7 +12,7 @@
     - thanos-store
 
 - name: restart prometheus-k8s statefulset
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - kubectl
@@ -22,3 +22,4 @@
     - restart
     - statefulset
     - prometheus-k8s
+...

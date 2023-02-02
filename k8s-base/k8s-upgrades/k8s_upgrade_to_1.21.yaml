@@ -1,7 +1,7 @@
 # This upgrade file is only for the k8s version 1.21.
 # For now we keep for every minor update a separate upgrade file
 # to avoid accidental major changes of old upgrade files.
-
+---
 - name: Detect user
   hosts: k8s_nodes
   gather_facts: false
@@ -10,7 +10,7 @@
   vars_files:
     - ../vars/etc.yaml
   roles:
-  - detect_user
+    - detect_user
 
 - name: Run pre-flight checks on all nodes
   hosts: k8s_nodes
@@ -34,7 +34,7 @@
   pre_tasks:
     - name: include ksl vars
       when: ksl_vars_directory is defined
-      include_vars:
+      ansible.builtin.include_vars:
         dir: "{{ ksl_vars_directory }}"
       tags:
         - always
@@ -66,7 +66,7 @@
   pre_tasks:
     - name: include ksl vars
       when: ksl_vars_directory is defined
-      include_vars:
+      ansible.builtin.include_vars:
         dir: "{{ ksl_vars_directory }}"
       tags:
         - always
@@ -114,7 +114,7 @@
   pre_tasks:
     - name: include ksl vars
       when: ksl_vars_directory is defined
-      include_vars:
+      ansible.builtin.include_vars:
         dir: "{{ ksl_vars_directory }}"
       tags:
         - always
@@ -139,14 +139,15 @@
   gather_facts: false
   hosts: masters[0]
   tasks:
-  - name: Final upgrade note
-    debug:
-      msg: |
-        🥳 Congratulations! 🎉
+    - name: Final upgrade note
+      ansible.builtin.debug:
+        msg: |
+          🥳 Congratulations! 🎉
 
-          \o/  The upgrade to
-           |      {{ next_k8s_version }}
-          / \  is complete.
+            \o/  The upgrade to
+            |      {{ next_k8s_version }}
+            / \  is complete.
 
-        You can now change the k8s_version variable to
-        {{ next_k8s_version | to_json }}.
+          You can now change the k8s_version variable to
+          {{ next_k8s_version | to_json }}.
+...

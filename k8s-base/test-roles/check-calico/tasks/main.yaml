@@ -1,11 +1,13 @@
+---
 - name: Check that calicoctl is installed on all master nodes
-  include_tasks: test-calicoctl.yaml
+  ansible.builtin.include_tasks: test-calicoctl.yaml
 
 - name: Check CNI Plugins
-  include_tasks: test-calico-cni-plugins.yaml
+  ansible.builtin.include_tasks: test-calico-cni-plugins.yaml
 
 - name: Check that calico/node and typha Pods are running
-  include_tasks: test-pod-readiness.yaml
+  ansible.builtin.include_tasks: test-pod-readiness.yaml
 
 - name: Check Pod-to-Pod connectivity
-  include_tasks: test-pod-connectivity.yaml
+  ansible.builtin.include_tasks: test-pod-connectivity.yaml
+...

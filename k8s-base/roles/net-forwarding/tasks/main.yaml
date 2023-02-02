@@ -1,3 +1,4 @@
+---
 - name: Enable IP forwarding
   become: yes
   block:
@@ -16,3 +17,4 @@
         - -p
         - /etc/sysctl.d/forward.conf
     changed_when: false
+...

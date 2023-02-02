@@ -1,6 +1,6 @@
 ---
 - name: Configure BIRD for calico (IPv4)
-  template:
+  ansible.builtin.template:
     src: bird-calico.conf.j2
     dest: /etc/bird.d/10-k8s-calico.conf
     owner: root
@@ -9,7 +9,7 @@
   notify: restart bird
 
 - name: Configure BIRD for calico (IPv6)
-  template:
+  ansible.builtin.template:
     src: bird-calico-v6.conf.j2
     dest: /etc/birdv6.d/10-k8s-calico-ipv6.conf
     owner: root
@@ -17,3 +17,4 @@
     mode: "u=rw,g=r,o-rwx"
   notify: restart bird6
   when: dualstack_support
+...

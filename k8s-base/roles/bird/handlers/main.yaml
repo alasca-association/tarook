@@ -1,11 +1,13 @@
+---
 - name: restart bird
-  become: yes
-  service:
+  become: true
+  ansible.builtin.service:
     name: bird
     state: restarted
 
 - name: restart bird6
-  become: yes
-  service:
+  become: true
+  ansible.builtin.service:
     name: bird6
     state: restarted
+...

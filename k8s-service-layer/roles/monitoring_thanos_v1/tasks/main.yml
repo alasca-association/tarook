@@ -1,3 +1,4 @@
+---
 - name: Sanity checks (OpenStack)
   # If no config file is passed, then we infer the access information to the bucket via the sourced
   # OpenStack variables. If there is a config file given, then this role will *not* validate the credentials.
@@ -73,3 +74,4 @@
   when: k8s_monitoring_enabled and monitoring_use_thanos
   tags:
   - thanos
+...

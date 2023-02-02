@@ -2,15 +2,15 @@
 - name: Create namespace
   when: k8s_cert_manager_install
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: v1
       kind: Namespace
       metadata:
         name: "{{ k8s_cert_manager_namespace }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -35,7 +35,7 @@
     release_namespace: "{{ k8s_cert_manager_namespace }}"
     release_name: cert-manager
     release_state: "{{ k8s_cert_manager_install | ternary('present', 'absent') }}"
-    update_repo_cache: yes
+    update_repo_cache: true
     values:
       installCRDs: true
       global:
@@ -51,7 +51,7 @@
 
 - name: "{{ (k8s_cert_manager_install and k8s_cert_manager_letsencrypt_email) | ternary('I', 'Uni') }}nstall Let's Encrypt cluster issuer"
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     state: "{{ k8s_cert_manager_letsencrypt_email | ternary('present', 'absent') }}"
     definition:
       apiVersion: v1
@@ -74,3 +74,4 @@
   until: k8s_apply is not failed
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
+...

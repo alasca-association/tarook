@@ -1,96 +1,97 @@
 # This task uses calicoctl. This is currently necessary to configure
-# Calico specific resources as the Calico CRDs are not designed to 
+# Calico specific resources as the Calico CRDs are not designed to
 # be used directly by kubectl. Please refer to the following issue:
 # https://github.com/projectcalico/calico/issues/2923
-
+---
 - name: Create calico BGP configuration and apply peering
-  run_once: True
-  become: yes
+  run_once: true
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes
   block:
   - name: BGP - Apply default calico BGP configuration
-    command:
+    ansible.builtin.command:
       argv:
-        - /usr/local/bin/calicoctl
-        - apply
-        - --filename=-
+      - /usr/local/bin/calicoctl
+      - apply
+      - --filename=-
       stdin: '{{ lookup("template", "calico_bgp_conf.yaml.j2") }}'
     register: bgp_configuration_result
     changed_when: "'Successfully applied' and 'BGPConfiguration' in bgp_configuration_result.stdout"
 
   # Probably not necessary on a fresh setup, just to be sure
   - name: BGP - Disable the default BGP node-to-node mesh
-    command:
+    ansible.builtin.command:
       argv:
-        - /usr/local/bin/calicoctl
-        - patch
-        - bgpconfiguration
-        - default
-        - -p
-        - '{"spec":{"nodeToNodeMeshEnabled":false} }'
+      - /usr/local/bin/calicoctl
+      - patch
+      - bgpconfiguration
+      - default
+      - -p
+      - '{"spec":{"nodeToNodeMeshEnabled":false} }'
     register: bgp_mesh_patch
     changed_when: "'Successfully patched' and 'BGPConfiguration' in bgp_mesh_patch.stdout"
 
   # Probably not necessary, just to be sure
   - name: BGP - Change the default global AS number
-    command:
+    ansible.builtin.command:
       argv:
-        - /usr/local/bin/calicoctl
-        - patch
-        - bgpconfiguration
-        - default
-        - -p
-        - ' {"spec":{"asNumber":{{ k8s_network_bgp_worker_as | to_json }} }}'
+      - /usr/local/bin/calicoctl
+      - patch
+      - bgpconfiguration
+      - default
+      - -p
+      - ' {"spec":{"asNumber":{{ k8s_network_bgp_worker_as | to_json }} }}'
     register: bgp_as_number_patch
     changed_when: "'Successfully patched' and 'BGPConfiguration' in bgp_as_number_patch.stdout"
 
   # By adding a routeReflectorClusterID to the node, calico/node recognizes that it is a route reflector
   - name: BGP - Mark the k8s masters as route reflectors
-    command:
+    ansible.builtin.command:
       argv:
-        - /usr/local/bin/calicoctl
-        - patch
-        - node
-        - "{{ item }}"
-        - -p
-        # A leading whitespace is needed to prevent Ansible from interpreting this string as JSON
-        - ' {"spec":{"bgp":{"routeReflectorClusterID": {{ calico_bgp_router_id | to_json }} }}}'
+      - /usr/local/bin/calicoctl
+      - patch
+      - node
+      - "{{ item }}"
+      - -p
+      # A leading whitespace is needed to prevent Ansible from interpreting this string as JSON
+      - ' {"spec":{"bgp":{"routeReflectorClusterID": {{ calico_bgp_router_id | to_json }} }}}'
     register: bgp_route_reflector_cluster_id_patch
     changed_when: "'Successfully patched' and 'Node' in bgp_route_reflector_cluster_id_patch.stdout"
     with_items: "{{ groups['masters'] }}"
 
   # Labeling the masters easies identification
   - name: BGP - Label the k8s masters as route reflectors
-    command:
+    ansible.builtin.command:
       argv:
-        - /usr/local/bin/calicoctl
-        - label
-        - nodes
-        - "{{ item }}"
-        - route-reflector=true
+      - /usr/local/bin/calicoctl
+      - label
+      - nodes
+      - "{{ item }}"
+      - route-reflector=true
     register: bgp_label_masters
     changed_when: "'Successfully updated label route-reflector on nodes' in bgp_label_masters.stdout"
     with_items: "{{ groups['masters'] }}"
 
   - name: BGP - Configure workers to peer with route reflectors (master nodes)
-    command:
+    ansible.builtin.command:
       argv:
-        - /usr/local/bin/calicoctl
-        - apply
-        - --filename=-
+      - /usr/local/bin/calicoctl
+      - apply
+      - --filename=-
       stdin: '{{ lookup("file", "calico_bgp_peer_node.yaml") }}'
     register: bgp_worker_to_master_peering
     changed_when: "'Successfully applied' and 'BGPPeer' in bgp_worker_to_master_peering.stdout"
 
   - name: BGP - Configure route reflectors (master nodes) to peer with the LoadBalanced-Master Gateway
-    command:
-        argv:
-          - /usr/local/bin/calicoctl
-          - apply
-          - --skip-empty
-          - --filename=-
-        stdin: '{{ lookup("template", "calico_bgp_peer_lb_master.yaml.j2") }}'
+    ansible.builtin.command:
+      argv:
+      - /usr/local/bin/calicoctl
+      - apply
+      - --skip-empty
+      - --filename=-
+      stdin: '{{ lookup("template", "calico_bgp_peer_lb_master.yaml.j2") }}'
     register: bgp_master_to_lb
     changed_when: "'Successfully applied' and 'BGPPeer' in bgp_master_to_lb.stdout"
+...

@@ -1,7 +1,8 @@
+---
 - name: Install prerequisites
-  become: yes
-  apt:
-    update_cache: yes
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
     state: present
     name:
       - curl
@@ -15,8 +16,8 @@
 
 - name: Expand NO_PROXY configuration on Ubuntu machines
   when: (cluster_behind_proxy | default(false)) and ansible_distribution == 'Ubuntu'
-  become: yes
-  lineinfile:
+  become: true
+  ansible.builtin.lineinfile:
     path: /etc/environment
     regexp: "^(.*{{ item }}.*)$"
     line: "{{ item }}={{ no_proxy }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
@@ -27,8 +28,8 @@
 
 - name: Expand NO_PROXY configuration on RHEL machines
   when: (cluster_behind_proxy | default(false)) and ansible_distribution == 'Red Hat Enterprise Linux'
-  become: yes
-  lineinfile:
+  become: true
+  ansible.builtin.lineinfile:
     path: /etc/profile.d/proxy.sh
     regexp: "^(.*{{ item }}.*)$"
     line: "{{ item }}={{ no_proxy }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
@@ -38,41 +39,41 @@
     - no_proxy
 
 - name: Add Google's K8s repository (apt)
-  become: yes
+  become: true
   block:
 
-  - name: Add Key of Google's K8s repository
-    apt_key:
-      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-      state: present
-    register: task_result
-    until: task_result is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    - name: Add Key of Google's K8s repository
+      ansible.builtin.apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
-  - name: Add Google's K8s repository to sources.list
-    copy:
-      dest: /etc/apt/sources.list.d/kubernetes.list
-      content: |
-        {{ _auto_generated_preamble }}
-        deb https://apt.kubernetes.io/ kubernetes-xenial main
-      owner: root
-      group: root
-      mode: 0640
+    - name: Add Google's K8s repository to sources.list
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/kubernetes.list
+        content: |
+          {{ _auto_generated_preamble }}
+          deb https://apt.kubernetes.io/ kubernetes-xenial main
+        owner: root
+        group: root
+        mode: 0640
 
-  - name: Install kubelet, kubeadm and kubectl
-    # Note: check available version with `apt-cache policy <package name>`
-    apt:
-      update_cache: yes
-    register: task_result
-    until: task_result is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    - name: Install kubelet, kubeadm and kubectl
+      # Note: check available version with `apt-cache policy <package name>`
+      ansible.builtin.apt:
+        update_cache: true
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
   when: ansible_pkg_mgr == 'apt'
 
 - name: Add Google's K8s repository (yum/dnf)
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: kubernetes.repo
     dest: /etc/yum.repos.d/kubernetes.repo
     owner: root
@@ -83,65 +84,66 @@
 - name: Install kubelet, kubeadm and kubectl
 
   block:
-  - name: Prepare list of packages to install (apt)
-    set_fact:
-      packages:
-        - "kubelet={{ k8s_version }}-00"
-        - "kubeadm={{ k8s_version }}-00"
-        - "kubectl={{ k8s_version }}-00"
-    when: ansible_pkg_mgr == 'apt'
+    - name: Prepare list of packages to install (apt)
+      ansible.builtin.set_fact:
+        packages:
+          - "kubelet={{ k8s_version }}-00"
+          - "kubeadm={{ k8s_version }}-00"
+          - "kubectl={{ k8s_version }}-00"
+      when: ansible_pkg_mgr == 'apt'
 
-  - name: Prepare list of packages to install (yum/dnf)
-    set_fact:
-      packages:
-        - "kubelet-{{ k8s_version }}-00"
-        - "kubeadm-{{ k8s_version }}-00"
-        - "kubectl-{{ k8s_version }}-00"
-    when: ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum'
+    - name: Prepare list of packages to install (yum/dnf)
+      ansible.builtin.set_fact:
+        packages:
+          - "kubelet-{{ k8s_version }}-00"
+          - "kubeadm-{{ k8s_version }}-00"
+          - "kubectl-{{ k8s_version }}-00"
+      when: ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum'
 
-  - name: Install kubelet, kubeadm and kubectl
-    # Note: check available version with `apt-cache policy <package name>`
-    become: yes
-    package:
-      state: present
-      name: "{{ packages }}"
-    register: task_result
-    until: task_result is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
-    notify: Restart kubelet
-
-  - name: Prevent the k8s packages for being updated (apt)
-    become: yes
-    command: apt-mark hold kubelet kubeadm kubectl
-    when: ansible_pkg_mgr == 'apt'
-
-  - name: Prevent the k8s packages for being updated (dnf)
-    become: yes
-
-    block:
-    - name: Install dnf versionlock
-      dnf:
-        name:
-        - 'dnf-command(versionlock)'
-        state: latest
+    - name: Install kubelet, kubeadm and kubectl
+      # Note: check available version with `apt-cache policy <package name>`
+      become: true
+      ansible.builtin.package:
+        state: present
+        name: "{{ packages }}"
       register: task_result
       until: task_result is not failed
       retries: "{{ network_error_retries }}"
       delay: "{{ network_error_delay }}"
+      notify: Restart kubelet
 
-    - name: Add a version lock
-      command:
-      args:
-        argv:
-        - dnf
-        - versionlock
-        - kubelet
-        - kubeadm
-        - kubectl
+    - name: Prevent the k8s packages for being updated (apt)
+      become: true
+      ansible.builtin.command: apt-mark hold kubelet kubeadm kubectl
+      when: ansible_pkg_mgr == 'apt'
 
-    when: ansible_pkg_mgr == 'dnf'
+    - name: Prevent the k8s packages for being updated (dnf)
+      become: true
+
+      block:
+        - name: Install dnf versionlock  # noqa package-latest
+          ansible.builtin.dnf:
+            name:
+              - 'dnf-command(versionlock)'
+            state: latest
+          register: task_result
+          until: task_result is not failed
+          retries: "{{ network_error_retries }}"
+          delay: "{{ network_error_delay }}"
+
+        - name: Add a version lock  # noqa no-changed-when
+          ansible.builtin.command:
+          args:
+            argv:
+              - dnf
+              - versionlock
+              - kubelet
+              - kubeadm
+              - kubectl
+
+      when: ansible_pkg_mgr == 'dnf'
 
 # kubelet should be restarted immediately
 - name: Force restart of kubelet at this point
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
+...

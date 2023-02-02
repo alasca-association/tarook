@@ -11,3 +11,4 @@ yaook_vault_dnsnames: []
 yaook_vault_scheduling_key: null
 yaook_vault_storage_class: csi-sc-cinderplugin
 yaook_vault_storage_size: 8Gi
+...

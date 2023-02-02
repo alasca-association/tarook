@@ -1,19 +1,20 @@
+---
 - name: Create mount points
-  become: yes
+  become: true
   block:
   - name: Create directory structure
-    file:
+    ansible.builtin.file:
       path: "{{ item }}"
       state: directory
       owner: root
       group: root
       mode: 0755
     loop:
-      - "{{ k8s_local_storage_static_data_directory }}"
-      - "{{ k8s_local_storage_static_discovery_directory }}/disk"
+    - "{{ k8s_local_storage_static_data_directory }}"
+    - "{{ k8s_local_storage_static_discovery_directory }}/disk"
 
   - name: Create bind mount
-    mount:
+    ansible.posix.mount:
       src: "{{ k8s_local_storage_static_data_directory }}"
       path: "{{ k8s_local_storage_static_discovery_directory }}/disk"
       state: mounted
@@ -24,81 +25,82 @@
   delegate_to: "{{ groups['masters'] | first }}"
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  become: yes
-  run_once: yes
+  become: true
+  run_once: true
   block:
-    - name: Create storage class
-      kubernetes.core.k8s:
-        state: present
-        apply: yes
-        definition: "{{ lookup('template', 'sc.yaml.j2') }}"
-        validate:
-          fail_on_error: yes
-          strict: yes
-      # Retry this task on failures
-      register: k8s_apply
-      until: k8s_apply is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
+  - name: Create storage class
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      definition: "{{ lookup('template', 'sc.yaml.j2') }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
-    - name: Create provisioner
-      kubernetes.core.k8s:
-        state: present
-        apply: yes
-        definition: "{{ lookup('template', 'provisioner.yaml.j2') }}"
-        validate:
-          fail_on_error: yes
-          strict: yes
-      # Retry this task on failures
-      register: k8s_apply
-      until: k8s_apply is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
+  - name: Create provisioner
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      definition: "{{ lookup('template', 'provisioner.yaml.j2') }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
-    - name: Create service
-      kubernetes.core.k8s:
-        state: present
-        apply: yes
-        definition: "{{ lookup('template', 'service.yaml.j2') }}"
-        validate:
-          fail_on_error: yes
-          strict: yes
-      # Retry this task on failures
-      register: k8s_apply
-      until: k8s_apply is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
+  - name: Create service
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      definition: "{{ lookup('template', 'service.yaml.j2') }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
 - name: Dump instantiated manifests
-  become: no
+  become: false
   delegate_to: localhost
-  run_once: yes
+  run_once: true
   when: "dump_k8s_manifests"
   vars:
     manifest_dir: "{{ etc_dir }}/manifests"
   tags:
-    - dump-k8s-manifests
+  - dump-k8s-manifests
   block:
-    - name: Create manifest directory
-      file:
-        state: directory
-        path: "{{ manifest_dir }}"
-        mode: 0755
+  - name: Create manifest directory
+    ansible.builtin.file:
+      state: directory
+      path: "{{ manifest_dir }}"
+      mode: 0755
 
-    - name: Create provisioner manifest
-      template:
-        src: 'provisioner.yaml.j2'
-        dest: "{{ manifest_dir }}/provisioner.yaml"
-        mode: 0664
+  - name: Create provisioner manifest
+    ansible.builtin.template:
+      src: 'provisioner.yaml.j2'
+      dest: "{{ manifest_dir }}/provisioner.yaml"
+      mode: 0664
 
-    - name: Create storage class manifest
-      template:
-        src: 'sc.yaml.j2'
-        dest: "{{ manifest_dir }}/sc.yaml"
-        mode: 0664
+  - name: Create storage class manifest
+    ansible.builtin.template:
+      src: 'sc.yaml.j2'
+      dest: "{{ manifest_dir }}/sc.yaml"
+      mode: 0664
 
-    - name: Create service manifest
-      template:
-        src: 'service.yaml.j2'
-        dest: "{{ manifest_dir }}/service.yaml"
-        mode: 0664
+  - name: Create service manifest
+    ansible.builtin.template:
+      src: 'service.yaml.j2'
+      dest: "{{ manifest_dir }}/service.yaml"
+      mode: 0664
+...

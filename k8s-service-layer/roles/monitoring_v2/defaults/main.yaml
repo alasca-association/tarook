@@ -31,3 +31,4 @@ monitoring_common_labels: []
 monitoring_grafana_persistent_storage_class: ""
 
 monitoring_crds_update_required: ["34", "35", "36", "39"]
+...

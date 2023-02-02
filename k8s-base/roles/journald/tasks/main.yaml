@@ -1,17 +1,19 @@
+---
 - name: Configure journald
   when: _allow_disruption or install_status == 'k8s_not_installed'
   block:
   - name: Create configuration for journald
-    become: yes
-    template:
+    become: true
+    ansible.builtin.template:
       src: journald.conf.j2
       dest: /etc/systemd/journald.conf
       mode: 0640
 
   - name: Restart journald
-    become: yes
-    systemd:
-      enabled: yes
+    become: true
+    ansible.builtin.systemd:
+      enabled: true
       state: restarted
-      daemon_reload: yes
+      daemon_reload: true
       name: systemd-journald
+...

@@ -1,26 +1,27 @@
+---
 - name: Check if the node has kubernetes installed
-  stat:
+  ansible.builtin.stat:
     path: "/etc/kubernetes"
   register: kubernetes_dir
 
 - name: Gather facts
-  setup:
+  ansible.builtin.setup:
 
 - name: Control and create proxy configuration for Ubuntu machines
-  become: yes
+  become: true
   when: (cluster_behind_proxy | default(false)) and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   block:
     - name: Ensure /etc/environment contains proxy configuration
-      become: yes
-      command: grep -Fq "no_proxy" /etc/environment
+      become: true
+      ansible.builtin.command: grep -Fq "no_proxy" /etc/environment
       register: proxy_conf
-      check_mode: no
-      ignore_errors: yes
-      changed_when: no
+      check_mode: false
+      ignore_errors: true
+      changed_when: false
 
     - name: Expand /etc/environment with proxy configuration
       when: proxy_conf.failed
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/environment
         insertafter: EOF
         line: "{{ item }}"
@@ -33,21 +34,21 @@
         - no_proxy={{ no_proxy }}
 
 - name: Control and create proxy configuration for RHEL machines
-  become: yes
+  become: true
   when: (cluster_behind_proxy | default(false)) and ansible_distribution == 'Red Hat Enterprise Linux'
   block:
 
     - name: Ensure /etc/profile.d/proxy.sh contains proxy configuration
-      become: yes
-      command: grep -Fq "no_proxy" /etc/profile.d/proxy.sh
+      become: true
+      ansible.builtin.command: grep -Fq "no_proxy" /etc/profile.d/proxy.sh
       register: proxy_conf
-      check_mode: no
-      ignore_errors: yes
-      changed_when: no
+      check_mode: false
+      ignore_errors: true
+      changed_when: false
 
     - name: Expand /etc/profile.d/proxy.sh with proxy configuration
       when: proxy_conf.failed
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/profile.d/proxy.sh
         insertafter: EOF
         line: "{{ item }}"
@@ -60,35 +61,35 @@
         - export no_proxy={{ no_proxy }}
 
 # https://ansible-tips-and-tricks.readthedocs.io/en/latest/os-dependent-tasks/installing_packages/#installing-system-updates
-- name: Upgrade the whole system (dnf) # noqa 403
-  become: yes
-  dnf:
+- name: Upgrade the whole system (dnf)  # noqa package-latest
+  become: true
+  ansible.builtin.dnf:
     name: '*'
     state: latest
   # see the apt task for details
   async: 1800
   poll: 5
   when:
-  - ansible_pkg_mgr == 'dnf'
-  # gateways are internet-facing and highly-available
-  - "_allow_disruption or not kubernetes_dir.stat.exists"
+    - ansible_pkg_mgr == 'dnf'
+    # gateways are internet-facing and highly-available
+    - "_allow_disruption or not kubernetes_dir.stat.exists"
   register: upgrade_dnf
   until: upgrade_dnf is not failed
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
 
-- name: Upgrade the whole system (yum) # noqa 403
-  yum:
+- name: Upgrade the whole system (yum)  # noqa package-latest
+  ansible.builtin.yum:
     name: '*'
     state: latest
-    update_cache: yes
+    update_cache: true
   # see the apt task for details
   async: 1800
   poll: 5
   when:
-  - ansible_pkg_mgr == 'yum'
-  # gateways are internet-facing and highly-available
-  - "_allow_disruption or not kubernetes_dir.stat.exists"
+    - ansible_pkg_mgr == 'yum'
+    # gateways are internet-facing and highly-available
+    - "_allow_disruption or not kubernetes_dir.stat.exists"
   register: upgrade_yum
 
 # This is required to be able to do initial updates on a Debian N image just
@@ -100,24 +101,24 @@
 #     E: Repository 'http://deb.debian.org/debian buster-updates InRelease'
 #     changed its 'Suite' value from 'stable-updates' to 'oldstable-updates'
 #
-- name: Update apt cache
+- name: Update apt cache  # noqa command-instead-of-module
   when: ansible_pkg_mgr == 'apt'
-  become: yes
+  become: true
   ansible.builtin.command:
     argv:
-    - apt-get
-    - update
-    - --allow-releaseinfo-change
+      - apt-get
+      - update
+      - --allow-releaseinfo-change
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
 
-- name: Upgrade the whole system (apt) # noqa 403
-  become: yes
-  apt:
+- name: Upgrade the whole system (apt)  # noqa package-latest
+  become: true
+  ansible.builtin.apt:
     upgrade: dist
-    autoremove: yes
+    autoremove: true
   # We’ve been seeing timeouts during this operation. By nudging ssh using
   # SIGWINCH, ansible is allowed to continue.
   #
@@ -137,24 +138,25 @@
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
   when:
-  - ansible_pkg_mgr == 'apt'
-  # gateways are internet-facing and highly-available
-  - "_allow_disruption or not kubernetes_dir.stat.exists"
+    - ansible_pkg_mgr == 'apt'
+    # gateways are internet-facing and highly-available
+    - "_allow_disruption or not kubernetes_dir.stat.exists"
 
-- name: Reboot block
-  become: yes
+- name: Reboot block  # noqa no-handler
+  become: true
   when: upgrade_dnf is changed or upgrade_yum is changed or upgrade_apt is changed
-  block: 
+  block:
 
     - name: Reboot the system (cloud-init run)
-      command:
+      ansible.builtin.command:
         argv:
-        - reboot
-        - now
+          - reboot
+          - now
       when: ansible_connection == 'local'
 
     # We do not need a "when" here. ansible is killed approximately immediately
     # anyway by the above command if it is executed; If the above command is
     # not executed, we want to execute this one.
     - name: Reboot the system
-      reboot:
+      ansible.builtin.reboot:
+...

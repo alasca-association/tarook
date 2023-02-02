@@ -11,3 +11,4 @@ pki_cert_files:
 etcd_files:
   - "ca.crt"
   - "ca.key"
+...

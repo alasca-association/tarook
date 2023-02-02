@@ -1,10 +1,12 @@
+---
 - name: Gather status of services
-  service_facts:
+  ansible.builtin.service_facts:
 
 - name: Gather node installation state
-  set_fact:
+  ansible.builtin.set_fact:
     install_status: "{{ ('keepalived.service' in ansible_facts.services or 'haproxy.service' in ansible_facts.services or 'wg-quick@.service' in ansible_facts.services) | ternary('initialized', 'uninitialized', 'initialized') }}"  # noqa 204
 
 - name: Group frontend nodes
-  group_by:
+  ansible.builtin.group_by:
     key: "{{ install_status }}_frontend_nodes"
+...

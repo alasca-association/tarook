@@ -5,7 +5,7 @@
 # Instead, we simply try them all.
 - name: Ensure python is installed
   # The so-called Wood Hammer Method (haha)
-  raw: |
+  ansible.builtin.raw: |
     test -e /usr/bin/python3 || \
     sudo apt install -y python3 || \
     sudo dnf install -y python3 || \
@@ -18,14 +18,14 @@
 
 # Cannot use facts (such as ansible_distribution) here because we may not have had python yet.
 - name: Get OS family name
-  raw: cat /etc/os-release | grep -i 'ID_LIKE'
+  ansible.builtin.raw: cat /etc/os-release | grep -i 'ID_LIKE'
   register: os_info
   changed_when: false
   failed_when: 'os_info.rc not in [0, 1]'
 
 - name: Required package installation on RedHat family
-  become: yes
-  package:
+  become: true
+  ansible.builtin.package:
     state: present
     name:
     - tar
@@ -37,3 +37,4 @@
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
+...

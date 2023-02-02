@@ -1,3 +1,4 @@
+---
 - name: Install lspci
   become: yes
   package:
@@ -18,3 +19,4 @@
 - name: Set gpu fact
   set_fact:
     has_gpu: "{{ ((gpu_test.stdout | length) > 0) | bool }}"
+...

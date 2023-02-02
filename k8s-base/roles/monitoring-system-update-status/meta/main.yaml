@@ -4,3 +4,4 @@ galaxy_info:
   author: Yaook Authors
 dependencies:
 - monitoring-system-update-status-common
+...

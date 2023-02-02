@@ -1,7 +1,8 @@
+---
 - name: Create nftables config for monitoring
   when: on_openstack | bool
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: "nftables.conf.j2"
     dest: /etc/nft.d/monitoring.conf
     owner: root
@@ -10,8 +11,8 @@
   notify: reload nftables for global-monitoring-frontend
 
 - name: Create HAProxy config for monitoring
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/conf.d/10_monitoring.cfg
     validate: haproxy -f %s -c
@@ -19,3 +20,4 @@
     owner: root
     group: root
   notify: reload haproxy for global-monitoring-frontend
+...

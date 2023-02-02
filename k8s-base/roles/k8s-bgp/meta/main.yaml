@@ -5,3 +5,4 @@ galaxy_info:
 dependencies:
 - bird
 - k8s-config
+...

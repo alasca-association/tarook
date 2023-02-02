@@ -1,2 +1,4 @@
+---
 monitoring_node_exporter_textfile_collector: true
 monitoring_node_exporter_textfile_collector_path: /var/lib/node_exporter/textfile_collector
+...

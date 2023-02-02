@@ -1,10 +1,10 @@
 ---
 - name: show test information
-  debug:
+  ansible.builtin.debug:
     msg: "This test is using the {{ fs_storage_class }} storageClass"
 
 - name: Run the test
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
 
@@ -16,8 +16,8 @@
       kind: Namespace
       name: "{{ check_shared_filesystem_namespace }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -29,8 +29,8 @@
       state: present
       definition: "{{ lookup('template', 'pvc.yaml') }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -42,8 +42,8 @@
       state: present
       definition: "{{ lookup('template', 'pod.yaml') }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     loop: "{{ test_worker_nodes | map(attribute='name') | list }}"
     register: worker_pods
     # Retry this task on failures
@@ -64,7 +64,7 @@
     retries: 240
 
   - name: check worker pod success
-    debug:
+    ansible.builtin.debug:
       msg: "Worker pod {{ item.resources[0].metadata.name }} is in condition {{ item.resources[0].status.phase }}"
     failed_when: 'item.resources[0].status.phase == "Failed"'
     loop: "{{ worker_state.results }}"
@@ -77,8 +77,8 @@
       name: "{{ check_shared_filesystem_namespace }}"
       wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
@@ -86,3 +86,4 @@
     delay: "{{ k8s_error_delay }}"
     tags:
     - test-cleanup
+...

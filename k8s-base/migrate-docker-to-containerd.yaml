@@ -5,7 +5,7 @@
   vars_files:
   - vars/etc.yaml
   roles:
-    - validate_configuration
+  - validate_configuration
 
 - name: Establish connectivity to the nodes
   hosts: k8s_nodes
@@ -27,152 +27,153 @@
   gather_facts: false
   any_errors_fatal: true
   vars_files:
-    - ../vars/disruption.yaml
-    - ../vars/retries.yaml
+  - ../vars/disruption.yaml
+  - ../vars/retries.yaml
   pre_tasks:
-    - name: Fail if container_runtime is misconfigured
-      when: container_runtime not in ["containerd", "docker"]
-      fail:
-        msg: |
-          Container runtime is misconfigured.
-          It needs to be either 'docker' or 'containerd'.
-          Please check your 'config/config.toml'.
-      tags: always
-    - name: End play
-      when: container_runtime == 'containerd'
-      meta: end_play
-      tags: always
-    - name: include ksl vars
-      when: ksl_vars_directory is defined
-      include_vars:
-        dir: "{{ ksl_vars_directory }}"
-      tags: always
+  - name: Fail if container_runtime is misconfigured
+    when: container_runtime not in ["containerd", "docker"]
+    ansible.builtin.fail:
+      msg: |
+        Container runtime is misconfigured.
+        It needs to be either 'docker' or 'containerd'.
+        Please check your 'config/config.toml'.
+    tags: always
+  - name: End play
+    when: container_runtime == 'containerd'
+    ansible.builtin.meta: end_play
+    tags: always
+  - name: include ksl vars
+    when: ksl_vars_directory is defined
+    ansible.builtin.include_vars:
+      dir: "{{ ksl_vars_directory }}"
+    tags: always
   tasks:
-    - name: Skip if CRI of node is not docker
-      delegate_to: localhost
-      block:
-        - name: Get node info
-          kubernetes.core.k8s_info:
-            api_version: v1
-            kind: Node
-            name: "{{ inventory_hostname }}"
-          register: node_info
-        - name: Skip migration for this host
-          meta: end_host
-          when: not "docker" in node_info.resources[0].status.nodeInfo.containerRuntimeVersion
-
-    - name: Verify cluster health
-      when: not (k8s_skip_upgrade_checks | bool)
-      include_role:
-        name: cluster-health-verification
-        apply:
-          delegate_to: localhost
-
-    - name: Drain the node
-      include_role:
-        name: kubeadm-drain-node
-
-    # as it is drained anyway, we can update it
-    - name: System update
-      include_role:
-        name: update_system
-
-    - name: Stop kubelet
-      become: True
-      ansible.builtin.service:
-        name: kubelet
-        state: stopped
-
-    - name: Stop & disable docker
-      become: true
-      ansible.builtin.service:
-        name: docker
-        state: stopped
-        enabled: false
-
-    - name: Install containerd
-      include_role:
-        name: containerd
-
-    - name: Configure kubelet
-      include_role:
-        name: kubelet-configuration
-        tasks_from: migrate_from_docker.yaml
-        apply:
-          become: true
-
-    - name: Patch node annotation
-      delegate_to: localhost
-      # TODO: add retries
-      kubernetes.core.k8s:
-        api_version: v1
-        kind: Node
-        name: "{{ inventory_hostname }}"
-        definition:
-          metadata:
-            annotations:
-              kubeadm.alpha.kubernetes.io/cri-socket: "unix:///run/containerd/containerd.sock"
-      # Retry this task on failures
-      register: k8s_apply
-      until: k8s_apply is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
-
-    - name: Verify CRI of node is containerd
-      delegate_to: localhost
+  - name: Skip if CRI of node is not docker
+    delegate_to: localhost
+    block:
+    - name: Get node info
       kubernetes.core.k8s_info:
         api_version: v1
         kind: Node
         name: "{{ inventory_hostname }}"
       register: node_info
-      failed_when: not "containerd" in node_info.resources[0].status.nodeInfo.containerRuntimeVersion
+    - name: Skip migration for this host
+      ansible.builtin.meta: end_host
+      when: not "docker" in node_info.resources[0].status.nodeInfo.containerRuntimeVersion
 
-    - name: Remove docker engine
-      become: true
-      ansible.builtin.apt:
-        name:
-          - docker-ce
-          - docker-ce-cli
-        state: absent
+  - name: Verify cluster health
+    when: not (k8s_skip_upgrade_checks | bool)
+    ansible.builtin.include_role:
+      name: cluster-health-verification
+      apply:
+        delegate_to: localhost
 
-    - name: restart kubelet
-      become: true
-      service:
-        name: kubelet
-        state: restarted
-        enabled: true
+  - name: Drain the node
+    ansible.builtin.include_role:
+      name: kubeadm-drain-node
 
-    - name: Uncordon node
-      delegate_to: localhost
-      kubernetes.core.k8s_drain:
-        name: "{{ inventory_hostname }}"
-        state: uncordon
+  # as it is drained anyway, we can update it
+  - name: System update
+    ansible.builtin.include_role:
+      name: update_system
+
+  - name: Stop kubelet
+    become: true
+    ansible.builtin.service:
+      name: kubelet
+      state: stopped
+
+  - name: Stop & disable docker
+    become: true
+    ansible.builtin.service:
+      name: docker
+      state: stopped
+      enabled: false
+
+  - name: Install containerd
+    ansible.builtin.include_role:
+      name: containerd
+
+  - name: Configure kubelet
+    ansible.builtin.include_role:
+      name: kubelet-configuration
+      tasks_from: migrate_from_docker.yaml
+      apply:
+        become: true
+
+  - name: Patch node annotation
+    delegate_to: localhost
+    # TODO: add retries
+    kubernetes.core.k8s:
+      api_version: v1
+      kind: Node
+      name: "{{ inventory_hostname }}"
+      definition:
+        metadata:
+          annotations:
+            kubeadm.alpha.kubernetes.io/cri-socket: "unix:///run/containerd/containerd.sock"
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+
+  - name: Verify CRI of node is containerd
+    delegate_to: localhost
+    kubernetes.core.k8s_info:
+      api_version: v1
+      kind: Node
+      name: "{{ inventory_hostname }}"
+    register: node_info
+    failed_when: not "containerd" in node_info.resources[0].status.nodeInfo.containerRuntimeVersion
+
+  - name: Remove docker engine
+    become: true
+    ansible.builtin.apt:
+      name:
+      - docker-ce
+      - docker-ce-cli
+      state: absent
+
+  - name: restart kubelet
+    become: true
+    ansible.builtin.service:
+      name: kubelet
+      state: restarted
+      enabled: true
+
+  - name: Uncordon node
+    delegate_to: localhost
+    kubernetes.core.k8s_drain:
+      name: "{{ inventory_hostname }}"
+      state: uncordon
 
 - name: Finalize migration
   hosts: localhost
   gather_facts: false
   pre_tasks:
-    - name: include ksl vars
-      when: ksl_vars_directory is defined
-      include_vars:
-        dir: "{{ ksl_vars_directory }}"
-      tags: always
+  - name: include ksl vars
+    when: ksl_vars_directory is defined
+    ansible.builtin.include_vars:
+      dir: "{{ ksl_vars_directory }}"
+    tags: always
   tasks:
-    - name: Verify cluster health
-      when: not (k8s_skip_upgrade_checks | bool)
-      include_role:
-        name: cluster-health-verification
-        apply:
-          delegate_to: localhost
+  - name: Verify cluster health
+    when: not (k8s_skip_upgrade_checks | bool)
+    ansible.builtin.include_role:
+      name: cluster-health-verification
+      apply:
+        delegate_to: localhost
 
-    - name: Print completion message
-      debug:
-        msg: |-
-          Congratulations!
+  - name: Print completion message
+    ansible.builtin.debug:
+      msg: |-
+        Congratulations!
 
-          The migration from
-          docker to containerd
-          is complete.
+        The migration from
+        docker to containerd
+        is complete.
 
-          You must now change the container_runtime variable
-          in your config/config.toml to 'containerd'.
+        You must now change the container_runtime variable
+        in your config/config.toml to 'containerd'.
+...

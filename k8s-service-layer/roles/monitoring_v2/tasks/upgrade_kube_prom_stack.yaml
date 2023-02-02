@@ -1,12 +1,13 @@
+---
 - name: Compare major and minor versions
   vars:
     prom_stack_conf_major_version: "{{ prom_stack_conf_version.split('.')[0] }}"
     prom_stack_depl_major_version: "{{ prom_stack_depl_version.split('.')[0] }}"
-    prom_stack_version_is_equal_major: "{{ (prom_stack_conf_major_version | int) - (prom_stack_depl_major_version | int) == 0}}"
+    prom_stack_version_is_equal_major: "{{ (prom_stack_conf_major_version | int) - (prom_stack_depl_major_version | int) == 0 }}"
 
   block:
   - name: Fail if configured KSL monitoring version is older than the deployed one
-    fail:
+    ansible.builtin.fail:
       msg: |
         An older KSL monitoring version than the currently deployed one has been configured.
         Downgrading it is not supported. Please adjust your configuration.
@@ -15,7 +16,7 @@
     when: prom_stack_conf_version is version(prom_stack_depl_version, operator='lt')
 
   - name: Check if the major versions do equal
-    debug:
+    ansible.builtin.debug:
       msg: |
         The deployed and configured KSL monitoring stack version belong to the same major release.
         Configured version: {{ prom_stack_conf_version }}
@@ -28,14 +29,14 @@
           not prom_stack_version_is_equal_major
     with_sequence:
     - start="{{ (prom_stack_depl_major_version | int) + 1 }}" end="{{ prom_stack_conf_major_version }}"
-    include_tasks: apply_crds.yaml
+    ansible.builtin.include_tasks: apply_crds.yaml
 
   # Remove the admission controllers associated with the old prometheus-operator installation
   # issue ref: https://github.com/helm/charts/issues/19928
   - name: Remove admission controller before upgrade
     vars:
       admission_webhook_name: "{{ (monitoring_prometheus_stack_release_name +
-       '-' + monitoring_prometheus_stack_chart_name)[:26] + '-' + 'admission'}}"
+       '-' + monitoring_prometheus_stack_chart_name)[:26] + '-' + 'admission' }}"
     when: not prom_stack_version_is_equal_major
     kubernetes.core.k8s:
       state: absent
@@ -50,3 +51,4 @@
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
+...

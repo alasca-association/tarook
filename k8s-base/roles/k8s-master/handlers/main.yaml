@@ -1,13 +1,15 @@
+---
 - name: Restart kubelet
   delegate_to: "{{ item }}"
   loop: "{{ groups['k8s_nodes'] }}"
-  become: yes
-  run_once: yes
-  service:
+  become: true
+  run_once: true
+  ansible.builtin.service:
     name: kubelet
     state: restarted
 
 - name: Publish join key
-  service:
+  ansible.builtin.service:
     name: publish-join-key.service
     state: started
+...

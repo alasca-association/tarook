@@ -20,3 +20,4 @@
   - name: Print detected version
     debug:
       msg: "Detected Kubernetes version {{ k8s_version_minor }}"
+...

@@ -2,10 +2,10 @@
 # if it is in HEALTH_ERR it will refuse to do the upgrade.
 #
 # https://rook.github.io/docs/rook/v1.2/ceph-upgrade.html#ceph-version-upgrades
-
+---
 # Verify that the ceph cluster is healthy
 - name: Include cluster health verification
-  include_tasks: cluster_health_verification.yaml
+  ansible.builtin.include_tasks: cluster_health_verification.yaml
 
 - name: Patch the image version of the Ceph Cluster (< v16.2.6)
   when: rook_ceph_version is version('v16.2.6', operator='<')
@@ -44,16 +44,17 @@
 # The upgrade will take at least 5 minutes
 # We are pausing here to prevent spamming the output with failures
 - name: The upgrade will take several minutes, pausing ansible for 5m
-  pause:
+  ansible.builtin.pause:
     seconds: 300
 
 - name: Wait until the ceph cluster's core components are fully updated
-  include_tasks: wait_for_ceph_upgrade.yaml
+  ansible.builtin.include_tasks: wait_for_ceph_upgrade.yaml
 
 - name: Give the rook-based ceph cluster time (20s) to stabilize
-  pause:
+  ansible.builtin.pause:
     seconds: 20
 
 # Verify that the ceph cluster is healthy
 - name: Include cluster health verification
-  include_tasks: cluster_health_verification.yaml
+  ansible.builtin.include_tasks: cluster_health_verification.yaml
+...

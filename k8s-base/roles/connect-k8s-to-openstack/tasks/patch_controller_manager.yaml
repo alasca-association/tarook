@@ -1,10 +1,11 @@
+---
 - name: Patch the K8s controller manager to mount the cloud-config
-  script: "{{ playbook_dir }}/utils/patch_kube_controller.py -i -f /etc/kubernetes/manifests/kube-controller-manager.yaml"
+  ansible.builtin.script: "{{ playbook_dir }}/utils/patch_kube_controller.py -i -f /etc/kubernetes/manifests/kube-controller-manager.yaml"
   args:
     executable: python3
 
 - name: Force restart of kube-controller-manager
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   kubernetes.core.k8s:
@@ -13,12 +14,13 @@
     kind: Pod
     namespace: kube-system
     name: "kube-controller-manager-{{ inventory_hostname }}"
-    wait: no
+    wait: false
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
+...

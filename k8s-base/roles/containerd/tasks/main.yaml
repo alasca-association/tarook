@@ -1,6 +1,7 @@
+---
 - name: Ensure /etc/containerd directory is present
-  become: yes
-  file:
+  become: true
+  ansible.builtin.file:
     path: /etc/containerd
     state: directory
     mode: 0755
@@ -20,7 +21,7 @@
     delay: "{{ network_error_delay }}"
 
   - name: Add docker repository
-    apt_repository:
+    ansible.builtin.apt_repository:
       repo: "deb https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
       state: present
     register: apt_action
@@ -40,7 +41,7 @@
   become: true
   block:
   - name: Ensure 'containerd' package is absent
-    apt:
+    ansible.builtin.apt:
       state: absent
       name:
       - containerd
@@ -50,7 +51,7 @@
     delay: "{{ network_error_delay }}"
 
   - name: Install 'containerd.io' package from docker repository
-    apt:
+    ansible.builtin.apt:
       state: present
       name:
       - containerd.io
@@ -60,8 +61,8 @@
     delay: "{{ network_error_delay }}"
 
 - name: Create containerd daemon configuration
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: config.toml.j2
     dest: /etc/containerd/config.toml
     owner: root
@@ -70,13 +71,14 @@
   register: configuration_update
 
 - name: Restart containerd
-  become: yes
+  become: true
   # Only restart if something changed AND we're allowed to do the restart
   when:
   - package_install.changed or containerd_remove.changed or configuration_update.changed
-  - _allow_disruption or install_status == 'k8s_not_installed' # noqa no-handler
-  systemd:
-    enabled: yes
+  - _allow_disruption or install_status == 'k8s_not_installed'  # noqa no-handler
+  ansible.builtin.systemd:
+    enabled: true
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true
     name: containerd
+...

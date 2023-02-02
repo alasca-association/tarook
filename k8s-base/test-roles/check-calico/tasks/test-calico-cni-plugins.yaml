@@ -1,22 +1,23 @@
 ---
 - name: Check that calico and calico-ipam CNI binaries do exist
-  become: yes
+  become: true
 
   block:
   - name: Check /opt/cni/bin/
-    stat:
+    ansible.builtin.stat:
       path: /opt/cni/bin/
     register: cni_stat_result
     failed_when: "( cni_stat_result.stat.exists != true ) or ( cni_stat_result.stat.mode != '0750' )"
 
   - name: Check /opt/cni/bin/calico
-    stat:
+    ansible.builtin.stat:
       path: /opt/cni/bin/calico
     register: cni_stat_result
     failed_when: "( cni_stat_result.stat.exists != true ) or ( cni_stat_result.stat.mode != '0750' )"
 
   - name: Check /opt/cni/bin/calico-ipam
-    stat:
+    ansible.builtin.stat:
       path: /opt/cni/bin/calico-ipam
     register: ipam_stat_result
     failed_when: "( ipam_stat_result.stat.exists != true ) or ( ipam_stat_result.stat.mode != '0750' )"
+...

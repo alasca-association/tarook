@@ -1,9 +1,10 @@
+---
 - name: kubeadm upgrade plan & apply
-  become: yes
+  become: true
   when: do_upgrade
   block:
-    - name: Run kubeadm upgrade plan # noqa no-changed-when
-      command:
+    - name: Run kubeadm upgrade plan  # noqa no-changed-when
+      ansible.builtin.command:
         argv:
           - "kubeadm"
           - "upgrade"
@@ -11,8 +12,8 @@
 
     # Do not renew certificates here because we rolled out our own chain
     # --yes auto-confirms and makes upgrade non-interactive
-    - name: Execute the upgrade
-      command:
+    - name: Execute the upgrade  # noqa no-changed-when
+      ansible.builtin.command:
         argv:
           - "kubeadm"
           - "upgrade"
@@ -28,98 +29,99 @@
       poll: 5
 
     - name: Remove IPv6DualStack for >= v1.23
-      become: yes
+      become: true
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
       when:
         - next_k8s_version is defined and next_k8s_version is version('1.23', '>=')
       block:
-      - name: Patch kube-proxy to remove IPv6DualStack
-        kubernetes.core.k8s_info:
-          kind: ConfigMap
-          namespace: kube-system
-          name: kube-proxy
-        register: kube_proxy_configmap_old
-
-      - name: Patch the kube-proxy ConfigMap
-        vars:
-          kube_proxy_config_patched: "{{ kube_proxy_configmap_old['resources'][0]['data']['config.conf'] | replace('IPv6DualStack: false', '') | from_yaml | to_nice_yaml }}"
-        kubernetes.core.k8s:
-          definition:
-            apiVersion: v1
+        - name: Patch kube-proxy to remove IPv6DualStack
+          kubernetes.core.k8s_info:
             kind: ConfigMap
-            metadata:
-              name: kube-proxy
-              namespace: kube-system
-            data:
-              config.conf: |
-                {{ kube_proxy_config_patched }}
-        register: kube_proxy_configmap
-        # Retry this task on failures
-        until: kube_proxy_configmap is not failed
-        retries: "{{ k8s_error_retries }}"
-        delay: "{{ k8s_error_delay }}"
+            namespace: kube-system
+            name: kube-proxy
+          register: kube_proxy_configmap_old
 
-      - name: Patch kubeadm-config to remove IPv6DualStack
-        kubernetes.core.k8s_info:
-          kind: ConfigMap
-          namespace: kube-system
-          name: kubeadm-config
-        register: kubeadm_config_configmap_old
+        - name: Patch the kube-proxy ConfigMap
+          vars:
+            kube_proxy_config_patched: "{{ kube_proxy_configmap_old['resources'][0]['data']['config.conf'] | replace('IPv6DualStack: false', '') | from_yaml | to_nice_yaml }}"
+          kubernetes.core.k8s:
+            definition:
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: kube-proxy
+                namespace: kube-system
+              data:
+                config.conf: |
+                  {{ kube_proxy_config_patched }}
+          register: kube_proxy_configmap
+          # Retry this task on failures
+          until: kube_proxy_configmap is not failed
+          retries: "{{ k8s_error_retries }}"
+          delay: "{{ k8s_error_delay }}"
 
-      - name: Patch the kubeadm-config ConfigMap
-        vars:
-          kubeadm_config_config_patched: "{{ kubeadm_config_configmap_old['resources'][0]['data']['ClusterConfiguration'] | replace('IPv6DualStack: false', '') | from_yaml | to_nice_yaml }}"
-        kubernetes.core.k8s:
-          definition:
-            apiVersion: v1
+        - name: Patch kubeadm-config to remove IPv6DualStack
+          kubernetes.core.k8s_info:
             kind: ConfigMap
-            metadata:
-              name: kubeadm-config
-              namespace: kube-system
-            data:
-              ClusterConfiguration: |
-                {{ kubeadm_config_config_patched }}
-        # Retry this task on failures
-        register: k8s_apply
-        until: k8s_apply is not failed
-        retries: "{{ k8s_error_retries }}"
-        delay: "{{ k8s_error_delay }}"
+            namespace: kube-system
+            name: kubeadm-config
+          register: kubeadm_config_configmap_old
 
-      - name: Patch kubelet-config to remove IPv6DualStack
-        kubernetes.core.k8s_info:
-          kind: ConfigMap
-          namespace: kube-system
-          name: "kubelet-config-{{next_minor_k8s_version}}"
-        register: kubelet_config_configmap_old
+        - name: Patch the kubeadm-config ConfigMap
+          vars:
+            kubeadm_config_config_patched: "{{ kubeadm_config_configmap_old['resources'][0]['data']['ClusterConfiguration'] | replace('IPv6DualStack: false', '') | from_yaml | to_nice_yaml }}"
+          kubernetes.core.k8s:
+            definition:
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: kubeadm-config
+                namespace: kube-system
+              data:
+                ClusterConfiguration: |
+                  {{ kubeadm_config_config_patched }}
+          # Retry this task on failures
+          register: k8s_apply
+          until: k8s_apply is not failed
+          retries: "{{ k8s_error_retries }}"
+          delay: "{{ k8s_error_delay }}"
 
-      - name: Patch the kubelet-config ConfigMap
-        vars:
-          kubelet_config_config_patched: "{{ kubelet_config_configmap_old['resources'][0]['data']['kubelet'] | replace('IPv6DualStack: false', '') | from_yaml | to_nice_yaml }}"
-        kubernetes.core.k8s:
-          definition:
-            apiVersion: v1
+        - name: Patch kubelet-config to remove IPv6DualStack
+          kubernetes.core.k8s_info:
             kind: ConfigMap
-            metadata:
-              name: "kubelet-config-{{next_minor_k8s_version}}"
-              namespace: kube-system
-            data:
-              kubelet: |
-                {{ kubelet_config_config_patched }}
-        # Retry this task on failures
-        register: k8s_apply
-        until: k8s_apply is not failed
-        retries: "{{ k8s_error_retries }}"
-        delay: "{{ k8s_error_delay }}"
+            namespace: kube-system
+            name: "kubelet-config-{{ next_minor_k8s_version }}"
+          register: kubelet_config_configmap_old
 
-      - name: Trigger rollout restart kube-proxy
-        when: kube_proxy_configmap.changed
-        command:
-          argv:
-            - kubectl
-            - rollout
-            - restart
-            - ds
-            - kube-proxy
-            - -n
-            - kube-system
+        - name: Patch the kubelet-config ConfigMap
+          vars:
+            kubelet_config_config_patched: "{{ kubelet_config_configmap_old['resources'][0]['data']['kubelet'] | replace('IPv6DualStack: false', '') | from_yaml | to_nice_yaml }}"
+          kubernetes.core.k8s:
+            definition:
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: "kubelet-config-{{ next_minor_k8s_version }}"
+                namespace: kube-system
+              data:
+                kubelet: |
+                  {{ kubelet_config_config_patched }}
+          # Retry this task on failures
+          register: k8s_apply
+          until: k8s_apply is not failed
+          retries: "{{ k8s_error_retries }}"
+          delay: "{{ k8s_error_delay }}"
+
+        - name: Trigger rollout restart kube-proxy
+          when: kube_proxy_configmap.changed
+          ansible.builtin.command:
+            argv:
+              - kubectl
+              - rollout
+              - restart
+              - ds
+              - kube-proxy
+              - -n
+              - kube-system
+...

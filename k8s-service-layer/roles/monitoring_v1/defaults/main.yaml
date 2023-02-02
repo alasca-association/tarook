@@ -12,9 +12,10 @@ k8s_sl_monitoring_jsonnet_manifest_listing: "{{ monitoring_jsonnet_dir_monitorin
 monitoring_scheduling_key: null
 monitoring_scheduling_value: null
 
-monitoring_prometheus_monitor_all_namespaces: True
+monitoring_prometheus_monitor_all_namespaces: true
 
 monitoring_kube_state_metrics_memory_limit: "128Mi"
 monitoring_kube_state_metrics_memory_request: "50Mi"
 monitoring_kube_state_metrics_cpu_limit: "50m"
 monitoring_kube_state_metrics_cpu_request: "20m"
+...

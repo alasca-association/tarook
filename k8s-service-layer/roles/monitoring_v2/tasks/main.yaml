@@ -1,21 +1,21 @@
 ---
 - name: Patch kube-proxy
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: kube_proxy_patch.yaml
   when: (k8s_monitoring_enabled | bool) and (k8s_network_plugin in ['calico'])
 
 - name: Create namespace
   when: k8s_monitoring_enabled | bool
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: v1
       kind: Namespace
       metadata:
         name: "{{ monitoring_namespace }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -23,7 +23,7 @@
   delay: "{{ k8s_error_delay }}"
 
 - name: Rollout the etcd-metrics-proxy
-  include_role:
+  ansible.builtin.include_role:
     name: etcd-metrics-proxy
 
 - name: Check if admin secret for Grafana already exists
@@ -38,7 +38,7 @@
   when: not grafana_admin.resources
   kubernetes.core.k8s:
     state: present
-    apply: yes
+    apply: true
     definition: |
       apiVersion: v1
       kind: Secret
@@ -50,8 +50,8 @@
         admin-user: YWRtaW4=
         admin-password: cHJvbS1vcGVyYXRvcg==
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -75,7 +75,7 @@
     prom_stack_conf_version: "{{ monitoring_prometheus_stack_version }}"
   block:
   - name: Check if configured and deployed KSL monitoring version do equal
-    debug:
+    ansible.builtin.debug:
       msg: |
         The configured KSL monitoring version matches the deployed one.
         Configured version: {{ prom_stack_conf_version }}
@@ -84,7 +84,7 @@
 
   - name: Trigger upgrade configured and deployed KSL monitoring version do not equal
     when: not prom_stack_conf_version is version(prom_stack_depl_version, operator='eq')
-    include_tasks: upgrade_kube_prom_stack.yaml
+    ansible.builtin.include_tasks: upgrade_kube_prom_stack.yaml
 
 - name: "{{ monitoring_install | ternary('Add', 'Remove') }} prometheus-community Repo"
   kubernetes.core.helm_repository:
@@ -106,8 +106,8 @@
     release_name: "{{ monitoring_prometheus_stack_release_name }}"
     release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'prometheus_stack.yaml.j2') | from_yaml }}"
-    wait: no
-    update_repo_cache: yes
+    wait: false
+    update_repo_cache: true
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
@@ -124,14 +124,15 @@
     release_name: "{{ monitoring_prometheus_adapter_release_name }}"
     release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'prometheus_adapter.yaml.j2') | from_yaml }}"
-    wait: no
-    update_repo_cache: yes
+    wait: false
+    update_repo_cache: true
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
 
 - name: Install thanos
-  include_role:
+  ansible.builtin.include_role:
     name: monitoring_thanos_v1
   when: monitoring_use_thanos
+...
