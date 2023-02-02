@@ -43,9 +43,8 @@
 - name: Harden SSH
   hosts: k8s_nodes
   become: true
-  collections:
-  - devsec.hardening
   roles:
+  # https://github.com/dev-sec/ansible-collection-hardening/
   - role: devsec.hardening.ssh_hardening
     tags: harden-ssh
 

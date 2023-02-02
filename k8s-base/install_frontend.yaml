@@ -35,11 +35,10 @@
 - name: Harden SSH
   hosts: frontend
   become: true
-  collections:
-  - devsec.hardening
   vars_files:
   - vars/ssh-hardening.yaml
   roles:
+  # https://github.com/dev-sec/ansible-collection-hardening/
   - role: devsec.hardening.ssh_hardening
     tags: harden-ssh
 
