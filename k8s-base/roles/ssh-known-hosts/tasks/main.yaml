@@ -18,6 +18,7 @@
     ansible.builtin.command: "ssh-keyscan {{ ansible_host }}"
     changed_when: false
     register: ssh_keyscan
+    failed_when: ssh_keyscan.rc not in [0,1]
 
   - name: Check if {{ inventory_hostname }} is already known
     ansible.builtin.known_hosts:
