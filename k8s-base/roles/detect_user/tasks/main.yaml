@@ -20,6 +20,7 @@
   ansible.builtin.shell: |
     ssh \
       -o ConnectTimeout=10 \
+      -o ConnectionAttempts=10 \
       -o PasswordAuthentication=no \
       -o StrictHostKeyChecking=yes \
       -o UserKnownHostsFile={{ etc_dir }}/ssh_known_hosts \
