@@ -1,0 +1,24 @@
+
+- name: Install apt-cacher-ng
+  apt:
+    name: apt-cacher-ng
+    state: present
+
+- name: Configure apt-cacher-ng (static files)
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/apt-cacher-ng/{{ item }}"
+    owner: root
+    group: root
+    mode: 0o664
+  loop:
+  - ubuntu_mirrors
+  - backends_ubuntu
+
+- name: Configure apt-cacher-ng (config template)
+  template:
+    src: acng.conf.j2
+    dest "/etc/apt-cacher-ng/acng.conf"
+    owner: root
+    group: root
+    mode 0o664
