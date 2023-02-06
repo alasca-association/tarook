@@ -632,6 +632,11 @@ enabled = false # •ᴗ•
 # used.
 #letsencrypt_ingress = "nginx"
 
+# This variable let's you specify the endpoint of the ACME issuer. A common usecase
+# is to switch between staging and production. [0]
+# [0]: https://letsencrypt.org/docs/staging-environment/
+# letsencrypt_server: https://acme-staging-v02.api.letsencrypt.org/directory
+
 # ANCHOR_END: ksl_cert_manager_configuration
 
 # ANCHOR: ksl_ingress_configuration
