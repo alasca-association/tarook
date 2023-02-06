@@ -94,10 +94,12 @@
   when: "container_mirror_ca"
 
 - name: Configure container mirrors
-  become: yes
   # NOTE: containerd need not be reloaded for changes to the mirrors
   # to take effect.
-  include_tasks: configure_mirror.yaml
+  include_tasks:
+    file: configure_mirror.yaml
+    apply:
+      become: yes
   loop: "{{ container_mirrors }}"
 
 - name: Reboot the node of initial installation
