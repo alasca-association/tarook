@@ -1,0 +1,31 @@
+---
+- name: Fetch the status of {{ pod.metadata.name }}
+  kubernetes.core.k8s_exec:
+    namespace: "{{ yaook_vault_namespace }}"
+    pod: "{{ pod.metadata.name }}"
+    container: vault
+    command: vault status -format=json
+  register: vault_status
+  failed_when: vault_status.rc not in [0, 2]
+
+- name: Abort if vault is sealed and we don't have any keys ({{ pod.metadata.name }})
+  when: (vault_status.stdout | from_json).sealed and not yaook_vault_unseal_keys
+  ansible.builtin.fail:
+    msg: Dear user, the LCM would like to speak with our vault. Unfortuntely it's locked and you didn't hand us the key(s). Mind helping us out by unsealing the vault manually? Thanks!
+
+# We don't care that the unseal keys are exposed because they are supposed to be rotated anyway after the initial setup.
+- name: Unseal {{ pod.metadata.name }}
+  when: (vault_status.stdout | from_json).sealed
+  kubernetes.core.k8s_exec:
+    namespace: "{{ yaook_vault_namespace }}"
+    pod: "{{ pod.metadata.name }}"
+    container: vault
+    command: "vault operator unseal {{ item | quote }}"
+  register: vault_unseal
+  until: vault_unseal.rc == 0
+  timeout: 120
+  retries: "{{ k8s_error_retries }}"
+  loop: "{{ yaook_vault_unseal_keys[:yaook_vault_init_key_threshold] }}"
+  loop_control:
+    label: Redacted
+...
