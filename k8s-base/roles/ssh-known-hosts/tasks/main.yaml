@@ -4,44 +4,59 @@
 # via it is already on our road map.
 
 - name: Manage known hosts
-  delegate_to: localhost
   become: false
+  delegate_to: localhost
+  run_once: true
   block:
   - name: Make sure {{ ssh_known_hosts_file }} exists
-    run_once: true
     ansible.builtin.file:
       path: "{{ ssh_known_hosts_file }}"
       state: touch
       mode: 0644
 
-  - name: Scan for SSH host keys.
-    ansible.builtin.command: "ssh-keyscan {{ ansible_host }}"
+  - name: Gather default hosts IPv4s
+    vars:
+      hosts_ipv4_dict: {}
+    ansible.builtin.set_fact:
+      hosts_ipv4_dict: "{{ hosts_ipv4_dict | combine({item: hostvars[item].ansible_host}) }}"
+    loop: "{{ groups['all'] }}"
+
+  - name: Scan SSH host keys.
+    ansible.builtin.command: "ssh-keyscan {{ item.value }}"
     changed_when: false
     register: ssh_keyscan
-    failed_when: ssh_keyscan.rc not in [0,1]
+    # failed_when: ssh_keyscan.rc not in [0,1]
+    loop: "{{ hosts_ipv4_dict | dict2items }}"
+    loop_control:
+      label: "{{ item.key }}: {{ item.value }}"
 
-  - name: Check if {{ inventory_hostname }} is already known
+  - name: Check if hosts are already known
     ansible.builtin.known_hosts:
-      name: "{{ ansible_host }}"
+      name: "{{ item }}"
       path: "{{ ssh_known_hosts_file }}"
       state: absent
     check_mode: true
+    loop: "{{ groups['all'] }}"
     register: ssh_host_present
 
   - name: Check for key diffs
     ansible.builtin.known_hosts:
-      name: "{{ ansible_host }}"
-      key: "{{ inventory_hostname }},{{ item }}"
+      name: "{{ item.0.item.key }}"
+      key: "{{ item.0.item.key }},{{ item.1 }}"
       path: "{{ ssh_known_hosts_file }}"
       state: present
-    with_items: "{{ ssh_keyscan.stdout_lines }}"
+    with_subelements:
+    - "{{ ssh_keyscan.results }}"
+    - stdout_lines
+    loop_control:
+      label: "{{ item.0.item.key }}: {{ item.1 }}"
     register: ssh_host_update
     check_mode: true
 
-  - name: Fail if a already known host changed
-    with_items: "{{ ssh_host_update.results }}"
+  - name: Fail if an already known host changed
+    loop: "{{ ssh_host_update.results }}"
     loop_control:
-      label: "{{ item.item }}"
+      label: "{{ item.item.0.item.key }}"
     when:
     - (item.changed | bool) and (ssh_host_present.changed | bool)
     - not allow_host_key_changes
@@ -49,13 +64,17 @@
       msg: |
         THE FOLLOWING HOST KEY HAS CHANGED
 
-        "{{ item.item }}"
+        {{ item.item.0.item.key }}, {{ item.item.0.item.value }}
 
   - name: Update known hosts
     ansible.builtin.known_hosts:
-      name: "{{ ansible_host }}"
-      key: "{{ inventory_hostname }},{{ item }}"
+      name: "{{ item.0.item.key }}"
+      key: "{{ item.0.item.key }},{{ item.1 }}"
       path: "{{ ssh_known_hosts_file }}"
       state: present
-    with_items: "{{ ssh_keyscan.stdout_lines }}"
+    with_subelements:
+    - "{{ ssh_keyscan.results }}"
+    - stdout_lines
+    loop_control:
+      label: "{{ item.0.item.key }}: {{ item.1 }}"
 ...

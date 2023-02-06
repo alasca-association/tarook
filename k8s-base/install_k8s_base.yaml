@@ -72,7 +72,6 @@
 
 - name: Update SSH known hosts after SSH hardening
   hosts: k8s_nodes
-  serial: 1
   become: true
   vars_files:
   - vars/etc.yaml
