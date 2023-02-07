@@ -18,7 +18,6 @@
           - "kubeadm"
           - "upgrade"
           - "apply"
-          - "--certificate-renewal=false"
           - "--yes"
           - "v{{ next_k8s_version }}"
       # Let’s also play this safe here -- the `upgrade apply` command can take a
