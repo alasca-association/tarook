@@ -27,12 +27,16 @@
       async: 1800
       poll: 5
 
+    # Remove me when dropping support for
+    # k8s v1.19, v1.20, v1.21 & v1.22
     - name: Remove IPv6DualStack for >= v1.23
       become: true
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
       when:
-        - next_k8s_version is defined and next_k8s_version is version('1.23', '>=')
+        - next_k8s_version is defined
+        - next_k8s_version is version('1.23', '>=')
+        - next_k8s_version is version('1.24', '<')
       block:
         - name: Patch kube-proxy to remove IPv6DualStack
           kubernetes.core.k8s_info:

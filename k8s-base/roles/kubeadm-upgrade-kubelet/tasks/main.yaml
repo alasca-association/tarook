@@ -66,7 +66,9 @@
     group: root
     mode: 0600
   when:
-  - next_k8s_version is defined and next_k8s_version is version('1.23', '>=')
+  - next_k8s_version is defined
+  - next_k8s_version is version('1.23', '>=')
+  - next_k8s_version is version('1.24', '<')
 
 - name: Configure and restart kubelet
   ansible.builtin.include_role:
