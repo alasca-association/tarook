@@ -186,6 +186,10 @@
   roles:
   - role: k8s-master
     tags: k8s-master
+  - role: k8s-fetch-certs
+    tags:
+    - k8s-master
+    - k8s-fetch-certs
 
 - name: Install calico supporting services
   hosts: masters

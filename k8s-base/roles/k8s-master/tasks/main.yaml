@@ -117,28 +117,6 @@
         value: 1
         state: present
 
-    - name: Fetch certificates file and keys from the initial master to localhost
-      ansible.builtin.fetch:
-        src: "/etc/kubernetes/pki/{{ item }}"
-        dest: "{{ etc_dir }}/"
-        flat: true
-      loop: "{{ pki_cert_files }}"
-      run_once: true
-
-    - name: Fetch etcd certificates file and keys from the initial master to localhost
-      ansible.builtin.fetch:
-        src: "/etc/kubernetes/pki/etcd/{{ item }}"
-        dest: "{{ etc_dir }}/etcd/"
-        flat: true
-      loop: "{{ etcd_files }}"
-      run_once: true
-
-    - name: Copy kubeconfig to localhost
-      ansible.builtin.fetch:
-        src: /etc/kubernetes/admin.conf
-        dest: "{{ etc_dir }}/"
-        flat: true
-
 - name: Test if this host can generate a token
   ansible.builtin.stat:
     path: /etc/kubernetes/admin.conf

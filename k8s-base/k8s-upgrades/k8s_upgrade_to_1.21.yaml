@@ -29,6 +29,7 @@
   vars_files:
     - ../vars/disruption.yaml
     - ../vars/retries.yaml
+    - ../vars/etc.yaml
   tags:
     - kubeadm-first-master
   pre_tasks:
@@ -51,6 +52,8 @@
     - name: kubeadm-upgrade-apply
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-uncordon-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - name: k8s-fetch-certs
       when: "not (k8s_upgrade_done | default(False))"
 
 - name: Upgrade the residual master nodes
