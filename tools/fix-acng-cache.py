@@ -21,7 +21,6 @@
 
 import argparse
 import os
-import stat
 import http.client
 import urllib.request
 import shutil
@@ -30,10 +29,12 @@ ap = argparse.ArgumentParser()
 ap.add_argument('dir', nargs='?', default='.')
 args = ap.parse_args()
 
+
 def read_head_file(fname):
     with open(fname, "rb") as f:
-        status_line = f.readline()
+        f.readline()  # chop off the status line
         return http.client.parse_headers(f)
+
 
 for path, dirs, files in os.walk(args.dir):
     for file_ in files:
