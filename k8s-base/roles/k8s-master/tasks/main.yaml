@@ -89,7 +89,7 @@
             csr_path: /etc/kubernetes/pki/ca.csr
             provider: selfsigned
 
-    - name: Check if gcr.io can be reached  # noqa no-changed-when
+    - name: Pull config images used by kubeadm from registry.k8s.io  # noqa no-changed-when
       ansible.builtin.command: kubeadm config images pull --kubernetes-version {{ k8s_version }}
 
     - name: Create kubeadm-init-config.yaml
