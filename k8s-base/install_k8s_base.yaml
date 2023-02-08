@@ -108,7 +108,9 @@
     ansible.builtin.fail:
       msg: |
         Docker is installed on this node, but containerd is configured as CRI!
-    when: "'docker.io' in ansible_facts.packages"
+    when:
+    - "'docker.io' in ansible_facts.packages"
+    - container_runtime == 'containerd'
   - name: Prevent installing containerd for GPU cluster
     ansible.builtin.fail:
       msg: Trying to used containerd in a GPU cluster – this does not work.
@@ -119,6 +121,7 @@
     - "'containerd' in ansible_facts.packages"
     - install_status == 'k8s_installed'
     - not _allow_disruption
+    - container_runtime == 'containerd'
     ansible.builtin.fail:
       msg: |
         The 'containerd' package is installed,
