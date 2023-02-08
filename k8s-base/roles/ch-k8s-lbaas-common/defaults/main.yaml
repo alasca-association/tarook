@@ -4,8 +4,8 @@ ch_k8s_lbaas_use_floating_ips: true
 ch_k8s_lbaas_controller_image: "registry.gitlab.com/yaook/ch-k8s-lbaas/controller:{{ ch_k8s_lbaas_version }}"
 
 ch_k8s_lbaas_agent_user: ch-k8s-lbaas-agent
-ch_k8s_lbaas_agent_binary_url: "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download/v{{ ch_k8s_lbaas_version }}/ch-k8s-lbaas-agent"
-
+ch_k8s_lbaas_agent_source: "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download"
+ch_k8s_lbaas_agent_binary_url: "{{ ch_k8s_lbaas_agent_source }}/v{{ ch_k8s_lbaas_version }}/ch-k8s-lbaas-agent"
 
 ch_k8s_lbaas_agent_binary_checksums:
   "0.1.0": "sha256:395da1f398c02941876597e8f0cd60128d682f01ed0e343063850392fee5f762"
