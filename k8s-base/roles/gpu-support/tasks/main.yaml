@@ -18,19 +18,26 @@
       retries: "{{ network_error_retries }}"
       delay: "{{ network_error_delay }}"
 
-    - name: Add key of nvidia's cuda repo
-      ansible.builtin.apt_key:
-        # presented key is the same for ubuntu1604, ubuntu1804 and ubuntu2004
-        url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
-        state: present
-      register: task_result
-      until: task_result is not failed
-      retries: "{{ network_error_retries }}"
-      delay: "{{ network_error_delay }}"
+    - name: Ensure keyrings directory exists
+      # ftr: this is present by default on Debian...
+      ansible.builtin.file:
+        state: directory
+        path: /etc/apt/keyrings
+        owner: root
+        group: root
+        mode: u=rwx,go=rx
+
+    - name: Deploy Google's K8s repository key
+      ansible.builtin.copy:
+        src: apt-key.gpg
+        dest: /etc/apt/keyrings/nvidia.gpg
+        owner: root
+        group: root
+        mode: u=rw,go=r
 
     - name: Add repository
       ansible.builtin.apt_repository:
-        repo: deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /
+        repo: deb [signed-by=/etc/apt/keyrings/nvidia.gpg] https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /
         state: present
         update_cache: true
       register: task_result
