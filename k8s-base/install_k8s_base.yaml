@@ -121,6 +121,7 @@
     - "'containerd' in ansible_facts.packages"
     - install_status == 'k8s_installed'
     - not _allow_disruption
+    - container_runtime == 'containerd'
     ansible.builtin.fail:
       msg: |
         The 'containerd' package is installed,
