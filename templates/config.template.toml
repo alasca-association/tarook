@@ -3,7 +3,7 @@
 # If a variable is commented out, it is optional and the defined
 # value is the default.
 
-# NOTE:For some sections the inventory updater will apply pefixes to
+# NOTE:For some sections the inventory updater will apply prefixes to
 # the variables before passing them over to the ansible inventories.
 
 # ANCHOR: terraform_config
@@ -15,7 +15,7 @@
 #workers = 3
 #worker_flavors = ["L", "M", "L"]
 
-# if set to true one must set propper values for the "azs" array according to the cloud in use
+# if set to true one must set proper values for the "azs" array according to the cloud in use
 #enable_az_management = false
 
 # Enable DualStack support
@@ -281,7 +281,7 @@ plugin = "calico" # •ᴗ•
 # deployed via the Yaook Metal Controller.
 enabled = false # •ᴗ•
 
-# Absolute path to an executable which prints a fresh, revokable vault token
+# Absolute path to an executable which prints a fresh, revocable vault token
 # to stdout. This token must be privileged enough to write the given vault path
 # below.
 #vault_token_script =
@@ -372,7 +372,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 # introspect the cluster state.
 #toolbox = true
 
-# Enable the CephFS shaerd filesystem.
+# Enable the CephFS shared filesystem.
 #ceph_fs = false
 #ceph_fs_name = "ceph-fs"
 #ceph_fs_replicated = 1
