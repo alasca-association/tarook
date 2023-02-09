@@ -74,9 +74,19 @@
       when: blacklisted_nouveau.changed or installed_driver.changed
       register: ramfs
 
-    - name: Reboot the node
+    - name: Reboot block (gpu)  # noqa no-handler
       when: ramfs.changed
-      ansible.builtin.reboot:
+      block:
+
+        - name: Reboot the system
+          ansible.builtin.command:
+            argv:
+              - reboot
+              - now
+          when: ansible_connection == 'local'
+
+        - name: Reboot the system
+          ansible.builtin.reboot:
 
     - name: Basic sanity check with nvidia-smi
       # nvidia-smi -L lists all detected cards.
