@@ -632,6 +632,11 @@ enabled = false # •ᴗ•
 # used.
 #letsencrypt_ingress = "nginx"
 
+# This variable let's you specify the endpoint of the ACME issuer. A common usecase
+# is to switch between staging and production. [0]
+# [0]: https://letsencrypt.org/docs/staging-environment/
+# letsencrypt_server: https://acme-staging-v02.api.letsencrypt.org/directory
+
 # ANCHOR_END: ksl_cert_manager_configuration
 
 # ANCHOR: ksl_ingress_configuration
@@ -720,6 +725,9 @@ enabled = false # •ᴗ•
 # LOCATION to use the Vault instance in the future!
 #enabled = false # •ᴗ•
 
+# Create a publically reachable ingress resource for the API endpoint of vault.
+#ingress = false
+
 # Version of the Helm Chart to use
 #chart_version = "0.20.1"
 
@@ -727,8 +735,7 @@ enabled = false # •ᴗ•
 # never deleted).
 #namespace = "k8s-svc-vault"
 
-# Extra DNS names for which certificates should be prepared. Enabling this
-# enables the ingress for vault.
+# Extra DNS names for which certificates should be prepared.
 # NOTE: to work correctly, there must exist an ingress of class `nginx` and it
 # must allow ssl passthrough.
 #dnsnames = [..]
@@ -762,6 +769,22 @@ enabled = false # •ᴗ•
 
 # Storage size for the vault file storage backend.
 #storage_size = "8Gi"
+
+# If `ingress=True` and `dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use 
+# for your ACME service.
+#yaook_vault_external_ingress_issuer_name = ""
+
+# Can be `Issuer` or `ClusterIssuer`, depending on the kind of issuer you would like
+# to use for externally facing certificates.
+#yaook_vault_external_ingress_issuer_kind = "ClusterIssuer"
+
+# If `true`, then an additional backup service will be deployed which creates snapshots and stores
+# them in an S3 bucket.
+#yaook_vault_enable_backups = true
+
+# Credentials to access an S3 bucket to which the backups will be written. Required if `enable_backups = true`.
+# You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
+#yaook_vault_s3_config_file = "vault_backup_s3_config.yaml"
 
 # ANCHOR_END: ksl_vault_configuration
 

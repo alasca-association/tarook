@@ -181,4 +181,33 @@
     metrics.stdout | from_json | json_query('status') == "success" and
     metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   delay: 3
+
+- name: Check vault
+  when: yaook_vault_enabled | default(False) | bool
+  block:
+  - name: Check vault's endpoint
+    kubernetes.core.k8s_exec:
+      namespace: "{{ check_prometheus_scraping_namespace }}"
+      pod: prometheus-test-scraper
+      command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="vault"}'
+    register: metrics
+    until: |
+      metrics.failed == false and
+      metrics.rc == 0 and
+      metrics.stdout | from_json | json_query('status') == "success" and
+      metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+    delay: 3
+  - name: Check vault-backup's endpoint
+    when: yaook_vault_enable_backups | default(True) | bool
+    kubernetes.core.k8s_exec:
+      namespace: "{{ check_prometheus_scraping_namespace }}"
+      pod: prometheus-test-scraper
+      command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="vault-backup-monitoring"}'
+    register: metrics
+    until: |
+      metrics.failed == false and
+      metrics.rc == 0 and
+      metrics.stdout | from_json | json_query('status') == "success" and
+      metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+    delay: 3
 ...

@@ -64,7 +64,7 @@
           preferredChain: "{{ k8s_cert_manager_letsencrypt_preferred_chain }}"
           privateKeySecretRef:
             name: letsencrypt-default-issuer-account-key
-          server: https://acme-v02.api.letsencrypt.org/directory
+          server: "{{ k8s_cert_manager_letsencrypt_server }}"
           solvers:
           - http01:
               ingress:

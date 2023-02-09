@@ -441,15 +441,15 @@ def main():
 
     # KUBERNETES SERVICE LAYER: VAULT
     print_process_state("KSL - VAULT")
-    kubernetes_service_ingress_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
-        "vault.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("vault"),
-        kubernetes_service_ingress_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("vault", "")
-    )
+    for stage in [ANSIBLE_STAGES["stage4"], ANSIBLE_STAGES["stage5"]]:
+        kubernetes_service_vault_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / stage / "vault.yaml"
+        )
+        dump_to_ansible_inventory(
+            config["k8s-service-layer"].get("vault"),
+            kubernetes_service_vault_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("vault", "")
+        )
 
     # KUBERNETES SERVICE LAYER: ETCD-BACKUP
     print_process_state("KSL - ETCD-BACKUP")

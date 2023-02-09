@@ -1,0 +1,95 @@
+---
+- name: Ensure we have a (Cluster)Issuer set
+  when: not (yaook_vault_external_ingress_issuer_name | default(""))
+  ansible.builtin.fail:
+    msg: |
+      `vault_v1` has been configured to create an external (a public) ingress.
+      Please set `external_ingress_issuer_name` s.t. the role can fetch a TLS certificate for you.
+
+- name: Set vault server DNS names
+  ansible.builtin.set_fact:
+    yaook_vault_dnsnames_complete: |
+      [
+        {% for name in yaook_vault_dnsnames %} {{ name | to_json }}, {% endfor %}
+      ]
+
+- name: Create Vault Certificate (external)
+  kubernetes.core.k8s:
+    apply: true
+    definition:
+      apiVersion: cert-manager.io/v1
+      kind: Certificate
+      metadata:
+        namespace: "{{ yaook_vault_namespace }}"
+        name: vault-cert-external
+      spec:
+        issuerRef:
+          name: "{{ yaook_vault_external_ingress_issuer_name }}"
+          kind: "{{ yaook_vault_external_ingress_issuer_kind }}"
+        secretName: vault-cert-external
+        dnsNames: "{{ yaook_vault_dnsnames_complete }}"
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+
+- name: Create another API endpoint
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+  kubernetes.core.k8s:
+    apply: true
+    validate:
+      fail_on_error: true
+      strict: true
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        labels:
+          app.kubernetes.io/instance: vault
+          app.kubernetes.io/name: vault
+        name: vault-external-active
+        namespace: k8s-svc-vault
+      spec:
+        internalTrafficPolicy: Cluster
+        ipFamilies:
+        - IPv4
+        ipFamilyPolicy: SingleStack
+        ports:
+        - name: https
+          port: 8250
+          protocol: TCP
+          targetPort: 8250
+        - name: https-internal
+          port: 8251
+          protocol: TCP
+          targetPort: 8251
+        publishNotReadyAddresses: true
+        selector:
+          app.kubernetes.io/instance: vault
+          app.kubernetes.io/name: vault
+          component: server
+          vault-active: "true"
+        sessionAffinity: None
+        type: ClusterIP
+
+- name: Create Vault Ingress (external)
+  kubernetes.core.k8s:
+    apply: true
+    definition: "{{ lookup('template', 'external_ingress.yaml.j2') }}"
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+...

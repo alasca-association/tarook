@@ -16,119 +16,12 @@
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
 
-- name: Create Vault CA selfsigned issuer
-  kubernetes.core.k8s:
-    apply: true
-    definition:
-      apiVersion: cert-manager.io/v1
-      kind: Issuer
-      metadata:
-        name: selfsigned-issuer
-        namespace: "{{ yaook_vault_namespace }}"
-      spec:
-        selfSigned: {}
-    validate:
-      fail_on_error: true
-      strict: true
-  # Retry this task on failures
-  register: k8s_apply
-  until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+- name: Create the internal PKI
+  ansible.builtin.import_tasks: internal_pki.yaml
 
-- name: Create Vault CA
-  kubernetes.core.k8s:
-    apply: true
-    definition:
-      apiVersion: cert-manager.io/v1
-      kind: Certificate
-      metadata:
-        namespace: "{{ yaook_vault_namespace }}"
-        name: vault-ca
-      spec:
-        issuerRef:
-          kind: "{{ yaook_vault_ca_issuer_kind }}"
-          name: "{{ yaook_vault_ca_issuer }}"
-        secretName: vault-ca
-        commonName: vault-ca
-        isCA: true
-    validate:
-      fail_on_error: true
-      strict: true
-  # Retry this task on failures
-  register: k8s_apply
-  until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
-
-- name: Create Vault Issuer
-  kubernetes.core.k8s:
-    apply: true
-    definition:
-      apiVersion: cert-manager.io/v1
-      kind: Issuer
-      metadata:
-        namespace: "{{ yaook_vault_namespace }}"
-        name: vault
-      spec:
-        ca:
-          secretName: vault-ca
-    validate:
-      fail_on_error: true
-      strict: true
-  # Retry this task on failures
-  register: k8s_apply
-  until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
-
-- name: Enumerate workers
-  kubernetes.core.k8s_info:
-    api_version: v1
-    kind: Node
-  register: nodes
-
-- name: Collect worker IPs
-  ansible.builtin.set_fact:
-    yaook_vault_worker_ips: "{{ (nodes.resources | map(attribute='status') | map(attribute='addresses') | flatten(levels=1) | selectattr('type', 'eq', 'InternalIP') | map(attribute='address')) }}"
-
-- name: Set vault server DNS names
-  ansible.builtin.set_fact:
-    yaook_vault_dnsnames_complete: |
-      [
-        {{ "vault.%s.svc.cluster.local" | format(yaook_vault_namespace) | to_json }}
-        {% for name in yaook_vault_dnsnames %}, {{ name | to_json }}{% endfor %}
-      ]
-
-- name: Create Vault Certificate
-  # This needs to be valid for:
-  # - the cluster service name
-  # - all worker IP addresses (if management cluster integration)
-  # - possibly a fun public DNS name
-  kubernetes.core.k8s:
-    apply: true
-    definition:
-      apiVersion: cert-manager.io/v1
-      kind: Certificate
-      metadata:
-        namespace: "{{ yaook_vault_namespace }}"
-        name: vault-cert
-      spec:
-        issuerRef:
-          name: vault
-        secretName: vault-cert
-        duration: 72h
-        renewBefore: 24h
-        ipAddresses: "{{ yaook_vault_management_cluster_integration | ternary(yaook_vault_worker_ips, []) + ['127.0.0.1', '::1'] }}"
-        dnsNames: "{{ yaook_vault_dnsnames_complete }}"
-    validate:
-      fail_on_error: true
-      strict: true
-  # Retry this task on failures
-  register: k8s_apply
-  until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+- name: Create the external PKI
+  when: yaook_vault_ingress | default(False)
+  ansible.builtin.import_tasks: external_pki.yaml
 
 - name: "{{ k8s_ingress_install | ternary('Add', 'Remove') }} Hashicorp vault Repo"
   kubernetes.core.helm_repository:
@@ -151,70 +44,7 @@
     release_name: vault
     release_state: present
     update_repo_cache: true
-    values:
-      global:
-        enabled: true
-        tlsDisable: false
-      injector:
-        enabled: false
-        priorityClassName: "system-cluster-critical"
-      server:
-        priorityClassName: "system-cluster-critical"
-        affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}"
-        tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}"
-        tls:
-          enabled: true
-          hosts: "{{ yaook_vault_dnsnames_complete }}"
-          secretName:
-          - vault-cert
-        ingress:
-          enabled: "{{ yaook_vault_dnsnames | bool }}"
-          annotations:
-            kubernetes.io/ingress.class: nginx
-            nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-            nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-            infra-bare-metal.yaook.cloud/dns-ip: "{{ yaook_vault_worker_ips | join(',') }}"
-          hosts: |
-            [
-              {% for name in yaook_vault_dnsnames %}{% if loop.index0 > 0 %}, {% endif %}{ "host": {{ name | to_json }} }{% endfor %}
-            ]
-        authDelegator:
-          enabled: false
-        standalone:
-          enabled: true
-          config: |
-            listener "tcp" {
-              address = "[::]:8200"
-              cluster_address = "[::]:8201"
-              tls_cert_file = "/vault/userconfig/vault-cert/tls.crt"
-              tls_key_file  = "/vault/userconfig/vault-cert/tls.key"
-            }
-            storage "file" {
-              path = "/vault/data"
-            }
-        shareProcessNamespace: true
-        dataStorage:
-          enabled: true
-          size: "{{ yaook_vault_storage_size }}"
-          storageClass: "{{ yaook_vault_storage_class }}"
-        extraContainers:
-        - name: service-reload
-          image: registry.gitlab.com/yaook/images/service-reload/service-reload:devel
-          volumeMounts:
-          - name: userconfig-vault-cert
-            mountPath: /data
-          env:
-          - name: YAOOK_SERVICE_RELOAD_MODULE
-            value: vault
-          - name: TINI_SUBREAPER
-            value: "1"
-          args:
-          - /data/
-        extraVolumes:
-        - type: secret
-          name: vault-cert
-      ui:
-        enabled: false
+    values: "{{ lookup('template', 'vault.yaml.j2') | from_yaml }}"
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
@@ -236,7 +66,7 @@
     namespace: "{{ yaook_vault_namespace }}"
     pod: "{{ vault_pods.resources[0].metadata.name }}"
     container: vault
-    command: "sh -c {{ 'VAULT_CAPATH=/vault/userconfig/vault-cert/ca.crt vault status -format=json' | quote }}"
+    command: vault status -format=json
   # not found or other fatal signals
   until: '(vault_status.rc | default(255)) < 128 and vault_status.stdout != ""'
   failed_when: '(vault_status.rc | default(255)) >= 128 or vault_status.stdout == ""'
@@ -244,6 +74,7 @@
   retries: 10
   delay: 5
 
+# Vault commands are usually idempotent
 - name: Initialize Vault in first pod if not initialized
   when: 'not (vault_status.stdout | from_json).initialized'
   block:
@@ -252,28 +83,64 @@
       namespace: "{{ yaook_vault_namespace }}"
       pod: "{{ vault_pods.resources[0].metadata.name }}"
       container: vault
-      command: "sh -c {{ 'VAULT_CAPATH=/vault/userconfig/vault-cert/ca.crt vault operator init -key-shares=%s -key-threshold=%s -format=json' | format(yaook_vault_init_key_shares | quote, yaook_vault_init_key_threshold | quote) | quote }}"
+      command: 'vault operator init -key-shares={{ yaook_vault_init_key_shares | quote }} -key-threshold={{ yaook_vault_init_key_threshold | quote }} -format=json'
     failed_when: 'vault_init.rc != 0'
     register: vault_init
 
-  - name: 'SENSITIVE: UNSEAL KEYS'
-    ansible.builtin.debug:
-      msg: "{{ item }}"
-    loop: "{{ (vault_init.stdout | from_json).unseal_keys_b64 }}"
+  # TODO: I'm caching those to facilitate development. We want to rotate these keys and token immediately after the cluster was spawned.
+  - name: 'SENSITIVE: Write UNSEAL KEYS into cluster repo (inventory/.etc/vault_unseal.key)'
+    delegate_to: localhost
+    ansible.builtin.copy:
+      content: "{{ (vault_init.stdout | from_json).unseal_keys_b64 }}"
+      dest: "{{ yaook_vault_etc_dir }}/vault_unseal.key"
+      mode: u=rw,og-rwx
 
-  - name: 'SENSITIVE: ROOT TOKEN'
-    ansible.builtin.debug:
-      msg: "{{ (vault_init.stdout | from_json).root_token }}"
+  - name: 'SENSITIVE: Write ROOT TOKEN into cluster repo (inventory/.etc/vault_root_token)'
+    delegate_to: localhost
+    ansible.builtin.copy:
+      content: "{{ (vault_init.stdout | from_json).root_token }}"
+      dest: "{{ yaook_vault_etc_dir }}/vault_root_token"
+      mode: u=rw,og-rwx
 
-  - name: Unseal Vault pod
-    vars:
-      init_data: "{{ vault_init.stdout | from_json }}"
-    kubernetes.core.k8s_exec:
-      namespace: "{{ yaook_vault_namespace }}"
-      pod: "{{ vault_pods.resources[0].metadata.name }}"
-      container: vault
-      command: "sh -c {{ 'VAULT_CAPATH=/vault/userconfig/vault-cert/ca.crt vault operator unseal %s' | format(item) | quote }}"
-    loop: "{{ init_data.unseal_keys_b64[:init_data.unseal_threshold] }}"  # noqa jinja[spacing]
-    failed_when: 'vault_unseal.rc != 0'
-    register: vault_unseal
+- name: Load unseal key(s) and a root token
+  ansible.builtin.import_tasks: credentials.yaml
+
+# We have to unseal at least one vault before the raft cluster can be established
+- name: Unseal the initial Vault pod
+  loop:
+  - "{{ vault_pods.resources[0] }}"
+  loop_control:
+    label: "{{ pod.metadata.name }}"
+    loop_var: pod
+  ansible.builtin.include_tasks: unseal.yaml
+
+- name: Wait until all vault instances have joined the cluster
+  kubernetes.core.k8s_exec:
+    namespace: "{{ yaook_vault_namespace }}"
+    pod: "{{ item.metadata.name }}"
+    container: vault
+    command: vault status -format=json
+  register: vault_status
+  failed_when: vault_status.rc == 1
+  until: (vault_status.stdout | from_json).initialized
+  retries: 10
+  delay: 5
+  loop: "{{ vault_pods.resources }}"
+
+# TODO: The unseal command sometimes fails with a timeout (triggered by vault) and yet is the vault unsealed eventually.
+# Potentially VAULT_MAX_RETRIES can help
+- name: Unseal all residual pods
+  loop: "{{ vault_pods.resources }}"
+  loop_control:
+    label: "{{ pod.metadata.name }}"
+    loop_var: pod
+  # Note: We're using the loop + `include_tasks` dance to emulate looping over a block
+  ansible.builtin.include_tasks: unseal.yaml
+
+- name: Add monitoring
+  ansible.builtin.import_tasks: monitoring.yaml
+
+- name: Add backups
+  when: yaook_vault_enable_backups
+  ansible.builtin.import_tasks: backup.yaml
 ...

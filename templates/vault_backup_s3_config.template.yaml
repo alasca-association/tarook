@@ -1,0 +1,7 @@
+access_key: REPLACEME
+secret_key: REPLACEME
+endpoint_url: REPLACEME
+endpoint_cacrt: |
+  -----BEGIN CERTIFICATE-----
+  REPLACEME
+  -----END CERTIFICATE-----

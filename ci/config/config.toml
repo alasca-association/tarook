@@ -143,7 +143,16 @@ enabled = true
 enabled = true
 
 [k8s-service-layer.vault]
-enabled = true
+enabled = false
+# Setting `ingress=true` only works and makes sense if we include the letsencrypt certificate creation.
+# We don't have a fixed public IP for the CI (as an Ingress IP), nor do we have DNSaaS, hence we can't do this.
+ingress = false
+# Backups require access to an S3 bucket. If one feels fancy, the test can be extended later and could like this:
+# 1.) inject credentials to an S3 bucket securely (!) into the CI job
+# 2.) enable backups
+# 3.) hop into the vault-backup pod and execute `backup-now`
+# 4.) check if the metric `yaook_backup_shifter_warm_backups_total` increased
+enable_backups = false
 
 [k8s-service-layer.fluxcd]
 enabled = true

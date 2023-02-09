@@ -1,0 +1,158 @@
+apiVersion: v1
+data:
+  s3_access_key: {{ yaook_vault_backup_s3.access_key | b64encode }}
+  s3_secret_key: {{ yaook_vault_backup_s3.secret_key | b64encode }}
+  s3_ca.crt: {{ yaook_vault_backup_s3.endpoint_cacrt | b64encode }}
+  s3_endpoint: {{ yaook_vault_backup_s3.endpoint_url | b64encode }}
+  vault_role_id: {{ yaook_vault_backup_approle_role_id | b64encode }}
+  vault_secret_id: {{ yaook_vault_backup_approle_secret_id | b64encode }}
+  vault_approle_path: {{ yaook_vault_backup_approle_path | b64encode }}
+kind: Secret
+metadata:
+  name: vault-backup
+  namespace: {{ yaook_vault_namespace | to_json }}
+type: Opaque
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-backup
+  namespace: {{ yaook_vault_namespace | to_json }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      yaook.cloud/component: vault-backup
+  template:
+    metadata:
+      labels:
+        yaook.cloud/component: vault-backup
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - env:
+        - name: YAOOK_BACKUP_CREATOR_BACKUP_MODULE_NAME
+          value: backup_creator.services.vaultraft
+        - name: YAOOK_BACKUP_CREATOR_OUT_PATH
+          value: /backup/new
+        - name: YAOOK_BACKUP_CREATOR_SCHEDULE
+          value: 21 */12 * * *
+        - name: YAOOK_BACKUP_CREATOR_VAULT_RAFT_APPROLE_SECRET_ID
+          valueFrom:
+            secretKeyRef:
+              key: vault_secret_id
+              name: vault-backup
+        - name: YAOOK_BACKUP_CREATOR_VAULT_RAFT_APPROLE_ROLE_ID
+          valueFrom:
+            secretKeyRef:
+              key: vault_role_id
+              name: vault-backup
+        - name: YAOOK_BACKUP_CREATOR_VAULT_RAFT_APPROLE_PATH
+          valueFrom:
+            secretKeyRef:
+              key: vault_approle_path
+              name: vault-backup
+        - name: VAULT_ADDR
+          value: "https://vault-active.{{ yaook_vault_namespace }}.svc.cluster.local:8200"
+        - name: VAULT_CAPATH
+          value: /vault/ca.crt
+        image: registry.gitlab.com/yaook/images/backup-creator/backup-creator:devel
+        imagePullPolicy: IfNotPresent
+        name: backup-creator
+        volumeMounts:
+        - mountPath: /backup
+          name: backup-scratch
+        - mountPath: /vault/ca.crt
+          subPath: ca.crt
+          name: vault-ca 
+      - env:
+        - name: YAOOK_BACKUP_SHIFTER_WORK_DIR
+          value: /backup
+        - name: YAOOK_BACKUP_SHIFTER_S3_FILE_PREFIX
+          value: vault-backup
+        - name: YAOOK_BACKUP_SHIFTER_SHIFTERS
+          value: dumpinfo,s3_upload
+        - name: YAOOK_BACKUP_SHIFTER_S3_URL
+          valueFrom:
+            secretKeyRef:
+              key: s3_endpoint
+              name: vault-backup
+        - name: YAOOK_BACKUP_SHIFTER_S3_BUCKET
+          value: vault-backup
+        - name: YAOOK_BACKUP_SHIFTER_S3_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key: s3_access_key
+              name: vault-backup
+        - name: YAOOK_BACKUP_SHIFTER_S3_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key: s3_secret_key
+              name: vault-backup
+        - name: YAOOK_BACKUP_SHIFTER_S3_CACERT
+          value: /vault/s3_ca.crt
+        - name: YAOOK_BACKUP_SHIFTER_S3_ADDRESSING_STYLE
+          value: path
+        - name: YAOOK_BACKUP_SHIFTER_METRICS_PORT
+          value: "19100"
+        image: registry.gitlab.com/yaook/images/backup-shifter/backup-shifter:1.0.108
+        imagePullPolicy: IfNotPresent
+        name: backup-shifter
+        resources: {}
+        volumeMounts:
+        - mountPath: /backup
+          name: backup-scratch
+        - mountPath: /vault/s3_ca.crt
+          subPath: s3_ca.crt
+          name: s3-ca
+      volumes:
+      - emptyDir: {}
+        name: backup-scratch
+      - name: vault-ca
+        secret:
+          secretName: vault-ca-internal
+      - name: s3-ca
+        secret:
+          secretName: vault-backup
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    yaook.cloud/component: vault-backup
+  name: vault-backup-monitoring
+  namespace: {{ yaook_vault_namespace | to_json }}
+spec:
+  ports:
+  - port: 19100
+    name: metrics
+    protocol: TCP
+    targetPort: 19100
+  selector:
+    yaook.cloud/component: vault-backup
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: vault-backup
+  namespace: {{ yaook_vault_namespace | to_json }}
+{% if monitoring_common_labels %}
+  labels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+    {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ yaook_vault_namespace }}
+  selector:
+    matchLabels:
+      yaook.cloud/component: vault-backup
+  endpoints:
+    - port: metrics
+      path: /metrics
