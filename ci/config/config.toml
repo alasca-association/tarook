@@ -143,7 +143,7 @@ enabled = true
 enabled = true
 
 [k8s-service-layer.vault]
-enabled = true
+enabled = false
 # Setting `ingress=true` only works and makes sense if we include the letsencrypt certificate creation.
 # We don't have a fixed public IP for the CI (as an Ingress IP), nor do we have DNSaaS, hence we can't do this.
 ingress = false
