@@ -1,0 +1,5 @@
+[global]
+index-url={{ pip_mirror_url }}
+{% if pip_mirror_ca %}
+cert=/etc/pip/pip_mirror_ca.pem
+{% endif %}
