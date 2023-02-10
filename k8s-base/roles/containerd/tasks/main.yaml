@@ -11,18 +11,26 @@
 - name: Add docker repository
   become: true
   block:
+  - name: Ensure keyrings directory exists
+    # ftr: this is present by default on Debian...
+    ansible.builtin.file:
+      state: directory
+      path: /etc/apt/keyrings
+      owner: root
+      group: root
+      mode: u=rwx,go=rx
+
   - name: Add GPG apt key
-    ansible.builtin.apt_key:
-      url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
-      state: present
-    register: apt_action
-    until: apt_action is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    ansible.builtin.copy:
+      src: apt-key-{{ ansible_distribution | lower }}.gpg
+      dest: /etc/apt/keyrings/docker.gpg
+      owner: root
+      group: root
+      mode: u=rw,go=r
 
   - name: Add docker repository
     ansible.builtin.apt_repository:
-      repo: "deb https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+      repo: "deb [signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
       state: present
     register: apt_action
     until: apt_action is not failed

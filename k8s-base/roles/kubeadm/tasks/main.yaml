@@ -41,22 +41,29 @@
 - name: Add Google's K8s repository (apt)
   become: true
   block:
+    - name: Ensure keyrings directory exists
+      # ftr: this is present by default on Debian...
+      ansible.builtin.file:
+        state: directory
+        path: /etc/apt/keyrings
+        owner: root
+        group: root
+        mode: u=rwx,go=rx
 
-    - name: Add Key of Google's K8s repository
-      ansible.builtin.apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        state: present
-      register: task_result
-      until: task_result is not failed
-      retries: "{{ network_error_retries }}"
-      delay: "{{ network_error_delay }}"
+    - name: Deploy Google's K8s repository key
+      ansible.builtin.copy:
+        src: apt-key.gpg
+        dest: /etc/apt/keyrings/kubeadm.gpg
+        owner: root
+        group: root
+        mode: u=rw,go=r
 
     - name: Add Google's K8s repository to sources.list
       ansible.builtin.copy:
         dest: /etc/apt/sources.list.d/kubernetes.list
         content: |
           {{ _auto_generated_preamble }}
-          deb https://apt.kubernetes.io/ kubernetes-xenial main
+          deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
         owner: root
         group: root
         mode: 0640
