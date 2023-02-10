@@ -1097,6 +1097,14 @@ container_runtime = "containerd"  # "•ᴗ•"
 # those don't work with caching proxies like apt-cacher-ng.
 # apt_proxy_url = "..."
 
+# Custom PyPI mirror
+# Use this in offline setups or to use a pull-through cache for
+# accessing the PyPI.
+# If the TLS certificate used by the mirror is not signed by a CA in
+# certifi, you can put its cert in `config/pip_mirror_ca.pem` to set
+# it explicitly.
+# pip_mirror_url = "..."
+
 [nvidia.vgpu]
 # vGPU Support
 # If virtualize_gpu in the [kubernetes] section is set to true, please also set these variables:
