@@ -5,4 +5,5 @@ skip_list:
   - name[casing]
   - name[template]
   - name[missing]
-  - experimental  # all rules tagged as experimental
+  - experimental   # all rules tagged as experimental
+  - yaml           # we run yamllint on everything anyway, so catch those issues there!
