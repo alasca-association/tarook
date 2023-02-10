@@ -37,4 +37,18 @@
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
+
+- name: Setup pip config for Offline Installation
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/pip.conf
+    mode: 0644
+    owner: root
+    group: root
+    content: |
+      [global]
+      index={{ pip_mirror_url }}
+      index-url={{ pip_mirror_url }}
+      trusted-host=my-company
+  when: "pip_mirror_url is defined"
 ...
