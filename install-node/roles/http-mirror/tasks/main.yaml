@@ -1,0 +1,91 @@
+- name: Create the http-mirror config directory
+  ansible.builtin.file:
+    path: /etc/install-node/http-mirror/
+    owner: root
+    group: root
+    mode: 0770
+    state: directory
+
+- name: Create the http-mirror TLS config directory
+  ansible.builtin.file:
+    path: /etc/install-node/http-mirror/tls
+    owner: root
+    group: root
+    mode: 0770
+    state: directory
+
+- name: Create the private key for the http-mirror
+  community.crypto.openssl_privatekey:
+    path: /etc/install-node/http-mirror/tls/private.key
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Create the CSR for the http-mirror
+  community.crypto.openssl_csr:
+    path: /etc/install-node/http-mirror/tls/request.csr
+    privatekey_path: /etc/install-node/http-mirror/tls/private.key
+    subject:
+      C: DE
+      O: Cloud&Heat GmbH
+      OU: Offline Installation
+      CN: registry.install-node
+    subjectAltName:
+    - "DNS:registry.install-node"
+    - "IP:{{ ansible_default_ipv4 }}"
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Sign the CSR
+  community.crypto.x509_certificate:
+    path: /etc/install-node/http-mirror/tls/cert.pem
+    privatekey_path: /etc/install-node/http-mirror/tls/private.key
+    csr_path: /etc/install-node/http-mirror/tls/request.csr
+    provider: selfsigned
+    mode: 0444
+    owner: root
+    group: root
+
+- name: Fetch the CA
+  ansible.builtin.fetch:
+    src: /etc/install-node/http-mirror/tls/cert.pem
+    dest: "{{ etc_dir }}/install-node-mirror-ca.pem"
+    flat: yes
+
+- name: Retrieve the IPs of the docker
+  community.docker.docker_container_info:
+    name: "registry-{{ item.name }}"
+  loop: container_mirrors
+  register: container_mirror_info
+
+- name: Render the configuration
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/install-node/http-mirror/nginx.conf
+    mode: 0440
+    owner: root
+    group: root
+
+- name: Start a container
+  community.docker.docker_container:
+    name: http-mirror
+    image: "{{ install_node_httpd_image }}"
+    network_mode: host
+    mounts:
+    - type: bind
+      source: "/etc/install-node/http-mirror/nginx.conf"
+      target: /etc/nginx/nginx.conf
+      readonly: true
+    - type: bind
+      source: /etc/install-node/http-mirror/tls/
+      target: /etc/ssl/private/
+      readonly: true
+    - type: bind
+      source: "{{ install_node_pip_mirror_path }}"
+      target: /var/lib/pip-mirror
+      readonly: true
+    - type: bind
+      source: "{{ install_node_misc_mirror_path }}"
+      target: /var/lib/misc/
+      readonly: true
