@@ -1,0 +1,4 @@
+install_node_https_mirror_port: 443
+install_node_httpd_image: "nginx:1.23"
+install_node_pip_mirror_path: /var/lib/pip-mirror/
+install_node_misc_mirror_path: /var/lib/misc-mirror/
