@@ -48,6 +48,10 @@ calico_node_key_path: "{{ etc_dir }}/calico/calico-node.key"
 # Changing this value can be useful if one endpoint hosts outdated images or you're subject to rate limiting
 calico_image_registry: "quay.io"
 
+# for versions before 3.21.3
 calico_calicoctl_binary_source: "https://github.com/projectcalico/calicoctl/releases/download"
 calico_cni_plugin_binary_source: "https://github.com/projectcalico/cni-plugin/releases/download"
+
+# for versions after 3.21.3
+calico_release_source: "https://github.com/projectcalico/calico/releases/download"
 ...
