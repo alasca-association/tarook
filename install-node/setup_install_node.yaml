@@ -8,4 +8,6 @@
   roles:
   - role: apt-cacher-ng
     tags: apt-cacher-ng
+  - role: http-mirror
+    tags: http-mirror
 ...
