@@ -1,0 +1,3 @@
+# for now we have only archive.ubuntu.com, this is to prevent additional
+# problems with mirrors that aren't up to date.
+http://archive.ubuntu.com/ubuntu/

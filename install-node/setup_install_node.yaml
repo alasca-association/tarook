@@ -1,0 +1,10 @@
+
+- name: Setup the install node
+  hosts: install_node
+  vars_files:
+  - vars/etc.yaml
+  become: yes
+  gather_facts: true
+  roles:
+  - role: apt-cacher-ng
+    tags: apt-cacher-ng

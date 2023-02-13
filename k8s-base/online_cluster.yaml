@@ -1,0 +1,32 @@
+
+- name: Establish connectivity to the nodes
+  hosts: frontend
+  gather_facts: false
+  strategy: free
+  vars_files:
+  - vars/disruption.yaml
+  - vars/etc.yaml
+  roles:
+  - role: detect_user
+    tags: detect_user
+  # - role: ssh-known-hosts
+  #   tags: ssh-known-hosts
+  # - role: prepare-node
+  #   tags: prepare-node
+  # - role: is-frontend-initialized
+  #   tags: update_system
+
+- name: Offline the Cluster
+  hosts: frontend
+  gather_facts: false
+  become: yes
+  tasks:
+  - name: Remove nftables config to offline the nodes
+    file:
+      path: /etc/nft.d/00take-offline.conf
+      state: absent
+
+  - name: Restart nftables
+    service:
+      name: nftables
+      state: restarted
