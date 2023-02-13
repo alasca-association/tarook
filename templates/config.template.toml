@@ -1052,6 +1052,18 @@ container_runtime = "containerd"  # "•ᴗ•"
 # A list of insecure registries that can be accessed without TLS verification.
 #docker_insecure_registries: [ "0.docker-registry.example.org", "1.docker-registry.example.org" ]
 
+# Mirror Configuration for Containerd
+# container_mirror_default_host = "install-node"
+# container_mirrors = [
+#   { name = "docker.io",
+#     upstream = "https://registry-1.docker.io/",
+#     port = 5000 },
+#   { name = "gitlab.cloudandheat.com",
+#     upstream = "https://registry.gitlab.cloudandheat.com/",
+#     mirrors = ["https://install-node:8000"] },
+# ]
+
+
 # Custom Chrony Configration
 # The ntp servers used by chrony can be customized if it should be necessary or wanted.
 # A list of pools and/or servers can be specified.

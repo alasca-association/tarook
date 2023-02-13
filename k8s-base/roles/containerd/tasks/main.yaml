@@ -78,6 +78,43 @@
     mode: 0640
   register: configuration_update
 
+- name: Create the container mirror directory
+  become: yes
+  file:
+    path: /etc/containerd/certs.d
+    state: directory
+    # I am not sure about the mode, in theory the cert.d directory can
+    # contain client keys for accessing a registry, if we support
+    # this, it probably shouldn't be world readable, on the other hand
+    # just protecting the keys with permissions should suffice
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Store the container mirror CA
+  become: yes
+  copy:
+    dest: /etc/containerd/mirror-ca.pem
+    mode: 0755
+    owner: root
+    group: root
+    content: "{{ container_mirror_ca }}"
+  when: "container_mirror_ca"
+
+- name: Configure container mirrors
+  # NOTE: containerd need not be reloaded for changes to the mirrors
+  # to take effect.
+  include_tasks:
+    file: configure_mirror.yaml
+    apply:
+      become: yes
+  loop: "{{ container_mirrors }}"
+
+- name: Reboot the node of initial installation
+  become: yes
+  when: package_install.changed and not kubernetes_dir.stat.exists
+  reboot: {}
+
 - name: Restart containerd
   become: true
   # Only restart if something changed AND we're allowed to do the restart

@@ -1,0 +1,12 @@
+- name: Create the host namespace directory
+  file:
+    path: "/etc/containerd/certs.d/{{ item.name }}"
+    state: directory
+
+- name: Create the host config file
+  template:
+    src: hosts.toml.j2
+    dest: "/etc/containerd/certs.d/{{ item.name }}/hosts.toml"
+    mode: 0755
+    owner: root
+    group: root

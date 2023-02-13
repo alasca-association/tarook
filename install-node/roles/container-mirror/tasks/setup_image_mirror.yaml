@@ -1,0 +1,41 @@
+
+- name: Create the registry data directory for {{ item.name }}
+  file:
+    path: /var/lib/registry-{{ item.name }}
+    owner: root
+    group: root
+    mode: 0770
+    state: directory
+
+- name: Create the registry config directory {{ item.name }}
+  file:
+    path: /etc/install-node/registry/{{ item.name }}
+    owner: root
+    group: root
+    mode: 0770
+    state: directory
+
+- name: Create the registry config for {{ item.name }}
+  template:
+    dest: /etc/install-node/registry/{{ item.name }}/config.yaml
+    owner: root
+    group: root
+    mode: 0660
+    src: registry-config.yml.j2
+
+- name: Start the registry for {{ item.name }}
+  community.docker.docker_container:
+    name: registry-{{ item.name }}
+    image: "{{ install_node_registry_image }}"
+    mounts:
+    - type: bind
+      source: "/var/lib/registry-{{ item.name }}"
+      target: /var/lib/registry
+    - type: bind
+      source: "/etc/install-node/registry/{{ item.name }}/config.yaml"
+      target: /etc/docker/registry/config.yml
+    - type: bind
+      source: /etc/install-node/registry/tls/
+      target: /etc/ssl/private/
+    ports:
+    - "{{ item.port }}:5000"

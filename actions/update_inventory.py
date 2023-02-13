@@ -37,10 +37,11 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "etcd-backup",
     "custom",
     "miscellaneous",
-    "nvidia"
+    "nvidia",
 )
 # Mapping stages to their common names
 ANSIBLE_STAGES = {
+    "install_node": "01_install_node",
     "stage2": "02_trampoline",
     "stage3": "03_k8s_base",
     "stage4": "04_k8s_service_layer",

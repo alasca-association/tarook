@@ -8,3 +8,5 @@
   roles:
   - role: apt-cacher-ng
     tags: apt-cacher-ng
+  - role: container-mirror
+    tags: container-mirror
