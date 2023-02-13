@@ -10,3 +10,5 @@
     tags: apt-cacher-ng
   - role: container-mirror
     tags: container-mirror
+  - role: http-mirror
+    tags: http-mirror

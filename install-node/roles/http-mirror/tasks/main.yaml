@@ -32,7 +32,7 @@
       CN: registry.install-node
     subjectAltName:
     - "DNS:registry.install-node"
-    - "IP:{{ ansible_default_ipv4 }}"
+    - "IP:{{ ansible_default_ipv4.address }}"
     mode: 0400
     owner: root
     group: root
@@ -56,7 +56,7 @@
 - name: Retrieve the IPs of the docker
   community.docker.docker_container_info:
     name: "registry-{{ item.name }}"
-  loop: container_mirrors
+  loop: "{{ container_mirrors }}"
   register: container_mirror_info
 
 - name: Render the configuration
@@ -76,16 +76,12 @@
     - type: bind
       source: "/etc/install-node/http-mirror/nginx.conf"
       target: /etc/nginx/nginx.conf
-      readonly: true
+      read_only: true
     - type: bind
-      source: /etc/install-node/http-mirror/tls/
-      target: /etc/ssl/private/
-      readonly: true
+      source: /etc/install-node/http-mirror/tls
+      target: /etc/ssl/private
+      read_only: true
     - type: bind
-      source: "{{ install_node_pip_mirror_path }}"
-      target: /var/lib/pip-mirror
-      readonly: true
-    - type: bind
-      source: "{{ install_node_misc_mirror_path }}"
-      target: /var/lib/misc/
-      readonly: true
+      source: "{{ install_node_mirror_path }}"
+      target: /var/lib/mirror
+      read_only: true

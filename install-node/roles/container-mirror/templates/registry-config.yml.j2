@@ -6,9 +6,9 @@ storage:
 
 http:
   addr: 0.0.0.0:5000
-  tls:
-     certificate: /etc/ssl/private/cert.pem
-     key: /etc/ssl/private/private.key
+  # tls:
+  #    certificate: /etc/ssl/private/cert.pem
+  #    key: /etc/ssl/private/private.key
 
 {% if install_node_online_mode %}
 proxy:

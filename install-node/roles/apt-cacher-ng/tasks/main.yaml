@@ -18,7 +18,7 @@
 - name: Configure apt-cacher-ng (config template)
   template:
     src: acng.conf.j2
-    dest "/etc/apt-cacher-ng/acng.conf"
+    dest: "/etc/apt-cacher-ng/acng.conf"
     owner: root
     group: root
-    mode 0o664
+    mode: 0o664

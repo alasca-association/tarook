@@ -37,5 +37,5 @@
     - type: bind
       source: /etc/install-node/registry/tls/
       target: /etc/ssl/private/
-    ports:
-    - "{{ item.port }}:5000"
+    # ports:
+    # - "{{ item.port }}:5000"

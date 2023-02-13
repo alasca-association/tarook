@@ -1,4 +1,8 @@
 
+events {
+
+}
+
 http {
   # tls settings
   ssl_protocols TLSv1.2 TLSv1.3;
@@ -10,21 +14,18 @@ http {
     ssl_certificate /etc/ssl/private/cert.pem;
     ssl_certificate_key /etc/ssl/private/private.key;
 
-    location /pip/ {
-      root /var/lib/mirror/pip/;
-    }
-
-    location /misc/ {
-      root /var/lib/mirror/misc/;
+    location / {
+      root /var/lib/mirror/;
+      index index.html;
     }
   }
 
-  {% for item, info in container_mirrors | zip(container_mirror_info.results) %}
+  {% for info in container_mirror_info.results -%}
   server {
     server_name _;
-    listen {{ item.port }} ssl;
-    ssl_certificate /etc/install-node/registry/tls/cert.pem;
-    ssl_certificate_key /etc/install-node/registry/tls/private.key;
+    listen {{ info.item.port }} ssl;
+    ssl_certificate /etc/ssl/private/cert.pem;
+    ssl_certificate_key /etc/ssl/private/private.key;
 
     add_header "Docker-Distribution-Api-Version" "registry/2.0";
 
@@ -37,5 +38,5 @@ http {
        }
     }
   }
-  {% endfor %}
+  {% endfor -%}
 }
