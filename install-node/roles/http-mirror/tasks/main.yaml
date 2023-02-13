@@ -1,0 +1,91 @@
+---
+- name: Create the install-node CA
+  ansible.builtin.include_tasks: create_ca.yaml
+
+- name: Create the http-mirror config directory
+  ansible.builtin.file:
+    path: /etc/install-node/http-mirror/
+    owner: root
+    group: root
+    mode: 0770
+    state: directory
+
+- name: Create the http-mirror TLS config directory
+  ansible.builtin.file:
+    path: /etc/install-node/http-mirror/tls
+    owner: root
+    group: root
+    mode: 0770
+    state: directory
+
+- name: Create the private key for the http-mirror
+  community.crypto.openssl_privatekey:
+    path: /etc/install-node/http-mirror/tls/private.key
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Create the CSR for the http-mirror
+  community.crypto.openssl_csr:
+    path: /etc/install-node/http-mirror/tls/request.csr
+    privatekey_path: /etc/install-node/http-mirror/tls/private.key
+    subject:
+      C: DE
+      O: Cloud&Heat GmbH
+      OU: Offline Installation
+      CN: install-node
+    subjectAltName:
+    - "DNS:*.{{ install_node_mirror_domain_name }}"
+    # - "IP:{{ ansible_default_ipv4.address }}"
+    basic_constraints: ['CA:FALSE']
+    basic_constraints_critical: true
+    mode: 0400
+    owner: root
+    group: root
+
+- name: Create the certificate for the http-mirror
+  community.crypto.x509_certificate:
+    path: /etc/install-node/http-mirror/tls/cert.pem
+    csr_path: /etc/install-node/http-mirror/tls/request.csr
+    provider: ownca
+    ownca_path: /etc/install-node/ca/ca.crt
+    ownca_privatekey_path: /etc/install-node/ca/private-ca.key
+    mode: 0444
+    owner: root
+    group: root
+  notify: Restart the nginx container
+
+- name: Retrieve the IPs of the container mirror containers
+  community.docker.docker_container_info:
+    name: "registry-{{ item.name }}"
+  loop: "{{ container_mirrors }}"
+  register: container_mirror_info
+
+- name: Render the nginx mirror and reverse proxy configuration
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/install-node/http-mirror/nginx.conf
+    mode: 0440
+    owner: root
+    group: root
+  notify: Restart the nginx container
+
+- name: Start the nginx container
+  community.docker.docker_container:
+    name: http-mirror
+    image: "{{ install_node_httpd_image }}"
+    network_mode: host
+    mounts:
+    - type: bind
+      source: "/etc/install-node/http-mirror/nginx.conf"
+      target: /etc/nginx/nginx.conf
+      read_only: true
+    - type: bind
+      source: /etc/install-node/http-mirror/tls
+      target: /etc/ssl/private
+      read_only: true
+    - type: bind
+      source: "{{ install_node_mirror_path }}"
+      target: /var/lib/mirror
+      read_only: true
+...
