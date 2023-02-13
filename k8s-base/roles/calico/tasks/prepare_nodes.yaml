@@ -5,7 +5,7 @@
 ---
 
 - name: Ensure that /opt/cni/bin/ exists
-  become: yes 
+  become: yes
   file:
     owner: root
     group: root
@@ -80,7 +80,7 @@
   - name: Download Calico release archive to localhost
     get_url:
       mode: 0750
-      url: "https://github.com/projectcalico/calico/releases/download/v{{ image_versions.calico_version }}/release-v{{ image_versions.calico_version }}.tgz"
+      url: "{{ calico_release_source }}/v{{ image_versions.calico_version }}/release-v{{ image_versions.calico_version }}.tgz"
       dest: "{{ calico_cache_dir }}"
       checksum: "{{ calico_release_checksum }}"
     async: 240
