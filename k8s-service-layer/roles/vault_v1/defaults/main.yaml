@@ -6,6 +6,7 @@ yaook_vault_ca_issuer_kind: Issuer
 yaook_vault_ca_issuer: selfsigned-issuer
 yaook_vault_external_ingress_issuer_name: ""
 yaook_vault_external_ingress_issuer_kind: ClusterIssuer
+yaook_vault_external_ingress_class: nginx
 yaook_vault_init_key_shares: 5
 yaook_vault_init_key_threshold: 2
 yaook_vault_management_cluster_integration: false
