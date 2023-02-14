@@ -85,11 +85,10 @@
 - name: Rollout company users
   hosts: k8s_nodes
   gather_facts: true
-  tasks:
-  - name: Rollout company users
+  roles:
+  - name: Rollout company users  # noqa syntax-check[specific]
     when: cah_users_rollout
-    ansible.builtin.include_role:
-      name: ch-role-users
+    role: ch-role-users
     tags:
     - ch-role-users
 
