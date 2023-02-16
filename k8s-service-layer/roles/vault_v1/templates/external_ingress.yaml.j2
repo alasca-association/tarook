@@ -2,7 +2,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/backend-protocol: HTTPS
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
   labels:
@@ -11,6 +10,7 @@ metadata:
   name: vault-external
   namespace: k8s-svc-vault
 spec:
+  ingressClassName: {{ yaook_vault_external_ingress_class | to_json }}
   rules:
 {% for name in yaook_vault_dnsnames %}
   - host: {{ name | to_json }}

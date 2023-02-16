@@ -142,5 +142,5 @@
 
 - name: Add backups
   when: yaook_vault_enable_backups
-  ansible.builtin.import_tasks: backup.yaml
+  ansible.builtin.include_tasks: backup.yaml
 ...
