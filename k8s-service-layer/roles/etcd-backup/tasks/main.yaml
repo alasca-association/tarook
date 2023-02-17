@@ -71,7 +71,7 @@
 - name: "{{ etcd_backup_enabled | ternary('Add', 'Remove') }} etcd-backup Repo"
   kubernetes.core.helm_repository:
     name: yaook.cloud
-    repo_url: https://charts.yaook.cloud/operator/stable/
+    repo_url: "{{ etcd_backup_helm_repo_url }}"
     repo_state: "{{ etcd_backup_enabled | ternary('present', 'absent') }}"
   register: task_result
   until: task_result is not failed

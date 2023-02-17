@@ -20,7 +20,7 @@
 - name: "{{ k8s_ingress_install | ternary('Add', 'Remove') }} ingress-nginx Repo"
   kubernetes.core.helm_repository:
     name: ingress-nginx
-    repo_url: https://kubernetes.github.io/ingress-nginx
+    repo_url: "{{ k8s_ingress_helm_repo_url }}"
     repo_state: "{{ k8s_ingress_install | ternary('present', 'absent') }}"
 
 - name: Install NGINX ingress
