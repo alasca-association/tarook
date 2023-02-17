@@ -80,8 +80,7 @@
 
 - name: Deploy yaook operator etcd backup chart
   kubernetes.core.helm:
-    chart_ref: etcdbackup
-    chart_repo_url: https://charts.yaook.cloud/operator/stable/
+    chart_ref: yaook.cloud/etcdbackup
     chart_version: "{{ etcd_backup_chart_version }}"
     release_namespace: "{{ etcd_backup_namespace }}"
     release_name: "{{ etcd_backup_name }}"

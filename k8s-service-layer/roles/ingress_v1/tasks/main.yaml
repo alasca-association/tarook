@@ -27,8 +27,7 @@
   vars:
     scheduling_key: "{{ k8s_ingress_scheduling_key }}"
   kubernetes.core.helm:
-    chart_ref: ingress-nginx
-    chart_repo_url: https://kubernetes.github.io/ingress-nginx
+    chart_ref: ingress-nginx/ingress-nginx
     release_namespace: "{{ k8s_ingress_namespace }}"
     release_name: ingress
     release_state: "{{ k8s_ingress_install | ternary('present', 'absent') }}"

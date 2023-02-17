@@ -37,8 +37,7 @@
   vars:
     scheduling_key: "{{ yaook_vault_scheduling_key }}"
   kubernetes.core.helm:
-    chart_ref: vault
-    chart_repo_url: https://helm.releases.hashicorp.com
+    chart_ref: hashicorp/vault
     chart_version: "{{ yaook_vault_chart_version }}"
     release_namespace: "{{ yaook_vault_namespace }}"
     release_name: vault

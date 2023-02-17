@@ -117,8 +117,7 @@
 # It enables commands like `k top nodes`
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall Prometheus adapter"
   kubernetes.core.helm:
-    chart_ref: prometheus-adapter
-    chart_repo_url: https://prometheus-community.github.io/helm-charts
+    chart_ref: prometheus-community/prometheus-adapter
     chart_version: "{{ monitoring_prometheus_adapter_version }}"
     release_namespace: "{{ monitoring_namespace }}"
     release_name: "{{ monitoring_prometheus_adapter_release_name }}"
