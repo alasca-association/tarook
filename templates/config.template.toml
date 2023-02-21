@@ -83,6 +83,12 @@ shared_secret = "..."   # REPLACE ME
 version       = "0.5.0"
 agent_port    = 15203
 
+# Configure memory and CPU resources for the lbaas controller
+#controller_cpu_request = "100m"
+#controller_memory_request = "256Mi"
+#controller_cpu_limit = "200m"
+#controller_memory_limit = "256Mi"
+
 # ANCHOR_END: ch-k8s-lbaas_config
 
 # ANCHOR: kubernetes_basic_cluster_configuration

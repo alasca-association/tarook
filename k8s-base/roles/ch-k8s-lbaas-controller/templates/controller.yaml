@@ -36,11 +36,11 @@ spec:
           protocol: TCP
         resources:
           requests:
-            cpu: 100m
-            memory: 64Mi
+            cpu: {{ ch_k8s_lbaas_controller_cpu_request | to_json }}
+            memory: {{ ch_k8s_lbaas_controller_memory_request | to_json }}
           limits:
-            cpu: 200m
-            memory: 96Mi
+            cpu: {{ ch_k8s_lbaas_controller_cpu_limit | to_json }}
+            memory: {{ ch_k8s_lbaas_controller_memory_limit | to_json }}
       serviceAccountName: ch-k8s-lbaas-controller
       volumes:
       - name: config
