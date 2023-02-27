@@ -1,0 +1,12 @@
+---
+- name: Copy the misc mirror certificate to the place for custom CA certs
+  become: true
+  ansible.builtin.copy:
+    dest: /usr/local/share/ca-certificates/mirror-ca.crt
+    mode: 0644
+    owner: root
+    group: root
+    content: "{{ misc_mirror_ca }}"
+  when: misc_mirror_ca
+  notify: Update the CA store
+...

@@ -1,0 +1,6 @@
+---
+- name: Update the CA store
+  become: true
+  ansible.builtin.command:
+    argv: ["update-ca-certificates", "--fresh"]
+...
