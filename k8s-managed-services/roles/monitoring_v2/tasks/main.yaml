@@ -1,8 +1,7 @@
 ---
 - name: "{{ monitoring_internet_probe | ternary('I', 'Uni') }}nstall blackbox-exporter"
   kubernetes.core.helm:
-    chart_ref: prometheus-blackbox-exporter
-    chart_repo_url: https://prometheus-community.github.io/helm-charts
+    chart_ref: prometheus-community/prometheus-blackbox-exporter
     chart_version: "{{ monitoring_blackbox_version }}"
     release_namespace: "{{ monitoring_namespace }}"
     release_name: "kms-blackbox"
@@ -155,7 +154,7 @@
 - name: "{{ k8s_is_gpu_cluster | ternary('I', 'Uni') }}nstall NVIDIA DCGM exporter"
   kubernetes.core.helm:
     chart_ref: dcgm-exporter
-    chart_repo_url: https://nvidia.github.io/dcgm-exporter/helm-charts
+    chart_repo_url: "{{ monitoring_nvidia_dcgm_exporter_helm_repo_url }}"
     chart_version: 2.6.10
     release_namespace: "{{ monitoring_namespace }}"
     release_name: "nvidia-dcgm-exporter"

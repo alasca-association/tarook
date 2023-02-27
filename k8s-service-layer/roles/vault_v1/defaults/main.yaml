@@ -1,6 +1,7 @@
 ---
 yaook_vault_enabled: false
 yaook_vault_namespace: k8s-svc-vault
+yaook_vault_helm_repo_url: "https://helm.releases.hashicorp.com"
 yaook_vault_chart_version: 0.23.0
 yaook_vault_ca_issuer_kind: Issuer
 yaook_vault_ca_issuer: selfsigned-issuer

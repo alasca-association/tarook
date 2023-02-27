@@ -89,7 +89,7 @@
 - name: "{{ monitoring_install | ternary('Add', 'Remove') }} prometheus-community Repo"
   kubernetes.core.helm_repository:
     name: prometheus-community
-    repo_url: https://prometheus-community.github.io/helm-charts
+    repo_url: "{{ monitoring_prometheus_helm_repo_url }}"
     repo_state: "{{ monitoring_install | ternary('present', 'absent') }}"
   register: task_result
   until: task_result is not failed
@@ -100,7 +100,6 @@
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall KSL monitoring stack"
   kubernetes.core.helm:
     chart_ref: "{{ monitoring_prometheus_stack_chart_name }}"
-    chart_repo_url: https://prometheus-community.github.io/helm-charts
     chart_version: "{{ monitoring_prometheus_stack_version }}"
     release_namespace: "{{ monitoring_namespace }}"
     release_name: "{{ monitoring_prometheus_stack_release_name }}"
@@ -117,8 +116,7 @@
 # It enables commands like `k top nodes`
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall Prometheus adapter"
   kubernetes.core.helm:
-    chart_ref: prometheus-adapter
-    chart_repo_url: https://prometheus-community.github.io/helm-charts
+    chart_ref: prometheus-community/prometheus-adapter
     chart_version: "{{ monitoring_prometheus_adapter_version }}"
     release_namespace: "{{ monitoring_namespace }}"
     release_name: "{{ monitoring_prometheus_adapter_release_name }}"
