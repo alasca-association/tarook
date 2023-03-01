@@ -1,43 +1,55 @@
+---
 - name: Fail if duplicate storageclass name
-  fail:
+  ansible.builtin.fail:
     msg: "If local storage and local path provisioners are enabled they MUST use a different storage class name"
   when: "k8s_local_storage_static_enabled and
          k8s_local_storage_static_storageclass_name == k8s_local_storage_dynamic_storageclass_name"
 
 - name: Create mount points
-  become: yes
+  become: true
   block:
   - name: Create directory structure
-    file:
+    ansible.builtin.file:
       path: "{{ item }}"
       state: directory
       owner: root
       group: root
       mode: 0755
     loop:
-      - "{{ k8s_local_storage_dynamic_data_directory }}"
+    - "{{ k8s_local_storage_dynamic_data_directory }}"
 
 - name: Configure k8s resources
   delegate_to: "{{ groups['masters'] | first }}"
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  become: yes
-  run_once: yes
+  become: true
+  run_once: true
   block:
-    - name: Create storage class
-      kubernetes.core.k8s:
-        state: present
-        apply: yes
-        definition: "{{ lookup('template', 'sc.yaml.j2') }}"
-        validate:
-          fail_on_error: yes
-          strict: yes
+  - name: Create storage class
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      definition: "{{ lookup('template', 'sc.yaml.j2') }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
-    - name: Create provisioner
-      kubernetes.core.k8s:
-        state: present
-        apply: yes
-        definition: "{{ lookup('template', 'provisioner.yaml.j2') }}"
-        validate:
-          fail_on_error: yes
-          strict: yes
+  - name: Create provisioner
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      definition: "{{ lookup('template', 'provisioner.yaml.j2') }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+...

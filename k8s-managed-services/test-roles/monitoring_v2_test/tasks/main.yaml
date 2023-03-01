@@ -1,6 +1,6 @@
 ---
 - name: Test the metrics API
-  include_tasks: scrape_metrics_api.yaml
+  ansible.builtin.include_tasks: scrape_metrics_api.yaml
 
 - name: Run the test
   block:
@@ -20,12 +20,12 @@
     delay: 3
 
   - name: Set prometheus cluster IP and web port
-    set_fact:
+    ansible.builtin.set_fact:
       prometheus_cluster_ip: "{{ prometheus_endpoint.resources[0].subsets[0].addresses[0].ip }}"
-      prometheus_web_port: "{{ (prometheus_endpoint.resources[0].subsets[0].ports | selectattr('name', 'in', ['web','http-web']) | first).port }}"
+      prometheus_web_port: "{{ (prometheus_endpoint.resources[0].subsets[0].ports | selectattr('name', 'in', ['web', 'http-web']) | first).port }}"
 
   - name: information about config
-    debug:
+    ansible.builtin.debug:
       msg: "This test is going to use the prometheus at {{ prometheus_cluster_ip }}:{{ prometheus_web_port }}"
 
   - name: Scrape prometheus endpoints
@@ -40,26 +40,35 @@
             labels:
               monitoring-checks: "{{ check_prometheus_scraping_namespace }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
         state: present
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Create the prometheus test scraper Pod
       kubernetes.core.k8s:
         definition: "{{ lookup('template', 'scraper.yaml.j2') }}"
-        apply: yes
+        apply: true
         state: "present"
-        wait: yes
+        wait: true
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
       register: scraper_info
+      # Retry this task on failures
+      until: scraper_info is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Scrape endpoints for prometheus stack itself
-      include_tasks: scrape_prometheus_stack.yaml
+      ansible.builtin.include_tasks: scrape_prometheus_stack.yaml
 
     - name: Scrape endpoints for managed services
-      include_tasks: scrape_managed_services.yaml
+      ansible.builtin.include_tasks: scrape_managed_services.yaml
 
   - name: Delete Namespace
     kubernetes.core.k8s:
@@ -69,7 +78,13 @@
       state: absent
       wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
-      - test-cleanup
+    - test-cleanup
+...

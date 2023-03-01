@@ -1,10 +1,10 @@
 # Before moving on, the rook/ceph cluster’s core (RADOS) components
 # (i.e., mons, mgrs, and OSDs) must be fully updated.
-
+---
 - name: Wait until rook upgrade completes
   block:
   - name: Set retry count
-    set_fact:
+    ansible.builtin.set_fact:
       retry_count: "{{ 0 if retry_count is undefined else (retry_count | int) + 1 }}"
 
   - name: Gather information about rook deployments
@@ -16,28 +16,30 @@
     register: rook_deployments_info
 
   - name: Validate that the new rook version is rolled out
-    debug:
-      msg: Deployment {{ item.metadata.name }} has rook version {{ item.metadata.labels['rook-version'] }}
-#          Configured Replicas:  {{ item.status.replicas }}
-#          Updated Replicas:     {{ item.status.updatedReplicas }}
-#          Ready Replicas:       {{ item.status.readyReplicas }}
+    ansible.builtin.debug:
+      msg: |
+        Deployment {{ item.metadata.name }} has rook version {{ item.metadata.labels['rook-version'] }}
+        Configured Replicas:  {{ item.status.replicas }}
+        Updated Replicas:     {{ item.status.updatedReplicas }}
+        Ready Replicas:       {{ item.status.readyReplicas }}
     failed_when: |
-      (item.status.replicas != item.status.updatedReplicas)
-      or (item.status.replicas != item.status.readyReplicas)
-      or (not item.metadata.labels['rook-version'] is version(rook_conf_version, operator='eq'))
+      ((item.status.replicas | int) != (item.status.updatedReplicas | int))
+      or ((item.status.replicas | int) != (item.status.readyReplicas | int))
+      or (not ((item.metadata.labels['rook-version']) is version(rook_version, operator='eq')))
     with_items: "{{ rook_deployments_info.resources }}"
     loop_control:
       label: "Deployment: {{ item.metadata.name }}"
 
   rescue:
   - name: Fail if the cluster did not converge
-    fail:
+    ansible.builtin.fail:
       msg: "Rook components did not converge after the upgrade ({{ retry_count }} retries)"
     when: (retry_count | int) == 180
 
   - name: Pause for 20 seconds, give the cluster time to converge
-    pause:
+    ansible.builtin.pause:
       seconds: 20
 
   # Recheck if retry_count limit has not been reached, yet
-  - include_tasks: wait_for_rook_upgrade.yaml
+  - ansible.builtin.include_tasks: wait_for_rook_upgrade.yaml
+...

@@ -8,3 +8,4 @@ dependencies:
 - gpu-support-detection
 - vault-config
 - vault-approle
+...

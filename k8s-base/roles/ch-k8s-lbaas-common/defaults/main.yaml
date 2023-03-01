@@ -4,8 +4,10 @@ ch_k8s_lbaas_use_floating_ips: true
 ch_k8s_lbaas_controller_image: "registry.gitlab.com/yaook/ch-k8s-lbaas/controller:{{ ch_k8s_lbaas_version }}"
 
 ch_k8s_lbaas_agent_user: ch-k8s-lbaas-agent
-ch_k8s_lbaas_agent_binary_url: "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download/v{{ ch_k8s_lbaas_version }}/ch-k8s-lbaas-agent"
+ch_k8s_lbaas_agent_source: "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download"
+ch_k8s_lbaas_agent_binary_url: "{{ ch_k8s_lbaas_agent_source }}/v{{ ch_k8s_lbaas_version }}/ch-k8s-lbaas-agent"
 
+ch_k8s_lbaas_port_manager: "openstack"
 
 ch_k8s_lbaas_agent_binary_checksums:
   "0.1.0": "sha256:395da1f398c02941876597e8f0cd60128d682f01ed0e343063850392fee5f762"
@@ -19,7 +21,15 @@ ch_k8s_lbaas_agent_binary_checksums:
   "0.4.1": "sha256:152c68c830851ea2be2dddd8b9155b4f4b23dc14f03cb624be2b21dd9f673fcc"
   "0.4.2": "sha256:152c68c830851ea2be2dddd8b9155b4f4b23dc14f03cb624be2b21dd9f673fcc"
   "0.5.0": "sha256:dd61b1f0f21bff40572708971a0f02ddf36b8aefae83959c93a6658c1ae01c29"
+  "0.6.0": "sha256:4663704629513ed6abf44617278bafa69c11764b70c61e5f9234dc3b5447cdc0"
 
 ch_k8s_lbaas_agent_binary_checksum: "{{ ch_k8s_lbaas_agent_binary_checksums[ch_k8s_lbaas_version] | default('invalid checksum') }}"
 
-ch_k8s_lbaas_use_bgp: "{{ k8s_network_plugin in ['kube-router','calico'] }}"
+ch_k8s_lbaas_use_bgp: "{{ k8s_network_plugin in ['calico'] }}"
+
+ch_k8s_lbaas_controller_cpu_request: "100m"
+ch_k8s_lbaas_controller_memory_request: "256Mi"
+
+ch_k8s_lbaas_controller_cpu_limit: "200m"
+ch_k8s_lbaas_controller_memory_limit: "256Mi"
+...

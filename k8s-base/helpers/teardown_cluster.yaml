@@ -1,6 +1,0 @@
-- name: Tear down all k8s nodes
-  gather_facts: false
-  hosts: k8s_nodes
-  become: yes
-  roles:
-    - teardown-kubeadm

@@ -1,15 +1,19 @@
 ---
 - name: install bird
-  become: yes
-  apt:
+  become: true
+  ansible.builtin.apt:
     name: bird
     state: present
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
   tags:
   - bird
 
 - name: configure bird
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: bird.conf
     dest: /etc/bird/bird.conf
     owner: bird
@@ -20,8 +24,8 @@
   - bird
 
 - name: drop-in directory for bird config
-  become: yes
-  file:
+  become: true
+  ansible.builtin.file:
     state: directory
     path: /etc/bird.d/
     owner: root
@@ -31,23 +35,23 @@
   - bird
 
 - name: disable bird6
-  become: yes
-  service:
+  become: true
+  ansible.builtin.service:
     name: bird6
-    enabled: no
+    enabled: false
     state: stopped
   when: not dualstack_support
   tags:
   - bird
 
 - name: Initialize config of bird6 for IPv6 support
-  become: yes
+  become: true
   when: dualstack_support
   tags:
   - bird6
   block:
   - name: Create config for bird6 in /etc/bird/
-    template:
+    ansible.builtin.template:
       src: bird6.conf
       dest: /etc/bird/bird6.conf
       owner: bird
@@ -56,7 +60,7 @@
     notify: restart bird
 
   - name: Create drop-in directory for bird6 configs
-    file:
+    ansible.builtin.file:
       state: directory
       path: /etc/birdv6.d/
       owner: root
@@ -64,7 +68,8 @@
       mode: "u=rwx,g=rx,o-rwx"
 
   - name: enable bird6
-    service:
+    ansible.builtin.service:
       name: bird6
-      enabled: yes
+      enabled: true
       state: started
+...

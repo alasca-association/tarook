@@ -1,6 +1,7 @@
 ---
 prometheus_haproxy_exporter_user: prometheus
-prometheus_haproxy_exporter_url: "https://github.com/prometheus/haproxy_exporter/releases/download/v{{ prometheus_haproxy_exporter_version }}/haproxy_exporter-{{ prometheus_haproxy_exporter_version }}.linux-amd64.tar.gz" # noqa yaml
+prometheus_haproxy_exporter_source: "https://github.com/prometheus/haproxy_exporter/releases/download"
+prometheus_haproxy_exporter_url: "{{ prometheus_haproxy_exporter_source }}/v{{ prometheus_haproxy_exporter_version }}/haproxy_exporter-{{ prometheus_haproxy_exporter_version }}.linux-amd64.tar.gz" # noqa yaml
 prometheus_haproxy_exporter_archive: "haproxy_exporter-{{ prometheus_haproxy_exporter_version }}.linux-amd64.tar.gz"
 prometheus_haproxy_exporter_extract_folder: "haproxy_exporter-{{ prometheus_haproxy_exporter_version }}.linux-amd64"
 
@@ -11,3 +12,4 @@ prometheus_haproxy_exporter_checksums:
 prometheus_haproxy_exporter_checksum: "{{ prometheus_haproxy_exporter_checksums[prometheus_haproxy_exporter_version] | default('invalid checksum') }}"
 
 prometheus_haproxy_exporter_admin_sock: /tmp/haproxy_admin.sock
+...

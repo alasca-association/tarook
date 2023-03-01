@@ -5,4 +5,4 @@ galaxy_info:
 dependencies:
 - k8s-config
 - k8s-tools
-- calico-kube-router-migration # can be removed after purging kube-router
+...

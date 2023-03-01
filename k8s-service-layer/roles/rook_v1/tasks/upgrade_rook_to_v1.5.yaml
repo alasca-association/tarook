@@ -1,0 +1,67 @@
+# Update k8s-rook from 1.4.* to 1.5.*
+# https://rook.io/docs/rook/v1.5/ceph-upgrade.html#rook-operator-upgrade-process
+---
+# Verify that the Ceph cluster is healthy
+- name: Include cluster health verification
+  ansible.builtin.include_tasks: cluster_health_verification.yaml
+
+- name: Configure k8s resources
+  block:
+    - name: Apply updated common resources
+      kubernetes.core.k8s:
+        state: present
+        apply: true
+        definition: "{{ lookup('template', 'v1.5/common.yaml') }}"
+        validate:
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
+
+    - name: Apply updated Custom Resource Definitions (CRDs)
+      kubernetes.core.k8s:
+        state: present
+        apply: true
+        definition: "{{ lookup('template', 'v1.5/crds.yaml') }}"
+        validate:
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
+
+    - name: Apply new rook-ceph-operator manifest (v1.5)
+      kubernetes.core.k8s:
+        state: present
+        apply: true
+        definition: "{{ lookup('template', 'v1.5/operator.yaml') }}"
+        validate:
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
+
+# The upgrade will take at least 5 minutes
+# We are pausing here to prevent spamming the output with failures
+- name: The upgrade will take several minutes, pausing ansible for 5m
+  ansible.builtin.pause:
+    seconds: 300
+
+- name: Wait until the ceph cluster's core components are fully updated
+  ansible.builtin.include_tasks: wait_for_rook_upgrade.yaml
+
+- name: Give the rook-based ceph cluster time (20s) to stabilize
+  ansible.builtin.pause:
+    seconds: 20
+
+- name: Include cluster health verification
+  ansible.builtin.include_tasks: cluster_health_verification.yaml
+...

@@ -1,90 +1,94 @@
 ---
 - name: Install strongswan and tools
-  become: yes
-  apt:
-    update_cache: yes
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
     name: "{{ ipsec_packages }}"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Create ipsec subdirectory in the inventory
-  become: no
+  become: false
   delegate_to: localhost
-  run_once: yes
-  file:
+  run_once: true
+  ansible.builtin.file:
     path: "{{ etc_dir }}/ipsec/"
     state: directory
     mode: 0750
 
-- name: Lookup ipsec_eap_psk # noqa 207
-  become: no
+- name: Lookup ipsec_eap_psk  # noqa jinja[invalid]
+  become: false
   delegate_to: localhost
-  run_once: yes
+  run_once: true
   vars:
     password_store_dir: "{{ etc_dir }}/passwordstore"
-  set_fact:
+  ansible.builtin.set_fact:
     ipsec_eap_psk: "{{ lookup('passwordstore', 'ipsec_eap_psk directory={{ password_store_dir }}') }}"
 
 - name: Abort prematurely if PSK contains '"' (Bug)
-  become: no
-  run_once: yes
-  fail:
+  become: false
+  run_once: true
+  ansible.builtin.fail:
     msg: 'PSK must not contain a quotation mark ("). We do not escape it properly yet.'
   when: '"\"" in ipsec_eap_psk'
 
 - name: Copy swanctl.conf
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: swanctl.conf.j2
     dest: /etc/swanctl/swanctl.conf
     mode: 0640
   register: swanctl_config
 
 - name: Copy charon-systemd.conf
-  become: yes
-  copy:
+  become: true
+  ansible.builtin.copy:
     src: charon-systemd.conf
     dest: /etc/strongswan.d/charon-systemd.conf
     mode: 0640
   register: charon_config
 
 - name: Prepare workstation as client
-  become: no
-  run_once: yes
+  become: false
+  run_once: true
   block:
     - name: Create swanctl.conf
       delegate_to: localhost
-      template:
+      ansible.builtin.template:
         src: swanctl.conf.client.j2
         dest: "{{ etc_dir }}/ipsec/swanctl.conf"
         mode: 0640
     - name: Create charon-systemd.conf
       delegate_to: localhost
-      copy:
+      ansible.builtin.copy:
         src: charon-systemd.conf
         dest: "{{ etc_dir }}/ipsec/charon-systemd.conf"
         mode: 0640
 
 - name: Collect host facts
-  gather_facts:
+  ansible.builtin.gather_facts:
 
 - name: Ensure swanctl is disabled on the VRRP backups
-  become: yes
+  become: true
   when: networking_fixed_ip not in ansible_facts.all_ipv4_addresses
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ strongswan_service }}"
-    enabled: no
+    enabled: false
     state: stopped
 
 - name: Start swanctl on the VRRP master
-  become: yes
+  become: true
   when: networking_fixed_ip in ansible_facts.all_ipv4_addresses
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ strongswan_service }}"
-    enabled: no
+    enabled: false
     state: "{{ (swanctl_config.changed or charon_config.changed) | ternary('reloaded', 'started') }}"
 
 - name: Configure bird
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: bird.conf
     dest: /etc/bird.d/10-ipsec-vpn.conf
     owner: root
@@ -93,8 +97,8 @@
   notify: restart bird
 
 - name: Configure nftables
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: nftables.conf
     dest: /etc/nft.d/10-ipsec-vpn.conf
     owner: root
@@ -103,10 +107,11 @@
   notify: reload nftables
 
 - name: Configure keepalived
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: 10-swanctl-notify.sh.j2
     dest: /etc/keepalived/scripts/
     owner: root
     group: root
     mode: "u=rwx,g=rx,o-rwx"
+...

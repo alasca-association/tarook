@@ -1,9 +1,10 @@
+---
 - name: show test information
-  debug:
+  ansible.builtin.debug:
     msg: "This test is using the {{ storageclass }} storageClass"
 
 - name: Run the test
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
@@ -14,24 +15,39 @@
       name: "{{ check_local_storage_namespace }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: create PVC
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'pvc.yaml.j2') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: start writer pod
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'writer-pod.yaml.j2') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: fetch writer pod completion state
     kubernetes.core.k8s_info:
@@ -45,7 +61,7 @@
     retries: 60
 
   - name: check writer pod success
-    debug:
+    ansible.builtin.debug:
       msg: "Writer pod is in condition {{ writer_state.resources[0].status.phase }}"
     failed_when: 'writer_state.resources[0].status.phase == "Failed"'
 
@@ -56,8 +72,13 @@
       definition: "{{ lookup('template', 'reader-pod.yaml.j2') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: fetch reader pod completion state
     kubernetes.core.k8s_info:
@@ -71,7 +92,7 @@
     retries: 60
 
   - name: check reader pod success
-    debug:
+    ansible.builtin.debug:
       msg: "Reader pod is in condition {{ reader_state.resources[0].status.phase }}"
     failed_when: 'reader_state.resources[0].status.phase == "Failed"'
 
@@ -83,7 +104,7 @@
       namespace: "{{ check_local_storage_namespace }}"
     register: pvc_info
     tags:
-      - test-cleanup
+    - test-cleanup
 
   - name: delete namespace
     kubernetes.core.k8s:
@@ -91,10 +112,15 @@
       kind: Namespace
       name: "{{ check_local_storage_namespace }}"
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
     - test-cleanup
 
@@ -105,6 +131,12 @@
       kind: PersistentVolume
       name: "{{ pvc_info.resources[0].spec.volumeName }}"
       state: absent
-      wait: no
+      wait: false
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
-      - test-cleanup
+    - test-cleanup
+...

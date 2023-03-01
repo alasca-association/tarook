@@ -1,3 +1,4 @@
+---
 # We don't want to assert mode here
 - name: Create parent directories for PKI directories
   become: yes
@@ -76,22 +77,22 @@
     register: ca_cert
 
   - name: Join the k8s cluster steps
-    become: yes
+    become: true
     block:
     - name: Create kubeadm-join-config.yaml
-      template:
+      ansible.builtin.template:
         src: kubeadm-join-config.yaml.j2
         dest: /tmp/kubeadm-join-config.yaml
         owner: root
         group: root
         mode: 0640
 
-    - name: Join the k8s cluster as another worker
+    - name: Join the k8s cluster as another worker  # noqa no-changed-when
       # XXX: ansible command module does not support setting the umask
       shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml --ignore-preflight-errors=FileAvailable--etc-kubernetes-kubelet.conf --ignore-preflight-errors=FileAvailable--etc-kubernetes-pki-ca.crt"
 
     - name: Remove kubeadm-join-config.yaml
-      file:
+      ansible.builtin.file:
         path: /tmp/kubeadm-join-config.yaml
         state: absent
 
@@ -99,7 +100,8 @@
     # to pass a kubelet config file for kubeadm join
     # https://stackoverflow.com/questions/60378117/limit-the-number-of-pods-per-node
     - name: Configure kubelet
-      include_role:
+      ansible.builtin.include_role:
         name: kubelet-configuration
       vars:
-        _init_cluster: True # needs to be passed so that kubelet is configured & restarted
+        _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
+...

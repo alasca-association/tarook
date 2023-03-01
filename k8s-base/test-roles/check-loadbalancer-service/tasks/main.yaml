@@ -1,6 +1,6 @@
 ---
 - name: execute test
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
@@ -11,25 +11,40 @@
       kind: Namespace
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create k8s preliminaries (ServiceAccount, RBAC, echo-Deployment)
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'preliminaries.yaml.j2') }}"
       state: present
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create SingleStack IPv4 load-balanced service
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_single_stack_v4.yaml.j2') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: require service to have ingress IP address set
     kubernetes.core.k8s_info:
@@ -44,42 +59,45 @@
 
   - name: require service to be reachable from this machine and respond to HTTP
     delegate_to: localhost
-    become: no
-    command:
-    args:
-      warn: false
-      argv:
-      - curl
-      - "-s"
-      - "-w"
-      - "\\n%{http_code}\\n"
-      - "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:{{ check_loadbalancer_service_port }}"
-    register: curl_result
-    until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
+    become: false
+    ansible.builtin.uri:
+      url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:{{ check_loadbalancer_service_port }}"
+      status_code: 200
+    register: uri_result
+    until: uri_result is not failed
     delay: 1
     retries: 60
-    changed_when: False
 
   - name: Remove SingleStack IPv4 load-balanced service
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_single_stack_v4.yaml.j2') }}"
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Validate LB-Services for DualStack-Clusters
     when: dualstack_support
-    include_tasks: dualstack-lb-services.yaml
+    ansible.builtin.include_tasks: dualstack-lb-services.yaml
 
   - name: Clean up k8s preliminaries (ServiceAccount, RBAC, echo-Deployment)
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'preliminaries.yaml.j2') }}"
       state: absent
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
     - test-cleanup
 
@@ -89,9 +107,15 @@
       name: "{{ check_loadbalancer_service_namespace }}"
       kind: Namespace
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
     - test-cleanup
+...

@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+  labels:
+    app.kubernetes.io/instance: vault
+    app.kubernetes.io/name: vault-external
+  name: vault-external
+  namespace: k8s-svc-vault
+spec:
+  ingressClassName: {{ yaook_vault_external_ingress_class | to_json }}
+  rules:
+{% for name in yaook_vault_dnsnames %}
+  - host: {{ name | to_json }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: vault-external-active
+            port:
+              number: 8250
+        path: /
+        pathType: Prefix
+{% endfor %}
+  tls:
+  - hosts:
+{% for name in yaook_vault_dnsnames %}
+    - {{ name | to_json }}
+{% endfor %}
+    secretName: vault-cert-external

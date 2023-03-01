@@ -4,6 +4,16 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Implement automated docker to containerd migration
+
+A migration path to change the container runtime on each node of a cluster from docker to containerd has been added.
+More information about this can be found in the [documentation](docs/src/operation/migrate-docker-containerd.md).
+
+## Drop support for kube-router
+
+We're dropping support for kube-router as CNI.
+This step has been announced via our usual communication channels months ago.
+A migration path from kube-router to calico has been available quite some time and is also removed now.
 
 ## Support for Rook 1.7 added
 

@@ -1,10 +1,11 @@
+---
 - name: Initial sanity checks
   hosts: localhost
   gather_facts: false
   vars_files:
   - vars/etc.yaml
   roles:
-    - validate_configuration
+  - validate_configuration
 
 - name: Establish connectivity to the frontend nodes
   hosts: frontend
@@ -13,6 +14,7 @@
   vars_files:
   - vars/disruption.yaml
   - vars/etc.yaml
+  - vars/retries.yaml
   roles:
   - role: detect_user
     tags: detect_user
@@ -28,6 +30,7 @@
   hosts: uninitialized_frontend_nodes
   vars_files:
   - vars/disruption.yaml
+  - vars/retries.yaml
   roles:
   - role: update_system
     tags: update_system
@@ -37,6 +40,7 @@
   hosts: initialized_frontend_nodes
   vars_files:
   - vars/disruption.yaml
+  - vars/retries.yaml
   serial: 1
   roles:
   - role: update_system
@@ -50,6 +54,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/retries.yaml
   roles:
   - role: detect_user
     tags: detect_user
@@ -61,10 +66,10 @@
     tags: update_system
 
   tasks:
-    - name: Group nodes by K8s installation status
-      # Here we're doing the group_by dance because it simplifies the logic of the next two plays
-      group_by:
-        key: node_with_{{ install_status }}
+  - name: Group nodes by K8s installation status
+    # Here we're doing the group_by dance because it simplifies the logic of the next two plays
+    ansible.builtin.group_by:
+      key: node_with_{{ install_status }}
 
 - name: Upgrade initialized k8s nodes
   hosts: node_with_k8s_installed
@@ -72,28 +77,31 @@
   serial: 1
   vars_files:
   - vars/disruption.yaml
+  - vars/retries.yaml
   pre_tasks:
-    - name: include ksl vars
-      include_vars:
-        dir: "{{ ksl_vars_directory }}"
-      tags:
-      - always
+  - name: include ksl vars
+    ansible.builtin.include_vars:
+      dir: "{{ ksl_vars_directory }}"
+    tags:
+    - always
   roles:
-    - name: cluster-health-verification
-      delegate_to: localhost
-      when: not (k8s_skip_upgrade_checks | bool)
-    - kubeadm-drain-node
-    - update_system
-    - kubeadm-uncordon-node
+  - name: cluster-health-verification
+    delegate_to: localhost
+    when: not (k8s_skip_upgrade_checks | bool)
+  - kubeadm-drain-node
+  - update_system
+  - kubeadm-uncordon-node
   tags:
-    - update_system
+  - update_system
 
 - name: Upgrade uninitialized k8s nodes
   hosts: node_with_k8s_not_installed
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
+  - vars/retries.yaml
   roles:
-    - update_system
+  - update_system
   tags:
-    - update_system
+  - update_system
+...

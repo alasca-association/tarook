@@ -1,3 +1,4 @@
+---
 - name: Check if /etc/cni/net.d/ is empty
   find:
     path: /etc/cni/net.d/
@@ -16,3 +17,4 @@
     when: cni_confs.files[0]['path'] != "/etc/cni/net.d/10-calico.conflist"
     fail:
       msg: "### ERROR ###\nThe CNI config '{{ cni_confs.files[0]['path'] }}' does not belong to calico"
+...

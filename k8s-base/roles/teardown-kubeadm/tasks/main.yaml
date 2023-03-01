@@ -1,5 +1,5 @@
 # https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#tear-down
-
+---
 # We might want / need to drain the node before we can undo the changes of kubeadm
 
 # kubeadm reset asks for confirmation, therefore pass --force
@@ -35,3 +35,4 @@
       - kubeadm
       - kubectl
       - kubelet
+...

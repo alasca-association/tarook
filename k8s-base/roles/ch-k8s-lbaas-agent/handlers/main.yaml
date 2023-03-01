@@ -1,15 +1,16 @@
 ---
 - name: restart ch-k8s-lbaas-agent
-  service:
+  ansible.builtin.service:
     name: ch-k8s-lbaas-agent
     state: restarted
 
 - name: reload nftables
-  service:
+  ansible.builtin.service:
     name: nftables
     state: reloaded
 
 - name: restart bird
-  service:
+  ansible.builtin.service:
     name: bird
     state: restarted
+...

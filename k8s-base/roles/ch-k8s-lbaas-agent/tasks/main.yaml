@@ -4,14 +4,14 @@
 
   block:
   - name: Create user
-    user:
-      system: yes
+    ansible.builtin.user:
+      system: true
       name: "{{ ch_k8s_lbaas_agent_user }}"
       home: /dev/null
       shell: /bin/false
 
   - name: Create configuration directory
-    file:
+    ansible.builtin.file:
       state: directory
       owner: root
       group: "{{ ch_k8s_lbaas_agent_user }}"
@@ -23,7 +23,7 @@
   # passed to the get_url module below changes, allowing to force a
   # re-download exactly when necessary.
   - name: Store id tag
-    template:
+    ansible.builtin.template:
       src: binary_id_tag
       dest: /etc/ch-k8s-lbaas-agent/version
       owner: root
@@ -32,7 +32,7 @@
     register: version
 
   - name: Download executable
-    get_url:
+    ansible.builtin.get_url:
       url: "{{ ch_k8s_lbaas_agent_binary_url }}"
       checksum: "{{ ch_k8s_lbaas_agent_binary_checksum }}"
       dest: /usr/local/bin/ch-k8s-lbaas-agent
@@ -40,11 +40,15 @@
       owner: root
       group: root
       mode: ugo=rx
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
     notify:
     - restart ch-k8s-lbaas-agent
 
   - name: Configure service
-    template:
+    ansible.builtin.template:
       src: agent-config.toml
       dest: /etc/ch-k8s-lbaas-agent/config.toml
       owner: root
@@ -54,7 +58,7 @@
     - restart ch-k8s-lbaas-agent
 
   - name: Configure sudoers
-    template:
+    ansible.builtin.template:
       src: sudoers
       dest: /etc/sudoers.d/lbaas
       owner: root
@@ -63,7 +67,7 @@
       validate: /usr/sbin/visudo -cf %s
 
   - name: Define service
-    template:
+    ansible.builtin.template:
       src: ch-k8s-lbaas-agent.service
       dest: /etc/systemd/system/
       owner: root
@@ -74,16 +78,16 @@
     - restart ch-k8s-lbaas-agent
 
   - name: Start service
-    systemd:
+    ansible.builtin.systemd:
       name: ch-k8s-lbaas-agent
       daemon_reload: "{{ agent_service is changed }}"
       state: started
-      enabled: yes
+      enabled: true
 
   # Need to do that *after* the service is started, because systemd creates the
   # /var/lib/ch-k8s-lbaas-agent/nftables directory.
   - name: Configure firewall for agent access
-    template:
+    ansible.builtin.template:
       src: nftables.conf.j2
       dest: /var/lib/ch-k8s-lbaas-agent/nftables/access.conf
       owner: root
@@ -94,8 +98,8 @@
 - name: Disable LBaaS agent
   when: not ch_k8s_lbaas_enabled
   block:
-  - name: Detect LBaaS agent # noqa 303
-    command:
+  - name: Detect LBaaS agent  # noqa command-instead-of-module
+    ansible.builtin.command:
     args:
       argv:
       - systemctl
@@ -106,14 +110,15 @@
     changed_when: "{{ agent_detect.rc == 0 }}"
 
   - name: Disable LBaaS agent
-    service:
+    ansible.builtin.service:
       name: ch-k8s-lbaas-agent
       state: stopped
-      enabled: no
+      enabled: false
     when: agent_detect is changed
 
   - name: Remove firewall hole for agent access
-    file:
+    ansible.builtin.file:
       state: absent
       path: /var/lib/ch-k8s-lbaas-agent/nftables/access.conf
     notify: reload nftables
+...

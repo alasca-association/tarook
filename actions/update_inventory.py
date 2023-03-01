@@ -458,39 +458,41 @@ def main():
 
     # KUBERNETES SERVICE LAYER: VAULT
     print_process_state("KSL - VAULT")
-    kubernetes_service_ingress_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
-        "vault.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("vault"),
-        kubernetes_service_ingress_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("vault", "")
-    )
+    for stage in [ANSIBLE_STAGES["stage4"], ANSIBLE_STAGES["stage5"]]:
+        kubernetes_service_vault_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / stage / "vault.yaml"
+        )
+        dump_to_ansible_inventory(
+            config["k8s-service-layer"].get("vault"),
+            kubernetes_service_vault_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("vault", "")
+        )
 
     # KUBERNETES SERVICE LAYER: ETCD-BACKUP
     print_process_state("KSL - ETCD-BACKUP")
-    kubernetes_service_storage_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
-        "etcd-backup.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("etcd-backup"),
-        kubernetes_service_storage_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("etcd-backup", "")
-    )
+    for stage in [ANSIBLE_STAGES["stage4"], ANSIBLE_STAGES["stage5"]]:
+        kubernetes_service_storage_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / stage /
+            "etcd-backup.yaml"
+        )
+        dump_to_ansible_inventory(
+            config["k8s-service-layer"].get("etcd-backup"),
+            kubernetes_service_storage_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("etcd-backup", "")
+        )
 
     # KUBERNETES SERVICE LAYER: FLUXCD
     print_process_state("KSL - FLUXCD")
-    kubernetes_service_storage_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
-        "fluxcd.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("fluxcd"),
-        kubernetes_service_storage_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("fluxcd", "")
-    )
+    for stage in [ANSIBLE_STAGES["stage4"], ANSIBLE_STAGES["stage5"]]:
+        kubernetes_service_storage_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / stage /
+            "fluxcd.yaml"
+        )
+        dump_to_ansible_inventory(
+            config["k8s-service-layer"].get("fluxcd"),
+            kubernetes_service_storage_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("fluxcd", "")
+        )
 
     # ---
     # C&H KUBERNETES LBaaS

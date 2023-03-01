@@ -48,12 +48,10 @@ detect-vault-image:
     - docker
 
 ansible-lint:
-  image:
-    name: cytopia/ansible-lint:5-0.6
-    entrypoint: ["/bin/sh", "-c"]
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
   stage: lint
   script:
-    - "ansible-galaxy install -r ansible/requirements.yaml" # Install requirements
+    - "ansible-galaxy install -r ansible/requirements.yaml"
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/install_frontend.yaml" # Check stage 2
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/install_k8s_base.yaml" # Check stage 3
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-service-layer/install.yaml" # Check stage 4
@@ -62,6 +60,7 @@ ansible-lint:
     - "ANSIBLE_ROLES_PATH=k8s-service-layer/test-roles ansible-lint -c ci/lint/ansible-lint-conf k8s-service-layer/test.yaml" # Check ksl tests
     - "ANSIBLE_ROLES_PATH=k8s-managed-services/test-roles ansible-lint -c ci/lint/ansible-lint-conf k8s-managed-services/test.yaml" # Check ksm tests
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/system_update_nodes.yaml" # Check system update node
+    - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/migrate-docker-to-containerd.yaml" # Check system update node
       # Check k8s upgrades
     - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.20.yaml"
     - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.21.yaml"
@@ -186,22 +185,22 @@ testBook:
     # Disable Cert-Manager (Requires k8s >= v1.20)
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"cert-manager\":{\"enabled\":\"false\"}}}"'
     # We can't use vault without cert-manager
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"vault\":{\"enabled\":\"false\"}}}"'
+  # - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"vault\":{\"enabled\":\"false\"}}}"'
     # Spawn and test cluster
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
     # Upgrade cluster to k8s v1.20.15
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.20.15
     # Update k8s version
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.20.15\"}}"'
-    # Install ingress, cert-manager & vault after upgrading to k8s v1.20
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"true\"}}}"'
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"cert-manager\":{\"enabled\":\"true\"}}}"'
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"vault\":{\"enabled\":\"true\"}}}"'
-  - AFLAGS="-t mk8s-sl/ingress,mk8s-sl/cert-manager,mk8s-sl/vault" ./managed-k8s/actions/apply-stage4.sh
     # Upgrade cluster to k8s v1.21.14
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.21.14
     # Update k8s version
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.21.14\"}}"'
+    # Install ingress, cert-manager & vault after upgrading to k8s v1.21
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"true\"}}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"cert-manager\":{\"enabled\":\"true\"}}}"'
+  # - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"vault\":{\"enabled\":\"true\"}}}"'
+  - AFLAGS="-t mk8s-sl/ingress,mk8s-sl/cert-manager,mk8s-sl/vault" ./managed-k8s/actions/apply-stage4.sh
     # Upgrade cluster to k8s v1.22.12
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.22.12
     # Update k8s version
@@ -228,7 +227,7 @@ docker:
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   script:
     - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"docker\"}}"'
-    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":true}}"'
+    # - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":true}}"'
     - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   stage: spawn-cluster
   retry: 2
@@ -333,7 +332,7 @@ docker-k8s-upgrade:
     - when: on_success
   script:
     - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"docker\"}}"'
-    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":true}}"'
+    # - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":true}}"'
     - !reference [.test_upgrade_path_k8s_cluster, script]
   extends: .test_upgrade_path_k8s_cluster
   stage: cluster-upgrades

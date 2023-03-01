@@ -121,12 +121,15 @@ PLATFORM_SCHEMA = {
 }
 
 
-def write_yaml(file, data, sort_keys=False, explicit_start=True):
+def write_yaml(file, data, sort_keys=False, explicit_start=True, explicit_end=True):
     # Ensure that parent dir exists, if not create it
     file.parent.mkdir(parents=True, exist_ok=True)
     with open(file, "w") as fd:
         yaml.safe_dump(
-            data, fd, sort_keys=sort_keys, explicit_start=explicit_start
+            data, fd,
+            sort_keys=sort_keys,
+            explicit_start=explicit_start,
+            explicit_end=explicit_end
         )
 
 
@@ -169,7 +172,7 @@ def bootstrap_base(role, action, filepath, **kwargs):
         return
 
     write_file(
-        filepath, ["---\n", f"# {filepath.parent.name} file for {role}"]
+        filepath, ["---\n", f"# {filepath.parent.name} file for {role}", "\n...\n"]
     )
     logger.debug(
         f"[{role}] {action} of {filepath.parent.name}/{filepath.name} - DONE"

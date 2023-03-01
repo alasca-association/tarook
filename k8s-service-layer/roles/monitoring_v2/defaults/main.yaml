@@ -14,7 +14,9 @@ monitoring_prometheus_memory_request: "{{ monitoring_prometheus_memory_limit }}"
 monitoring_prometheus_cpu_limit: "1"
 monitoring_prometheus_cpu_request: "{{ monitoring_prometheus_cpu_limit }}"
 
-monitoring_prometheus_stack_chart_name: "kube-prometheus-stack"
+monitoring_prometheus_helm_repo_url: "https://prometheus-community.github.io/helm-charts"
+
+monitoring_prometheus_stack_chart_name: "prometheus-community/kube-prometheus-stack"
 monitoring_prometheus_stack_release_name: "prometheus-stack"
 monitoring_prometheus_adapter_release_name: "prometheus-adapter"
 
@@ -31,3 +33,4 @@ monitoring_common_labels: []
 monitoring_grafana_persistent_storage_class: ""
 
 monitoring_crds_update_required: ["34", "35", "36", "39"]
+...

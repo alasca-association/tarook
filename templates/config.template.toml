@@ -3,7 +3,7 @@
 # If a variable is commented out, it is optional and the defined
 # value is the default.
 
-# NOTE:For some sections the inventory updater will apply pefixes to
+# NOTE:For some sections the inventory updater will apply prefixes to
 # the variables before passing them over to the ansible inventories.
 
 # ANCHOR: terraform_config
@@ -15,7 +15,7 @@
 #workers = 3
 #worker_flavors = ["L", "M", "L"]
 
-# if set to true one must set propper values for the "azs" array according to the cloud in use
+# if set to true one must set proper values for the "azs" array according to the cloud in use
 #enable_az_management = false
 
 # Enable DualStack support
@@ -92,8 +92,32 @@ cluster_name = "devcluster" # "•ᴗ•"
 
 enabled       = true    # •ᴗ•
 shared_secret = "..."   # REPLACE ME
-version       = "0.5.0"
+version       = "0.6.0"
 agent_port    = 15203
+
+# Configure which IP address ("port") manager to use. Two options are available:
+# - openstack: Uses OpenStack and the yaook/k8s gateway nodes to provision
+#   LBaaS IP addresses ports.
+# - static: Uses a fixed set of IP addresses to use for load balancing. When the
+#   static port manager is used, the `agent_urls` and `static_ipv4_addresses`
+#   options must also be configured.
+#port_manager  = "openstack"
+
+# List of IPv4 addresses which are usable for the static port manager. It is
+# your responsibility to ensure that the node(s) which run the agent(s) receive
+# traffic for these IPv4 addresses.
+#static_ipv4_addresses = []
+
+# Customize URLs for the agents. This will typically be a list of HTTP URLs
+# like http://agent_ip:15203. This option is only used if the port manager is
+# set to `static`, and must be set if the port manager is `static`.
+#agent_urls = []
+
+# Configure memory and CPU resources for the lbaas controller
+#controller_cpu_request = "100m"
+#controller_memory_request = "256Mi"
+#controller_cpu_limit = "200m"
+#controller_memory_limit = "256Mi"
 
 # ANCHOR_END: ch-k8s-lbaas_config
 
@@ -102,7 +126,7 @@ agent_port    = 15203
 # ansible prefix: "k8s_"
 [kubernetes]
 # Kubernetes version. Currently, we support from 1.19.* to 1.23.*.
-version = "1.23.9" # •ᴗ•
+version = "1.23.15" # •ᴗ•
 
 # Uncomment if this cluster contains a worker with GPU access so that the driver
 # and surrounding framework is deployed.
@@ -117,6 +141,9 @@ is_gpu_cluster = false # •ᴗ•
 
 [kubernetes.apiserver]
 frontend_port = 8888 # •ᴗ•
+
+[kubernetes.controller_manager]
+#large_cluster_size_threshold = 50
 
 # ANCHOR_END: kubernetes_basic_cluster_configuration
 
@@ -239,12 +266,10 @@ pod_subnet = "10.244.0.0/16" # •ᴗ•
 # This is the subnet used by Kubernetes for Services.
 service_subnet = "10.96.0.0/12" # •ᴗ•
 
-# Pick a networking plugin:
-# - kube-router: High-performance, low-overhead implementation with support
-#   for NetworkPolicy objects (DEPRACTED: Support will be dropped in the near future)
-# - calico: High-performance, pure IP networking, policy engine. Calico provides
-#   layer 3 networking capabilities and associates a virtual router with each node.
-#   Allows the establishment of zone boundaries through BGP
+# calico:
+# High-performance, pure IP networking, policy engine. Calico provides
+# layer 3 networking capabilities and associates a virtual router with each node.
+# Allows the establishment of zone boundaries through BGP
 plugin = "calico" # •ᴗ•
 
 # Pick a Calico version:
@@ -313,6 +338,10 @@ cluster_name = "rook-ceph" # •ᴗ•
 # https://rook.github.io/docs/rook/v1.3/ceph-cluster-crd.html#cluster-settings
 #skip_upgrade_checks = false
 
+# If true, the rook operator will create and manage PodDisruptionBudgets
+# for OSD, Mon, RGW, and MDS daemons.
+#rook_manage_pod_budgets = true
+
 # Scheduling keys control where services may run. A scheduling key corresponds
 # to both a node label and to a taint. In order for a service to run on a node,
 # it needs to have that label key.
@@ -354,7 +383,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 # introspect the cluster state.
 #toolbox = true
 
-# Enable the CephFS shaerd filesystem.
+# Enable the CephFS shared filesystem.
 #ceph_fs = false
 #ceph_fs_name = "ceph-fs"
 #ceph_fs_replicated = 1
@@ -614,6 +643,11 @@ enabled = false # •ᴗ•
 # used.
 #letsencrypt_ingress = "nginx"
 
+# This variable let's you specify the endpoint of the ACME issuer. A common usecase
+# is to switch between staging and production. [0]
+# [0]: https://letsencrypt.org/docs/staging-environment/
+# letsencrypt_server: https://acme-staging-v02.api.letsencrypt.org/directory
+
 # ANCHOR_END: ksl_cert_manager_configuration
 
 # ANCHOR: ksl_ingress_configuration
@@ -707,6 +741,9 @@ enabled = false # •ᴗ•
 # LOCATION to use the Vault instance in the future!
 #enabled = false # •ᴗ•
 
+# Create a publically reachable ingress resource for the API endpoint of vault.
+#ingress = false
+
 # Version of the Helm Chart to use
 #chart_version = "0.20.1"
 
@@ -714,8 +751,7 @@ enabled = false # •ᴗ•
 # never deleted).
 #namespace = "k8s-svc-vault"
 
-# Extra DNS names for which certificates should be prepared. Enabling this
-# enables the ingress for vault.
+# Extra DNS names for which certificates should be prepared.
 # NOTE: to work correctly, there must exist an ingress of class `nginx` and it
 # must allow ssl passthrough.
 #dnsnames = [..]
@@ -749,6 +785,22 @@ enabled = false # •ᴗ•
 
 # Storage size for the vault file storage backend.
 #storage_size = "8Gi"
+
+# If `ingress=True` and `dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use 
+# for your ACME service.
+#external_ingress_issuer_name = ""
+
+# Can be `Issuer` or `ClusterIssuer`, depending on the kind of issuer you would like
+# to use for externally facing certificates.
+#external_ingress_issuer_kind = "ClusterIssuer"
+
+# If `true`, then an additional backup service will be deployed which creates snapshots and stores
+# them in an S3 bucket.
+#enable_backups = true
+
+# Credentials to access an S3 bucket to which the backups will be written. Required if `enable_backups = true`.
+# You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
+#s3_config_file = "vault_backup_s3_config.yaml"
 
 # ANCHOR_END: ksl_vault_configuration
 

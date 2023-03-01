@@ -1,0 +1,40 @@
+#jinja2:lstrip_blocks: True
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    yaook.cloud/component: etcd-backup
+  name: etcd-backup-monitoring
+  namespace: kube-system
+spec:
+  ports:
+  - port: 19100
+    name: metrics
+    protocol: TCP
+    targetPort: 19100
+  selector:
+    yaook.cloud/component: etcd-backup
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: etcd-backup
+  namespace: kube-system
+{% if monitoring_common_labels %}
+  labels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+    {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
+spec:
+  namespaceSelector:
+    matchNames:
+      - kube-system
+  selector:
+    matchLabels:
+      yaook.cloud/component: etcd-backup
+  endpoints:
+    - port: metrics
+      path: /metrics

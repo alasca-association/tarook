@@ -1,22 +1,27 @@
+---
 - name: Installation on Debian
   when: ansible_os_family == 'Debian'
   block:
 
     - name: Install prometheus-haproxy-exporter
-      become: yes
-      apt:
-        update_cache: yes
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
         state: present
         name:
           - prometheus-haproxy-exporter
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
     - name: Register service user fact for prometheus-haproxy-exporter on Debian
-      set_fact:
+      ansible.builtin.set_fact:
         phe_user: "prometheus"
 
     - name: Configure the exporter
-      become: yes
-      template:
+      become: true
+      ansible.builtin.template:
         src: prometheus-haproxy-exporter.default
         dest: /etc/default/prometheus-haproxy-exporter
         owner: root
@@ -26,23 +31,23 @@
 
 
 - name: Install prometheus-haproxy-exporter
-  become: yes
+  become: true
   when: ansible_os_family == 'RedHat'
   block:
 
     - name: Register service user fact for prometheus-haproxy-exporter on CentOS/RedHat
-      set_fact:
+      ansible.builtin.set_fact:
         phe_user: "{{ prometheus_haproxy_exporter_user }}"
 
     - name: Create prometheus-haproxy-exporter user
-      user:
-        system: yes
+      ansible.builtin.user:
+        system: true
         name: "{{ phe_user }}"
         shell: /sbin/nologin
-        create_home: no
+        create_home: false
 
     - name: Create configuration directory
-      file:
+      ansible.builtin.file:
         state: directory
         path: /etc/prometheus-haproxy-exporter
         owner: root
@@ -50,7 +55,7 @@
         mode: u=rwx,g=rx,o-rwx
 
     - name: Store version info
-      template:
+      ansible.builtin.template:
         src: archive_id_tag
         dest: /etc/prometheus-haproxy-exporter/version
         owner: root
@@ -64,7 +69,7 @@
       block:
 
         - name: Create cache directory for archive/binary
-          file:
+          ansible.builtin.file:
             state: directory
             path: "{{ phe_path }}"
             owner: root
@@ -72,7 +77,7 @@
             mode: u=rwx,g=rx,o-rwx
 
         - name: Download prometheus-haproxy-exporter
-          get_url:
+          ansible.builtin.get_url:
             checksum: "{{ prometheus_haproxy_exporter_checksum }}"
             dest: "{{ phe_path }}"
             url: "{{ prometheus_haproxy_exporter_url }}"
@@ -80,41 +85,46 @@
             owner: root
             group: root
             mode: ugo-rx
+          register: task_result
+          until: task_result is not failed
+          retries: "{{ network_error_retries }}"
+          delay: "{{ network_error_delay }}"
 
         - name: Extract prometheus-haproxy-exporter
-          unarchive:
+          ansible.builtin.unarchive:
             src: "{{ phe_path }}/{{ prometheus_haproxy_exporter_archive }}"
             dest: "{{ phe_path }}"
-            remote_src: yes
+            remote_src: true
 
         - name: Copy prometheus-haproxy-exporter to /usr/local/bin
-          copy:
+          ansible.builtin.copy:
             src: "{{ phe_path }}/{{ prometheus_haproxy_exporter_extract_folder }}/haproxy_exporter"
             dest: /usr/local/bin/prometheus-haproxy-exporter
             owner: "{{ phe_user }}"
             mode: u=rx,go-rwx
-            remote_src: yes
+            remote_src: true
           register: phe_binary
 
         - name: Create prometheus-haproxy-exporter service file
-          template:
+          ansible.builtin.template:
             src: prometheus-haproxy-exporter.service
             dest: /usr/lib/systemd/system/prometheus-haproxy-exporter.service
             mode: 0640
           register: phe_service
 
 - name: Add user prometheus to group haproxy to access admin sock
-  become: yes
-  user:
-    append: yes
+  become: true
+  ansible.builtin.user:
+    append: true
     name: "{{ phe_user }}"
     groups:
       - haproxy
 
 - name: Enable & restart prometheus-haproxy-exporter
-  become: yes
-  systemd:
+  become: true
+  ansible.builtin.systemd:
     name: prometheus-haproxy-exporter
     state: "{{ ((phe_binary is changed) or (phe_service is changed) or (phe_default_config is changed)) | ternary('restarted', 'started') }}"
-    enabled: yes
-    daemon-reload: yes
+    enabled: true
+    daemon-reload: true
+...

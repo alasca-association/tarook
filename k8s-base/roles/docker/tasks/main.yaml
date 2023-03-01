@@ -1,6 +1,7 @@
+---
 - name: Ensure /etc/docker directory is present
-  become: yes
-  file:
+  become: true
+  ansible.builtin.file:
     path: /etc/docker
     state: directory
     mode: 0755
@@ -8,75 +9,99 @@
     group: root
 
 - name: Install docker CE (apt)
-  become: yes
-  apt:
+  become: true
+  ansible.builtin.apt:
     state: present
     name:
       - docker.io
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
   when:
-  - ansible_pkg_mgr == 'apt'
+    - ansible_pkg_mgr == 'apt'
 
 - name: Install docker CE (yum/dnf)
-  become: yes
+  become: true
   when:
-  - ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf'
+    - ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf'
   block:
-  # TODO: test without
-  - name: Install pre-requisites to docker
-    yum:
-      name:
-      - yum-utils
-      - device-mapper-persistent-data
-      - lvm2
+    # TODO: test without
+    - name: Install pre-requisites to docker
+      ansible.builtin.yum:
+        name:
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
-  - name: Add Docker repo
-    get_url:
-      url: https://download.docker.com/linux/centos/docker-ce.repo
-      dest: /etc/yum.repos.d/docker-ce.repo
+    - name: Add Docker repo
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
-  - name: Install docker
-    yum:
-      name:
-      - docker-ce
-      - docker-ce-cli
-      - containerd.io
+    - name: Install docker
+      ansible.builtin.yum:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
 
 - name: Install docker nvidia runtime
-  become: yes
+  become: true
   vars:
     # This value is the concatenation of the fields $ID and $VERSION_ID in /etc/os-release,
     # e.g., `ubuntu18.04`.
     # I think it's a bad idea to simply source these fields so let's follow a different
     # path.
-    distribution: "{{ (ansible_distribution | lower) }}{{ansible_distribution_version }}"
+    distribution: "{{ (ansible_distribution | lower) }}{{ ansible_distribution_version }}"
   when:
     - k8s_is_gpu_cluster | default(False)
     - has_gpu
     - ansible_facts['pkg_mgr'] == "apt"
   block:
     - name: Add nvidia's repo key
-      apt_key:
+      ansible.builtin.apt_key:
         url: https://nvidia.github.io/nvidia-docker/gpgkey
         state: present
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
     - name: Add nvidia-docker2 repositories
-      apt_repository:
+      ansible.builtin.apt_repository:
         # Don't update on each item
         update_cache: false
         repo: "{{ item }}"
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
       loop:
         - "deb https://nvidia.github.io/libnvidia-container/stable/{{ distribution }}/$(ARCH) /"
         - "deb https://nvidia.github.io/nvidia-container-runtime/stable/{{ distribution }}/$(ARCH) /"
         - "deb https://nvidia.github.io/nvidia-docker/{{ distribution }}/$(ARCH) /"
 
     - name: Install nvidia-docker2 package
-      apt:
+      ansible.builtin.apt:
         name: nvidia-docker2
-        update_cache: yes
+        update_cache: true
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
 - name: Create docker daemon configuration
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
     owner: root
@@ -85,12 +110,12 @@
   notify: Restart docker
 
 - name: Create docker proxy configuration
-  become: yes
+  become: true
   when: (cluster_behind_proxy | default(false))
   block:
     - name: Ensure directory docker service directory is present
-      become: yes
-      file:
+      become: true
+      ansible.builtin.file:
         path: /etc/systemd/system/docker.service.d
         state: directory
         mode: 0755
@@ -98,8 +123,8 @@
         group: root
 
     - name: Create docker service extension
-      become: yes
-      template:
+      become: true
+      ansible.builtin.template:
         src: http-proxy.conf.j2
         dest: /etc/systemd/system/docker.service.d/http-proxy.conf
         owner: root
@@ -108,4 +133,5 @@
       notify: Restart docker
 
 - name: Trigger the handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
+...

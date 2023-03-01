@@ -1,7 +1,8 @@
+---
 - name: Create a Test-Pod on each k8s-node and check that each Pod can ping each other Pod
   delegate_to: "{{ groups['masters'] | first }}"
   run_once: true
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
@@ -15,9 +16,14 @@
           labels:
             calico-test: "{{ check_calico_namespace }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
       state: present
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Collect Information about number of Nodes
     kubernetes.core.k8s_info:
@@ -27,15 +33,20 @@
   - name: Create ServiceAccount, RBAC, and Deployment for calico-busybox-test
     kubernetes.core.k8s:
       definition: "{{ lookup('template', item) }}"
-      apply: yes
+      apply: true
       state: "present"
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     with_items:
     - busybox_serviceaccount.yaml.j2
     - busybox-deployment.yaml.j2
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Collect (calico-)BusyBox Pod Resource Information
     kubernetes.core.k8s_info:
@@ -45,49 +56,49 @@
     register: calico_busybox_pod_information
 
   # ping each Pod from each Pod with a nested loop
-  - name: ping each BusyBox Pod from every BusyBox Pod
-    command:
+  - name: ping each BusyBox Pod from every BusyBox Pod  # noqa no-changed-when
+    ansible.builtin.command:
       argv:
-        - kubectl
-        - -n
-        - '{{ check_calico_namespace }}'
-        - exec
-        - "{{ item[0].metadata.name }}"
-        - --
-        - ping
-        - "{{ item[1].status.podIPs[0]['ip'] }}"
-        - -q
-        - -c
-        - 5
-        - -w
-        - 10
+      - kubectl
+      - -n
+      - '{{ check_calico_namespace }}'
+      - exec
+      - "{{ item[0].metadata.name }}"
+      - --
+      - ping
+      - "{{ item[1].status.podIPs[0]['ip'] }}"
+      - -q
+      - -c
+      - 5
+      - -w
+      - 10
     with_nested:
-      - "{{ calico_busybox_pod_information.resources }}"
-      - "{{ calico_busybox_pod_information.resources }}"
+    - "{{ calico_busybox_pod_information.resources }}"
+    - "{{ calico_busybox_pod_information.resources }}"
     loop_control:
       label: "{{ item[0].metadata.name }} --> {{ item[1].metadata.name }} ({{ item[1].status.podIP }})"
     async: 45
     poll: 0
 
   - name: ping each BusyBox Pod from every BusyBox Pods (IPv6)
-    command:
+    ansible.builtin.command:
       argv:
-        - kubectl
-        - -n
-        - '{{ check_calico_namespace }}'
-        - exec
-        - "{{ item[0].metadata.name }}"
-        - --
-        - ping
-        - "{{ item[1].status.podIPs[1]['ip'] }}"
-        - -q
-        - -c
-        - 5
-        - -w
-        - 10
+      - kubectl
+      - -n
+      - '{{ check_calico_namespace }}'
+      - exec
+      - "{{ item[0].metadata.name }}"
+      - --
+      - ping
+      - "{{ item[1].status.podIPs[1]['ip'] }}"
+      - -q
+      - -c
+      - 5
+      - -w
+      - 10
     with_nested:
-      - "{{ calico_busybox_pod_information.resources }}"
-      - "{{ calico_busybox_pod_information.resources }}"
+    - "{{ calico_busybox_pod_information.resources }}"
+    - "{{ calico_busybox_pod_information.resources }}"
     when: dualstack_support
     loop_control:
       label: "{{ item[0].metadata.name }} --> {{ item[1].metadata.name }} ({{ item[1].status.podIPs[1]['ip'] | default('not defined') }})"
@@ -98,16 +109,21 @@
   - name: Delete the (calico-)BusyBox DaemonSet and ServiceAccount
     kubernetes.core.k8s:
       definition: "{{ lookup('template', item) }}"
-      apply: yes
+      apply: true
       state: absent
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     with_items:
     - busybox-deployment.yaml.j2
     - busybox_serviceaccount.yaml.j2
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
-      - test-cleanup
+    - test-cleanup
 
   - name: Delete Namespace for calico Pod-to-Pod Connectivity-Check
     kubernetes.core.k8s:
@@ -117,7 +133,13 @@
       state: absent
       wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
-      - test-cleanup
+    - test-cleanup
+...

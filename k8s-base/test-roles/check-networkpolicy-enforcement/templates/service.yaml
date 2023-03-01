@@ -20,6 +20,16 @@ spec:
       labels:
         app: echo
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: NotIn
+                  values:
+                  - "{{ inventory_hostname }}"
       securityContext:
         runAsNonRoot: true
         runAsUser: 24635

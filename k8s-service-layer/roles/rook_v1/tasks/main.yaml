@@ -1,13 +1,9 @@
+---
 - name: Include version checks and updates
-  include_tasks: version_checks.yaml
+  ansible.builtin.include_tasks: version_checks.yaml
 
 - name: Configure k8s resources
   when: k8s_storage_rook_enabled | bool
-  vars:
-    rook_conf_major_version: "{{ rook_version.split('.')[0] }}"
-    rook_conf_minor_version: "{{ rook_version.split('.')[1] }}"
-    rook_conf_maj_min_version: "{{ '%s.%s' | format(rook_conf_major_version,rook_conf_minor_version) }}" # ugly
-    rook_ceph_version: "{{ rook_ceph_version_map[rook_version]['ceph'] }}"
   block:
   - name: Check that mon volume storage class exists
     kubernetes.core.k8s_info:
@@ -31,45 +27,65 @@
       crds_template: "{{ '%s/crds.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', crds_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     when: rook_version is version('v1.5.0', operator='ge')
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create common resource definitions
     vars:
       common_template: "{{ '%s/common.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', common_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create the operator
     vars:
       operator_template: "{{ '%s/operator.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', operator_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create the cluster
     vars:
       cluster_template: "{{ '%s/cluster.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', cluster_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Wait for cluster to become ready
     kubernetes.core.k8s_info:
@@ -110,55 +126,81 @@
       toolbox_template: "{{ '%s/toolbox.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: "{{ rook_toolbox | ternary('present', 'absent') }}"
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', toolbox_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create ceph pools
     vars:
       pool_template: "{{ '%s/pool.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', pool_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     loop: "{{ rook_pools }}"
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create pool storage classes
     vars:
       block_storage_class_template: "{{ '%s/block_storage_class.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: present
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', block_storage_class_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     when: "item.create_storage_class | default(False)"
     loop: "{{ rook_pools }}"
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create shared filesystem
     vars:
       fs_template: "{{ '%s/filesystem.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: "{{ rook_ceph_fs | ternary('present', 'absent') }}"
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', fs_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Create shared filesystem storage class
     vars:
       cephfs_storage_class_template: "{{ '%s/cephfs_storage_class.yaml' | format(rook_conf_maj_min_version) }}"
     kubernetes.core.k8s:
       state: "{{ rook_ceph_fs | ternary('present', 'absent') }}"
-      apply: yes
+      apply: true
       definition: "{{ lookup('template', cephfs_storage_class_template) }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+...

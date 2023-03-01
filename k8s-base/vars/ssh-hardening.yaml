@@ -1,3 +1,4 @@
+---
 ssh_ciphers:
   - "aes256-gcm@openssh.com"
   - "aes256-ctr"
@@ -13,3 +14,4 @@ ssh_macs:
 ssh_kex:
   - "curve25519-sha256@libssh.org"
   - "diffie-hellman-group-exchange-sha256"
+...

@@ -1,11 +1,12 @@
+---
 - name: Initial sanity checks
   hosts: localhost
   gather_facts: false
   vars_files:
   - vars/etc.yaml
   roles:
-    - validate_configuration
-    - vault-migrated
+  - validate_configuration
+  - vault-migrated
 
 - name: Initial node bootstrap
   hosts: k8s_nodes
@@ -14,6 +15,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/retries.yaml
   roles:
   - role: detect_user
     tags: detect_user
@@ -43,10 +45,9 @@
 
 - name: Harden SSH
   hosts: k8s_nodes
-  become: yes
-  collections:
-  - devsec.hardening
+  become: true
   roles:
+  # https://github.com/dev-sec/ansible-collection-hardening/
   - role: devsec.hardening.ssh_hardening
     tags: harden-ssh
 
@@ -55,13 +56,14 @@
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
+  - vars/retries.yaml
   tasks:
-    - name: Upgrade the system
-      when: install_status == 'k8s_not_installed'
-      include_role:
-        name: update_system
-      tags:
-        - update_system
+  - name: Upgrade the system
+    when: install_status == 'k8s_not_installed'
+    ansible.builtin.include_role:
+      name: update_system
+    tags:
+    - update_system
 
 - name: Detect login for gateways
   hosts: gateways
@@ -80,19 +82,19 @@
   - role: k8s-api-frontend
     tags: k8s-api-frontend
   - role: global-monitoring-frontend
-    tags: k8s-global-monitoring # ToDo: find better tag
+    tags: k8s-global-monitoring  # ToDo: find better tag
     when: k8s_global_monitoring_enabled
 
 - name: Rollout company users
   hosts: k8s_nodes
   gather_facts: true
   tasks:
-    - name: Rollout company users
-      when: cah_users_rollout
-      include_role:
-        name: ch-role-users
-      tags:
-        - ch-role-users
+  - name: Rollout company users
+    when: cah_users_rollout
+    ansible.builtin.include_role:
+      name: ch-role-users
+    tags:
+    - ch-role-users
 
 - name: Prepare the k8s nodes
   hosts: k8s_nodes
@@ -100,6 +102,38 @@
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
+  pre_tasks:
+  - name: Obtain installed packages
+    ansible.builtin.package_facts:
+      manager: auto
+  - name: Fail when docker is installed but containerd configured
+    ansible.builtin.fail:
+      msg: |
+        Docker is installed on this node, but containerd is configured as CRI!
+    when:
+    - "'docker.io' in ansible_facts.packages"
+    - container_runtime == 'containerd'
+  - name: Prevent installing containerd for GPU cluster
+    ansible.builtin.fail:
+      msg: Trying to use containerd in a GPU cluster – this does not work.
+    when:
+    - k8s_is_gpu_cluster | default(False)
+    - container_runtime == 'containerd'
+  - name: Fail if outdated containerd package is installed
+    become: true
+    when:
+    - "'containerd' in ansible_facts.packages"
+    - install_status == 'k8s_installed'
+    - not _allow_disruption
+    - container_runtime == 'containerd'
+    ansible.builtin.fail:
+      msg: |
+        The 'containerd' package is installed,
+        but the 'containerd.io' package from the official
+        docker repositories is needed. Please allow disruption
+        or manually uninstall the 'containerd' package on all
+        Kubernetes nodes.
   roles:
   - role: networking
     tags: networking
@@ -119,9 +153,6 @@
     tags: kubeadm
   - role: remove_snap
     tags: remove_snap
-  - role: wireguard-support
-    tags: wireguard
-    when: wireguard_on_workers
 
 # If DualStack is enabled, the k8s cluster needs to use calico as CNI plugin
 # In Ansible, it is not possible to overwrite inventory variables, therefore we need to fail here
@@ -130,7 +161,7 @@
   hosts: localhost
   tasks:
   - name: Check if DualStack support is enabled, but CNI plugin is not set to calico
-    fail:
+    ansible.builtin.fail:
       msg: |
         ### ERROR ###
         You have enabled DualStack support, but have not chosen calico as k8s network plugin.
@@ -142,8 +173,8 @@
   gather_facts: true
   serial: 1
   roles:
-    - role: etcd-clean-stale-members
-      tags: etcd-clean-stale-members
+  - role: etcd-clean-stale-members
+    tags: etcd-clean-stale-members
 
 - name: Spawn the K8s control plane
   hosts: masters
@@ -152,16 +183,21 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/retries.yaml
   # With serial we can specify the number of hosts on which the Playbook is
   # executed in parallel.
   # https://docs.ansible.com/ansible/latest/user_guide/playbooks_delegation.html
   # FIXME: Do we really want to copy our OpenStack user credentials like this?
   serial:
-    - 1
-    - "100%"
+  - 1
+  - "100%"
   roles:
-    - role: k8s-master
-      tags: k8s-master
+  - role: k8s-master
+    tags: k8s-master
+  - role: k8s-fetch-certs
+    tags:
+    - k8s-master
+    - k8s-fetch-certs
 
 - name: Install calico supporting services
   hosts: masters
@@ -170,18 +206,31 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/retries.yaml
   roles:
-    - role: calico-control-plane
-      tags:
-      - calico
-      - calico-control-plane
-      when: k8s_network_plugin == 'calico'
-    - role: calico-worker
-      tags:
-      - calico
-      - calico-control-plane
-      - calico-worker
-      when: k8s_network_plugin == 'calico'
+  - role: calico-control-plane
+    tags:
+    - calico
+    - calico-control-plane
+    when: k8s_network_plugin == 'calico'
+  - role: calico-worker
+    tags:
+    - calico
+    - calico-control-plane
+    - calico-worker
+    when: k8s_network_plugin == 'calico'
+  post_tasks:
+  # This is required for the k8s node to come up after the installation
+  # of calico – but only when using containerd, go figure!
+  - name: Restart containerd
+    when:
+    - container_runtime == 'containerd'
+    - install_status == 'k8s_not_installed'
+    become: true
+    ansible.builtin.systemd:
+      name: containerd
+      state: restarted
+      enabled: true
 
 - name: Spawn and configure the k8s worker nodes
   hosts: workers
@@ -190,48 +239,63 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/retries.yaml
   roles:
-    - role: k8s-worker
-      tags: k8s-worker
-    - role: kubelet-configuration
-      tags: kubelet-configuration
-    - role: calico-worker
-      tags:
-      - calico
-      - calico-worker
-      when: k8s_network_plugin == 'calico'
+  - role: k8s-worker
+    tags: k8s-worker
+  - role: kubelet-configuration
+    tags: kubelet-configuration
+  - role: calico-worker
+    tags:
+    - calico
+    - calico-worker
+    when: k8s_network_plugin == 'calico'
+  post_tasks:
+  # This is required for the k8s node to come up after the installation
+  # of calico – but only when using containerd, go figure!
+  - name: Restart containerd
+    when:
+    - container_runtime == 'containerd'
+    - install_status == 'k8s_not_installed'
+    become: true
+    ansible.builtin.systemd:
+      name: containerd
+      state: restarted
+      enabled: true
 
 - name: Cleanup Calico binaries
   hosts: localhost
   gather_facts: false
   roles:
-    - role: calico-cleanup
-      tags: calico-cleanup
-      when: k8s_network_plugin == 'calico'
+  - role: calico-cleanup
+    tags: calico-cleanup
+    when: k8s_network_plugin == 'calico'
 
 - name: Spawn the OpenStack k8s Control Plane
   hosts: masters
-  become: yes
+  become: true
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
-  run_once: yes
+  - vars/retries.yaml
+  run_once: true
   roles:
-    - role: connect-k8s-to-openstack
-      tags: connect-k8s-to-openstack
-      when: on_openstack | default(False) | bool
-    - role: ch-k8s-lbaas-controller
-      tags:
-      - ch-k8s-lbaas
-      - ch-k8s-lbaas-controller
+  - role: connect-k8s-to-openstack
+    tags: connect-k8s-to-openstack
+    when: on_openstack | default(False) | bool
+  - role: ch-k8s-lbaas-controller
+    tags:
+    - ch-k8s-lbaas
+    - ch-k8s-lbaas-controller
 
 - name: Configure BGP and LBaaS on the gateways
   hosts: gateways
-  become: yes
+  become: true
   gather_facts: true
   vars_files:
   - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
   roles:
   - role: k8s-bgp
     tags:
@@ -245,13 +309,14 @@
   hosts: k8s_nodes
   vars_files:
   - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
   roles:
-    - role: k8s-local-storage-controller
-      tags: lsc
-      when: k8s_local_storage_static_enabled
-    - role: k8s-local-path-provisioner
-      tags: lpp
-      when: k8s_local_storage_dynamic_enabled
+  - role: k8s-local-storage-controller
+    tags: lsc
+    when: k8s_local_storage_static_enabled
+  - role: k8s-local-path-provisioner
+    tags: lpp
+    when: k8s_local_storage_dynamic_enabled
 
 # yahrens: This play resides only transitionally here.
 # See https://gitlab.com/yaook/k8s/-/issues/349 for details
@@ -259,62 +324,10 @@
   hosts: workers
   gather_facts: false
   tasks:
-    - name: Configure vm.max_map_count
-      import_role:
-        name: vm-max-map-count
-      when: "vm_max_map_count is defined"
-      tags:
-        - vm-max-map-count
-
-- name: Restart kubelet after the initial installation as workaround
-  hosts: k8s_nodes
-  gather_facts: false
-  serial: 1
-  vars_files:
-  - vars/disruption.yaml
-  tasks:
-    # This is required for the k8s node to come up after the installation
-    # of calico – but only when using containerd, go figure!  When
-    # disruption is allowed we also restart on changes of the config, as
-    # we can assume it is not properly reloaded (if initial loading does
-    # not work).
-    - name: Get the kubernetes node info
-      become: yes
-      environment:
-        KUBECONFIG: /etc/kubernetes/kubelet.conf
-      command:
-      args:
-        argv:
-          - kubectl
-          - get
-          - node
-          - -o
-          - json
-          - "{{ inventory_hostname }}"
-      register: kubectl_get_node
-      changed_when: false
-      tags: containerd
-
-    - name: Restart containerd
-      become: yes
-      systemd:
-        enabled: yes
-        name: containerd
-        state: restarted
-      tags: containerd
-      when: container_runtime == 'containerd' and 'cni plugin not initialized' in kubectl_get_node.stdout
-
-    - name: Restart kubelet
-      become: yes
-      systemd:
-        enabled: yes
-        name: kubelet
-        state: restarted
-      tags: containerd
-      when: container_runtime == 'containerd' and 'cni plugin not initialized' in kubectl_get_node.stdout
-
-    - name: Let things settle after the restart
-      pause:
-        seconds: 30
-      tags: containerd
-      when: container_runtime == 'containerd' and 'cni plugin not initialized' in kubectl_get_node.stdout
+  - name: Configure vm.max_map_count
+    ansible.builtin.import_role:
+      name: vm-max-map-count
+    when: "vm_max_map_count is defined"
+    tags:
+    - vm-max-map-count
+...

@@ -1,11 +1,12 @@
+---
 - name: Initial sanity checks
   hosts: localhost
   gather_facts: false
   vars_files:
   - vars/etc.yaml
   roles:
-    - validate_configuration
-    - vault-migrated
+  - validate_configuration
+  - vault-migrated
 
 - name: Establish connectivity to the nodes
   hosts: frontend
@@ -14,6 +15,7 @@
   vars_files:
   - vars/disruption.yaml
   - vars/etc.yaml
+  - vars/retries.yaml
   roles:
   - role: detect_user
     tags: detect_user
@@ -42,12 +44,11 @@
 
 - name: Harden SSH
   hosts: frontend
-  become: yes
-  collections:
-  - devsec.hardening
+  become: true
   vars_files:
   - vars/ssh-hardening.yaml
   roles:
+  # https://github.com/dev-sec/ansible-collection-hardening/
   - role: devsec.hardening.ssh_hardening
     tags: harden-ssh
 
@@ -55,6 +56,7 @@
   hosts: uninitialized_frontend_nodes
   vars_files:
   - vars/disruption.yaml
+  - vars/retries.yaml
   roles:
   - role: update_system
     tags: update_system
@@ -63,12 +65,12 @@
   hosts: gateways
   gather_facts: true
   tasks:
-    - name: Rollout company users
-      when: cah_users_rollout
-      include_role:
-        name: ch-role-users
-      tags:
-        - ch-role-users
+  - name: Rollout company users
+    when: cah_users_rollout
+    ansible.builtin.include_role:
+      name: ch-role-users
+    tags:
+    - ch-role-users
 
 - name: Configure frontend server services
   hosts: frontend
@@ -77,6 +79,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/retries.yaml
   roles:
   - role: ntp
     tags: ntp
@@ -96,6 +99,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/retries.yaml
   roles:
   - role: bird
     tags: bird
@@ -113,5 +117,5 @@
     tags: configure-automatic-system-updates
   - role: ipsec-vpn
     tags: ipsec-vpn
-  - role: wireguard-site-to-site
-    tags: wireguard-site-to-site
+
+...

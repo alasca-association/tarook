@@ -1,14 +1,16 @@
 ---
 - name: Kubernetes Managed Services
   hosts: orchestrator
-  gather_facts: no
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
   pre_tasks:
-    - name: include env vars
-      when: kms_vars_directory is defined
-      include_vars:
-        dir: "{{ kms_vars_directory }}"
-      tags:
-        - always
+  - name: include env vars
+    when: kms_vars_directory is defined
+    ansible.builtin.include_vars:
+      dir: "{{ kms_vars_directory }}"
+    tags:
+    - always
   tags:
   - mk8s-ms
   roles:
@@ -26,3 +28,4 @@
     when: k8s_is_gpu_cluster
     tags:
     - mk8s-ms/nvidia-device-plugin
+...

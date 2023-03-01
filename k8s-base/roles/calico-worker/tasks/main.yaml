@@ -1,3 +1,4 @@
+---
 - name: Create /etc/cni/net.d/
   become: yes
   file:
@@ -19,3 +20,4 @@
     kubeconfig_issuer: calico-cni
     kubeconfig_user: calico-cni
     kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
+...

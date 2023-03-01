@@ -1,3 +1,4 @@
+---
 - name: Create passwordstore directory
   become: no
   delegate_to: localhost
@@ -23,3 +24,4 @@
       {{- pass_cmd -}}
   environment:
     PASSWORD_STORE_DIR: "{{ etc_dir }}/passwordstore"
+...

@@ -14,9 +14,9 @@ monitoring_thanos_config_secret_name: thanos-objectstorage
 monitoring_scheduling_key: null
 monitoring_scheduling_value: null
 
-monitoring_prometheus_monitor_all_namespaces: True
+monitoring_prometheus_monitor_all_namespaces: true
 
-monitoring_grafana_customer_dashboards: True
+monitoring_grafana_customer_dashboards: true
 monitoring_grafana_customer_dashboards_configmap: grafana-customer-dashboards
 
 monitoring_alertmanager_memory_limit: "256Mi"
@@ -82,3 +82,4 @@ monitoring_internet_probe: false
 monitoring_internet_probe_targets: []
 
 monitoring_prometheus_adapter_version: "v0.8.2"
+...

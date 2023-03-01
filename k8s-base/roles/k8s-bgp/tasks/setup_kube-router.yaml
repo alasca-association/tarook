@@ -1,9 +1,0 @@
----
-- name: Configure BIRD
-  template:
-    src: bird-kube-router.conf
-    dest: /etc/bird.d/10-k8s-kube-router.conf
-    owner: root
-    group: bird
-    mode: "u=rw,g=r,o-rwx"
-  notify: restart bird

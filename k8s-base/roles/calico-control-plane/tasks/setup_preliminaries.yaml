@@ -1,23 +1,29 @@
 # If you plan to upgrade calico resources:
 # curl https://docs.projectcalico.org/manifests/calico.yaml -O
 # Make sure to only apply the CustomResourceDefinitions
+---
 - name: Create Custom Calico Resource Definitions
-  become: yes
-  run_once: yes
+  become: true
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   vars:
     crd_file: "{{ 'crds/calico-crds-v%s.yaml' | format(image_versions.calico_version) }}"
   kubernetes.core.k8s:
     definition: "{{ lookup('file', crd_file) }}"
-    apply: yes
+    apply: true
     state: present
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: Upload calico CA certificate to k8s
-  run_once: yes
+  run_once: true
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
@@ -40,16 +46,22 @@
         strict: yes
 
 - name: Create user for calico-cni, configure RBAC and create RoleBinding
-  become: yes
-  run_once: yes
+  become: true
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   kubernetes.core.k8s:
     definition: "{{ lookup('file', item) }}"
-    apply: yes
+    apply: true
     state: "present"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   loop:
-    - "{{ calico_versions_folder }}/calico-cni-user.yaml"
+  - "{{ calico_versions_folder }}/calico-cni-user.yaml"
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+...

@@ -1,8 +1,9 @@
+---
 - name: Check reachability of remote endpoint
   vars:
     gateway: "{{ (groups['gateways'] | first) if ('gateways' in groups) else False }}"
-    ipsec_enabled: "{{ hostvars[gateway]['ipsec_enabled']  | default(False) }}"
-    ipsec_test_enabled: "{{ hostvars[gateway]['ipsec_test_enabled']  | default(False) }}"
+    ipsec_enabled: "{{ hostvars[gateway]['ipsec_enabled'] | default(False) }}"
+    ipsec_test_enabled: "{{ hostvars[gateway]['ipsec_test_enabled'] | default(False) }}"
     ipsec_remote_private_addrs: "{{ hostvars[gateway]['ipsec_remote_private_addrs'] }}"
   block:
   - name: create namespace
@@ -12,18 +13,28 @@
       name: "{{ check_ipsec_namespace }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: create a busybox Pod
     kubernetes.core.k8s:
       state: present
       definition: "{{ lookup('template', 'busybox-ping-job.yaml.j2') }}"
-      wait: yes
-      apply: yes
+      wait: true
+      apply: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Try to ping test-node via IPsec
     kubernetes.core.k8s_exec:
@@ -43,5 +54,11 @@
       state: absent
       wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+...

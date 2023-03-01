@@ -4,3 +4,4 @@ galaxy_info:
   license: Apache-2.0
 dependencies:
 - k8s-config
+...

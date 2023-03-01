@@ -1,3 +1,4 @@
+---
 - name: Sanity checks (OpenStack)
   # If no config file is passed, then we infer the access information to the bucket via the sourced
   # OpenStack variables. If there is a config file given, then this role will *not* validate the credentials.
@@ -37,6 +38,11 @@
     validate:
       fail_on_error: yes
       strict: yes
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
   tags:
   - monitoring
   - thanos
@@ -56,6 +62,11 @@
     validate:
       fail_on_error: yes
       strict: yes
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
   tags:
   - thanos
 
@@ -63,3 +74,4 @@
   when: k8s_monitoring_enabled and monitoring_use_thanos
   tags:
   - thanos
+...

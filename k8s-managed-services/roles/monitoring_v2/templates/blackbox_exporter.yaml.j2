@@ -17,6 +17,8 @@ config:
     tcp_connect:
       prober: tcp
       timeout: 5s
+      tcp:
+        preferred_ip_protocol: "ip4"
 
 serviceMonitor:
   enabled: true
@@ -104,3 +106,20 @@ securityContext:
     drop: ["ALL"]
 # Add NET_RAW to enable ICMP
     add: ["NET_RAW"]
+
+extraArgs:
+  - --log.level=debug
+
+{% if monitoring_scheduling_key %}
+tolerations:
+  - key: "{{ monitoring_scheduling_key }}"
+    operator: Exists
+    effect: NoSchedule
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: "{{ monitoring_scheduling_key }}"
+              operator: Exists
+{% endif %}

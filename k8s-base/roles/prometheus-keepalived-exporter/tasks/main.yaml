@@ -1,24 +1,24 @@
 ---
 - name: create user
-  become: yes
-  user:
-    system: yes
+  become: true
+  ansible.builtin.user:
+    system: true
     name: "{{ prometheus_keepalived_exporter_user }}"
     home: /dev/null
-    create_home: no
+    create_home: false
 
 - name: "[Legacy] Remove residual files from /tmp"
-  become: yes
-  file:
+  become: true
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   loop:
-    - "/tmp/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64.tar.gz"
-    - "/tmp/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64"
+  - "/tmp/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64.tar.gz"
+  - "/tmp/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64"
 
 - name: Create configuration directory
-  become: yes
-  file:
+  become: true
+  ansible.builtin.file:
     state: directory
     path: /etc/prometheus-keepalived-exporter
     owner: root
@@ -26,8 +26,8 @@
     mode: u=rwx,g=rx,o-rwx
 
 - name: Store id tag
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: archive_id_tag
     dest: /etc/prometheus-keepalived-exporter/version
     owner: root
@@ -36,12 +36,12 @@
   register: version
 
 - name: Fetch and install binary
-  become: yes
+  become: true
   vars:
     pke_path: /var/cache/prometheus-keepalived-exporter
   block:
   - name: Create caching directory for the archive/binary
-    file:
+    ansible.builtin.file:
       state: directory
       path: "{{ pke_path }}"
       owner: root
@@ -49,7 +49,7 @@
       mode: u=rwx,g=rx,o-rwx
 
   - name: Download executable
-    get_url:
+    ansible.builtin.get_url:
       checksum: "{{ prometheus_keepalived_exporter_checksums[prometheus_keepalived_exporter_version] }}"
       dest: "{{ pke_path }}"
       url: "{{ prometheus_keepalived_exporter_url }}"
@@ -57,24 +57,28 @@
       owner: root
       group: root
       mode: ugo-rx
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
 
   - name: Extract binary
-    unarchive:
+    ansible.builtin.unarchive:
       src: "{{ pke_path }}/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64.tar.gz"
       dest: "{{ pke_path }}"
-      remote_src: yes
+      remote_src: true
 
   - name: Install binary to /usr/local/bin
-    copy:
+    ansible.builtin.copy:
       src: "{{ pke_path }}/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64/keepalived_exporter"
       dest: /usr/local/bin
       owner: keepalived-exporter
       mode: u=rx,go-rwx
-      remote_src: yes
+      remote_src: true
     register: pke_binary
 
   - name: Set capabilities
-    capabilities:
+    community.general.capabilities:
       path: /usr/local/bin/keepalived_exporter
       capability: "{{ item }}"
       state: present
@@ -84,14 +88,14 @@
     - cap_net_admin+ep
 
 - name: Activate ip_vs kernel module
-  become: yes
-  modprobe:
+  become: true
+  community.general.modprobe:
     name: ip_vs
     state: present
 
 - name: Create a systemd unit for keepalived_exporter
-  become: yes
-  copy:
+  become: true
+  ansible.builtin.copy:
     src: "{{ role_path }}/files/prometheus-keepalived-exporter.service"
     dest: /etc/systemd/system/
     owner: root
@@ -100,9 +104,10 @@
   register: pke_unit
 
 - name: Start & enable the systemd unit
-  become: yes
-  systemd:
+  become: true
+  ansible.builtin.systemd:
     name: prometheus-keepalived-exporter
     state: "{{ ((pke_binary is changed) or (pke_unit is changed)) | ternary('restarted', 'started') }}"
-    enabled: yes
-    daemon-reload: yes
+    enabled: true
+    daemon-reload: true
+...

@@ -4,3 +4,4 @@ galaxy_info:
   author: Yaook Authors
 dependencies:
   - is-k8s-installed
+...

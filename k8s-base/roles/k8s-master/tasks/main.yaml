@@ -1,6 +1,7 @@
+---
 - name: Load admin credentials into interactive shells
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: kubernetes-admin.sh.j2
     dest: /etc/profile.d/kubernetes-admin.sh
     owner: root
@@ -8,34 +9,34 @@
     mode: u=rw,go=r
 
 - name: Check reachability of local kube-apiserver
-  wait_for:
+  ansible.builtin.wait_for:
     port: 6443
     timeout: 5
-  ignore_errors: yes
+  ignore_errors: true
   register: local_kube_apiserver_status
 
 - name: Register the available frontend
-  set_fact:
+  ansible.builtin.set_fact:
     available_frontend: "{{ groups['frontend'] | first }}"
 
 - name: Check reachability of load-balanced kube-apiserver
   when: local_kube_apiserver_status is failed
   vars:
     host: "{{ networking_fixed_ip }}:{{ hostvars[available_frontend]['k8s_apiserver_frontend_port'] }}"
-  uri:
+  ansible.builtin.uri:
     url: "https://{{ host }}"
     status_code: 403
-    validate_certs: no # self-signed certificate
+    validate_certs: false  # self-signed certificate
     timeout: 3
   register: lb_kube_apiserver_status
   until: lb_kube_apiserver_status.status == 403
   retries: 3
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Make sure 'etc_dir' exists
   delegate_to: localhost
-  become: no
-  file:
+  become: false
+  ansible.builtin.file:
     path: "{{ etc_dir }}"
     state: directory
     mode: 0755
@@ -52,8 +53,8 @@
 
 # The focus of the following two tasks is on fixing the permissions.
 - name: Create PKI directories
-  become: yes
-  file:
+  become: true
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: u=rwx,go-rwx
@@ -340,8 +341,8 @@
   - etcd/ca.key
 
 - name: Ensure that /var/lib/etcd exists
-  become: yes
-  file:
+  become: true
+  ansible.builtin.file:
     path: /var/lib/etcd
     state: directory
     mode: u=rwx,go-rwx
@@ -350,45 +351,46 @@
   when: "local_kube_apiserver_status is failed and lb_kube_apiserver_status is failed"
   tags:
     - spawn
-  become: yes
+  become: true
   block:
-  - name: Check if gcr.io can be reached
-    command: kubeadm config images pull
 
-  - name: Create kubeadm-init-config.yaml
-    vars:
-      gateway: "{{ groups['gateways'] | first }}"
-    template:
-      src: kubeadm-init-config.yaml.j2
-      dest: /tmp/kubeadm-init-config.yaml
-      owner: root
-      group: root
-      mode: 0600
+    - name: Pull config images used by kubeadm from registry.k8s.io  # noqa no-changed-when
+      ansible.builtin.command: kubeadm config images pull --kubernetes-version {{ k8s_version }}
 
-  - name: Run kubeadm init
-    # XXX: ansible command module does not support setting the umask
-    shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
+    - name: Create kubeadm-init-config.yaml
+      vars:
+        gateway: "{{ groups['gateways'] | first }}"
+      ansible.builtin.template:
+        src: kubeadm-init-config.yaml.j2
+        dest: /tmp/kubeadm-init-config.yaml
+        owner: root
+        group: root
+        mode: 0600
 
-  - name: Remove kubeadm-init-config.yaml
-    file:
-      path: /tmp/kubeadm-init-config.yaml
-      state: absent
+    - name: Run kubeadm init  # noqa no-changed-when
+      # XXX: ansible command module does not support setting the umask
+      ansible.builtin.shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
 
-  - name: Configure bridge-nf-call-iptables
-    sysctl:
-      name: net.bridge.bridge-nf-call-iptables
-      value: 1
-      state: present
+    - name: Remove kubeadm-init-config.yaml
+      ansible.builtin.file:
+        path: /tmp/kubeadm-init-config.yaml
+        state: absent
 
-  - name: Copy kubeconfig to localhost
-    fetch:
-      src: /etc/kubernetes/admin.conf
-      dest: "{{ etc_dir }}/"
-      flat: yes
+    - name: Configure bridge-nf-call-iptables
+      ansible.posix.sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: 1
+        state: present
+
+    - name: Copy kubeconfig to localhost
+      fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ etc_dir }}/"
+        flat: yes
 
 - name: Join the K8s control plane
   when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed"
-  become: yes
+  become: true
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
@@ -416,14 +418,14 @@
         state: absent
 
 - name: Ensure that the 'gods' group exists
-  become: yes
-  group:
+  become: true
+  ansible.builtin.group:
     name: "{{ k8s_admin_credentials_group }}"
     state: present
 
 - name: Make the kube config readable by gods
-  become: yes
-  file:
+  become: true
+  ansible.builtin.file:
     state: file
     path: /etc/kubernetes/admin.conf
     owner: root
@@ -431,27 +433,19 @@
     mode: u=rw,g=r,o-rwx
 
 - name: Ensure that the current user is allowed to read the kube config
-  become: yes
-  user:
-    append: yes
+  become: true
+  ansible.builtin.user:
+    append: true
     groups: "{{ k8s_admin_credentials_group }}"
     name: "{{ ansible_user }}"
   when: "ansible_user | default(False)"
 
-- name: Setup kube-router networking
-  include_tasks: setup_kube-router.yaml
-  when: k8s_network_plugin == 'kube-router'
-
 - name: Fail if no networking was configured
-  fail:
+  ansible.builtin.fail:
     msg: |
       You chose "{{ k8s_network_plugin }}", but that did not work.
-      Currently, we support 'kube-router', and 'calico'.
-  # This variable is set by the setup_*.yaml files included above.
-  # If you reach this point, none of them was included, probably because of
-  # a typo in your k8s_network_plugin variable.
-  # If calico is chosen, the network setup will be done after setting up the k8s nodes
-  when: not (runtime_k8s_networking_configured | default(False)) and not k8s_network_plugin == 'calico'
+      Currently, we support only 'calico'.
+  when: not k8s_network_plugin == 'calico'
 
 - name: Provide CA certificates as ConfigMap
   become: yes
@@ -474,3 +468,4 @@
       data:
         front-proxy-ca.crt: "{{ k8s_front_proxy_ca_cert }}"
         kubernetes-ca.crt: "{{ k8s_ca_cert }}"
+...

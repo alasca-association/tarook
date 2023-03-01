@@ -1,9 +1,6 @@
 ---
-- name: execute test
-  become: yes
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-
+- name: Execute test on the k8s layer
+  delegate_to: localhost
   block:
   - name: create test namespace
     kubernetes.core.k8s:
@@ -15,17 +12,27 @@
           labels:
             test: "{{ check_networkpolicy_namespace }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
       state: present
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: create service
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service.yaml') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: get pod IPs
     kubernetes.core.k8s_info:
@@ -44,7 +51,7 @@
     delay: 1
 
   - name: store pod IPs
-    set_fact:
+    ansible.builtin.set_fact:
       service_pod_ips: "{{ service_pods.resources | map(attribute='status') | map(attribute='podIP') | list }}"
 
   - name: start blocked-test
@@ -54,8 +61,13 @@
       definition: "{{ lookup('template', 'test-pod.yaml') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: fetch blocked-test pod completion state
     kubernetes.core.k8s_info:
@@ -69,7 +81,7 @@
     retries: 60
 
   - name: check blocked-test pod failure
-    debug:
+    ansible.builtin.debug:
       msg: "Blocked test pod is in condition {{ blocked_test_state.resources[0].status.phase }}"
     failed_when: 'blocked_test_state.resources[0].status.phase != "Failed"'
 
@@ -78,8 +90,13 @@
       definition: "{{ lookup('template', 'unblock-same-namespace.yaml') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: start unblocked-test
     vars:
@@ -88,8 +105,13 @@
       definition: "{{ lookup('template', 'test-pod.yaml') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: fetch unblocked-test pod completion state
     kubernetes.core.k8s_info:
@@ -103,67 +125,63 @@
     retries: 60
 
   - name: check unblocked-test pod succeeded
-    debug:
+    ansible.builtin.debug:
       msg: "Blocked test pod is in condition {{ blocked_test_state.resources[0].status.phase }}"
     failed_when: 'blocked_test_state.resources[0].status.phase == "Failed"'
 
-  - name: check service is unreachable from the node
-    # In SingleNode setups, the node will be able to connect to the service
-    when: inventory_hostname != groups['masters'] | first
-    command:
-    args:
-      warn: false
-      argv:
-      - curl
-      - "-sS"
-      - "--connect-timeout"
-      - "10"
-      - "--retry"
-      - "3"
-      - "--retry-delay"
-      - "1"
-      - "-w"
-      - "\\n%{http_code}\\n"
-      - "http://{{ item }}"
-    register: curl_result
-    loop: "{{ service_pod_ips }}"
-    changed_when: False
-    failed_when: "curl_result.rc not in [7,28]"
+- name: check service is unreachable from the node
+  # In SingleNode setups, the node will be able to connect to the service
+  when: inventory_hostname != groups['masters'] | first
+  ansible.builtin.uri:
+    url: "http://{{ item }}:8080"
+    timeout: 10
+    status_code: -1
+  register: uri_result
+  until: uri_result is not failed
+  delay: 1
+  retries: 3
+  loop: "{{ service_pod_ips }}"
 
-  - name: unblock access from everywhere
-    kubernetes.core.k8s:
-      definition: "{{ lookup('template', 'unblock-all.yaml') }}"
-      state: present
-      validate:
-        fail_on_error: yes
-        strict: yes
+- name: unblock access from everywhere
+  delegate_to: localhost
+  kubernetes.core.k8s:
+    definition: "{{ lookup('template', 'unblock-all.yaml') }}"
+    state: present
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
-  - name: check service is reachable from the node
-    command:
-    args:
-      warn: false
-      argv:
-      - curl
-      - "-sS"
-      - "-w"
-      - "\\n%{http_code}\\n"
-      - "http://{{ item }}:8080"
-    register: curl_result
-    until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
-    loop: "{{ service_pod_ips }}"
-    delay: 1
-    retries: 60
-    changed_when: False
+- name: check service is reachable from the node
+  ansible.builtin.uri:
+    url: "http://{{ item }}:8080"
+    status_code: 200
+  register: uri_result
+  until: uri_result is not failed
+  loop: "{{ service_pod_ips }}"
+  delay: 1
+  retries: 60
 
-  - name: delete test namespace
-    kubernetes.core.k8s:
-      api_version: v1
-      name: "{{ check_networkpolicy_namespace }}"
-      kind: Namespace
-      state: absent
-      wait: yes
-      validate:
-        fail_on_error: yes
-        strict: yes
-    tags:
-    - test-cleanup
+- name: delete test namespace
+  delegate_to: localhost
+  kubernetes.core.k8s:
+    api_version: v1
+    name: "{{ check_networkpolicy_namespace }}"
+    kind: Namespace
+    state: absent
+    wait: true
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+  tags:
+  - test-cleanup
+...

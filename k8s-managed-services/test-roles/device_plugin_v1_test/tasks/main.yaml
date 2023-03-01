@@ -8,8 +8,13 @@
         state: present
         name: "{{ check_gpu_support_namespace }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Apply the cuda test manifest
       kubernetes.core.k8s:
@@ -17,8 +22,13 @@
         state: present
         namespace: "{{ check_gpu_support_namespace }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Fetch cuda test completion state
       kubernetes.core.k8s_info:
@@ -32,7 +42,7 @@
       until: "cuda_state.resources and (cuda_state.resources[0].status | default(False)) and (cuda_state.resources[0].status.phase | default('') in ['Completed', 'Succeeded', 'Failed'])"
 
     - name: Check cuda test pod success
-      debug:
+      ansible.builtin.debug:
         msg: "Cuda pod is in condition {{ cuda_state.resources[0].status.phase }}"
       failed_when: 'cuda_state.resources[0].status.phase == "Failed"'
 
@@ -44,17 +54,28 @@
           kubernetes.core.k8s:
             definition: "{{ lookup('file', 'cuda.yaml') }}"
             state: absent
-            wait: yes
+            wait: true
             validate:
-              fail_on_error: yes
-              strict: yes
+              fail_on_error: true
+              strict: true
+          # Retry this task on failures
+          register: k8s_apply
+          until: k8s_apply is not failed
+          retries: "{{ k8s_error_retries }}"
+          delay: "{{ k8s_error_delay }}"
         - name: Delete the namespace
           kubernetes.core.k8s:
             api_version: v1
             kind: Namespace
             state: absent
             name: "{{ check_gpu_support_namespace }}"
-            wait: yes
+            wait: true
             validate:
-              fail_on_error: yes
-              strict: yes
+              fail_on_error: true
+              strict: true
+          # Retry this task on failures
+          register: k8s_apply
+          until: k8s_apply is not failed
+          retries: "{{ k8s_error_retries }}"
+          delay: "{{ k8s_error_delay }}"
+...

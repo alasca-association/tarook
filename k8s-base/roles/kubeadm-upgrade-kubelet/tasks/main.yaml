@@ -1,25 +1,30 @@
+---
 - name: Upgrade kubelet on apt systems
   when: ansible_pkg_mgr == 'apt'
-  become: yes
+  become: true
   block:
-  - name: Remove the hold of kubelet
-    command: apt-mark unhold kubelet kubectl
+  - name: Remove the hold of kubelet  # noqa no-changed-when
+    ansible.builtin.command: apt-mark unhold kubelet kubectl
 
   - name: Upgrade kubelet
-    apt:
+    ansible.builtin.apt:
       name:
-        - "kubelet={{ next_k8s_version }}-00"
-        - "kubectl={{ next_k8s_version }}-00"
+      - "kubelet={{ next_k8s_version }}-00"
+      - "kubectl={{ next_k8s_version }}-00"
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
 
-  - name: Re-hold kubelet
-    command: apt-mark hold kubelet kubectl
+  - name: Re-hold kubelet  # noqa no-changed-when
+    ansible.builtin.command: apt-mark hold kubelet kubectl
 
 - name: Upgrade kubelet on dnf systems
   when: ansible_pkg_mgr == 'dnf'
-  become: yes
+  become: true
   block:
-  - name: Remove versionlock on kubelet
-    command:
+  - name: Remove versionlock on kubelet  # noqa no-changed-when
+    ansible.builtin.command:
     args:
       argv:
       - dnf
@@ -29,14 +34,18 @@
       - kubectl
 
   - name: Upgrade kubelet
-    dnf:
+    ansible.builtin.dnf:
       name:
       - "kubelet-{{ next_k8s_version }}-00"
       - "kubectl-{{ next_k8s_version }}-00"
       state: present
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
 
-  - name: Add versionlock on kubelet
-    command:
+  - name: Add versionlock on kubelet  # noqa no-changed-when
+    ansible.builtin.command:
     args:
       argv:
       - dnf
@@ -48,8 +57,8 @@
 # Remove me when dropping support for
 # k8s v1.19, v1.20, v1.21 & v1.22
 - name: Remove featureGates for >= v1.23
-  become: yes
-  lineinfile:
+  become: true
+  ansible.builtin.lineinfile:
     path: /var/lib/kubelet/config.yaml
     state: absent
     search_string: "IPv6DualStack:"
@@ -57,10 +66,11 @@
     group: root
     mode: 0600
   when:
-    - next_k8s_version is defined and next_k8s_version is version('1.23', '>=')
+  - next_k8s_version is defined and next_k8s_version is version('1.23', '>=')
 
 - name: Configure and restart kubelet
-  include_role:
+  ansible.builtin.include_role:
     name: kubelet-configuration
   vars:
-    _require_kubelet_restart: True
+    _require_kubelet_restart: true
+...

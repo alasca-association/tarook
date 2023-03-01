@@ -1,3 +1,4 @@
+---
 - name: Check prometheus endpoint status
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
@@ -189,8 +190,8 @@
   retries: 60
   delay: 3
   loop:
-  # Look for both job and container. The thanos-sidecar is to blame because I don't consider 'prometheus-stack-kube-prom-thanos-discovery'
-  # to be a descriptive name for a ServiceMonitor :)
+    # Look for both job and container. The thanos-sidecar is to blame because I don't consider 'prometheus-stack-kube-prom-thanos-discovery'
+    # to be a descriptive name for a ServiceMonitor :)
     - job: thanos-compact
       container: thanos-compact
     - job: thanos-query
@@ -199,3 +200,4 @@
       container: thanos-store
     - job: prometheus-stack-kube-prom-thanos-discovery
       container: thanos-sidecar
+...

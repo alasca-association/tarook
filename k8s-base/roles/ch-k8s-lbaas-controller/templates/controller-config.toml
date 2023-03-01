@@ -3,7 +3,9 @@ backend-layer='Pod'
 {% else %}
 backend-layer='NodePort'
 {% endif %}
+port-manager='{{ ch_k8s_lbaas_port_manager }}'
 
+{% if ch_k8s_lbaas_port_manager == "openstack" %}
 [openstack.auth]
 region={{ lookup('env', 'OS_REGION_NAME') | to_json }}
 username={{ lookup('env','OS_USERNAME') | to_json }}
@@ -20,12 +22,27 @@ application-credential-secret={{ lookup('env', 'OS_APPLICATION_CREDENTIAL_SECRET
 use-floating-ips={{ ch_k8s_lbaas_use_floating_ips | ternary('true', 'false') }}
 floating-ip-network-id={{ ch_k8s_lbaas_floating_ip_network_id | to_json }}
 subnet-id={{ ch_k8s_lbaas_subnet_id | to_json }}
+{% elif ch_k8s_lbaas_port_manager == "static" %}
+[static]
+ipv4-addresses = [
+{% for addr in ch_k8s_lbaas_static_ipv4_addresses %}
+    {{ addr | to_json }},
+{% endfor %}
+]
+{% endif %}
 
 [agents]
 shared-secret={{ ch_k8s_lbaas_shared_secret | to_json }}
 token-lifetime=60
 
+{% if ch_k8s_lbaas_port_manager == "openstack" %}
 {% for node in groups['frontend'] %}
 [[agents.agent]]
 url="http://{{ hostvars[node]['local_ipv4_address'] }}:{{ ch_k8s_lbaas_agent_port }}"
 {% endfor %}
+{% else %}
+{% for url in ch_k8s_lbaas_agent_urls %}
+[[agents.agent]]
+url={{ url | to_json }}
+{% endfor %}
+{% endif %}

@@ -1,0 +1,19 @@
+# These tasks are used during the CRI migration from
+# docker to containerd only.
+# They can be dropped along with the respective action script
+# 'k8s-base/migrate-docker-to-containerd.yaml' which in turn
+# can be dropped along with support for Kubernetes v1.23
+
+---
+- name: Configure environment variables of kubelet
+  ansible.builtin.template:
+    src: kubeadm-flags.env.j2
+    dest: /var/lib/kubelet/kubeadm-flags.env
+    owner: root
+    group: root
+    mode: 0600
+  notify: restart kubelet
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+...

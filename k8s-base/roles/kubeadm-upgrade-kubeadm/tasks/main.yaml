@@ -1,27 +1,32 @@
+---
 - name: Upgrade kubeadm on apt systems
   when: ansible_pkg_mgr == 'apt'
-  become: yes
+  become: true
   block:
-  - name: Remove the hold of kubeadm
-    command: apt-mark unhold kubeadm
+  - name: Remove the hold of kubeadm  # noqa no-changed-when
+    ansible.builtin.command: apt-mark unhold kubeadm
 
   - name: Upgrade kubeadm
-    apt:
+    ansible.builtin.apt:
       name:
-        - "kubeadm={{ next_k8s_version }}-00"
+      - "kubeadm={{ next_k8s_version }}-00"
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
 
-  - name: Re-hold kubeadm
-    command: apt-mark hold kubeadm
+  - name: Re-hold kubeadm  # noqa no-changed-when
+    ansible.builtin.command: apt-mark hold kubeadm
 
-  - name: Check kubeadm's version
-    command: kubeadm version
+  - name: Check kubeadm's version  # noqa no-changed-when
+    ansible.builtin.command: kubeadm version
 
 - name: Upgrade kubeadm on dnf systems
   when: ansible_pkg_mgr == 'dnf'
-  become: yes
+  become: true
   block:
-  - name: Remove versionlock on kubeadm
-    command:
+  - name: Remove versionlock on kubeadm  # noqa no-changed-when
+    ansible.builtin.command:
     args:
       argv:
       - dnf
@@ -30,16 +35,21 @@
       - kubeadm
 
   - name: Upgrade kubeadm
-    dnf:
+    ansible.builtin.dnf:
       name:
       - "kubeadm-{{ next_k8s_version }}-00"
       state: present
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
 
-  - name: Add versionlock on kubeadm
-    command:
+  - name: Add versionlock on kubeadm  # noqa no-changed-when
+    ansible.builtin.command:
     args:
       argv:
       - dnf
       - versionlock
       - add
       - kubeadm
+...

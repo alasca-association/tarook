@@ -1,12 +1,13 @@
+---
 - name: Uncordon the worker node
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   delegate_to: "{{ (groups['masters'] | sort)[0] }}"
   retries: 5
   delay: 10
   when: _allow_disruption
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - kubectl
@@ -15,3 +16,4 @@
   register: uncordon_result
   until: uncordon_result is successful
   changed_when: "'uncordoned' in uncordon_result.stdout"
+...

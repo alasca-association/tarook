@@ -2,9 +2,10 @@
 # Calico specific resources as the Calico CRDs are not designed to
 # be used directly by kubectl. Please refer to the following issue:
 # https://github.com/projectcalico/calico/issues/2923
+---
 
 - name: Ensure that /opt/cni/bin/ exists
-  become: yes 
+  become: yes
   file:
     owner: root
     group: root
@@ -24,16 +25,20 @@
           owner: root
           group: root
           mode: 0750
-          url: "https://github.com/projectcalico/calicoctl/releases/download/v{{ image_versions.calico_version }}/calicoctl-linux-amd64"
+          url: "{{ calico_calicoctl_binary_source }}/v{{ image_versions.calico_version }}/calicoctl-linux-amd64"
           dest: /usr/local/bin/calicoctl
           checksum: "{{ calicoctl_binary_checksum }}"
+        register: task_result
+        until: task_result is not failed
+        retries: "{{ network_error_retries }}"
+        delay: "{{ network_error_delay }}"
 
       - name: Install calico
         get_url:
           owner: root
           group: root
           mode: 0750
-          url: "https://github.com/projectcalico/cni-plugin/releases/download/v{{ image_versions.calico_version }}/calico-amd64"
+          url: "{{ calico_cni_plugin_binary_source }}/v{{ image_versions.calico_version }}/calico-amd64"
           dest: /opt/cni/bin/calico
           checksum: "{{ calico_binary_checksum }}"
 
@@ -42,9 +47,13 @@
           owner: root
           group: root
           mode: 0750
-          url: "https://github.com/projectcalico/cni-plugin/releases/download/v{{ image_versions.calico_version }}/calico-ipam-amd64"
+          url: "{{ calico_cni_plugin_binary_source }}/v{{ image_versions.calico_version }}/calico-ipam-amd64"
           dest: /opt/cni/bin/calico-ipam
           checksum: "{{ calico_ipam_binary_checksum }}"
+        register: task_result
+        until: task_result is not failed
+        retries: "{{ network_error_retries }}"
+        delay: "{{ network_error_delay }}"
 
 - name: Calico binaries download for versions after 3.21.3
   when: image_versions.calico_version is version('3.21.3', '>=')
@@ -71,13 +80,17 @@
   - name: Download Calico release archive to localhost
     get_url:
       mode: 0750
-      url: "https://github.com/projectcalico/calico/releases/download/v{{ image_versions.calico_version }}/release-v{{ image_versions.calico_version }}.tgz"
+      url: "{{ calico_release_source }}/v{{ image_versions.calico_version }}/release-v{{ image_versions.calico_version }}.tgz"
       dest: "{{ calico_cache_dir }}"
       checksum: "{{ calico_release_checksum }}"
     async: 240
     poll: 15
     when: not calico_archive_release_file.stat.exists
           and calico_archive_release_file.stat.checksum | default('') != calico_release_checksum
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
 
   - name: Extract Calico release archive
     unarchive:
@@ -121,3 +134,4 @@
     mode: 0600
     src: 10-calico.conflist.j2
     dest: /etc/cni/net.d/10-calico.conflist
+...

@@ -30,8 +30,6 @@ calico_version_minor: '{{ image_version_map[k8s_version_minor].calico_version | 
 # of versioning.
 image_version_map:
   "1.19":
-    kube_router:
-      kube_router: "v1.1.0"
     openstack:
       cinder_csi_plugin: "v1.19.0"
       csi_attacher: "v2.0.0"
@@ -40,15 +38,9 @@ image_version_map:
       csi_resizer: "v0.3.0"
       csi_snapshotter: "v1.2.2"
       openstack_cloud_controller_manager: "v1.19.1"
-    rook:
-      ceph: "v14.2.6"
-      operator: "v1.2.3"
-      toolbox: "v1.2.3"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.19.0') }}" # Version of Calico binaries and images to be deployed
 
   "1.20":
-    kube_router:
-      kube_router: "v1.1.0"
     openstack:
       cinder_csi_plugin: "v1.19.0"
       csi_attacher: "v2.0.0"
@@ -57,15 +49,9 @@ image_version_map:
       csi_resizer: "v0.3.0"
       csi_snapshotter: "v1.2.2"
       openstack_cloud_controller_manager: "v1.19.1"
-    rook:
-      ceph: "v14.2.6"
-      operator: "v1.2.3"
-      toolbox: "v1.2.3"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.19.0') }}" # Version of Calico binaries and images to be deployed
 
   "1.21":
-    kube_router:
-      kube_router: "v1.1.0"
     openstack:
       cinder_csi_plugin: "v1.19.0"
       csi_attacher: "v2.0.0"
@@ -74,15 +60,9 @@ image_version_map:
       csi_resizer: "v0.3.0"
       csi_snapshotter: "v1.2.2"
       openstack_cloud_controller_manager: "v1.19.1"
-    rook:
-      ceph: "v14.2.6"
-      operator: "v1.2.3"
-      toolbox: "v1.2.3"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.19.0') }}" # Version of Calico binaries and images to be deployed
 
   "1.22":
-    kube_router:
-      kube_router: "v1.1.0"
     openstack:
       # https://github.com/kubernetes/cloud-provider-openstack/releases/tag/v1.24.2
       cinder_csi_plugin: "v1.24.2"
@@ -99,15 +79,9 @@ image_version_map:
       csi_snapshotter: "v6.0.1"
       # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.6.0
       csi_livenessprobe: "v2.6.0"
-    rook:
-      ceph: "v14.2.6"
-      operator: "v1.2.3"
-      toolbox: "v1.2.3"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.21.6') }}"
 
   "1.23":
-    kube_router:
-      kube_router: "v1.5.1"
     openstack:
       # https://github.com/kubernetes/cloud-provider-openstack/releases/tag/v1.24.2
       cinder_csi_plugin: "v1.24.2"
@@ -124,10 +98,7 @@ image_version_map:
       csi_snapshotter: "v6.0.1"
       # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.7.0
       csi_livenessprobe: "v2.7.0"
-    rook:
-      ceph: "v14.2.6"
-      operator: "v1.2.3"
-      toolbox: "v1.2.3"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.21.6') }}"
 
 image_versions: "{{ image_version_map[k8s_version_minor] }}"
+...

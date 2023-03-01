@@ -1,7 +1,7 @@
 ---
 - name: restart thanos-store
-  become: yes
-  command:
+  become: true
+  ansible.builtin.command:
   args:
     argv:
     - kubectl
@@ -13,8 +13,8 @@
     - thanos-store
 
 - name: restart prometheus-k8s
-  become: yes
-  command:
+  become: true
+  ansible.builtin.command:
   args:
     argv:
     - kubectl
@@ -24,3 +24,4 @@
     - "-n"
     - "{{ monitoring_namespace }}"
     - prometheus-k8s
+...

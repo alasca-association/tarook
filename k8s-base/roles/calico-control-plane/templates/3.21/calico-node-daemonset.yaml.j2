@@ -79,12 +79,12 @@ spec:
             - name: IP
               value: "autodetect"
             - name: IP_AUTODETECTION_METHOD
-              value: "can-reach=www.cloudandheat.com"
+              value: "{{ k8s_network_calico_ip_autodetection_method | default('can-reach=www.cloudandheat.com') }}"
             {% if dualstack_support -%}
             - name: IP6
               value: "autodetect"
             - name: IP6_AUTODETECTION_METHOD
-              value: "can-reach=www.cloudandheat.com"
+              value: "{{ k8s_network_calico_ipv6_autodetection_method | default('can-reach=www.cloudandheat.com') }}"
             {% endif -%}
             # Disable file logging so `kubectl logs` works.
             - name: CALICO_DISABLE_FILE_LOGGING

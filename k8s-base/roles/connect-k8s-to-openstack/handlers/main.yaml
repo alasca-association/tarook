@@ -1,9 +1,9 @@
 ---
 - name: restart CCM
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - "kubectl"
@@ -14,10 +14,10 @@
     - "daemonset.apps/openstack-cloud-controller-manager"
 
 - name: restart octavia-ingress-controller
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - "kubectl"
@@ -26,3 +26,4 @@
     - "rollout"
     - "restart"
     - "statefulset.apps/octavia-ingress-controller"
+...

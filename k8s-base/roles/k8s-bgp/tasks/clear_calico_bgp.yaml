@@ -1,6 +1,7 @@
 ---
 - name: De-configure BIRD of calico
-  file:
+  ansible.builtin.file:
     state: absent
     path: /etc/bird.d/10-k8s-calico.conf
   notify: restart bird
+...

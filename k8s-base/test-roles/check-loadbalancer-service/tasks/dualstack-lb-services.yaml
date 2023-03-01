@@ -1,3 +1,4 @@
+---
 - name: Check dual stack lb service functionality
   block:
   - name: Create DualStack load-balanced service
@@ -5,8 +6,13 @@
       definition: "{{ lookup('template', 'service_dual_stack.yaml.j2') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: require service to have ingress IP address set
     kubernetes.core.k8s_info:
@@ -21,40 +27,44 @@
 
   - name: require service to be reachable from this machine and respond to HTTP
     delegate_to: localhost
-    command:
-    args:
-      warn: false
-      argv:
-      - curl
-      - "-s"
-      - "-w"
-      - "\\n%{http_code}\\n"
-      - "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
-    register: curl_result
-    until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
+    become: false
+    ansible.builtin.uri:
+      url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
+      status_code: 200
+    register: uri_result
+    until: uri_result is not failed
     delay: 1
     retries: 60
-    changed_when: False
 
   - name: Remove DualStack load-balanced service
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_dual_stack.yaml.j2') }}"
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
 - name: Check single stack IPv6 lb service functionality
-  when: false # Currently we do not support IPv6 single stack load balanced services (refer to the dualstack docs)
+  when: false  # Currently we do not support IPv6 single stack load balanced services (refer to the dualstack docs)
   block:
   - name: Create SingleStack IPv6 load-balanced service
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_single_stack_v6.yaml.j2') }}"
       state: present
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: require service to have ingress IP address set
     kubernetes.core.k8s_info:
@@ -69,26 +79,26 @@
 
   - name: require service to be reachable from this machine and respond to HTTP
     delegate_to: localhost
-    command:
-    args:
-      warn: false
-      argv:
-      - curl
-      - "-s"
-      - "-w"
-      - "\\n%{http_code}\\n"
-      - "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
-    register: curl_result
-    until: "curl_result.rc == 0 and (curl_result.stdout_lines[0] == '200' or curl_result.stdout_lines[-1] == '200')"
+    become: false
+    ansible.builtin.uri:
+      url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
+      status_code: 200
+    register: uri_result
+    until: uri_result is not failed
     delay: 1
     retries: 60
-    changed_when: False
 
   - name: Remove SingleStack IPv6 load-balanced service
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'service_single_stack_v6.yaml.j2') }}"
       state: absent
-      wait: yes
+      wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+...

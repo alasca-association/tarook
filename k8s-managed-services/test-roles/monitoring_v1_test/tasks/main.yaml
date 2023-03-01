@@ -15,11 +15,11 @@
       )
 
   - name: set cluster IP fact
-    set_fact:
+    ansible.builtin.set_fact:
       prometheus_cluster_ip: "{{ prometheus_service.resources[0].spec.clusterIP }}"
 
   - name: information about config
-    debug:
+    ansible.builtin.debug:
       msg: "This test is going to use the prometheus at {{ prometheus_cluster_ip }}:9090"
 
   - name: Scrape the endpoints
@@ -34,20 +34,29 @@
             labels:
               monitoring-checks: "{{ check_node_exporter_namespace }}"
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
         state: present
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: Create the node-exporter scraper Pod
       kubernetes.core.k8s:
         definition: "{{ lookup('template', 'scraper.yaml.j2') }}"
-        apply: yes
+        apply: true
         state: "present"
-        wait: yes
+        wait: true
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
       register: scraper_info
+      # Retry this task on failures
+      until: scraper_info is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
     - name: check node exporter scrape endpoint status
       kubernetes.core.k8s_exec:
@@ -96,9 +105,9 @@
 
     - name: check ceph mgr scrape endpoint status
       kubernetes.core.k8s_exec:
-          namespace: "{{ check_node_exporter_namespace }}"
-          pod: node-exporter-scraper
-          command: curl -g 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="rook-ceph-mgr"}'
+        namespace: "{{ check_node_exporter_namespace }}"
+        pod: node-exporter-scraper
+        command: curl -g 'http://{{ prometheus_cluster_ip }}:9090/api/v1/query?query=up{job="rook-ceph-mgr"}'
       register: metrics
       when: "k8s_storage_rook_enabled"
       until: |
@@ -148,7 +157,13 @@
       state: absent
       wait: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
     tags:
-      - test-cleanup
+    - test-cleanup
+...

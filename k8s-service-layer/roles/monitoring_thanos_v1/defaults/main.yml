@@ -42,3 +42,4 @@ monitoring_thanos_query_additional_store_endpoints: []
 # If you are old fashioned or a masochist and want to use the
 # jsonnet stuff (monitoring_v1), use "prometheus-k8s"
 monitoring_prometheus_service_name: "prometheus-operated"
+...

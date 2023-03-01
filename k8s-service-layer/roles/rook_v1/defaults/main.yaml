@@ -1,3 +1,6 @@
+---
+rook_manage_pod_budgets: true
+
 rook_nmons: 3
 rook_namespace: "rook-ceph"
 rook_mon_volume: true
@@ -59,11 +62,15 @@ rook_nodeplugin_toleration: true
 
 rook_use_host_networking: false
 
-rook_version: "v1.2.3" # default
+rook_version: "v1.7.11"  # default
+rook_conf_major_version: "{{ rook_version.split('.')[0] }}"
+rook_conf_minor_version: "{{ rook_version.split('.')[1] }}"
+# v1.2.3 --> v1.2
+rook_conf_maj_min_version: "{{ '%s.%s' | format(rook_conf_major_version, rook_conf_minor_version) }}"
 
 rook_ceph_version_map:
-  "v1.2.3": # default
-    ceph: "v14.2.6" # default
+  "v1.2.3":  # default
+    ceph: "v14.2.6"  # default
   "v1.3.11":
     ceph: "v14.2.21"
   "v1.4.9":
@@ -75,7 +82,7 @@ rook_ceph_version_map:
   "v1.7.11":
     ceph: "v16.2.6"
 
-rook_ceph_versions: "{{ rook_ceph_version_map[rook_version] }}"
+rook_ceph_version: "{{ rook_ceph_version_map[rook_version]['ceph'] }}"
 
 rook_scheduling_key: null
 rook_mon_scheduling_key: null
@@ -84,33 +91,37 @@ rook_mgr_scheduling_key: null
 # If OSDs are not replicated, the rook-ceph-operator will reject
 # to perform upgrades, because OSDs will become unavailable.
 # Set to True so rook will update even if OSDs would become unavailable
-rook_skip_upgrade_checks: False
+rook_skip_upgrade_checks: false
 
 # Each rook release does only support certain major releases of ceph.
-rook_supported_releases:
-  - rook_release: "v1.2"
-    supported_ceph_releases:
-      - v13
-      - v14
-  - rook_release: "v1.3"
-    supported_ceph_releases:
-      - v14
-      - v15
-  - rook_release: "v1.4"
-    supported_ceph_releases:
-      - v14
-      - v15
-  - rook_release: "v1.5"
-    supported_ceph_releases:
-      - v14 # actually v14.2.5
-      - v15 # actually v15.2.0
-  - rook_release: "v1.6"
-    supported_ceph_releases:
-      - v14
-      - v15
-      - v16
-  - rook_release: "v1.7"
-    supported_ceph_releases:
-      - v14 # >= 14.2.5
-      - v15 # >= 15.2.0
-      - v16 # >= 16.2.0
+rook_ceph_release_map:
+- rook_release: "v1.2"
+  supported_ceph_releases:
+  - v13
+  - v14
+- rook_release: "v1.3"
+  supported_ceph_releases:
+  - v14
+  - v15
+- rook_release: "v1.4"
+  supported_ceph_releases:
+  - v14
+  - v15
+- rook_release: "v1.5"
+  supported_ceph_releases:
+  - v14  # actually v14.2.5
+  - v15  # actually v15.2.0
+- rook_release: "v1.6"
+  supported_ceph_releases:
+  - v14
+  - v15
+  - v16
+- rook_release: "v1.7"
+  supported_ceph_releases:
+  - v14  # >= 14.2.5
+  - v15  # >= 15.2.0
+  - v16  # >= 16.2.0
+
+supported_rook_releases: "{{ rook_ceph_release_map | map(attribute='rook_release') }}"
+supported_ceph_releases: "{{ rook_ceph_release_map | selectattr('rook_release', 'equalto', rook_conf_maj_min_version) | map(attribute='supported_ceph_releases') | flatten }}"
+...

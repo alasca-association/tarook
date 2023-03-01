@@ -102,7 +102,7 @@ error writing to socket: Network is unreachable
 
 The problem statement: With the current setup a roadwarrior can reach the gateway and all nodes beyond the gateway in their private net. The gateway can contact the roadwarrior. But what if a node or a pod in the private network wants to reach the roadwarrior (probably more interesting in a site-to-site scenario)?
 
-Bird should import routes from routing table `220` (ipsecs) into its internal routing table. It should export those routes via BGP. `gobgp`, `kube-router's` BGP server, should import them and expose them on the nodes.
+Bird should import routes from routing table `220` (ipsecs) into its internal routing table. It should export those routes via BGP. The BGP server of the CNI plugin should import them and expose them on the nodes.
 
 FIB is short for Forwarding Information Base.
 

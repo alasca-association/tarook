@@ -1,8 +1,9 @@
+---
 - name: restart ch-k8s-lbaas-controller
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-  command:
+  ansible.builtin.command:
   args:
     argv:
     - "kubectl"
@@ -11,3 +12,4 @@
     - "rollout"
     - "restart"
     - "deployment.apps/ch-k8s-lbaas-controller"
+...

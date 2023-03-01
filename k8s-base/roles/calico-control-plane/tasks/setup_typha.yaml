@@ -13,69 +13,85 @@
     get_cert_k8s_filename: typha
 
 - name: Apply Typha resources
-  become: yes
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: Create ServiceAccount for calico-typha, configure RBAC, ClusterRole, ClusterRoleBinding
     kubernetes.core.k8s:
       definition: "{{ lookup('file', item) }}"
-      apply: yes
+      apply: true
       state: "present"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     with_items:
     - "{{ calico_versions_folder }}/typha-serviceaccount.yaml"
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Deploy Typha Deployment
     kubernetes.core.k8s:
       definition: "{{ lookup('template', item) }}"
-      apply: yes
+      apply: true
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
     with_items:
     - "{{ calico_versions_folder }}/typha-deployment.yaml.j2"
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Deploy Typha service
     kubernetes.core.k8s:
       definition: "{{ lookup('file', item) }}"
-      apply: yes
+      apply: true
       validate:
-        fail_on_error: yes
-        strict: yes
-      wait: yes
+        fail_on_error: true
+        strict: true
+      wait: true
     with_items:
     - typha-service.yaml
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
-- name: Restart Typha Pods on certificate_renewal
-  become: yes
+- name: Restart Typha Pods on certificate_renewal  # noqa no-handler
+  become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   when: get_cert is changed
   block:
-  - name: Restart Typha Pods
-    command:
+  - name: Restart Typha Pods  # noqa no-changed-when
+    ansible.builtin.command:
       argv:
-        - kubectl
-        - rollout
-        - restart
-        - deployment
-        - calico-typha
-        - -n
-        - kube-system
+      - kubectl
+      - rollout
+      - restart
+      - deployment
+      - calico-typha
+      - -n
+      - kube-system
 
-  - name: Wait for Rollout Restart of Typha Pods to finish
-    command:
+  - name: Wait for Rollout Restart of Typha Pods to finish  # noqa no-changed-when
+    ansible.builtin.command:
       argv:
-        - kubectl
-        - rollout
-        - status
-        - deployment
-        - calico-typha
-        - -n
-        - kube-system
+      - kubectl
+      - rollout
+      - status
+      - deployment
+      - calico-typha
+      - -n
+      - kube-system
 
 # TODO: Validate that Typha is using TLS?
 # https://docs.projectcalico.org/getting-started/kubernetes/hardway/install-typha#install-service
+...

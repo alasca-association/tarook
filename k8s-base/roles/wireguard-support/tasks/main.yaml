@@ -1,3 +1,4 @@
+---
 - name: Prepare wireguard install on Debian
   become: yes
   # wireguard is included in the bullseye (11) repos, so we only need to add 'unstable' for buster (10).
@@ -37,6 +38,10 @@
       name:
         - linux-headers-cloud-amd64
         - bc
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
 - name: Install wireguard
   become: yes
@@ -44,9 +49,14 @@
     state: present
     name:
       - wireguard
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
 
 - name: Modprobe the wireguard module to ensure its existence
   become: yes
   modprobe:
     name: wireguard
     state: present
+...

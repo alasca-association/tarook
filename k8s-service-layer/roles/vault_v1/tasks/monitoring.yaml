@@ -1,0 +1,80 @@
+---
+- name: Create the yaook/prometheus policy
+  vars:
+    vault_expression: |
+      vault policy write sys/policies/acl/yaook/prometheus - << EOF
+      path "sys/metrics" {
+        capabilities = ["list", "read"]
+      }
+      EOF
+  ansible.builtin.include_tasks: vault_command.yaml
+
+- name: Check if prometheus secret already exists
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    namespace: "{{ yaook_vault_namespace }}"
+    name: prometheus-bearer-token
+  # Retry this task on failures
+  register: prometheus_secret
+  until: prometheus_secret is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+
+- name: Configure a prometheus bearer token secret
+  when: prometheus_secret.resources | length == 0
+  block:
+    - name: Create a token for prometheus to fetch the metrics
+      vars:
+        vault_expression: vault token create -format=json -policy=sys/policies/acl/yaook/prometheus
+      ansible.builtin.include_tasks: vault_command.yaml
+
+    - name: Create the secret
+      vars:
+        # vault_out comes from the task above
+        prometheus_bearer_token: "{{ (vault_out.stdout | from_json).auth.client_token | b64encode }}"
+      kubernetes.core.k8s:
+        apply: true
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            namespace: "{{ yaook_vault_namespace }}"
+            name: prometheus-bearer-token
+          data:
+            token: "{{ prometheus_bearer_token }}"
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
+
+# Otherwise the servicemonitor would add 9 targets
+- name: Create an additional label for the 'vault' service
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+  kubernetes.core.k8s:
+    apply: true
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        namespace: "{{ yaook_vault_namespace }}"
+        name: vault
+        labels:
+          yaook-vault: "true"
+
+# The helm chart doesn't support authenticated access yet
+- name: Create a servicemonitor
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+  kubernetes.core.k8s:
+    apply: true
+    definition: "{{ lookup('template', 'servicemonitor.yaml.j2') }}"
+...
