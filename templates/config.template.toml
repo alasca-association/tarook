@@ -762,6 +762,9 @@ enabled = false # •ᴗ•
 # without significant damage.
 # NOTE: To work in infra-ironic clusters, this requires the vault to be in the
 # same namespace as the infra-ironic instance.
+# NOTE: if you enable this, you MUST NOT set the service_type to ClusterIP; it
+# will default to NodePort and it must be at least NodePort or LoadBalancer for
+# the integration to work correctly.
 #management_cluster_integration = false
 
 # Number of unseal key shares to generate upon vault initialization.
@@ -801,6 +804,15 @@ enabled = false # •ᴗ•
 # Credentials to access an S3 bucket to which the backups will be written. Required if `enable_backups = true`.
 # You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
 #s3_config_file = "vault_backup_s3_config.yaml"
+
+# Type of the Kubernetes Service of the Vault
+# NOTE: You may set this to LoadBalancer, but note that this will still use the internal certificate.
+# If you want to expose the Vault to the outside world, use the ingress config above.
+#service_type = "ClusterIP"
+
+# Node port to use for the Service which exposes the active Vault instance
+# See NOTE above regarding exposure of the Vault.
+#active_node_port = 32048
 
 # ANCHOR_END: ksl_vault_configuration
 

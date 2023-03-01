@@ -100,6 +100,9 @@ server:
   - type: secret
     name: vault-cert-external
 {% endif %}
+  service:
+    type: {{ yaook_vault_service_type }}
+    activeNodePort: {{ yaook_vault_service_active_node_port }}
 serverTelemetry:
   # This service monitor comes without any means of authentication
   serviceMonitor:

@@ -111,7 +111,7 @@
         secretName: vault-cert-internal
         duration: 72h
         renewBefore: 24h
-        ipAddresses: "{{ yaook_vault_management_cluster_integration | ternary(yaook_vault_worker_ips, []) + ['127.0.0.1', '::1'] }}"
+        ipAddresses: "{{ (yaook_vault_service_type in ['NodePort', 'LoadBalancer']) | ternary(yaook_vault_worker_ips, []) + ['127.0.0.1', '::1'] }}"
         dnsNames: "{{ yaook_vault_dnsnames_complete }}"
     validate:
       fail_on_error: true

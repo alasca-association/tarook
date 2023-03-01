@@ -297,3 +297,217 @@ $ managed-k8s/tools/load-signed-intermediates.sh $clustername
 ```
 
 to load the signed intermediate CA certificates into Vault.
+
+## Pivoting a cluster to host its own vault
+
+"to pivot" means "to turn on an exact spot".
+Here, we use this verb to mean that an existing cluster,
+which is reliant on another Vault instance,
+is changed such that relies on a Vault instance
+running within that very same cluster.
+
+### Motivation
+
+As every yaook/k8s cluster needs a Vault instance
+it uses as a root of trust and identity,
+the question becomes where to host that Vault instance.
+An obvious answer is to run it inside Kubernetes.
+However, if you were to use yaook/k8s again,
+where would *that* cluster have its root of trust?
+
+The answer is pivoting.
+When a cluster has no other Vault to rely on,
+for instance because it is the root of trust in a site,
+it becomes necessary that it hosts its own Vault.
+Despite sounding nonsensical,
+this is an expressly supported use-case.
+
+### Prerequisites and Caveats
+
+In order to migrate a cluster to host its own vault,
+the following prerequisites are necessary:
+
+- The cluster has been deployed or migrated to use another Vault.
+  This can be the development Vault setup provided with yaook/k8s.
+
+- The source Vault instance uses Raft.
+
+- A sufficient amount of unseal key shares to unseal the *source* Vault
+  are known.
+
+- No Vault has been deployed with yaook/k8s inside the cluster yet.
+
+**Note:** In general, it is not possible to pivot the cluster
+except by restoring a Vault raft snapshot into the cluster.
+This implies that *all* data from the source Vault
+is imported into the cluster.
+Thus, if you plan to pivot a cluster later,
+make sure to use a fresh Vault instance
+to avoid leaking data into the cluster you'd rather not have there.
+
+**Note:** An exception to the above rule exists
+if the cluster has been migrated and the original CA files still exist.
+In that case, it can be migrated *again* into the Vault it hosts itself.
+This process is left as an exercise to the reader.
+
+### Procedure
+
+In the following,
+we will call the Vault instance
+with which the cluster has been deployed the *source Vault*.
+The Vault instance which we will spawn inside the cluster
+will be called the *target Vault*.
+
+1. Obtain the number of unseal shares and the threshold
+   for unsealing of the *source Vault*.
+
+2. Configure `k8s-service-layer.vault` with the same number of unseal shares
+   and the same threshold.
+   Enable the vault instance
+   and configure any other options you might want to set,
+   such as backup configuration.
+   Set the `service_type` to `NodePort`
+   and set the `active_node_port` to `32048`.
+
+3. Deploy the Vault by re-running Stage 4.
+
+4. Verify that you can reach the Vault instance
+   by running `curl -k https://$nodeip:32048`,
+   where you substitute `$nodeip`
+   with the IP of any worker or control plane node.
+   (You should get some HTML back.)
+
+5. Take a raft snapshot of your *source Vault*
+   by running `vault operator raft snapshot save foo.snap`
+   with a sufficiently privileged token.
+
+6. Obtain the CA of the *target Vault* from Kubernetes
+   using `kubectl -n k8s-svc-vault get secret vault-cert-internal -o json | jq -r '.data["ca.crt"]' | base64 -d > vault-ca.crt`
+
+7. Configure access to the Vault:
+   ```
+   export VAULT_ADDR=https://$nodeip:32048
+   export VAULT_CACERT="$(pwd)/vault-ca.crt"
+   unset VAULT_TOKEN
+   ```
+
+   Verify connectivity using:
+   `vault status`.
+
+   You should see something like:
+   ```
+   Key                     Value
+   ---                     -----
+   Seal Type               shamir
+   Initialized             true
+   Sealed                  false
+   Total Shares            1
+   Threshold               1
+   Version                 1.12.1
+   Build Date              2022-10-27T12:32:05Z
+   Storage Type            raft
+   Cluster Name            vault-cluster-4a491f8a
+   Cluster ID              40dfd4ea-76ac-b2d0-bb9a-5a35c0a9bc9d
+   HA Enabled              true
+   HA Cluster              https://vault-0.vault-internal:8201
+   HA Mode                 active
+   Active Since            2023-03-01T18:42:41.824499649Z
+   Raft Committed Index    44
+   Raft Applied Index      44
+   ```
+
+   *Tip*: Verify that you're talking to the *target Vault*
+   by checking the *Active Since* timestamp.
+
+8. Obtain a root token for the *target Vault* instance.
+   As you have just freshly installed it with yaook/k8s,
+   the root token will be in `inventory/.etc/vault_root_token`.
+
+9. Scale the vault down to one replica.
+
+10. Delete the PVCs of the other replicas.
+
+    **Note:** We are entering the danger zone now.
+    Double-check always that you are operating on the correct cluster
+    and with the correct vault.
+
+11. **DANGER:** THIS WILL IRREVERSIBLY DELETE THE DATA IN THE *target Vault*.
+   Double-check you are talking to the correct vault!
+   Take a snapshot or whatever!
+
+   Restore the snapshot from the *source Vault* in the *target Vault*.
+
+   ```
+   vault operator raft snapshot restore -force foo.snap
+   ```
+
+12. Manually unseal the *target Vault*:
+
+    ```
+    kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- vault operator unseal
+    ```
+
+    You now need to supply unseal key shares from the *source Vault*.
+
+13. Force vault to reset whatever it thinks about the cluster state.
+    This is done by triggering a Raft recovery
+    by placing a magic `peers.json` file in the raft data directory.
+
+    First, we need to find the node ID:
+
+    ```
+    kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- cat /vault/data/node-id; echo
+    ```
+
+    Then create the `peers.json` file:
+
+    ```json
+    [
+      {
+        "id": "...",
+        "address": "vault-0.vault-internal:8201",
+        "non_voter": false
+      }
+    ]
+    ```
+
+    (fill in the `id` field with the ID you found above)
+
+    Upload the `peers.json` into the Vault node:
+
+    ```
+    kubectl -n k8s-svc-vault cp -c vault peers.json vault-0:/vault/data/raft/
+    ```
+
+    Restart the Vault node:
+
+    ```
+    kubectl -n k8s-svc-vault delete pod vault-0
+    ```
+
+    Once it comes up, unseal it again:
+
+    ```
+    kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- vault operator unseal
+    ```
+
+    This should now show the `HA Mode` as active.
+
+14. Scale the cluster back up.
+
+    ```
+    kubectl -n k8s-svc-vault scale sts vault --replicas=3
+    ```
+
+15. Unseal the other replicas:
+
+    ```
+    kubectl -n k8s-svc-vault exec -it vault-1 -c vault -- vault operator unseal
+    kubectl -n k8s-svc-vault exec -it vault-2 -c vault -- vault operator unseal
+    ```
+
+    Congrats! You now have the data inside the k8s cluster.
+
+16. To test that yaook/k8s can talk to the Vault appropriately,
+    you can now run any stage3 with `AFLAGS="-t vault-onboarded"`
+    to see if it can talk to Vault.
