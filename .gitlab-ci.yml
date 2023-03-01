@@ -111,6 +111,19 @@ testBook:
     SSH_COMPANY_USERS: "false"
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
+  services:
+  - name: vault:1.12.3
+    alias: yaook-vault
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        export VAULT_ADDR=https://127.0.0.1:8200
+        mkdir -p /vault/config /vault/tls/ca
+        printf "%s" "$VAULT_KEY" > /vault/tls/vault.key
+        printf "%s" "$VAULTCHAIN_CRT" > /vault/tls/vaultchain.crt
+        printf "%s" "$VAULT_CONFIG_HCL" > /vault/config/config.hcl
+        cp /bin/vault $CI_PROJECT_DIR
+        exec vault server -config=/vault/config/config.hcl
   before_script:
     - "export wg_conf_name=wg0"
     # id_rsa must be set as `File` input in the GitLab CI/CD variables of the
