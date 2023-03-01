@@ -70,8 +70,6 @@
       when: "not (k8s_upgrade_done | default(False))"
     - name: kubeadm-uncordon-node
       when: "not (k8s_upgrade_done | default(False))"
-    - name: k8s-fetch-certs
-      when: "not (k8s_upgrade_done | default(False))"
 
 - name: Upgrade the residual master nodes
   hosts: masters[1:]
