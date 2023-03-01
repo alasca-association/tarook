@@ -156,7 +156,7 @@
       # metal installation case.
       wrap_ttl: 60s
       data:
-        metadata: '{"yaook_deployment": {{ vault_cluster_name | to_json }}, "yaook_hostname": {{ inventory_hostname | to_json }}, "yaook_primary_ipv4": {{ local_ipv4_address | default("127.0.0.1") | to_json }}, "yaook_primary_ipv6": {{ local_ipv6_address | default("::1") | to_json }}}'
+        metadata: '{{ {"yaook_deployment": vault_cluster_name, "yaook_hostname": inventory_hostname, "yaook_primary_ipv4": local_ipv4_address | default("127.0.0.1"), "yaook_primary_ipv6": local_ipv6_address | default("::1")} | to_json }}'
     register: approle_secret_id_wrapped
 
   - name: Unwrap secret ID
