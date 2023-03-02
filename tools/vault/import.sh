@@ -135,8 +135,8 @@ base64 < "$inventory_etc/sa.key" | vault kv put "$cluster_path/kv/k8s/service-ac
 echo "Importing etcd backup credentials ..."
 
 etcdbackup_config_path=config/etcd_backup_s3_config.yaml
-if etcdbackup_config="$(python3 -c 'import json, yaml, sys; yaml.dump(json.load(sys.stdin), sys.stdout)' < $etcdbackup_config_path)"; then
-    vault kv put "$cluster_path/kv/etcdbackup" @- <<<"$etcdbackup_config"
+if etcdbackup_config="$(python3 -c 'import json, yaml, sys; json.dump(yaml.load(sys.stdin, Loader=yaml.SafeLoader), sys.stdout)' < $etcdbackup_config_path)"; then
+    vault kv put "$cluster_path/kv/etcdbackup" - <<<"$etcdbackup_config"
 else
     echo "Failed to find etcd backup credentials at $etcdbackup_config_path" >&2
     echo "Ignoring, as those are optional." >&2

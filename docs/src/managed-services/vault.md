@@ -31,17 +31,6 @@ By default, vault listens on a cluster internal API endpoint whose authenticity 
 
 Note: We cannot assume the existence of a publically available vault endpoint but must be able to interact with the vault cluster from the orchestrator. As a consequence we cannot make use of ansible's built-in vault modules but instead we have to jump into the vault pods to execute commands as our second-best option.
 
-## Bootstrapping
-
-Once [feature/vault](https://gitlab.com/yaook/k8s/-/merge_requests/553) has been merged, there will be the necessity to bootstrap a number of vaults. The general idea is to 
-
-- use the tooling which comes with that MR to spawn a local vault on your work station
-- do a full `apply.sh`
-- create a snapshot of your local vault (`vault operator raft snapshot save`)
-- copy and restore the snapshot in your remote vault
-
-Ensure that the key parameters (total number of shares and the threshold) of your local vault match the ones of the vault deployed by `vault_v1`! Otherwise you won't be able to restore the snapshot.
-
 ## Vault Configuraton
 
 ```toml

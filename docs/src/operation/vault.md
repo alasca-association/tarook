@@ -327,15 +327,25 @@ this is an expressly supported use-case.
 In order to migrate a cluster to host its own vault,
 the following prerequisites are necessary:
 
-- The cluster has been deployed or migrated to use another Vault.
-  This can be the development Vault setup provided with yaook/k8s.
+- Case 1: Migrating from a development or other Vault
 
-- The source Vault instance uses Raft.
+  - The cluster has been deployed or migrated to use another Vault.
+    This can be the development Vault setup provided with yaook/k8s.
 
-- A sufficient amount of unseal key shares to unseal the *source* Vault
-  are known.
+  - The source Vault instance uses Raft.
+
+  - A sufficient amount of unseal key shares to unseal the *source* Vault
+    are known.
+
+- Case 2: Migrating a cluster which is not upgraded to use Vault yet to use
+  itself as Vault.
+
+  - The cluster has not been upgraded to use Vault yet.
 
 - No Vault has been deployed with yaook/k8s inside the cluster yet.
+
+**Note:** The documentation mostly applies for both cases,
+except for the places noted.
 
 **Note:** In general, it is not possible to pivot the cluster
 except by restoring a Vault raft snapshot into the cluster.
@@ -359,7 +369,8 @@ The Vault instance which we will spawn inside the cluster
 will be called the *target Vault*.
 
 1. Obtain the number of unseal shares and the threshold
-   for unsealing of the *source Vault*.
+   for unsealing of the *source Vault*,
+   if migrating from another Vault.
 
 2. Configure `k8s-service-layer.vault` with the same number of unseal shares
    and the same threshold.
@@ -369,6 +380,11 @@ will be called the *target Vault*.
    Set the `service_type` to `NodePort`
    and set the `active_node_port` to `32048`.
 
+   If you are not migrating from another Vault,
+   you may choose an arbitrary number of unseal shares
+   and an arbitrary threshold,
+   in compliance with your security requirements.
+
 3. Deploy the Vault by re-running Stage 4.
 
 4. Verify that you can reach the Vault instance
@@ -377,14 +393,16 @@ will be called the *target Vault*.
    with the IP of any worker or control plane node.
    (You should get some HTML back.)
 
-5. Take a raft snapshot of your *source Vault*
+#### Case 1: Migrating from a development or other Vault
+
+1. Take a raft snapshot of your *source Vault*
    by running `vault operator raft snapshot save foo.snap`
    with a sufficiently privileged token.
 
-6. Obtain the CA of the *target Vault* from Kubernetes
+2. Obtain the CA of the *target Vault* from Kubernetes
    using `kubectl -n k8s-svc-vault get secret vault-cert-internal -o json | jq -r '.data["ca.crt"]' | base64 -d > vault-ca.crt`
 
-7. Configure access to the Vault:
+3. Configure access to the Vault:
    ```
    export VAULT_ADDR=https://$nodeip:32048
    export VAULT_CACERT="$(pwd)/vault-ca.crt"
@@ -419,19 +437,19 @@ will be called the *target Vault*.
    *Tip*: Verify that you're talking to the *target Vault*
    by checking the *Active Since* timestamp.
 
-8. Obtain a root token for the *target Vault* instance.
+4. Obtain a root token for the *target Vault* instance.
    As you have just freshly installed it with yaook/k8s,
    the root token will be in `inventory/.etc/vault_root_token`.
 
-9. Scale the vault down to one replica.
+5. Scale the vault down to one replica.
 
-10. Delete the PVCs of the other replicas.
+6. Delete the PVCs of the other replicas.
 
     **Note:** We are entering the danger zone now.
     Double-check always that you are operating on the correct cluster
     and with the correct vault.
 
-11. **DANGER:** THIS WILL IRREVERSIBLY DELETE THE DATA IN THE *target Vault*.
+7. **DANGER:** THIS WILL IRREVERSIBLY DELETE THE DATA IN THE *target Vault*.
    Double-check you are talking to the correct vault!
    Take a snapshot or whatever!
 
@@ -441,7 +459,7 @@ will be called the *target Vault*.
    vault operator raft snapshot restore -force foo.snap
    ```
 
-12. Manually unseal the *target Vault*:
+8. Manually unseal the *target Vault*:
 
     ```
     kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- vault operator unseal
@@ -449,7 +467,7 @@ will be called the *target Vault*.
 
     You now need to supply unseal key shares from the *source Vault*.
 
-13. Force vault to reset whatever it thinks about the cluster state.
+9. Force vault to reset whatever it thinks about the cluster state.
     This is done by triggering a Raft recovery
     by placing a magic `peers.json` file in the raft data directory.
 
@@ -493,13 +511,13 @@ will be called the *target Vault*.
 
     This should now show the `HA Mode` as active.
 
-14. Scale the cluster back up.
+10. Scale the cluster back up.
 
     ```
     kubectl -n k8s-svc-vault scale sts vault --replicas=3
     ```
 
-15. Unseal the other replicas:
+11. Unseal the other replicas:
 
     ```
     kubectl -n k8s-svc-vault exec -it vault-1 -c vault -- vault operator unseal
@@ -508,6 +526,24 @@ will be called the *target Vault*.
 
     Congrats! You now have the data inside the k8s cluster.
 
-16. To test that yaook/k8s can talk to the Vault appropriately,
+12. To test that yaook/k8s can talk to the Vault appropriately,
     you can now run any stage3 with `AFLAGS="-t vault-onboarded"`
     to see if it can talk to Vault.
+
+13. Done!
+
+#### Case 2: Migrating a cluster which is not upgraded to use Vault yet to use itself as Vault
+
+1. Configure access to the Vault:
+   ```
+   export VAULT_ADDR=https://$nodeip:32048
+   export VAULT_CACERT="$(pwd)/vault-ca.crt"
+   export VAULT_TOKEN=$(cat inventory/.etc/vault_root_token)
+   ```
+
+2. Run `managed-k8s/tools/vault/init.sh`
+
+3. Run `managed-k8s/tools/vault/import.sh`
+   with the appropriate parameters.
+
+4. Done.
