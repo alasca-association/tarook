@@ -250,7 +250,7 @@ Conceptually, this mode is similar to running `mkcluster-root.sh` (see above).
 To run a migration in this mode, call:
 
 ```console
-$ managed-k8s/tools/import.sh $clustername no-intermediates
+$ managed-k8s/tools/vault/import.sh $clustername no-intermediates
 ```
 
 ### With Intermediate CA
@@ -269,7 +269,7 @@ Conceptually, this mode is similar to running `mkcluster-intemediate.sh` (see ab
 To start a migration in this mode, call:
 
 ```console
-$ managed-k8s/tools/import.sh $clustername with-intermediates
+$ managed-k8s/tools/vault/import.sh $clustername with-intermediates
 ```
 
 This will print a message
@@ -293,7 +293,7 @@ in order to load the signed certificates.
 Once you have provided the files, run:
 
 ```console
-$ managed-k8s/tools/load-signed-intermediates.sh $clustername
+$ managed-k8s/tools/vault/load-signed-intermediates.sh $clustername
 ```
 
 to load the signed intermediate CA certificates into Vault.

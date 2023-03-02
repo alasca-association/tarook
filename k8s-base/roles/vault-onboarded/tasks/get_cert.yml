@@ -42,7 +42,7 @@
         {% if cert_info.valid_at.point_2 %} and is valid 16w from now{% else %} and expires in less than 16w{% endif %}.
         {% else %}does not exist.{% endif %}
 
-  - name: "{{ get_cert_title }}: Fail if cert and key existance differs"
+  - name: "{{ get_cert_title }}: Fail if cert exists but not the key Key, or vice versa"
     fail:
       msg: Cert exists but key does not or vice versa
     when: cert_existence.stat.exists != key_existence.stat.exists
