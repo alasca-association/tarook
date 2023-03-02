@@ -41,6 +41,7 @@
       kubeconfig_external: true
       kubeconfig_keypair_path: /var/lib/kubelet/pki/kubelet-client-current.pem
       kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
+      kubeconfig_notify: Restart only this kubelet
 
 - name: Gather necessary cluster join information
   when: install_status == 'k8s_not_installed'

@@ -179,6 +179,7 @@
       kubeconfig_destination: /etc/kubernetes/controller-manager.conf
       kubeconfig_issuer: system-masters_controllers
       kubeconfig_user: system:kube-controller-manager
+      kubeconfig_notify: Restart kube-controller-manager
 
   - name: Generate scheduler kubeconfig
     include_tasks: mkkubeconfig.yaml
@@ -189,6 +190,7 @@
       kubeconfig_destination: /etc/kubernetes/scheduler.conf
       kubeconfig_issuer: system-masters_controllers
       kubeconfig_user: system:kube-scheduler
+      kubeconfig_notify: Restart kube-scheduler
 
   - name: Generate kubelet kubeconfig
     include_tasks: mkkubeconfig.yaml
@@ -201,6 +203,7 @@
       kubeconfig_user: "system:node:{{ inventory_hostname }}"
       kubeconfig_external: true
       kubeconfig_keypair_path: /var/lib/kubelet/pki/kubelet-client-current.pem
+      kubeconfig_notify: Restart only this kubelet
 
   - name: Generate admin kubeconfig
     include_tasks: mkkubeconfig.yaml
@@ -229,6 +232,7 @@
         alt_names: "{{ inventory_hostname }}"
         ip_sans: "{{ local_ipv4_address }},127.0.0.1,::1{% if local_ipv6_address | default(False) %},{{ local_ipv6_address }}{% endif %}"
         ttl: 8784h
+      get_cert_notify: Restart etcd
 
   - name: Obtain etcd peer certificate
     include_role:
@@ -247,6 +251,7 @@
         alt_names: "{{ inventory_hostname }}"
         ip_sans: "{{ local_ipv4_address }},127.0.0.1,::1{% if local_ipv6_address | default(False) %},{{ local_ipv6_address }}{% endif %}"
         ttl: 8784h
+      get_cert_notify: Restart etcd
 
   - name: Obtain etcd healthcheck certificate
     include_role:
@@ -264,6 +269,7 @@
         common_name: "{{ inventory_hostname }}"
         alt_names: "{{ inventory_hostname }}"
         ttl: 8784h
+      get_cert_notify: Restart etcd
 
   - name: Obtain apiserver etcd client certificate
     include_role:
@@ -280,6 +286,7 @@
       get_cert_vault_data:
         common_name: "{{ inventory_hostname }}"
         ttl: 8784h
+      get_cert_notify: Restart kube-apiserver
 
   - name: Obtain apiserver frontend certificate
     include_role:
@@ -298,6 +305,7 @@
         alt_names: "{{ inventory_hostname }},{{ inventory_hostname }}.node.{{ vault_cluster_name }},kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.{{ vault_cluster_name }},kubernetes.default.svc.cluster.local"
         ip_sans: "{{ networking_fixed_ip }},{{ local_ipv4_address }},127.0.0.1,::1{% if networking_fixed_ip_v6 | default(False) %},{{ networking_fixed_ip_v6 }},{{ local_ipv6_address }}{% endif %},{{ k8s_network_service_subnet | ansible.utils.nthhost(1) }}"
         ttl: 8784h
+      get_cert_notify: Restart kube-apiserver
 
   - name: Obtain apiserver kubelet client certificate
     include_role:
@@ -314,6 +322,7 @@
       get_cert_vault_data:
         common_name: "apiserver:{{ inventory_hostname }}.node.{{ vault_cluster_name }}"
         ttl: 8784h
+      get_cert_notify: Restart kube-apiserver
 
   - name: Obtain apiserver front proxy client certificate
     include_role:
@@ -330,6 +339,7 @@
       get_cert_vault_data:
         common_name: "{{ inventory_hostname }}"
         ttl: 8784h
+      get_cert_notify: Restart kube-apiserver
 
 - name: Delete secret data which is now in Vault
   file:

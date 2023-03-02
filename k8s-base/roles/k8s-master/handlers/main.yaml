@@ -8,8 +8,38 @@
     name: kubelet
     state: restarted
 
-- name: Publish join key
+- name: Restart only this kubelet
+  become: true
   ansible.builtin.service:
-    name: publish-join-key.service
-    state: started
+    name: kubelet
+    state: restarted
+
+- name: Restart kube-apiserver
+  become: true
+  # We must use shell here, because crictl cannot restart things by name.
+  # We have to look up the ID of the Pod.
+  ansible.builtin.shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^kube-apiserver$' --no-trunc -q)
+
+- name: Restart kube-scheduler
+  become: true
+  # We must use shell here, because crictl cannot restart things by name.
+  # We have to look up the ID of the Pod.
+  ansible.builtin.shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^kube-scheduler$' --no-trunc -q)
+
+- name: Restart kube-controller-manager
+  become: true
+  # We must use shell here, because crictl cannot restart things by name.
+  # We have to look up the ID of the Pod.
+  ansible.builtin.shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^kube-controller-manager$' --no-trunc -q)
+
+- name: Restart etcd
+  become: true
+  # We must use shell here, because crictl cannot restart things by name.
+  # We have to look up the ID of the Pod.
+  ansible.builtin.shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^etcd$' --no-trunc -q)
+
+- name: noop
+  # this handler is used as default in mkkubeconfig, if the caller specified no handler to notify
+  ansible.builtin.debug:
+    msg: Nothing to see here, move along.
 ...

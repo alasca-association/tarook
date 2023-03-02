@@ -72,6 +72,7 @@
       group: "{{ get_cert_group | default(get_cert_owner) }}"
       mode: u=rw,go=r
       content: "{{ get_cert.data.data.certificate }}{{ '\n' }}{{ get_cert.data.data.ca_chain | join('\n') }}{{ '\n' }}"
+    notify: "{{ get_cert_notify | default('noop') }}"
 
   - name: "{{ get_cert_title }}: Write private key"
     become: yes
@@ -82,3 +83,4 @@
       group: "{{ get_cert_group | default(get_cert_owner) }}"
       mode: u=r
       content: "{{ get_cert.data.data.private_key }}{{ '\n' }}"
+    notify: "{{ get_cert_notify | default('noop') }}"
