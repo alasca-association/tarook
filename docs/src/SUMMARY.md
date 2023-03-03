@@ -33,6 +33,7 @@
 - [Resetting Kubernetes]() <!-- ./operation/resetting-kubernetes.md -->
 - [Backups](./operation/backups.md)
 - [Migrate CRI from docker to containerd](./operation/migrate-docker-containerd.md)
+- [Calico (CNI)](./operation/calico.md)
 
 ---
 
