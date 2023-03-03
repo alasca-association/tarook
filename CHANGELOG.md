@@ -4,6 +4,17 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Implement support for Tigera operator-based Calico installation
+
+Instead of using a customized manifest-based installation method,
+we're now switching to an
+[operator-based installation](https://docs.tigera.io/calico/3.25/about/) method
+based on the Tigera operator.
+
+**Existing clusters must be migrated.**
+Please have a look at our [Calico documentation](./docs/src/operation/calico.md)
+for further information.
+
 ## Support for Kubernetes v1.24
 
 The LCM now supports Kubernetes v1.24.
