@@ -1,8 +1,10 @@
 ---
 - name: Include sanity checks
+  when: not k8s_network_calico_use_tigera_operator
   include_tasks: sanity_checks.yaml
 
 - name: Make sure the calico directory exists in the 'etc_dir'
+  when: not k8s_network_calico_use_tigera_operator
   delegate_to: localhost
   run_once: yes
   become: no
@@ -12,5 +14,6 @@
     mode: 0755
 
 - name: Prepare Kubernetes Nodes
+  when: not k8s_network_calico_use_tigera_operator
   include_tasks: prepare_nodes.yaml
 ...

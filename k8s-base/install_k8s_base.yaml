@@ -271,6 +271,7 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
+  - vars/retries.yaml
   roles:
   - role: calico-tigera-operator
     tags:

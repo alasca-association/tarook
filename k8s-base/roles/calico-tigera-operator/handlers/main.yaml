@@ -1,8 +1,0 @@
----
-- name: Restart containerd
-  become: true
-  become_user: root
-  ansible.builtin.service:
-    name: containerd
-    state: restarted
-...
