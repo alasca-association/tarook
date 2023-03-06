@@ -1,3 +1,15 @@
+# A single Typha can support hundreds of Felix instances. That means we can
+# safely scale it by the number of k8s nodes divided by fifty and ensure that
+# at least two exist, if we have enough nodes for that
+{% set node_bunches = (groups['k8s_nodes'] | length) / 50 %}
+{% set target_number = node_bunches %}
+{% set minimum_number_cp = [2, node_bunches] | max %}
+# more typhas than we have k8s masters makes no sense and is also impossible
+# to schedule (once we actually prevent typhas from running on random
+# nodes...), but it could happen on small clusters using the logic above.
+{% set maximum_number_cp = groups['masters'] | length %}
+# now we pick the smallest number, because the maximum is a hard maximum and the minimum is a soft minimum
+{% set cp_replicas = [minimum_number_cp, maximum_number_cp] | min %}
 ---
 apiVersion: operator.tigera.io/v1
 kind: Installation
@@ -6,7 +18,21 @@ metadata:
 spec:
   nodeMetricsPort: 9092
   typhaMetricsPort: 9093
+  registry: "{{ k8s_network_calico_image_registry }}/"
+  controlPlaneNodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+  nonPrivileged: "True"
+  controlPlaneReplicas: {{ cp_replicas }}
   calicoNetwork:
+    mtu: {{ k8s_network_calico_mtu | to_json }}
+    nodeAddressAutodetectionV4:
+      cidrs:
+        - "{{ subnet_cidr }}"
+{% if dualstack_support %}
+    nodeAddressAutodetectionV6:
+      cidrs:
+        - "{{ subnet_cidr }}"
+{% endif %}
     ipPools:
     - blockSize: 26
       cidr: "{{ k8s_network_pod_subnet }}"

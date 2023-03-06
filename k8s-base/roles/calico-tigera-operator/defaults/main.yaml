@@ -1,6 +1,16 @@
 ---
-tigera_operator_version: v3.24.5
+# Variables for Calico-based Networking
+k8s_network_calico_bgp_router_id: 244.0.0.1  # An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
+k8s_network_calico_mtu: 1450  # for OpenStack at most 1450
 
-calico_installation_resource_file_path: installation.yaml
-calico_apiserver_resource_file_path: apiserver.yaml
+# Specify the registry endpoint
+# Changing this value can be useful if one endpoint hosts outdated images or you're subject to rate limiting
+k8s_network_calico_image_registry: "quay.io"
+
+k8s_network_calico_encapsulation: "None"
+
+calico_installation_resource_file_path: installation.yaml.j2
+calico_apiserver_resource_file_path: apiserver.yaml.j2
+
+calico_calicoctl_binary_source: "https://github.com/projectcalico/calico/releases/download"
 ...

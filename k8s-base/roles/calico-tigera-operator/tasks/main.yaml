@@ -18,67 +18,82 @@
 - name: Check for migration tasks
   ansible.builtin.include_tasks: migrate.yaml
 
-- name: Install calico as a network driver
+- name: Deploy tigera-operator
   become: true
   become_user: root
   run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
-    - name: Create tigera-operator Namespace
+    - name: Download tigera-operator manifest to the node
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/projectcalico/calico/v{{ image_versions.calico_version }}/manifests/tigera-operator.yaml"
+        dest: /tmp/tigera-operator.yaml
+        mode: '0440'
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+
+    - name: Apply tigera-operator manifest  # noqa no-changed-when
+      # Using kubernetes.core.k8s not possible,
+      # it can't do kubectl replace and fails as the
+      # metadata timestamps in the downloaded manifest
+      # are Null and not any empty string.
+      # It also fails on re-appliance due to "annotations field too long"
+      # Feel free to investigate.
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - "{{ tigera_operator_exists | ternary('replace', 'create') }}"
+          - -f
+          - /tmp/tigera-operator.yaml
+
+    # Give the operator some time to create the CRDs
+    - name: Pause for 20s
+      when: not tigera_operator_exists
+      ansible.builtin.pause:
+        seconds: 20
+
+    - name: Create Calico Installation Resource
       kubernetes.core.k8s:
-        name: tigera-operator
-        api_version: v1
-        kind: Namespace
         state: present
+        definition: "{{ lookup('template', calico_installation_resource_file_path) | from_yaml }}"
+        apply: true
         validate:
           fail_on_error: true
           strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
-    - name: Download tigera-operator manifest to the cluster
-      ansible.builtin.get_url:
-        url: "https://raw.githubusercontent.com/projectcalico/calico/{{ tigera_operator_version }}/manifests/tigera-operator.yaml"
-        dest: /tmp/tigera-operator.yaml
-        mode: '0664'
-
-    - name: Apply tigera-operator manifest to the cluster
+    - name: Create Calico APIServer Resource
       kubernetes.core.k8s:
         state: present
-        src: /tmp/tigera-operator.yaml
+        definition: "{{ lookup('template', calico_apiserver_resource_file_path) | from_yaml }}"
+        apply: true
+        validate:
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
 
-    - name: Create the Calico Installation Resource
-      kubernetes.core.k8s:
-        state: present
-        definition: "{{ lookup('file', calico_installation_resource_file_path) | from_yaml }}"
-
-    - name: Create the Calico APIServer Resource
-      kubernetes.core.k8s:
-        state: present
-        definition: "{{ lookup('file', calico_apiserver_resource_file_path) | from_yaml }}"
-
-    - name: Remove calico node DaemonSet
-      kubernetes.core.k8s:
-        state: absent
-        api_version: apps/v1
-        kind: DaemonSet
-        namespace: kube-system
-        name: calico-node
-
-    - name: Remove calico-kube-controllers Deployment
-      kubernetes.core.k8s:
-        state: absent
-        api_version: apps/v1
-        kind: Deployment
-        namespace: kube-system
-        name: calico-kube-controllers
-
-    - name: Remove calico typha Deployment
-      kubernetes.core.k8s:
-        state: absent
-        api_version: apps/v1
-        kind: Deployment
-        namespace: kube-system
-        name: calico-typha
+- name: Install calicoctl
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ calico_calicoctl_binary_source }}/v{{ image_versions.calico_version }}/calicoctl-linux-amd64"
+    dest: /usr/local/bin/calicoctl
+    owner: root
+    group: root
+    mode: 0750
+    timeout: 30
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
 
 - name: Setup BGP Routing Information Distribution via BIRD
   run_once: true
