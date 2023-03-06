@@ -197,13 +197,17 @@
     tags:
     - calico
     - calico-control-plane
-    when: k8s_network_plugin == 'calico' == 'calico' and not (calico_use_tigera_operator | default(False) | bool)
+    when:
+    - k8s_network_plugin == 'calico'
+    - not k8s_network_calico_use_tigera_operator
   - role: calico-worker
     tags:
     - calico
     - calico-control-plane
     - calico-worker
-    when: k8s_network_plugin == 'calico' == 'calico' and not (calico_use_tigera_operator | default(False) | bool)
+    when:
+    - k8s_network_plugin == 'calico'
+    - not k8s_network_calico_use_tigera_operator
   post_tasks:
   # This is required for the k8s node to come up after the installation
   # of calico – but only when using containerd, go figure!
@@ -234,7 +238,9 @@
     tags:
     - calico
     - calico-worker
-    when: k8s_network_plugin == 'calico' and not (calico_use_tigera_operator | default(False) | bool)
+    when:
+    - k8s_network_plugin == 'calico'
+    - not k8s_network_calico_use_tigera_operator
   post_tasks:
   # This is required for the k8s node to come up after the installation
   # of calico – but only when using containerd, go figure!
@@ -254,7 +260,9 @@
   roles:
   - role: calico-cleanup
     tags: calico-cleanup
-    when: k8s_network_plugin == 'calico' and not (calico_use_tigera_operator | default(False) | bool)
+    when:
+    - k8s_network_plugin == 'calico'
+    - not k8s_network_calico_use_tigera_operator
 
 - name: Install calico with the tigera operator
   hosts: masters
@@ -267,7 +275,9 @@
   - role: calico-tigera-operator
     tags:
     - calico
-    when: k8s_network_plugin == 'calico' and (calico_use_tigera_operator | default(False) | bool)
+    when:
+    - k8s_network_plugin == 'calico'
+    - k8s_network_calico_use_tigera_operator
 
 - name: Spawn the OpenStack k8s Control Plane
   hosts: masters

@@ -6,7 +6,7 @@
       "type": "calico",
       "log_level": "info",
       "datastore_type": "kubernetes",
-      "mtu": {{ calico_mtu | to_json }},
+      "mtu": {{ k8s_network_calico_mtu | to_json }},
       "ipam": {
           "type": "calico-ipam",
 {% if dualstack_support %}
