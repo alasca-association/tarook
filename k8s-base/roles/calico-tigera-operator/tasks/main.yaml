@@ -1,16 +1,22 @@
 ---
-- name: Define Calico download folder
-  become: true
-  become_user: root
-  ansible.builtin.set_fact:
-    calico_cache_dir: "{% if lookup('env', 'XDG_CACHE_HOME') == '' %}{{ lookup('env', 'HOME') + '/.cache' + '/yaook-k8s-ansible/calico-binaries' }}{% else %}{{ lookup('env', 'XDG_CACHE_HOME')  + '/yaook-k8s-ansible/calico-binaries' }}{% endif %}"
+- name: Check if tigera-operator already exists
+  delegate_to: localhost
+  run_once: true
+  block:
+    - name: Check if tigera-operator Deployment exists
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Deployment
+        name: tigera-operator
+        namespace: tigera-operator
+      register: tigera_operator_deployment
 
-- name: "Ensure that {{ calico_cache_dir }} is removed"
-  become: true
-  become_user: root
-  ansible.builtin.file:
-    state: absent
-    path: "{{ calico_cache_dir }}"
+    - name: Set fact if tigera-operator Deployment exists
+      ansible.builtin.set_fact:
+        tigera_operator_exists: "{{ tigera_operator_deployment.resources | length >= 1 | bool }}"
+
+- name: Check for migration tasks
+  ansible.builtin.include_tasks: migrate.yaml
 
 - name: Install calico as a network driver
   become: true

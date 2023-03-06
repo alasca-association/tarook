@@ -1,0 +1,47 @@
+---
+- name: Check if calico/node and Typha are deployed in kube-system
+  delegate_to: localhost
+  block:
+    - name: Check if calico/node DaemonSet exists in kube-system
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: DaemonSet
+        name: calico-node
+        namespace: kube-system
+      register: calico_node_daemonset
+
+    - name: Check if Typha Deployment exists in kube-system
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Deployment
+        name: calico-typha
+        namespace: kube-system
+      register: calico_typha_deployment
+
+- name: End play if migration needed but disruption is not allowed
+  when:
+    - calico_node_daemonset.resources | length >= 1 | bool
+    - calico_typha_deployment.resources | length >= 1 | bool
+    - not tigera_operator_exists
+    - not _allow_disruption
+  block:
+    - name: Fail if migration needed but disruption is not allowed
+      ansible.builtin.fail:
+        msg: |
+          It looks as you've already deployed calico, but not
+          via the tigera-operator. You configured a migration
+          to the tigera-operator, but did not allow disruption.
+
+          Migrating to the tigera-operator based installation
+          is disruptive. To proceed, you must allow disruption.
+
+- name: Cleanup old installation
+  when:
+    - calico_node_daemonset.resources | length >= 1 | bool
+    - calico_typha_deployment | length >= 1 | bool
+    - not tigera_operator_exists
+    - _allow_disruption
+  ansible.builtin.include_role:
+    name: calico-control-plane
+    tasks_from: delete_everything.yaml
+...
