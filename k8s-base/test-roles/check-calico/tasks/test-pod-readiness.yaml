@@ -43,11 +43,11 @@
     when:
     - k8s_network_plugin == 'calico'
     - k8s_network_calico_use_tigera_operator | bool
+    - image_versions.calico_version is version ('3.24', '>=')
     failed_when: ( pod_info.resources[0].status.phase != "Running" ) and ( pod_info.resources[0].status.containerStatuses[0].ready != true )
     with_items:
     - calico-node
     - calico-typha
     - calico-apiserver
     - calico-kube-controllers
-    - csi-node-driver
 ...

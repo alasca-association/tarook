@@ -121,10 +121,28 @@
     - node-exporter-service-monitor
 
   - name: Create service monitors for calico
+    when: not k8s_network_calico_use_tigera_operator
     kubernetes.core.k8s:
       state: present
       apply: true
       definition: "{{ lookup('template', 'calico-monitoring.yaml.j2') }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+    tags:
+    - calico-service-monitor
+
+  - name: Create monitoring resources for calico (operator-based)
+    when: k8s_network_calico_use_tigera_operator
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      definition: "{{ lookup('template', 'calico-tigera-monitoring.yaml.j2') }}"
       validate:
         fail_on_error: true
         strict: true
