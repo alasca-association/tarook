@@ -259,6 +259,15 @@ service_subnet = "10.96.0.0/12" # •ᴗ•
 # layer 3 networking capabilities and associates a virtual router with each node.
 # Allows the establishment of zone boundaries through BGP
 plugin = "calico" # •ᴗ•
+# ANCHOR_END: kubernetes_network_configuration
+
+# ANCHOR: calico_configuration
+[kubernetes.network.calico]
+# Calico can be either installed via a manually implemented manifest-based approach
+# or via the tigera operator. The latter is preferred. Migration from the previous
+# to the latter happens automatically, if this variable here is enabled. For more
+# information refer to: https://docs.tigera.io/calico/3.25/operations/operator-migration
+use_tigera_operator = true
 
 # Pick a Calico version:
 # Be aware that not all combinations of Kubernetes and Calico versions are recommended:
@@ -266,11 +275,18 @@ plugin = "calico" # •ᴗ•
 # We provide Calico in version: 3.17.1, 3.19.0, 3.21.6.
 # If not specified here, a predefined Calico version will be matched against
 # the above specified Kubernetes version.
-# calico_custom_version = "3.21.6"
+#custom_version = "3.21.6"
 
+#mtu = 1450 # for OpenStack at most 1450
+
+# Only takes effect for operator-based installations
+# https://docs.tigera.io/calico/3.25/reference/installation/api#operator.tigera.io/v1.EncapsulationType
+#encapsulation = "None"
+
+# Only takes effect for manifest-based installations
 # Define if the IP-in-IP encapsulation of calico should be activated
-# https://projectcalico.docs.tigera.io/networking/vxlan-ipip
-# calico_ipipmode = "Never"
+# https://docs.tigera.io/calico/3.24/reference/resources/ippool#spec
+#ipipmode = "Never"
 
 # Make the auto detection method variable as one downside of
 # using can-reach mechanism is that it produces additional logs about
@@ -278,16 +294,13 @@ plugin = "calico" # •ᴗ•
 # use an interface to detect ip settings i.e. interface=bond0
 # calico_ip_autodetection_method = "can-reach=www.cloudandheat.com"
 # calico_ipv6_autodetection_method = "can-reach=www.cloudandheat.com"
-# ANCHOR_END: kubernetes_network_configuration
 
-# ANCHOR: calico_configuration
-[calico]
-# There is a migration path from the existing "hard way setup" towards the tigera
-# operator setup, but not the other way around. So, if you want to get back to the
-# "hard way setup" you need to do several manual steps.
-# use_tigera_operator = false
-# installation_resource_file_path = "path-to-a-custom/installation.yaml"
-# apiserver_resource_file_path = "path-to-a-custom/apiserver.yaml"
+# For the operator-based installation,
+# it is possible to link to self-maintained manifests of the the installation
+# and apiserver resource.
+#installation_resource_file_path = "path-to-a-custom/installation.yaml"
+#apiserver_resource_file_path = "path-to-a-custom/apiserver.yaml"
+
 # ANCHOR_END: calico_configuration
 
 # ANCHOR: kubernetes_kubelet_configuration

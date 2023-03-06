@@ -1,7 +1,7 @@
 ---
 # Variables for Calico-based Networking
-calico_bgp_router_id: 244.0.0.1 # An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
-calico_mtu: 1450 # for OpenStack at most 1450
+k8s_network_calico_bgp_router_id: 244.0.0.1 # An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
+k8s_network_calico_mtu: 1450 # for OpenStack at most 1450
 
 # Version-checksums
 calico_binary_checksums:
