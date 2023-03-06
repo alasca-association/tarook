@@ -7,8 +7,16 @@ spec:
   calicoNetwork:
     ipPools:
     - blockSize: 26
-      cidr: 10.244.0.0/16
-      encapsulation: VXLANCrossSubnet
+      cidr: "{{ k8s_network_pod_subnet }}"
       natOutgoing: Enabled
       nodeSelector: all()
+      disabled: False
+      encapsulation: "{{ k8s_network_calico_encapsulation }}"
+{% if dualstack_support %}
+    - blockSize: 26
+      cidr: "{{ k8s_network_pod_subnet_v6 }}"
+      natOutgoing: Disabled
+      nodeSelector: all()
+      encapsulation: "{{ k8s_network_calico_encapsulation }}"
+{% endif %}
 ...
