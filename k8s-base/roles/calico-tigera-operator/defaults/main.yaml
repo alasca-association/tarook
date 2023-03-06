@@ -1,6 +1,6 @@
 ---
 tigera_operator_version: v3.24.5
 
-calico_installation_resource_file_path: apiserver.yaml
-calico_apiserver_resource_file_path: installation.yaml
+calico_installation_resource_file_path: installation.yaml
+calico_apiserver_resource_file_path: apiserver.yaml
 ...
