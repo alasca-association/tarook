@@ -80,44 +80,7 @@
         namespace: kube-system
         name: calico-typha
 
-- name: Restart the tigera operator
-  become: true
-  become_user: root
+- name: Setup BGP Routing Information Distribution via BIRD
   run_once: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  block:
-    - name: Search for all tigera operator Pods
-      kubernetes.core.k8s_info:
-        kind: Pod
-        label_selectors:
-          - k8s-app = tigera-operator
-      register: tigera_operator_pods
-
-    - name: Restart tigera operator Pods
-      kubernetes.core.k8s:
-        state: absent
-        api_version: v1
-        kind: Pod
-        namespace: "{{ item['metadata']['namespace'] }}"
-        name: "{{ item['metadata']['name'] }}"
-      loop: "{{ tigera_operator_pods['resources'] }}"
-
-    - name: Get a list of all nodes
-      kubernetes.core.k8s_info:
-        api_version: v1
-        kind: Node
-      register: k8s_nodes
-
-    - name: Remove projectcalico.org/operator-node-migration label
-      kubernetes.core.k8s:
-        state: present
-        definition:
-          apiVersion: v1
-          kind: Node
-          metadata:
-            name: "{{ item.metadata.name }}"
-            labels:
-              projectcalico.org/operator-node-migration: null
-      loop: "{{ k8s_nodes.resources }}"
+  ansible.builtin.include_tasks: setup_bgp.yaml
 ...
