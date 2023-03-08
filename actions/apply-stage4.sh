@@ -13,4 +13,5 @@ python3 "$actions_dir/update_inventory.py"
 
 export KUBECONFIG="$cluster_repository/inventory/.etc/admin.conf"
 cd "$ansible_k8s_sl_playbook"
+ansible-galaxy install -r "$ansible_directory/requirements.yaml"
 ansible_playbook -i "inventory/default.yaml" -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" install.yaml
