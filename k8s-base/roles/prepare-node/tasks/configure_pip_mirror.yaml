@@ -18,6 +18,13 @@
     content: "{{ pip_mirror_ca }}"
   when: pip_mirror_ca
 
+- name: Remove the pip mirror certificate file
+  become: true
+  ansible.builtin.file:
+    path: /etc/pip/pip_mirror_ca.pem
+    state: absent
+  when: not pip_mirror_ca
+
 - name: Setup pip config for Offline Installation
   become: true
   ansible.builtin.template:
