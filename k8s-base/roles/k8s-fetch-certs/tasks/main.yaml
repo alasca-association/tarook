@@ -19,9 +19,12 @@
     loop: "{{ etcd_files }}"
     run_once: true
 
-  - name: Copy kubeconfig to localhost
+  - name: Copy kubernetes configs to localhost
     ansible.builtin.fetch:
-      src: /etc/kubernetes/admin.conf
+      src: "{{ item }}"
       dest: "{{ etc_dir }}/"
       flat: true
+    with_items:
+      - /etc/kubernetes/admin.conf
+      - /etc/kubernetes/kubelet.conf
 ...
