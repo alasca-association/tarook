@@ -39,7 +39,7 @@ if [ -z "$vault_status" ] || [ "$vault_status" = 'exited' ]; then
         -u "$(id -u):$(id -g)" \
         -v "$vault_dir/config":/vault/config \
         -v "$vault_dir/tls":/vault/tls \
-        -v "$vault_dir/data":/vault/file \
+        -v "$vault_dir/data":/vault/data \
         -e VAULT_ADDR="https://127.0.0.1:8200" \
         -e VAULT_CACERT="/vault/tls/ca/vaultca.crt" \
         "$vault_image" server
