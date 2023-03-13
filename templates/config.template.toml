@@ -300,10 +300,8 @@ use_tigera_operator = true
 # calico_ipv6_autodetection_method = "can-reach=www.cloudandheat.com"
 
 # For the operator-based installation,
-# it is possible to link to self-maintained manifests of the the installation
-# and apiserver resource.
-#installation_resource_file_path = "path-to-a-custom/installation.yaml"
-#apiserver_resource_file_path = "path-to-a-custom/apiserver.yaml"
+# it is possible to link to self-maintained values file for the helm chart
+#values_file_path = "path-to-a-custom/values.yaml"
 
 # ANCHOR_END: calico_configuration
 
