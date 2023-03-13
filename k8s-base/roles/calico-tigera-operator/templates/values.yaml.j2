@@ -11,11 +11,8 @@
 # now we pick the smallest number, because the maximum is a hard maximum and the minimum is a soft minimum
 {% set cp_replicas = [minimum_number_cp, maximum_number_cp] | min %}
 ---
-apiVersion: operator.tigera.io/v1
-kind: Installation
-metadata:
-  name: default
-spec:
+installation:
+  enabled: true
   nodeMetricsPort: 9092
   typhaMetricsPort: 9093
   registry: "{{ k8s_network_calico_image_registry }}/"
@@ -38,7 +35,6 @@ spec:
       cidr: "{{ k8s_network_pod_subnet }}"
       natOutgoing: Enabled
       nodeSelector: all()
-      disabled: False
       encapsulation: "{{ k8s_network_calico_encapsulation }}"
 {% if dualstack_support %}
     - blockSize: 26
@@ -47,4 +43,6 @@ spec:
       nodeSelector: all()
       encapsulation: "{{ k8s_network_calico_encapsulation }}"
 {% endif %}
-...
+
+apiServer:
+  enabled: true

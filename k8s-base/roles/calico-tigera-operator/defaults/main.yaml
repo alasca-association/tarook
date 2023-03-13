@@ -9,8 +9,9 @@ k8s_network_calico_image_registry: "quay.io"
 
 k8s_network_calico_encapsulation: "None"
 
-calico_installation_resource_file_path: installation.yaml.j2
-calico_apiserver_resource_file_path: apiserver.yaml.j2
+calico_values_file_path: values.yaml.j2
 
 calico_calicoctl_binary_source: "https://github.com/projectcalico/calico/releases/download"
+
+calico_helm_repo_url: "https://docs.tigera.io/calico/charts"
 ...

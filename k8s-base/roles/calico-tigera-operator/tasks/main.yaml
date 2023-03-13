@@ -19,68 +19,51 @@
   ansible.builtin.include_tasks: migrate.yaml
 
 - name: Deploy tigera-operator
-  become: true
-  become_user: root
+  delegate_to: localhost
   run_once: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
-    - name: Download tigera-operator manifest to the node
-      ansible.builtin.get_url:
-        url: "https://raw.githubusercontent.com/projectcalico/calico/v{{ image_versions.calico_version }}/manifests/tigera-operator.yaml"
-        dest: /tmp/tigera-operator.yaml
-        mode: '0440'
+    - name: Create Tigera operator namespace
+      kubernetes.core.k8s:
+        apply: true
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: tigera-operator
+        validate:
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
+
+    - name: Add projectcalico helm repository
+      kubernetes.core.helm_repository:
+        name: projectcalico
+        repo_url: "{{ calico_helm_repo_url }}"
+        repo_state: "present"
+
+    - name: Deploy Tigera operator chart
+      kubernetes.core.helm:
+        chart_ref: projectcalico/tigera-operator
+        chart_version: "{{ image_versions.calico_version }}"
+        release_namespace: "tigera-operator"
+        release_name: "calico"
+        release_state: present
+        update_repo_cache: true
+        values: "{{ lookup('template', calico_values_file_path) | from_yaml }}"
       register: task_result
       until: task_result is not failed
       retries: "{{ network_error_retries }}"
-
-    - name: Apply tigera-operator manifest  # noqa no-changed-when
-      # Using kubernetes.core.k8s not possible,
-      # it can't do kubectl replace and fails as the
-      # metadata timestamps in the downloaded manifest
-      # are Null and not any empty string.
-      # It also fails on re-appliance due to "annotations field too long"
-      # Feel free to investigate.
-      ansible.builtin.command:
-        argv:
-          - kubectl
-          - "{{ tigera_operator_exists | ternary('replace', 'create') }}"
-          - -f
-          - /tmp/tigera-operator.yaml
+      delay: "{{ network_error_delay }}"
 
     # Give the operator some time to create the CRDs
     - name: Pause for 20s
       when: not tigera_operator_exists
       ansible.builtin.pause:
         seconds: 20
-
-    - name: Create Calico Installation Resource
-      kubernetes.core.k8s:
-        state: present
-        definition: "{{ lookup('template', calico_installation_resource_file_path) | from_yaml }}"
-        apply: true
-        validate:
-          fail_on_error: true
-          strict: true
-      # Retry this task on failures
-      register: k8s_apply
-      until: k8s_apply is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
-
-    - name: Create Calico APIServer Resource
-      kubernetes.core.k8s:
-        state: present
-        definition: "{{ lookup('template', calico_apiserver_resource_file_path) | from_yaml }}"
-        apply: true
-        validate:
-          fail_on_error: true
-          strict: true
-      # Retry this task on failures
-      register: k8s_apply
-      until: k8s_apply is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
 
 - name: Install calicoctl
   become: true

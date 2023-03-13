@@ -14,7 +14,8 @@
 > Please update to Kubernetes `v1.24`, which maps Calico `v3.24.5` by default, in advance.
 
 For new clusters, calico will be setup by using the operator-based approach.
-More detailed: the [Tigera Calico Operator](https://docs.tigera.io/calico/3.25/getting-started/kubernetes/quickstart#operator-based-installation) is deployed.
+More detailed: the [Tigera Calico Operator](https://docs.tigera.io/calico/3.25/getting-started/kubernetes/helm#how-to) is deployed.
+The Tigera operator is deployed via `helm`.
 
 It is possible to customize the Calico setup to some extend.
 Please check out the [calico configuration section](../usage/cluster-configuration.md#calico-configuration)
