@@ -139,6 +139,12 @@
       - docker-ce-cli
       state: absent
 
+  - name: Ensure pigz is installed
+    become: true
+    ansible.builtin.apt:
+      name: pigz
+      state: present
+
   - name: restart kubelet
     become: true
     ansible.builtin.service:
