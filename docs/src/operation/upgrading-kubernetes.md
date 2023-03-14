@@ -9,6 +9,7 @@
   - [General procedure](#general-procedure)
   - [Upgrading specific versions](#upgrading-specific-versions)
     - [Upgrading to 1.18.x (from 1.17.x or 1.18.x)](#upgrading-to-118x-from-117x-or-118x)
+  - [Upgrade to Kubernetes v1.24](#upgrade-to-kubernetes-v124)
   - [Skip Intermittent Cluster Health Verification](#skip-intermittent-cluster-health-verification)
   - [Kubernetes Component Versioning](#kubernetes-component-versioning)
     - [General Information](#general-information)
@@ -56,6 +57,15 @@
    [kubernetes]
    version="1.18.1"
    ```
+## Upgrade to Kubernetes v1.24
+
+**Prior** to the upgrade to Kubernetes v1.24,
+one must migrate to use containerd as CRI.
+This migration has been automated.
+
+If you have docker configured as CRI, please have a look at
+[the migration documentation](migrate-docker-containerd.md)
+for information on how to migrate.
 
 ## Skip Intermittent Cluster Health Verification
 

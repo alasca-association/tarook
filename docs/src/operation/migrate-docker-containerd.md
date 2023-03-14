@@ -5,6 +5,7 @@
 **Table of Contents:**
 
 - [Migrate CRI from docker to containerd](#migrate-cri-from-docker-to-containerd)
+  - [Migration](#migration)
   - [Procedure Description](#procedure-description)
   - [Skip intermediate Cluster Health Verification](#skip-intermediate-cluster-health-verification)
 
@@ -15,6 +16,18 @@
 ---
 
 The process of changing the CRI from docker to containerd is well documented in the official Kubernetes documentation: [Changing the Container Runtime on a Node from Docker Engine to containerd](https://kubernetes.io/docs/tasks/administer-cluster/migrating-from-dockershim/change-runtime-containerd/).
+
+## Migration
+
+The migration can be triggered via:
+
+```console
+MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/migrate-docker-containerd.sh [-s]
+```
+
+After the playbook finished, one **must** change
+the `container_runtime` variable to `containerd`
+in its `config/config.toml`.
 
 ## Procedure Description
 
