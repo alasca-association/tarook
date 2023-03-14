@@ -118,6 +118,10 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
 
+  - name: Pause to give kubelet some time to update the node info
+    ansible.builtin.pause:
+      seconds: 10
+
   - name: Verify CRI of node is containerd
     delegate_to: localhost
     kubernetes.core.k8s_info:
