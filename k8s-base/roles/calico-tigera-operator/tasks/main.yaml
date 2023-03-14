@@ -1,4 +1,13 @@
 ---
+- name: Faill if configured calico version is too old
+  when: image_versions.calico_version is version ('3.24', '<')
+  ansible.builtin.fail:
+    msg: |
+      The configured calico version is too old to be deployed
+      with the Tigera operator helm chart.
+      See https://yaook.gitlab.io/k8s/operation/calico.html
+      for more information.
+
 - name: Check if tigera-operator already exists
   delegate_to: localhost
   run_once: true
