@@ -204,6 +204,8 @@ vault-container-test:
   script:
     # Set k8s version to minimal supported version: v1.19.16
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.19.16\"}}"'
+    # Use calico manifest-based installation for clusters < K8s v1.24
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"network\":{\"calico\":{\"use_tigera_operator\":\"false\"}}}}"'
     # Disable Ingress (Requires k8s >= v1.20)
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"false\"}}}"'
     # Disable Cert-Manager (Requires k8s >= v1.20)
@@ -241,6 +243,8 @@ vault-container-test:
     # Update k8s version
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.24.10\"}}"'
     # Retest the cluster
+    # Use calico operator-based installation for clusters >= K8s v1.24
+  #- 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"network\":{\"calico\":{\"use_tigera_operator\":\"true\"}}}}"'
   - ./managed-k8s/actions/test.sh
   after_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, after_script]
