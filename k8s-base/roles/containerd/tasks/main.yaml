@@ -78,6 +78,15 @@
     mode: 0640
   register: configuration_update
 
+- name: Configure crictl
+  become: true
+  ansible.builtin.template:
+    src: crictl.yaml.j2
+    dest: /etc/crictl.yaml
+    owner: root
+    group: root
+    mode: 0400
+
 - name: Restart containerd
   become: true
   # Only restart if something changed AND we're allowed to do the restart
