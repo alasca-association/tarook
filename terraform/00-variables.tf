@@ -1,4 +1,5 @@
 # ANCHOR: terraform_variables
+
 variable "cluster_name" {
   type = string
   default = "managed-k8s"
