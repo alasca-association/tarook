@@ -151,7 +151,8 @@ variable "timeout_time" {
 
 variable "root_disk_volume_type" {
   type = string
-  default = "three_times_replicated"
+  default = ""
+  description = "If 'create_root_disk_on_volume=true', the volume type to be used as default for all instances. If left empty, default of IaaS environment is used."
 }
 
 variable "worker_join_anti_affinity_group" {
@@ -170,16 +171,34 @@ variable "master_root_disk_sizes" {
   description = "If 'create_root_disk_on_volume=true' and the master flavor does not specify a disk size, the root disk volume of this particular instance will have this size."
 }
 
+variable "master_root_disk_volume_types" {
+  type        = list(string)
+  default     = []
+  description = "If 'create_root_disk_on_volume=true', volume type for root disk of this particular control plane node. If 'root_disk_volume_type' is left empty, default volume type of your IaaS environment is used."
+}
+
 variable "worker_root_disk_sizes" {
   type = list(number)
   default = []
-  description = "If 'create_root_disk_on_volume=true' and the worker flavor does not specify a disk size, the root disk volume of this particular instance will have this size."
+  description = "If 'create_root_disk_on_volume=true', volume type for root disk of this particular worker node. If 'root_disk_volume_type' is left empty, default volume type of your IaaS environment is used."
+}
+
+variable "worker_root_disk_volume_types" {
+  type        = list(string)
+  default     = []
+  description = "If 'create_root_disk_on_volume=true', volume types of easdasd TODO"
 }
 
 variable "gateway_root_disk_volume_size" {
   type = number
   default = 10
   description = "If 'create_root_disk_on_volume=true' and the gateway flavor does not specify a disk size, the root disk volume will have this size."
+}
+
+variable "gateway_root_disk_volume_type" {
+  type        = string
+  default     = ""
+  description = "If 'create_root_disk_on_volume=true', set the volume type of the root disk volume for Gateways. Can't be configured separately for each instance"
 }
 
 variable "default_master_root_disk_size" {

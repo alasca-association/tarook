@@ -7,6 +7,7 @@ locals {
       az                       = var.enable_az_management ? try(var.worker_azs[idx], var.azs[idx % length(var.azs)]) : null
       join_anti_affinity_group = try(var.worker_join_anti_affinity_group[idx], false)
       root_disk_size           = try(var.worker_root_disk_sizes[idx], var.default_worker_root_disk_size)
+      root_disk_volume_type    = try(var.worker_root_disk_volume_types[idx], var.root_disk_volume_type)
       volume_name              = "${var.cluster_name}-worker-volume-${try(var.worker_names[idx], idx)}"
     }
   }
@@ -53,7 +54,7 @@ resource "openstack_blockstorage_volume_v2" "worker-volume" {
   name        = each.value.volume_name
   size        = (data.openstack_compute_flavor_v2.worker[each.key].disk > 0) ? data.openstack_compute_flavor_v2.worker[each.key].disk : each.value.root_disk_size
   image_id    = data.openstack_images_image_v2.worker[each.key].id
-  volume_type = var.root_disk_volume_type
+  volume_type = each.value.root_disk_volume_type
   availability_zone = each.value.az
 
   timeouts {
