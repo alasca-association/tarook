@@ -4,6 +4,18 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Support for Kubernetes v1.24
+
+The LCM now supports Kubernetes v1.24.
+One can either directly create a new cluster with a patch release of that version or upgrade an existing cluster to one as usual via:
+
+```shell
+# Replace the patch version
+MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.24.10
+```
+
+Further information are given in the [Upgrading Kubernetes documentation](https://yaook.gitlab.io/k8s/operation/upgrading-kubernetes.html).
+
 ## Implement automated docker to containerd migration
 
 A migration path to change the container runtime on each node of a cluster from docker to containerd has been added.
