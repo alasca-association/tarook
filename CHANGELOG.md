@@ -14,6 +14,10 @@ One can either directly create a new cluster with a patch release of that versio
 MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.24.10
 ```
 
+> **NOTE:** If you're using docker as CRI,
+> you **must** [migrate to containerd](https://yaook.gitlab.io/k8s/operation/migrate-docker-containerd.html)
+> in advance.
+
 Further information are given in the [Upgrading Kubernetes documentation](https://yaook.gitlab.io/k8s/operation/upgrading-kubernetes.html).
 
 ## Implement automated docker to containerd migration
