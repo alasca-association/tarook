@@ -7,6 +7,7 @@ workflow:
 
 stages:
 - lint
+- pages
 - spawn-cluster
 - cluster-upgrades
 - deploy
@@ -365,7 +366,7 @@ docker-k8s-upgrade-manual:
   retry: 0
 
 pages:
-  stage: deploy
+  stage: pages
   image: rust
   variables:
     CARGO_HOME: $CI_PROJECT_DIR/cargo
