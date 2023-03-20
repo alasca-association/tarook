@@ -51,7 +51,7 @@ server:
           path = "/vault/data"
           retry_join {
             leader_ca_cert_file = "/vault/userconfig/vault-cert-internal/ca.crt"
-            leader_api_addr = "https://vault.k8s-svc-vault.svc.cluster.local:8200"
+            leader_api_addr = "https://vault.{{ yaook_vault_namespace }}.svc.cluster.local:8200"
           }
         }
         # Enables vault pods to expose their state via labels; requires HA

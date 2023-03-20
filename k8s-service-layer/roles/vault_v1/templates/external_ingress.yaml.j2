@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/instance: vault
     app.kubernetes.io/name: vault-external
   name: vault-external
-  namespace: k8s-svc-vault
+  namespace: {{ yaook_vault_namespace }}
 spec:
   ingressClassName: {{ yaook_vault_external_ingress_class | to_json }}
   rules:
