@@ -1,0 +1,2 @@
+{{ prometheus_bird_exporter_checksum }}
+{{ prometheus_bird_exporter_url }}

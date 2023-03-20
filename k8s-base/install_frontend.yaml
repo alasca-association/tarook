@@ -93,6 +93,8 @@
   roles:
   - role: bird
     tags: bird
+  - role: prometheus-bird-exporter
+    tags: prometheus-bird-exporter
   - role: nftables
     tags: nftables
   - role: wireguard
