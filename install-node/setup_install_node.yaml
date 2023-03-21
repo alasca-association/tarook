@@ -12,4 +12,6 @@
     tags: container-mirror
   - role: http-mirror
     tags: http-mirror
+  - role: mirror-on-k8s
+    tags: mirror-on-k8s
 ...
