@@ -56,7 +56,7 @@
           app.kubernetes.io/instance: vault
           app.kubernetes.io/name: vault
         name: vault-external-active
-        namespace: k8s-svc-vault
+        namespace: "{{ yaook_vault_namespace }}"
       spec:
         internalTrafficPolicy: Cluster
         ipFamilies:
