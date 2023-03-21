@@ -1,0 +1,13 @@
+---
+- name: Create the manifests directory
+  ansible.builtin.file:
+    dest: "{{ etc_dir }}/mirror-manifests"
+    mode: 0750
+    state: directory
+
+- name: Render the configuration for registry containers
+  ansible.builtin.template:
+    dest: "{{ etc_dir }}/mirror-manifests/{{ item.name }}.yaml"
+    src: image_mirror_manifest.yaml.j2
+  loop: "{{ container_mirrors }}"
+...
