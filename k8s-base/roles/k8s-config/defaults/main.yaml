@@ -40,6 +40,7 @@ image_version_map:
       csi_snapshotter: "v1.2.2"
       openstack_cloud_controller_manager: "v1.19.1"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.19.0') }}" # Version of Calico binaries and images to be deployed
+    calico_use_tigera_operator: "{{ k8s_network_calico_use_tigera_operator  | default(False) }}"
 
   "1.20":
     openstack:
@@ -51,6 +52,7 @@ image_version_map:
       csi_snapshotter: "v1.2.2"
       openstack_cloud_controller_manager: "v1.19.1"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.19.0') }}" # Version of Calico binaries and images to be deployed
+    calico_use_tigera_operator: "{{ k8s_network_calico_use_tigera_operator  | default(False) }}"
 
   "1.21":
     openstack:
@@ -62,6 +64,7 @@ image_version_map:
       csi_snapshotter: "v1.2.2"
       openstack_cloud_controller_manager: "v1.19.1"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.19.0') }}" # Version of Calico binaries and images to be deployed
+    calico_use_tigera_operator: "{{ k8s_network_calico_use_tigera_operator  | default(False) }}"
 
   "1.22":
     openstack:
@@ -81,6 +84,7 @@ image_version_map:
       # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.6.0
       csi_livenessprobe: "v2.6.0"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.21.6') }}"
+    calico_use_tigera_operator: "{{ k8s_network_calico_use_tigera_operator  | default(False) }}"
 
   "1.23":
     openstack:
@@ -100,6 +104,7 @@ image_version_map:
       # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.7.0
       csi_livenessprobe: "v2.7.0"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.21.6') }}"
+    calico_use_tigera_operator: "{{ k8s_network_calico_use_tigera_operator  | default(False) }}"
 
   "1.24":
     openstack:
@@ -119,6 +124,7 @@ image_version_map:
       # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.9.0
       csi_livenessprobe: "v2.9.0"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.24.5') }}"
+    calico_use_tigera_operator: "{{ k8s_network_calico_use_tigera_operator  | default(False) }}"
 
 image_versions: "{{ image_version_map[k8s_version_minor] }}"
 ...

@@ -121,7 +121,7 @@
     - node-exporter-service-monitor
 
   - name: Create service monitors for calico
-    when: not k8s_network_calico_use_tigera_operator
+    when: not image_versions.calico_use_tigera_operator
     kubernetes.core.k8s:
       state: present
       apply: true
@@ -138,7 +138,7 @@
     - calico-service-monitor
 
   - name: Create monitoring resources for calico (operator-based)
-    when: k8s_network_calico_use_tigera_operator
+    when: image_versions.calico_use_tigera_operator
     kubernetes.core.k8s:
       state: present
       apply: true

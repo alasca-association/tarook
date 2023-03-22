@@ -3,13 +3,13 @@
   ansible.builtin.include_tasks: test-calicoctl.yaml
   when:
   - k8s_network_plugin == 'calico'
-  - not k8s_network_calico_use_tigera_operator
+  - not image_versions.calico_use_tigera_operator
 
 - name: Check CNI Plugins
   ansible.builtin.include_tasks: test-calico-cni-plugins.yaml
   when:
   - k8s_network_plugin == 'calico'
-  - not k8s_network_calico_use_tigera_operator
+  - not image_versions.calico_use_tigera_operator
 
 - name: Check that calico/node and typha Pods are running
   ansible.builtin.include_tasks: test-pod-readiness.yaml

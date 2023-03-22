@@ -17,7 +17,7 @@
     register: pod_info
     when:
     - k8s_network_plugin == 'calico'
-    - not (k8s_network_calico_use_tigera_operator | bool)
+    - not (image_versions.calico_use_tigera_operator | bool)
     failed_when: ( pod_info.resources[0].status.phase != "Running" ) and ( pod_info.resources[0].status.containerStatuses[0].ready != true )
     with_items:
     - calico-node
@@ -31,7 +31,7 @@
     register: pod_info
     when:
     - k8s_network_plugin == 'calico'
-    - k8s_network_calico_use_tigera_operator | bool
+    - image_versions.calico_use_tigera_operator | bool
     failed_when: ( pod_info.resources[0].status.phase != "Running" ) and ( pod_info.resources[0].status.containerStatuses[0].ready != true )
 
   - name: Check running and readiness status of calico pods
@@ -42,7 +42,7 @@
     register: pod_info
     when:
     - k8s_network_plugin == 'calico'
-    - k8s_network_calico_use_tigera_operator | bool
+    - image_versions.calico_use_tigera_operator | bool
     - image_versions.calico_version is version ('3.24', '>=')
     failed_when: ( pod_info.resources[0].status.phase != "Running" ) and ( pod_info.resources[0].status.containerStatuses[0].ready != true )
     with_items:

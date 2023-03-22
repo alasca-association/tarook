@@ -1,5 +1,10 @@
 ---
-- name: Faill if configured calico version is too old
+- name: Skip play if Tigera operator is not configured
+  ansible.builtin.meta: end_play
+  when:
+    - not image_versions.calico_use_tigera_operator | bool
+
+- name: Fail if configured calico version is too old
   when: image_versions.calico_version is version ('3.24', '<')
   ansible.builtin.fail:
     msg: |

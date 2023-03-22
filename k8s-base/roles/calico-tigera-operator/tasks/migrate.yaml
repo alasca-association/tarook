@@ -44,4 +44,7 @@
   ansible.builtin.include_role:
     name: calico-control-plane
     tasks_from: delete_everything.yaml
+    apply:
+      tags:
+        - calico
 ...

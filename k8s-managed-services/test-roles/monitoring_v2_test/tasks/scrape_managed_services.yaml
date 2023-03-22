@@ -151,7 +151,7 @@
 - name: Check calico's monitoring endpoints (manifest-based)
   when:
   - k8s_network_plugin == "calico"
-  - not k8s_network_calico_use_tigera_operator
+  - not image_versions.calico_use_tigera_operator
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
@@ -171,7 +171,7 @@
 - name: Check calico's monitoring endpoints (operator-based)
   when:
   - k8s_network_plugin == "calico"
-  - k8s_network_calico_use_tigera_operator
+  - image_versions.calico_use_tigera_operator
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
