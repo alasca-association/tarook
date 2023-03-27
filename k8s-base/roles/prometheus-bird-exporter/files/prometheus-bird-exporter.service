@@ -1,0 +1,17 @@
+[Unit]
+Description=Prometheus exporter for bird
+Documentation=https://github.com/czerwonk/bird_exporter
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Restart=always
+ExecStart=/usr/local/bin/bird_exporter -bird.socket /var/run/bird/bird.ctl -bird.ipv6=false -web.listen-address :9324
+User=bird-exporter
+Group=bird
+NoNewPrivileges=true
+RestrictSUIDSGID=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=false

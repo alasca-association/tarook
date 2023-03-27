@@ -11,6 +11,7 @@ define wg_port = {{ wg_port }}
 define haproxy_stats_port = {{ haproxy_stats_port }}
 define haproxy_prom_metrics_port = 9101
 define keepalived_prom_metrics_port = 9650
+define bird_prom_metrics_port = 9324
 define node_exporter_metrics_port = 9100
 
 table inet filter {
@@ -22,6 +23,7 @@ table inet filter {
             $haproxy_prom_metrics_port,
             $haproxy_stats_port,
             $keepalived_prom_metrics_port,
+            $bird_prom_metrics_port,
             $node_exporter_metrics_port
         }
     }

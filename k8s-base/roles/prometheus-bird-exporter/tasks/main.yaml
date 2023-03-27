@@ -1,0 +1,88 @@
+---
+- name: create user
+  become: true
+  ansible.builtin.user:
+    system: true
+    name: "{{ prometheus_bird_exporter_user }}"
+    home: /dev/null
+    create_home: false
+
+- name: Create configuration directory
+  become: true
+  ansible.builtin.file:
+    state: directory
+    path: /etc/prometheus-bird-exporter
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o-rwx
+
+- name: Store id tag
+  become: true
+  ansible.builtin.template:
+    src: archive_id_tag
+    dest: /etc/prometheus-bird-exporter/version
+    owner: root
+    group: root
+    mode: ugo-rwx
+  register: version
+
+- name: Fetch and install binary
+  become: true
+  vars:
+    pke_path: /var/cache/prometheus-bird-exporter
+  block:
+  - name: Create caching directory for the archive/binary
+    ansible.builtin.file:
+      state: directory
+      path: "{{ pke_path }}"
+      owner: root
+      group: root
+      mode: u=rwx,g=rx,o-rwx
+
+  - name: Download executable
+    ansible.builtin.get_url:
+      checksum: "{{ prometheus_bird_exporter_checksums[prometheus_bird_exporter_version] }}"
+      dest: "{{ pke_path }}"
+      url: "{{ prometheus_bird_exporter_url }}"
+      force: "{{ (version is changed) | ternary(True, False) }}"
+      owner: root
+      group: root
+      mode: ugo-rx
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
+
+  - name: Extract binary
+    ansible.builtin.unarchive:
+      src: "{{ pke_path }}/{{ prometheus_bird_exporter_archive_name }}"
+      dest: "{{ pke_path }}"
+      remote_src: true
+
+  - name: Install binary to /usr/local/bin
+    ansible.builtin.copy:
+      src: "{{ pke_path }}/bird_exporter"
+      dest: /usr/local/bin/
+      owner: bird-exporter
+      mode: u=rx,go-rwx
+      remote_src: true
+    register: pke_binary
+
+- name: Create a systemd unit for bird_exporter
+  become: true
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/prometheus-bird-exporter.service"
+    dest: /etc/systemd/system/prometheus-bird-exporter.service
+    owner: root
+    group: root
+    mode: 0640
+  register: pke_unit
+
+- name: Start & enable the systemd unit
+  become: true
+  ansible.builtin.systemd:
+    name: prometheus-bird-exporter
+    state: "{{ ((pke_binary is changed) or (pke_unit is changed)) | ternary('restarted', 'started') }}"
+    enabled: true
+    daemon-reload: true
+...

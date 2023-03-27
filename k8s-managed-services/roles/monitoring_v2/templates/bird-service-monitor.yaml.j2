@@ -1,0 +1,55 @@
+#jinja2:lstrip_blocks: True
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: bird-service-monitor
+  namespace: "{{ monitoring_namespace }}"
+{% if monitoring_common_labels %}
+  labels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+    {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ monitoring_namespace }}
+  selector:
+    matchLabels:
+      app: prometheus-bird
+  endpoints:
+    - interval: 5s
+      port: metrics
+      path: /metrics
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus-bird
+  namespace: "{{ monitoring_namespace }}"
+  labels:
+    app: prometheus-bird
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 9600
+      targetPort: 9600
+
+---
+
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: prometheus-bird
+  namespace: "{{ monitoring_namespace }}"
+subsets:
+  - addresses:
+{% for node in groups['frontend'] %}
+    - ip: {{ hostvars[node]["local_ipv4_address"] }}
+{% endfor %}
+    ports:
+      - name: metrics
+        port: 9324

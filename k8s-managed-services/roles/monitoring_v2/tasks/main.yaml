@@ -47,6 +47,20 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
 
+  - name: Create bird service monitor (frontend)
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      definition: "{{ lookup('template', 'bird-service-monitor.yaml.j2') }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+
   - name: Create HAProxy service monitor (frontend)
     kubernetes.core.k8s:
       state: present
