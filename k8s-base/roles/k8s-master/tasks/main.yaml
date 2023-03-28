@@ -187,27 +187,4 @@
 - name: Enable periodic publishing of the k8s join key
   ansible.builtin.include_tasks: continuous_join_key.yaml
   when: k8s_continuous_join_key_enabled
-
-- name: Ensure that the 'gods' group exists
-  become: true
-  ansible.builtin.group:
-    name: "{{ k8s_admin_credentials_group }}"
-    state: present
-
-- name: Make the kube config readable by gods
-  become: true
-  ansible.builtin.file:
-    state: file
-    path: /etc/kubernetes/admin.conf
-    owner: root
-    group: "{{ k8s_admin_credentials_group }}"
-    mode: u=rw,g=r,o-rwx
-
-- name: Ensure that the current user is allowed to read the kube config
-  become: true
-  ansible.builtin.user:
-    append: true
-    groups: "{{ k8s_admin_credentials_group }}"
-    name: "{{ ansible_user }}"
-  when: "ansible_user | default(False)"
 ...

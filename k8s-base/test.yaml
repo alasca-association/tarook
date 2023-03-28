@@ -13,9 +13,7 @@
   gather_facts: false
   tasks:
   - name: Get node info
-    delegate_to: "{{ groups['masters'] | first }}"
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
+    delegate_to: localhost
     kubernetes.core.k8s_info:
       kind: node
       name: "{{ inventory_hostname }}"
