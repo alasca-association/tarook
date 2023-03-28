@@ -7,3 +7,4 @@ reclaimPolicy: Delete
 volumeBindingMode: Immediate
 parameters:
   type: three_times_replicated_nvme
+allowVolumeExpansion: true
