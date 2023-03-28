@@ -210,11 +210,4 @@
     groups: "{{ k8s_admin_credentials_group }}"
     name: "{{ ansible_user }}"
   when: "ansible_user | default(False)"
-
-- name: Fail if no networking was configured
-  ansible.builtin.fail:
-    msg: |
-      You chose "{{ k8s_network_plugin }}", but that did not work.
-      Currently, we support only 'calico'.
-  when: not k8s_network_plugin == 'calico'
 ...
