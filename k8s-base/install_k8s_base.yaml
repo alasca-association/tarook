@@ -244,40 +244,6 @@
     tags:
     - calico
 
-- name: Spawn the OpenStack k8s Control Plane
-  hosts: masters
-  become: true
-  gather_facts: false
-  vars_files:
-  - vars/disruption.yaml
-  - vars/auto_generated_preamble.yaml
-  - vars/retries.yaml
-  run_once: true
-  roles:
-  - role: connect-k8s-to-openstack
-    tags: connect-k8s-to-openstack
-    when: on_openstack | default(False) | bool
-  - role: ch-k8s-lbaas-controller
-    tags:
-    - ch-k8s-lbaas
-    - ch-k8s-lbaas-controller
-
-- name: Configure BGP and LBaaS on the gateways
-  hosts: gateways
-  become: true
-  gather_facts: true
-  vars_files:
-  - vars/auto_generated_preamble.yaml
-  - vars/retries.yaml
-  roles:
-  - role: k8s-bgp
-    tags:
-    - k8s-bgp
-  - role: ch-k8s-lbaas-agent
-    tags:
-    - ch-k8s-lbaas
-    - ch-k8s-lbaas-agent
-
 - name: Configure the local-storage controllers
   hosts: k8s_nodes
   vars_files:
