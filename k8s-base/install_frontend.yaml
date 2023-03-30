@@ -66,10 +66,6 @@
     tags: keepalived
   - role: haproxy
     tags: haproxy
-  - role: prometheus-haproxy-exporter
-    tags: prometheus-haproxy-exporter
-  - role: prometheus-keepalived-exporter
-    tags: prometheus-keepalived-exporter
 
 - name: Configure load balancer and VPN gateway
   hosts: gateways
@@ -88,10 +84,6 @@
     tags: nftables
   - role: wireguard
     tags: wireguard
-  - role: prometheus-node-exporter
-    tags: prometheus-node-exporter
-  - role: monitoring-system-update-status
-    tags: monitoring-system-update-status
   - role: journald
     tags: journald
   - role: configure-automatic-system-updates

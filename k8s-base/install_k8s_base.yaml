@@ -28,10 +28,6 @@
     tags: journald
   - role: is-k8s-installed
     tags: update_system
-  - role: configure-automatic-system-updates
-    tags: configure-automatic-system-updates
-  - role: monitoring-system-update-status
-    tags: monitoring-system-update-status
   - role: disable-swap
     tags: disable-swap
 
