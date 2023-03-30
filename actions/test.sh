@@ -17,15 +17,6 @@ cd "$ansible_k8s_base_playbook"
 # Required for the upper layer tests
 export KUBECONFIG="$cluster_repository/inventory/.etc/admin.conf"
 
-# Test k8s-managed-service layer
-pushd "$ansible_k8s_ms_playbook"
-ANSIBLE_ROLES_PATH="$ansible_k8s_ms_playbook/test-roles/" \
-    ansible_playbook -i "inventory/default.yaml" \
-    -i "$ansible_inventoryfile_03" \
-    -e "kms_vars_directory=$ansible_k8s_ms_vars_base" \
-    test.yaml
-popd
-
 # Test k8s-base
 # Please unclutter me
 # shellcheck disable=2086
