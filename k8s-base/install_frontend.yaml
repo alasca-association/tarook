@@ -51,17 +51,6 @@
   - role: update_system
     tags: update_system
 
-- name: Rollout company users
-  hosts: gateways
-  gather_facts: true
-  tasks:
-  - name: Rollout company users
-    when: cah_users_rollout
-    ansible.builtin.include_role:
-      name: ch-role-users
-    tags:
-    - ch-role-users
-
 - name: Configure frontend server services
   hosts: frontend
   gather_facts: true
