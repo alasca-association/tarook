@@ -118,11 +118,6 @@ if [ "$(realpath "$new_actions_dir")" != "$(realpath "$actions_dir")" ]; then
     fi
 fi
 
-# Create Vault development container
-if [ "${USE_VAULT_IN_DOCKER:-false}" == "true" ]; then
-  "$actions_dir/vault.sh"
-fi
-
 mkdir -p config
 cp "$code_repository/templates/template.gitignore" .gitignore
 cp --no-clobber "$code_repository/templates/config.template.toml" config/config.toml

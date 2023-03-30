@@ -2,10 +2,6 @@
 set -euo pipefail
 actions_dir="$(dirname "$0")"
 
-if [ "${USE_VAULT_IN_DOCKER:-false}" == "true" ]; then
-  "$actions_dir/vault.sh"
-fi
-
 "$actions_dir/apply-stage2.sh"
 "$actions_dir/apply-stage3.sh"
 "$actions_dir/apply-stage4.sh"
