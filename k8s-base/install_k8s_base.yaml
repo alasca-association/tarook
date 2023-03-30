@@ -120,9 +120,9 @@
     tags: networking
   - role: ntp
     tags: ntp
-  - role: gpu-support
+  - role: gpu-support # Discussion: Extract this?
     tags: gpu-support
-  - role: vgpu-support
+  - role: vgpu-support # Discussion: Extract this?
     tags: vgpu-support
   - role: docker
     tags: docker
