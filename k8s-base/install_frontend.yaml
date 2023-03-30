@@ -82,8 +82,6 @@
     tags: prometheus-bird-exporter
   - role: nftables
     tags: nftables
-  - role: wireguard
-    tags: wireguard
   - role: journald
     tags: journald
   - role: configure-automatic-system-updates
