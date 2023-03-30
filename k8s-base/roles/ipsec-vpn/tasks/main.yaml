@@ -1,9 +1,0 @@
----
-- name: Configure IPSec and related services
-  ansible.builtin.include_tasks: configure_ipsec.yaml
-  when: ipsec_enabled
-
-- name: Deconfigure IPSec and related services
-  ansible.builtin.include_tasks: cleanup_ipsec.yaml
-  when: not ipsec_enabled
-...

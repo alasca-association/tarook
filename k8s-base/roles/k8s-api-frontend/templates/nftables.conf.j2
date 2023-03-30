@@ -1,6 +1,0 @@
-#jinja2:lstrip_blocks: True
-#!/usr/sbin/nft -f
-
-{{ _auto_generated_preamble }}
-
-add element inet filter tcp_internal_accepted { {{ k8s_apiserver_frontend_port }} }

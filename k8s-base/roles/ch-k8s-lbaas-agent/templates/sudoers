@@ -1,3 +1,0 @@
-{{ _auto_generated_preamble }}
-
-{{ ch_k8s_lbaas_agent_user }} ALL = NOPASSWD: /usr/bin/systemctl reload nftables, /usr/bin/systemctl is-active nftables, /usr/bin/systemctl restart nftables, /usr/bin/systemctl reload keepalived, /usr/bin/systemctl is-active keepalived, /usr/bin/systemctl restart keepalived
