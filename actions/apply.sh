@@ -2,10 +2,6 @@
 set -euo pipefail
 actions_dir="$(dirname "$0")"
 
-if [ "${TF_USAGE:-true}" == 'true' ]; then
-  "$actions_dir/apply-terraform.sh"
-fi
-
 if [ "${USE_VAULT_IN_DOCKER:-false}" == "true" ]; then
   "$actions_dir/vault.sh"
 fi
