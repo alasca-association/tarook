@@ -1,4 +1,3 @@
 ---
-k8s_admin_credentials_group: god
 terminated_pod_gc_threshold: 10
 ...
