@@ -29,7 +29,7 @@
 
     - name: Deploy Google's K8s repository key
       ansible.builtin.copy:
-        src: apt-key.gpg
+        src: apt-keyrings-nvidia.gpg
         dest: /etc/apt/keyrings/nvidia.gpg
         owner: root
         group: root
