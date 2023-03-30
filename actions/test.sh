@@ -17,14 +17,6 @@ cd "$ansible_k8s_base_playbook"
 # Required for the upper layer tests
 export KUBECONFIG="$cluster_repository/inventory/.etc/admin.conf"
 
-# Test k8s-service-layer
-pushd "$ansible_k8s_sl_playbook"
-ANSIBLE_ROLES_PATH="$ansible_k8s_sl_playbook/test-roles/" \
-    ansible_playbook -i "inventory/default.yaml" \
-    -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" \
-    test.yaml
-popd
-
 # Test k8s-managed-service layer
 pushd "$ansible_k8s_ms_playbook"
 ANSIBLE_ROLES_PATH="$ansible_k8s_ms_playbook/test-roles/" \

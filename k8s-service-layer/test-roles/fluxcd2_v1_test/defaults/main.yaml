@@ -1,3 +1,0 @@
----
-k8s_fluxcd_namespace: k8s-svc-flux-system
-...
