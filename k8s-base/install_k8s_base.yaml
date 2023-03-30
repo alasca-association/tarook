@@ -153,20 +153,6 @@
   - role: remove_snap
     tags: remove_snap
 
-# If DualStack is enabled, the k8s cluster needs to use calico as CNI plugin
-# In Ansible, it is not possible to overwrite inventory variables, therefore we need to fail here
-# and ask the user to adjust its configuration.
-- name: Validate DualStack configurations
-  hosts: localhost
-  tasks:
-  - name: Check if DualStack support is enabled, but CNI plugin is not set to calico
-    ansible.builtin.fail:
-      msg: |
-        ### ERROR ###
-        You have enabled DualStack support, but have not chosen calico as k8s network plugin.
-        Please set 'k8s_network_plugin' to 'calico' in your config and rerun.
-    when: dualstack_support and k8s_network_plugin != "calico"
-
 - name: Clean up control plane
   hosts: masters
   gather_facts: true
