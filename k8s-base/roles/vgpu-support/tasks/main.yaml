@@ -44,10 +44,10 @@
           - "linux-headers-{{ ansible_kernel }}"
           - build-essential
           - manpages-dev
-        register: task_result
-        until: task_result is not failed
-        retries: "{{ network_error_retries }}"
-        delay: "{{ network_error_delay }}"
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
 
     - name: Install virtual gpu manager
