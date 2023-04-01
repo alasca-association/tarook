@@ -19,6 +19,32 @@
       mode: 0600
     notify: restart kubelet
 
+  - name: Patch kubelet config for eviction values
+    block:
+    - name: Slurp current kubelet config
+      ansible.builtin.slurp:
+        src: /var/lib/kubelet/config.yaml
+      register: kubelet_config
+    - name: Patch kubelet config for eviction values
+      vars:
+        eviction_values:
+          evictionSoft:
+            memory.available: "384Mi"
+          evictionSoftGracePeriod:
+            memory.available: "1m30s"
+          evictionHard:
+            memory.available: "256Mi"
+            nodefs.available: "10%"
+            imagefs.available: "15%"
+            nodefs.inodesFree: "5%"
+      ansible.builtin.copy:
+        content: "{{ (kubelet_config.content | b64decode | from_yaml) | combine(eviction_values) | to_nice_yaml }}"
+        dest: /var/lib/kubelet/config.yaml
+        owner: root
+        group: root
+        mode: 0600
+      notify: restart kubelet
+
 - name: Force restart of kubelet if requested
   ansible.builtin.debug:
     msg: It IS requested!
