@@ -80,6 +80,8 @@
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
+  vars:
+    use_nftables: infrastructure_type == 'openstack' | default(false)
   roles:
   - role: k8s-api-frontend
     tags: k8s-api-frontend
@@ -142,6 +144,8 @@
 - name: Spawn the K8s control plane
   hosts: masters
   gather_facts: true
+  vars:
+    use_external_cloud_provider: infrastructure_type == "openstack" | default(False)
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
@@ -192,6 +196,8 @@
 - name: Spawn and configure the k8s worker nodes
   hosts: workers
   gather_facts: true
+  vars:
+    use_external_cloud_provider: infrastructure_type == "openstack" | default(False)
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
@@ -235,7 +241,7 @@
   roles:
   - role: connect-k8s-to-openstack
     tags: connect-k8s-to-openstack
-    when: on_openstack | default(False) | bool
+    when: infrastructure_type == "openstack" | default(False)
   - role: ch-k8s-lbaas-controller
     tags:
     - ch-k8s-lbaas

@@ -1,7 +1,7 @@
 ---
 - name: Create nftables config for k8s API server
   become: true
-  when: on_openstack | bool
+  when: use_nftables
   ansible.builtin.template:
     src: nftables.conf.j2
     dest: /etc/nft.d/k8s_apiserver.conf
