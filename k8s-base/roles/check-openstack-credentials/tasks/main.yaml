@@ -1,6 +1,6 @@
 ---
 - name: Check OpenStack credentials
-  when: ((on_openstack | default(False)) | bool) and ((check_openstack_credentials | default(True)) | bool)
+  when: ((infrastructure_type == "openstack" | default(False)) | bool) and ((check_openstack_credentials | default(True)) | bool)
   delegate_to: localhost
   run_once: yes
   become: false

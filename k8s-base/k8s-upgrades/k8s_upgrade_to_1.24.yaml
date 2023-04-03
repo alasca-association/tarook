@@ -149,8 +149,8 @@
     - ../vars/auto_generated_preamble.yaml  # needed for the cloud.config secret
     - ../vars/retries.yaml
   roles:
-    - role: connect-k8s-to-openstack
-      when: on_openstack | default(False) | bool
+    - role: k8s-on-openstack-manager
+      when: infrastructure_type == "openstack" | default(False)
       k8s_version: "{{ next_k8s_version }}"
 
 - name: Update Calico (Control Plane)

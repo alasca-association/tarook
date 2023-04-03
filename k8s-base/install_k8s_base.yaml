@@ -281,8 +281,8 @@
   - vars/retries.yaml
   run_once: true
   roles:
-  - role: connect-k8s-to-openstack
-    tags: connect-k8s-to-openstack
+  - role: k8s-on-openstack-manager
+    tags: k8s-on-openstack-manager
     when: infrastructure_type == "openstack" | default(False)
   - role: ch-k8s-lbaas-controller
     tags:

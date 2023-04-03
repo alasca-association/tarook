@@ -30,13 +30,13 @@
     - ../vars/retries.yaml
   pre_tasks:
     - name: Purge the csi-sc-cinder-controllerplugin Statefulset
-      when: on_openstack | default(False) | bool
+      when: infrastructure_type == "openstack" | default(False)
       ansible.builtin.include_role:
-        name: connect-k8s-to-openstack
+        name: k8s-on-openstack-manager
         tasks_from: upgrade_to_k8s_v1.22.yaml
   roles:
-    - role: connect-k8s-to-openstack
-      when: on_openstack | default(False) | bool
+    - role: k8s-on-openstack-manager
+      when: infrastructure_type == "openstack" | default(False)
       k8s_version: "{{ next_k8s_version }}"
 
 - name: Upgrade the first master node

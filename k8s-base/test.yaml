@@ -171,7 +171,7 @@
   - role: check-block-storage
     vars:
       block_storage_class: csi-sc-cinderplugin
-    when: on_openstack | default(True)
+    when: infrastructure_type == "openstack" | default(False)
     tags:
     - test-block-storage-cinder
     - check-block-storage-cinder

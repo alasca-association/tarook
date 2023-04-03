@@ -1,6 +1,6 @@
 ---
 - name: Create nftables config for monitoring
-  when: on_openstack | bool
+  when: use_nftables | bool
   become: true
   ansible.builtin.template:
     src: "nftables.conf.j2"
