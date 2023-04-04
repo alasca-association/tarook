@@ -1,0 +1,36 @@
+---
+- name: Create the pip config dir
+  become: true
+  ansible.builtin.file:
+    dest: /etc/pip
+    mode: 0755
+    owner: root
+    group: root
+    state: directory
+
+- name: Copy the pip mirror certificate
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/pip/pip_mirror_ca.pem
+    mode: 0644
+    owner: root
+    group: root
+    content: "{{ pip_mirror_ca }}"
+  when: pip_mirror_ca
+
+- name: Remove the pip mirror certificate file
+  become: true
+  ansible.builtin.file:
+    path: /etc/pip/pip_mirror_ca.pem
+    state: absent
+  when: not pip_mirror_ca
+
+- name: Setup pip config for Offline Installation
+  become: true
+  ansible.builtin.template:
+    src: pip.conf.j2
+    dest: /etc/pip.conf
+    mode: 0644
+    owner: root
+    group: root
+...
