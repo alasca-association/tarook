@@ -210,4 +210,34 @@
       metrics.stdout | from_json | json_query('status') == "success" and
       metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
     delay: 3
+
+- name: Check cert-manager endpoint status
+  when: k8s_cert_manager_enabled | bool
+  kubernetes.core.k8s_exec:
+    namespace: "{{ check_prometheus_scraping_namespace }}"
+    pod: prometheus-test-scraper
+    command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="cert-manager",service="cert-manager"}'
+  register: metrics
+  until: |
+    metrics.failed == false and
+    metrics.rc == 0 and
+    metrics.stdout | from_json | json_query('status') == "success" and
+    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  retries: 60
+  delay: 3
+
+- name: Check nginx-ingress endpoint status
+  when: k8s_ingress_enabled | bool
+  kubernetes.core.k8s_exec:
+    namespace: "{{ check_prometheus_scraping_namespace }}"
+    pod: prometheus-test-scraper
+    command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="ingress-ingress-nginx-controller-metrics",service="ingress-ingress-nginx-controller-metrics"}'
+  register: metrics
+  until: |
+    metrics.failed == false and
+    metrics.rc == 0 and
+    metrics.stdout | from_json | json_query('status') == "success" and
+    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  retries: 60
+  delay: 3
 ...

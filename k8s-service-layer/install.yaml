@@ -15,6 +15,11 @@
   tags:
   - mk8s-sl
   roles:
+  - role: monitoring_v2
+    when: (k8s_monitoring_enabled | bool) and not (monitoring_use_jsonnet_setup | default(False))
+    tags:
+    - mk8s-sl/monitoring
+
   - role: cert_manager_v1
     when: k8s_cert_manager_enabled | bool
     tags:
@@ -28,11 +33,6 @@
 
   - role: monitoring_v1
     when: (k8s_monitoring_enabled | bool) and (monitoring_use_jsonnet_setup | default(False))
-    tags:
-    - mk8s-sl/monitoring
-
-  - role: monitoring_v2
-    when: (k8s_monitoring_enabled | bool) and not (monitoring_use_jsonnet_setup | default(False))
     tags:
     - mk8s-sl/monitoring
 

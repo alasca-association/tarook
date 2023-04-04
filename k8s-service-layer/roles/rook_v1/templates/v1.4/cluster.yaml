@@ -80,7 +80,7 @@ spec:
   # enable prometheus alerting for cluster
   monitoring:
     # requires Prometheus to be pre-installed
-    enabled: false
+    enabled: {{ k8s_monitoring_enabled | bool }}
     # namespace to deploy prometheusRule in. If empty, namespace of the cluster will be used.
     # Recommended:
     # If you have a single rook-ceph cluster, set the rulesNamespace to the same namespace as the cluster or keep it empty.
@@ -188,7 +188,15 @@ spec:
 #    prepareosd:
 # If no mgr annotations are set, prometheus scrape annotations will be set by default.
 #    mgr:
-#  labels:
+  labels:
+{% if k8s_monitoring_enabled %}
+{% if monitoring_common_labels %}
+    monitoring:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+      {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
+{% endif %}
 #    all:
 #    mon:
 #    osd:
