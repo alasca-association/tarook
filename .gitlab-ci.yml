@@ -14,7 +14,7 @@ stages:
 
 tflint:
   image:
-    name: wata727/tflint:latest
+    name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/wata727/tflint:latest"
     entrypoint: ["/bin/sh", "-c"]
   stage: lint
   script:
@@ -25,7 +25,7 @@ tflint:
 shellcheck:
   variables:
     SHELLCHECK_IMAGE_TAG: v0.7.2
-  image: koalaman/shellcheck-alpine:$SHELLCHECK_IMAGE_TAG
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/koalaman/shellcheck-alpine:$SHELLCHECK_IMAGE_TAG"
   stage: lint
   script:
     - "find -iname '*.sh' '!' -ipath './jsonnet-sources/*/vendor/**' '!' -ipath './.git/**' -print0 | xargs -0 -- shellcheck -Calways"
@@ -64,7 +64,7 @@ ansible-lint:
     - docker
 
 flake8:
-  image: python:3
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3"
   script:
     - "pip3 install flake8"
     - 'python3 -m flake8 --max-line-length 88 --filename="*.py"'
@@ -74,7 +74,7 @@ flake8:
 
 testBook:
   stage: lint
-  image: rust
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/rust"
   variables:
     CARGO_HOME: $CI_PROJECT_DIR/cargo
   before_script:
@@ -367,7 +367,7 @@ docker-k8s-upgrade-manual:
 
 pages:
   stage: pages
-  image: rust
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/rust"
   variables:
     CARGO_HOME: $CI_PROJECT_DIR/cargo
   before_script:
