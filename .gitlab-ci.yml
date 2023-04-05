@@ -23,7 +23,7 @@ tflint:
     - docker
 
 shellcheck:
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/koalaman/shellcheck-alpine:v0.7.2"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/koalaman/shellcheck-alpine:v0.9.0"
   stage: lint
   script:
     - "find -iname '*.sh' '!' -ipath './jsonnet-sources/*/vendor/**' '!' -ipath './.git/**' -print0 | xargs -0 -- shellcheck -Calways"
