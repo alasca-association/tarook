@@ -126,7 +126,7 @@ fi
 mkdir -p config
 cp "$code_repository/templates/template.gitignore" .gitignore
 cp --no-clobber "$code_repository/templates/config.template.toml" config/config.toml
-if [ ! $actions_dir == "./$submodule_managed_k8s_name/actions" ]; then
+if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 	run git add .gitignore config/config.toml
 fi
 
@@ -151,7 +151,7 @@ if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then
     ln -sf "../../managed-k8s/k8s-service-layer/vars/" "$ansible_k8s_custom_playbook/vars/ksl-vars"
 fi
 
-if [ ! $actions_dir == "./$submodule_managed_k8s_name/actions" ]; then
+if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 	notef 'cluster repository initialised successfully!'
 	notef 'You should now update config/config.toml as needed and '
 	notef 'then run git commit -v to check and commit your changes'
