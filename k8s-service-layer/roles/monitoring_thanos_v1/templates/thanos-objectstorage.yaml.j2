@@ -11,4 +11,5 @@ config:
   password: {{ lookup('env', 'OS_PASSWORD') | to_json }}
   region_name: {{ lookup('env', 'OS_REGION_NAME') | to_json }}
   container_name: "{{ monitoring_thanos_objectstorage_container_name }}"
+  list_objects_version: "v1"
 {% endif %}
