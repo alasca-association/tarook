@@ -148,8 +148,30 @@
   retries: 60
   delay: 3
 
-- name: Check calico's monitoring endpoints
-  when: k8s_network_plugin == "calico"
+- name: Check calico's monitoring endpoints (manifest-based)
+  when:
+  - k8s_network_plugin == "calico"
+  - not image_versions.calico_use_tigera_operator
+  kubernetes.core.k8s_exec:
+    namespace: "{{ check_prometheus_scraping_namespace }}"
+    pod: prometheus-test-scraper
+    command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{service={{ item | to_json }}}'
+  register: metrics
+  until: |
+    metrics.failed == false and
+    metrics.rc == 0 and
+    metrics.stdout | from_json | json_query('status') == "success" and
+    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  loop:
+  - calico-kube-controllers-monitoring
+  - calico-node-monitoring
+  - calico-typha-monitoring
+  delay: 3
+
+- name: Check calico's monitoring endpoints (operator-based)
+  when:
+  - k8s_network_plugin == "calico"
+  - image_versions.calico_use_tigera_operator
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
@@ -161,9 +183,9 @@
     metrics.stdout | from_json | json_query('status') == "success" and
     metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   loop:
-  - calico-kube-controllers-monitoring
-  - calico-node-monitoring
-  - calico-typha-monitoring
+  - calico-kube-controllers-metrics
+  - felix-metrics-svc
+  - typha-metrics-svc
   delay: 3
 
 - name: Check fluxcd's monitoring endpoints

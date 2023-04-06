@@ -78,6 +78,17 @@ This section contains generic information about the Kubernetes cluster configura
 ```
 </details>
 
+#### Calico Configuration
+
+The following configuration options are specific to calico, our CNI plugin in use.
+
+<details>
+<summary>config.toml: Kubernetes basic cluster configuration</summary>
+
+```toml
+{{#include ../templates/config.template.toml:calico_configuration}}
+```
+
 #### Storage Configuration
 
 <details>

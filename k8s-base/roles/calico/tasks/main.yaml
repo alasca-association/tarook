@@ -1,16 +1,20 @@
 ---
-- name: Include sanity checks
-  include_tasks: sanity_checks.yaml
+- name: Deploy calico prerequisites
+  when:
+  - not image_versions.calico_use_tigera_operator | bool
+  block:
+  - name: Include sanity checks
+    include_tasks: sanity_checks.yaml
 
-- name: Make sure the calico directory exists in the 'etc_dir'
-  delegate_to: localhost
-  run_once: yes
-  become: no
-  file:
-    path: "{{ etc_dir }}/calico"
-    state: directory
-    mode: 0755
+  - name: Make sure the calico directory exists in the 'etc_dir'
+    delegate_to: localhost
+    run_once: yes
+    become: no
+    file:
+      path: "{{ etc_dir }}/calico"
+      state: directory
+      mode: 0755
 
-- name: Prepare Kubernetes Nodes
-  include_tasks: prepare_nodes.yaml
+  - name: Prepare Kubernetes Nodes
+    include_tasks: prepare_nodes.yaml
 ...

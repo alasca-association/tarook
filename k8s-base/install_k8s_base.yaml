@@ -197,13 +197,11 @@
     tags:
     - calico
     - calico-control-plane
-    when: k8s_network_plugin == 'calico'
   - role: calico-worker
     tags:
     - calico
     - calico-control-plane
     - calico-worker
-    when: k8s_network_plugin == 'calico'
   post_tasks:
   # This is required for the k8s node to come up after the installation
   # of calico – but only when using containerd, go figure!
@@ -234,7 +232,10 @@
     tags:
     - calico
     - calico-worker
-    when: k8s_network_plugin == 'calico'
+  - role: calico-cleanup
+    tags:
+    - calico
+    - calico-cleanup
   post_tasks:
   # This is required for the k8s node to come up after the installation
   # of calico – but only when using containerd, go figure!
@@ -248,13 +249,18 @@
       state: restarted
       enabled: true
 
-- name: Cleanup Calico binaries
-  hosts: localhost
+- name: Install calico with the tigera operator
+  hosts: masters
   gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
   roles:
-  - role: calico-cleanup
-    tags: calico-cleanup
-    when: k8s_network_plugin == 'calico'
+  - role: calico-tigera-operator
+    tags:
+    - calico
 
 - name: Spawn the OpenStack k8s Control Plane
   hosts: masters

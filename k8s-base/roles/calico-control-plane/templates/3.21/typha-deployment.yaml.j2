@@ -68,7 +68,7 @@ spec:
       securityContext:
         fsGroup: 65534
       containers:
-      - image: {{ "calico/typha:v%s" | format(image_versions.calico_version) | to_json }}
+      - image: {{ "%s/calico/typha:v%s" | format(k8s_network_calico_image_registry, image_versions.calico_version) | to_json }}
         name: calico-typha
         ports:
         - containerPort: 5473

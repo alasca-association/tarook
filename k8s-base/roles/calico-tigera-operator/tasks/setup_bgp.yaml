@@ -4,7 +4,6 @@
 # https://github.com/projectcalico/calico/issues/2923
 ---
 - name: Create calico BGP configuration and apply peering
-  run_once: true
   become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
@@ -16,35 +15,9 @@
       - /usr/local/bin/calicoctl
       - apply
       - --filename=-
-      stdin: '{{ lookup("template", "calico_bgp_conf.yaml.j2") }}'
+      stdin: '{{ lookup("template", "bgp.yaml.j2") }}'
     register: bgp_configuration_result
     changed_when: "'Successfully applied' and 'BGPConfiguration' in bgp_configuration_result.stdout"
-
-  # Probably not necessary on a fresh setup, just to be sure
-  - name: BGP - Disable the default BGP node-to-node mesh
-    ansible.builtin.command:
-      argv:
-      - /usr/local/bin/calicoctl
-      - patch
-      - bgpconfiguration
-      - default
-      - -p
-      - '{"spec":{"nodeToNodeMeshEnabled":false} }'
-    register: bgp_mesh_patch
-    changed_when: "'Successfully patched' and 'BGPConfiguration' in bgp_mesh_patch.stdout"
-
-  # Probably not necessary, just to be sure
-  - name: BGP - Change the default global AS number
-    ansible.builtin.command:
-      argv:
-      - /usr/local/bin/calicoctl
-      - patch
-      - bgpconfiguration
-      - default
-      - -p
-      - ' {"spec":{"asNumber":{{ k8s_network_bgp_worker_as | to_json }} }}'
-    register: bgp_as_number_patch
-    changed_when: "'Successfully patched' and 'BGPConfiguration' in bgp_as_number_patch.stdout"
 
   # By adding a routeReflectorClusterID to the node, calico/node recognizes that it is a route reflector
   - name: BGP - Mark the k8s masters as route reflectors
@@ -73,25 +46,4 @@
     register: bgp_label_masters
     changed_when: "'Successfully updated label route-reflector on nodes' in bgp_label_masters.stdout"
     with_items: "{{ groups['masters'] }}"
-
-  - name: BGP - Configure workers to peer with route reflectors (master nodes)
-    ansible.builtin.command:
-      argv:
-      - /usr/local/bin/calicoctl
-      - apply
-      - --filename=-
-      stdin: '{{ lookup("file", "calico_bgp_peer_node.yaml") }}'
-    register: bgp_worker_to_master_peering
-    changed_when: "'Successfully applied' and 'BGPPeer' in bgp_worker_to_master_peering.stdout"
-
-  - name: BGP - Configure route reflectors (master nodes) to peer with the LoadBalanced-Master Gateway
-    ansible.builtin.command:
-      argv:
-      - /usr/local/bin/calicoctl
-      - apply
-      - --skip-empty
-      - --filename=-
-      stdin: '{{ lookup("template", "calico_bgp_peer_lb_master.yaml.j2") }}'
-    register: bgp_master_to_lb
-    changed_when: "'Successfully applied' and 'BGPPeer' in bgp_master_to_lb.stdout"
 ...

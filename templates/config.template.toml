@@ -259,18 +259,20 @@ service_subnet = "10.96.0.0/12" # •ᴗ•
 # layer 3 networking capabilities and associates a virtual router with each node.
 # Allows the establishment of zone boundaries through BGP
 plugin = "calico" # •ᴗ•
+# ANCHOR_END: kubernetes_network_configuration
 
-# Pick a Calico version:
-# Be aware that not all combinations of Kubernetes and Calico versions are recommended:
-# https://projectcalico.docs.tigera.io/getting-started/kubernetes/requirements
-# We provide Calico in version: 3.17.1, 3.19.0, 3.21.6.
-# If not specified here, a predefined Calico version will be matched against
-# the above specified Kubernetes version.
-# calico_custom_version = "3.21.6"
+# ANCHOR: calico_configuration
+[kubernetes.network.calico]
+#mtu = 1450 # for OpenStack at most 1450
 
+# Only takes effect for operator-based installations
+# https://docs.tigera.io/calico/3.25/reference/installation/api#operator.tigera.io/v1.EncapsulationType
+#encapsulation = "None"
+
+# Only takes effect for manifest-based installations
 # Define if the IP-in-IP encapsulation of calico should be activated
-# https://projectcalico.docs.tigera.io/networking/vxlan-ipip
-# calico_ipipmode = "Never"
+# https://docs.tigera.io/calico/3.24/reference/resources/ippool#spec
+#ipipmode = "Never"
 
 # Make the auto detection method variable as one downside of
 # using can-reach mechanism is that it produces additional logs about
@@ -278,7 +280,32 @@ plugin = "calico" # •ᴗ•
 # use an interface to detect ip settings i.e. interface=bond0
 # calico_ip_autodetection_method = "can-reach=www.cloudandheat.com"
 # calico_ipv6_autodetection_method = "can-reach=www.cloudandheat.com"
-# ANCHOR_END: kubernetes_network_configuration
+
+# For the operator-based installation,
+# it is possible to link to self-maintained values file for the helm chart
+#values_file_path = "path-to-a-custom/values.yaml"
+
+# We're mapping a fitting calico version to the configured Kubernetes version.
+# You can however pick a custom Calico version.
+# Be aware that not all combinations of Kubernetes and Calico versions are recommended:
+# https://projectcalico.docs.tigera.io/getting-started/kubernetes/requirements
+# For the operator-based installation, any version should work as long as
+# you stick to the calico-Kubernetes compatibility matrix.
+# # For the deprecated manifest-based installation we provide Calico in version: 3.17.1, 3.19.0, 3.21.6, 3.24.5
+#
+# If not specified here, a predefined Calico version will be matched against
+# the above specified Kubernetes version.
+#custom_version = "3.24.5"
+
+# Calico can be either installed via a manually implemented manifest-based approach
+# (default for K8s <= v1.24) or via the tigera operator (enforced for K8s >= v1.25).
+# Migration from the previous to the latter happens automatically, if this variable
+# here is enabled. Note that this is considered disruptive.
+# For more information refer to: https://docs.tigera.io/calico/3.25/operations/operator-migration
+# and our documentation: https://yaook.gitlab.io/k8s/
+#use_tigera_operator = true
+
+# ANCHOR_END: calico_configuration
 
 # ANCHOR: kubernetes_kubelet_configuration
 # --- KUBERNETES: KUBELET CONFIGURATION (WORKERS) ---

@@ -55,7 +55,7 @@ require_disruption
 export KUBECONFIG="$cluster_repository/inventory/.etc/admin.conf"
 cd "$ansible_k8s_base_playbook"
 # include k8s-base roles
-ANSIBLE_ROLES_PATH="$ansible_k8s_base_playbook/roles:$ansible_k8s_sl_playbook/roles" \
+ANSIBLE_ROLES_PATH="$ansible_k8s_base_playbook/roles:$ansible_k8s_sl_playbook/roles:$ansible_k8s_ms_playbook/roles" \
     ansible_playbook -i "$ansible_inventoryfile_03" "$playbook" \
     -e "next_k8s_version=$target_version" \
     -e "next_minor_k8s_version=$minor_version" \

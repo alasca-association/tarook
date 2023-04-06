@@ -14,7 +14,6 @@
   - [Kubernetes Component Versioning](#kubernetes-component-versioning)
     - [General Information](#general-information)
     - [Calico](#calico)
-      - [Manually Upgrade Calico](#manually-upgrade-calico)
 
 ---
 
@@ -97,28 +96,4 @@ components/services above the Kubernetes layer itself ("stage 3") but on the ser
 The calico version is mapped to the Kubernetes version and calico is updated to the mapped version
 during Kubernetes upgrades.
 However, it is possible to manually update calico to another version.
-
-#### Manually Upgrade Calico
-
-The calico version can be manually set via the [`calico_custom_version`](../usage/cluster-configuration.md#network-configuration) variable in the
-`[kubernetes.network]` section of cluster-specific your `config/config.toml`.
-
-You have to choose one of the following:
-
-* `v3.17.1`
-* `v3.19.0`
-* `v3.21.6`
-* `v3.24.5`
-
-After updating that variable, you can then update calico by executing the following.
-Note that this is a (slightly) disruptive action:
-
-```shell
-MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="--diff -t calico" bash managed-k8s/actions/apply-stage3.sh
-```
-
-Optionally, you can verify the calico functionality afterwards by triggering the test role:
-
-```
-AFLAGS="--diff -t check-calico" bash managed-k8s/actions/test.sh
-```
+That procedure is describe in [operation/calico](calico.md).

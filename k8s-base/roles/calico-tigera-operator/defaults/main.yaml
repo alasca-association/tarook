@@ -1,0 +1,17 @@
+---
+# Variables for Calico-based Networking
+k8s_network_calico_bgp_router_id: 244.0.0.1  # An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
+k8s_network_calico_mtu: 1450  # for OpenStack at most 1450
+
+# Specify the registry endpoint
+# Changing this value can be useful if one endpoint hosts outdated images or you're subject to rate limiting
+k8s_network_calico_image_registry: "quay.io"
+
+k8s_network_calico_encapsulation: "None"
+
+calico_values_file_path: values.yaml.j2
+
+calico_calicoctl_binary_source: "https://github.com/projectcalico/calico/releases/download"
+
+calico_helm_repo_url: "https://docs.tigera.io/calico/charts"
+...
