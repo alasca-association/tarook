@@ -137,7 +137,9 @@
       name:
       - docker-ce
       - docker-ce-cli
+      - docker.io
       state: absent
+      purge: true
 
   - name: Ensure pigz is installed
     become: true
