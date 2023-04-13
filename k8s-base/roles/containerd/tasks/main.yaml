@@ -78,6 +78,25 @@
     mode: 0640
   register: configuration_update
 
+- name: Ensure /etc/systemd/system/containerd.service.d/ is present
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/containerd.service.d
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Require containerd to be started before kubelet
+  become: true
+  ansible.builtin.template:
+    src: before-kubelet.conf.j2
+    dest: /etc/systemd/system/containerd.service.d/before-kubelet.conf
+    owner: root
+    group: root
+    mode: 0640
+  register: configuration_update
+
 - name: Configure crictl
   become: true
   ansible.builtin.template:
