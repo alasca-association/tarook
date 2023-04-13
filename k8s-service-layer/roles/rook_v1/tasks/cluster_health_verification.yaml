@@ -130,6 +130,6 @@
     - name: Verify that all Placement Groups are active and clean
       ansible.builtin.debug:
         msg: "There are {{ item.count }} Placement Groups in state {{ item.state_name }}"
-      failed_when: item.state_name != "active+clean"
+      failed_when: '"active+clean" not in item.state_name'
       with_items: "{{ ceph_cluster_status_json['pgmap']['pgs_by_state'] }}"
 ...
