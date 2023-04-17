@@ -1,0 +1,19 @@
+version: 0.1
+
+storage:
+  filesystem:
+    rootdirectory: /var/lib/registry
+
+http:
+  addr: 0.0.0.0:5000
+
+{% if install_node_online_mode %}
+proxy:
+  remoteurl: {{ item.upstream | to_json }}
+{%   if 'upstream_username' in item %}
+  username: {{ item.upstream_username | to_json }}
+{%   endif %}
+{%   if 'upstream_password' in item %}
+  password: {{ item.upstream_password | to_json }}
+{%   endif %}
+{% endif %}
