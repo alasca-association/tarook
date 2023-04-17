@@ -8,6 +8,19 @@
     owner: root
     group: root
 
+- name: Ensure that docker is purged
+  become: true
+  ansible.builtin.apt:
+    name:
+    - docker-ce
+    - docker-ce-cli
+    - docker.io
+    state: absent
+    # we purge here to ensure that space in /var/lib/docker is released
+    purge: true
+  # we only do this *after* the migration to avoid killing data when a rollback is still technically possible.
+  when: container_runtime == 'containerd'
+
 - name: Add docker repository
   become: true
   block:
