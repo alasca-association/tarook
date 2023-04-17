@@ -109,28 +109,35 @@
     mode: 0640
   notify: Restart docker
 
+- name: Ensure directory docker service directory is present
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
 - name: Create docker proxy configuration
   become: true
+  ansible.builtin.template:
+    src: http-proxy.conf.j2
+    dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+    owner: root
+    group: root
+    mode: 0640
   when: (cluster_behind_proxy | default(false))
-  block:
-    - name: Ensure directory docker service directory is present
-      become: true
-      ansible.builtin.file:
-        path: /etc/systemd/system/docker.service.d
-        state: directory
-        mode: 0755
-        owner: root
-        group: root
+  notify: Restart docker
 
-    - name: Create docker service extension
-      become: true
-      ansible.builtin.template:
-        src: http-proxy.conf.j2
-        dest: /etc/systemd/system/docker.service.d/http-proxy.conf
-        owner: root
-        group: root
-        mode: 0640
-      notify: Restart docker
+- name: Require docker to be started before kubelet
+  become: true
+  ansible.builtin.template:
+    src: before-kubelet.conf.j2
+    dest: /etc/systemd/system/docker.service.d/before-kubelet.conf
+    owner: root
+    group: root
+    mode: 0640
+  notify: Restart docker
 
 - name: Trigger the handlers
   ansible.builtin.meta: flush_handlers
