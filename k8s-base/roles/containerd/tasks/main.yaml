@@ -119,11 +119,34 @@
     group: root
     mode: 0400
 
+- name: Create containerd proxy configuration
+  become: true
+  when: (cluster_behind_proxy | default(false))
+  block:
+  - name: Ensure directory containerd service directory is present
+    become: true
+    ansible.builtin.file:
+      path: /etc/systemd/system/containerd.service.d
+      state: directory
+      mode: 0755
+      owner: root
+      group: root
+
+  - name: Create containerd service extension
+    become: true
+    ansible.builtin.template:
+      src: http-proxy.conf.j2
+      dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
+      owner: root
+      group: root
+      mode: 0640
+    register: service_drop_in
+
 - name: Restart containerd
   become: true
   # Only restart if something changed AND we're allowed to do the restart
   when:
-  - package_install.changed or containerd_remove.changed or configuration_update.changed
+  - package_install.changed or containerd_remove.changed or configuration_update.changed or ((cluster_behind_proxy | default(False)) and service_drop_in.changed)
   - _allow_disruption or install_status == 'k8s_not_installed'  # noqa no-handler
   ansible.builtin.systemd:
     enabled: true
