@@ -14,20 +14,8 @@ spec:
         app.kubernetes.io/name: etcd-proxy-metrics
     spec:
       priorityClassName: system-node-critical
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            # K8s v1.20 introduces node-role.kubernetes.io/control-plane as a new label to denote controller denotes.
-            # We're using a nodeAffinity rule (instead of a plain selector) so the DS doesn't break after an upgrade from 1.19 to 1.20.
-            # matchExpressions are OR'ed
-            # https://github.com/kubernetes/kubeadm/issues/2200
-              - matchExpressions:
-                  - key: node-role.kubernetes.io/control-plane
-                    operator: Exists
-              - matchExpressions:
-                  - key: node-role.kubernetes.io/master
-                    operator: Exists
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
       tolerations:
         - operator: Exists
       hostNetwork: true
