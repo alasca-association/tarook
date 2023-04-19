@@ -24,7 +24,7 @@
 - name: Change CRI from docker to containerd on all nodes
   hosts: k8s_nodes
   serial: 1
-  gather_facts: false
+  gather_facts: true
   any_errors_fatal: true
   vars_files:
   - ../vars/disruption.yaml
