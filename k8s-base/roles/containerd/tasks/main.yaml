@@ -173,23 +173,6 @@
       become: true
   loop: "{{ container_mirrors }}"
 
-- name: Reboot block  # noqa no-handler
-  become: true
-  when: package_install.changed and not kubernetes_dir.stat.exists
-  block:
-  - name: Reboot the system (cloud-init run)
-    ansible.builtin.command:
-      argv:
-      - reboot
-      - now
-    when: ansible_connection == 'local'
-
-  # We do not need a "when" here. ansible is killed approximately immediately
-  # anyway by the above command if it is executed; If the above command is
-  # not executed, we want to execute this one.
-  - name: Reboot the system
-    ansible.builtin.reboot: {}
-
 - name: Restart containerd
   become: true
   # Only restart if something changed AND we're allowed to do the restart
