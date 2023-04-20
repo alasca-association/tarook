@@ -147,10 +147,9 @@
   ansible.builtin.file:
     path: /etc/containerd/certs.d
     state: directory
-    # I am not sure about the mode, in theory the cert.d directory can
-    # contain client keys for accessing a registry, if we support
-    # this, it probably shouldn't be world readable, on the other hand
-    # just protecting the keys with permissions should suffice
+    # WARNING: The certs.d directory is world readable.  It may
+    # contain private keys for client key authentication in the
+    # future. Make sure to set restrictive file permissions on those.
     mode: 0755
     owner: root
     group: root
