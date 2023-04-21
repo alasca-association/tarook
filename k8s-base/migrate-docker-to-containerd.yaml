@@ -27,6 +27,7 @@
   any_errors_fatal: true
   vars_files:
   - ../vars/disruption.yaml
+  - ../vars/etc.yaml
   - ../vars/retries.yaml
   pre_tasks:
   - name: Fail if container_runtime is misconfigured
