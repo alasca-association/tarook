@@ -1,0 +1,72 @@
+---
+- name: Create Cuda-Test namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    state: present
+    name: "{{ nvidia_device_plugin_test_namespace }}"
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+
+- name: Get GPU nodes
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Node
+    label_selectors:
+      - yk8s-use-gpu
+  # Retry this task on failures
+  register: gpu_nodes
+  until: gpu_nodes is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+
+# This will spawn the test Pods on GPU nodes in serial
+# We're waiting for the Pod to get completed
+- name: Create Cuda-Test Pods
+  kubernetes.core.k8s:
+    definition: "{{ lookup('template', 'test_pod.yaml.j2') | from_yaml }}"
+    state: present
+    namespace: "{{ nvidia_device_plugin_test_namespace }}"
+    validate:
+      fail_on_error: true
+      strict: true
+    wait: true
+    wait_sleep: 5
+    wait_timeout: 600
+    wait_condition:
+      type: "Initialized"
+      status: "True"
+      reason: "PodCompleted"
+  loop: "{{ gpu_nodes.resources }}"
+  # Retry this task on failures
+  register: k8s_apply_cuda_pod
+  until: k8s_apply_cuda_pod is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+
+- name: Clean-up
+  tags:
+    - test-cleanup
+  block:
+    - name: Delete the namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        state: absent
+        name: "{{ nvidia_device_plugin_test_namespace }}"
+        wait: true
+        validate:
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
+...

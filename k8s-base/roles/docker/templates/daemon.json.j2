@@ -1,5 +1,5 @@
 {
-{% if (has_gpu | default(False)) and (k8s_is_gpu_cluster | default(False)) %}
+{% if node_has_gpu and k8s_is_gpu_cluster %}
     "default-runtime": {{ nvidia_runtime.name | to_json }},
     "runtimes": {
         {{ nvidia_runtime.name | to_json }}: {

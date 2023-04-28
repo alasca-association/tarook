@@ -4,5 +4,4 @@ galaxy_info:
   author: Yaook Authors
 dependencies:
   - gpu-support-detection
-  - is-k8s-installed
 ...

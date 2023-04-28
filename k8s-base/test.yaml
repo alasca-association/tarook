@@ -72,6 +72,17 @@
     - test-ipsec
     when: ipsec_enabled and ipsec_test_enabled
 
+- name: Test Nvidia GPU Support
+  hosts: localhost
+  vars_files:
+  - vars/retries.yaml
+  roles:
+  - role: check-nvidia-device-plugin
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    tags:
+    - test-nvidia-device-plugin
+    - check-nvidia-device-plugin
+
 # Ugly: assuming naming scheme here.
 - name: Annotate worker nodes
   hosts: localhost

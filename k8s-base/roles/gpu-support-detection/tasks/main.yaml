@@ -18,5 +18,5 @@
 
 - name: Set gpu fact
   set_fact:
-    has_gpu: "{{ ((gpu_test.stdout | length) > 0) | bool }}"
+    node_has_gpu: "{{ ((gpu_test.stdout | length) > 0) | bool }}"
 ...

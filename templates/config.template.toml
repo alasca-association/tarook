@@ -116,16 +116,19 @@ agent_port    = 15203
 # Kubernetes version. Currently, we support from 1.21.* to 1.24.*.
 version = "1.24.10" # •ᴗ•
 
-# Uncomment if this cluster contains a worker with GPU access so that the driver
-# and surrounding framework is deployed.
-# You must set the container_runtime to "docker" for GPU clusters.
+# Set this variable if this cluster contains worker with GPU access
+# and you want to make use of these inside of the cluster,
+# so that the driver and surrounding framework is deployed.
 is_gpu_cluster = false # •ᴗ•
 
-# Set this variable to virtualize Nvidia GPUs on worker nodes.
-# It will install a VGPU manager on the worker node and split the GPU according to chosen vgpu type.
+# Set this variable to virtualize Nvidia GPUs on worker nodes
+# for usage outside of the Kubernetes cluster / above the Kubernetes layer.
+# It will install a VGPU manager on the worker node and
+# split the GPU according to chosen vgpu type.
 # Note: This will not install Nvidia drivers to utilize vGPU guest VMs!!
 # If set to true, please set further variables in the [miscellaneous] section.
-#virtualize_gpu = false
+# Note: This is mutually exclusive with "is_gpu_cluster"
+virtualize_gpu = false
 
 [kubernetes.apiserver]
 frontend_port = 8888 # •ᴗ•
