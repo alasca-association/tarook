@@ -101,7 +101,7 @@
 #     E: Repository 'http://deb.debian.org/debian buster-updates InRelease'
 #     changed its 'Suite' value from 'stable-updates' to 'oldstable-updates'
 #
-- name: Update apt cache  # noqa command-instead-of-module
+- name: Update apt cache  # noqa command-instead-of-module no-changed-when
   when: ansible_pkg_mgr == 'apt'
   become: true
   ansible.builtin.command:
@@ -147,7 +147,7 @@
   when: upgrade_dnf is changed or upgrade_yum is changed or upgrade_apt is changed
   block:
 
-    - name: Reboot the system (cloud-init run)
+    - name: Reboot the system (cloud-init run)  # noqa no-changed-when
       ansible.builtin.command:
         argv:
           - reboot

@@ -76,7 +76,7 @@
         group: root
       register: blacklisted_nouveau
 
-    - name: Update initramfs
+    - name: Update initramfs  # noqa no-changed-when no-handler
       ansible.builtin.command: "update-initramfs -k {{ ansible_kernel }} -uv"
       when: blacklisted_nouveau.changed or installed_driver.changed
       register: ramfs
@@ -85,7 +85,7 @@
       when: ramfs.changed
       block:
 
-        - name: Reboot the system
+        - name: Reboot the system  # noqa no-changed-when
           ansible.builtin.command:
             argv:
               - reboot

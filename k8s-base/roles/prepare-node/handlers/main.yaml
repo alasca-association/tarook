@@ -1,5 +1,5 @@
 ---
-- name: Update the CA store
+- name: Update the CA store  # noqa no-changed-when
   become: true
   ansible.builtin.command:
     argv: ["update-ca-certificates", "--fresh"]

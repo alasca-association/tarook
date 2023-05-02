@@ -1,5 +1,5 @@
 ---
-- name: restart thanos-store
+- name: restart thanos-store  # noqa no-changed-when
   become: true
   ansible.builtin.command:
   args:
@@ -12,7 +12,7 @@
     - "{{ monitoring_namespace }}"
     - thanos-store
 
-- name: restart prometheus-k8s
+- name: restart prometheus-k8s  # noqa no-changed-when
   become: true
   ansible.builtin.command:
   args:

@@ -1,5 +1,5 @@
 ---
-- name: restart CCM
+- name: restart CCM  # noqa no-changed-when
   become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
@@ -13,7 +13,7 @@
     - "restart"
     - "daemonset.apps/openstack-cloud-controller-manager"
 
-- name: restart octavia-ingress-controller
+- name: restart octavia-ingress-controller  # noqa no-changed-when
   become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf

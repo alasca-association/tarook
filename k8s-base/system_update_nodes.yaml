@@ -5,12 +5,11 @@
   vars_files:
   - vars/etc.yaml
   roles:
-  - validate_configuration
+  - role: validate_configuration
 
 - name: Establish connectivity to the frontend nodes
   hosts: frontend
   gather_facts: false
-  strategy: free
   vars_files:
   - vars/disruption.yaml
   - vars/etc.yaml
@@ -85,12 +84,12 @@
     tags:
     - always
   roles:
-  - name: cluster-health-verification
+  - role: cluster-health-verification
     delegate_to: localhost
     when: not (k8s_skip_upgrade_checks | bool)
-  - kubeadm-drain-node
-  - update_system
-  - kubeadm-uncordon-node
+  - role: kubeadm-drain-node
+  - role: update_system
+  - role: kubeadm-uncordon-node
   tags:
   - update_system
 
@@ -101,7 +100,7 @@
   - vars/disruption.yaml
   - vars/retries.yaml
   roles:
-  - update_system
+  - role: update_system
   tags:
   - update_system
 ...
