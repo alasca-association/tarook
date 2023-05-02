@@ -4,6 +4,11 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Drop support for Kubernetes v1.20
+
+We're dropping support for Kubernetes v1.20 as this version is EOL quite some time.
+This step has been announced several times in our [public development meeting](https://gitlab.com/yaook/meta#subscribe-to-meetings).
+
 ## Drop support for Kubernetes v1.19
 
 We're dropping support for Kubernetes v1.19 as this version is EOL quite some time.
