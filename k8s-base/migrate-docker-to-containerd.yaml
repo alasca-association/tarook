@@ -10,7 +10,6 @@
 - name: Establish connectivity to the nodes
   hosts: k8s_nodes
   gather_facts: false
-  strategy: free
   vars_files:
   - vars/disruption.yaml
   - vars/etc.yaml

@@ -57,20 +57,20 @@
       tags:
         - always
   roles:
-    - name: cluster-health-verification
+    - role: cluster-health-verification
       delegate_to: localhost
       when: not (k8s_skip_upgrade_checks | bool) and not (k8s_upgrade_done | default(False))
-    - name: kubeadm-drain-node
+    - role: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"
-    - name: update_system
+    - role: update_system
       when: "not (k8s_upgrade_done | default(False))"
-    - name: kubeadm-upgrade-kubeadm
+    - role: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
-    - name: kubeadm-upgrade-apply
+    - role: kubeadm-upgrade-apply
       when: "not (k8s_upgrade_done | default(False))"
-    - name: kubeadm-uncordon-node
+    - role: kubeadm-uncordon-node
       when: "not (k8s_upgrade_done | default(False))"
-    - name: k8s-fetch-certs
+    - role: k8s-fetch-certs
       when: "not (k8s_upgrade_done | default(False))"
 
 - name: Upgrade the residual master nodes
@@ -91,18 +91,18 @@
       tags:
         - always
   roles:
-    - name: cluster-health-verification
+    - role: cluster-health-verification
       delegate_to: localhost
       when: not (k8s_skip_upgrade_checks | bool) and not (k8s_upgrade_done | default(False))
-    - name: kubeadm-drain-node
+    - role: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"
-    - name: update_system
+    - role: update_system
       when: "not (k8s_upgrade_done | default(False))"
-    - name: kubeadm-upgrade-kubeadm
+    - role: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
-    - name: kubeadm-upgrade-node
+    - role: kubeadm-upgrade-node
       when: "not (k8s_upgrade_done | default(False))"
-    - name: kubeadm-uncordon-node
+    - role: kubeadm-uncordon-node
       when: "not (k8s_upgrade_done | default(False))"
 
 - name: Upgrade kubelet on master nodes
@@ -115,7 +115,7 @@
     - kubelet-masters
   serial: 1
   roles:
-    - name: kubeadm-upgrade-kubelet
+    - role: kubeadm-upgrade-kubelet
       when: "not (k8s_upgrade_done | default(False))"
       # we do not want to customize kubelet on control-plane nodes
       k8s_kubelet_disable_customizations: true
@@ -138,20 +138,20 @@
       tags:
         - always
   roles:
-    - name: cluster-health-verification
+    - role: cluster-health-verification
       delegate_to: localhost
       when: not (k8s_skip_upgrade_checks | bool) and not (k8s_upgrade_done | default(False))
-    - name: kubeadm-drain-node
+    - role: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"
-    - name: update_system
+    - role: update_system
       when: "not (k8s_upgrade_done | default(False))"
-    - name: kubeadm-upgrade-kubeadm
+    - role: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
-    - name: kubeadm-upgrade-node
+    - role: kubeadm-upgrade-node
       when: "not (k8s_upgrade_done | default(False))"
-    - name: kubeadm-upgrade-kubelet
+    - role: kubeadm-upgrade-kubelet
       when: "not (k8s_upgrade_done | default(False))"
-    - name: kubeadm-uncordon-node
+    - role: kubeadm-uncordon-node
       when: "not (k8s_upgrade_done | default(False))"
 
 - name: Update Calico (Control Plane)

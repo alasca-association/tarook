@@ -116,7 +116,7 @@
           retries: "{{ k8s_error_retries }}"
           delay: "{{ k8s_error_delay }}"
 
-        - name: Trigger rollout restart kube-proxy
+        - name: Trigger rollout restart kube-proxy  # noqa no-changed-when no-handler
           when: kube_proxy_configmap.changed
           ansible.builtin.command:
             argv:

@@ -37,7 +37,7 @@
   vars:
     password_store_dir: "{{ etc_dir }}/passwordstore"
   block:
-    - name: Lookup key in passwordstore  # noqa ignore-errors, jinja[invalid]
+    - name: Lookup key in passwordstore  # noqa ignore-errors
       ignore_errors: true
       # Check if the key exists
       ansible.builtin.set_fact:
@@ -59,7 +59,7 @@
               with the current wireguard private key of the gateway and make sure that they match.
       when: "wg0_conf.stat.exists and (wg_gw_key is not defined)"
 
-    - name: Create new wireguard private key of the gateway
+    - name: Create new wireguard private key of the gateway  # noqa no-changed-when
       ansible.builtin.command: wg genkey
       register: wg_genkey
       when: "not wg0_conf.stat.exists and (wg_gw_key is not defined)"
@@ -158,7 +158,7 @@
     daemon_reload: true
   when: old_wg_service is changed
 
-- name: Stop wg0 after removal of legacy service so that the new service can take over  # noqa no-handler
+- name: Stop wg0 after removal of legacy service so that the new service can take over  # noqa no-handler no-changed-when
   become: true
   ansible.builtin.command:
   args:

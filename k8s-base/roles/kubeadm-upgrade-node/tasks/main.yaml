@@ -1,5 +1,5 @@
 ---
-- name: Run kubeadm upgrade node
+- name: Run kubeadm upgrade node  # noqa no-changed-when
   when: do_upgrade
   become: true
   ansible.builtin.command: kubeadm upgrade node
