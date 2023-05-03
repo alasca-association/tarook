@@ -1,0 +1,6 @@
+---
+# For other values, see:
+# https://github.com/torvalds/linux/commit/92890123749bafc317bbfacbe0a62ce08d78efb7
+fs_inotify_max_user_instances: 65536
+fs_inotify_max_user_watches: 65536
+...
