@@ -89,6 +89,6 @@ resource "openstack_compute_instance_v2" "master" {
   }
 
   lifecycle {
-    ignore_changes = [key_pair, image_id]
+    ignore_changes = [key_pair, image_id, config_drive]
   }
 }
