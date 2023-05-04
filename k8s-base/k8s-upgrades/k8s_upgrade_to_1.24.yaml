@@ -49,6 +49,8 @@
       when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
+    - role: kubeadm-patches
+      when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-upgrade-apply
       when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-uncordon-node
@@ -82,6 +84,8 @@
     - role: update_system
       when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-upgrade-kubeadm
+      when: "not (k8s_upgrade_done | default(False))"
+    - role: kubeadm-patches
       when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-upgrade-node
       when: "not (k8s_upgrade_done | default(False))"

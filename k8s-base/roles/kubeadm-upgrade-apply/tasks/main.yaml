@@ -58,6 +58,8 @@
           - "apply"
           - "--yes"
           - "v{{ next_k8s_version }}"
+          - "--patches"
+          - "/etc/kubernetes/kubeadm-patches"
       # Let’s also play this safe here -- the `upgrade apply` command can take a
       # while and we want to be sure that we don’t run into any connection timeouts.
       # Note that this imposes a run-time limit on the apply command (half an hour)
