@@ -28,7 +28,7 @@
       poll: 5
 
     # Remove me when dropping support for
-    # k8s v1.20, v1.21 & v1.22
+    # k8s v1.21 & v1.22
     - name: Remove IPv6DualStack for >= v1.23
       become: true
       environment:
