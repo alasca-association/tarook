@@ -321,4 +321,9 @@
     when: "vm_max_map_count is defined"
     tags:
     - vm-max-map-count
+  - name: Configure vm.max_map_count
+    ansible.builtin.import_role:
+      name: fs-inotify
+    tags:
+    - fs-inotify
 ...
