@@ -264,10 +264,6 @@ containerd-k8s-upgrade-manual:
 
 # Spawn a cluster with calico as CNI, containerd as CRI and
 # rook enabled (MR only)
-# Note on k8s_is_gpu_cluster: This needs to be disabled (as
-# containerd-GPU-clusters don't work and error out loudly).
-# The ugly formatting of the config patches is necessary due to the
-# way gitlab CI passes the commands to the shell.
 containerd:
   environment:
     name: spawn-cluster
@@ -314,7 +310,6 @@ docker-k8s-upgrade:
     - when: on_success
   script:
     - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"docker\"}}"'
-    # - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"is_gpu_cluster\":true}}"'
     - !reference [.test_upgrade_path_k8s_cluster, script]
   extends: .test_upgrade_path_k8s_cluster
   stage: cluster-upgrades
