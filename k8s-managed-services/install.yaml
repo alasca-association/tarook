@@ -23,9 +23,4 @@
     when: (k8s_monitoring_enabled | bool) and not (monitoring_use_jsonnet_setup | default(False))
     tags:
     - mk8s-ms/monitoring
-
-  - role: device_plugin_v1
-    when: k8s_is_gpu_cluster
-    tags:
-    - mk8s-ms/nvidia-device-plugin
 ...
