@@ -129,6 +129,21 @@
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
 
+- name: Do we have any gpu nodes?
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Node
+    label_selectors:
+    - yk8s-use-gpu=true
+  # Retry this task on failures
+  register: gpu_nodes
+  until: gpu_nodes is not failed
+  retries: "{{ k8s_error_retries }}"
+
+- name: NVIDIA DCGM Exporter
+  when: (gpu_nodes.resources | length) > 0
+  ansible.builtin.include_tasks: nvidia_dcgm_exporter.yaml
+
 - name: Install thanos
   ansible.builtin.include_role:
     name: monitoring_thanos_v1

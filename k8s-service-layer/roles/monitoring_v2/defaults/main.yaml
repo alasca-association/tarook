@@ -33,4 +33,7 @@ monitoring_common_labels: []
 monitoring_grafana_persistent_storage_class: ""
 
 monitoring_crds_update_required: ["34", "35", "36", "39"]
+
+monitoring_nvidia_dcgm_exporter_helm_repo_url: "https://nvidia.github.io/dcgm-exporter/helm-charts"
+monitoring_nvidia_dcgm_exporter_helm_version: ""  # if not specified, latest
 ...
