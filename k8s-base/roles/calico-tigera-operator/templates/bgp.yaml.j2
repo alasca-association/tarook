@@ -14,9 +14,9 @@ metadata:
 spec:
   nodeSelector: all()
   peerSelector: has(route-reflector)
----
 {# BGP config for calico is not necessary if gateway (frontend) nodes are identical to master nodes #}
 {% if groups['masters'] | symmetric_difference(groups['frontend']) | length != 0 %}
+---
 apiVersion: projectcalico.org/v3
 kind: BGPPeer
 metadata:
