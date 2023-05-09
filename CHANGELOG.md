@@ -4,6 +4,12 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Change kube-apiserver Service-Account-Issuer
+Kube-apiserver now issues service-account tokens with `https://kubernetes.default.svc` as issuer instead of `kubernetes.default.svc`.
+Tokens with the old issuer are still considered valid, but should be renewed as this additional support will be dropped in the future.
+
+This change had to be made to make yaook-k8s pass all [k8s-conformance tests](https://github.com/cncf/k8s-conformance/blob/master/instructions.md).
+
 ## Drop support for Kubernetes v1.20
 
 We're dropping support for Kubernetes v1.20 as this version is EOL quite some time.
