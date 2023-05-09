@@ -9,7 +9,7 @@ k8s_network_calico_image_registry: "quay.io"
 
 k8s_network_calico_encapsulation: "None"
 
-calico_values_file_path: values.yaml.j2
+calico_values_file_path: "{{ k8s_network_calico_values_file_path | default(values.yaml.j2) }}"
 
 calico_calicoctl_binary_source: "https://github.com/projectcalico/calico/releases/download"
 
