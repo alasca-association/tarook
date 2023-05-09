@@ -3,6 +3,44 @@
   become: true
   when: do_upgrade
   block:
+    # When the service-account-issuer apiServer argument is not the correct HTTPS URL, patch the kubeadm config to fix that
+    - name: Enable ServiceAccountIssuerDiscovery in kube-apiserver
+      become: true
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      when:
+        # Assume that the value is set correctly for upgrades to 1.26 and higher
+        - next_k8s_version is defined
+        - next_k8s_version is version('1.26', '<')
+      block:
+        - name: Get current kubeadm-config to check for correct apiServer arguments
+          kubernetes.core.k8s_info:
+            kind: ConfigMap
+            namespace: kube-system
+            name: kubeadm-config
+          register: kubeadm_config_configmap_old
+
+        - name: Patch the kubeadm-config ConfigMap to enable ServiceAccountIssuerDiscovery
+          vars:
+            kubeadm_config_config_patched: "{{ kubeadm_config_configmap_old['resources'][0]['data']['ClusterConfiguration'] | from_yaml | combine({'apiServer': {'extraArgs': {'service-account-issuer': 'https://kubernetes.default.svc'}}}, recursive=True) | to_nice_yaml }}"
+          kubernetes.core.k8s:
+            definition:
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: kubeadm-config
+                namespace: kube-system
+              data:
+                ClusterConfiguration: |
+                  {{ kubeadm_config_config_patched }}
+          # Retry this task on failures
+          register: k8s_apply
+          until: k8s_apply is not failed
+          retries: "{{ k8s_error_retries }}"
+          delay: "{{ k8s_error_delay }}"
+          when:
+            - "(kubeadm_config_configmap_old['resources'][0]['data']['ClusterConfiguration'] | from_yaml)['apiServer']['extraArgs']['service-account-issuer'] != 'https://kubernetes.default.svc'"
+
     - name: Run kubeadm upgrade plan  # noqa no-changed-when
       ansible.builtin.command:
         argv:
@@ -20,6 +58,8 @@
           - "apply"
           - "--yes"
           - "v{{ next_k8s_version }}"
+          - "--patches"
+          - "/etc/kubernetes/kubeadm-patches"
       # Let’s also play this safe here -- the `upgrade apply` command can take a
       # while and we want to be sure that we don’t run into any connection timeouts.
       # Note that this imposes a run-time limit on the apply command (half an hour)
