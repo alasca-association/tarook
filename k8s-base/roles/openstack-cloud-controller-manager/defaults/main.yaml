@@ -1,0 +1,14 @@
+---
+openstack_network_name: ""
+
+# Default image tags for 'our' services, separated by minor k8s release.
+# To overwrite any of the tags you probably will have to copy the whole dict
+# to your `config.toml` and make the necessary adjustments. Monitoring is
+# is not included here because `kube-prometheus` comes with its own type
+# of versioning.
+image_version_map:
+  "1.23":
+    openstack_cloud_controller_manager: "v1.24.2"
+  "1.24":
+    openstack_cloud_controller_manager: "v1.26.0"
+...

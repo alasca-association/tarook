@@ -1,0 +1,32 @@
+---
+- name: Initial node bootstrap
+  hosts: k8s_nodes
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  roles:
+  - role: detect_user
+    tags: detect_user
+
+- name: Install the Openstack Cloud Controller Manager
+  hosts: masters
+  become: true
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
+  run_once: true
+  roles:
+  - role: check-openstack-credentials
+  - role: openstack-cloud-controller-manager
+    tags: openstack-cloud-controller
+    when: infrastructure_type == "openstack" | default(False)
+  # - role: ch-k8s-lbaas-controller
+  #   tags:
+  #   - ch-k8s-lbaas
+  #   - ch-k8s-lbaas-controller
+...

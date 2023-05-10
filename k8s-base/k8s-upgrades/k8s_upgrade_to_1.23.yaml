@@ -149,7 +149,10 @@
     - ../vars/auto_generated_preamble.yaml  # needed for the cloud.config secret
     - ../vars/retries.yaml
   roles:
-    - role: k8s-on-openstack-manager
+    - role: openstack-cloud-controller-manager
+      when: infrastructure_type == "openstack" | default(False)
+      k8s_version: "{{ next_k8s_version }}"
+    - role: openstack-cinder-csi-manager
       when: infrastructure_type == "openstack" | default(False)
       k8s_version: "{{ next_k8s_version }}"
 

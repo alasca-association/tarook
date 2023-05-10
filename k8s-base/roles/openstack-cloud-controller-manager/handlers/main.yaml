@@ -1,5 +1,5 @@
 ---
-- name: restart octavia-ingress-controller  # noqa no-changed-when
+- name: restart CCM
   become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
@@ -11,5 +11,5 @@
     - "kube-system"
     - "rollout"
     - "restart"
-    - "statefulset.apps/octavia-ingress-controller"
+    - "daemonset.apps/openstack-cloud-controller-manager"
 ...

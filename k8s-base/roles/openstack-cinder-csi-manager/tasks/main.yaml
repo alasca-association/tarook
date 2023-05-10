@@ -1,0 +1,123 @@
+---
+- name: Get Cluster information
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  kubernetes.core.k8s_cluster_info:
+  register: api_status
+
+- name: Determine the kubernetes minor version
+  set_fact:
+    kubernetes_minor_version: "{{ api_status['version']['server']['kubernetes']['major'] }}.{{ api_status['version']['server']['kubernetes']['minor'] }}"
+
+- name: Fail if kubernetes version is not supported
+  ansible.builtin.fail:
+    msg: The kubernetes version "{{ kubernetes_minor_version }}" is not supported.
+  when: kubernetes_minor_version not in image_version_map
+
+- name: Determine the Openstack Cinder CSI version to install
+  set_fact:
+    cinder_csi_plugin_version: "{{ image_version_map[kubernetes_minor_version]['cinder_csi_plugin'] }}"
+    csi_attacher_version: "{{ image_version_map[kubernetes_minor_version]['csi_attacher'] }}"
+    csi_node_driver_registrar_version: "{{ image_version_map[kubernetes_minor_version]['csi_node_driver_registrar'] }}"
+    csi_provisioner_version: "{{ image_version_map[kubernetes_minor_version]['csi_provisioner'] }}"
+    csi_resizer_version: "{{ image_version_map[kubernetes_minor_version]['csi_resizer'] }}"
+    csi_snapshotter_version: "{{ image_version_map[kubernetes_minor_version]['csi_snapshotter'] }}"
+    csi_livenessprobe_version: "{{ image_version_map[kubernetes_minor_version]['csi_livenessprobe'] }}"
+
+- name: Print the Openstack Cinder CSI versions to install
+  debug:
+    msg: |
+      Cinder CSI Plugin: "{{ cinder_csi_plugin_version}}"
+      CSI Attacher: "{{ csi_attacher_version}}"
+      CSI Node Driver Registrar: "{{ csi_node_driver_registrar_version}}"
+      CSI Provisioner: "{{ csi_provisioner_version}}"
+      CSI Resizer: "{{ csi_resizer_version}}"
+      CSI Snapshotter: "{{ csi_snapshotter_version}}"
+      CSI Livenessprobe: "{{ csi_livenessprobe_version}}"
+
+- name: Create cloud-config secret for the Cinder CSI
+  become: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  kubernetes.core.k8s:
+    apply: true
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: Opaque
+      data:
+        cloud.conf: "{{ lookup('template', 'os_cloud_config.ini') | b64encode }}"
+      metadata:
+        name: cinder-csi-cloud-config
+        namespace: kube-system
+    validate:
+      fail_on_error: true
+      strict: true
+  notify:
+    - Restart CSI Cinder Nodeplugin
+    - Restart CSI Cinder Controllerplugin
+#   # Retry this task on failures
+#   register: k8s_apply
+#   until: k8s_apply is not failed
+#   retries: "{{ k8s_error_retries }}"
+#   delay: "{{ k8s_error_delay }}"
+
+- name: Start the Cinder CSI driver plugin
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  vars:
+    template_folder: "{{ ('k8s-v' + kubernetes_minor_version + '/') }}"
+
+  kubernetes.core.k8s:
+    state: present
+    apply: true
+    definition: "{{ lookup('template', item) }}"
+    validate:
+      fail_on_error: true
+      strict: true
+  # loop over all template-files in the respective directory
+  # the number/names of template-files may differ between versions
+  with_fileglob:
+    - "templates/{{ template_folder }}cinder-csi-plugin/*.yaml.j2"
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+  become: true
+
+- name: Create cinder storage class (hdd)
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  kubernetes.core.k8s:
+    state: present
+    apply: true
+    definition: "{{ lookup('file', 'cinder/cinder_storage_class.yaml') }}"
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+  become: true
+
+- name: Create cinder storage class (nvme)
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  when: openstack_cinder_nvme
+  kubernetes.core.k8s:
+    state: present
+    apply: true
+    definition: "{{ lookup('file', 'cinder/cinder_nvme_storage_class.yaml') }}"
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+  become: true
+...

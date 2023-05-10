@@ -13,6 +13,7 @@ fi
 "$actions_dir/apply-stage2.sh"
 "$actions_dir/apply-stage3.sh"
 "$actions_dir/apply-stage4.sh"
+"$actions_dir/install-k8s-openstack-cloud-controller.sh"
 "$actions_dir/apply-stage5.sh"
 
 if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then

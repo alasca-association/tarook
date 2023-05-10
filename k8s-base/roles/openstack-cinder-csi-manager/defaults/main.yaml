@@ -1,0 +1,40 @@
+---
+# Create the StorageClass `csi-sc-cinderplugin-nvme` in k8s. Note that you have
+# to add the volume type `three_times_replicated_nvme` to your OpenStack project.
+openstack_cinder_nvme: false
+cinder_storage_nodeplugin_toleration: true
+k8s_storage_cinder_enable_topology: false
+openstack_network_name: ""
+
+image_version_map:
+  "1.23":
+      # https://github.com/kubernetes/cloud-provider-openstack/releases/tag/v1.24.2
+      cinder_csi_plugin: "v1.24.2"
+      # https://github.com/kubernetes-csi/external-attacher/releases/tag/v3.5.0
+      csi_attacher: "v3.5.0"
+      # https://github.com/kubernetes-csi/node-driver-registrar/releases/tag/v2.5.1
+      csi_node_driver_registrar: "v2.5.1"
+      # https://github.com/kubernetes-csi/external-provisioner/releases/tag/v3.2.1
+      csi_provisioner: "v3.2.1"
+      # https://github.com/kubernetes-csi/external-resizer/releases/tag/v1.5.0
+      csi_resizer: "v1.5.0"
+      # https://github.com/kubernetes-csi/external-snapshotter/releases/tag/v6.0.1
+      csi_snapshotter: "v6.0.1"
+      # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.7.0
+      csi_livenessprobe: "v2.7.0"
+
+  "1.24":
+      # https://github.com/kubernetes/cloud-provider-openstack/releases/tag/v1.26.0
+      cinder_csi_plugin: "v1.26.0"
+      # https://github.com/kubernetes-csi/external-attacher/releases/tag/v4.2.0
+      csi_attacher: "v4.2.0"
+      # https://github.com/kubernetes-csi/node-driver-registrar/releases/tag/v2.6.3
+      csi_node_driver_registrar: "v2.6.3"
+      # https://github.com/kubernetes-csi/external-provisioner/releases/tag/v3.4.0
+      csi_provisioner: "v3.4.0"
+      # https://github.com/kubernetes-csi/external-resizer/releases/tag/v1.7.0
+      csi_resizer: "v1.7.0"
+      # https://github.com/kubernetes-csi/external-snapshotter/releases/tag/v6.2.1
+      csi_snapshotter: "v6.2.1"
+      # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.9.0
+      csi_livenessprobe: "v2.9.0"

@@ -1,0 +1,29 @@
+---
+- name: Restart CSI Cinder Nodeplugin
+  become: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  ansible.builtin.command:
+  args:
+    argv:
+      - "kubectl"
+      - "-n"
+      - "kube-system"
+      - "rollout"
+      - "restart"
+      - "daemonset.apps/csi-cinder-nodeplugin"
+
+- name: Restart CSI Cinder Controllerplugin
+  become: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  ansible.builtin.command:
+  args:
+    argv:
+      - "kubectl"
+      - "-n"
+      - "kube-system"
+      - "rollout"
+      - "restart"
+      - "deployment.apps/csi-cinder-controllerplugin"
+...

@@ -1,0 +1,28 @@
+---
+- name: Initial node bootstrap
+  hosts: k8s_nodes
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  roles:
+  - role: detect_user
+    tags: detect_user
+
+- name: Install the Openstack Cinder CSI
+  hosts: masters
+  become: true
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
+  run_once: true
+  roles:
+  - role: check-openstack-credentials
+  - role: openstack-cinder-csi-manager
+    tags: openstack-cinder-csi
+    when: infrastructure_type == "openstack" | default(False)
+...
