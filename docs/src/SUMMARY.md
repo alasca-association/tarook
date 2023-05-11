@@ -29,7 +29,6 @@
 - [Upgrading Kubernetes](./operation/upgrading-kubernetes.md)
 - [Updating Host Nodes]() <!-- ./operation/updating-host-nodes.md -->
 - [GPU and vGPU Support](./operation/gpu-and-vgpu.md)
-- [vGPU Support](./operation/vgpu-support.md)
 - [Resetting Kubernetes]() <!-- ./operation/resetting-kubernetes.md -->
 - [Backups](./operation/backups.md)
 - [Migrate CRI from docker to containerd](./operation/migrate-docker-containerd.md)
