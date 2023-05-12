@@ -114,6 +114,29 @@
     state: directory
     mode: 0755
 
+- name: Remove no longer needed Wireguard peer templates
+  delegate_to: localhost
+  run_once: true
+  become: false
+  vars:
+    wg_config_dir_path: "{{ etc_dir }}/wireguard"
+    peers: "{{ wg_peers | map(attribute='ident') | flatten | map('regex_replace', '(.+)', 'wg_\\1.conf') | list }}"
+  block:
+    - name: Find no longer needed wg.conf files
+      ansible.builtin.find:
+        file_type: file
+        paths: "{{ wg_config_dir_path }}"
+        exclude: "{{ peers }}"
+        recurse: true
+      register: unused_config_files
+    - name: Delete unused wg.conf files
+      ansible.builtin.file:
+        path: "{{ item['path'] }}"
+        state: absent
+      loop: "{{ unused_config_files.files }}"
+      loop_control:
+        label: "{{ item['path'] }}"
+
 - name: Create a wg0.conf template for each peer
   become: false
   delegate_to: localhost
