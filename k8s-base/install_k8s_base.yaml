@@ -113,12 +113,6 @@
     when:
     - "'docker.io' in ansible_facts.packages"
     - container_runtime == 'containerd'
-  - name: Prevent installing containerd for GPU cluster
-    ansible.builtin.fail:
-      msg: Trying to use containerd in a GPU cluster – this does not work.
-    when:
-    - k8s_is_gpu_cluster | default(False)
-    - container_runtime == 'containerd'
   - name: Fail if outdated containerd package is installed
     become: true
     when:
@@ -138,10 +132,19 @@
     tags: networking
   - role: ntp
     tags: ntp
-  - role: gpu-support
-    tags: gpu-support
+  - role: nvidia-cuda-drivers
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    tags:
+    - gpu-support
+    - nvidia-cuda-drivers
+  - role: nvidia-container-toolkit
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    tags:
+    - gpu-support
+    - nvidia-container-toolkit
   - role: vgpu-support
     tags: vgpu-support
+    when: k8s_virtualize_gpu and not k8s_is_gpu_cluster
   - role: docker
     tags: docker
     when: container_runtime == 'docker'
@@ -308,6 +311,17 @@
   - role: k8s-local-path-provisioner
     tags: lpp
     when: k8s_local_storage_dynamic_enabled
+
+- name: Configure Nvidia Device Plugin
+  hosts: workers
+  vars_files:
+  - vars/retries.yaml
+  roles:
+  - role: nvidia-device-plugin
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    tags:
+    - gpu-support
+    - nvidia-device-plugin
 
 # yahrens: This play resides only transitionally here.
 # See https://gitlab.com/yaook/k8s/-/issues/349 for details

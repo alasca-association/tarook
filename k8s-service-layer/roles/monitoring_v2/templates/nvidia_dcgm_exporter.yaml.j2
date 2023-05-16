@@ -7,6 +7,6 @@ serviceMonitor:
 {% endfor %}
 {% endif %}
 nodeSelector:
-  yaook-k8s-has-gpu: "true"
+  yk8s-use-gpu: "true"
 # TODO (low prio, needs discussion and probably desired for all scrape jobs):
 # Remove labels Hostname, container, (namespace?), pod. Maybe use own SM to be able to relabel, here.

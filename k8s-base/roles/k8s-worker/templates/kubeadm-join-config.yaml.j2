@@ -11,8 +11,8 @@ nodeRegistration:
     node-ip: {{ local_ipv4_address | to_json }}
 {% endif %}
 {% set labels = k8s_node_labels[inventory_hostname] | default([]) %}
-{% if has_gpu is defined and has_gpu %}
-{{ labels.append("yaook-k8s-has-gpu=true") }}
+{% if node_has_gpu and k8s_is_gpu_cluster and not k8s_virtualize_gpu %}
+{{ labels.append("yk8s-use-gpu=true") }}
 {% endif %}
 {% if labels %}
     node-labels: {{ labels | join(",") | to_json }}

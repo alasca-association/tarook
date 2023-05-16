@@ -1,0 +1,14 @@
+nodeSelector:
+  yk8s-use-gpu: "true"
+
+# Subcharts
+# https://github.com/NVIDIA/gpu-operator/tree/master/deployments/gpu-operator/charts/node-feature-discovery
+nfd:
+  # limit to GPU nodes for
+  worker:
+    tolerations: {}
+    nodeSelector:
+      yk8s-use-gpu: "true"
+# https://github.com/NVIDIA/gpu-feature-discovery
+gfd:
+  enabled: true

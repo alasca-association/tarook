@@ -4,6 +4,20 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## [GPU: Rework setup and check procedure (!750) · Merge requests · YAOOK / k8s · GitLab](https://gitlab.com/yaook/k8s/-/merge_requests/750)
+
+We reworked the setup and smoke test procedure for GPU nodes to be used inside of Kubernetes [1].
+In the last two ShoreLeave-Meetings (our official development) meetings [2] and our IRC-Channel [3]
+we asked for feedback if the old procedure is in use in the wild.
+As that does not seem to be the case,
+we decided to save the overhead of implementing and testing a migration path.
+If you have GPU nodes in your cluster and support for these breaks by the reworked code,
+please create an issue or consider rebuilding the nodes with the new procedure.
+
+[1] [GPU Support Documentation](./docs/src/operation/gpu-and-vgpu.md#internal-usage)  
+[2] https://gitlab.com/yaook/meta#subscribe-to-meetings  
+[3] https://gitlab.com/yaook/meta/-/wikis/home#chat
+
 ## Change kube-apiserver Service-Account-Issuer
 Kube-apiserver now issues service-account tokens with `https://kubernetes.default.svc` as issuer instead of `kubernetes.default.svc`.
 Tokens with the old issuer are still considered valid, but should be renewed as this additional support will be dropped in the future.

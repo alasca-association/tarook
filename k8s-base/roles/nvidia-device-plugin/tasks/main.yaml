@@ -1,0 +1,42 @@
+---
+- name: Install Nvidia Device Plugin
+  delegate_to: localhost
+  run_once: true
+  block:
+  - name: "{{ k8s_nvidia_device_plugin_install | ternary('Create', 'Delete') }} namespace"
+    kubernetes.core.k8s:
+      apply: true
+      definition:
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: "{{ k8s_nvidia_device_plugin_namespace }}"
+      state: "{{ k8s_nvidia_device_plugin_install | ternary('present', 'absent') }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+
+  - name: "{{ k8s_nvidia_device_plugin_install | ternary('Add', 'Remove') }} nvidia-device-plugin helm repository"
+    kubernetes.core.helm_repository:
+      name: nvdp
+      repo_url: "{{ k8s_nvidia_device_plugin_helm_repo_url }}"
+      repo_state: "{{ k8s_nvidia_device_plugin_install | ternary('present', 'absent') }}"
+
+  - name: "{{ k8s_nvidia_device_plugin_install | ternary('Install', 'Uninstall') }} nvidia-device-plugin"
+    kubernetes.core.helm:
+      chart_ref: nvdp/nvidia-device-plugin
+      release_namespace: "{{ k8s_nvidia_device_plugin_namespace }}"
+      release_name: nvdp
+      release_state: "{{ k8s_nvidia_device_plugin_install | ternary('present', 'absent') }}"
+      values: "{{ lookup('template', 'nvdp_values.yaml.j2') | from_yaml }}"
+      update_repo_cache: true
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
+...

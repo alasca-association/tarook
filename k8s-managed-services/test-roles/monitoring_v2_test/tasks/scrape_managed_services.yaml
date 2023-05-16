@@ -97,7 +97,7 @@
     api_version: v1
     kind: Node
     label_selectors:
-    - yaook-k8s-has-gpu=true
+    - yk8s-use-gpu=true
   register: gpu_nodes
 
 - name: Check dcgm-gpu-exporter endpoint status
