@@ -5,7 +5,7 @@
   become: true
   when:
     - k8s_virtualize_gpu | default(False)
-    - has_gpu
+    - node_has_gpu
     - _allow_disruption or install_status == 'k8s_not_installed'
     - ansible_facts['pkg_mgr'] == "apt"
   block:
