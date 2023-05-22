@@ -231,7 +231,7 @@ for additional environment variables accepted by these tools.
     Deletes all data associated with the cluster from Vault.
     EXCEPTIONALLY DANGEROUS, so it always requires manual confirmation.
 
-## Migrating an existing cluster to Vault
+## Migrating an existing cluster to an existing Vault
 
 There are two choices to migrate your cluster to Vault:
 
@@ -252,6 +252,10 @@ To run a migration in this mode, call:
 ```console
 $ managed-k8s/tools/vault/import.sh $clustername no-intermediates
 ```
+
+In addition,
+this mode takes care that the root CA files are actually usable as CAs
+(this is not ensured by the pre-vault LCM but somehow nothing cared).
 
 ### With Intermediate CA
 
@@ -322,6 +326,26 @@ it becomes necessary that it hosts its own Vault.
 Despite sounding nonsensical,
 this is an expressly supported use-case.
 
+### Terminology
+
+Pivoting has two sub-scenarios,
+depending on whether the cluster which is to be pivoted
+is already onboarded in a Vault or not.
+If the cluster is already onboarded in a Vault instance
+(either productive or the local docker-based development Vault),
+we call that *Case 1*.
+If the cluster is not already onboarded in a Vault instance
+(i.e. a legacy cluster)
+we call that *Case 2*.
+
+In *Case 1*,
+we have to distinguish two Vault instances.
+We will call the Vault instance
+with which the cluster has been deployed up to now the *source Vault*.
+The Vault instance which we will spawn inside the cluster
+and onto which the cluster will be pivoted
+will be called the *target Vault*.
+
 ### Prerequisites and Caveats
 
 In order to migrate a cluster to host its own vault,
@@ -329,12 +353,13 @@ the following prerequisites are necessary:
 
 - Case 1: Migrating from a development or other Vault
 
-  - The cluster has been deployed or migrated to use another Vault.
+  - The cluster has been deployed or migrated to use another Vault
+    (the *soucre Vault*).
     This can be the development Vault setup provided with yaook/k8s.
 
-  - The source Vault instance uses Raft.
+  - The *source Vault* instance uses Raft.
 
-  - A sufficient amount of unseal key shares to unseal the *source* Vault
+  - A sufficient amount of unseal key shares to unseal the *source Vault*
     are known.
 
 - Case 2: Migrating a cluster which is not upgraded to use Vault yet to use
@@ -344,8 +369,10 @@ the following prerequisites are necessary:
 
 - No Vault has been deployed with yaook/k8s inside the cluster yet.
 
-**Note:** The documentation mostly applies for both cases,
-except for the places noted.
+  **Note:**
+  If there already exists a Vault instance with yaook/k8s
+  inside the cluster,
+  all data inside it will be erased by following this procedure.
 
 **Note:** In general, it is not possible to pivot the cluster
 except by restoring a Vault raft snapshot into the cluster.
@@ -358,34 +385,32 @@ to avoid leaking data into the cluster you'd rather not have there.
 **Note:** An exception to the above rule exists
 if the cluster has been migrated and the original CA files still exist.
 In that case, it can be migrated *again* into the Vault it hosts itself.
-This process is left as an exercise to the reader.
+In this case, you may pretend you were doing *Case 2*,
+except that you need to trick the migration scripts.
+How to do that is left as an exercise to the reader.
 
 ### Procedure
 
-In the following,
-we will call the Vault instance
-with which the cluster has been deployed the *source Vault*.
-The Vault instance which we will spawn inside the cluster
-will be called the *target Vault*.
+1. (Case 1 only)
+   Obtain the number of unseal shares and the threshold
+   for unsealing of the *source Vault*.
 
-1. Obtain the number of unseal shares and the threshold
-   for unsealing of the *source Vault*,
-   if migrating from another Vault.
-
-2. Configure `k8s-service-layer.vault` with the same number of unseal shares
-   and the same threshold.
-   Enable the vault instance
-   and configure any other options you might want to set,
-   such as backup configuration.
+2. Enable `k8s-service-layer.vault`,
+   configure the backup
+   and any other options you may need.
    Set the `service_type` to `NodePort`
    and set the `active_node_port` to `32048`.
 
-   If you are not migrating from another Vault,
+   If Case 1 applies,
+   set the number of unseal shares and the threshold
+   to the same values as the *source Vault*.
+
+   If Case 2 applies,
    you may choose an arbitrary number of unseal shares
    and an arbitrary threshold,
    in compliance with your security requirements.
 
-3. Deploy the Vault by re-running Stage 4.
+3. Deploy the Vault by (re-)running Stage 4.
 
 4. Verify that you can reach the Vault instance
    by running `curl -k https://$nodeip:32048`,
@@ -399,11 +424,24 @@ will be called the *target Vault*.
    by running `vault operator raft snapshot save foo.snap`
    with a sufficiently privileged token.
 
-2. Obtain the CA of the *target Vault* from Kubernetes
-   using `kubectl -n k8s-svc-vault get secret vault-cert-internal -o json | jq -r '.data["ca.crt"]' | base64 -d > vault-ca.crt`
+   Optionally, stop the *source Vault*
+   to avoid accidentally interacting with it further.
 
-3. Configure access to the Vault:
+   **Note:**
+   Continued use of the *source Vault*
+   after taking a snapshot which is later loaded into the *target Vault*
+   may or may not have security implications
+   (serial number or token ID reuse or similar).
+
+2. Obtain the CA of the *target Vault* from Kubernetes using:
+
+   ```console
+   kubectl -n k8s-svc-vault get secret vault-cert-internal -o json | jq -r '.data["ca.crt"]' | base64 -d > vault-ca.crt
    ```
+
+3. Configure access to the *target Vault*:
+
+   ```console
    export VAULT_ADDR=https://$nodeip:32048
    export VAULT_CACERT="$(pwd)/vault-ca.crt"
    unset VAULT_TOKEN
