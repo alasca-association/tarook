@@ -1,0 +1,9 @@
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: csi-do-test-snapshot
+  namespace: {{ check_block_storage_namespace | to_json }}
+spec:
+  volumeSnapshotClassName: {{ volume_snapshot_class | to_json }}
+  source:
+    persistentVolumeClaimName: block-storage-test

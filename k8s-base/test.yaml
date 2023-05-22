@@ -171,6 +171,7 @@
   - role: check-block-storage
     vars:
       block_storage_class: csi-sc-cinderplugin
+      volume_snapshot_class: csi-cinder-snapclass
     when: on_openstack | default(True)
     tags:
     - test-block-storage-cinder

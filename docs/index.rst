@@ -40,6 +40,7 @@ Welcome to Yaook k8s' documentation!
    operation/gpu-and-vgpu
    operation/resetting-kubernetes
    operation/backups
+   operation/snapshot
    operation/migrate-docker-containerd
    Calico (CNI) <operation/calico>
    Vault secret store <operation/vault>
