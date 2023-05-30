@@ -1,0 +1,36 @@
+# Common
+README.md
+CHANGELOG.md
+docker-compose.yml
+Dockerfile
+
+# git
+.git
+.gitattributes
+.gitignore
+
+# python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.mypy_cache
+.pytest_cache
+.hypothesis
+
+# yaook/k8s
+ci
+docs
+terraform
