@@ -537,6 +537,9 @@ cluster_name = "rook-ceph" # •ᴗ•
 # kube-system, monitoring and rook namespaces are scraped by Prometheus.
 #prometheus_monitor_all_namespaces=true
 
+# How many replicas of the alertmanager should be deployed inside the cluster
+#alertmanager_replicas=1
+
 # Scheduling keys control where services may run. A scheduling key corresponds
 # to both a node label and to a taint. In order for a service to run on a node,
 # it needs to have that label key.
