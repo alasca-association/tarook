@@ -26,6 +26,7 @@ alertmanager:
   enabled: true
   alertmanagerSpec:
     priorityClassName: "system-cluster-critical"
+    replicas: "{{ monitoring_alertmanager_replicas }}"
   serviceMonitor:
     relabelings:
       - sourceLabels: [__meta_kubernetes_pod_node_name]
