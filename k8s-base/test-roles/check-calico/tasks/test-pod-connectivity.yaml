@@ -80,7 +80,7 @@
     async: 45
     poll: 0
 
-  - name: ping each BusyBox Pod from every BusyBox Pods (IPv6)
+  - name: ping each BusyBox Pod from every BusyBox Pods (IPv6)  # noqa no-changed-when
     ansible.builtin.command:
       argv:
       - kubectl

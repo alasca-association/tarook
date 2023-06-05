@@ -49,18 +49,11 @@
   when: not (server_cert_state.resources and client_cert_state.resources)
   block:
     - name: Get the controller nodes
-      # Used to shorten the `label_selectors` expression
-      vars:
-        old: node-role.kubernetes.io/master
-        new: node-role.kubernetes.io/control-plane
       kubernetes.core.k8s_info:
         api_version: v1
         kind: Node
-        # K8s v1.20 introduces "node-role.kubernetes.io/control-plane" as a new label to denote controller denotes.
-        # https://github.com/kubernetes/kubeadm/issues/2200
-        # label_selectors are AND'ed.
         label_selectors:
-          - "{{ k8s_version is version('1.20.0', '<', version_type='semver') | ternary(old, new) }}"
+          - node-role.kubernetes.io/control-plane
       register: controller_nodes
     - name: Create the x509 key of the server
       community.crypto.openssl_privatekey_pipe:

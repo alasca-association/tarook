@@ -1,0 +1,32 @@
+---
+- name: Install apt-cacher-ng
+  ansible.builtin.apt:
+    name: apt-cacher-ng
+    state: present
+
+- name: Configure apt-cacher-ng (static files)
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/apt-cacher-ng/{{ item }}"
+    owner: root
+    group: root
+    mode: 0o664
+  loop:
+  - ubuntu_mirrors
+  - backends_ubuntu
+  notify: Restart apt-cacher-ng
+
+- name: Configure apt-cacher-ng (config template)
+  ansible.builtin.template:
+    src: acng.conf.j2
+    dest: "/etc/apt-cacher-ng/acng.conf"
+    owner: root
+    group: root
+    mode: 0o664
+  notify: Restart apt-cacher-ng
+
+- name: Disable automatic periodic maintenance
+  ansible.builtin.file:
+    dest: /etc/cron.daily/apt-cacher-ng
+    state: absent
+...

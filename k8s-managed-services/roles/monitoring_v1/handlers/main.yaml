@@ -1,5 +1,5 @@
 ---
-- name: restart thanos-store statefulset
+- name: restart thanos-store statefulset  # noqa no-changed-when
   ansible.builtin.command:
   args:
     argv:
@@ -11,7 +11,7 @@
     - statefulset
     - thanos-store
 
-- name: restart prometheus-k8s statefulset
+- name: restart prometheus-k8s statefulset  # noqa no-changed-when
   ansible.builtin.command:
   args:
     argv:

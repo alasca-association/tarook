@@ -1,4 +1,9 @@
 ---
+- name: End play if Tigera operator is configured
+  ansible.builtin.meta: end_play
+  when:
+    - image_versions.calico_use_tigera_operator | bool
+
 - name: Create /etc/cni/net.d/
   become: yes
   file:

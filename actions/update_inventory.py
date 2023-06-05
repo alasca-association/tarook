@@ -42,6 +42,7 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
 )
 # Mapping stages to their common names
 ANSIBLE_STAGES = {
+    "install-node": "00_install_node",
     "stage2": "02_trampoline",
     "stage3": "03_k8s_base",
     "stage4": "04_k8s_service_layer",
@@ -434,27 +435,29 @@ def main():
     # ---
     # KUBERNETES SERVICE LAYER: CERT MANAGER
     print_process_state("KSL - CERT MANAGER")
-    kubernetes_service_cm_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
-        "cert-manager.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("cert-manager"),
-        kubernetes_service_cm_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("cert-manager", "")
-    )
+    for stage in [ANSIBLE_STAGES["stage4"], ANSIBLE_STAGES["stage5"]]:
+        kubernetes_service_cm_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / stage /
+            "cert-manager.yaml"
+        )
+        dump_to_ansible_inventory(
+            config["k8s-service-layer"].get("cert-manager"),
+            kubernetes_service_cm_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("cert-manager", "")
+        )
 
     # KUBERNETES SERVICE LAYER: INGRESS
     print_process_state("KSL - INGRESS")
-    kubernetes_service_ingress_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
-        "ingress.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("ingress"),
-        kubernetes_service_ingress_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("ingress", "")
-    )
+    for stage in [ANSIBLE_STAGES["stage4"], ANSIBLE_STAGES["stage5"]]:
+        kubernetes_service_ingress_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / stage /
+            "ingress.yaml"
+        )
+        dump_to_ansible_inventory(
+            config["k8s-service-layer"].get("ingress"),
+            kubernetes_service_ingress_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("ingress", "")
+        )
 
     # KUBERNETES SERVICE LAYER: VAULT
     print_process_state("KSL - VAULT")
@@ -514,15 +517,31 @@ def main():
     # Including both stage2 and stage3 because at least `journald_storage` is
     # used in both.
     print_process_state("Miscellaneous")
-    for stage in [ANSIBLE_STAGES["stage2"], ANSIBLE_STAGES["stage3"]]:
+
+    misc_stages = [ANSIBLE_STAGES["stage2"], ANSIBLE_STAGES["stage3"]]
+    if os.getenv('K8S_INSTALL_NODE_USAGE', 'false') == 'true':
+        misc_stages.append(ANSIBLE_STAGES["install-node"])
+
+    for stage in misc_stages:
         misc_ansible_inventory_path = (
             ANSIBLE_INVENTORY_BASEPATH / stage /
             "group_vars" / "all" / "miscellaneous.yaml"
         )
+
+        miscellaneous_config = config.get("miscellaneous", {})
+        registry_configuration_files = miscellaneous_config.get(
+            "registry_configuration_files", {}
+        )
+        for registry, config_file_path in registry_configuration_files.items():
+            if config_file_path != "":
+                abs_file_path = os.path.abspath(config_file_path)
+                registry_configuration_files[registry] = abs_file_path
+
         dump_to_ansible_inventory(
-            config.get("miscellaneous"),
+            miscellaneous_config,
             misc_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("miscellaneous", "")
+            SECTION_VARIABLE_PREFIX_MAP.get("miscellaneous", ""),
+            unflat_keys=['registry_configuration_files']
         )
 
     # ---

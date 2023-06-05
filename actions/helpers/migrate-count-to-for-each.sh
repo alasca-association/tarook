@@ -1,6 +1,6 @@
 # shellcheck shell=bash enable=check-extra-masked-returns
 
-# shellcheck disable=SC2154
+# shellcheck disable=SC2154,SC2312
 terraform_console_remove_quotes () {
   echo "$1" | terraform -chdir="$terraform_module" console -var-file="$terraform_state_dir"/config.tfvars.json | tail -1 | sed -e 's/^"//' -e 's/"$//'
 }

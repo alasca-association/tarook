@@ -8,7 +8,7 @@
 
 haproxy_ports        = [30060]
 workers              = 6
-worker_flavors       = ["L", "L", "L", "L", "L", "L"]
+worker_flavors       = ["L", "L", "L", "L", "L", "SCS-4C:8:50s-GNt:1-mk8sPrivate"]
 master_images        = ["Ubuntu 18.04 LTS x64", "Ubuntu 22.04 LTS x64"]
 worker_images        = ["Ubuntu 18.04 LTS x64", "Ubuntu 22.04 LTS x64"]
 enable_az_management = false
@@ -45,8 +45,9 @@ version       = "0.6.0"
 agent_port    = 15203
 
 [kubernetes]
-version                 = "1.23.15"
-is_gpu_cluster          = false
+version = "1.24.10"
+is_gpu_cluster = true
+virtualize_gpu = false
 
 [kubernetes.apiserver]
 frontend_port = 8888
@@ -79,7 +80,6 @@ service_subnet = "10.96.0.0/12"
 [k8s-service-layer.rook]
 namespace                = "rook-ceph"
 cluster_name             = "rook-ceph"
-version                  = "v1.6.7"
 skip_upgrade_checks      = true
 nodeplugin_toleration    = true
 nmons                    = 3

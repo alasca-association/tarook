@@ -1,0 +1,16 @@
+---
+- name: Configure 'fs.inotify.max_user_instances' (needed by applications like ElasticSearch)
+  become: true
+  ansible.posix.sysctl:
+    name: fs.inotify.max_user_instances
+    state: present
+    reload: true
+    value: "{{ fs_inotify_max_user_instances }}" # https://github.com/torvalds/linux/commit/92890123749bafc317bbfacbe0a62ce08d78efb7
+- name: Configure 'fs.inotify.max_user_watches' (needed by applications like ElasticSearch)
+  become: true
+  ansible.posix.sysctl:
+    name: fs.inotify.max_user_watches
+    state: present
+    reload: true
+    value: "{{ fs_inotify_max_user_watches }}" # https://github.com/torvalds/linux/commit/92890123749bafc317bbfacbe0a62ce08d78efb7
+...

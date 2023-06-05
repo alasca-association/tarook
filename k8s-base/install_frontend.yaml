@@ -11,7 +11,6 @@
 - name: Establish connectivity to the nodes
   hosts: frontend
   gather_facts: false
-  strategy: free
   vars_files:
   - vars/disruption.yaml
   - vars/etc.yaml
@@ -103,6 +102,8 @@
   roles:
   - role: bird
     tags: bird
+  - role: prometheus-bird-exporter
+    tags: prometheus-bird-exporter
   - role: nftables
     tags: nftables
   - role: wireguard

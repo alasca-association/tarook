@@ -40,6 +40,7 @@
 
 - name: Add Google's K8s repository (apt)
   become: true
+  when: ansible_pkg_mgr == 'apt'
   block:
     - name: Ensure keyrings directory exists
       # ftr: this is present by default on Debian...
@@ -63,7 +64,11 @@
         dest: /etc/apt/sources.list.d/kubernetes.list
         content: |
           {{ _auto_generated_preamble }}
+          {% if apt_proxy_url is defined %}
+          deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] http://apt.kubernetes.io/ kubernetes-xenial main
+          {% else %}
           deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
+          {% endif %}
         owner: root
         group: root
         mode: 0640
@@ -76,7 +81,6 @@
       until: task_result is not failed
       retries: "{{ network_error_retries }}"
       delay: "{{ network_error_delay }}"
-  when: ansible_pkg_mgr == 'apt'
 
 - name: Add Google's K8s repository (yum/dnf)
   become: true
@@ -119,14 +123,14 @@
       delay: "{{ network_error_delay }}"
       notify: Restart kubelet
 
-    - name: Prevent the k8s packages for being updated (apt)
+    - name: Prevent the k8s packages for being updated (apt)  # noqa no-changed-when
       become: true
       ansible.builtin.command: apt-mark hold kubelet kubeadm kubectl
       when: ansible_pkg_mgr == 'apt'
 
     - name: Prevent the k8s packages for being updated (dnf)
       become: true
-
+      when: ansible_pkg_mgr == 'dnf'
       block:
         - name: Install dnf versionlock  # noqa package-latest
           ansible.builtin.dnf:
@@ -147,8 +151,6 @@
               - kubelet
               - kubeadm
               - kubectl
-
-      when: ansible_pkg_mgr == 'dnf'
 
 # kubelet should be restarted immediately
 - name: Force restart of kubelet at this point

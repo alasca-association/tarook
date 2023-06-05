@@ -156,11 +156,13 @@ spec:
           operator: Exists
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
       serviceAccountName: calico-kube-controllers
       priorityClassName: system-cluster-critical
       containers:
         - name: calico-kube-controllers
-          image: {{ "%s/calico/kube-controllers:v%s" | format(calico_image_registry, image_versions.calico_version) | to_json }}
+          image: {{ "%s/calico/kube-controllers:v%s" | format(k8s_network_calico_image_registry, image_versions.calico_version) | to_json }}
           env:
             # Choose which controllers to run.
             - name: ENABLED_CONTROLLERS

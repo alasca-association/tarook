@@ -10,7 +10,6 @@
 - name: Establish connectivity to the nodes
   hosts: k8s_nodes
   gather_facts: false
-  strategy: free
   vars_files:
   - vars/disruption.yaml
   - vars/etc.yaml
@@ -24,7 +23,7 @@
 - name: Change CRI from docker to containerd on all nodes
   hosts: k8s_nodes
   serial: 1
-  gather_facts: false
+  gather_facts: true
   any_errors_fatal: true
   vars_files:
   - ../vars/disruption.yaml
@@ -118,6 +117,10 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
 
+  - name: Pause to give kubelet some time to update the node info
+    ansible.builtin.pause:
+      seconds: 10
+
   - name: Verify CRI of node is containerd
     delegate_to: localhost
     kubernetes.core.k8s_info:
@@ -133,7 +136,15 @@
       name:
       - docker-ce
       - docker-ce-cli
+      - docker.io
       state: absent
+      purge: true
+
+  - name: Ensure pigz is installed
+    become: true
+    ansible.builtin.apt:
+      name: pigz
+      state: present
 
   - name: restart kubelet
     become: true

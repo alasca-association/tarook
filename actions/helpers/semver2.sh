@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2295
 
 # POSIX SH portable semver 2.0 comparition tool.
 

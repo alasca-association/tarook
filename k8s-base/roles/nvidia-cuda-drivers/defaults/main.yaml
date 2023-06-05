@@ -1,0 +1,5 @@
+---
+k8s_nvidia_device_plugin_install: true
+k8s_nvidia_device_plugin_namespace: yaook-k8s-nvidia-device-plugin
+k8s_nvidia_device_plugin_helm_repo_url: "https://nvidia.github.io/k8s-device-plugin"
+...

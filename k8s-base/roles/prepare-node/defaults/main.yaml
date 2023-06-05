@@ -1,0 +1,4 @@
+---
+pip_mirror_ca: "{{ lookup('file', '%s/../../config/pip-mirror-ca.pem' | format(etc_dir), errors='ignore') }}"
+misc_mirror_ca: "{{ lookup('file', '%s/../../config/mirror-ca.pem' | format(etc_dir), errors='ignore') }}"
+...

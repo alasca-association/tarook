@@ -1,7 +1,11 @@
 ---
 # Variables for Calico-based Networking
-calico_bgp_router_id: 244.0.0.1 # An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
-calico_mtu: 1450 # for OpenStack at most 1450
+k8s_network_calico_bgp_router_id: 244.0.0.1 # An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
+k8s_network_calico_mtu: 1450 # for OpenStack at most 1450
+
+# Specify the registry endpoint
+# Changing this value can be useful if one endpoint hosts outdated images or you're subject to rate limiting
+k8s_network_calico_image_registry: "quay.io"
 
 # Version-checksums
 calico_binary_checksums:
@@ -43,10 +47,6 @@ typha_key_path: "{{ etc_dir }}/calico/typha.key"
 calico_node_crt_path: "{{ etc_dir }}/calico/calico-node.crt"
 calico_node_csr_path: "{{ etc_dir }}/calico/calico-node.csr"
 calico_node_key_path: "{{ etc_dir }}/calico/calico-node.key"
-
-# Specify the registry endpoint
-# Changing this value can be useful if one endpoint hosts outdated images or you're subject to rate limiting
-calico_image_registry: "quay.io"
 
 # for versions before 3.21.3
 calico_calicoctl_binary_source: "https://github.com/projectcalico/calicoctl/releases/download"

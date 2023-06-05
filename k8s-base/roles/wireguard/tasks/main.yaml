@@ -33,13 +33,13 @@
   delegate_to: localhost
   run_once: true
   block:
-    - name: Lookup key in vault # noqa ignore-errors
+    - name: Lookup key in vault # noqa ignore-errors, jinja[invalid]
       ignore_errors: yes
       # Check if the key exists
       set_fact:
         wg_gw_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_caller_auth_mount_point, auth_method=vault_caller_auth_method, token=vault_caller_token, role_id=vault_caller_role_id, secret_id=vault_caller_secret_id).data.data.private_key }}"
 
-    - name: Create new wireguard private key of the gateway
+    - name: Create new wireguard private key of the gateway  # noqa no-changed-when
       ansible.builtin.command: wg genkey
       register: wg_genkey
       when: "not wg0_conf.stat.exists and (wg_gw_key is not defined)"
@@ -99,6 +99,29 @@
     state: directory
     mode: 0755
 
+- name: Remove no longer needed Wireguard peer templates
+  delegate_to: localhost
+  run_once: true
+  become: false
+  vars:
+    wg_config_dir_path: "{{ etc_dir }}/wireguard"
+    peers: "{{ wg_peers | map(attribute='ident') | flatten | map('regex_replace', '(.+)', 'wg_\\1.conf') | list }}"
+  block:
+    - name: Find no longer needed wg.conf files
+      ansible.builtin.find:
+        file_type: file
+        paths: "{{ wg_config_dir_path }}"
+        exclude: "{{ peers }}"
+        recurse: true
+      register: unused_config_files
+    - name: Delete unused wg.conf files
+      ansible.builtin.file:
+        path: "{{ item['path'] }}"
+        state: absent
+      loop: "{{ unused_config_files.files }}"
+      loop_control:
+        label: "{{ item['path'] }}"
+
 - name: Create a wg0.conf template for each peer
   become: false
   delegate_to: localhost
@@ -143,7 +166,7 @@
     daemon_reload: true
   when: old_wg_service is changed
 
-- name: Stop wg0 after removal of legacy service so that the new service can take over  # noqa no-handler
+- name: Stop wg0 after removal of legacy service so that the new service can take over  # noqa no-handler no-changed-when
   become: true
   ansible.builtin.command:
   args:

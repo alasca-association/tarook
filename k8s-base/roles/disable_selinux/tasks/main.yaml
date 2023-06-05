@@ -12,7 +12,7 @@
   when: selinux_res.reboot_required
   block:
 
-    - name: Reboot host (cloud-init run)
+    - name: Reboot host (cloud-init run)  # noqa no-changed-when
       ansible.builtin.command:
         argv:
           - reboot

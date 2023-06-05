@@ -5,7 +5,7 @@
   become: true
   when:
     - k8s_virtualize_gpu | default(False)
-    - has_gpu
+    - node_has_gpu
     - _allow_disruption or install_status == 'k8s_not_installed'
     - ansible_facts['pkg_mgr'] == "apt"
   block:
@@ -33,7 +33,7 @@
         mode: 0644
       register: grub_config
 
-    - name: Update GRUB
+    - name: Update GRUB  # noqa no-changed-when no-handler
       when: grub_config.changed
       ansible.builtin.command: update-grub
 
@@ -44,10 +44,10 @@
           - "linux-headers-{{ ansible_kernel }}"
           - build-essential
           - manpages-dev
-        register: task_result
-        until: task_result is not failed
-        retries: "{{ network_error_retries }}"
-        delay: "{{ network_error_delay }}"
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
 
 
     - name: Install virtual gpu manager
@@ -88,17 +88,17 @@
         group: root
       register: blacklisted_nouveau
 
-    - name: Update initramfs
+    - name: Update initramfs  # noqa no-changed-when no-handler
       ansible.builtin.command: "update-initramfs -k {{ ansible_kernel }} -uv"
       when: blacklisted_nouveau.changed or installed_vgpu_manager.changed
       register: ramfs
 
-    - name: Reboot block
+    - name: Reboot block  # noqa no-handler
       become: true
       when: ramfs is changed or grub_config is changed
       block:
 
-        - name: Reboot the system (cloud-init run)
+        - name: Reboot the system (cloud-init run)  # noqa no-changed-when no-handler
           ansible.builtin.command:
             argv:
               - reboot
@@ -134,7 +134,7 @@
         mode: 0644
       register: udev_vfio_rule
 
-    - name: Reload udev rules on the node
+    - name: Reload udev rules on the node  # noqa no-changed-when no-handler
       # nvidia-smi -L lists all detected cards.
       # I installed the toolchain on a host with any nvidia cards and the rc was != 0.
       # It's therefore safe to assume that if the installation somehow failed, then this task would fail too.

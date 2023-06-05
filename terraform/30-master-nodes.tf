@@ -6,6 +6,7 @@ locals {
       image          = try(var.master_images[idx], var.default_master_image_name),
       az             = var.enable_az_management ? try(var.master_azs[idx], var.azs[idx % length(var.azs)]) : null
       root_disk_size = try(var.master_root_disk_sizes[idx], var.default_master_root_disk_size)
+      root_disk_volume_type = try(var.master_root_disk_volume_types[idx], var.root_disk_volume_type)
       volume_name    = "${var.cluster_name}-master-volume-${try(var.master_names[idx], idx)}"
     }
   }
@@ -48,7 +49,7 @@ resource "openstack_blockstorage_volume_v2" "master-volume" {
   name        = each.value.volume_name
   size        = (data.openstack_compute_flavor_v2.master[each.key].disk > 0) ? data.openstack_compute_flavor_v2.master[each.key].disk : each.value.root_disk_size
   image_id    = data.openstack_images_image_v2.master[each.key].id
-  volume_type = var.root_disk_volume_type
+  volume_type = each.value.root_disk_volume_type
   availability_zone = each.value.az
 
   timeouts {

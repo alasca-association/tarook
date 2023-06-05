@@ -1,0 +1,12 @@
+serviceMonitor:
+  interval: 30s # Our default scrape interval
+  additionalLabels:
+{% if monitoring_common_labels %}
+{% for label_key, label_value in monitoring_common_labels.items() %}
+    {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
+nodeSelector:
+  yk8s-use-gpu: "true"
+# TODO (low prio, needs discussion and probably desired for all scrape jobs):
+# Remove labels Hostname, container, (namespace?), pod. Maybe use own SM to be able to relabel, here.

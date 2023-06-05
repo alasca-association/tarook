@@ -16,6 +16,10 @@ oom_score = 0
   # tcp address!
   address = "127.0.0.1:1234"
 
+{% if node_has_gpu and k8s_is_gpu_cluster %}
+[plugins."io.containerd.grpc.v1.cri".containerd]
+  default_runtime_name = "nvidia"
+{% endif %}
 
 [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
 
@@ -24,3 +28,17 @@ oom_score = 0
 
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
     SystemdCgroup = true
+
+{% if node_has_gpu and k8s_is_gpu_cluster %}
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+    privileged_without_host_devices = false
+    runtime_engine = ""
+    runtime_root = ""
+    runtime_type = "io.containerd.runc.v2"
+
+    [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
+      BinaryName = "/usr/bin/nvidia-container-runtime"
+{% endif %}
+
+[plugins."io.containerd.grpc.v1.cri".registry]
+   config_path = "/etc/containerd/certs.d"

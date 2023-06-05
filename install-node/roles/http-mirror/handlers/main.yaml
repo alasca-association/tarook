@@ -1,0 +1,11 @@
+---
+# Note: We don't use the docker_container module here, because we are not
+# sure how it interacts with a configured container if I just specify
+# part of the state when restarting the container.
+- name: Restart the nginx container
+  ansible.builtin.command:
+    argv:
+    - docker
+    - restart
+    - http-mirror
+...

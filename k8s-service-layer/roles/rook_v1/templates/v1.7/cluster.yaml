@@ -94,7 +94,7 @@ spec:
   # enable prometheus alerting for cluster
   monitoring:
     # requires Prometheus to be pre-installed
-    enabled: false
+    enabled: {{ k8s_monitoring_enabled | bool }}
     # namespace to deploy prometheusRule in. If empty, namespace of the cluster will be used.
     # Recommended:
     # If you have a single rook-ceph cluster, set the rulesNamespace to the same namespace as the cluster or keep it empty.
@@ -220,7 +220,14 @@ spec:
 #    prepareosd:
 # monitoring is a list of key-value pairs. It is injected into all the monitoring resources created by operator.
 # These labels can be passed as LabelSelector to Prometheus
-#    monitoring:
+{% if k8s_monitoring_enabled %}
+{% if monitoring_common_labels %}
+    monitoring:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+      {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
+{% endif %}
 #    crashcollector:
   resources:
 # The requests and limits set here, allow the mgr pod to use half of one CPU core and 1 gigabyte of memory

@@ -1,0 +1,41 @@
+---
+- name: Install nvidia-container-toolkit
+  become: true
+  when: node_has_gpu
+  block:
+  - name: Ensure keyrings directory exists
+    ansible.builtin.file:
+      state: directory
+      path: "/etc/apt/keyrings"
+      owner: root
+      group: root
+      mode: u=rwx,go=rx
+
+  - name: Deploy libnvidia-container repository key to keyrings
+    ansible.builtin.copy:
+      src: libnvidia-container.gpg
+      dest: /etc/apt/keyrings/libnvidia-container.gpg
+      owner: root
+      group: root
+      mode: u=rw,go=r
+
+  - name: Add libnvidia-container repository
+    ansible.builtin.apt_repository:
+      repo: "deb [signed-by=/etc/apt/keyrings/libnvidia-container.gpg] https://nvidia.github.io/libnvidia-container/stable/ubuntu18.04/$(ARCH) /"
+      state: present
+      filename: nvidia-container-toolkit
+      update_cache: true
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
+
+  - name: Install nvidia-container-toolkit package
+    ansible.builtin.apt:
+      name: nvidia-container-toolkit
+      update_cache: true
+    register: nvidia_container_toolkit_pkg
+    until: nvidia_container_toolkit_pkg is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
+...

@@ -1,0 +1,98 @@
+---
+- name: Skip play if Tigera operator is not configured
+  ansible.builtin.meta: end_play
+  when:
+    - not image_versions.calico_use_tigera_operator | bool
+
+- name: Fail if configured calico version is too old
+  when: image_versions.calico_version is version ('3.24', '<')
+  ansible.builtin.fail:
+    msg: |
+      The configured calico version is too old to be deployed
+      with the Tigera operator helm chart.
+      See https://yaook.gitlab.io/k8s/operation/calico.html
+      for more information.
+
+- name: Check if tigera-operator already exists
+  delegate_to: localhost
+  run_once: true
+  block:
+    - name: Check if tigera-operator Deployment exists
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Deployment
+        name: tigera-operator
+        namespace: tigera-operator
+      register: tigera_operator_deployment
+
+    - name: Set fact if tigera-operator Deployment exists
+      ansible.builtin.set_fact:
+        tigera_operator_exists: "{{ tigera_operator_deployment.resources | length >= 1 | bool }}"
+
+- name: Check for migration tasks
+  ansible.builtin.include_tasks: migrate.yaml
+
+- name: Deploy tigera-operator
+  delegate_to: localhost
+  run_once: true
+  block:
+    - name: Create Tigera operator namespace
+      kubernetes.core.k8s:
+        apply: true
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: tigera-operator
+        validate:
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
+
+    - name: Add projectcalico helm repository
+      kubernetes.core.helm_repository:
+        name: projectcalico
+        repo_url: "{{ calico_helm_repo_url }}"
+        repo_state: "present"
+
+    - name: Deploy Tigera operator chart
+      kubernetes.core.helm:
+        chart_ref: projectcalico/tigera-operator
+        chart_version: "{{ image_versions.calico_version }}"
+        release_namespace: "tigera-operator"
+        release_name: "calico"
+        release_state: present
+        update_repo_cache: true
+        values: "{{ lookup('template', calico_values_file_path) | from_yaml }}"
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
+
+    # Give the operator some time to create the CRDs
+    - name: Pause for 20s
+      when: not tigera_operator_exists
+      ansible.builtin.pause:
+        seconds: 20
+
+- name: Install calicoctl
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ calico_calicoctl_binary_source }}/v{{ image_versions.calico_version }}/calicoctl-linux-amd64"
+    dest: /usr/local/bin/calicoctl
+    owner: root
+    group: root
+    mode: 0750
+    timeout: 30
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+
+- name: Setup BGP Routing Information Distribution via BIRD
+  run_once: true
+  ansible.builtin.include_tasks: setup_bgp.yaml
+...

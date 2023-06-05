@@ -4,6 +4,63 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## [GPU: Rework setup and check procedure (!750) · Merge requests · YAOOK / k8s · GitLab](https://gitlab.com/yaook/k8s/-/merge_requests/750)
+
+We reworked the setup and smoke test procedure for GPU nodes to be used inside of Kubernetes [1].
+In the last two ShoreLeave-Meetings (our official development) meetings [2] and our IRC-Channel [3]
+we asked for feedback if the old procedure is in use in the wild.
+As that does not seem to be the case,
+we decided to save the overhead of implementing and testing a migration path.
+If you have GPU nodes in your cluster and support for these breaks by the reworked code,
+please create an issue or consider rebuilding the nodes with the new procedure.
+
+[1] [GPU Support Documentation](./docs/src/operation/gpu-and-vgpu.md#internal-usage)  
+[2] https://gitlab.com/yaook/meta#subscribe-to-meetings  
+[3] https://gitlab.com/yaook/meta/-/wikis/home#chat
+
+## Change kube-apiserver Service-Account-Issuer
+Kube-apiserver now issues service-account tokens with `https://kubernetes.default.svc` as issuer instead of `kubernetes.default.svc`.
+Tokens with the old issuer are still considered valid, but should be renewed as this additional support will be dropped in the future.
+
+This change had to be made to make yaook-k8s pass all [k8s-conformance tests](https://github.com/cncf/k8s-conformance/blob/master/instructions.md).
+
+## Drop support for Kubernetes v1.20
+
+We're dropping support for Kubernetes v1.20 as this version is EOL quite some time.
+This step has been announced several times in our [public development meeting](https://gitlab.com/yaook/meta#subscribe-to-meetings).
+
+## Drop support for Kubernetes v1.19
+
+We're dropping support for Kubernetes v1.19 as this version is EOL quite some time.
+This step has been announced several times in our [public development meeting](https://gitlab.com/yaook/meta#subscribe-to-meetings).
+
+## Implement support for Tigera operator-based Calico installation
+
+Instead of using a customized manifest-based installation method,
+we're now switching to an
+[operator-based installation](https://docs.tigera.io/calico/3.25/about/) method
+based on the Tigera operator.
+
+**Existing clusters must be migrated.**
+Please have a look at our [Calico documentation](./docs/src/operation/calico.md)
+for further information.
+
+## Support for Kubernetes v1.24
+
+The LCM now supports Kubernetes v1.24.
+One can either directly create a new cluster with a patch release of that version or upgrade an existing cluster to one as usual via:
+
+```shell
+# Replace the patch version
+MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.24.10
+```
+
+> **NOTE:** If you're using docker as CRI,
+> you **must** [migrate to containerd](https://yaook.gitlab.io/k8s/operation/migrate-docker-containerd.html)
+> in advance.
+
+Further information are given in the [Upgrading Kubernetes documentation](https://yaook.gitlab.io/k8s/operation/upgrading-kubernetes.html).
+
 ## Implement automated docker to containerd migration
 
 A migration path to change the container runtime on each node of a cluster from docker to containerd has been added.

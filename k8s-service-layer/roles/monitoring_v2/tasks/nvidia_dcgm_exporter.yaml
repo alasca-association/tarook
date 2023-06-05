@@ -1,0 +1,27 @@
+---
+- name: "{{ (gpu_nodes.resources | length > 0) | ternary('Add', 'Remove') }} NVIDIA DCGM Exporter helm repository"
+  kubernetes.core.helm_repository:
+    name: dcgm-exporter
+    repo_url: "{{ monitoring_nvidia_dcgm_exporter_helm_repo_url }}"
+    repo_state: "{{ (gpu_nodes.resources | length > 0) | ternary('present', 'absent') }}"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
+
+- name: "{{ (gpu_nodes.resources | length > 0) | ternary('I', 'Uni') }}nstall NVIDIA DCGM exporter"
+  kubernetes.core.helm:
+    chart_ref: dcgm-exporter
+    chart_repo_url: "{{ monitoring_nvidia_dcgm_exporter_helm_repo_url }}"
+    chart_version: "{{ monitoring_nvidia_dcgm_exporter_helm_version }}"
+    release_namespace: "{{ monitoring_namespace }}"
+    release_name: "nvidia-dcgm-exporter"
+    release_state: "{{ (gpu_nodes.resources | length > 0) | ternary('present', 'absent') }}"
+    values: "{{ lookup('template', 'nvidia_dcgm_exporter.yaml.j2') | from_yaml }}"
+    wait: true
+    update_repo_cache: true
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
+...

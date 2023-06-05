@@ -55,6 +55,25 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
 
+  - name: Create rook-monitoring RBAC
+    vars:
+      mon_rbac_template: "{{ '%s/monitoring-rbac.yaml.j2' | format(rook_conf_maj_min_version) }}"
+    when:
+    - k8s_monitoring_enabled | bool
+    - rook_version is version('v1.5.0', operator='ge')
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      definition: "{{ lookup('template', mon_rbac_template) }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+
   - name: Create the operator
     vars:
       operator_template: "{{ '%s/operator.yaml' | format(rook_conf_maj_min_version) }}"

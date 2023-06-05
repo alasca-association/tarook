@@ -109,7 +109,7 @@
     failed_when: false
     changed_when: "{{ agent_detect.rc == 0 }}"
 
-  - name: Disable LBaaS agent
+  - name: Disable LBaaS agent  # noqa no-handler
     ansible.builtin.service:
       name: ch-k8s-lbaas-agent
       state: stopped

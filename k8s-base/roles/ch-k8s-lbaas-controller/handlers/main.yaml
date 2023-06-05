@@ -1,5 +1,5 @@
 ---
-- name: restart ch-k8s-lbaas-controller
+- name: restart ch-k8s-lbaas-controller  # noqa no-changed-when
   become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf

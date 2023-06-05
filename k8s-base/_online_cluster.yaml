@@ -1,0 +1,32 @@
+---
+# This playbook is used for testing offline installations in k8s
+# clusters atop OpenStack. It reverts the changes done by
+# the offline_cluster.yaml playbook.
+# It only works when triggered from `../actions/offline_cluster.py`
+# which takes care of the setup on the OpenStack side.´
+- name: Establish connectivity to the nodes
+  hosts: frontend
+  gather_facts: false
+  strategy: free
+  vars_files:
+  - vars/disruption.yaml
+  - vars/etc.yaml
+  roles:
+  - role: detect_user
+    tags: detect_user
+
+- name: Online the Cluster
+  hosts: frontend
+  gather_facts: false
+  become: yes
+  tasks:
+  - name: Remove nftables config to offline the nodes
+    file:
+      path: /etc/nft.d/00take-offline.conf
+      state: absent
+
+  - name: Restart nftables
+    service:
+      name: nftables
+      state: restarted
+...

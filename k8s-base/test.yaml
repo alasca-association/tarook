@@ -13,9 +13,7 @@
   gather_facts: false
   tasks:
   - name: Get node info
-    delegate_to: "{{ groups['masters'] | first }}"
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
+    delegate_to: localhost
     kubernetes.core.k8s_info:
       kind: node
       name: "{{ inventory_hostname }}"
@@ -73,6 +71,17 @@
     - check-ipsec
     - test-ipsec
     when: ipsec_enabled and ipsec_test_enabled
+
+- name: Test Nvidia GPU Support
+  hosts: localhost
+  vars_files:
+  - vars/retries.yaml
+  roles:
+  - role: check-nvidia-device-plugin
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    tags:
+    - test-nvidia-device-plugin
+    - check-nvidia-device-plugin
 
 # Ugly: assuming naming scheme here.
 - name: Annotate worker nodes

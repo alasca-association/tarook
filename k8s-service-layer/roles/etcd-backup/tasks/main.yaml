@@ -94,7 +94,6 @@
     release_state: present
     update_repo_cache: true
     values: "{{ lookup('template', 'etcd_backup.yaml.j2') | from_yaml }}"
-  when: bucket_info.buckets | length > 0
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"

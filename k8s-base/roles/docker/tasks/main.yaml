@@ -42,6 +42,9 @@
       ansible.builtin.get_url:
         url: https://download.docker.com/linux/centos/docker-ce.repo
         dest: /etc/yum.repos.d/docker-ce.repo
+        owner: root
+        group: root
+        mode: 0640
       register: task_result
       until: task_result is not failed
       retries: "{{ network_error_retries }}"
@@ -54,51 +57,6 @@
           - docker-ce-cli
           - containerd.io
 
-- name: Install docker nvidia runtime
-  become: true
-  vars:
-    # This value is the concatenation of the fields $ID and $VERSION_ID in /etc/os-release,
-    # e.g., `ubuntu18.04`.
-    # I think it's a bad idea to simply source these fields so let's follow a different
-    # path.
-    distribution: "{{ (ansible_distribution | lower) }}{{ ansible_distribution_version }}"
-  when:
-    - k8s_is_gpu_cluster | default(False)
-    - has_gpu
-    - ansible_facts['pkg_mgr'] == "apt"
-  block:
-    - name: Add nvidia's repo key
-      ansible.builtin.apt_key:
-        url: https://nvidia.github.io/nvidia-docker/gpgkey
-        state: present
-      register: task_result
-      until: task_result is not failed
-      retries: "{{ network_error_retries }}"
-      delay: "{{ network_error_delay }}"
-
-    - name: Add nvidia-docker2 repositories
-      ansible.builtin.apt_repository:
-        # Don't update on each item
-        update_cache: false
-        repo: "{{ item }}"
-      register: task_result
-      until: task_result is not failed
-      retries: "{{ network_error_retries }}"
-      delay: "{{ network_error_delay }}"
-      loop:
-        - "deb https://nvidia.github.io/libnvidia-container/stable/{{ distribution }}/$(ARCH) /"
-        - "deb https://nvidia.github.io/nvidia-container-runtime/stable/{{ distribution }}/$(ARCH) /"
-        - "deb https://nvidia.github.io/nvidia-docker/{{ distribution }}/$(ARCH) /"
-
-    - name: Install nvidia-docker2 package
-      ansible.builtin.apt:
-        name: nvidia-docker2
-        update_cache: true
-      register: task_result
-      until: task_result is not failed
-      retries: "{{ network_error_retries }}"
-      delay: "{{ network_error_delay }}"
-
 - name: Create docker daemon configuration
   become: true
   ansible.builtin.template:
@@ -109,28 +67,35 @@
     mode: 0640
   notify: Restart docker
 
+- name: Ensure directory docker service directory is present
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
 - name: Create docker proxy configuration
   become: true
+  ansible.builtin.template:
+    src: http-proxy.conf.j2
+    dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+    owner: root
+    group: root
+    mode: 0640
   when: (cluster_behind_proxy | default(false))
-  block:
-    - name: Ensure directory docker service directory is present
-      become: true
-      ansible.builtin.file:
-        path: /etc/systemd/system/docker.service.d
-        state: directory
-        mode: 0755
-        owner: root
-        group: root
+  notify: Restart docker
 
-    - name: Create docker service extension
-      become: true
-      ansible.builtin.template:
-        src: http-proxy.conf.j2
-        dest: /etc/systemd/system/docker.service.d/http-proxy.conf
-        owner: root
-        group: root
-        mode: 0640
-      notify: Restart docker
+- name: Require docker to be started before kubelet
+  become: true
+  ansible.builtin.template:
+    src: before-kubelet.conf.j2
+    dest: /etc/systemd/system/docker.service.d/before-kubelet.conf
+    owner: root
+    group: root
+    mode: 0640
+  notify: Restart docker
 
 - name: Trigger the handlers
   ansible.builtin.meta: flush_handlers

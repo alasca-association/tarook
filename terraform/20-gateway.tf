@@ -5,6 +5,7 @@ locals {
       az              = var.enable_az_management ? var.azs[idx] : null
       fip_description = "Floating IP for gateway in ${var.azs[idx]}"
       volume_name     = "${var.cluster_name}-gw-volume-${try(var.azs[idx], idx)}"
+      root_disk_volume_type = try(var.gateway_root_disk_volume_type, var.root_disk_volume_type)
     }
   }
 }
@@ -69,7 +70,7 @@ resource "openstack_blockstorage_volume_v2" "gateway-volume" {
   name        = each.value.volume_name
   size        = (data.openstack_compute_flavor_v2.gateway.disk > 0) ? data.openstack_compute_flavor_v2.gateway.disk : var.gateway_root_disk_volume_size
   image_id    = data.openstack_images_image_v2.gateway.id
-  volume_type = var.root_disk_volume_type
+  volume_type = each.value.root_disk_volume_type
   availability_zone = each.value.az
 
   timeouts {

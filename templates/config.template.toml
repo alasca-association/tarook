@@ -125,19 +125,22 @@ agent_port    = 15203
 # --- KUBERNETES: BASIC CLUSTER CONFIGURATION ---
 # ansible prefix: "k8s_"
 [kubernetes]
-# Kubernetes version. Currently, we support from 1.19.* to 1.23.*.
-version = "1.23.15" # •ᴗ•
+# Kubernetes version. Currently, we support from 1.21.* to 1.24.*.
+version = "1.24.10" # •ᴗ•
 
-# Uncomment if this cluster contains a worker with GPU access so that the driver
-# and surrounding framework is deployed.
-# You must set the container_runtime to "docker" for GPU clusters.
+# Set this variable if this cluster contains worker with GPU access
+# and you want to make use of these inside of the cluster,
+# so that the driver and surrounding framework is deployed.
 is_gpu_cluster = false # •ᴗ•
 
-# Set this variable to virtualize Nvidia GPUs on worker nodes.
-# It will install a VGPU manager on the worker node and split the GPU according to chosen vgpu type.
+# Set this variable to virtualize Nvidia GPUs on worker nodes
+# for usage outside of the Kubernetes cluster / above the Kubernetes layer.
+# It will install a VGPU manager on the worker node and
+# split the GPU according to chosen vgpu type.
 # Note: This will not install Nvidia drivers to utilize vGPU guest VMs!!
 # If set to true, please set further variables in the [miscellaneous] section.
-#virtualize_gpu = false
+# Note: This is mutually exclusive with "is_gpu_cluster"
+virtualize_gpu = false
 
 [kubernetes.apiserver]
 frontend_port = 8888 # •ᴗ•
@@ -271,18 +274,20 @@ service_subnet = "10.96.0.0/12" # •ᴗ•
 # layer 3 networking capabilities and associates a virtual router with each node.
 # Allows the establishment of zone boundaries through BGP
 plugin = "calico" # •ᴗ•
+# ANCHOR_END: kubernetes_network_configuration
 
-# Pick a Calico version:
-# Be aware that not all combinations of Kubernetes and Calico versions are recommended:
-# https://projectcalico.docs.tigera.io/getting-started/kubernetes/requirements
-# We provide Calico in version: 3.17.1, 3.19.0, 3.21.6.
-# If not specified here, a predefined Calico version will be matched against
-# the above specified Kubernetes version.
-# calico_custom_version = "3.21.6"
+# ANCHOR: calico_configuration
+[kubernetes.network.calico]
+#mtu = 1450 # for OpenStack at most 1450
 
+# Only takes effect for operator-based installations
+# https://docs.tigera.io/calico/3.25/reference/installation/api#operator.tigera.io/v1.EncapsulationType
+#encapsulation = "None"
+
+# Only takes effect for manifest-based installations
 # Define if the IP-in-IP encapsulation of calico should be activated
-# https://projectcalico.docs.tigera.io/networking/vxlan-ipip
-# calico_ipipmode = "Never"
+# https://docs.tigera.io/calico/3.24/reference/resources/ippool#spec
+#ipipmode = "Never"
 
 # Make the auto detection method variable as one downside of
 # using can-reach mechanism is that it produces additional logs about
@@ -290,7 +295,32 @@ plugin = "calico" # •ᴗ•
 # use an interface to detect ip settings i.e. interface=bond0
 # calico_ip_autodetection_method = "can-reach=www.cloudandheat.com"
 # calico_ipv6_autodetection_method = "can-reach=www.cloudandheat.com"
-# ANCHOR_END: kubernetes_network_configuration
+
+# For the operator-based installation,
+# it is possible to link to self-maintained values file for the helm chart
+#values_file_path = "path-to-a-custom/values.yaml"
+
+# We're mapping a fitting calico version to the configured Kubernetes version.
+# You can however pick a custom Calico version.
+# Be aware that not all combinations of Kubernetes and Calico versions are recommended:
+# https://projectcalico.docs.tigera.io/getting-started/kubernetes/requirements
+# For the operator-based installation, any version should work as long as
+# you stick to the calico-Kubernetes compatibility matrix.
+# # For the deprecated manifest-based installation we provide Calico in version: 3.17.1, 3.19.0, 3.21.6, 3.24.5
+#
+# If not specified here, a predefined Calico version will be matched against
+# the above specified Kubernetes version.
+#custom_version = "3.24.5"
+
+# Calico can be either installed via a manually implemented manifest-based approach
+# (default for K8s <= v1.24) or via the tigera operator (enforced for K8s >= v1.25).
+# Migration from the previous to the latter happens automatically, if this variable
+# here is enabled. Note that this is considered disruptive.
+# For more information refer to: https://docs.tigera.io/calico/3.25/operations/operator-migration
+# and our documentation: https://yaook.gitlab.io/k8s/
+#use_tigera_operator = true
+
+# ANCHOR_END: calico_configuration
 
 # ANCHOR: kubernetes_kubelet_configuration
 # --- KUBERNETES: KUBELET CONFIGURATION (WORKERS) ---
@@ -494,6 +524,9 @@ cluster_name = "rook-ceph" # •ᴗ•
 # kube-system, monitoring and rook namespaces are scraped by Prometheus.
 #prometheus_monitor_all_namespaces=true
 
+# How many replicas of the alertmanager should be deployed inside the cluster
+#alertmanager_replicas=1
+
 # Scheduling keys control where services may run. A scheduling key corresponds
 # to both a node label and to a taint. In order for a service to run on a node,
 # it needs to have that label key.
@@ -681,6 +714,9 @@ enabled = false # •ᴗ•
 
 # Enable SSL passthrough in the controller
 #enable_ssl_passthrough = true
+
+# Replica Count
+#replica_count = 1
 
 # ANCHOR_END: ksl_ingress_configuration
 
@@ -1080,6 +1116,15 @@ container_runtime = "containerd"  # "•ᴗ•"
 # A list of insecure registries that can be accessed without TLS verification.
 #docker_insecure_registries: [ "0.docker-registry.example.org", "1.docker-registry.example.org" ]
 
+# Containerd Registry Configuration
+# A map of registry names to config files (absolute or relative path) to configure the
+# access of container image registries.
+# Please refer https://github.com/containerd/containerd/blob/main/docs/cri/registry.md
+# for the configuration.
+[miscellaneous.registry_configuration_files]
+#"_default" = "your_default_registry_config.toml"
+#"docker.io" = "your_docker_registry_config.toml"
+
 # Custom Chrony Configration
 # The ntp servers used by chrony can be customized if it should be necessary or wanted.
 # A list of pools and/or servers can be specified.
@@ -1095,6 +1140,19 @@ container_runtime = "containerd"  # "•ᴗ•"
 # if you provided valid credentials as a sanity check iff you're on openstack and the flag below is set
 # to True.
 #check_openstack_credentials = True
+
+# APT Proxy Configuration
+# As a secondary effect, https repositories are not used, since
+# those don't work with caching proxies like apt-cacher-ng.
+# apt_proxy_url = "..."
+
+# Custom PyPI mirror
+# Use this in offline setups or to use a pull-through cache for
+# accessing the PyPI.
+# If the TLS certificate used by the mirror is not signed by a CA in
+# certifi, you can put its cert in `config/pip_mirror_ca.pem` to set
+# it explicitly.
+# pip_mirror_url = "..."
 
 [nvidia.vgpu]
 # vGPU Support
