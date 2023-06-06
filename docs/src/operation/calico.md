@@ -117,5 +117,3 @@ The migration can be triggered as followed:
 ```shell
 MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="--diff -t calico" bash managed-k8s/actions/apply-stage3.sh
 ```
-
-Hint: During and after the migration you should check the Tigera operator logs.
