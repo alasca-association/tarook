@@ -117,3 +117,25 @@ The migration can be triggered as followed:
 ```shell
 MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="--diff -t calico" bash managed-k8s/actions/apply-stage3.sh
 ```
+
+Hint: During and after the migration you should check the Tigera operator logs.
+
+To create ServiceMonitors, you must also run:
+
+```shell
+AFLAGS="--diff -t mk8s-ms/monitoring" bash managed-k8s/actions/apply-stage5.sh
+```
+
+You can verify the migration was successful by executing:
+
+```shell
+AFLAGS="--diff -t check-calico" bash managed-k8s/actions/test.sh
+```
+
+and if you enabled (service) monitoring:
+
+```shell
+AFLAGS="--diff -t check-mk8s-ms/monitoring_v2" bash managed-k8s/actions/test.sh
+```
+
+It can take a few minutes for Calico to reconcile routes and network interfaces.
