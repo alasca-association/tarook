@@ -5,4 +5,4 @@
 # because it is easy to break accidentally.
 set -euo pipefail
 gitlab_ci_file="$(dirname "$0")/../.gitlab-ci.yml"
-exec grep -Po '(?<=- name: )vault:\S+' "$gitlab_ci_file"
+exec grep -Po '(?<=\${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/)vault:\S+(?=")' "$gitlab_ci_file"
