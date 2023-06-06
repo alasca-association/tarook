@@ -91,44 +91,6 @@
     mode: 0640
   register: configuration_update
 
-- name: Ensure /etc/containerd/certs.d/ is present
-  become: true
-  ansible.builtin.file:
-    path: /etc/containerd/certs.d
-    state: directory
-    mode: 0755
-    owner: root
-    group: root
-
-- name: Ensure /etc/containerd/certs.d/{{ item.key }} is present
-  become: true
-  ansible.builtin.file:
-    path: /etc/containerd/certs.d/{{ item.key }}/
-    state: directory
-    mode: 0755
-    owner: root
-    group: root
-  loop: "{{ registry_configuration_files | dict2items }}"
-
-- name: Create registry configuration files for {{ item.key }}
-  become: true
-  ansible.builtin.template:
-    src: "{{ item.value }}"
-    dest: /etc/containerd/certs.d/{{ item.key }}/hosts.toml
-    owner: root
-    group: root
-    mode: 0640
-  loop: "{{ registry_configuration_files | dict2items }}"
-  when: item.value != ""
-
-- name: Cleanup registry configuration files for {{ item.key }}
-  become: true
-  ansible.builtin.file:
-    state: absent
-    dest: /etc/containerd/certs.d/{{ item.key }}
-  loop: "{{ registry_configuration_files | dict2items }}"
-  when: item.value == ""
-
 - name: Ensure /etc/systemd/system/containerd.service.d/ is present
   become: true
   ansible.builtin.file:

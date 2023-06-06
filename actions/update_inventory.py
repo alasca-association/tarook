@@ -527,21 +527,10 @@ def main():
             ANSIBLE_INVENTORY_BASEPATH / stage /
             "group_vars" / "all" / "miscellaneous.yaml"
         )
-
-        miscellaneous_config = config.get("miscellaneous", {})
-        registry_configuration_files = miscellaneous_config.get(
-            "registry_configuration_files", {}
-        )
-        for registry, config_file_path in registry_configuration_files.items():
-            if config_file_path != "":
-                abs_file_path = os.path.abspath(config_file_path)
-                registry_configuration_files[registry] = abs_file_path
-
         dump_to_ansible_inventory(
-            miscellaneous_config,
+            config.get("miscellaneous"),
             misc_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("miscellaneous", ""),
-            unflat_keys=['registry_configuration_files']
+            SECTION_VARIABLE_PREFIX_MAP.get("miscellaneous", "")
         )
 
     # ---

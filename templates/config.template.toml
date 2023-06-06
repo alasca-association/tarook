@@ -1116,15 +1116,6 @@ container_runtime = "containerd"  # "•ᴗ•"
 # A list of insecure registries that can be accessed without TLS verification.
 #docker_insecure_registries: [ "0.docker-registry.example.org", "1.docker-registry.example.org" ]
 
-# Containerd Registry Configuration
-# A map of registry names to config files (absolute or relative path) to configure the
-# access of container image registries.
-# Please refer https://github.com/containerd/containerd/blob/main/docs/cri/registry.md
-# for the configuration.
-[miscellaneous.registry_configuration_files]
-#"_default" = "your_default_registry_config.toml"
-#"docker.io" = "your_docker_registry_config.toml"
-
 # Custom Chrony Configration
 # The ntp servers used by chrony can be customized if it should be necessary or wanted.
 # A list of pools and/or servers can be specified.
