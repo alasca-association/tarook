@@ -31,8 +31,8 @@
   - name: Upload calico CA certificate from vault
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
-    k8s:
-      apply: yes
+    kubernetes.core.k8s:
+      apply: true
       definition:
         apiVersion: v1
         kind: ConfigMap
@@ -42,8 +42,8 @@
         data:
           typhaca.crt: "{{ lookup('community.hashi_vault.vault_read', '%s/%s/calico-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id, mount_point=vault_nodes_approle).data.ca_chain }}"
       validate:
-        fail_on_error: yes
-        strict: yes
+        fail_on_error: true
+        strict: true
 
 - name: Create user for calico-cni, configure RBAC and create RoleBinding
   become: true

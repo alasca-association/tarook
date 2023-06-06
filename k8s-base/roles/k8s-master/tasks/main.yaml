@@ -42,8 +42,8 @@
     mode: 0755
 
 - name: Create parent directories for PKI directories
-  become: yes
-  file:
+  become: true
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: u=rwx,go=rx
@@ -75,8 +75,8 @@
   # https://kubernetes.io/docs/setup/best-practices/certificates/
 
   - name: Load service account key from Vault # noqa ignore-errors
-    ignore_errors: yes
-    set_fact:
+    ignore_errors: true
+    ansible.builtin.set_fact:
       service_account_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'k8s/service-account-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key | b64decode }}"
 
   - name: Generate private key if necessary
@@ -91,7 +91,7 @@
 
   - name: Delete generated private key from disk
     delegate_to: localhost
-    file:
+    ansible.builtin.file:
       state: absent
       path: "{{ etc_dir }}/sa.key"
 
@@ -110,7 +110,7 @@
 
   - name: Use generated service account key
     when: service_account_key is not defined
-    set_fact:
+    ansible.builtin.set_fact:
       service_account_key: "{{ generated_service_account_key.privatekey }}"
 
   - name: Derive service account public key
@@ -119,8 +119,8 @@
     register: service_account_key_info
 
   - name: Write service account private key
-    become: yes
-    copy:
+    become: true
+    ansible.builtin.copy:
       dest: /etc/kubernetes/pki/sa.key
       content: "{{ service_account_key }}"
       owner: root
@@ -128,8 +128,8 @@
       mode: u=r
 
   - name: Write service account public key
-    become: yes
-    copy:
+    become: true
+    ansible.builtin.copy:
       dest: /etc/kubernetes/pki/sa.pub
       content: "{{ service_account_key_info.public_key }}"
       owner: root
@@ -137,13 +137,13 @@
       mode: ugo=r
 
   - name: Fetch CA certificates
-    set_fact:
+    ansible.builtin.set_fact:
       k8s_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-pki'}) }}"
       k8s_front_proxy_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-front-proxy-pki'}) }}"
 
   - name: Write k8s CA file
-    become: yes
-    copy:
+    become: true
+    ansible.builtin.copy:
       dest: /etc/kubernetes/pki/ca.crt
       owner: root
       group: root
@@ -151,8 +151,8 @@
       content: "{{ k8s_ca_cert }}"
 
   - name: Write k8s front proxy CA file
-    become: yes
-    copy:
+    become: true
+    ansible.builtin.copy:
       dest: /etc/kubernetes/pki/front-proxy-ca.crt
       owner: root
       group: root
@@ -160,10 +160,10 @@
       content: "{{ k8s_front_proxy_ca_cert }}"
 
   - name: Write etcd CA file
-    become: yes
+    become: true
     vars:
       ca_pki_name: etcd-pki
-    template:
+    ansible.builtin.template:
       src: ca.crt.j2
       dest: /etc/kubernetes/pki/etcd/ca.crt
       owner: root
@@ -171,7 +171,7 @@
       mode: ugo=r
 
   - name: Generate controller-manager kubeconfig
-    include_tasks: mkkubeconfig.yaml
+    ansible.builtin.include_tasks: mkkubeconfig.yaml
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
       vault_secret_id: "{{ vault_node_secret_id }}"
@@ -182,7 +182,7 @@
       kubeconfig_notify: Restart kube-controller-manager
 
   - name: Generate scheduler kubeconfig
-    include_tasks: mkkubeconfig.yaml
+    ansible.builtin.include_tasks: mkkubeconfig.yaml
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
       vault_secret_id: "{{ vault_node_secret_id }}"
@@ -193,7 +193,7 @@
       kubeconfig_notify: Restart kube-scheduler
 
   - name: Generate kubelet kubeconfig
-    include_tasks: mkkubeconfig.yaml
+    ansible.builtin.include_tasks: mkkubeconfig.yaml
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
       vault_secret_id: "{{ vault_node_secret_id }}"
@@ -206,7 +206,7 @@
       kubeconfig_notify: Restart only this kubelet
 
   - name: Generate admin kubeconfig
-    include_tasks: mkkubeconfig.yaml
+    ansible.builtin.include_tasks: mkkubeconfig.yaml
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
       vault_secret_id: "{{ vault_node_secret_id }}"
@@ -216,7 +216,7 @@
       kubeconfig_user: kubernetes-admin
 
   - name: Obtain etcd server certificate
-    include_role:
+    ansible.builtin.include_role:
       name: vault-onboarded
       tasks_from: get_cert
     vars:
@@ -235,7 +235,7 @@
       get_cert_notify: Restart etcd
 
   - name: Obtain etcd peer certificate
-    include_role:
+    ansible.builtin.include_role:
       name: vault-onboarded
       tasks_from: get_cert
     vars:
@@ -254,7 +254,7 @@
       get_cert_notify: Restart etcd
 
   - name: Obtain etcd healthcheck certificate
-    include_role:
+    ansible.builtin.include_role:
       name: vault-onboarded
       tasks_from: get_cert
     vars:
@@ -272,7 +272,7 @@
       get_cert_notify: Restart etcd
 
   - name: Obtain apiserver etcd client certificate
-    include_role:
+    ansible.builtin.include_role:
       name: vault-onboarded
       tasks_from: get_cert
     vars:
@@ -289,7 +289,7 @@
       get_cert_notify: Restart kube-apiserver
 
   - name: Obtain apiserver frontend certificate
-    include_role:
+    ansible.builtin.include_role:
       name: vault-onboarded
       tasks_from: get_cert
     vars:
@@ -308,7 +308,7 @@
       get_cert_notify: Restart kube-apiserver
 
   - name: Obtain apiserver kubelet client certificate
-    include_role:
+    ansible.builtin.include_role:
       name: vault-onboarded
       tasks_from: get_cert
     vars:
@@ -325,7 +325,7 @@
       get_cert_notify: Restart kube-apiserver
 
   - name: Obtain apiserver front proxy client certificate
-    include_role:
+    ansible.builtin.include_role:
       name: vault-onboarded
       tasks_from: get_cert
     vars:
@@ -342,7 +342,7 @@
       get_cert_notify: Restart kube-apiserver
 
 - name: Delete secret data which is now in Vault
-  file:
+  ansible.builtin.file:
     state: absent
     path: /etc/kubernetes/pki/{{ item }}
   loop:
@@ -360,43 +360,42 @@
 - name: Spawn K8s cluster with 'kubeadm init'
   when: "local_kube_apiserver_status is failed and lb_kube_apiserver_status is failed"
   tags:
-    - spawn
+  - spawn
   become: true
   block:
+  - name: Pull config images used by kubeadm from registry.k8s.io  # noqa no-changed-when
+    ansible.builtin.command: kubeadm config images pull --kubernetes-version {{ k8s_version }}
 
-    - name: Pull config images used by kubeadm from registry.k8s.io  # noqa no-changed-when
-      ansible.builtin.command: kubeadm config images pull --kubernetes-version {{ k8s_version }}
+  - name: Create kubeadm-init-config.yaml
+    vars:
+      gateway: "{{ groups['gateways'] | first }}"
+    ansible.builtin.template:
+      src: kubeadm-init-config.yaml.j2
+      dest: /tmp/kubeadm-init-config.yaml
+      owner: root
+      group: root
+      mode: 0600
 
-    - name: Create kubeadm-init-config.yaml
-      vars:
-        gateway: "{{ groups['gateways'] | first }}"
-      ansible.builtin.template:
-        src: kubeadm-init-config.yaml.j2
-        dest: /tmp/kubeadm-init-config.yaml
-        owner: root
-        group: root
-        mode: 0600
+  - name: Run kubeadm init  # noqa no-changed-when
+    # XXX: ansible command module does not support setting the umask
+    ansible.builtin.shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
 
-    - name: Run kubeadm init  # noqa no-changed-when
-      # XXX: ansible command module does not support setting the umask
-      ansible.builtin.shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
+  - name: Remove kubeadm-init-config.yaml
+    ansible.builtin.file:
+      path: /tmp/kubeadm-init-config.yaml
+      state: absent
 
-    - name: Remove kubeadm-init-config.yaml
-      ansible.builtin.file:
-        path: /tmp/kubeadm-init-config.yaml
-        state: absent
+  - name: Configure bridge-nf-call-iptables
+    ansible.posix.sysctl:
+      name: net.bridge.bridge-nf-call-iptables
+      value: 1
+      state: present
 
-    - name: Configure bridge-nf-call-iptables
-      ansible.posix.sysctl:
-        name: net.bridge.bridge-nf-call-iptables
-        value: 1
-        state: present
-
-    - name: Copy kubeconfig to localhost
-      fetch:
-        src: /etc/kubernetes/admin.conf
-        dest: "{{ etc_dir }}/"
-        flat: yes
+  - name: Copy kubeconfig to localhost
+    ansible.builtin.fetch:
+      src: /etc/kubernetes/admin.conf
+      dest: "{{ etc_dir }}/"
+      flat: true
 
 - name: Join the K8s control plane
   when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed"
@@ -405,36 +404,36 @@
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
   block:
-    - name: Get certificate information
-      community.crypto.x509_certificate_info:
-        path: "/etc/kubernetes/pki/ca.crt"
-      register: ca_cert
+  - name: Get certificate information
+    community.crypto.x509_certificate_info:
+      path: "/etc/kubernetes/pki/ca.crt"
+    register: ca_cert
 
-    - name: Create kubeadm-join-config.yaml
-      template:
-        src: kubeadm-join-config.yaml.j2
-        dest: /tmp/kubeadm-join-config.yaml
-        owner: root
-        group: root
-        mode: 0600
+  - name: Create kubeadm-join-config.yaml
+    ansible.builtin.template:
+      src: kubeadm-join-config.yaml.j2
+      dest: /tmp/kubeadm-join-config.yaml
+      owner: root
+      group: root
+      mode: 0600
 
-    - name: Join the existing cluster as another control plane node
-      # XXX: ansible command module does not support setting the umask
-      shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml --ignore-preflight-errors=FileAvailable--etc-kubernetes-kubelet.conf"
+  - name: Join the existing cluster as another control plane node  # noqa no-changed-when
+    # XXX: ansible command module does not support setting the umask
+    ansible.builtin.shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml --ignore-preflight-errors=FileAvailable--etc-kubernetes-kubelet.conf"
 
-    - name: Remove kubeadm-join-config.yaml
-      file:
-        path: /tmp/kubeadm-join-config.yaml
-        state: absent
+  - name: Remove kubeadm-join-config.yaml
+    ansible.builtin.file:
+      path: /tmp/kubeadm-join-config.yaml
+      state: absent
 
 - name: Provide CA certificates as ConfigMap
-  become: yes
-  run_once: yes
+  become: true
+  run_once: true
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
     KUBECONFIG: /etc/kubernetes/admin.conf
-  k8s:
+  kubernetes.core.k8s:
     apply: true
     validate:
       fail_on_error: true

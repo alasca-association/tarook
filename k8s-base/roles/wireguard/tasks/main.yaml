@@ -33,10 +33,10 @@
   delegate_to: localhost
   run_once: true
   block:
-    - name: Lookup key in vault # noqa ignore-errors, jinja[invalid]
-      ignore_errors: yes
+    - name: Lookup key in vault  # noqa ignore-errors
+      ignore_errors: true
       # Check if the key exists
-      set_fact:
+      ansible.builtin.set_fact:
         wg_gw_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_caller_auth_mount_point, auth_method=vault_caller_auth_method, token=vault_caller_token, role_id=vault_caller_role_id, secret_id=vault_caller_secret_id).data.data.private_key }}"
 
     - name: Create new wireguard private key of the gateway  # noqa no-changed-when
@@ -67,7 +67,7 @@
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
   block:
     - name: Load private key
-      set_fact:
+      ansible.builtin.set_fact:
         wg_gw_priv_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_caller_auth_mount_point, auth_method=vault_caller_auth_method, token=vault_caller_token, role_id=vault_caller_role_id, secret_id=vault_caller_secret_id).data.data.private_key }}"
 
     - name: Derive public key  # noqa no-changed-when

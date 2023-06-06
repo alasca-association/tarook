@@ -59,8 +59,8 @@
   delay: "{{ k8s_error_delay }}"
 
 - name: Copy CA file from kube-system namespace
-  k8s:
-    apply: yes
+  kubernetes.core.k8s:
+    apply: true
     definition:
       apiVersion: v1
       kind: ConfigMap

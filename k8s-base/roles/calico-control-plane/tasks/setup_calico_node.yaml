@@ -1,5 +1,6 @@
+---
 - name: Update calico-node certificate
-  include_tasks: get_cert_in_k8s.yaml
+  ansible.builtin.include_tasks: get_cert_in_k8s.yaml
   vars:
     vault_role_id: "{{ vault_node_role_id }}"
     vault_secret_id: "{{ vault_node_secret_id }}"

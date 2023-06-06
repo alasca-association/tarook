@@ -14,25 +14,25 @@
     name: kubelet
     state: restarted
 
-- name: Restart kube-apiserver
+- name: Restart kube-apiserver  # noqa no-changed-when
   become: true
   # We must use shell here, because crictl cannot restart things by name.
   # We have to look up the ID of the Pod.
   ansible.builtin.shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^kube-apiserver$' --no-trunc -q)
 
-- name: Restart kube-scheduler
+- name: Restart kube-scheduler  # noqa no-changed-when
   become: true
   # We must use shell here, because crictl cannot restart things by name.
   # We have to look up the ID of the Pod.
   ansible.builtin.shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^kube-scheduler$' --no-trunc -q)
 
-- name: Restart kube-controller-manager
+- name: Restart kube-controller-manager  # noqa no-changed-when
   become: true
   # We must use shell here, because crictl cannot restart things by name.
   # We have to look up the ID of the Pod.
   ansible.builtin.shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^kube-controller-manager$' --no-trunc -q)
 
-- name: Restart etcd
+- name: Restart etcd  # noqa no-changed-when
   become: true
   # We must use shell here, because crictl cannot restart things by name.
   # We have to look up the ID of the Pod.

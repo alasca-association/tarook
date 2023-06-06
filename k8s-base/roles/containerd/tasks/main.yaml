@@ -100,7 +100,7 @@
     owner: root
     group: root
 
-- name: Ensure /etc/containerd/certs.d/{{item.key}} is present
+- name: Ensure /etc/containerd/certs.d/{{ item.key }} is present
   become: true
   ansible.builtin.file:
     path: /etc/containerd/certs.d/{{ item.key }}/
@@ -110,7 +110,7 @@
     group: root
   loop: "{{ registry_configuration_files | dict2items }}"
 
-- name: Create registry configuration files for {{item.key}}
+- name: Create registry configuration files for {{ item.key }}
   become: true
   ansible.builtin.template:
     src: "{{ item.value }}"
@@ -121,7 +121,7 @@
   loop: "{{ registry_configuration_files | dict2items }}"
   when: item.value != ""
 
-- name: Cleanup registry configuration files for {{item.key}}
+- name: Cleanup registry configuration files for {{ item.key }}
   become: true
   ansible.builtin.file:
     state: absent

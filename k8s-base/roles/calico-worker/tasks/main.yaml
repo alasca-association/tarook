@@ -5,8 +5,8 @@
     - image_versions.calico_use_tigera_operator | bool
 
 - name: Create /etc/cni/net.d/
-  become: yes
-  file:
+  become: true
+  ansible.builtin.file:
     owner: root
     group: root
     mode: u=rw,g=r,o-rwx
@@ -14,7 +14,7 @@
     state: directory
 
 - name: Generate calico kubeconfig
-  include_role:
+  ansible.builtin.include_role:
     name: k8s-master
     tasks_from: mkkubeconfig
   vars:

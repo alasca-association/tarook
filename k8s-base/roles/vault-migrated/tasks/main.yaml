@@ -1,7 +1,8 @@
+---
 - name: Detect presence of service account key in local storage
   delegate_to: localhost
-  become: no
-  stat:
+  become: false
+  ansible.builtin.stat:
     path: "{{ etc_dir }}/sa.key"
   register: sa_stat
   tags:
@@ -10,8 +11,8 @@
 
 - name: Detect presence of wireguard key in local storage
   delegate_to: localhost
-  become: no
-  stat:
+  become: false
+  ansible.builtin.stat:
     path: "{{ etc_dir }}/passwordstore/wg_gw_key.gpg"
   register: wg_stat
   tags:
@@ -20,8 +21,8 @@
 
 - name: Detect presence of migration flag
   delegate_to: localhost
-  become: no
-  stat:
+  become: false
+  ansible.builtin.stat:
     path: "{{ etc_dir }}/migrated-to-vault"
   register: migration_stat
   tags:
@@ -29,7 +30,7 @@
   - always
 
 - name: Fail because migration to vault has not been executed
-  fail:
+  ansible.builtin.fail:
     msg: |
       Detected sa.key or wg_gw_key.gpg in local storage, but there is no flag
       indicating successful migration to Vault!
@@ -40,3 +41,4 @@
   tags:
   - vault-migrated
   - always
+...
