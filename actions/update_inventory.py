@@ -37,7 +37,7 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "etcd-backup",
     "custom",
     "miscellaneous",
-    "nvidia"
+    "nvidia",
 )
 # Mapping stages to their common names
 ANSIBLE_STAGES = {

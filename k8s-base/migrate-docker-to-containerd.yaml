@@ -26,8 +26,9 @@
   gather_facts: true
   any_errors_fatal: true
   vars_files:
-  - ../vars/disruption.yaml
-  - ../vars/retries.yaml
+  - vars/disruption.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
   pre_tasks:
   - name: Fail if container_runtime is misconfigured
     when: container_runtime not in ["containerd", "docker"]

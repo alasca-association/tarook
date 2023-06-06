@@ -142,6 +142,37 @@
       mode: 0640
     register: service_drop_in
 
+- name: Create the container mirror directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/containerd/certs.d
+    state: directory
+    # WARNING: The certs.d directory is world readable.  It may
+    # contain private keys for client key authentication in the
+    # future. Make sure to set restrictive file permissions on those.
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Store the container mirror CA
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/containerd/mirror-ca.pem
+    mode: 0755
+    owner: root
+    group: root
+    content: "{{ container_mirror_ca }}"
+  when: "container_mirror_ca"
+
+- name: Configure container mirrors
+  # NOTE: containerd need not be reloaded for changes to the mirrors
+  # to take effect.
+  ansible.builtin.include_tasks:
+    file: configure_mirror.yaml
+    apply:
+      become: true
+  loop: "{{ container_mirrors }}"
+
 - name: Restart containerd
   become: true
   # Only restart if something changed AND we're allowed to do the restart
