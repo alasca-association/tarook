@@ -2,7 +2,7 @@
 
 <!-- This file uses https://rhodesmill.org/brandon/2012/one-sentence-per-line/ -->
 
-As of Summer 2022, yaook/k8s exclusively supports [HashiCorp Vault](https://vaultproject.io) as backend for storing secrets.
+As of Summer 2023, yaook/k8s exclusively supports [HashiCorp Vault](https://vaultproject.io) as backend for storing secrets.
 Previously, passwordstore was used.
 Vault supports many different kinds of secrets
 and in particular its support for managing PKIs made it attractive for yaook/k8s.
@@ -232,6 +232,12 @@ for additional environment variables accepted by these tools.
     EXCEPTIONALLY DANGEROUS, so it always requires manual confirmation.
 
 ## Migrating an existing cluster to an existing Vault
+
+Before starting the migration, you must ensure that
+[your environment](../usage/environmental-variables.md#vault-tooling-variables)
+has been setup properly **and**
+you initialized policies and approles in the corresponding
+vault instance via `tools/vault/init.sh` (see above).
 
 There are two choices to migrate your cluster to Vault:
 
