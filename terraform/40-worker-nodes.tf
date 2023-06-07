@@ -104,6 +104,6 @@ resource "openstack_compute_instance_v2" "worker" {
   # Ignoring 'scheduler_hints' here for existing VMs because otherwise tf would destroy and recreate them.
   # The initial distribution for existing clusters must therefore be enforced manually.
   lifecycle {
-    ignore_changes = [key_pair, image_id, scheduler_hints]
+    ignore_changes = [key_pair, image_id, config_drive, scheduler_hints]
   }
 }

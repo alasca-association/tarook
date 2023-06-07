@@ -38,7 +38,7 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "custom",
     "vault",
     "miscellaneous",
-    "nvidia"
+    "nvidia",
 )
 # Mapping stages to their common names
 ANSIBLE_STAGES = {

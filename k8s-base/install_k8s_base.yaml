@@ -102,6 +102,7 @@
   hosts: k8s_nodes
   gather_facts: true
   vars_files:
+  - vars/etc.yaml
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/retries.yaml

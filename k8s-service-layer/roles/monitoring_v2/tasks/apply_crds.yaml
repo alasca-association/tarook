@@ -35,7 +35,7 @@
 # Once this request is approved, This task can be updated to use k8s module instead of command.
 - name: "Apply CRDs for appversion: {{ app_version }}"
   vars:
-    app_version: "{{ (helm_chart.stdout | from_yaml).appVersion }}"
+    app_version: "{{ (helm_chart.stdout | from_yaml).appVersion | replace('v','') }}"
   ansible.builtin.command:
   args:
     argv:
