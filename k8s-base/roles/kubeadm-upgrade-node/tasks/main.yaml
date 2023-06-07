@@ -9,4 +9,5 @@
       - "node"
       - "--patches"
       - "/etc/kubernetes/kubeadm-patches"
+      - --certificate-renewal=false
 ...
