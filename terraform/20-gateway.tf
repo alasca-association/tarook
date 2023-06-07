@@ -109,7 +109,7 @@ resource "openstack_compute_instance_v2" "gateway" {
     port = each.value.id
   }
   lifecycle {
-    ignore_changes = [key_pair, image_id]
+    ignore_changes = [key_pair, image_id, config_drive]
   }
 }
 
