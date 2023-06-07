@@ -14,6 +14,11 @@
       name: "{{ get_cert_k8s_secret_name }}"
       namespace: "{{ get_cert_k8s_namespace | default('kube-system') }}"
     register: k8s_keypair_secret
+    # Retry this task on failures
+    until: k8s_keypair_secret is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+
 
   - name: "{{ get_cert_k8s_title }}: Check expiry"
     when: k8s_keypair_secret.resources
@@ -70,4 +75,9 @@
       validate:
         fail_on_error: true
         strict: true
+    register: cert_update
+    # Retry this task on failures
+    until: cert_update is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 ...

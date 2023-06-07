@@ -69,6 +69,11 @@
         namespace: "{{ monitoring_namespace }}"
       data:
         front-proxy-ca.crt: "{{ lookup('kubernetes.core.k8s', api_version='v1', kind='ConfigMap', namespace='kube-system', resource_name='cluster-ca-certs').data['front-proxy-ca.crt'] }}"
+  register: k8s_apply
+  # Retry this task on failures
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 # Checking the KSL monitoring chart version if its already deployed
 - name: Get deployed KSL monitoring stack version

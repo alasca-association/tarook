@@ -447,4 +447,9 @@
       data:
         front-proxy-ca.crt: "{{ k8s_front_proxy_ca_cert }}"
         kubernetes-ca.crt: "{{ k8s_ca_cert }}"
+  register: k8s_apply
+  # Retry this task on failures
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 ...

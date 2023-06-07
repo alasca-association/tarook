@@ -44,6 +44,11 @@
       validate:
         fail_on_error: true
         strict: true
+    register: k8s_apply
+    # Retry this task on failures
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
 - name: Create user for calico-cni, configure RBAC and create RoleBinding
   become: true
