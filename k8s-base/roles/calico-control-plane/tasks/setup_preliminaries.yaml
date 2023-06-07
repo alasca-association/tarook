@@ -29,6 +29,7 @@
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
   block:
   - name: Upload calico CA certificate from vault
+    become: true
     environment:
       KUBECONFIG: /etc/kubernetes/admin.conf
     kubernetes.core.k8s:
