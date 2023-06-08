@@ -5,6 +5,28 @@ cluster repository.
 The scripts extensively rely on environment variables.
 See the [Environment Variables Reference](./../usage/environmental-variables.md) for details.
 
+  - [`init.sh`](#initsh)
+  - [`apply.sh`](#applysh)
+  - [`apply-terraform.sh`](#apply-terraformsh)
+  - [`apply-stage2.sh`](#apply-stage2sh)
+  - [`apply-stage3.sh`](#apply-stage3sh)
+  - [`apply-stage4.sh`](#apply-stage4sh)
+  - [`apply-stage5.sh`](#apply-stage5sh)
+  - [`apply-custom.sh`](#apply-customsh)
+  - [`test.sh`](#testsh)
+
+Additional operating scripts:
+  - [`system_update_nodes.sh`](#system_update_nodessh)
+  - [`destroy.sh`](#destroysh)
+  - [`wg-up.sh`](#wg-upsh)
+  - [`manage_roles.py`](#manage_rolespy)
+  - [`manual-terraform.sh`](#manual-terraformsh)
+    - [Examples](#examples)
+  - [`update_inventory.py`](#update_inventorypy)
+  - [`upgrade.sh`](#upgradesh)
+  - [`migrate-docker-containerd.sh`](#migrate-docker-containerdsh)
+  - [`lib.sh`](#libsh)
+
 ## `init.sh`
 
 The `init.sh`-script is used for the [Cluster Repository Initialization](./../usage/initialization.md).
@@ -18,9 +40,6 @@ Except in very rare cases where a new feature requires it, you'll need and shoul
 
 The script triggers the execution of the following scripts:
 
-- [Actions Reference](#actions-reference)
-  - [`init.sh`](#initsh)
-  - [`apply.sh`](#applysh)
   - [`apply-terraform.sh`](#apply-terraformsh)
   - [`apply-stage2.sh`](#apply-stage2sh)
   - [`apply-stage3.sh`](#apply-stage3sh)
@@ -28,16 +47,6 @@ The script triggers the execution of the following scripts:
   - [`apply-stage5.sh`](#apply-stage5sh)
   - [`apply-custom.sh`](#apply-customsh)
   - [`test.sh`](#testsh)
-  - [`system_update_nodes.sh`](#system_update_nodessh)
-  - [`destroy.sh`](#destroysh)
-  - [`wg-up.sh`](#wg-upsh)
-  - [`manage_roles.py`](#manage_rolespy)
-  - [`manual-terraform.sh`](#manual-terraformsh)
-    - [Examples](#examples)
-  - [`update_inventory.py`](#update_inventorypy)
-  - [`upgrade.sh`](#upgradesh)
-  - [`migrate-docker-containerd.sh`](#migrate-docker-containerdsh)
-  - [`lib.sh`](#libsh)
 
 ## `apply-terraform.sh`
 
