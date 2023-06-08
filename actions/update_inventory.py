@@ -510,8 +510,20 @@ def main():
             ANSIBLE_INVENTORY_BASEPATH / stage /
             "group_vars" / "all" / "miscellaneous.yaml"
         )
+
+        # the toml package is unable to parse the 'container_mirrors' list
+        # properly and passes a class to the yaml.safe_dump function, which
+        # fails. That is why we need to unpack the whole list with it's
+        # embedded dict and rebuild it.
+        new_misc_dict = {}
+        for key, value in config.get("miscellaneous").items():
+            if isinstance(value, list) and key == 'container_mirrors':
+                new_misc_dict[key] = [dict(val.items()) for val in value]
+            else:
+                new_misc_dict[key] = value
+
         dump_to_ansible_inventory(
-            config.get("miscellaneous"),
+            new_misc_dict,
             misc_ansible_inventory_path,
             SECTION_VARIABLE_PREFIX_MAP.get("miscellaneous", "")
         )
