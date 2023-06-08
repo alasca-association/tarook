@@ -4,6 +4,20 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Add support for Kubernetes v1.25
+
+We added support for all patch versions of Kubernetes v1.25.
+One can either directly create a new cluster with a patch release of that version or upgrade an existing cluster to one [as usual](https://yaook.gitlab.io/k8s/operation/upgrading-kubernetes.html) via:
+
+```shell
+# Replace the patch version
+MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.25.10
+```
+
+> **NOTE:** By default, the Tigera operator is deployed with Kubernetes v1.25.
+> Therefore, during the upgrade from Kubernetes v1.24 to v1.25, the [migration to the Tigera operator](https://yaook.gitlab.io/k8s/operation/calico.html#migrate-to-operator-based-installation)
+> will be triggered automatically by default!
+
 ## [GPU: Rework setup and check procedure (!750) · Merge requests · YAOOK / k8s · GitLab](https://gitlab.com/yaook/k8s/-/merge_requests/750)
 
 We reworked the setup and smoke test procedure for GPU nodes to be used inside of Kubernetes [1].
