@@ -20,6 +20,60 @@
   failed_when: "not osd_storage_class.resources"
 - name: Add annotations and labels for Helm to adopt existing resources
   block:
+    - name: Get all rook CRDs of group ceph.rook.io  # noqa no-changed-when
+      ansible.builtin.command: "kubectl api-resources --api-group=ceph.rook.io -o name"
+      register: rook_crds
+
+    - name: Add annotations and labels for Helm to rook CRDs of group ceph.rook.io
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: "apiextensions.k8s.io/v1"
+          kind: "CustomResourceDefinition"
+          metadata:
+            name: "{{ item }}"
+            annotations:
+              "meta.helm.sh/release-namespace": "{{ rook_namespace }}"
+              "meta.helm.sh/release-name": "{{ rook_helm_release_name_operator }}"
+            labels:
+              "app.kubernetes.io/managed-by": "Helm"
+      loop: "{{ rook_crds.stdout_lines }}"
+
+    - name: Get all rook CRDs of group rook.io  # noqa no-changed-when
+      ansible.builtin.command: "kubectl api-resources --api-group=rook.io -o name"
+      register: rook_crds
+
+    - name: Add annotations and labels for Helm to rook CRDs of group rook.io
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: "apiextensions.k8s.io/v1"
+          kind: "CustomResourceDefinition"
+          metadata:
+            name: "{{ item }}"
+            annotations:
+              "meta.helm.sh/release-namespace": "{{ rook_namespace }}"
+              "meta.helm.sh/release-name": "{{ rook_helm_release_name_operator }}"
+            labels:
+              "app.kubernetes.io/managed-by": "Helm"
+      loop: "{{ rook_crds.stdout_lines }}"
+
+    - name: Get all rook CRDs of group objectbucket.io  # noqa no-changed-when
+      ansible.builtin.command: "kubectl api-resources --api-group=objectbucket.io -o name"
+      register: rook_crds
+
+    - name: Add annotations and labels for Helm to rook CRDs of group objectbucket.io
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: "apiextensions.k8s.io/v1"
+          kind: "CustomResourceDefinition"
+          metadata:
+            name: "{{ item }}"
+            annotations:
+              "meta.helm.sh/release-namespace": "{{ rook_namespace }}"
+              "meta.helm.sh/release-name": "{{ rook_helm_release_name_operator }}"
+            labels:
+              "app.kubernetes.io/managed-by": "Helm"
+      loop: "{{ rook_crds.stdout_lines }}"
+
     - name: Add annotations and labels for Helm to cluster wide resources
       kubernetes.core.k8s:
         definition:
@@ -33,24 +87,6 @@
             labels:
               "app.kubernetes.io/managed-by": "Helm"
       loop:
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephblockpools.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephbucketnotifications.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephbuckettopics.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephclients.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephclusters.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephfilesystemmirrors.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephfilesystems.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephfilesystemsubvolumegroups.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephnfses.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephobjectrealms.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephobjectstores.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephobjectstoreusers.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephobjectzonegroups.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephobjectzones.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "cephrbdmirrors.ceph.rook.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "objectbucketclaims.objectbucket.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "objectbuckets.objectbucket.io"]
-        - ["apiextensions.k8s.io/v1", "CustomResourceDefinition", "volumes.rook.io"]
         - ["rbac.authorization.k8s.io/v1", "ClusterRole", "cephfs-csi-nodeplugin"]
         - ["rbac.authorization.k8s.io/v1", "ClusterRole", "cephfs-external-provisioner-runner"]
         - ["rbac.authorization.k8s.io/v1", "ClusterRole", "psp:rook"]
