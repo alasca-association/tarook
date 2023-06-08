@@ -83,6 +83,7 @@ enabled = false
 [k8s-service-layer.rook]
 namespace                = "rook-ceph"
 cluster_name             = "rook-ceph"
+use_helm                 = true
 skip_upgrade_checks      = true
 nodeplugin_toleration    = true
 nmons                    = 3
