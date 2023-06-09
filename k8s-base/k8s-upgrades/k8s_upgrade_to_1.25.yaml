@@ -208,6 +208,8 @@
     - ../vars/retries.yaml
   roles:
     - role: calico-tigera-operator
+      vars:
+        k8s_version: "{{ next_k8s_version }}"
       tags:
         - calico
 
