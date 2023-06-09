@@ -195,14 +195,15 @@ function init_k8s_front_proxy_pki_roles() {
     vault write "$k8s_front_proxy_pki_path/roles/apiserver" \
         max_ttl="$pki_ttl" \
         ttl="$pki_ttl" \
-        allow_localhost=true \
-        enforce_hostnames=true \
+        allow_localhost=false \
+        enforce_hostnames=false \
         server_flag=false \
         client_flag=true \
-        allowed_domains="{{identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_hostname}},{{identity.entity.aliases.$nodes_approle_accessor.metadata.role_name}}" \
-        allowed_domains_template=true \
-        allow_any_name=true \
-        allow_ip_sans=true \
+        allowed_domains="front-proxy-client" \
+        allowed_domains_template=false \
+        allow_bare_domains=true \
+        allow_subdomains=false \
+        allow_ip_sans=false \
         key_type=rsa
 }
 

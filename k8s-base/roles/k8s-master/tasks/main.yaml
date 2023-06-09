@@ -337,7 +337,7 @@
       get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/k8s-front-proxy-pki/issue/apiserver"
       get_cert_owner: root
       get_cert_vault_data:
-        common_name: "{{ inventory_hostname }}"
+        common_name: "front-proxy-client"
         ttl: 8784h
       get_cert_notify: Restart kube-apiserver
 
