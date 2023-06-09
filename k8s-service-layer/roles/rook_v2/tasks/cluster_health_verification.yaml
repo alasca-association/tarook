@@ -1,135 +1,20 @@
-# Verify that the Ceph cluster is in a healthy state
-# https://rook.github.io/docs/rook/v1.2/ceph-upgrade.html#health-verification
+# Because we can't loop multiple tasks with Ansible,
+# we have to built this workaround with include_tasks
 ---
-- name: Check if the rook namespace already exists
-  kubernetes.core.k8s_info:
-    kind: Namespace
-    name: "{{ rook_namespace }}"
-  register: rook_ns
-
-- name: Verify that each rook Pod is up and healthy
-  when: rook_ns.resources is defined and rook_ns.resources | length != 0
-  retries: 3
-  delay: 5
-  kubernetes.core.k8s_info:
-    kind: Pod
-    namespace: "{{ rook_namespace }}"
-    wait_timeout: 10
-    wait: true
-    label_selectors:
-    - app != rook-ceph-osd-prepare
-    wait_condition:
-      status: "True"
-      type: "Ready"
-
-- name: Verify ceph cluster health
-  when: rook_ns.resources is defined and rook_ns.resources | length != 0
+- name: Wait for Ceph to become healthy
   block:
-  - name: Determine the rook-ceph-tools pod
-    kubernetes.core.k8s_info:
-      kind: Pod
-      namespace: "{{ rook_namespace }}"
-      label_selectors:
-      - app = rook-ceph-tools
-    register: rook_ceph_tools_pod_info
+  - name: Set retry count
+    ansible.builtin.set_fact:
+      retry_count: "{{ 0 if retry_count is undefined else (retry_count | int) + 1 }}"
 
-  - name: Gather ceph cluster status information via the rook-ceph-tools Pod
-    kubernetes.core.k8s_exec:
-      namespace: "{{ rook_namespace }}"
-      pod: "{{ rook_ceph_tools_pod_info.resources[0].metadata.name }}"
-      command: ceph status -f json
-    register: ceph_cluster_status
+  - name: Include cluster health verification
+    ansible.builtin.include_tasks: _cluster_health_verification.yaml
 
-  # Sadly the ceph status output varies from version to version.
-  # The following tasks check the cluster health depending on the deployed
-  # ceph version. Versions tested: v14.2.5, v14.2.8, v14.2.21, v15.2.13
-  - name: Gather information about the Ceph Cluster
-    kubernetes.core.k8s_info:
-      kind: CephCluster
-      namespace: "{{ rook_namespace }}"
-      name: "{{ rook_cluster_name }}"
-      api_version: ceph.rook.io/v1
-    failed_when: "(ceph_cluster_info.resources | length) == 0"
-    register: ceph_cluster_info
+  rescue:
+  - name: Fail if ceph is not considered healthy
+    ansible.builtin.fail:
+      msg: "Rook/Ceph is not considered healthy. Tried ({{ retry_count }} times.)"
+    when: (retry_count | int) == 20
 
-  - name: Verify the ceph cluster status information
-    vars:
-      ceph_cluster_status_json: "{{ ceph_cluster_status.stdout | from_json }}"
-      ceph_cluster_version: "{{ ceph_cluster_info.resources[0]['spec']['cephVersion']['image'].split(':') | last }}"
-    block:
-    - name: Verify ceph cluster health status (< v14.2.8)
-      vars:
-        ceph_health_status: "{{ ceph_cluster_status_json['health']['status'] }}"
-      ansible.builtin.debug:
-        msg: "The health status of the ceph cluster is {{ ceph_health_status }}"
-      failed_when: ceph_health_status != "HEALTH_OK"
-      when:
-      - ceph_cluster_version is version('v14.2.5', operator='ge')
-      - ceph_cluster_version is version('v14.2.8', operator='lt')
-
-    - name: Verify ceph cluster health status (>= v14.2.8)
-      vars:
-        ceph_health_status: "{{ ceph_cluster_status_json['health']['status'] }}"
-      ansible.builtin.debug:
-        msg: "The health status of the ceph cluster is {{ ceph_health_status }}"
-      failed_when: ceph_health_status == "HEALTH_ERR"
-      when:
-      - ceph_cluster_version is version('v14.2.8', operator='ge')
-
-    - name: Verify that all mons are in the quorum list (< v14.2.8)
-      vars:
-        ceph_num_mons: "{{ ceph_cluster_status_json['monmap']['mons'] | length }}"
-        ceph_num_mons_in_quorum: "{{ ceph_cluster_status_json['quorum'] | length }}"
-      ansible.builtin.debug:
-        msg: "There are {{ ceph_num_mons }} mons out of which {{ ceph_num_mons_in_quorum }} are in the quorum list"
-      failed_when: ceph_num_mons != ceph_num_mons_in_quorum
-      when:
-      - ceph_cluster_version is version('v14.2.5', operator='ge')
-      - ceph_cluster_version is version('v14.2.8', operator='lt')
-
-    - name: Verify that all mons are in the quorum list (>= v14.2.8)
-      vars:
-        ceph_num_mons: "{{ ceph_cluster_status_json['monmap']['num_mons'] }}"
-        ceph_num_mons_in_quorum: "{{ ceph_cluster_status_json['quorum'] | length }}"
-      ansible.builtin.debug:
-        msg: "There are {{ ceph_num_mons }} mons out of which {{ ceph_num_mons_in_quorum }} are in the quorum list"
-      failed_when: ceph_num_mons != ceph_num_mons_in_quorum
-      when:
-      - ceph_cluster_version is version('v14.2.8', operator='ge')
-
-    - name: Verify that the manager is available
-      vars:
-        ceph_mgr_available: "{{ ceph_cluster_status_json['mgrmap']['available'] }}"
-      ansible.builtin.debug:
-        msg: "The ceph manager is {{ ceph_mgr_available | ternary('available', 'unavailable') }}"
-      failed_when: not ceph_mgr_available
-
-    - name: Verify that all OSDs are up and in (< v15.2.13)
-      vars:
-        ceph_num_osds: "{{ ceph_cluster_status_json['osdmap']['osdmap']['num_osds'] }}"
-        ceph_num_up_osds: "{{ ceph_cluster_status_json['osdmap']['osdmap']['num_up_osds'] }}"
-        ceph_num_in_osds: "{{ ceph_cluster_status_json['osdmap']['osdmap']['num_in_osds'] }}"
-      ansible.builtin.debug:
-        msg: "There are {{ ceph_num_osds }} OSDs; {{ ceph_num_up_osds }} are up; {{ ceph_num_in_osds }} are in"
-      failed_when: ceph_num_up_osds != ceph_num_osds or ceph_num_in_osds != ceph_num_osds
-      when:
-      - ceph_cluster_version is version('v14.2.8', operator='ge')
-      - ceph_cluster_version is version('v15.2.13', operator='lt')
-
-    - name: Verify that all OSDs are up and in (>= v15.2.13)
-      vars:
-        ceph_num_osds: "{{ ceph_cluster_status_json['osdmap']['num_osds'] }}"
-        ceph_num_up_osds: "{{ ceph_cluster_status_json['osdmap']['num_up_osds'] }}"
-        ceph_num_in_osds: "{{ ceph_cluster_status_json['osdmap']['num_in_osds'] }}"
-      ansible.builtin.debug:
-        msg: "There are {{ ceph_num_osds }} OSDs; {{ ceph_num_up_osds }} are up; {{ ceph_num_in_osds }} are in"
-      failed_when: ceph_num_up_osds != ceph_num_osds or ceph_num_in_osds != ceph_num_osds
-      when:
-      - ceph_cluster_version is version('v15.2.13', operator='ge')
-
-    - name: Verify that all Placement Groups are active and clean
-      ansible.builtin.debug:
-        msg: "There are {{ item.count }} Placement Groups in state {{ item.state_name }}"
-      failed_when: '"active+clean" not in item.state_name'
-      with_items: "{{ ceph_cluster_status_json['pgmap']['pgs_by_state'] }}"
+  - ansible.builtin.include_tasks: _cluster_health_verification.yaml
 ...
