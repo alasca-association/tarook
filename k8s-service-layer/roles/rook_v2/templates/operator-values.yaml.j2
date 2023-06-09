@@ -19,6 +19,9 @@ tolerations:
    operator: Exists
 {% endif %}
 
+monitoring:
+  enabled: {{ k8s_monitoring_enabled | bool }}
+
 discover:
   priorityClassName: system-cluster-critical
 {% if rook_scheduling_key %}

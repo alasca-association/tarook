@@ -15,6 +15,11 @@ toolbox:
     operator: Exists
 {% endif %}
 
+monitoring:
+  enabled: {{ k8s_monitoring_enabled | bool }}
+  createPrometheusRules: true
+  rulesNamespaceOverride: "{{ rook_namespace }}"
+
 clusterName: "{{ rook_cluster_name }}"
 cephClusterSpec:
   cephVersion:
@@ -47,9 +52,6 @@ cephClusterSpec:
   dashboard:
     enabled: false
     ssl: true
-  monitoring:
-    enabled: {{ k8s_monitoring_enabled | bool }}
-    rulesNamespaceOverride: "{{ rook_namespace }}"
 {% if rook_use_host_networking %}
   network:
 {% endif %}
