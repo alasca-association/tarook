@@ -1,6 +1,8 @@
 ---
-- name: Run kubeadm upgrade node  # noqa no-changed-when
-  when: do_upgrade
+- name: Run kubeadm upgrade node on CP node  # noqa no-changed-when
+  when:
+    - do_upgrade
+    - "'masters' in group_names"
   become: true
   ansible.builtin.command:
     argv:
@@ -10,4 +12,15 @@
       - "--patches"
       - "/etc/kubernetes/kubeadm-patches"
       - --certificate-renewal=false
+
+- name: Run kubeadm upgrade node on worker node  # noqa no-changed-when
+  when:
+    - do_upgrade
+    - "'workers' in group_names"
+  become: true
+  ansible.builtin.command:
+    argv:
+      - "kubeadm"
+      - "upgrade"
+      - "node"
 ...

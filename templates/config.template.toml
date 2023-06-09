@@ -126,7 +126,7 @@ agent_port    = 15203
 # ansible prefix: "k8s_"
 [kubernetes]
 # Kubernetes version. Currently, we support from 1.21.* to 1.24.*.
-version = "1.24.10" # •ᴗ•
+version = "1.25.10" # •ᴗ•
 
 # Set this variable if this cluster contains worker with GPU access
 # and you want to make use of these inside of the cluster,
@@ -310,7 +310,7 @@ plugin = "calico" # •ᴗ•
 #
 # If not specified here, a predefined Calico version will be matched against
 # the above specified Kubernetes version.
-#custom_version = "3.24.5"
+#custom_version = "3.25.1"
 
 # Calico can be either installed via a manually implemented manifest-based approach
 # (default for K8s <= v1.24) or via the tigera operator (enforced for K8s >= v1.25).

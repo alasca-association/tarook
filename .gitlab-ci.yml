@@ -64,6 +64,7 @@ ansible-lint:
     - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.22.yaml"
     - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.23.yaml"
     - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.24.yaml"
+    - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.25.yaml"
   tags:
     - docker
 
@@ -216,6 +217,10 @@ testBook:
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.24.10
     # Update k8s version
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.24.10\"}}"'
+    # Upgrade cluster to k8s v1.25.10
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.25.10
+    # Update k8s version
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.25.10\"}}"'
     # Retest the cluster
   - ./managed-k8s/actions/test.sh
   after_script:
