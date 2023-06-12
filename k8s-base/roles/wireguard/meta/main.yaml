@@ -7,4 +7,5 @@ dependencies:
 - net-forwarding
 - bird
 - vault-config
+- vault-approle
 ...
