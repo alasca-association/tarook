@@ -1,7 +1,7 @@
-{% if item.port %}
-{% set hosts = [container_mirror_default_host ~ ":" ~ item.port] %}
+{% if (item.port | default(false)) %}
+  {% set hosts = [container_mirror_default_host ~ ":" ~ item.port] %}
 {% else %}
-{% set hosts = item.mirrors %}
+  {% set hosts = item.mirrors %}
 {% endif %}
 {% for host in hosts %}
 [host.{{ host | to_json}}]
