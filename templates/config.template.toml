@@ -651,7 +651,7 @@ use_helm = true
 # The key can not be "release" as that one is already used by the Prometheus helm chart.
 #
 #[k8s-service-layer.prometheus.common_labels]
-#managed-by = "yaook-k8s-monitoring"
+#managed-by = "yaook-k8s"
 
 # ANCHOR_END: ksl_prometheus_configuration
 

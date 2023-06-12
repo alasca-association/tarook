@@ -135,7 +135,7 @@ module = "icmp"
 
 
 [k8s-service-layer.prometheus.common_labels]
-managed-by = "yaook-k8s-monitoring"
+managed-by = "yaook-k8s"
 
 [k8s-service-layer.cert-manager]
 enabled = true
