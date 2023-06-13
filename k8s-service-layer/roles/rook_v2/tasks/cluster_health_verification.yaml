@@ -1,0 +1,20 @@
+# Because we can't loop multiple tasks with Ansible,
+# we have to built this workaround with include_tasks
+---
+- name: Wait for Ceph to become healthy
+  block:
+  - name: Set retry count
+    ansible.builtin.set_fact:
+      retry_count: "{{ 0 if retry_count is undefined else (retry_count | int) + 1 }}"
+
+  - name: Include cluster health verification
+    ansible.builtin.include_tasks: _cluster_health_verification.yaml
+
+  rescue:
+  - name: Fail if ceph is not considered healthy
+    ansible.builtin.fail:
+      msg: "Rook/Ceph is not considered healthy. Tried ({{ retry_count }} times.)"
+    when: (retry_count | int) == 20
+
+  - ansible.builtin.include_tasks: _cluster_health_verification.yaml
+...

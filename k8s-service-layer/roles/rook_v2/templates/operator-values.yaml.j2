@@ -1,0 +1,80 @@
+image:
+  tag: "{{ rook_version }}"
+resources:
+  limits:
+    memory: {{ rook_operator_memory_limit | to_json }}
+    cpu: {{ rook_operator_cpu_limit | to_json }}
+  requests:
+    memory: {{ rook_operator_memory_request | to_json }}
+    cpu: {{ rook_operator_cpu_request | to_json }}
+
+nodeSelector:
+{% if rook_scheduling_key %}
+  {{ rook_scheduling_key | to_json }}: "true"
+{% endif %}
+
+tolerations:
+{% if rook_scheduling_key %}
+ - key: {{ rook_scheduling_key | to_json }}
+   operator: Exists
+{% endif %}
+
+monitoring:
+  enabled: {{ k8s_monitoring_enabled | bool }}
+
+discover:
+  priorityClassName: system-cluster-critical
+{% if rook_scheduling_key %}
+  tolerations:
+    - effect: NoSchedule
+      key: {{ rook_scheduling_key | to_json }}
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: {{ rook_scheduling_key | to_json }}
+          operator: Exists
+{% endif %}
+
+agent:
+  priorityClassName: system-cluster-critical
+{% if rook_scheduling_key %}
+  tolerations:
+    - effect: NoSchedule
+      key: {{ rook_scheduling_key | to_json }}
+{% endif %}
+
+pspEnable: false
+
+csi:
+  enableRbdDriver: "{{ rook_csi_plugins }}"
+  enableCephfsDriver: "{{ rook_csi_plugins }}"
+  enableGrpcMetrics: "{{ rook_csi_plugins }}"
+  enableCephfsSnapshotter: "{{ rook_csi_plugins }}"
+  enableRBDSnapshotter: "{{ rook_csi_plugins }}"
+  #rbdFSGroupPolicy: "ReadWriteOnceWithFSType"
+  #cephFSFSGroupPolicy: "ReadWriteOnceWithFSType"
+{% if rook_scheduling_key %}
+  provisionerTolerations:
+    - effect: NoSchedule
+      key: {{ rook_scheduling_key | to_json }}
+      operator: Exists
+  provisionerNodeAffinity: {{ rook_scheduling_key | to_json }} #TODO not to json
+{% endif %}
+
+  pluginTolerations:
+  {% if rook_nodeplugin_toleration == True %}
+    - operator: Exists
+  {% else %}
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/controlplane
+      operator: Exists
+    - effect: NoExecute
+      key: node-role.kubernetes.io/etcd
+      operator: Exists
+  {% if rook_nodeplugin_toleration %}
+    - key: {{ rook_nodeplugin_toleration | to_json }}
+      operator: Exists
+  {% endif %}
+  {% endif %}
+  

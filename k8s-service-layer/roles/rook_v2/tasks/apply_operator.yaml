@@ -1,0 +1,14 @@
+---
+- name: Apply operator chart
+  kubernetes.core.helm:
+    chart_ref: rook-ceph
+    chart_repo_url: https://charts.rook.io/release/
+    chart_version: "{{ rook_version }}"
+    release_namespace: "{{ rook_namespace }}"
+    create_namespace: true
+    release_name: "{{ rook_helm_release_name_operator }}"
+    release_state: present
+    values: "{{ lookup('template', 'operator-values.yaml.j2') | from_yaml }}"
+    wait: true
+  register: operator_status
+...

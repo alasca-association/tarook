@@ -1,0 +1,367 @@
+{% from "roles/rook_v1/templates/utils.j2" import resource_constraints %}
+
+toolbox:
+  enabled: true
+{% if rook_scheduling_key %}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: {{ rook_scheduling_key | to_json }}
+            operator: Exists
+  tolerations:
+  - key: {{ rook_scheduling_key | to_json }}
+    operator: Exists
+{% endif %}
+
+monitoring:
+  enabled: {{ k8s_monitoring_enabled | bool }}
+  createPrometheusRules: true
+  rulesNamespaceOverride: "{{ rook_namespace }}"
+
+clusterName: "{{ rook_cluster_name }}"
+cephClusterSpec:
+  cephVersion:
+    image: "quay.io/ceph/ceph:{{ rook_ceph_versions.ceph }}"
+    allowUnsupported: false
+  dataDirHostPath: /var/lib/rook
+  skipUpgradeChecks: {{ rook_skip_upgrade_checks | to_json }}
+  continueUpgradeAfterChecksEvenIfNotHealthy: {{ rook_skip_upgrade_checks | to_json }}
+  waitTimeoutForHealthyOSDInMinutes: 10
+  priorityClassNames:
+    all: system-cluster-critical
+  mon:
+    count: {{ rook_nmons }}
+    allowMultiplePerNode: {{ rook_mon_allow_multiple_per_node }}
+{% if rook_mon_volume %}
+    volumeClaimTemplate:
+      spec:
+        storageClassName: "{{ rook_mon_volume_storage_class }}"
+        resources:
+          requests:
+            storage: "{{ rook_mon_volume_size }}"
+{% endif %}
+  mgr:
+{% if rook_mgr_use_pg_autoscaler %}
+    count: {{ rook_nmgrs }}
+    modules:
+      - name: pg_autoscaler
+        enabled: true
+{% endif %}
+  dashboard:
+    enabled: false
+    ssl: true
+{% if rook_use_host_networking %}
+  network:
+{% endif %}
+  crashCollector:
+    disable: false
+  cleanupPolicy:
+    confirmation: ""
+    sanitizeDisks:
+      method: quick
+      dataSource: zero
+      iteration: 1
+    allowUninstallWithVolumes: false
+  placement:
+{% if rook_scheduling_key %}
+    all:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: {{ rook_scheduling_key | to_json }}
+              operator: Exists
+      tolerations:
+      - key: {{ rook_scheduling_key | to_json }}
+        operator: Exists
+{% endif %}
+{% if rook_mon_scheduling_key %}
+    mon:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: {{ rook_mon_scheduling_key | to_json }}
+              operator: Exists
+      tolerations:
+      - key: {{ rook_mon_scheduling_key | to_json }}
+        operator: Exists
+{% endif %}
+{% if rook_mgr_scheduling_key %}
+    mgr:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: {{ rook_mgr_scheduling_key | to_json }}
+              operator: Exists
+      tolerations:
+      - key: {{ rook_mgr_scheduling_key | to_json }}
+        operator: Exists
+{% endif %}
+  annotations:
+  labels:
+# Workaround as we can't directly overwrite the created ServiceMonitors
+# persistently currently: https://github.com/rook/rook/issues/9618
+{% if k8s_monitoring_enabled | bool and monitoring_common_labels is defined | default(False) %}
+    all:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+      {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
+  resources:
+    mgr: {
+{% call resource_constraints(
+  rook_mgr_memory_request,
+  rook_mgr_cpu_request,
+  rook_mgr_memory_limit,
+  rook_mgr_cpu_limit) %}{% endcall %}
+    }
+    mon: {
+{% call resource_constraints(
+  rook_mon_memory_request,
+  rook_mon_cpu_request,
+  rook_mon_memory_limit,
+  rook_mon_cpu_limit) %}{% endcall %}
+    }
+  removeOSDsIfOutAndSafeToRemove: {{ rook_osd_autodestroy_safe }}
+  storage: # cluster level storage configuration and selection
+    useAllNodes: false
+    useAllDevices: false
+    config:
+      encryptedDevice: "{{ rook_encrypt_osds }}" # the default value for this option is "false"
+    onlyApplyOSDPlacement: false
+    storageClassDeviceSets:
+    - name: cinder
+      count: {{ rook_nosds }}
+      portable: true
+{% if rook_osd_anti_affinity or rook_scheduling_key %}
+      placement:
+{% if rook_osd_anti_affinity %}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - rook-ceph-osd
+                - key: app
+                  operator: In
+                  values:
+                  - rook-ceph-osd-prepare
+              topologyKey: kubernetes.io/hostname
+        topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - rook-ceph-osd
+              - rook-ceph-osd-prepare
+{% endif %}
+{% if rook_scheduling_key %}
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: {{ rook_scheduling_key | to_json }}
+                operator: Exists
+        tolerations:
+        - key: {{ rook_scheduling_key | to_json }}
+          operator: Exists
+{% endif %}
+{% endif %}
+      resources: {
+{% call resource_constraints(
+  rook_osd_memory_request,
+  rook_osd_cpu_request,
+  rook_osd_memory_limit,
+  rook_osd_cpu_limit) %}{% endcall %}
+      }
+      volumeClaimTemplates:
+      - metadata:
+          creationTimestamp: null
+          name: data  # it is important that the template is called data for rook v1.3
+        spec:
+          resources:
+            requests:
+              storage: "{{ rook_osd_volume_size }}"
+          storageClassName: "{{ rook_osd_storage_class }}"
+          volumeMode: Block
+          accessModes:
+          - ReadWriteOnce
+  disruptionManagement:
+    managePodBudgets: {{ rook_manage_pod_budgets | bool }}
+    osdMaintenanceTimeout: 30
+    machineDisruptionBudgetNamespace: openshift-machine-api
+
+  # healthChecks
+  # Valid values for daemons are 'mon', 'osd', 'status'
+  healthCheck:
+    daemonHealth:
+      mon:
+        disabled: false
+        interval: 45s
+      osd:
+        disabled: false
+        interval: 60s
+      status:
+        disabled: false
+        interval: 60s
+    # Change pod liveness probe, it works for all mon,mgr,osd daemons
+    livenessProbe:
+      mon:
+        disabled: false
+      mgr:
+        disabled: false
+      osd:
+        disabled: false
+
+
+
+cephBlockPools:
+{% for item in rook_pools %}
+  - name: "{{ item.name }}"
+    spec:
+      failureDomain: "{{ item.failure_domain | default('host') }}"
+{% if item.erasure_coded | default(False) %}
+      erasureCoded:
+        dataChunks: {{ item.erasure_coded.data_chunks | default(2) }}
+        codingChunks: {{ item.erasure_coded.coding_chunks | default(1) }}
+{% else %}
+      # For a pool based on raw copies, specify the number of copies. A size of 1 indicates no redundancy.
+      replicated:
+        size: {{ item.replicated | default(1) }}
+        # Disallow setting pool with replica 1, this could lead to data loss without recovery.
+        # Make sure you're *ABSOLUTELY CERTAIN* that is what you want
+        requireSafeReplicaSize: {{ ((item.replicated | default(1) | int) != 1) | to_json }}
+{% endif %}
+      deviceClass: {{ item.device_class | default("hdd") | to_json }}
+      parameters:
+        compression_mode: none
+      mirroring:
+        enabled: false
+        mode: image
+      statusCheck:
+        mirror:
+          disabled: false
+          interval: 60s
+      annotations:
+    storageClass:
+      enabled: true
+      name: {{ "%s-%s" | format(rook_cluster_name, item.name) | to_json }}
+      isDefault: false
+      reclaimPolicy: Delete
+
+      parameters:
+        # RBD image features. Available for imageFormat: "2". CSI RBD currently supports only `layering` feature.
+        imageFeatures: layering
+
+        # The secrets contain Ceph admin credentials.
+        csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
+        csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+        csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
+        csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+
+{% endfor %}
+
+cephFileSystems:
+{% if rook_ceph_fs %}
+  - name: "{{ rook_ceph_fs_name }}"
+    spec:
+      metadataPool:
+        replicated:
+          size: {{ rook_ceph_fs_replicated }}
+          requireSafeReplicaSize: {{ (rook_ceph_fs_replicated | int != 1) | to_json }}
+        parameters:
+          compression_mode: "none"
+      dataPools:
+        - failureDomain: host
+          replicated:
+            size: {{ rook_ceph_fs_replicated }}
+            # Disallow setting pool with replica 1, this could lead to data loss without recovery.
+            # Make sure you're *ABSOLUTELY CERTAIN* that is what you want
+            requireSafeReplicaSize: {{ (rook_ceph_fs_replicated | int != 1) | to_json }}
+          parameters:
+            compression_mode: "none"
+      preserveFilesystemOnDelete: true
+      metadataServer:
+        activeCount: 1
+        activeStandby: true
+        placement:
+{% if rook_scheduling_key %}
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: {{ rook_scheduling_key | to_json }}
+                  operator: Exists
+          tolerations:
+          - key: {{ rook_scheduling_key | to_json }}
+            operator: Exists
+{% endif %}
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - rook-ceph-mds
+                # topologyKey: kubernetes.io/hostname will place MDS across different hosts
+                topologyKey: kubernetes.io/hostname
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                      - key: app
+                        operator: In
+                        values:
+                          - rook-ceph-mds
+                  # topologyKey: */zone can be used to spread MDS across different AZ
+                  topologyKey: topology.kubernetes.io/zone
+        annotations:
+        labels:
+        resources: {
+    {% call resource_constraints(
+      rook_mds_memory_request,
+      rook_mds_cpu_request,
+      rook_mds_memory_limit,
+      rook_mds_cpu_limit) %}{% endcall %}
+        }
+      mirroring:
+        enabled: false
+    storageClass:
+      enabled: true
+      isDefault: false
+      name: {{ "%s-cephfs" | format(rook_cluster_name) | to_json }}
+      pool: {{ "%s-data0" | format(rook_ceph_fs_name) | to_json }}
+
+      reclaimPolicy: Delete
+      allowVolumeExpansion: true
+
+      parameters:
+        # The secrets contain Ceph admin credentials.
+        csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+        csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+        csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+        csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+        csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+        csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+
+        clusterID: {{ rook_cluster_name | to_json }}
+        fsName: {{ rook_ceph_fs_name | to_json }}
+        pool: {{ "%s-data0" | format(rook_ceph_fs_name) | to_json }}
+        provisionVolume: "true"
+{% endif %}
+
+cephObjectStores: []
