@@ -230,6 +230,7 @@ vault-container-test:
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.25.10
     # Update k8s version
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.25.10\"}}"'
+  - AFLAGS="-t mk8s-ms/monitoring" ./managed-k8s/actions/apply-stage5.sh
     # Retest the cluster
   - ./managed-k8s/actions/test.sh
   after_script:
