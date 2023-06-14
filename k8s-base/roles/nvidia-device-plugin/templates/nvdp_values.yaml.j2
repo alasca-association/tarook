@@ -14,7 +14,13 @@ tolerations:
 nfd:
   # limit to GPU nodes for
   worker:
-    tolerations: {}
+    tolerations:
+    - key: k8s.yaook.cloud/gpu-node
+      operator: Exists
+      effect: NoSchedule
+    - key: k8s.yaook.cloud/gpu-node
+      operator: Exists
+      effect: PreferNoSchedule
     nodeSelector:
       k8s.yaook.cloud/gpu-node: "true"
 # https://github.com/NVIDIA/gpu-feature-discovery
