@@ -6,6 +6,13 @@ serviceMonitor:
     {{ label_key | to_json }}: {{ label_value | to_json }}
 {% endfor %}
 {% endif %}
+tolerations:
+  - key: yk8s-use-gpu
+    operator: Exists
+    effect: NoSchedule
+  - key: yk8s-use-gpu
+    operator: Exists
+    effect: PreferNoSchedule
 nodeSelector:
   yk8s-use-gpu: "true"
 # TODO (low prio, needs discussion and probably desired for all scrape jobs):

@@ -1,6 +1,14 @@
 nodeSelector:
   yk8s-use-gpu: "true"
 
+tolerations:
+  - key: yk8s-use-gpu
+    operator: Exists
+    effect: NoSchedule
+  - key: yk8s-use-gpu
+    operator: Exists
+    effect: PreferNoSchedule
+
 # Subcharts
 # https://github.com/NVIDIA/gpu-operator/tree/master/deployments/gpu-operator/charts/node-feature-discovery
 nfd:
