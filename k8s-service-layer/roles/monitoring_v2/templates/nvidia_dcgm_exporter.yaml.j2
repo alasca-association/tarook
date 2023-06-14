@@ -7,13 +7,13 @@ serviceMonitor:
 {% endfor %}
 {% endif %}
 tolerations:
-  - key: yk8s-use-gpu
+  - key: k8s.yaook.cloud/gpu-node
     operator: Exists
     effect: NoSchedule
-  - key: yk8s-use-gpu
+  - key: k8s.yaook.cloud/gpu-node
     operator: Exists
     effect: PreferNoSchedule
 nodeSelector:
-  yk8s-use-gpu: "true"
+  k8s.yaook.cloud/gpu-node: "true"
 # TODO (low prio, needs discussion and probably desired for all scrape jobs):
 # Remove labels Hostname, container, (namespace?), pod. Maybe use own SM to be able to relabel, here.

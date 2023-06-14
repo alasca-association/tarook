@@ -1,11 +1,11 @@
 nodeSelector:
-  yk8s-use-gpu: "true"
+  k8s.yaook.cloud/gpu-node: "true"
 
 tolerations:
-  - key: yk8s-use-gpu
+  - key: k8s.yaook.cloud/gpu-node
     operator: Exists
     effect: NoSchedule
-  - key: yk8s-use-gpu
+  - key: k8s.yaook.cloud/gpu-node
     operator: Exists
     effect: PreferNoSchedule
 
@@ -16,7 +16,7 @@ nfd:
   worker:
     tolerations: {}
     nodeSelector:
-      yk8s-use-gpu: "true"
+      k8s.yaook.cloud/gpu-node: "true"
 # https://github.com/NVIDIA/gpu-feature-discovery
 gfd:
   enabled: true
