@@ -347,9 +347,11 @@ plugin = "calico" # •ᴗ•
 
 namespace    = "rook-ceph" # •ᴗ•
 cluster_name = "rook-ceph" # •ᴗ•
+use_helm = true
+
 
 # Currently we support the following rook versions:
-# v1.2.3, v1.3.11, v1.4.9, v1.5.12, v1.6.7, v1.7.11
+# v1.2.3, v1.3.11, v1.4.9, v1.5.12, v1.6.7, v1.7.11, v1.8.10
 #version = "v1.7.11"
 
 #nodeplugin_toleration = true
@@ -636,7 +638,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 # The key can not be "release" as that one is already used by the Prometheus helm chart.
 #
 #[k8s-service-layer.prometheus.common_labels]
-#managed-by = "yaook-k8s-monitoring"
+#managed-by = "yaook-k8s"
 
 # ANCHOR_END: ksl_prometheus_configuration
 

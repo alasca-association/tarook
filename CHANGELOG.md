@@ -18,6 +18,15 @@ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.25.10
 > Therefore, during the upgrade from Kubernetes v1.24 to v1.25, the [migration to the Tigera operator](https://yaook.gitlab.io/k8s/operation/calico.html#migrate-to-operator-based-installation)
 > will be triggered automatically by default!
 
+## [Add support for Helm-based installation of rook-ceph (!676)](https://gitlab.com/yaook/k8s/-/merge_requests/676)
+Starting with rook v1.7, an official Helm chart is provided and has become the
+recommended installation method. The charts take care most installation and
+upgrade processes. The role rook_v2 includes adds support for the Helm-based
+installation as well as a migration path from rook_v1.
+
+In order to migrate, make sure that rook v1.7.11 is installed and healthy, then
+set use_helm=true in the k8s-service-layer.rook section and run stage4.
+
 ## [GPU: Rework setup and check procedure (!750) · Merge requests · YAOOK / k8s · GitLab](https://gitlab.com/yaook/k8s/-/merge_requests/750)
 
 We reworked the setup and smoke test procedure for GPU nodes to be used inside of Kubernetes [1].
