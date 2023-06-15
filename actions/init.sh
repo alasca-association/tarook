@@ -160,3 +160,6 @@ else
 	notef 'You should now update config/config.toml as needed and '
 	notef 'inventory/02_trampoline/hosts with your server IPs'
 fi
+
+notef 'Make sure to set your user specific variables in one'
+notef 'of the supported ways, see '"$submodule_managed_k8s_name"'/templates/yaook-k8s-env.template.sh'
