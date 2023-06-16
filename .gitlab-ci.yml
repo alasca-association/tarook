@@ -329,8 +329,9 @@ testBook:
     - jq .unseal_keys_b64[0] -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/unseal.key
     - vault operator unseal $(cat $CI_PROJECT_DIR/unseal.key)
     - vault login $(cat $CI_PROJECT_DIR/root.key)
-    - bash ./managed-k8s/tools/vault-init.sh
-    - bash ./managed-k8s/tools/vault-mkcluster.sh k8s.ci.yaook.cloud
+    - bash ./managed-k8s/tools/vault/init.sh
+    - bash ./managed-k8s/tools/vault/mkcluster-root.sh k8s.ci.yaook.cloud
+    - export VAULT_TOKEN=$(cat $CI_PROJECT_DIR/root.key)
     - pip3 install -r managed-k8s/requirements.txt
     - ./managed-k8s/actions/apply-terraform.sh
     - ./reachability-or-recreate.sh
