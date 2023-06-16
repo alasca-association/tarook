@@ -16,24 +16,6 @@
       group: root
     register: blacklisted_nouveau
 
-  - name: Update initramfs  # noqa no-changed-when no-handler
-    ansible.builtin.command: "update-initramfs -k {{ ansible_kernel }} -uv"
-    when: blacklisted_nouveau.changed or installed_driver.changed
-    register: ramfs
-
-  - name: Reboot block (gpu)  # noqa no-handler
-    when: ramfs.changed
-    block:
-    - name: Reboot the system  # noqa no-changed-when
-      ansible.builtin.command:
-        argv:
-        - reboot
-        - now
-      when: ansible_connection == 'local'
-
-    - name: Reboot the system
-      ansible.builtin.reboot:
-
   - name: Install deps for the nvidia drivers
     ansible.builtin.apt:
       state: present
@@ -83,4 +65,22 @@
     until: installed_driver is not failed
     retries: "{{ network_error_retries }}"
     delay: "{{ network_error_delay }}"
+
+  - name: Update initramfs  # noqa no-changed-when no-handler
+    ansible.builtin.command: "update-initramfs -k {{ ansible_kernel }} -uv"
+    when: blacklisted_nouveau.changed or installed_driver.changed
+    register: ramfs
+
+  - name: Reboot block (gpu)  # noqa no-handler
+    when: ramfs.changed
+    block:
+    - name: Reboot the system  # noqa no-changed-when
+      ansible.builtin.command:
+        argv:
+        - reboot
+        - now
+      when: ansible_connection == 'local'
+
+    - name: Reboot the system
+      ansible.builtin.reboot:
 ...

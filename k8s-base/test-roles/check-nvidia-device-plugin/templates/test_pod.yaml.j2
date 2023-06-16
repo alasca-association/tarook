@@ -14,4 +14,11 @@ spec:
       resources:
         limits:
           nvidia.com/gpu: 1 # requesting 1 GPU
+  tolerations:
+    - key: k8s.yaook.cloud/gpu-node
+      operator: Exists
+      effect: NoSchedule
+    - key: k8s.yaook.cloud/gpu-node
+      operator: Exists
+      effect: PreferNoSchedule
 ...
