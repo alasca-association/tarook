@@ -42,4 +42,5 @@ oom_score = 0
 
     [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
       BinaryName = "/usr/bin/nvidia-container-runtime"
+      SystemdCgroup = true
 {% endif %}

@@ -151,7 +151,7 @@
     api_version: v1
     kind: Node
     label_selectors:
-    - yk8s-use-gpu=true
+    - k8s.yaook.cloud/gpu-node=true
   # Retry this task on failures
   register: gpu_nodes
   until: gpu_nodes is not failed
