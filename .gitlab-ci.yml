@@ -118,9 +118,9 @@ testBook:
       - |
         export VAULT_ADDR=https://127.0.0.1:8200
         mkdir -p /vault/config /vault/tls/ca
-        printf "%s" "$VAULT_KEY" > /vault/tls/vault.key
-        printf "%s" "$VAULTCHAIN_CRT" > /vault/tls/vaultchain.crt
-        printf "%s" "$VAULT_CONFIG_HCL" > /vault/config/config.hcl
+        printf "%s" "$ci_cert_vault_key" > /vault/tls/vault.key
+        printf "%s" "$ci_cert_vaultchain_crt" > /vault/tls/vaultchain.crt
+        printf "%s" "$ci_vault_config_hcl" > /vault/config/config.hcl
         cp /bin/vault $CI_PROJECT_DIR
         exec vault server -config=/vault/config/config.hcl
   before_script:
@@ -155,7 +155,7 @@ testBook:
   script:
     - export VAULT_ADDR=https://yaook-vault:8200
     - mkdir -p $CI_PROJECT_DIR/tls/ca
-    - printf "%s" "$VAULTCA_CRT" > $CI_PROJECT_DIR/tls/ca/vaultca.crt
+    - printf "%s" "$ci_cert_vaultca_crt" > $CI_PROJECT_DIR/tls/ca/vaultca.crt
     - export VAULT_CACERT="$CI_PROJECT_DIR/tls/ca/vaultca.crt"
     - vault operator init -key-shares=1 -key-threshold=1 -format=json > $CI_PROJECT_DIR/vault_init.out
     - jq .root_token -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/root.key
