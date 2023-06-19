@@ -28,6 +28,8 @@ source_up || true
 # https://direnv.net/man/direnv-stdlib.1.html#codesourceupifexists-ltfilenamegtcode
 #source_up_if_exists
 
+source_env ./managed-k8s/.envrc.lib.sh || true
+
 # For more details on existing environment variables and their effects,
 # please see docs/admin/cluster-repo.md in the managed-k8s lcm
 # repository.
@@ -78,6 +80,8 @@ export KUBECONFIG
 # 'cluster_repository/k8s-custom' folder and executed after
 # after initialization through the included main.yaml
 export K8S_CUSTOM_STAGE_USAGE=false
+
+layout poetry managed-k8s
 
 source_env "$PWD/.envrc.local" || true
 # For up-to-date direnv versions one can also use:

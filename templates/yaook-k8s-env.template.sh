@@ -27,6 +27,3 @@ export TF_VAR_keypair='firstnamelastname-hostname-gendate'
 
 # Optional: You can also source your openrc from here.
 
-# Optional: activate the virtual env for yaook-k8s
-source_env_if_exists ~/.venv/yaook-k8s/bin/activate
-

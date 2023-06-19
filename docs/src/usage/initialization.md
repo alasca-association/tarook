@@ -96,11 +96,12 @@ serve as your [cluster repository](./../design/cluster-repository.md):
     ```
     This `init.sh` script will:
     - Add all necessary submodules.
-    - Copy a `config.toml` template to `./config/config.toml`, if no config exists in the cluster repository yet.
+    - Copy a `config.toml` template to `./config/config.toml` if no config exists in the cluster repository yet.
     - Update `.gitignore` to current standards.
 1. In the `[defaults]` section of the [ansible configuration file](./cluster-configuration.md#ansible-configuration) `./managed-k8s/ansible/ansible.cfg`, set the environment variable `private_key_file` to the path of the private key file of the keypair, which in the `./.envrc` file was specified by the `$TF_VAR_keypair` environment variable.
 1. Make sure poetry is up to date (otherwise installing the dependencies might fail), see https://python-poetry.org/docs/#installation
 1. Activate the virtual environment with all python dependencies
+   NOTE: This is handled automatically for you if you use the default .envrc
     ```console
     poetry shell -C managed-k8s
     ```
