@@ -34,8 +34,9 @@ yamllint:
   stage: lint
   tags:
     - docker
-  image: registry.gitlab.com/pipeline-components/yamllint:latest
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3"
   script:
+    - "pip3 install yamllint==v1.31.0"
     - yamllint .
 
 detect-vault-image:
@@ -69,7 +70,7 @@ ansible-lint:
 flake8:
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3"
   script:
-    - "pip3 install flake8"
+    - "pip3 install flake8==6.0.0"
     - 'python3 -m flake8'
   stage: lint
   tags:
