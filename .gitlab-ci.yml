@@ -76,6 +76,16 @@ flake8:
   tags:
     - docker
 
+pre-commit-hooks:
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  before_script:
+    - poetry install --sync
+  script:
+    - 'SKIP=shellcheck,yamllint,flake8 pre-commit run --all-files'
+  stage: lint
+  tags:
+    - docker
+
 build-docs-check:
   stage: lint
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
