@@ -9,8 +9,8 @@
 haproxy_ports        = [30060]
 workers              = 6
 worker_flavors       = ["L", "L", "L", "L", "L", "SCS-4C:8:50s-GNt:1-mk8sPrivate"]
-master_images        = ["Ubuntu 18.04 LTS x64", "Ubuntu 22.04 LTS x64"]
-worker_images        = ["Ubuntu 18.04 LTS x64", "Ubuntu 22.04 LTS x64"]
+master_images        = ["Ubuntu 20.04 LTS x64", "Ubuntu 22.04 LTS x64"]
+worker_images        = ["Ubuntu 20.04 LTS x64", "Ubuntu 22.04 LTS x64"]
 enable_az_management = false
 cluster_name         = "ci"
 
