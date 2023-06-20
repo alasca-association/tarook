@@ -7,7 +7,7 @@ repos:
         args:
           - -x
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.28.0
+    rev: v1.31.0
     hooks:
       - id: yamllint
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -21,7 +21,7 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
   - repo: https://github.com/pycqa/flake8
-    rev: '6.0.0'
+    rev: 6.0.0
     hooks:
       - id: flake8
   - repo: local
@@ -30,6 +30,12 @@ repos:
         name: make sure shebangs are portable
         types: [executable, text]
         entry: ci/lint/portable-shebangs.sh
+        language: script
+        stages: [commit, push, manual]
+      - id: validate-linter-versions
+        name: make sure gitlab ci and pre-commit use the same linter versions
+        files: "^(.gitlab-ci.yml|.pre-commit-config.yaml)$"
+        entry: ci/lint/validate-linter-versions.sh
         language: script
         stages: [commit, push, manual]
 ...
