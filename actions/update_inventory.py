@@ -613,18 +613,23 @@ def main():
             "host {}".format(host)
         )
 
-    # Remove priorities after they have been processed so that they
-    # are not contained in the upper section anymore
-    config.get("load-balancing", dict()).pop("priorities", dict())
-    load_balancing_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage2"] /
-        "group_vars" / "gateways" / "load-balancing.yaml"
-    )
-    dump_to_ansible_inventory(
-        config.get("load-balancing", dict()),
-        load_balancing_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("load-balancing", "")
-    )
+    load_balancing_ansible_inventory_paths = [
+        (
+            ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage2"] /
+            "group_vars" / "gateways" / "load-balancing.yaml"
+        ),
+        (
+            ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage3"] /
+            "group_vars" / "all" / "load-balancing.yaml"
+        ),
+    ]
+
+    for path in load_balancing_ansible_inventory_paths:
+        dump_to_ansible_inventory(
+            config.get("load-balancing", dict()),
+            path,
+            SECTION_VARIABLE_PREFIX_MAP.get("load-balancing", "")
+        )
 
     # ---
     # CAH USERS
