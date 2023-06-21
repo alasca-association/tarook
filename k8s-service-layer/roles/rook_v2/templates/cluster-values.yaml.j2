@@ -22,9 +22,11 @@ monitoring:
 
 clusterName: "{{ rook_cluster_name }}"
 cephClusterSpec:
+{% if rook_custom_ceph_version is defined %}
   cephVersion:
-    image: "quay.io/ceph/ceph:{{ rook_ceph_versions.ceph }}"
-    allowUnsupported: false
+    image: "quay.io/ceph/ceph:{{ rook_custom_ceph_version }}"
+    allowUnsupported: true
+{% endif %}
   dataDirHostPath: /var/lib/rook
   skipUpgradeChecks: {{ rook_skip_upgrade_checks | to_json }}
   continueUpgradeAfterChecksEvenIfNotHealthy: {{ rook_skip_upgrade_checks | to_json }}

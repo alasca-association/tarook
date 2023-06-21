@@ -45,16 +45,7 @@ rook_pools:
     replicated: 1
 rook_nodeplugin_toleration: true
 rook_use_host_networking: false
-# ToDo: REMOVE ME after refactoring service layer inventories/variables
-# hack because k8s-config is not available on this layer
-k8s_version_minor: "1.18"
 rook_version: "v1.7.11" # default
-rook_ceph_version_map:
-  "v1.7.11": # default
-    ceph: "v16.2.6" # default
-  "v1.8.10":
-    ceph: "v16.2.13"
-rook_ceph_versions: "{{ rook_ceph_version_map[rook_version] }}"
 rook_scheduling_key: null
 rook_mon_scheduling_key: null
 rook_mgr_scheduling_key: null
@@ -62,17 +53,6 @@ rook_mgr_scheduling_key: null
 # to perform upgrades, because OSDs will become unavailable.
 # Set to True so rook will update even if OSDs would become unavailable
 rook_skip_upgrade_checks: false
-# Each rook release does only support certain major releases of ceph.
-rook_supported_releases:
-  - rook_release: "v1.7"
-    supported_ceph_releases:
-      - v14  # >= 14.2.5
-      - v15  # >= 15.2.0
-      - v16  # >= 16.2.0
-  - rook_release: "v1.8"
-    supported_ceph_releases:
-      - v15 # >= 15.2.0
-      - v16 # >= 16.2.0
 rook_helm_release_name_operator: "rook-ceph"
 rook_helm_release_name_cluster: "rook-ceph-cluster"
 ...
