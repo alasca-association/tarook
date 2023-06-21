@@ -9,7 +9,7 @@ rook_mon_memory_limit: "1Gi"
 rook_mon_memory_request: "{{ rook_mon_memory_limit }}"
 rook_mon_cpu_limit: "500m"
 rook_mon_cpu_request: "100m"
-rook_nmgrs: 1
+rook_nmgrs: 2
 rook_mgr_use_pg_autoscaler: true
 rook_mgr_memory_limit: "512Mi"
 rook_mgr_memory_request: "{{ rook_mgr_memory_limit }}"
