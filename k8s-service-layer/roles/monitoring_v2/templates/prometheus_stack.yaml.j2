@@ -27,6 +27,10 @@ alertmanager:
   alertmanagerSpec:
     priorityClassName: "system-cluster-critical"
     replicas: "{{ monitoring_alertmanager_replicas }}"
+{% if monitoring_allow_external_rules %}
+    alertmanagerConfigMatcherStrategy:
+      type: None
+{% endif %}
   serviceMonitor:
     relabelings:
       - sourceLabels: [__meta_kubernetes_pod_node_name]
@@ -430,4 +434,9 @@ prometheus:
             - matchExpressions:
                 - key: "{{ monitoring_scheduling_key }}"
                   operator: Exists
+{% endif %}
+{% if monitoring_allow_external_rules %}
+    ruleSelectorNilUsesHelmValues: false
+    ruleSelector: {}
+    ruleNamespaceSelector: {}
 {% endif %}

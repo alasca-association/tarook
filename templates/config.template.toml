@@ -637,6 +637,11 @@ use_helm = true
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
 #blackbox_version = "7.0.0"
 
+# By default, prometheus and alertmanager only consider global rules from the monitoring 
+# namespace while other rules can only alert on their own namespace. If this variable is
+# set, cluster wide rules are considered from all namespaces.
+#allow_external_rules = false
+
 #[[k8s-service-layer.prometheus.internet_probe_targets]]
 # name="example"                    # Human readable URL that will appear in Prometheus / AlertManager
 # url="http://example.com/healthz"  # The URL that blackbox will scrape
