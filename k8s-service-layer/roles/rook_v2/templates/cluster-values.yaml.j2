@@ -54,6 +54,10 @@ cephClusterSpec:
   dashboard:
     enabled: false
     ssl: true
+{% if rook_version[1:] is version('1.9', '>=') %}
+    createPrometheusRules: true
+{% endif %}
+
 {% if rook_use_host_networking %}
   network:
 {% endif %}
