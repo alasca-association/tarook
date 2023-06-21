@@ -5,16 +5,6 @@
 # In addition, we need to check if the configured ceph version is supported
 # by the configured rook version so that the rook operator always feels responsible :)
 ---
-- name: Fail if the configured rook version does not support the configured ceph version
-  block:
-  - name: Fail if the configured rook version is not supported
-    ansible.builtin.fail:
-      msg: |
-        The configured rook version is not supported. Please adjust your configuration.
-        Configured version: {{ rook_conf_maj_min_version }}
-        Supported versions: {{ rook_supported_releases | map(attribute='rook_release') }}
-    when: rook_conf_maj_min_version not in ( rook_supported_releases | map(attribute='rook_release') )
-
 ######################################################################
 # Check if we need to upgrade rook                                   #
 ######################################################################
@@ -124,22 +114,7 @@
             Deployed version:   {{ rook_operator_version }}
         when: rook_version is version(rook_operator_next_minor_version , operator='>=')
 
-######################################################################
-# Check if we need to upgrade Ceph                                   #
-######################################################################
-- name: Gather information about the Ceph Cluster
-  kubernetes.core.k8s_info:
-    kind: CephCluster
-    namespace: "{{ rook_namespace }}"
-    name: "{{ rook_cluster_name }}"
-  register: ceph_cluster_info
-  ignore_errors: true
-
-- name: Compare the configured and the deployed Ceph version
-  when: ceph_cluster_info.resources is defined and ceph_cluster_info.resources | length != 0
-  vars:
-    ceph_cluster_version: "{{ ceph_cluster_info.resources[0]['spec']['cephVersion']['image'].split(':') | last | default(None) }}"
-    ceph_conf_version: "{{ rook_ceph_version_map[rook_version]['ceph'] }}"
+- name: Helmify Ceph Cluster
   block:
   - name: Gather information about cluster chart
     kubernetes.core.helm_info:
@@ -149,53 +124,18 @@
       - all
     register: cluster_chart_status
 
-  - name: Check if configured and deployed ceph version do equal
-    when: ceph_conf_version is version(ceph_cluster_version, operator='eq')
+  # If the ceph cluster helm chart is not deployed,
+  # but the rook operator already exists, we need to trigger
+  # the helmification
+  - name: Helmification
+    when:
+    - cluster_chart_status.status is not defined
+    - rook_operator_info.resources is defined and rook_operator_info.resources | length != 0
     block:
-    - ansible.builtin.debug:
-        msg: |
-          The configured ceph version matches the deployed one.
-          Configured version: {{ ceph_conf_version }}
-          Deployed version:   {{ ceph_cluster_version }}
-
-    - name: Helmification
-      when: cluster_chart_status.status is not defined
-      block:
-      - name: Fail if helmification is necessary, but disruption is forbidden
-        ansible.builtin.fail:
-        when: not _allow_disruption
-
-      - name: Trigger the operator-specific upgrade tasks
-        ansible.builtin.include_tasks: upgrade_from_v1_cluster.yaml
-
-    # Downgrading Ceph is theoretically possible, but we do not want to cover automated downgrades
-    - name: Fail if configured ceph version is older than the deployed one
+    - name: Fail if helmification is necessary, but disruption is forbidden
       ansible.builtin.fail:
-        msg: |
-          An older ceph version than the currently deployed one has been configured.
-          Downgrading ceph is not supported. Please adjust your configuration.
-          Configured version: {{ ceph_conf_version }}
-          Deployed version:   {{ ceph_cluster_version }}
-      when: ceph_conf_version is version(ceph_cluster_version, operator='lt')
+      when: not _allow_disruption
 
-  - name: Fail if configured ceph version is newer than the deployed one, but disruption is forbidden
-    ansible.builtin.fail:
-      msg: |
-        A newer ceph version than the currently deployed one has been configured.
-        This will trigger a ceph update, but disruption is forbidden. Please allow
-        disruption if you really want to update ceph or adjust your configuration.
-        Configured version: {{ ceph_conf_version }}
-        Deployed version:   {{ ceph_cluster_version }}
-    when: ceph_conf_version is version(ceph_cluster_version, operator='gt') and not _allow_disruption
-
-  - name: Fail if configured ceph version is newer than the deployed one, but helmification is necessary
-    ansible.builtin.fail:
-      msg: |
-        A newer ceph version than the currently deployed one has been configured.
-        This will trigger a ceph update, but the cluster still runs on rook_v1 (not using helm.
-        Please set the version back to v1.7.11 and trigger a helmification first.
-        Please set the version back to v16.2.6 and trigger a helmification first.
-        Configured version: {{ ceph_conf_version }}
-        Deployed version:   {{ ceph_cluster_version }}
-    when: ceph_conf_version is version(ceph_cluster_version, operator='gt') and cluster_chart_status.status is not defined
+    - name: Trigger the operator-specific upgrade tasks
+      ansible.builtin.include_tasks: upgrade_from_v1_cluster.yaml
 ...

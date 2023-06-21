@@ -362,6 +362,12 @@ namespace    = "rook-ceph" # •ᴗ•
 cluster_name = "rook-ceph" # •ᴗ•
 use_helm = true
 
+# Configure a custom Ceph version.
+# If not defined, the one mapped to the rook version
+# will be used. Be aware that you can't choose an
+# arbitrary Ceph version, but should stick to the
+# rook-ceph-compatibility-matrix.
+#custom_ceph_version = ""
 
 # Currently we support the following rook versions:
 # v1.2.3, v1.3.11, v1.4.9, v1.5.12, v1.6.7, v1.7.11, v1.8.10
