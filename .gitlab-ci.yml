@@ -110,7 +110,7 @@ vault-container-test:
     VAULTCHAIN_CRT: $ci_cert_vaultchain_crt
     VAULT_CONFIG_HCL: $ci_vault_config_hcl
   services:
-    - name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/vault:1.13.2"
+    - name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/vault:1.13.3"
       alias: yaook-vault
       entrypoint: ["sh", "-c"]
       command:
