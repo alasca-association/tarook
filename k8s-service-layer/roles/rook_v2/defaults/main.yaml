@@ -54,6 +54,8 @@ rook_ceph_version_map:
     ceph: "v16.2.6" # default
   "v1.8.10":
     ceph: "v16.2.13"
+  "v1.9.12":
+    ceph: "v17.2.6"
 rook_ceph_versions: "{{ rook_ceph_version_map[rook_version] }}"
 rook_scheduling_key: null
 rook_mon_scheduling_key: null
@@ -73,6 +75,11 @@ rook_supported_releases:
     supported_ceph_releases:
       - v15 # >= 15.2.0
       - v16 # >= 16.2.0
+  - rook_release: "v1.9"
+    supported_ceph_releases:
+      - v15 # >= 15.2.0 Not supported for CephNFS
+      - v16 # >= 16.2.7
+      - v17 # >= 17.2.0
 rook_helm_release_name_operator: "rook-ceph"
 rook_helm_release_name_cluster: "rook-ceph-cluster"
 ...

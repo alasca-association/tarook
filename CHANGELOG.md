@@ -4,6 +4,9 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Add support for rook v1.9.12
+Update by setting `version=1.9.12` and running `MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="--diff --tags mk8s-sl/rook" managed-k8s/actions/apply-stage4.sh`
+
 ## Add support for rook v1.8.10
 Update by setting `version=1.8.10` and running `MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="--diff --tags mk8s-sl/rook" managed-k8s/actions/apply-stage4.sh`
 
