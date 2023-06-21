@@ -252,19 +252,6 @@
       state: restarted
       enabled: true
 
-- name: Install calico with the tigera operator
-  hosts: masters
-  gather_facts: false
-  vars_files:
-  - vars/disruption.yaml
-  - vars/auto_generated_preamble.yaml
-  - vars/etc.yaml
-  - vars/retries.yaml
-  roles:
-  - role: calico-tigera-operator
-    tags:
-    - calico
-
 - name: Spawn the OpenStack k8s Control Plane
   hosts: masters
   become: true
@@ -282,6 +269,19 @@
     tags:
     - ch-k8s-lbaas
     - ch-k8s-lbaas-controller
+
+- name: Install calico with the tigera operator
+  hosts: masters
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  roles:
+  - role: calico-tigera-operator
+    tags:
+    - calico
 
 - name: Configure BGP and LBaaS on the gateways
   hosts: gateways
