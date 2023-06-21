@@ -272,3 +272,22 @@ function mkcsrs() {
         ttl="$ttl" \
         key_type=ed25519 > k8s-calico.csr
 }
+
+function import_etcd_backup_config() {
+    etcdbackup_config_path=config/etcd_backup_s3_config.yaml
+    if etcdbackup_config="$(python3 -c 'import json, yaml, sys; json.dump(yaml.load(sys.stdin, Loader=yaml.SafeLoader), sys.stdout)' < $etcdbackup_config_path)"; then
+        if ! vault kv get "$cluster_path"/kv/etcdbackup > /dev/null; then
+            vault kv put "$cluster_path/kv/etcdbackup" - <<<"$etcdbackup_config"
+            echo "Successfully imported etcd backup credentials into vault."
+            echo "Removing etcd backup credentials file: $etcdbackup_config_path"
+            rm $etcdbackup_config_path
+        else
+            echo "An etcd backup configuration already has been stored in vault."
+            echo "Please manually remove the existing data from vault,"
+            echo "if you want to import a new configuration file."
+        fi
+    else
+        echo "Failed to find etcd backup credentials at $etcdbackup_config_path" >&2
+        echo "Ignoring, as those are optional." >&2
+    fi
+}

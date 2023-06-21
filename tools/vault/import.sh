@@ -132,23 +132,15 @@ echo "Importing other secrets ..."
 PASSWORD_STORE_DIR="$inventory_etc/passwordstore" pass show wg_gw_key | head -n1 | tr -d '\n' | vault kv put "$cluster_path/kv/wireguard-key" private_key=-
 base64 < "$inventory_etc/sa.key" | vault kv put "$cluster_path/kv/k8s/service-account-key" private_key=-
 
-echo "Importing etcd backup credentials ..."
-
-etcdbackup_config_path=config/etcd_backup_s3_config.yaml
-if etcdbackup_config="$(python3 -c 'import json, yaml, sys; json.dump(yaml.load(sys.stdin, Loader=yaml.SafeLoader), sys.stdout)' < $etcdbackup_config_path)"; then
-    vault kv put "$cluster_path/kv/etcdbackup" - <<<"$etcdbackup_config"
-else
-    echo "Failed to find etcd backup credentials at $etcdbackup_config_path" >&2
-    echo "Ignoring, as those are optional." >&2
-    echo "If you did not expect this, make sure to store the credentials in vault at" >&2
-    echo "    $cluster_path/kv/etcdbackup" >&2
-fi
-
 echo "Initializing PKI engines ..."
 
 init_k8s_cluster_pki_roles "$k8s_pki_path" "$pki_ttl"
 init_k8s_etcd_pki_roles "$etcd_pki_path" "$pki_ttl"
 init_k8s_front_proxy_pki_roles "$k8s_front_proxy_pki_path" "$pki_ttl"
 init_k8s_calico_pki_roles "$calico_pki_path" "$pki_ttl"
+
+echo "-----------------------------------------------"
+echo "Trying to importing etcd backup credentials ..."
+import_etcd_backup_config
 
 touch "$flag_file"

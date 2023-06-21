@@ -18,7 +18,6 @@ fi
 cluster="$1"
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
-scriptdir="$(dirname "$0")"
 
 pki_ttl=8784h
 
@@ -29,3 +28,6 @@ init_k8s_etcd_pki_roles "$etcd_pki_path" "$pki_ttl"
 init_k8s_front_proxy_pki_roles "$k8s_front_proxy_pki_path" "$pki_ttl"
 init_k8s_calico_pki_roles "$calico_pki_path" "$pki_ttl"
 
+echo "-----------------------------------------------"
+echo "Trying to importing etcd backup credentials ..."
+import_etcd_backup_config
