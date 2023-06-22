@@ -355,6 +355,7 @@ testBook:
 .test_upgrade_path_k8s_cluster:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
   variables: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables]
+  services: !reference [.prepare_spawn_test_cleanup_k8s_cluster, services]
   before_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
   script:
