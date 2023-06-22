@@ -1,7 +1,0 @@
----
-nvidia_runtime:
-  name: nvidia
-  path: /usr/bin/nvidia-container-runtime
-docker_insecure_registries: []
-docker_registry_mirrors: []
-...

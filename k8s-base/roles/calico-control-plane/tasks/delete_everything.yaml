@@ -193,7 +193,7 @@
       kubernetes.core.k8s:
         definition: "{{ lookup('file', crd_file) }}"
         state: absent
-      loop: ["3.17.1", "3.19.0", "3.21.6", "3.24.5"]
+      loop: ["3.24.5"]
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed

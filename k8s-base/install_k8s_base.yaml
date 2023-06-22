@@ -103,31 +103,6 @@
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/retries.yaml
-  pre_tasks:
-  - name: Obtain installed packages
-    ansible.builtin.package_facts:
-      manager: auto
-  - name: Fail when docker is installed but containerd configured
-    ansible.builtin.fail:
-      msg: |
-        Docker is installed on this node, but containerd is configured as CRI!
-    when:
-    - "'docker.io' in ansible_facts.packages"
-    - container_runtime == 'containerd'
-  - name: Fail if outdated containerd package is installed
-    become: true
-    when:
-    - "'containerd' in ansible_facts.packages"
-    - install_status == 'k8s_installed'
-    - not _allow_disruption
-    - container_runtime == 'containerd'
-    ansible.builtin.fail:
-      msg: |
-        The 'containerd' package is installed,
-        but the 'containerd.io' package from the official
-        docker repositories is needed. Please allow disruption
-        or manually uninstall the 'containerd' package on all
-        Kubernetes nodes.
   roles:
   - role: networking
     tags: networking
@@ -146,12 +121,8 @@
   - role: vgpu-support
     tags: vgpu-support
     when: k8s_virtualize_gpu and not k8s_is_gpu_cluster
-  - role: docker
-    tags: docker
-    when: container_runtime == 'docker'
   - role: containerd
     tags: containerd
-    when: container_runtime == 'containerd'
   - role: kubeadm
     tags: kubeadm
   - role: remove_snap

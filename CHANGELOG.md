@@ -4,6 +4,10 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Drop support for Kubernetes v1.21, v1.22, v1.23
+
+We're dropping support for EOL Kubernetes versions.
+
 ## Add support for Kubernetes v1.25
 
 We added support for all patch versions of Kubernetes v1.25.

@@ -12,9 +12,6 @@ k8s_network_bgp_gateway_as: 65000
 k8s_network_calico_ipipmode: "Never"
 
 supported_k8s_versions:
-  - '1.21'
-  - '1.22'
-  - '1.23'
   - '1.24'
   - '1.25'
 
@@ -29,58 +26,6 @@ calico_version_minor: '{{ image_version_map[k8s_version_minor].calico_version | 
 # is not included here because `kube-prometheus` comes with its own type
 # of versioning.
 image_version_map:
-  "1.21":
-    openstack:
-      cinder_csi_plugin: "v1.19.0"
-      csi_attacher: "v2.0.0"
-      csi_node_driver_registrar: "v1.1.0"
-      csi_provisioner: "v1.4.0"
-      csi_resizer: "v0.3.0"
-      csi_snapshotter: "v1.2.2"
-      openstack_cloud_controller_manager: "v1.19.1"
-    calico_version: "{{ k8s_network_calico_custom_version  | default('3.19.0') }}" # Version of Calico binaries and images to be deployed
-    calico_use_tigera_operator: "{{ k8s_network_calico_use_tigera_operator  | default(False) }}"
-
-  "1.22":
-    openstack:
-      # https://github.com/kubernetes/cloud-provider-openstack/releases/tag/v1.24.2
-      cinder_csi_plugin: "v1.24.2"
-      openstack_cloud_controller_manager: "v1.24.2"
-      # https://github.com/kubernetes-csi/external-attacher/releases/tag/v3.4.0
-      csi_attacher: "v3.4.0"
-      # https://github.com/kubernetes-csi/node-driver-registrar/releases/tag/v2.5.1
-      csi_node_driver_registrar: "v2.5.1"
-      # https://github.com/kubernetes-csi/external-provisioner/releases/tag/v3.1.1
-      csi_provisioner: "v3.1.1"
-      # https://github.com/kubernetes-csi/external-resizer/releases/tag/v1.5.0
-      csi_resizer: "v1.5.0"
-      # https://github.com/kubernetes-csi/external-snapshotter/releases/tag/v6.0.1
-      csi_snapshotter: "v6.0.1"
-      # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.6.0
-      csi_livenessprobe: "v2.6.0"
-    calico_version: "{{ k8s_network_calico_custom_version  | default('3.21.6') }}"
-    calico_use_tigera_operator: "{{ k8s_network_calico_use_tigera_operator  | default(False) }}"
-
-  "1.23":
-    openstack:
-      # https://github.com/kubernetes/cloud-provider-openstack/releases/tag/v1.24.2
-      cinder_csi_plugin: "v1.24.2"
-      openstack_cloud_controller_manager: "v1.24.2"
-      # https://github.com/kubernetes-csi/external-attacher/releases/tag/v3.5.0
-      csi_attacher: "v3.5.0"
-      # https://github.com/kubernetes-csi/node-driver-registrar/releases/tag/v2.5.1
-      csi_node_driver_registrar: "v2.5.1"
-      # https://github.com/kubernetes-csi/external-provisioner/releases/tag/v3.2.1
-      csi_provisioner: "v3.2.1"
-      # https://github.com/kubernetes-csi/external-resizer/releases/tag/v1.5.0
-      csi_resizer: "v1.5.0"
-      # https://github.com/kubernetes-csi/external-snapshotter/releases/tag/v6.0.1
-      csi_snapshotter: "v6.0.1"
-      # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.7.0
-      csi_livenessprobe: "v2.7.0"
-    calico_version: "{{ k8s_network_calico_custom_version  | default('3.21.6') }}"
-    calico_use_tigera_operator: "{{ k8s_network_calico_use_tigera_operator  | default(False) }}"
-
   "1.24":
     openstack:
       # https://github.com/kubernetes/cloud-provider-openstack/releases/tag/v1.26.0
