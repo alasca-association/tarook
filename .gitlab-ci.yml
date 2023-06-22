@@ -354,7 +354,6 @@ testBook:
 
 .test_upgrade_path_k8s_cluster:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
-  variables: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables]
   services: !reference [.prepare_spawn_test_cleanup_k8s_cluster, services]
   before_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
@@ -421,6 +420,10 @@ containerd-k8s-upgrade:
     SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
     ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+    ci_vault_config_hcl: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_vault_config_hcl]
+    ci_cert_vaultchain_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultchain_crt]
+    ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
+    ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
 
 # Manually spawn a cluster and test the k8s upgrade path (w/ calico)
 containerd-k8s-upgrade-manual:
@@ -496,6 +499,10 @@ docker-k8s-upgrade:
     SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
     ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+    ci_vault_config_hcl: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_vault_config_hcl]
+    ci_cert_vaultchain_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultchain_crt]
+    ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
+    ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
 
 # Manually spawn a cluster and test the k8s upgrade path (w/ calico)
 docker-k8s-upgrade-manual:
