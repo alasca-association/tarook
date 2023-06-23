@@ -604,14 +604,6 @@ use_helm = true
 # NOTE: you probably don't have to override this variable.
 #thanos_objectstorage_config_path = "{{ ksl_vars_directory }}/../../config/"
 
-# Use legacy jsonnet-based setup (monitoring_v1).
-# The jsonnet-based monitoring setup will get removed soon™
-# https://github.com/prometheus-operator/kube-prometheus
-#use_jsonnet_setup = false
-
-# Include migration tasks
-#migrate_from_v1 = false
-
 # Scrape external targets via blackbox exporter
 # https://github.com/helm/charts/tree/master/stable/prometheus-blackbox-exporter
 #internet_probe = false
