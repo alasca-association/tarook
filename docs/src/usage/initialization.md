@@ -14,6 +14,7 @@ yaook/k8s requires the following packages:
 - pass
 - uuid-runtime
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux)
+- openssl
 
 Please consult the documentation of your operation system to fulfill these dependencies.
 
