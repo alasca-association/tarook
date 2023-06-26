@@ -2,12 +2,8 @@ nodeSelector:
   k8s.yaook.cloud/gpu-node: "true"
 
 tolerations:
-  - key: k8s.yaook.cloud/gpu-node
+  - key: ""
     operator: Exists
-    effect: NoSchedule
-  - key: k8s.yaook.cloud/gpu-node
-    operator: Exists
-    effect: PreferNoSchedule
 
 # Subcharts
 # https://github.com/NVIDIA/gpu-operator/tree/master/deployments/gpu-operator/charts/node-feature-discovery
@@ -15,12 +11,8 @@ nfd:
   # limit to GPU nodes for
   worker:
     tolerations:
-    - key: k8s.yaook.cloud/gpu-node
-      operator: Exists
-      effect: NoSchedule
-    - key: k8s.yaook.cloud/gpu-node
-      operator: Exists
-      effect: PreferNoSchedule
+      - key: ""
+        operator: Exists
     nodeSelector:
       k8s.yaook.cloud/gpu-node: "true"
 # https://github.com/NVIDIA/gpu-feature-discovery
