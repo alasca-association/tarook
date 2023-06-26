@@ -1,13 +1,4 @@
 ---
-- name: Preliminaries
-  block:
-    # Remove me when dropping support for
-    # k8s v1.21
-    - name: Include controller manager patch
-      ansible.builtin.include_tasks: patch_controller_manager.yaml
-      when:
-        - k8s_version_minor is version('1.22', '<')
-
 - name: Create cloud-config secret
   become: true
   environment:

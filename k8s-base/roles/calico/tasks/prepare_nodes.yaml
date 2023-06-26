@@ -14,49 +14,7 @@
     path: /opt/cni/bin/
     state: directory
 
-- name: Calico binaries download for versions prior 3.21.3
-  when: image_versions.calico_version is version('3.21.3', '<')
-  block:
-  - name: Install and configure Calico CNI Plugin binaries
-    become: yes
-    block:
-      - name: Install calicoctl
-        get_url:
-          owner: root
-          group: root
-          mode: 0750
-          url: "{{ calico_calicoctl_binary_source }}/v{{ image_versions.calico_version }}/calicoctl-linux-amd64"
-          dest: /usr/local/bin/calicoctl
-          checksum: "{{ calicoctl_binary_checksum }}"
-        register: task_result
-        until: task_result is not failed
-        retries: "{{ network_error_retries }}"
-        delay: "{{ network_error_delay }}"
-
-      - name: Install calico
-        get_url:
-          owner: root
-          group: root
-          mode: 0750
-          url: "{{ calico_cni_plugin_binary_source }}/v{{ image_versions.calico_version }}/calico-amd64"
-          dest: /opt/cni/bin/calico
-          checksum: "{{ calico_binary_checksum }}"
-
-      - name: Install calico-ipam
-        get_url:
-          owner: root
-          group: root
-          mode: 0750
-          url: "{{ calico_cni_plugin_binary_source }}/v{{ image_versions.calico_version }}/calico-ipam-amd64"
-          dest: /opt/cni/bin/calico-ipam
-          checksum: "{{ calico_ipam_binary_checksum }}"
-        register: task_result
-        until: task_result is not failed
-        retries: "{{ network_error_retries }}"
-        delay: "{{ network_error_delay }}"
-
-- name: Calico binaries download for versions after 3.21.3
-  when: image_versions.calico_version is version('3.21.3', '>=')
+- name: Calico binaries download
   delegate_to: localhost
   run_once: true
   block:

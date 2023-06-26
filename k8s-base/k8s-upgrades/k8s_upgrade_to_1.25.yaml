@@ -148,10 +148,11 @@
   vars_files:
     - ../vars/auto_generated_preamble.yaml  # needed for the cloud.config secret
     - ../vars/retries.yaml
+  vars:
+    k8s_version: "{{ next_k8s_version }}"
   roles:
     - role: connect-k8s-to-openstack
       when: on_openstack | default(False) | bool
-      k8s_version: "{{ next_k8s_version }}"
 
 - name: Update Calico (Control Plane)
   hosts: masters
@@ -160,6 +161,8 @@
     - ../vars/auto_generated_preamble.yaml
     - ../vars/etc.yaml
     - ../vars/retries.yaml
+  vars:
+    k8s_version: "{{ next_k8s_version }}"
   roles:
     - role: calico-control-plane
       tags:
@@ -168,7 +171,6 @@
       when:
         - k8s_network_plugin == 'calico'
         - k8s_network_calico_use_tigera_operator | default(False)
-      k8s_version: "{{ next_k8s_version }}"
     - role: calico-worker
       tags:
         - calico
@@ -177,7 +179,6 @@
       when:
         - k8s_network_plugin == 'calico'
         - k8s_network_calico_use_tigera_operator | default(False)
-      k8s_version: "{{ next_k8s_version }}"
 
 - name: Update Calico (Worker)
   hosts: workers
@@ -196,11 +197,12 @@
       when:
         - k8s_network_plugin == 'calico'
         - not k8s_network_calico_use_tigera_operator | default(False)
-      k8s_version: "{{ next_k8s_version }}"
 
 - name: Install calico with the tigera operator
   hosts: masters
   gather_facts: false
+  vars:
+    k8s_version: "{{ next_k8s_version }}"
   vars_files:
     - ../vars/disruption.yaml
     - ../vars/auto_generated_preamble.yaml
@@ -208,10 +210,9 @@
     - ../vars/retries.yaml
   roles:
     - role: calico-tigera-operator
-      vars:
-        k8s_version: "{{ next_k8s_version }}"
       tags:
         - calico
+      k8s_version: "{{ next_k8s_version }}"
 
 - name: Update ch-k8s-lbaas-controller
   hosts: masters

@@ -3,6 +3,7 @@
   ansible.builtin.meta: end_play
   when:
     - not image_versions.calico_use_tigera_operator | bool
+    # - not next_k8s_version is defined and next_k8s_version is version('1.25.0', '>=') and next_k8s_version is version('1.26.0', '<')
 
 - name: Fail if configured calico version is too old
   when: image_versions.calico_version is version ('3.24', '<')
