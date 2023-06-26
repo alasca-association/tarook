@@ -6,7 +6,7 @@ monitoring_internet_probe: false
 # List of hosts to probe. Override in config.toml
 monitoring_internet_probe_targets: []
 
-monitoring_common_labels: []
+monitoring_common_labels: {}
 
 monitoring_blackbox_version: "7.0.0"
 ...
