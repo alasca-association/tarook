@@ -39,4 +39,23 @@
     until: task_result is not failed
     retries: "{{ network_error_retries }}"
     delay: "{{ network_error_delay }}"
+
+# drop me with calico tigera migration tasks
+- name: Rollout restart Nvidia Device Plugin after calico tigera migration  # noqa no-changed-when
+  when:
+  # this variable is set as fact in the calico-tigera-operator role
+  - calico_tigera_migrated | default(False)
+  - k8s_nvidia_device_plugin_install
+  - _allow_disruption | default(False)
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.command:
+    argv:
+    - kubectl
+    - rollout
+    - restart
+    - daemonset
+    - "-n"
+    - "{{ k8s_nvidia_device_plugin_namespace }}"
+    - nvdp-nvidia-device-plugin
 ...
