@@ -38,6 +38,14 @@ yamllint:
   script:
     - yamllint .
 
+detect-vault-image:
+  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
+  stage: lint
+  script:
+    - bash ./actions/detect-vault-image.sh
+  tags:
+    - docker
+
 ansible-lint:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
   stage: lint
@@ -90,47 +98,6 @@ testBook:
     paths:
       - $CARGO_HOME/bin
 
-# Tests the Vault in Docker dev deployment.
-# It mainly tests the defined config.hcl settings.
-# The certificates and config are stored within the CI vars,
-# as the service instance is limited in accessing data from the
-# repo while it's starting, so they have to be stored elsewhere.
-vault-container-test:
-  stage: deploy
-  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
-  variables:
-    GIT_CLEAN_FLAGS: -ffd $CI_PROJECT_DIR -e vault
-    VAULT_TLS_DIR: $CI_PROJECT_DIR/ci/vault/tls
-    VAULT_KEY: $ci_cert_vault_key
-    VAULTCA_CRT: $ci_cert_vaultca_crt
-    VAULTCHAIN_CRT: $ci_cert_vaultchain_crt
-    VAULT_CONFIG_HCL: $ci_vault_config_hcl
-  services:
-    - name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/vault:1.13.3"
-      alias: yaook-vault
-      entrypoint: ["sh", "-c"]
-      command:
-        - |
-          export VAULT_ADDR=https://127.0.0.1:8200
-          mkdir -p /vault/config /vault/tls/ca
-          printf "%s" "$VAULT_KEY" > /vault/tls/vault.key
-          printf "%s" "$VAULTCHAIN_CRT" > /vault/tls/vaultchain.crt
-          printf "%s" "$VAULT_CONFIG_HCL" > /vault/config/config.hcl
-          cp /bin/vault $CI_PROJECT_DIR
-          exec vault server -config=/vault/config/config.hcl
-  script:
-    - export VAULT_ADDR=https://yaook-vault:8200
-    - mkdir -p $CI_PROJECT_DIR/tls/ca
-    - printf "%s" "$VAULTCA_CRT" > $CI_PROJECT_DIR/tls/ca/vaultca.crt
-    - export VAULT_CACERT="$CI_PROJECT_DIR/tls/ca/vaultca.crt"
-    - $CI_PROJECT_DIR/vault operator init -key-shares=1 -key-threshold=1 -format=json > $CI_PROJECT_DIR/vault_init.out
-    - jq .root_token -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/root.key
-    - jq .unseal_keys_b64[0] -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/unseal.key
-    - $CI_PROJECT_DIR/vault operator unseal $(cat $CI_PROJECT_DIR/unseal.key)
-    - $CI_PROJECT_DIR/vault login $(cat $CI_PROJECT_DIR/root.key)
-  tags:
-  - docker
-
 .prepare_spawn_test_cleanup_k8s_cluster:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
   variables:
@@ -139,6 +106,186 @@ vault-container-test:
     SSH_COMPANY_USERS: "false"
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
+    # before you panic: this key is only used in the CI vault
+    # instance, for integration testing.
+    # obviously: don't use this for anything else :>
+    ci_cert_vault_key: |
+      -----BEGIN RSA PRIVATE KEY-----
+      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
+      -----END RSA PRIVATE KEY-----
+    ci_cert_vaultca_crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIFCTCCAvGgAwIBAgIUdGsWd3PKnQAUkKoJG7vn7TNlG9QwDQYJKoZIhvcNAQEL
+      BQAwEzERMA8GA1UECgwIVkFVTFQgQ0EwIBcNMjIwMjAxMTI1MzU2WhgPMjEyMjAx
+      MDgxMjUzNTZaMBMxETAPBgNVBAoMCFZBVUxUIENBMIICIjANBgkqhkiG9w0BAQEF
+      AAOCAg8AMIICCgKCAgEApE2jBJjrgZuyiENA/7tBFe9QoC9J6EoFZ5E6D9Ybmv7/
+      kI26EdN3VrQuRRJyC6qblXLEJ7lg5fb+b224TD2F87jLR2HfsdyBB5C/3JQgjgab
+      l7CKpm20THr6rwB0qerQ3K9IgmKzspbP3UwQqXeqQdwceVn8UMm6uTd07ZM4qpD0
+      g3R+M7fKpslyBEiqtgjqwMrEquCy+BT+KnZYgLWqgyWqP1F+qI3JCoUZo3l/o+kC
+      WtG2+KGw2XQk67RYOSJ9iMlKFfQfoDgNdazVKJusjdV7FBPeat5f4dI+wEXRUU1A
+      THvfcxDoLVronzbFdopve80bPYxBx6tmRsZck+huRpAPHDZCKsEYU1EeVVnC6DBs
+      8ftGBXqPW2cFybQUKu6IgVHpt9toQ12A4lEJ/+LJfQYvWT6rqISlet97oHM37XKP
+      vUhoBFrSM+raFNsuxkuy/EOhulQmG+0cEstU+iblknMv6/R/XRIIAm69PYNyh2VG
+      Dh0P5JCAKN8BjKKqaZtlmwBZq63iy43ned18lhrIgo+21hqutFqFAEGucNHcM6EZ
+      oRMcRlE7L4Ndl7v2It2Iq+Xb2XKG0jGo6Hapn13ykaQ0dxWnNCx7ny1uUTwDM31K
+      kcEm/iTrYjelZzFYBi5HA2oRynZZ6H1sD2YgN1+HlfFgvalo3sI2JLbme1+90nEC
+      AwEAAaNTMFEwHQYDVR0OBBYEFEdsXrikI+DgTe8iSPxALNL33H6vMB8GA1UdIwQY
+      MBaAFEdsXrikI+DgTe8iSPxALNL33H6vMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZI
+      hvcNAQELBQADggIBAJpMT21CMyGqs5enTaY8WWvdiTmKbdlgjNnHSaBOBXZFN00a
+      9zEZmcs9APDmaZXfT1I+z3qniYJOjUFj04HX9pvi8DaaYY++IcNKEjWinIjzg4Rx
+      HTYCqd6onklgfL0JLAHeQWvjaPzRkEcd9CDJ/R7cVz5Q3UXwX4xP8yyn8R1W7hdP
+      B9ltsm7P7n2W5L0J8iYEJIeZkAA+S1tXwVzUytdNWiZMRtQapsuKF/NDQ/aoDnfE
+      /yTYLty0rlyjDdOy8h3sfiArUXfE95SPHLRHz1eAH6cD6MHlbueIJnzAG3pOO/oB
+      ibVfYNG1/PwCpVirDKx9Cs/eiLNgHdUSBtvz+CoSVPmqSTFEwUQmhZ301N53/BpL
+      45wtiCqUSH3BUpSqSZEjvtqntwA3xAk9a36ufslMEwaYf+hpRTGpiYN5mnptRbYz
+      2Kh1M7CXpZy1o7pKgDku1hQ+xzh/JGGeYNG+pXmlfwJV3x7zkxBtDr9PmxeWoO/s
+      ZigqgxUwF9gQZTQENXVKLsR2y7KadUFqDSxwKdyM/fp/ClD+X++wDtYUFRiW6ET+
+      eJIHRfCFhgcm61uaQUn2oWp7/EmESxU20PMddg4G9vz2YdBfFCplgsCyp2t98T0u
+      LyHrHQa1VuGocU8/DFsLxUOThPmAtuBvqRvTtWZLuNEP05QwmyvBv/5VFXpd
+      -----END CERTIFICATE-----
+    ci_cert_vaultchain_crt: |
+      -----BEGIN CERTIFICATE-----
+      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
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFCTCCAvGgAwIBAgIUdGsWd3PKnQAUkKoJG7vn7TNlG9QwDQYJKoZIhvcNAQEL
+      BQAwEzERMA8GA1UECgwIVkFVTFQgQ0EwIBcNMjIwMjAxMTI1MzU2WhgPMjEyMjAx
+      MDgxMjUzNTZaMBMxETAPBgNVBAoMCFZBVUxUIENBMIICIjANBgkqhkiG9w0BAQEF
+      AAOCAg8AMIICCgKCAgEApE2jBJjrgZuyiENA/7tBFe9QoC9J6EoFZ5E6D9Ybmv7/
+      kI26EdN3VrQuRRJyC6qblXLEJ7lg5fb+b224TD2F87jLR2HfsdyBB5C/3JQgjgab
+      l7CKpm20THr6rwB0qerQ3K9IgmKzspbP3UwQqXeqQdwceVn8UMm6uTd07ZM4qpD0
+      g3R+M7fKpslyBEiqtgjqwMrEquCy+BT+KnZYgLWqgyWqP1F+qI3JCoUZo3l/o+kC
+      WtG2+KGw2XQk67RYOSJ9iMlKFfQfoDgNdazVKJusjdV7FBPeat5f4dI+wEXRUU1A
+      THvfcxDoLVronzbFdopve80bPYxBx6tmRsZck+huRpAPHDZCKsEYU1EeVVnC6DBs
+      8ftGBXqPW2cFybQUKu6IgVHpt9toQ12A4lEJ/+LJfQYvWT6rqISlet97oHM37XKP
+      vUhoBFrSM+raFNsuxkuy/EOhulQmG+0cEstU+iblknMv6/R/XRIIAm69PYNyh2VG
+      Dh0P5JCAKN8BjKKqaZtlmwBZq63iy43ned18lhrIgo+21hqutFqFAEGucNHcM6EZ
+      oRMcRlE7L4Ndl7v2It2Iq+Xb2XKG0jGo6Hapn13ykaQ0dxWnNCx7ny1uUTwDM31K
+      kcEm/iTrYjelZzFYBi5HA2oRynZZ6H1sD2YgN1+HlfFgvalo3sI2JLbme1+90nEC
+      AwEAAaNTMFEwHQYDVR0OBBYEFEdsXrikI+DgTe8iSPxALNL33H6vMB8GA1UdIwQY
+      MBaAFEdsXrikI+DgTe8iSPxALNL33H6vMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZI
+      hvcNAQELBQADggIBAJpMT21CMyGqs5enTaY8WWvdiTmKbdlgjNnHSaBOBXZFN00a
+      9zEZmcs9APDmaZXfT1I+z3qniYJOjUFj04HX9pvi8DaaYY++IcNKEjWinIjzg4Rx
+      HTYCqd6onklgfL0JLAHeQWvjaPzRkEcd9CDJ/R7cVz5Q3UXwX4xP8yyn8R1W7hdP
+      B9ltsm7P7n2W5L0J8iYEJIeZkAA+S1tXwVzUytdNWiZMRtQapsuKF/NDQ/aoDnfE
+      /yTYLty0rlyjDdOy8h3sfiArUXfE95SPHLRHz1eAH6cD6MHlbueIJnzAG3pOO/oB
+      ibVfYNG1/PwCpVirDKx9Cs/eiLNgHdUSBtvz+CoSVPmqSTFEwUQmhZ301N53/BpL
+      45wtiCqUSH3BUpSqSZEjvtqntwA3xAk9a36ufslMEwaYf+hpRTGpiYN5mnptRbYz
+      2Kh1M7CXpZy1o7pKgDku1hQ+xzh/JGGeYNG+pXmlfwJV3x7zkxBtDr9PmxeWoO/s
+      ZigqgxUwF9gQZTQENXVKLsR2y7KadUFqDSxwKdyM/fp/ClD+X++wDtYUFRiW6ET+
+      eJIHRfCFhgcm61uaQUn2oWp7/EmESxU20PMddg4G9vz2YdBfFCplgsCyp2t98T0u
+      LyHrHQa1VuGocU8/DFsLxUOThPmAtuBvqRvTtWZLuNEP05QwmyvBv/5VFXpd
+      -----END CERTIFICATE-----
+    ci_vault_config_hcl: |
+      {
+        "storage": {
+          "file": {
+            "path": "/vault/data"
+          }
+        },
+        "listener": {
+          "tcp": {
+            "address": "0.0.0.0:8200",
+            "tls_disable": "false",
+            "tls_cert_file": "/vault/tls/vaultchain.crt",
+            "tls_key_file": "/vault/tls/vault.key",
+            "tls_require_and_verify_client_cert": "false",
+            "tls_disable_client_certs": "true"
+          }
+        },
+        "disable_mlock": "true",
+        "api_addr": "http://0.0.0.0:8200",
+        "ui": "true",
+        "log_level": "Info"
+      }
+  services:
+  - name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/vault:1.13.2"
+    alias: yaook-vault
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        export VAULT_ADDR=https://127.0.0.1:8200
+        mkdir -p /vault/config /vault/tls/ca
+        printf "%s" "$ci_cert_vault_key" > /vault/tls/vault.key
+        printf "%s" "$ci_cert_vaultchain_crt" > /vault/tls/vaultchain.crt
+        printf "%s" "$ci_vault_config_hcl" > /vault/config/config.hcl
+        cp /bin/vault $CI_PROJECT_DIR
+        exec vault server -config=/vault/config/config.hcl
   before_script:
     - "export wg_conf_name=wg0"
     # id_rsa must be set as `File` input in the GitLab CI/CD variables of the
@@ -169,6 +316,18 @@ vault-container-test:
     - unset PASSWORD_STORE_DIR
 
   script:
+    - export VAULT_ADDR=https://yaook-vault:8200
+    - mkdir -p $CI_PROJECT_DIR/tls/ca
+    - printf "%s" "$ci_cert_vaultca_crt" > $CI_PROJECT_DIR/tls/ca/vaultca.crt
+    - export VAULT_CACERT="$CI_PROJECT_DIR/tls/ca/vaultca.crt"
+    - vault operator init -key-shares=1 -key-threshold=1 -format=json > $CI_PROJECT_DIR/vault_init.out
+    - jq .root_token -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/root.key
+    - jq .unseal_keys_b64[0] -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/unseal.key
+    - vault operator unseal $(cat $CI_PROJECT_DIR/unseal.key)
+    - vault login $(cat $CI_PROJECT_DIR/root.key)
+    - bash ./managed-k8s/tools/vault/init.sh
+    - bash ./managed-k8s/tools/vault/mkcluster-root.sh k8s.ci.yaook.cloud
+    - export VAULT_TOKEN=$(cat $CI_PROJECT_DIR/root.key)
     - pip3 install -r managed-k8s/requirements.txt
     - ./managed-k8s/actions/apply-terraform.sh
     - ./reachability-or-recreate.sh
@@ -191,7 +350,7 @@ vault-container-test:
 
 .test_upgrade_path_k8s_cluster:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
-  variables: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables]
+  services: !reference [.prepare_spawn_test_cleanup_k8s_cluster, services]
   before_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
   script:
@@ -233,6 +392,10 @@ containerd-k8s-upgrade:
     SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
     ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+    ci_vault_config_hcl: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_vault_config_hcl]
+    ci_cert_vaultchain_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultchain_crt]
+    ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
+    ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
 
 # Manually spawn a cluster and test the k8s upgrade path (w/ calico)
 containerd-k8s-upgrade-manual:

@@ -56,54 +56,28 @@
     register: calico_busybox_pod_information
 
   # ping each Pod from each Pod with a nested loop
-  - name: ping each BusyBox Pod from every BusyBox Pod  # noqa no-changed-when
-    ansible.builtin.command:
-      argv:
-      - kubectl
-      - -n
-      - '{{ check_calico_namespace }}'
-      - exec
-      - "{{ item[0].metadata.name }}"
-      - --
-      - ping
-      - "{{ item[1].status.podIPs[0]['ip'] }}"
-      - -q
-      - -c
-      - 5
-      - -w
-      - 10
+  - name: ping each BusyBox Pod from every BusyBox Pod
+    kubernetes.core.k8s_exec:
+      namespace: "{{ check_calico_namespace }}"
+      pod: "{{ item[0].metadata.name }}"
+      command: "ping {{ item[1].status.podIPs[0]['ip'] }} -q -c5 -w10"
     with_nested:
     - "{{ calico_busybox_pod_information.resources }}"
     - "{{ calico_busybox_pod_information.resources }}"
     loop_control:
       label: "{{ item[0].metadata.name }} --> {{ item[1].metadata.name }} ({{ item[1].status.podIP }})"
-    async: 45
-    poll: 0
 
-  - name: ping each BusyBox Pod from every BusyBox Pods (IPv6)  # noqa no-changed-when
-    ansible.builtin.command:
-      argv:
-      - kubectl
-      - -n
-      - '{{ check_calico_namespace }}'
-      - exec
-      - "{{ item[0].metadata.name }}"
-      - --
-      - ping
-      - "{{ item[1].status.podIPs[1]['ip'] }}"
-      - -q
-      - -c
-      - 5
-      - -w
-      - 10
+  - name: ping each BusyBox Pod from every BusyBox Pods (IPv6)
+    kubernetes.core.k8s_exec:
+      namespace: "{{ check_calico_namespace }}"
+      pod: "{{ item[0].metadata.name }}"
+      command: "ping {{ item[1].status.podIPs[1]['ip'] }} -q -c5 -w10"
     with_nested:
     - "{{ calico_busybox_pod_information.resources }}"
     - "{{ calico_busybox_pod_information.resources }}"
     when: dualstack_support
     loop_control:
       label: "{{ item[0].metadata.name }} --> {{ item[1].metadata.name }} ({{ item[1].status.podIPs[1]['ip'] | default('not defined') }})"
-    async: 45
-    poll: 0
 
   # Using a Deamonset ensures that a Pod is created on each node
   - name: Delete the (calico-)BusyBox DaemonSet and ServiceAccount

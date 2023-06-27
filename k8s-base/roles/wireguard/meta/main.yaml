@@ -6,5 +6,6 @@ dependencies:
 - wireguard-support
 - net-forwarding
 - bird
-- passwordstore
+- vault-config
+- vault-approle
 ...

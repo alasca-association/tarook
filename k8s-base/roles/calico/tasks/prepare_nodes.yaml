@@ -5,12 +5,12 @@
 ---
 
 - name: Ensure that /opt/cni/bin/ exists
-  become: yes
+  become: true
   file:
     owner: root
     group: root
     mode: 0750
-    recurse: yes
+    recurse: true
     path: /opt/cni/bin/
     state: directory
 
@@ -61,7 +61,7 @@
       dest: "{{ calico_cache_dir }}"
 
 - name: Copy Calico binaries to node
-  become: yes
+  become: true
   copy:
     src: "{{ item.key }}"
     dest: "{{ item.value }}"
@@ -75,7 +75,7 @@
   when: image_versions.calico_version is version('3.21.3', '>=')
 
 - name: Ensure that /etc/cni/net.d/ exists on all k8s_nodes
-  become: yes
+  become: true
   file:
     owner: root
     group: root
@@ -85,7 +85,7 @@
 
 # https://docs.projectcalico.org/reference/cni-plugin/configuration#kubernetes-specific
 - name: Activate k8s Calico CNI plugin on all nodes
-  become: yes
+  become: true
   template:
     owner: root
     group: root

@@ -10,6 +10,10 @@ k8s_network_service_subnet_v6: fdff:3::/108
 k8s_network_bgp_worker_as: 64512
 k8s_network_bgp_gateway_as: 65000
 k8s_network_calico_ipipmode: "Never"
+k8s_cri_url: "{{ {
+  'containerd': 'unix:///var/run/containerd/containerd.sock',
+  'docker': 'unix:///var/run/dockershim.sock',
+}[container_runtime] }}"
 
 supported_k8s_versions:
   - '1.24'
@@ -63,7 +67,7 @@ image_version_map:
       csi_snapshotter: "v6.2.1"
       # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.9.0
       csi_livenessprobe: "v2.9.0"
-    calico_version: "{{ k8s_network_calico_custom_version  | default('3.25.1') }}"
+    calico_version: "{{ k8s_network_calico_custom_version  | default('3.26.1') }}"
     calico_use_tigera_operator: "{{ k8s_network_calico_use_tigera_operator  | default(True) }}"
 
 image_versions: "{{ image_version_map[k8s_version_minor] }}"

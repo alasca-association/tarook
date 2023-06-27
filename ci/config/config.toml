@@ -9,8 +9,8 @@
 haproxy_ports        = [30060]
 workers              = 6
 worker_flavors       = ["L", "L", "L", "L", "L", "SCS-4C:8:50s-GNt:1-mk8sPrivate"]
-master_images        = ["Ubuntu 18.04 LTS x64", "Ubuntu 22.04 LTS x64"]
-worker_images        = ["Ubuntu 18.04 LTS x64", "Ubuntu 22.04 LTS x64"]
+master_images        = ["Ubuntu 20.04 LTS x64", "Ubuntu 22.04 LTS x64"]
+worker_images        = ["Ubuntu 20.04 LTS x64", "Ubuntu 22.04 LTS x64"]
 enable_az_management = false
 cluster_name         = "ci"
 
@@ -76,9 +76,6 @@ nodeport_name = "ch-k8s-global-monitoring"
 plugin         = "calico"
 pod_subnet     = "10.244.0.0/16"
 service_subnet = "10.96.0.0/12"
-
-[kubernetes.continuous_join_key]
-enabled = false
 
 [k8s-service-layer.rook]
 namespace                = "rook-ceph"
@@ -214,3 +211,9 @@ container_runtime = "containerd"
 
 custom_chrony_configuration = true
 custom_ntp_servers = [ "0.de.pool.ntp.org", "1.de.pool.ntp.org", "2.de.pool.ntp.org", "3.de.pool.ntp.org"]
+
+[vault]
+cluster_name = "k8s.ci.yaook.cloud"
+policy_prefix = "yaook"
+path_prefix = "yaook"
+nodes_approle = "yaook/nodes"

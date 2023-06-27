@@ -1,7 +1,3 @@
-# This task uses calicoctl. This is currently necessary to configure
-# Calico specific resources as the Calico CRDs are not designed to
-# be used directly by kubectl. Please refer to the following issue:
-# https://github.com/projectcalico/calico/issues/2923
 ---
 - name: Create calico BGP configuration and apply peering
   become: true
@@ -9,41 +5,48 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
     DATASTORE_TYPE: kubernetes
   block:
+  - name: Wait for Calico API servers to be up and running
+    kubernetes.core.k8s_info:
+      api_version: operator.tigera.io/v1
+      kind: APIServer
+      name: default
+    # Retry this task on failures
+    register: calico_apiserver
+    until: "calico_apiserver.resources and (calico_apiserver.resources[0].status | default(False)) and (calico_apiserver.resources[0].status.state | default('') in ['Ready', 'Failed'])"
+    retries: 60
+    delay: "{{ k8s_error_delay }}"
+
   - name: BGP - Apply default calico BGP configuration
-    ansible.builtin.command:
-      argv:
-      - /usr/local/bin/calicoctl
-      - apply
-      - --filename=-
-      stdin: '{{ lookup("template", "bgp.yaml.j2") }}'
-    register: bgp_configuration_result
-    changed_when: "'Successfully applied' and 'BGPConfiguration' in bgp_configuration_result.stdout"
+    kubernetes.core.k8s:
+      apply: true
+      definition: "{{ lookup('template', 'bgp.yaml.j2') | from_yaml_all }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
-  # By adding a routeReflectorClusterID to the node, calico/node recognizes that it is a route reflector
-  - name: BGP - Mark the k8s masters as route reflectors
-    ansible.builtin.command:
-      argv:
-      - /usr/local/bin/calicoctl
-      - patch
-      - node
-      - "{{ item }}"
-      - -p
-      # A leading whitespace is needed to prevent Ansible from interpreting this string as JSON
-      - ' {"spec":{"bgp":{"routeReflectorClusterID": {{ k8s_network_calico_bgp_router_id | to_json }} }}}'
-    register: bgp_route_reflector_cluster_id_patch
-    changed_when: "'Successfully patched' and 'Node' in bgp_route_reflector_cluster_id_patch.stdout"
-    with_items: "{{ groups['masters'] }}"
-
-  # Labeling the masters easies identification
-  - name: BGP - Label the k8s masters as route reflectors
-    ansible.builtin.command:
-      argv:
-      - /usr/local/bin/calicoctl
-      - label
-      - nodes
-      - "{{ item }}"
-      - route-reflector=true
-    register: bgp_label_masters
-    changed_when: "'Successfully updated label route-reflector on nodes' in bgp_label_masters.stdout"
-    with_items: "{{ groups['masters'] }}"
+  - name: BGP - Label CP nodes as route reflectors
+    kubernetes.core.k8s:
+      state: patched
+      kind: Node
+      name: "{{ item }}"
+      definition:
+        metadata:
+          annotations:
+            projectcalico.org/RouteReflectorClusterID: "{{ k8s_network_calico_bgp_router_id }}"
+          labels:
+            route-reflector: "true"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+    loop: "{{ groups['masters'] }}"
 ...

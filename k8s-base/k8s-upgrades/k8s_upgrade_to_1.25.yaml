@@ -22,6 +22,33 @@
   tags:
     - kubernetes-upgrade-preflight-checks
 
+- name: Renew certificates (CP)
+  hosts: masters
+  gather_facts: true
+  vars_files:
+    - ../vars/disruption.yaml
+    - ../vars/auto_generated_preamble.yaml
+    - ../vars/etc.yaml
+    - ../vars/retries.yaml
+  serial:
+    - 1
+    - "100%"
+  roles:
+    - role: k8s-master
+      tags: k8s-master
+
+- name: Renew certificates (Worker)
+  hosts: workers
+  gather_facts: true
+  vars_files:
+    - ../vars/disruption.yaml
+    - ../vars/auto_generated_preamble.yaml
+    - ../vars/etc.yaml
+    - ../vars/retries.yaml
+  roles:
+    - role: k8s-worker
+      tags: k8s-worker
+
 - name: Upgrade the first master node
   hosts: masters[0]
   gather_facts: false
@@ -54,8 +81,6 @@
     - role: kubeadm-upgrade-apply
       when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-uncordon-node
-      when: "not (k8s_upgrade_done | default(False))"
-    - role: k8s-fetch-certs
       when: "not (k8s_upgrade_done | default(False))"
 
 - name: Upgrade the residual master nodes

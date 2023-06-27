@@ -12,7 +12,9 @@ yaook/k8s requires the following packages:
 - moreutils (for `sponge`)
 - wireguard
 - pass
+- uuid-runtime
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux)
+- openssl
 
 Please consult the documentation of your operation system to fulfill these dependencies.
 
@@ -105,6 +107,32 @@ serve as your [cluster repository](./../design/cluster-repository.md):
     ```console
     python3 -m pip install -r managed-k8s/requirements.txt
     ```
+
+## Initialize Vault for a Development Setup
+
+As of Summer 2022, yaook/k8s exclusively supports [HashiCorp Vault](https://vaultproject.io) as backend for storing secrets.
+Previously, passwordstore was used.
+For details on the use of Vault in yaook/k8s, please see the [Use of HashiCorp Vault in yaook/k8s](./../operation/vault.md) section.
+
+To initialize a **local** Vault instance for **development purposes**, do the following:
+
+1. Start the docker container:
+
+    ```console
+    ./managed-k8s/actions/vault.sh
+    ```
+
+    **Note:** This is not suited for productive deployments or production use,
+    for many reasons!
+
+2. Ensure that sourcing `managed-k8s/actions/vault_env.sh` is part of your `.envrc`.
+
+3. Run `./managed-k8s/tools/vault/init.sh`
+
+4. Run `./managed-k8s/tools/vault/mkcluster-root.sh devcluster`. Note that
+  `devcluster` must be the same as the `cluster_name` set in the `config.toml`
+  in the `[vault]` section.
+
 
 ## Appendix
 

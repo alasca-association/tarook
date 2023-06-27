@@ -22,90 +22,34 @@
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
 
-- name: Check local presence of calico-kubeconfig certificate
+- name: Upload calico CA certificate to k8s
   run_once: true
+  environment:
+    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
   block:
-  - name: Check if calico-kubeconfig private key is locally present
-    delegate_to: localhost
-    ansible.builtin.stat:
-      path: "{{ calico_cni_key_path }}"
-    register: calico_cni_key_local
-
-  - name: Check if calico-kubeconfig signed certificate is locally present
-    delegate_to: localhost
-    ansible.builtin.stat:
-      path: "{{ calico_cni_crt_path }}"
-    register: calico_cni_crt_local
-
-  - name: Fail if certificate but private key does not exist for calico-kubeconfig
-    ansible.builtin.fail:
-      msg: "### WARNING ###\nThe certificate of calico-kubeconfig is locally present, but not the private key!"
-    when: calico_cni_crt_local.stat.exists and not calico_cni_key_local.stat.exists
-
-- name: Validate local calico-kubeconfig crt on expiration
-  run_once: true
-  when: calico_cni_crt_local.stat.exists
-  block:
-  - name: Collect expiration information of the calico-kubeconfig crt
-    delegate_to: localhost
-    community.crypto.x509_certificate_info:
-      path: "{{ calico_cni_crt_path }}"
-      valid_at:
-        point_1: "+104w"
-        point_2: "+52w"
-    register: calico_cni_crt_valid
-
-  # ToDo send a notification
-  - name: Warn if the calico-kubeconfig crt expires in less than 2 years from now
-    ansible.builtin.debug:
-      msg: "### WARNING ###\nThe calico-kubeconfig certificate expires in less than 2 years from now"
-    when: not calico_cni_crt_valid.valid_at.point_1
-
-  - name: Warn if the calico-kubeconfig crt expires in less than 1 year from now
-    ansible.builtin.debug:
-      msg: "### WARNING ###\nThe calico-kubeconfig certificate expires in less than 1 year from now"
-    when: not calico_cni_crt_valid.valid_at.point_2
-
-- name: Manage calico-kubeconfig private key
-  run_once: true
-  become: false
-  block:
-  - name: Regenerate (force) private key of calico-kubeconfig if it is short to expire
-    when: not (calico_cni_crt_valid.valid_at.point_2 | default('false'))
-    delegate_to: localhost
-    community.crypto.openssl_privatekey:
-      path: "{{ calico_cni_crt_path }}"
-      mode: 0600
-      size: 4096
-      force: true
-
-  - name: Generate private key for CA certificate of calico-kubeconfig
-    delegate_to: localhost
-    community.crypto.openssl_privatekey:
-      mode: 0600
-      path: "{{ calico_cni_key_path }}"
-      size: 4096
-
-  - name: Generate Certificate Signing Request for calico-kubeconfig
-    delegate_to: localhost
-    community.crypto.openssl_csr:
-      mode: 0664
-      path: "{{ calico_cni_csr_path }}"
-      privatekey_path: "{{ calico_cni_key_path }}"
-      common_name: calico-cni
-      subject:
-        CN: calico-cni
-
-  - name: Sign the Certificate Signing Request for calico-kubeconfig
-    delegate_to: localhost
-    community.crypto.x509_certificate:
-      mode: 0664
-      path: "{{ calico_cni_crt_path }}"
-      csr_path: "{{ calico_cni_csr_path }}"
-      ownca_path: "{{ own_ca_crt_path }}"
-      ownca_privatekey_path: "{{ own_ca_key_path }}"
-      entrust_not_after: "+3653d"
-      provider: ownca
+  - name: Upload calico CA certificate from vault
+    become: true
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    kubernetes.core.k8s:
+      apply: true
+      definition:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: calico-typha-ca
+          namespace: kube-system
+        data:
+          typhaca.crt: "{{ lookup('community.hashi_vault.vault_read', '%s/%s/calico-pki/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name), auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id, mount_point=vault_nodes_approle).data.ca_chain }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    register: k8s_apply
+    # Retry this task on failures
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
 - name: Create user for calico-cni, configure RBAC and create RoleBinding
   become: true

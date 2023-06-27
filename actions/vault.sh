@@ -5,6 +5,8 @@ actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
+vault_image="$(bash "$actions_dir/detect-vault-image.sh")"
+
 # Create vault folders
 # shellcheck disable=SC2154
 mkdir -p "$vault_dir/config"
@@ -25,18 +27,22 @@ fi
 vault_status="$(docker inspect -f '{{.State.Status}}' "$vault_container_name" 2>/dev/null || true)"
 
 # Create Vault container
-if [ -z "$vault_status" ]; then
+if [ -z "$vault_status" ] || [ "$vault_status" = 'exited' ]; then
+    # always upgrade vault when it's not running
+    run docker rm -f "$vault_container_name" >/dev/null || true
     run docker run -d \
         --name "$vault_container_name" \
         -p 8200 \
         --cap-add=IPC_LOCK \
+        -e SKIP_CHOWN=yes \
+        -e SKIP_SETCAP=yes \
+        -u "$(id -u):$(id -g)" \
         -v "$vault_dir/config":/vault/config \
         -v "$vault_dir/tls":/vault/tls \
+        -v "$vault_dir/data":/vault/file \
         -e VAULT_ADDR="https://127.0.0.1:8200" \
         -e VAULT_CACERT="/vault/tls/ca/vaultca.crt" \
-        vault:1.10.3 server
-elif [ "$vault_status" = "exited" ]; then
-    run docker start "$vault_container_name" > /dev/null
+        "$vault_image" server
 fi
 
 vault_initialized=false
@@ -48,7 +54,9 @@ for attempt in $(seq 1 60) ; do
     printf "Initialization status: %s\n" "$vault_init_status"
     
     if [ "$vault_init_status" = "false" ]; then
-        docker exec "$vault_container_name" vault operator init -key-shares=1 -key-threshold=1 -format=json >"$vault_dir/init.out" || true
+        init_out="$(docker exec "$vault_container_name" vault operator init -key-shares=1 -key-threshold=1 -format=json)"
+        jq .unseal_keys_b64[0] -cr <<<"$init_out" > "$vault_dir/unseal.key"
+        jq ".root_token" -cr <<<"$init_out" >"$vault_dir/root.key"
         vault_initialized=true
     fi
     if [ "$vault_init_status" = "true" ]; then
@@ -68,9 +76,7 @@ fi
 vault_sealed_status="$( (docker exec "$vault_container_name" vault status --format=json || true) | jq -r .sealed)"
 
 if [ "$vault_sealed_status" = "true" ]; then
-    VAULT_UNSEAL_KEY="$(jq .unseal_keys_b64[0] -c "$vault_dir/init.out" -r | tee "$vault_dir/unseal.key")"
-    docker exec "$vault_container_name" vault operator unseal "$VAULT_UNSEAL_KEY" >/dev/null
+    unseal_key="$(cat "$vault_dir/unseal.key")"
+    docker exec "$vault_container_name" vault operator unseal "$unseal_key" >/dev/null
     printf "Vault has been unsealed 🔓 ✅\n"
 fi
-
-jq ".root_token" "$vault_dir/init.out" -r >"$vault_dir/root.key"

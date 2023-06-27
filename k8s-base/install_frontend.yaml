@@ -6,6 +6,7 @@
   - vars/etc.yaml
   roles:
   - validate_configuration
+  - vault-migrated
 
 - name: Establish connectivity to the nodes
   hosts: frontend
@@ -23,6 +24,15 @@
     tags: prepare-node
   - role: is-frontend-initialized
     tags: update_system
+
+- name: Prepare Vault
+  hosts: frontend
+  gather_facts: true
+  vars_files:
+  - vars/etc.yaml
+  roles:
+  - role: vault-onboarded
+    tags: vault-onboarded
 
 - name: Disable SELinux
   hosts: frontend

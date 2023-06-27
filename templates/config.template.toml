@@ -33,6 +33,18 @@ dualstack_support = false # "•ᴗ•"
 
 # ANCHOR_END: terraform_config
 
+# ANCHOR: vault_configuration
+# --- VAULT BACKEND ---
+# ansible prefix: vault_
+[vault]
+# Name of the cluster inside Vault. The secrets engines are searched for
+# relative to $path_prefix/$cluster_name/.
+# This name must be unique within a single vault instance and cannot be
+# reasonably changed after a cluster has been spawned.
+cluster_name = "devcluster" # "•ᴗ•"
+
+# ANCHOR_END: vault_configuration
+
 # ANCHOR: load-balancing_config
 # --- LOAD-BALANCING ---
 # ansible prefix: /
@@ -324,31 +336,6 @@ plugin = "calico" # •ᴗ•
 #pod_limit = 110
 
 # ANCHOR_END: kubernetes_kubelet_configuration
-
-# ANCHOR: kubernetes_continuous_join_key_configuration
-# --- KUBERNETES: CONTINUOUS JOIN KEY ---
-# ansible prefix: "k8s_continuous_join_key"
-[kubernetes.continuous_join_key]
-# This section controls a systemd timer which periodically publishes a fresh
-# Kubernetes join key into a HashiCorp Vault server. At the time of writing,
-# the primary use case is integration with the scripts provided to every node
-# deployed via the Yaook Metal Controller.
-enabled = false # •ᴗ•
-
-# Absolute path to an executable which prints a fresh, revocable vault token
-# to stdout. This token must be privileged enough to write the given vault path
-# below.
-#vault_token_script =
-
-# Path to a Vault key/value object where the join key data should be written
-# to.
-#vault_path =
-
-# Path to a file which should be loaded as additional environment to the token
-# renewal script.
-#env_path = "/dev/null"
-
-# ANCHOR_END: kubernetes_continuous_join_key_configuration
 
 # --- KUBERNETES SERVICE LAYER ---
 # ANCHOR: ksl_rook_configuration
@@ -756,12 +743,17 @@ enabled = false # •ᴗ•
 # Name of the folder to keep the backup files. It defaults to `etcd-backup`
 #file_prefix = "backup"
 
-# Configure s3 config yaml name. The file MUST be kept under `config` dir
-# and should be protected via some mechanism. This is a mandatory
-# variable, if etcd_backup_enabled is set to True. A template for such a file can be found at
-# managed-k8s/templates/etcd_backup_s3_config.yaml
-# **IMPORTANT:** This file contains credentials in plain text so make sure its appropriately secured (git-crypt, etc)
-#s3_config_name = "etcd_backup_s3_config.yaml"
+# Configure the location of the Vault kv2 storage where the credentials can
+# be found. This location is the default location used by import.sh and is
+# recommended.
+#vault_mount_point = "yaook/{{ vault_cluster_name }}/kv"
+
+# Configure the kv2 key under which the credentials are found. This location is
+# the default location used by import.sh and is recommended.
+#
+# The role expects a JSON object with `access_key` and `secret_key` keys,
+# containing the corresponding S3 credentials.
+#vault_path = "etcdbackup"
 
 # Number of days after which individual items in the bucket are dropped. Enforced by S3 lifecyle rules which
 # are also implemented by Ceph's RGW.
@@ -813,6 +805,9 @@ enabled = false # •ᴗ•
 # without significant damage.
 # NOTE: To work in infra-ironic clusters, this requires the vault to be in the
 # same namespace as the infra-ironic instance.
+# NOTE: if you enable this, you MUST NOT set the service_type to ClusterIP; it
+# will default to NodePort and it must be at least NodePort or LoadBalancer for
+# the integration to work correctly.
 #management_cluster_integration = false
 
 # Number of unseal key shares to generate upon vault initialization.
@@ -852,6 +847,15 @@ enabled = false # •ᴗ•
 # Credentials to access an S3 bucket to which the backups will be written. Required if `enable_backups = true`.
 # You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
 #s3_config_file = "vault_backup_s3_config.yaml"
+
+# Type of the Kubernetes Service of the Vault
+# NOTE: You may set this to LoadBalancer, but note that this will still use the internal certificate.
+# If you want to expose the Vault to the outside world, use the ingress config above.
+#service_type = "ClusterIP"
+
+# Node port to use for the Service which exposes the active Vault instance
+# See NOTE above regarding exposure of the Vault.
+#active_node_port = 32048
 
 # ANCHOR_END: ksl_vault_configuration
 

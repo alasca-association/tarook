@@ -28,6 +28,9 @@ When initializing your env vars from the template, you'll need to minimally (sic
   * Disable `TF_USAGE`
   * Disable `WG_USAGE`
 
+* For potentially productive setups, setting `YAOOK_K8S_CA_*_OVERRIDE` as
+  described in the template is **strongly encouraged**.
+
 Details about these can be found below.
 
 ## General
@@ -148,6 +151,49 @@ disable safety checks or give consent to potentially dangerous operations.
 
 >***Note:*** If you have already initialized you cluster repository, you'll need to rerun the [`init.sh`-script](./../operation/actions-references.md#initsh)
 > after enabling the Customization layer.
+
+## Vault tooling variables
+
+- `YAOOK_K8S_CA_ORGANIZATION_OVERRIDE`: Overrides the "organization" name in
+  X.509 identities for CAs (root and intermediate) created by the Vault
+  tooling.
+
+- `YAOOK_K8S_CA_COUNTRY_OVERRIDE`: Overrides the "country" identifier in
+  X.509 identities for CAs (root and intermediate) created by the Vault
+  tooling.
+
+- `VAULT_TOKEN`: Standard environment variable where the Vault CLI, all scripts
+  and the LCM look for a ready-to-use token. Note that the LCM (and only the
+  LCM, i.e. the ansible roles) ignores this variable if `VAULT_AUTH_METHOD` is
+  set to a value different than `token`.
+
+- `VAULT_AUTH_METHOD` (LCM only, default: `token`): The authentication method
+  to use for all orchestrator-controlled Vault operations. The only other
+  supported value is `approle`, which requires `VAULT_AUTH_PATH`,
+  `VAULT_ROLE_ID` and `VAULT_SECRET_ID` to be set.
+
+- `VAULT_AUTH_PATH` (LCM only, no default): Path to the authentication
+  engine to use. Only used for non-`token` `VAULT_AUTH_METHOD`.
+
+- `VAULT_ROLE_ID` (LCM only, no default): If `VAULT_AUTH_METHOD` is set to
+  `approle`, this must be set to the role ID to authenticate with.
+
+- `VAULT_SECRET_ID` (LCM only, no default): If `VAULT_AUTH_METHOD` is set to
+  `approle`, this must be the secret ID to authenticate with.
+
+- `YAOOK_K8S_VAULT_PATH_PREFIX` (default: `yaook`): Vault URI path prefix to be
+  used for all secrets engines used by yaook/k8s. Changing this is not fully
+  supported and at your own risk.
+
+- `YAOOK_K8S_VAULT_POLICY_PREFIX` (default: `yaook`): Vault policy name prefix
+  to be used for all policies created by yaook/k8s. Changing this is not fully
+  supported and at your own risk.
+
+- `YAOOK_K8S_VAULT_NODES_APPROLE_NAME`
+  (default: `$YAOOK_K8S_VAULT_PATH_PREFIX/nodes`): Vault auth engine mount
+  point to be used for the approle engine used to authenticate nodes. Changing
+  this is not fully supported and at your own risk.
+
 ## Template
 
 The template file is located at `templates/envrc.template.sh`.

@@ -1,0 +1,83 @@
+---
+- name: Refresh certificate
+  environment:
+    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+  block:
+  - name: "{{ get_cert_k8s_title }}: Read keypair secret"
+    become: true
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    kubernetes.core.k8s_info:
+      api_version: v1
+      kind: Secret
+      name: "{{ get_cert_k8s_secret_name }}"
+      namespace: "{{ get_cert_k8s_namespace | default('kube-system') }}"
+    register: k8s_keypair_secret
+    # Retry this task on failures
+    until: k8s_keypair_secret is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+
+
+  - name: "{{ get_cert_k8s_title }}: Check expiry"
+    when: k8s_keypair_secret.resources
+    delegate_to: localhost
+    community.crypto.x509_certificate_info:
+      content: "{{ k8s_keypair_secret.resources[0].data[get_cert_k8s_filename + '.crt'] | b64decode }}"
+      valid_at:
+        point_1: "-4w"
+        point_2: "+16w"
+    register: cert_info
+
+  - name: "{{ get_cert_k8s_title }}: Dump cert information"
+    ansible.builtin.debug:
+      msg: |
+        Certificate {% if k8s_keypair_secret.resources %}exists,
+        {% if cert_info.valid_at.point_1 %} is older than 4w{% else %}is not older than 4w{% endif %}
+        {% if cert_info.valid_at.point_2 %} and is valid 16w from now{% else %} and expires in less than 16w{% endif %}.
+        {% else %}does not exist.{% endif %}
+
+  - name: "{{ get_cert_k8s_title }}: Fetch if absent or expiring"
+    when: |
+      not k8s_keypair_secret.resources or
+      cert_info.valid_at.point_1 or
+      not cert_info.valid_at.point_2
+    delegate_to: localhost
+    community.hashi_vault.vault_write:
+      path: "{{ get_cert_k8s_vault_path }}"
+      data: "{{ get_cert_k8s_vault_data }}"
+      token_validate: false
+      auth_method: approle
+      role_id: "{{ vault_role_id }}"
+      secret_id: "{{ vault_secret_id }}"
+      mount_point: "{{ vault_nodes_approle }}"
+    register: get_cert
+
+  - name: "{{ get_cert_k8s_title }}: Update certificate secret"  # noqa no-handler
+    when: get_cert is changed
+    become: true
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    kubernetes.core.k8s:
+      apply: true
+      definition:
+        apiVersion: v1
+        data: |
+          {
+            {{ "%s.crt" | format(get_cert_k8s_filename) | to_json }}: {{ get_cert.data.data.certificate | b64encode | to_json }},
+            {{ "%s.key" | format(get_cert_k8s_filename) | to_json }}: {{ get_cert.data.data.private_key | b64encode | to_json }},
+          }
+        kind: Secret
+        metadata:
+          name: "{{ get_cert_k8s_secret_name }}"
+          namespace: "{{ get_cert_k8s_namespace | default('kube-system') }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    register: cert_update
+    # Retry this task on failures
+    until: cert_update is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+...

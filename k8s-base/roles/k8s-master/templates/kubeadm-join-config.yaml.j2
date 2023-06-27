@@ -32,11 +32,8 @@ nodeRegistration:
 {% endif %}
 
 discovery:
-  bootstrapToken:
-    apiServerEndpoint: {{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}
-    token: {{ kubeadm_join_token }}
-    caCertHashes:
-    - "sha256:{{ ca_cert['public_key_fingerprints']['sha256'] | replace(':', '') }}"
+  file:
+    kubeConfigPath: /etc/kubernetes/kubelet.conf
   timeout: 5m0s
 
 controlPlane:

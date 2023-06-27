@@ -166,18 +166,6 @@ The LCM supports the customization of certain variables of `kubelet` for (meta-)
 ```
 </details>
 
-#### Continuous Join Key Configuration
-
-Currently, this is only needed for yk8s clusters created via the yaook/metal-controller on bare metal.
-
-<details>
-<summary>config.toml: Kubernetes - Continuous Join Key Configuration</summary>
-
-```toml
-{{#include ../templates/config.template.toml:kubernetes_continuous_join_key_configuration}}
-```
-</details>
-
 ### KSL - Kubernetes Service Layer
 
 #### Rook Configuration
@@ -243,8 +231,9 @@ It uses the helm chart [etcdbackup](https://gitlab.com/yaook/operator/-/tree/dev
 The object storage retains data for 30 days then deletes it.
 
 The usage of it is disabled by default but can be enabled (and configured) in the following section.
-The s3 config yaml file name **MUST** be set when etcd backups are enabled.
-The file should be kept under `config/` dir and should be protected.
+The credentials are stored in Vault.
+By default, they are searched for in the cluster's kv storage (at `yaook/$clustername/kv`) under `etcdbackup`.
+They must be in the form of a JSON object/dict with the keys `access_key` and `secret_key`.
 
 > ***Note:*** To enable etcd-backup, `k8s-service-layer.etcd-backup.enabled` needs to be set to `true`.
 <details>

@@ -26,72 +26,56 @@
   register: wg0_conf
 
 - name: Lookup private wireguard key of the gateway
-  # Currently the passwordstore lookup plugin cannot deal with whitespaces in the passwordstore directory. [0]
-  # We're mitigating this issue by checking that `etc_dir` does not contain a whitespace + hardcoding the path
-  # to the cluster local password store.
-  #
-  # [0] https://github.com/ansible-collections/community.general/blob/de8e2a83e2948eabb0b8b1d9c1a533a18fc65214/plugins/lookup/passwordstore.py#L161
+  environment:
+    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
   become: false
   delegate_to: localhost
   run_once: true
-  vars:
-    password_store_dir: "{{ etc_dir }}/passwordstore"
   block:
-    - name: Lookup key in passwordstore  # noqa ignore-errors
+    - name: Lookup key in vault  # noqa ignore-errors
       ignore_errors: true
       # Check if the key exists
       ansible.builtin.set_fact:
-        wg_gw_key: "{{ lookup('passwordstore', 'wg_gw_key directory={{ password_store_dir }}') }}"
-
-    - name: Fail if wg0.conf exists but key is not in passwordstore
-      ansible.builtin.fail:
-        msg: |
-          This task fails because the private wireguard key of the gateway should no longer be stored in plain text in the file system of the workstation.
-          Previously the key was not included in the git repository to mitigate the risk of leaking sensitive credentials.
-          The role didn't warn you about a missing key, however, but overwrote it happily. Mercy on those who do not use '--diff'.
-          We're using pass to store the credentials from now on. Here is what to do:
-          1.) Fetch the current wireguard private key of the gateways. Likely spots are:
-            - inventory/.etc/wg_gw_priv.key
-            - /etc/wireguard/wg0.conf (on the gateways)
-          2.) If you haven't done so already, install `pass` on your workstation. (https://www.passwordstore.org/)
-          3.) Insert the key into the database: `PASSWORD_STORE_DIR="$(pwd)/inventory/.etc/passwordstore" pass insert wg_gw_key`
-          4.) Compare the output of `PASSWORD_STORE_DIR="$(pwd)/inventory/.etc/passwordstore" pass show wg_gw_key`
-              with the current wireguard private key of the gateway and make sure that they match.
-      when: "wg0_conf.stat.exists and (wg_gw_key is not defined)"
+        wg_gw_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key }}"
 
     - name: Create new wireguard private key of the gateway  # noqa no-changed-when
       ansible.builtin.command: wg genkey
       register: wg_genkey
       when: "not wg0_conf.stat.exists and (wg_gw_key is not defined)"
 
-    - name: Ensure that the output of `wg genkey` contains no whitespace
-      ansible.builtin.fail:
-        msg: |
-          The output of `wg genkey` contains whitespace for an unknown reason. The passwordstore lookup plugin cannot cope with that so
-          please check what went wrong.
-      when: "wg_genkey.changed and (wg_genkey.stdout | regex_search('\\s'))"
-
-    - name: Insert key into the passwordstore
-      # Ignoring the linter here because without nesting jinja we'd have to concat strings which is even uglier.
-      ansible.builtin.set_fact:
-        _: "{{ lookup('passwordstore', '{{ wg_gw_priv_path }} userpass={{ wg_genkey.stdout }} directory={{ password_store_dir }} create=True') }}"
+    - name: Store generated key in vault
       when: "not wg0_conf.stat.exists and (wg_gw_key is not defined)"
+      community.hashi_vault.vault_write:
+        path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv/data/wireguard-key"
+        mount_point: "{{ vault_nodes_approle }}"
+        auth_method: "approle"
+        role_id: "{{ vault_node_role_id }}"
+        secret_id: "{{ vault_node_secret_id }}"
+        token_validate: false
+        data:
+          data:
+            private_key: "{{ wg_genkey.stdout }}"
 
 - name: Load shared keypair
   become: false
   delegate_to: localhost
   run_once: true
-  vars:
-    password_store_dir: "{{ etc_dir }}/passwordstore"
+  environment:
+    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
   block:
     - name: Load private key
       ansible.builtin.set_fact:
-        wg_gw_priv_key: "{{ lookup('passwordstore', '{{ wg_gw_priv_path }} directory={{ password_store_dir }}') }}"
+        wg_gw_priv_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key }}"
+
     - name: Derive public key  # noqa no-changed-when
       ansible.builtin.command: "wg pubkey"
       args:
         stdin: "{{ wg_gw_priv_key }}"
       register: wg_pubkey
+      changed_when: false
+
     - name: Write public key to disk
       ansible.builtin.copy:
         content: "{{ wg_pubkey.stdout }}"

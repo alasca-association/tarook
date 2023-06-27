@@ -11,6 +11,7 @@
       - "node"
       - "--patches"
       - "/etc/kubernetes/kubeadm-patches"
+      - --certificate-renewal=false
 
 - name: Run kubeadm upgrade node on worker node  # noqa no-changed-when
   when:

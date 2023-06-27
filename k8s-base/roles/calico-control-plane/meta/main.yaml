@@ -5,4 +5,6 @@ galaxy_info:
 dependencies:
 - calico
 - k8s-tools
+- vault-config
+- vault-approle
 ...

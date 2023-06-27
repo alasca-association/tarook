@@ -36,6 +36,7 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "cah-users",
     "etcd-backup",
     "custom",
+    "vault",
     "miscellaneous",
     "nvidia",
 )
@@ -88,6 +89,7 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "etcd-backup": "etcd_backup",
     "vault": "yaook_vault",
     "nvidia": "nvidia",
+    "vault_backend": "vault",
 }
 
 
@@ -310,6 +312,21 @@ def main():
         tf_config["monitoring_manage_thanos_bucket"] = use_thanos and \
             manage_thanos_bucket
         terraform_helper.deploy_terraform_config(tf_config)
+
+    # ---
+    # VAULT
+    # ---
+    print_process_state("Vault")
+    for stage in ["stage2", "stage3", "stage4"]:
+        vault_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES[stage] /
+            "group_vars" / "all" / "vault.yaml"
+        )
+        dump_to_ansible_inventory(
+            config["vault"],
+            vault_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("vault_backend", "")
+        )
 
     # ---
     # WIREGUARD

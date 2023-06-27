@@ -33,6 +33,7 @@
 - [Backups](./operation/backups.md)
 - [Migrate CRI from docker to containerd](./operation/migrate-docker-containerd.md)
 - [Calico (CNI)](./operation/calico.md)
+- [Vault secret store](./operation/vault.md)
 
 ---
 
@@ -66,6 +67,7 @@
 # Development & Contribution
 
 - [Coding Guide](./development/coding-guide.md)
+- [Developing with Vault](./development/vault.md)
 
 ---
 

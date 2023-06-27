@@ -42,6 +42,13 @@ export TF_VAR_keypair
 # Optional: Vault: Activate Hashicorp Vault Docker container
 export USE_VAULT_IN_DOCKER=false
 
+# These should be set according to your org and country. This will be used to
+# provision root and/or intermediate CAs depending on which workflow you chose.
+# It is irrelevant for development/testing setups, but you should probably get
+# this right for productive setups in order to avoid any confusion.
+#export YAOOK_K8S_CA_ORGANIZATION_OVERRIDE='Your Company Ltd.'
+#export YAOOK_K8S_CA_COUNTRY_OVERRIDE='XX'
+
 # Vault: Define Vault data storage path
 #VAULT_DIR="$(pwd)/vault"
 #export VAULT_DIR

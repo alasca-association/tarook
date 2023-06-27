@@ -4,22 +4,25 @@
   when:
     - image_versions.calico_use_tigera_operator | bool
 
-- name: Distribute calico-kubeconfig to all nodes
+- name: Create /etc/cni/net.d/
   become: true
-  block:
-    - name: Ensure that /etc/cni/net.d/ exists on all k8s_nodes
-      ansible.builtin.file:
-        owner: root
-        group: root
-        mode: 0640
-        path: /etc/cni/net.d/
-        state: directory
+  ansible.builtin.file:
+    owner: root
+    group: root
+    mode: u=rw,g=r,o-rwx
+    path: /etc/cni/net.d/
+    state: directory
 
-    - name: Push calico-kubeconfig from localhost to k8s_nodes
-      ansible.builtin.template:
-        owner: root
-        group: root
-        mode: 0400
-        src: "calico-kubeconfig.j2"
-        dest: /etc/cni/net.d/calico-kubeconfig
+- name: Generate calico kubeconfig
+  ansible.builtin.include_role:
+    name: k8s-master
+    tasks_from: mkkubeconfig
+  vars:
+    vault_role_id: "{{ vault_node_role_id }}"
+    vault_secret_id: "{{ vault_node_secret_id }}"
+    kubeconfig_title: calico
+    kubeconfig_destination: /etc/cni/net.d/calico-kubeconfig
+    kubeconfig_issuer: calico-cni
+    kubeconfig_user: calico-cni
+    kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
 ...
