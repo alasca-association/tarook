@@ -125,7 +125,7 @@ agent_port    = 15203
 # --- KUBERNETES: BASIC CLUSTER CONFIGURATION ---
 # ansible prefix: "k8s_"
 [kubernetes]
-# Kubernetes version. Currently, we support from 1.21.* to 1.24.*.
+# Kubernetes version. Currently, we support from 1.24.* to 1.25.*.
 version = "1.25.10" # •ᴗ•
 
 # Set this variable if this cluster contains worker with GPU access
@@ -624,6 +624,11 @@ use_helm = true
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
 #blackbox_version = "7.0.0"
 
+# By default, prometheus and alertmanager only consider global rules from the monitoring 
+# namespace while other rules can only alert on their own namespace. If this variable is
+# set, cluster wide rules are considered from all namespaces.
+#allow_external_rules = false
+
 #[[k8s-service-layer.prometheus.internet_probe_targets]]
 # name="example"                    # Human readable URL that will appear in Prometheus / AlertManager
 # url="http://example.com/healthz"  # The URL that blackbox will scrape
@@ -1077,12 +1082,6 @@ rollout = false # •ᴗ•
 # Install wireguard on all workers (without setting up any server-side stuff)
 # so that it can be used from within Pods.
 wireguard_on_workers = false
-
-# Configure which container runtime to use.
-# Supported values are: "docker" and "containerd".
-# For now migrating the container runtime of existing clusters is not
-# supported.
-container_runtime = "containerd"  # "•ᴗ•"
 
 # Configuration details if the cluster will be placed behind a HTTP proxy.
 # If unconfigured images will be used to setup the cluster, the updates of

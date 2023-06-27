@@ -59,11 +59,7 @@ ansible-lint:
     - "ANSIBLE_ROLES_PATH=k8s-service-layer/test-roles ansible-lint -c ci/lint/ansible-lint-conf k8s-service-layer/test.yaml" # Check ksl tests
     - "ANSIBLE_ROLES_PATH=k8s-managed-services/test-roles ansible-lint -c ci/lint/ansible-lint-conf k8s-managed-services/test.yaml" # Check ksm tests
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/system_update_nodes.yaml" # Check system update node
-    - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/migrate-docker-to-containerd.yaml" # Check system update node
       # Check k8s upgrades
-    - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.22.yaml"
-    - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.23.yaml"
-    - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.24.yaml"
     - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.25.yaml"
   tags:
     - docker
@@ -358,37 +354,13 @@ testBook:
   before_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
   script:
-    # Disable Ingress (Requires k8s >= v1.22)
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"false\"}}}"'
-    # Disable Cert-Manager (Requires k8s >= v1.22)
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"cert-manager\":{\"enabled\":\"false\"}}}"'
-    # Set k8s version to minimal supported version: v1.21.14
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.21.14\"}}"'
     # Spawn and test cluster
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.24.15\"}}"'
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
-    # Upgrade cluster to k8s v1.22.12
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.22.12
+    # Upgrade cluster to k8s v1.25.11
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.25.11
     # Update k8s version
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.22.12\"}}"'
-    # Install ingress, cert-manager & vault after upgrading to k8s v1.22
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"ingress\":{\"enabled\":\"true\"}}}"'
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"k8s-service-layer\":{\"cert-manager\":{\"enabled\":\"true\"}}}"'
-  - AFLAGS="-t mk8s-sl/ingress,mk8s-sl/cert-manager,mk8s-sl/vault" ./managed-k8s/actions/apply-stage4.sh
-    # Upgrade cluster to k8s v1.23.13
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.23.13
-    # Update k8s version
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.23.13\"}}"'
-    # Migrate to containerd
-  - 'MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/migrate-docker-containerd.sh'
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"containerd\"}}"'
-    # Upgrade cluster to k8s v1.24.10
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.24.10
-    # Update k8s version
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.24.10\"}}"'
-    # Upgrade cluster to k8s v1.25.10
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.25.10
-    # Update k8s version
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.25.10\"}}"'
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.25.11\"}}"'
   - AFLAGS="-t mk8s-ms/monitoring" ./managed-k8s/actions/apply-stage5.sh
     # Retest the cluster
   - ./managed-k8s/actions/test.sh
@@ -471,51 +443,6 @@ containerd-manual:
     - when: never
   allow_failure: true
   extends: containerd
-  retry: 0
-
-# Spawn a cluster and test the k8s upgrade path (w/ calico)
-docker-k8s-upgrade:
-  environment:
-    name: spawn-cluster
-  rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: never
-    - if: $CI_COMMIT_REF_NAME == 'devel'
-      when: never
-    - if: $CI_COMMIT_REF_NAME == 'stable'
-      when: never
-    - when: on_success
-  script:
-    - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"miscellaneous\":{\"container_runtime\":\"docker\"}}"'
-    - !reference [.test_upgrade_path_k8s_cluster, script]
-  extends: .test_upgrade_path_k8s_cluster
-  stage: cluster-upgrades
-  retry: 2
-  variables:
-    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
-    # so we need to reference the default vars here (only one level of nesting is allowed)
-    WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
-    PASS_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, PASS_COMPANY_USERS]
-    SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
-    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
-    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
-    ci_vault_config_hcl: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_vault_config_hcl]
-    ci_cert_vaultchain_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultchain_crt]
-    ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
-    ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
-
-# Manually spawn a cluster and test the k8s upgrade path (w/ calico)
-docker-k8s-upgrade-manual:
-  rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: manual
-    - if: $CI_COMMIT_REF_NAME == 'devel'
-      when: manual
-    - if: $CI_COMMIT_REF_NAME == 'stable'
-      when: manual
-    - when: never
-  extends: docker-k8s-upgrade
-  allow_failure: true
   retry: 0
 
 pages:

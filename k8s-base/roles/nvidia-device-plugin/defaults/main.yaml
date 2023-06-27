@@ -1,7 +1,7 @@
 ---
 # Install if there is at least one node with a GPU,
 # uninstall otherwise
-k8s_nvidia_device_plugin_install: "{{ true in (ansible_play_hosts | map('extract', hostvars, 'node_has_gpu') | list) and k8s_is_gpu_cluster and not k8s_virtualize_gpu }}"
+k8s_nvidia_device_plugin_install: "k8s_is_gpu_cluster and not k8s_virtualize_gpu }}"
 k8s_nvidia_device_plugin_namespace: k8s-nvidia-device-plugin
 k8s_nvidia_device_plugin_helm_repo_url: "https://nvidia.github.io/k8s-device-plugin"
 ...

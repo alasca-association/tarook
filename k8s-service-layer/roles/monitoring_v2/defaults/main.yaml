@@ -38,4 +38,6 @@ monitoring_nvidia_dcgm_exporter_helm_repo_url: "https://nvidia.github.io/dcgm-ex
 monitoring_nvidia_dcgm_exporter_helm_version: ""  # if not specified, latest
 
 monitoring_alertmanager_replicas: 1
+
+monitoring_allow_external_rules: false
 ...
