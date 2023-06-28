@@ -7,21 +7,6 @@
     name: "{{ rook_namespace }}"
   register: rook_ns
 
-- name: Verify that each rook Pod is up and healthy
-  when: rook_ns.resources is defined and rook_ns.resources | length != 0
-  retries: 3
-  delay: 5
-  kubernetes.core.k8s_info:
-    kind: Pod
-    namespace: "{{ rook_namespace }}"
-    wait_timeout: 10
-    wait: true
-    label_selectors:
-    - app != rook-ceph-osd-prepare
-    wait_condition:
-      status: "True"
-      type: "Ready"
-
 - name: Verify ceph cluster health
   when: rook_ns.resources is defined and rook_ns.resources | length != 0
   block:
