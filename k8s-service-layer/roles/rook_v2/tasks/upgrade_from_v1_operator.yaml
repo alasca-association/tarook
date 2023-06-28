@@ -130,7 +130,6 @@
       loop:
         - ["v1", "ConfigMap", "rook-ceph-operator-config"]
         - ["apps/v1", "Deployment", "rook-ceph-operator"]
-        - ["policy/v1beta1", "PodSecurityPolicy", "00-rook-privileged"]
         - ["rbac.authorization.k8s.io/v1", "Role", "cephfs-external-provisioner-cfg"]
         - ["rbac.authorization.k8s.io/v1", "Role", "rbd-external-provisioner-cfg"]
         - ["rbac.authorization.k8s.io/v1", "Role", "rook-ceph-cmd-reporter"]
