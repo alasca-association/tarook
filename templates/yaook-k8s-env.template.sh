@@ -16,6 +16,11 @@ export wg_private_key_file="path/to/your/private/key"
 # Wireguard: Your username in the wg-user repository
 export wg_user='firstnamelastname'
 
+# Wireguard: MTU value
+# Optional parameter, usually Wireguard handles this correctly automatically
+#wg_mtu='1400'
+#export wg_mtu
+
 # OpenStack: Name of the keypair to use to bootstrap new instances.
 # Does not affect existing instances.
 export TF_VAR_keypair='firstnamelastname-hostname-gendate'

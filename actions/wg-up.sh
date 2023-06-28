@@ -52,4 +52,11 @@ if [ "${WG_USAGE:-true}" == "true" ]; then
     else
         sudo wg set "$wg_conf_name" private-key /dev/stdin <<< "$wg_private_key"
     fi
+    if [[ -v wg_mtu ]]; then
+        if [ "$(id -u)" = '0' ]; then
+	    ip l set mtu "$wg_mtu" dev "$wg_conf_name"
+        else
+            sudo ip l set mtu "$wg_mtu" dev "$wg_conf_name"
+        fi
+    fi
 fi
