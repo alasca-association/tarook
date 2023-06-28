@@ -3,7 +3,6 @@ kubernetes
 openshift
 toml
 kubernetes-validate
-python-openstackclient
 
 # helper scripts requirements
 mergedeep
