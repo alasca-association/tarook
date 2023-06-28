@@ -19,12 +19,11 @@
     ansible.builtin.debug:
       msg: |
         Deployment {{ item.metadata.name }} has ceph version {{ item.metadata.labels['ceph-version'] }}
-        Configured Replicas:  {{ item.status.replicas }}
-        Updated Replicas:     {{ item.status.updatedReplicas }}
-        Ready Replicas:       {{ item.status.readyReplicas }}
+        Configured Replicas:  {{ item.status.replicas | default("Unknown") }}
+        Updated Replicas:     {{ item.status.updatedReplicas | default("Unknown") }}
+        Ready Replicas:       {{ item.status.readyReplicas | default("Unknown") }}
     failed_when: |
-      ((item.status.replicas | int) != (item.status.updatedReplicas | int))
-      or ((item.status.replicas | int) != (item.status.readyReplicas | int))
+      ((item.status.replicas | default("-1") | int) != (item.status.readyReplicas | default("-2") | int))
       or (rook_ceph_version[1:] not in item.metadata.labels['ceph-version'])
     # the Ceph version gets an additional build tag, the "-n" suffix, and is missing the leading "v" :/
     with_items: "{{ rook_deployments_info.resources }}"
