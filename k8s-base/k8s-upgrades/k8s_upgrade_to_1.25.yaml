@@ -155,9 +155,9 @@
       delegate_to: localhost
       when: not (k8s_skip_upgrade_checks | bool) and not (k8s_upgrade_done | default(False))
     - role: kubeadm-drain-node
-      when: "not (k8s_upgrade_done | default(False)) and not k8s_inplace_upgrade | default(False)"
+      when: "not (k8s_upgrade_done | default(False))"
     - role: update_system
-      when: "not (k8s_upgrade_done | default(False)) and not k8s_inplace_upgrade | default(False)"
+      when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-upgrade-kubeadm
       when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-upgrade-node

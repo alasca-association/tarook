@@ -7,14 +7,11 @@ actions_dir="$(dirname "$0")"
 # Ensure that the latest config is deployed to the inventory
 python3 "$actions_dir/update_inventory.py"
 
-while getopts si flag
+while getopts s flag
 do
     case "${flag}" in
         s)
             k8s_skip_upgrade_checks=true
-            ;;
-        i)
-            k8s_inplace_upgrade=true
             ;;
         *)
             echo "Unknown flag passed: '${flag}'" >&2
@@ -64,5 +61,4 @@ ANSIBLE_ROLES_PATH="$ansible_k8s_base_playbook/roles:$ansible_k8s_sl_playbook/ro
     -e "next_minor_k8s_version=$minor_version" \
     -e '{"do_upgrade": true}' \
     -e "k8s_skip_upgrade_checks=${k8s_skip_upgrade_checks:-false}" \
-    -e "k8s_inplace_upgrade=${k8s_inplace_upgrade:-false}" \
     -e "ksl_vars_directory=$ansible_k8s_sl_vars_base"
