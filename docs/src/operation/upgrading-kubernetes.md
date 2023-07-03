@@ -11,7 +11,6 @@
     - [Upgrading to 1.18.x (from 1.17.x or 1.18.x)](#upgrading-to-118x-from-117x-or-118x)
   - [Upgrade to Kubernetes v1.24](#upgrade-to-kubernetes-v124)
   - [Skip Intermittent Cluster Health Verification](#skip-intermittent-cluster-health-verification)
-  - [Inplace Upgrades](#inplace-upgrades)
   - [Kubernetes Component Versioning](#kubernetes-component-versioning)
     - [General Information](#general-information)
     - [Calico](#calico)
@@ -80,18 +79,6 @@ The flag has to be passed between the script path and the target version.
 ```console
 # Triggering a Kubernetes upgrade and skip health verification tasks
 $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh -s 1.22.11
-```
-
-## Inplace Upgrades
-
-It is best practice, but not a hard requirement to drain a Kubernetes worker prior to upgrading it.
-However, in most cases you want to drain the workers as we're also doing system updates by that chance.
-The drain and system update of workers can be skipped by passing the `-i` flag to the [`upgrade.sh'-script](../operation/actions-references.md#upgradesh).
-The flag has to be passed between the script path and the target version.
-
-```console
-# Triggering an inplace Kubernetes upgrade without system updates
-$ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh -i 1.22.11
 ```
 
 ## Kubernetes Component Versioning
