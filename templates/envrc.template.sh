@@ -1,6 +1,33 @@
 # Example .envrc file.
 # shellcheck shell=bash
 
+# This file is meant to be checked into the VCS and to contain
+# environment variables specific to the cluster and shared 
+# between users.
+
+# User specific variables are read from 3 locations.
+# 
+#   1. ~/.config/yaook-k8s/env
+#   2. the next .envrc in parent directories
+#      (vie source_up)
+#   3. .envrc.local
+# 
+# The first can contain user specific variables
+# that apply to all clusters.
+# The second can be used to target subsets of
+# clusters.
+# The third is for user and cluster specific
+# variables and is sourced in the end of this .envrc
+# so it can override variables.
+
+source_env ~/.config/yaook-k8s/env || true
+source_up || true
+# For up-to-date direnv versions one can also use:
+# https://direnv.net/man/direnv-stdlib.1.html#codesourceenvifexists-ltfilenamegtcode
+#source_env_if_exists ~/.config/yaook-k8s/env
+# https://direnv.net/man/direnv-stdlib.1.html#codesourceupifexists-ltfilenamegtcode
+#source_up_if_exists
+
 # For more details on existing environment variables and their effects,
 # please see docs/admin/cluster-repo.md in the managed-k8s lcm
 # repository.
@@ -21,23 +48,8 @@ export SSH_COMPANY_USERS=false
 wg_conf_name='wg0'
 export wg_conf_name
 
-# Wireguard: Absolute path to your private wireguard key.
-wg_private_key_file="$(pwd)/../privkey"
-export wg_private_key_file
-# Alternatively you can directly export your wireguard key
-#export wg_private_key="$(pass PASS_PATH_TO_YOUR_WIREGUARD_KEY)"
-
-# Wireguard: Your username in the wg-user repository
-wg_user='firstnamelastname'
-export wg_user
-
 # Terraform: Use Terraform (default: True)
 export TF_USAGE=true
-
-# OpenStack: Name of the keypair to use to bootstrap new instances.
-# Does not affect existing instances.
-TF_VAR_keypair='firstnamelastname-hostname-gendate'
-export TF_VAR_keypair
 
 # Optional: Vault: Activate Hashicorp Vault Docker container
 export USE_VAULT_IN_DOCKER=false
@@ -62,12 +74,12 @@ export USE_VAULT_IN_DOCKER=false
 KUBECONFIG="$(pwd)/inventory/.etc/admin.conf"
 export KUBECONFIG
 
-# Optional: activate the virtual env for managed-k8s
-source_env ~/.venv/managed-k8s/bin/activate
-
 # Optional: Use custom roles that can be droped into the
 # 'cluster_repository/k8s-custom' folder and executed after
 # after initialization through the included main.yaml
 export K8S_CUSTOM_STAGE_USAGE=false
 
-# Optional: You can also source your openrc from here.
+source_env "$PWD/.envrc.local" || true
+# For up-to-date direnv versions one can also use:
+# https://direnv.net/man/direnv-stdlib.1.html#codesourceenvifexists-ltfilenamegtcode
+#source_env_if_exists "$PWD/.envrc.local"

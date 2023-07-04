@@ -14,6 +14,6 @@
 /inventory/.etc/manifests/
 /terraform/config.tfvars.json
 /terraform/plan.tfplan
-.envrc
+.envrc.local
 /.direnv
 terraform/02-moved-instances.tf
