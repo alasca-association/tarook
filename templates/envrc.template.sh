@@ -20,8 +20,13 @@
 # variables and is sourced in the end of this .envrc
 # so it can override variables.
 
-source_env_if_exists ~/.config/yaook-k8s/env
-source_up_if_exists
+source_env ~/.config/yaook-k8s/env || true
+source_up || true
+# For up-to-date direnv versions one can also use:
+# https://direnv.net/man/direnv-stdlib.1.html#codesourceenvifexists-ltfilenamegtcode
+#source_env_if_exists ~/.config/yaook-k8s/env
+# https://direnv.net/man/direnv-stdlib.1.html#codesourceupifexists-ltfilenamegtcode
+#source_up_if_exists
 
 # For more details on existing environment variables and their effects,
 # please see docs/admin/cluster-repo.md in the managed-k8s lcm
@@ -74,4 +79,7 @@ export KUBECONFIG
 # after initialization through the included main.yaml
 export K8S_CUSTOM_STAGE_USAGE=false
 
-source_env_if_exists "$PWD/.envrc.local"
+source_env "$PWD/.envrc.local" || true
+# For up-to-date direnv versions one can also use:
+# https://direnv.net/man/direnv-stdlib.1.html#codesourceenvifexists-ltfilenamegtcode
+#source_env_if_exists "$PWD/.envrc.local"
