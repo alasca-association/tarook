@@ -39,7 +39,7 @@
       block:
         - name: Pause for 20 seconds, give the cluster time to converge
           ansible.builtin.pause:
-            seconds: 20
+            seconds: 60
         - name: Include ceph upgrade verification
           ansible.builtin.include_tasks: wait_for_ceph_upgrade.yaml
     - name: Wait for cluster to become ready
