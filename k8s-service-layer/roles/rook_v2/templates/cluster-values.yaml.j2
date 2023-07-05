@@ -54,7 +54,7 @@ cephClusterSpec:
   dashboard:
     enabled: false
     ssl: true
-{% if rook_version[1:] is version('1.9', '>=') %}
+{% if rook_version[1:] is version('1.9', '>=') and k8s_monitoring_enabled %}
     createPrometheusRules: true
 {% endif %}
 
