@@ -1,5 +1,3 @@
-{% from "roles/rook_v1/templates/utils.j2" import resource_constraints %}
-
 toolbox:
   enabled: true
 {% if rook_scheduling_key %}
@@ -124,20 +122,32 @@ cephClusterSpec:
 {% endfor %}
 {% endif %}
   resources:
-    mgr: {
-{% call resource_constraints(
-  rook_mgr_memory_request,
-  rook_mgr_cpu_request,
-  rook_mgr_memory_limit,
-  rook_mgr_cpu_limit) %}{% endcall %}
-    }
-    mon: {
-{% call resource_constraints(
-  rook_mon_memory_request,
-  rook_mon_cpu_request,
-  rook_mon_memory_limit,
-  rook_mon_cpu_limit) %}{% endcall %}
-    }
+    mgr:
+      limits:
+        cpu: "{{ rook_mgr_cpu_limit }}"
+        memory: "{{ rook_mgr_memory_limit }}"
+      requests:
+        cpu: "{{ rook_mgr_cpu_request }}"
+        memory: "{{ rook_mgr_memory_request }}"
+    mon:
+      limits:
+        cpu: "{{ rook_mon_cpu_limit }}"
+        memory: "{{ rook_mon_memory_limit }}"
+      requests:
+        cpu: "{{ rook_mon_cpu_request }}"
+        memory: "{{ rook_mon_memory_request }}"
+    osd:
+      limits:
+        cpu: "{{ rook_osd_cpu_limit }}"
+        memory: "{{ rook_osd_memory_limit }}"
+      requests:
+        cpu: "{{ rook_osd_cpu_request }}"
+        memory: "{{ rook_osd_memory_request }}"
+    prepareosd:
+    mgr-sidecar:
+    crashcollector:
+    logcollector:
+    cleanup:
   removeOSDsIfOutAndSafeToRemove: {{ rook_osd_autodestroy_safe }}
   storage: # cluster level storage configuration and selection
     useAllNodes: false
@@ -192,13 +202,13 @@ cephClusterSpec:
           operator: Exists
 {% endif %}
 {% endif %}
-      resources: {
-{% call resource_constraints(
-  rook_osd_memory_request,
-  rook_osd_cpu_request,
-  rook_osd_memory_limit,
-  rook_osd_cpu_limit) %}{% endcall %}
-      }
+      resources:
+        limits:
+          cpu: "{{ rook_osd_cpu_limit }}"
+          memory: "{{ rook_osd_memory_limit }}"
+        requests:
+          cpu: "{{ rook_osd_cpu_request }}"
+          memory: "{{ rook_osd_memory_request }}"
       volumeClaimTemplates:
       - metadata:
           creationTimestamp: null
@@ -345,13 +355,13 @@ cephFileSystems:
                   topologyKey: topology.kubernetes.io/zone
         annotations:
         labels:
-        resources: {
-    {% call resource_constraints(
-      rook_mds_memory_request,
-      rook_mds_cpu_request,
-      rook_mds_memory_limit,
-      rook_mds_cpu_limit) %}{% endcall %}
-        }
+        resources:
+          limits:
+            cpu: "{{ rook_mds_cpu_limit }}"
+            memory: "{{ rook_mds_memory_limit }}"
+          requests:
+            cpu: "{{ rook_mds_cpu_request }}"
+            memory: "{{ rook_mds_memory_request }}"
       mirroring:
         enabled: false
     storageClass:
