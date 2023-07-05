@@ -8,9 +8,24 @@
 
 haproxy_ports        = [30060]
 workers              = 6
-worker_flavors       = ["L", "L", "L", "L", "L", "SCS-4C:8:50s-GNt:1-mk8sPrivate"]
-master_images        = ["Ubuntu 18.04 LTS x64", "Ubuntu 22.04 LTS x64"]
-worker_images        = ["Ubuntu 18.04 LTS x64", "Ubuntu 22.04 LTS x64"]
+worker_flavors = [
+  "XL", # storage-0
+  "L", # cpu-0
+  "L", # storage-1
+  "L", # cpu-1
+  "XL", # storage-2
+  "SCS-4C:8:50s-GNt:1-mk8sPrivate" # gpu-0
+]
+worker_names = [
+  "storage-0",
+  "cpu-0", # labeled for monitoring
+  "storage-1",
+  "cpu-1", # labeled for monitoring
+  "storage-2",
+  "gpu-0"
+]
+master_images        = ["Ubuntu 20.04 LTS x64", "Ubuntu 22.04 LTS x64"]
+worker_images        = ["Ubuntu 20.04 LTS x64", "Ubuntu 22.04 LTS x64"]
 enable_az_management = false
 cluster_name         = "ci"
 
@@ -159,27 +174,27 @@ enable_backups = false
 enabled = true
 
 [testing.test-nodes]
-"ci-worker-1" = "worker0"
-"ci-worker-3" = "worker1"
-"ci-worker-5" = "worker2"
+"ci-worker-cpu-0" = "worker0"
+"ci-worker-cpu-1" = "worker1"
+"ci-worker-gpu-0" = "worker2"
 
 [node-scheduling]
 scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 
 [node-scheduling.labels]
-ci-worker-0 = ["{{ scheduling_key_prefix }}/storage=true"]
-ci-worker-1 = ["{{ scheduling_key_prefix }}/monitoring=true","{{ scheduling_key_prefix }}/rook-mgr=true"]
-ci-worker-2 = ["{{ scheduling_key_prefix }}/storage=true"]
-ci-worker-3 = ["{{ scheduling_key_prefix }}/monitoring=true","{{ scheduling_key_prefix }}/rook-mgr=true"]
-ci-worker-4 = ["{{ scheduling_key_prefix }}/storage=true"]
+ci-worker-storage-0 = ["{{ scheduling_key_prefix }}/storage=true"]
+ci-worker-storage-1 = ["{{ scheduling_key_prefix }}/storage=true"]
+ci-worker-storage-2 = ["{{ scheduling_key_prefix }}/storage=true"]
+ci-worker-cpu-0 = ["{{ scheduling_key_prefix }}/monitoring=true","{{ scheduling_key_prefix }}/rook-mgr=true"]
+ci-worker-cpu-1 = ["{{ scheduling_key_prefix }}/monitoring=true","{{ scheduling_key_prefix }}/rook-mgr=true"]
 
 [node-scheduling.taints]
-ci-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 # explicitly test a node with explicit request for no taints (to check the
 # templates more than anything else)
-ci-worker-1 = []
-ci-worker-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
-ci-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+ci-worker-cpu-0 = []
+ci-worker-storage-0= ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+ci-worker-storage-1 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
+ci-worker-storage-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 
 [passwordstore]
 rollout_company_users = false # False because we don't have the keys
