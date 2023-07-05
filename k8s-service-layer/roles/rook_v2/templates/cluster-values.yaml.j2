@@ -145,6 +145,7 @@ cephClusterSpec:
     config:
       encryptedDevice: "{{ rook_encrypt_osds }}" # the default value for this option is "false"
     onlyApplyOSDPlacement: false
+{% if rook_on_openstack %}
     storageClassDeviceSets:
     - name: cinder
       count: {{ rook_nosds }}
@@ -210,6 +211,7 @@ cephClusterSpec:
           volumeMode: Block
           accessModes:
           - ReadWriteOnce
+{% endif %}
   disruptionManagement:
     managePodBudgets: {{ rook_manage_pod_budgets | bool }}
     osdMaintenanceTimeout: 30
