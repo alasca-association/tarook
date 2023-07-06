@@ -1,0 +1,10 @@
+{{ _auto_generated_preamble }}
+
+[Interface]
+PrivateKey = REPLACEME
+Address = {{ item['ips'][endpoint.id] }} {%- if dualstack_support %}, {{ item['ipsv6'][endpoint.id] }}{% endif %}
+
+[Peer]
+PublicKey = {{ lookup('file', (wg_local_pub_path, keyfile_name) | path_join ) }}
+Endpoint = {{ networking_floating_ip }}:{{ endpoint.port }}
+AllowedIPs = {{ endpoint.ip_cidr }}, {{ subnet_cidr }} {%- if dualstack_support %}, {{ endpoint.ipv6_cidr }}, {{ subnet_v6_cidr }}{% endif %}

@@ -39,7 +39,8 @@ fi
 if [ "${WG_USAGE:-true}" == "true" ]; then
     wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
     wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
-    ansible_wg_template="$ansible_inventory_base/.etc/wireguard/wg_${wg_user}.conf"
+    wg_endpoint="${wg_endpoint:-0}"
+    ansible_wg_template="$ansible_inventory_base/.etc/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}.conf"
 fi
 
 if [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'true' ]; then

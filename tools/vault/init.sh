@@ -181,6 +181,9 @@ write_policy gateway <<EOF
 path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/wireguard-key" {
     capabilities = ["create", "update", "read"]
 }
+path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/wireguard/*" {
+    capabilities = ["create", "update", "read"]
+}
 EOF
 
 write_policy node <<EOF
@@ -264,6 +267,10 @@ path "$common_path_prefix/+/kv/data/etcdbackup" {
 }
 
 path "$common_path_prefix/+/kv/data/wireguard-key" {
+    capabilities = ["create", "update", "read"]
+}
+
+path "$common_path_prefix/+/kv/data/wireguard/*" {
     capabilities = ["create", "update", "read"]
 }
 EOF

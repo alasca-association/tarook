@@ -1,0 +1,206 @@
+---
+- name: Configure wireguard endpoint if enabled
+  when: endpoint.enabled
+  block:
+    - name: "Check existence of wg{{ endpoint.id }}.conf"
+      become: true
+      ansible.builtin.stat:
+        path: "/etc/wireguard/wg{{ endpoint.id }}.conf"
+      register: wg_conf
+
+    - name: Lookup private wireguard key of the gateway
+      environment:
+        ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+        ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+      become: false
+      delegate_to: localhost
+      run_once: true
+      block:
+        - name: Lookup key in vault  # noqa ignore-errors
+          ignore_errors: true
+          # Check if the key exists
+          ansible.builtin.set_fact:
+            wg_gw_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard/wg' ~ endpoint.id ~ '-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key }}"
+          register: wg_lookup
+
+        - name: Lookup id 0 key in vault  # noqa ignore-errors
+          ignore_errors: true
+          # Check if the key exists
+          ansible.builtin.set_fact:
+            wg_gw_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key }}"
+          when: wg_lookup is failed and endpoint.id == 0
+          register: wg_lookup_0
+
+        - name: Store existing key under new name
+          when: endpoint.id == 0 and (wg_lookup_0 is succeeded and wg_lookup_0 is not skipped)
+          community.hashi_vault.vault_write:
+            path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv/data/wireguard/wg{{ endpoint.id }}-key"
+            mount_point: "{{ vault_nodes_approle }}"
+            auth_method: "approle"
+            role_id: "{{ vault_node_role_id }}"
+            secret_id: "{{ vault_node_secret_id }}"
+            token_validate: false
+            data:
+              data:
+                private_key: "{{ wg_gw_key }}"
+          register: wg_key_new_name
+
+        - name: Create new wireguard private key of the gateway  # noqa no-changed-when
+          ansible.builtin.command: wg genkey
+          register: wg_genkey
+          when: "not wg_conf.stat.exists and wg_key_new_name is skipped and wg_lookup is failed"
+
+        - name: Store generated key in vault
+          when: "wg_genkey is succeeded and wg_genkey is not skipped"
+          community.hashi_vault.vault_write:
+            path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv/data/wireguard/wg{{ endpoint.id }}-key"
+            mount_point: "{{ vault_nodes_approle }}"
+            auth_method: "approle"
+            role_id: "{{ vault_node_role_id }}"
+            secret_id: "{{ vault_node_secret_id }}"
+            token_validate: false
+            data:
+              data:
+                private_key: "{{ wg_genkey.stdout }}"
+
+    - name: Load shared keypair
+      become: false
+      delegate_to: localhost
+      run_once: true
+      environment:
+        ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+        ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+      block:
+        - name: Load private key
+          ansible.builtin.set_fact:
+            wg_gw_priv_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard/wg' ~ endpoint.id ~ '-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key }}"
+
+        - name: Derive public key  # noqa no-changed-when
+          ansible.builtin.command: "wg pubkey"
+          args:
+            stdin: "{{ wg_gw_priv_key }}"
+          register: wg_pubkey
+          changed_when: false
+
+        - name: Ensure {{ wg_local_pub_path }} dir exists
+          ansible.builtin.file:
+            path: "{{ wg_local_pub_path }}"
+            state: directory
+            mode: 0755
+
+        - name: Write public key to disk
+          ansible.builtin.copy:
+            content: "{{ wg_pubkey.stdout }}"
+            dest: "{{ (wg_local_pub_path, keyfile_name) | path_join }}"
+            mode: 0644
+          vars:
+            keyfile_name: "wg{{ endpoint.id }}.key"
+
+    - name: "Create /etc/wireguard/wg{{ endpoint.id }}.conf on gateway side"
+      become: true
+      ansible.builtin.template:
+        src: "wg_server.conf.j2"
+        dest: "/etc/wireguard/wg{{ endpoint.id }}.conf"
+        mode: '0640'
+      register: wg_conf
+
+    - name: Make sure wireguard directory exists in etc directory
+      delegate_to: localhost
+      become: false
+      ansible.builtin.file:
+        path: "{{ etc_dir }}/wireguard/wg{{ endpoint.id }}"
+        state: directory
+        mode: 0755
+
+    - name: Remove no longer needed Wireguard peer templates
+      delegate_to: localhost
+      run_once: true
+      become: false
+      vars:
+        wg_config_dir_path: "{{ etc_dir }}/wireguard/wg{{ endpoint.id }}"
+        peers: "{{ wg_peers | map(attribute='ident') | flatten | map('regex_replace', '(.+)', 'wg' ~ endpoint.id ~ '_\\1.conf') | list }}"
+      block:
+        - name: Find no longer needed wg.conf files
+          ansible.builtin.find:
+            file_type: file
+            paths: "{{ wg_config_dir_path }}"
+            exclude: "{{ peers }}"
+            recurse: true
+          register: unused_config_files
+        - name: Delete unused wg.conf files
+          ansible.builtin.file:
+            path: "{{ item['path'] }}"
+            state: absent
+          loop: "{{ unused_config_files.files }}"
+          loop_control:
+            label: "{{ item['path'] }}"
+
+    - name: "Create a wg{{ endpoint.id }}.conf template for each peer"
+      become: false
+      delegate_to: localhost
+      run_once: true
+      ansible.builtin.template:
+        src: wg_client.conf.j2
+        dest: "{{ wg_client_path }}"
+        mode: '0640'
+      vars:
+        wg_client_path: "{{ etc_dir }}/wireguard/wg{{ endpoint.id }}/wg{{ endpoint.id }}_{{ item['ident'] }}.conf"
+        vip_port: vip-port
+        keyfile_name: "wg{{ endpoint.id }}.key"
+      loop: "{{ wg_peers }}"
+
+    - name: Notify user about auto-generated wg.conf
+      delegate_to: localhost
+      become: false
+      run_once: true
+      ansible.builtin.debug:
+        msg: |
+          The wg{{ endpoint.id }}_* configurations were written to {{ etc_dir }}/wireguard/wg{{ endpoint.id }}.
+          You need to insert your private wireguard key and bring the wireguard
+          interface up before continuing.
+
+    - name: Start and enable wireguard endpoint
+      become: true
+      block:
+        - name: Start and enable wireguard endpoint
+          ansible.builtin.service:
+            name: "wg-quick@wg{{ endpoint.id }}"
+            enabled: true
+            state: "{{ 'restarted' if wg_conf is changed else 'started' }}"
+      rescue:
+        - name: Collect logs of the wg-quick service  # noqa no-changed-when
+          ansible.builtin.shell: "journalctl -u wg-quick@wg{{ endpoint.id }}; systemctl status wg-quick@wg{{ endpoint.id }}"
+          register: wg_logs
+          ignore_errors: true
+        - name: Print logs
+          ansible.builtin.debug:
+            var: wg_logs.stdout_lines
+        - name: Re-raise error
+          ansible.builtin.fail:
+            msg: "{{ ansible_failed_result }}"
+
+- name: Deconfigure wireguard endpoint if disabled
+  when: not endpoint.enabled
+  block:
+    - name: Remove wireguard endpoint
+      become: true
+      block:
+        - name: Stop and remove wireguard endpoint
+          ansible.builtin.service:
+            name: "wg-quick@wg{{ endpoint.id }}"
+            enabled: false
+            state: "stopped"
+
+    - name: "Delete /etc/wireguard/wg{{ endpoint.id }}.conf on gateway side"
+      become: true
+      ansible.builtin.file:
+        path: "/etc/wireguard/wg{{ endpoint.id }}.conf"
+        state: absent
+
+    - name: Delete wireguard directory in etc directory
+      delegate_to: localhost
+      become: false
+      ansible.builtin.file:
+        path: "{{ etc_dir }}/wireguard/wg{{ endpoint.id }}"
+        state: absent
+...
