@@ -173,8 +173,10 @@
   vars_files:
     - ../vars/auto_generated_preamble.yaml  # needed for the cloud.config secret
     - ../vars/retries.yaml
-  vars:
-    k8s_version: "{{ next_k8s_version }}"
+  pre_tasks:
+    - name: Overwrite k8s_version with next_k8s_version
+      ansible.builtin.set_fact:
+        k8s_version: "{{ next_k8s_version }}"
   roles:
     - role: connect-k8s-to-openstack
       when: on_openstack | default(False) | bool
@@ -186,8 +188,10 @@
     - ../vars/auto_generated_preamble.yaml
     - ../vars/etc.yaml
     - ../vars/retries.yaml
-  vars:
-    k8s_version: "{{ next_k8s_version }}"
+  pre_tasks:
+    - name: Overwrite k8s_version with next_k8s_version
+      ansible.builtin.set_fact:
+        k8s_version: "{{ next_k8s_version }}"
   roles:
     - role: calico-control-plane
       tags:
@@ -212,8 +216,10 @@
     - ../vars/auto_generated_preamble.yaml
     - ../vars/etc.yaml
     - ../vars/retries.yaml
-  vars:
-    k8s_version: "{{ next_k8s_version }}"
+  pre_tasks:
+    - name: Overwrite k8s_version with next_k8s_version
+      ansible.builtin.set_fact:
+        k8s_version: "{{ next_k8s_version }}"
   roles:
     - role: calico-worker
       tags:
@@ -233,11 +239,14 @@
     - ../vars/auto_generated_preamble.yaml
     - ../vars/etc.yaml
     - ../vars/retries.yaml
+  pre_tasks:
+    - name: Overwrite k8s_version with next_k8s_version
+      ansible.builtin.set_fact:
+        k8s_version: "{{ next_k8s_version }}"
   roles:
     - role: calico-tigera-operator
       tags:
         - calico
-      k8s_version: "{{ next_k8s_version }}"
     # the nvidia-device-plugin becomes unhealthy after Tigera migration
     # so we want to rollout restart it in that case
     - role: nvidia-device-plugin
