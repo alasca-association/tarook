@@ -1,0 +1,37 @@
+---
+- name: Initialize Snapshots
+  become: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  block:
+  - name: Create Custom Snapshot Resource Definitions
+    kubernetes.core.k8s:
+      definition: "{{ lookup('file', 'crds/snapshot.storage.k8s.io.yaml') }}"
+      apply: true
+      state: present
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+
+  - name: Deploy the Snapshot Controller and its RBAC
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      definition: "{{ lookup('file', 'snapshot-controller/' + item) }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    loop:
+    - rbac-snapshot-controller.yaml
+    - setup-snapshot-controller.yaml
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+...

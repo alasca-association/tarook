@@ -223,6 +223,17 @@
       state: restarted
       enabled: true
 
+- name: Install volume snapshot controller
+  hosts: masters
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
+  roles:
+  - role: volume-snapshots
+    tags:
+    - volume-snapshot
+    - volume-snapshot-controller
+
 - name: Spawn the OpenStack k8s Control Plane
   hosts: masters
   become: true
