@@ -4,13 +4,18 @@ This is an mdbook.
 
 ## Table of Contents
 
-See [SUMMARY.md](src/SUMMARY.md).
+See [index.rst](index.rst).
 
 ## How to render
 
-1. Install cargo and rustc from apt: `apt install cargo rustc`
-2. Run `cargo install mdbook`
-3. `cd docs && ~/.cargo/bin/mdbook serve -p 8000`
-4. Open `http://127.0.0.1:8000` in your browser
+Install sphinx by executing
 
-Alternatively, you can render the book and open it without going through `mdbook serve`, but Browsers may be a tad picky about that: `~/.cargo/bin/mdbook build` and then open `book/index.html`.
+```
+pip3 install sphinx sphinx-rtd-theme sphinx-tabs myst-parser furo
+```
+
+To build the documentation use
+
+```
+python3 -m sphinx docs _build/html
+```

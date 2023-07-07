@@ -1,1 +1,0 @@
-../../../templates/envrc.template.sh
