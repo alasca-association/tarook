@@ -110,7 +110,7 @@
   become: true
   ansible.builtin.template:
     src: 10-swanctl-notify.sh.j2
-    dest: /etc/keepalived/scripts/
+    dest: /etc/keepalived/scripts/10-swanctl-notify.sh
     owner: root
     group: root
     mode: "u=rwx,g=rx,o-rwx"
