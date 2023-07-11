@@ -181,8 +181,8 @@ for chart in config["charts"]:
         # should we allow more powerful selectors here?
         # helm seems to use the format 1.x.x for loose matching
         if (selected is None or
-            semver.cmp(considered["version"], selected["version"]) == 1):  # noqa
-            if version is None or semver.cmp(version, considered["version"]) == 0:
+            semver.compare(considered["version"], selected["version"]) == 1):  # noqa
+            if version is None or semver.compare(version, considered["version"]) == 0:
                 selected = considered
 
     if selected is None:
