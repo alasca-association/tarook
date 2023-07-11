@@ -79,7 +79,7 @@ flake8:
 pre-commit-hooks:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
   script:
-    - "pip3 install pre-commit"
+    - poetry install --sync
     - 'SKIP=shellcheck,yamllint,flake8 pre-commit run --all-files'
   stage: lint
   tags:
