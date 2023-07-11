@@ -406,15 +406,17 @@ def main():
     # ---
     # KUBERNETES SERVICE LAYER: ROOK
     print_process_state("KSL - ROOK")
-    kubernetes_service_storage_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage4"] /
-        "rook.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("rook"),
-        kubernetes_service_storage_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("rook", "")
-    )
+    for stage in [ANSIBLE_STAGES["stage4"], ANSIBLE_STAGES["stage5"]]:
+        kubernetes_service_storage_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / stage /
+            "rook.yaml"
+        )
+        dump_to_ansible_inventory(
+            config["k8s-service-layer"].get("rook"),
+            kubernetes_service_storage_ansible_inventory_path,
+            SECTION_VARIABLE_PREFIX_MAP.get("rook", "")
+        )
+
     # KUBERNETES SERVICE LAYER: PROMETHEUS
     print_process_state("KSL - PROMETHEUS")
     #
