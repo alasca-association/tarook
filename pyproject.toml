@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "yk8s"
+version = "0.0.0"
+description = ""
+authors = ["The Yaook Authors"]
+license = "Apache-2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+ansible = "^8.1.0"
+kubernetes = "^26.1.0"
+openshift = "^0.13.1"
+python-openstackclient = "^6.2.0"
+mergedeep = "^1.3.4"
+loguru = "^0.7.0"
+PyYAML = "^6.0"
+packaging = "^23.1"
+jsonschema = "^4.17.3"
+toml = "^0.10.2"
+kubernetes-validate = "^1.26.0"
+hvac = "^1.1.1"
+boto3 = "^1.26.155"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

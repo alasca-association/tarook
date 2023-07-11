@@ -33,16 +33,6 @@
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
 
-- name: Install required packages for s3
-  ansible.builtin.pip:
-    name:
-      - boto3
-      - botocore
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
-
 - name: Manage the backup bucket
   environment:
     EC2_ACCESS_KEY: "{{ etcd_backup_config.access_key }}"

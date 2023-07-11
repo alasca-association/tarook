@@ -4,6 +4,17 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Use poetry to lock dependencies
+Poetry allows to declaratively set Python dependencies and lock
+versions. This way we can ensure that everybody uses the same isolated
+environment with identical versions and thus reduce inconsistencies
+between individual development environments.
+
+`requirements.txt` has been removed.
+Python dependencies are now declared in `pyproject.toml` and locked in `poetry.lock`.
+New deps can be added using the command `poetry add package-name`.
+After manually editing `pyproject.toml`, run `poetry lock` to update the lock file.
+
 ## Drop support for Kubernetes v1.21, v1.22, v1.23
 
 We're dropping support for EOL Kubernetes versions.

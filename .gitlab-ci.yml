@@ -314,6 +314,9 @@ testBook:
     - pass init mk8s-ci@gitlab
     - echo ${IPSEC_EAP_PSK} | pass insert -m ipsec_eap_psk
     - unset PASSWORD_STORE_DIR
+    - pip install poetry
+    - poetry install
+    - source $(poetry env info --path)/bin/activate
 
   script:
     - export VAULT_ADDR=https://yaook-vault:8200
@@ -328,7 +331,6 @@ testBook:
     - bash ./managed-k8s/tools/vault/init.sh
     - bash ./managed-k8s/tools/vault/mkcluster-root.sh k8s.ci.yaook.cloud
     - export VAULT_TOKEN=$(cat $CI_PROJECT_DIR/root.key)
-    - pip3 install -r managed-k8s/requirements.txt
     - ./managed-k8s/actions/apply-terraform.sh
     - ./reachability-or-recreate.sh
     - ./managed-k8s/actions/apply-stage2.sh
