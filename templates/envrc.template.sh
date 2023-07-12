@@ -34,6 +34,12 @@ source_env ./managed-k8s/.envrc.lib.sh || true
 # please see docs/admin/cluster-repo.md in the managed-k8s lcm
 # repository.
 
+# From which repository should the submodule be created
+#export MANAGED_K8S_GIT=https://gitlab.com/yaook/k8s.git
+
+# Which branch of the repo should be checked out in the submodule
+#export MANAGED_K8S_BRANCH=devel
+
 # Passwordstore: Encrypt for C&H company members
 export PASS_COMPANY_USERS=false
 
