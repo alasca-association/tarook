@@ -2,6 +2,21 @@
 
 ## Install System Requirements
 
+### (Optional) Install requirements using Nix
+[Nix](https://nixos.org) is a declarative package manager
+which powers NixOS but can also be installed as an additional package manager on any
+other distribution. This repository contains a flake.nix which references all necessary
+dependencies which are locked to specific versions so everybody uses an identical environment.
+
+1. [Install Nix](https://nixos.org/download.html#download-nix)
+2. [Enable flake support](https://nixos.wiki/wiki/Flakes#Permanent) by adding the line
+   ```
+   experimental-features = nix-command flakes
+   ```
+   to either `~/.config/nix/nix.conf` or `/etc/nix/nix.conf`
+3. Run `nix shell` in this directory to enter the an environment with all requirements available
+   If you use direnv, it will automatically load all requirements once you enter the directory.
+
 <details>
 <summary>Install system package dependencies</summary>
 

@@ -21,3 +21,16 @@ layout_poetry() {
   watch_file "$PYPROJECT_TOML"
   watch_file "$poetry_dir/poetry.lock"
 }
+
+use_flake_if_nix() {
+  flake_dir="${1:-${PWD}}"
+  if has nix; then
+    if [ -z "$(comm -13 <(nix show-config | grep -Po 'experimental-features = \K(.*)' | tr " " "\n" |  sort) <(echo "flakes nix-command" | tr " " "\n"))" ];
+    then
+      use flake "$flake_dir"
+    else
+      echo "Not loading flake. Nix is installed, but flakes are not enabled."
+      echo "Add 'experimental-features = flakes nix-command' to either ~/.config/nix/nix.conf or /etc/nix/nix.conf"
+    fi
+  fi
+}

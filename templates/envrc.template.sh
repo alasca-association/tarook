@@ -81,7 +81,8 @@ export KUBECONFIG
 # after initialization through the included main.yaml
 export K8S_CUSTOM_STAGE_USAGE=false
 
-layout poetry managed-k8s
+use flake_if_nix ./managed-k8s
+layout poetry ./managed-k8s
 
 source_env "$PWD/.envrc.local" || true
 # For up-to-date direnv versions one can also use:
