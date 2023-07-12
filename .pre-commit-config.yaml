@@ -42,4 +42,10 @@ repos:
         entry: ci/lint/portable-shebangs.sh
         language: script
         stages: [commit, push, manual]
+      - id: check-flake
+        name: check flake
+        files: "^flake.nix$"
+        entry: ci/lint/check-flake.sh
+        language: script
+        stages: [commit, push, manual]
 ...

@@ -81,7 +81,7 @@ pre-commit-hooks:
   before_script:
     - poetry install --sync
   script:
-    - 'SKIP=shellcheck,yamllint,flake8 pre-commit run --all-files'
+    - 'SKIP=shellcheck,yamllint,flake8,check-flake pre-commit run --all-files'
   stage: lint
   tags:
     - docker
