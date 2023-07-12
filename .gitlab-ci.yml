@@ -80,7 +80,7 @@ pre-commit-hooks:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
   script:
     - poetry install --sync
-    - 'SKIP=shellcheck,yamllint,flake8 pre-commit run --all-files'
+    - 'SKIP=shellcheck,yamllint,flake8,check-flake pre-commit run --all-files'
   stage: lint
   tags:
     - docker
