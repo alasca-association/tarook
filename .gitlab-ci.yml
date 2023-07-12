@@ -301,7 +301,6 @@ testBook:
     - rm -rf ci # make sure we're operating on a clean directory
     - git checkout -- ci
     - export MANAGED_K8S_GIT="$(realpath .)"
-    - export MANAGED_K8S_BRANCH="$CI_COMMIT_REF_NAME"
     - cd ci
     - git init
     - ../actions/init.sh

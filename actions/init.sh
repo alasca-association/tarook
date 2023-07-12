@@ -9,7 +9,11 @@ submodule_base="submodules"
 
 submodule_managed_k8s_name="managed-k8s"
 submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/yaook/k8s.git}"
-submodule_managed_k8s_branch="${MANAGED_K8S_BRANCH:-devel}"
+if [[ -v MANAGED_K8S_BRANCH ]]; then
+  submodule_managed_k8s_branch_arg="-b ${MANAGED_K8S_BRANCH}"
+else
+  submodule_managed_k8s_branch_arg=""
+fi
 
 submodule_wg_user_name="wg_user"
 submodule_wg_user_git="${MANAGED_K8S_WG_USER_GIT:-git@gitlab.cloudandheat.com:lcm/wg_user}"
@@ -22,7 +26,7 @@ submodule_ch_role_user_git="${MANAGED_CH_ROLE_USER_GIT:-git@gitlab.cloudandheat.
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 	if [ ! -d "$submodule_managed_k8s_name" ]; then
-		run git submodule add -b "$submodule_managed_k8s_branch" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
+		run git submodule add $submodule_managed_k8s_branch_arg "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
 	else
 		pushd "$cluster_repository/$submodule_managed_k8s_name" > /dev/null
 		run git remote set-url origin "$submodule_managed_k8s_url"
