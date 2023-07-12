@@ -49,6 +49,8 @@ detect-vault-image:
 ansible-lint:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
   stage: lint
+  before_script:
+    - poetry install --with ci --sync
   script:
     - "ansible-galaxy install -r ansible/requirements.yaml"
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/install_frontend.yaml" # Check stage 2
@@ -314,9 +316,7 @@ testBook:
     - pass init mk8s-ci@gitlab
     - echo ${IPSEC_EAP_PSK} | pass insert -m ipsec_eap_psk
     - unset PASSWORD_STORE_DIR
-    - pip install poetry
-    - poetry install
-    - source $(poetry env info --path)/bin/activate
+    - poetry install --with ci --sync
 
   script:
     - export VAULT_ADDR=https://yaook-vault:8200

@@ -22,6 +22,12 @@ kubernetes-validate = "^1.26.0"
 hvac = "^1.1.1"
 boto3 = "^1.26.155"
 
+[tool.poetry.group.ci]
+optional = true
+
+[tool.poetry.group.ci.dependencies]
+ansible-lint = { version = "^6.14.6", markers = "platform_system != 'Windows'" }
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
