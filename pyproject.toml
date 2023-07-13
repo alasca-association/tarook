@@ -28,6 +28,9 @@ optional = true
 [tool.poetry.group.ci.dependencies]
 ansible-lint = { version = "^6.14.6", markers = "platform_system != 'Windows'" }
 
+[tool.poetry.group.offline-installation.dependencies]
+semver = "^3.0.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
