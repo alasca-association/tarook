@@ -132,6 +132,7 @@ spec:
         app.kubernetes.io/component: container-registry
         app.kubernetes.io/instance: {{ item.name | to_json }}
     spec:
+      shareProcessNamespace: true
       containers:
       - name: registry
         image: {{ install_node_registry_image | to_json }}
@@ -151,6 +152,18 @@ spec:
           subPath: nginx.conf
         - name: tls-cert
           mountPath: /etc/ssl/private
+      - name: service-reload
+        image: {{ install_node_service_reload_image | to_json }}
+        volumeMounts:
+        - name: tls-cert
+          mountPath: /data
+        env:
+        - name: YAOOK_SERVICE_RELOAD_MODULE
+          value: nginx
+        - name: TINI_SUBREAPER
+          value: 1
+        args:
+        - /data/
       volumes:
       - name: registry-config
         configMap:
