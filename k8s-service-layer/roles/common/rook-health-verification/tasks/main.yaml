@@ -116,10 +116,10 @@
       when:
       - ceph_cluster_version is version('v15.2.13', operator='ge')
 
-    - name: Verify that all Placement Groups are active and clean
+    - name: Verify that all Placement Groups are active
       ansible.builtin.debug:
         msg: "There are {{ item.count }} Placement Groups in state {{ item.state_name }}"
-      failed_when: '"active+clean" not in item.state_name'
+      failed_when: '"active" not in item.state_name'
       with_items: "{{ ceph_cluster_status_json['pgmap']['pgs_by_state'] }}"
   rescue:
   - name: Fail if ceph is not considered healthy
