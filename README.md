@@ -10,7 +10,7 @@ For further information on how to install and use managed-k8s, please refer to t
 
 Documentation is currently available at https://yaook.gitlab.io/k8s/. It is planned to integrate it into https://docs.yaook.cloud/.
 
-The documentation is created with [mdBook](https://github.com/rust-lang/mdBook) and located under [docs/](docs/).
+The documentation is created with [sphinx](https://www.sphinx-doc.org/en/master/) and located under [docs/](docs/).
 
 Built instructions for the documentation can be found in the [respective README](docs/README.md).
 

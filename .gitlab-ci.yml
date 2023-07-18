@@ -75,30 +75,25 @@ flake8:
   tags:
     - docker
 
-testBook:
+build-docs-check:
   stage: lint
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/rust"
-  variables:
-    CARGO_HOME: $CI_PROJECT_DIR/cargo
-  before_script:
-    - export PATH="$PATH:$CARGO_HOME/bin"
-    - mdbook --version || cargo install mdbook
-    - mdbook-linkcheck --version || cargo install mdbook-linkcheck
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3.11"
   script:
-    - mdbook build docs
-    - cp -r docs/book/html public
-  rules:
-    - when: always
+    - pip install sphinx sphinx-rtd-theme sphinx-tabs myst-parser furo
+    - sphinx-build docs _build/html
+    - mv _build/html public
+  needs: []
   artifacts:
     expose_as: "Rendered Docs"
     expire_in: "7 days"
     paths:
       - public/
+  rules:
+    - if: "$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/"
+      when: never
+    - when: on_success
   tags:
     - docker
-  cache:
-    paths:
-      - $CARGO_HOME/bin
 
 .prepare_spawn_test_cleanup_k8s_cluster:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
@@ -449,25 +444,18 @@ containerd-manual:
 
 pages:
   stage: pages
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/rust"
-  variables:
-    CARGO_HOME: $CI_PROJECT_DIR/cargo
-  before_script:
-    - export PATH="$PATH:$CARGO_HOME/bin"
-    - mdbook --version || cargo install mdbook
-    - mdbook-linkcheck --version || cargo install mdbook-linkcheck
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3.11"
   script:
-    - mdbook build docs
-    - cp -r docs/book/html public
-  rules:
-    - if: "$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/"
-      when: always
-    - when: never
+    - pip install sphinx sphinx-rtd-theme sphinx-tabs myst-parser furo
+    - sphinx-build docs _build/html
+    - mv _build/html public
+  needs: []
   artifacts:
     paths:
       - public/
+  rules:
+    - if: "$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/"
+      when: on_success
+    - when: never
   tags:
     - docker
-  cache:
-    paths:
-      - $CARGO_HOME/bin
