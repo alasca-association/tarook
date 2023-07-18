@@ -33,15 +33,18 @@ role rook_v1 (manifest based)
 role rook_v2 (Helm based)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. table::
-   :align: center
+The rook_v2 role should support any arbitrary helm chart version.
+We tested it both on bare metal and on OpenStack up to rook v1.11.
 
-   ============ ============
-   rook version ceph version
-   ============ ============
-   ``v1.7.11``  ``v16.2.6``
-   ============ ============
+.. warning::
 
+   If you're running on bare metal, prior to the upgrade to rook v1.8
+   you must set a
+   :ref:`custom ceph version <cluster-configuration.rook-configuration>`
+   as the one used by default contains
+   the following bug which will fry your cluster:
+   `Ceph Bug #55970 <https://tracker.ceph.com/issues/55970>`_
+   A version known to work with rook v1.8 is Ceph v16.2.13.
 
 A word of warning / Things to be considered
 -------------------------------------------
@@ -230,13 +233,16 @@ Read the corresponding upgrade page at the
 **Especially check the** ``Considerations`` **section there**.
 
 -  Most upgrade steps will be taken care of by Helm
--  In case any changes need to be made to the values of one of the
-   charts, add them inside {% if .. is version %} .. {% endif %}
--  Implement any additional steps described in the
-   `rook Docs <https://rook.github.io/docs/rook/latest/Getting-Started/intro/>`__
-   into a new task file which you
-   should call ``upgrade_rook_from_v1.xx.yaml``
+-  In case any changes need to be made to the values of one of the charts,
+   place them inside an if block, e.g.:
 
+   .. code:: yaml
+
+   {% if rook_version[1:] is version('1.9', '>=') %}
+      createPrometheusRules: true
+   {% endif %}
+
+-  If necessary, implement any additional steps described in the [rook Docs](https://rook.io/docs/rook/)
    -  Please also include the cluster health verification task prior and
       subsequent to the actual upgrade steps. As the ``ceph status``
       update can slightly differ from release to release, you may need
@@ -245,13 +251,6 @@ Read the corresponding upgrade page at the
 
 -  Make sure your implemented upgrade tasks are included at the right
    place and under the correct circumstances in ``version_checks.yaml``
--  Add the newly supported version to ``rook_supported_releases`` in
-   ``k8s-rook``
--  Add the newly supported version (and the corresponding ceph version)
-   to the ``rook_ceph_version_map`` in ``k8s-config``
--  Adjust the comment about supported versions in the configuration
-   template
--  (Update the CI configuration)
 -  **Test your changes**
 
    -  Configure the new rook version in your managed-k8s cluster
