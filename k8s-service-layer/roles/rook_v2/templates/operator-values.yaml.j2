@@ -63,18 +63,18 @@ csi:
 {% endif %}
 
   pluginTolerations:
-  {% if rook_nodeplugin_toleration == True %}
+{% if rook_nodeplugin_toleration == True %}
     - operator: Exists
-  {% else %}
+{% else %}
     - effect: NoSchedule
       key: node-role.kubernetes.io/controlplane
       operator: Exists
     - effect: NoExecute
       key: node-role.kubernetes.io/etcd
       operator: Exists
-  {% if rook_nodeplugin_toleration %}
+{% if rook_nodeplugin_toleration %}
     - key: {{ rook_nodeplugin_toleration | to_json }}
       operator: Exists
-  {% endif %}
-  {% endif %}
-  
+{% endif %}
+{% endif %}
+
