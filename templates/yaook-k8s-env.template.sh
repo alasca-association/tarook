@@ -25,5 +25,7 @@ export wg_user='firstnamelastname'
 # Does not affect existing instances.
 export TF_VAR_keypair='firstnamelastname-hostname-gendate'
 
+# Set to true if you are using rootless docker or podman
+#VAULT_IN_DOCKER_USE_ROOTLESS=true
 # Optional: You can also source your openrc from here.
 
