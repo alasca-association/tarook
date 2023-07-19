@@ -1,0 +1,119 @@
+---
+- name: Initial sanity checks
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+  - vars/etc.yaml
+  roles:
+  - validate_configuration
+
+- name: Initial node bootstrap
+  hosts: k8s_nodes
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  roles:
+  - role: detect_user
+    tags: detect_user
+#  - role: ssh-known-hosts
+#    tags: ssh-known-hosts
+# - role: prepare-node
+#   tags: prepare-node
+# - role: configure-apt-proxy
+#   tags: configure-apt-proxy
+# - role: journald
+#   tags: journald
+# - role: is-k8s-installed
+#   tags: update_system
+# - role: configure-automatic-system-updates
+#   tags: configure-automatic-system-updates
+# - role: monitoring-system-update-status
+#   tags: monitoring-system-update-status
+# - role: disable-swap
+#   tags: disable-swap
+
+# - name: Disable SELinux
+#   hosts: k8s_nodes
+#   roles:
+#   - role: disable_selinux
+#     tags: disable_selinux
+#     when: ansible_os_family == 'RedHat'
+
+# - name: Harden SSH
+#   hosts: k8s_nodes
+#   become: true
+#   roles:
+#   # https://github.com/dev-sec/ansible-collection-hardening/
+#   - role: devsec.hardening.ssh_hardening
+#     tags: harden-ssh
+
+# - name: Upgrade the system
+#   hosts: k8s_nodes
+#   gather_facts: false
+#   vars_files:
+#   - vars/disruption.yaml
+#   - vars/retries.yaml
+#   tasks:
+#   - name: Upgrade the system
+#     when: install_status == 'k8s_not_installed'
+#     ansible.builtin.include_role:
+#       name: update_system
+#     tags:
+#     - update_system
+
+- name: Detect login for gateways
+  hosts: gateways
+  gather_facts: false
+  vars_files:
+  - vars/etc.yaml
+  roles:
+  - detect_user
+
+# - name: Prepare Gateways
+#   hosts: frontend
+#   vars_files:
+#   - vars/disruption.yaml
+#   - vars/auto_generated_preamble.yaml
+#   vars:
+#     use_nftables: infrastructure_type == 'openstack' | default(false)
+#   roles:
+#   - role: k8s-api-frontend
+#     tags: k8s-api-frontend
+#   - role: global-monitoring-frontend
+#     tags: k8s-global-monitoring  # ToDo: find better tag
+#     when: k8s_global_monitoring_enabled
+
+- name: Spawn the OpenStack k8s Control Plane
+  hosts: masters
+  become: true
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
+  run_once: true
+  roles:
+  - role: ch-k8s-lbaas-controller
+    tags:
+    - ch-k8s-lbaas
+    - ch-k8s-lbaas-controller
+
+- name: Configure BGP and LBaaS on the gateways
+  hosts: gateways
+  become: true
+  gather_facts: true
+  vars_files:
+  - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
+  roles:
+  - role: k8s-bgp
+    tags:
+    - k8s-bgp
+  - role: ch-k8s-lbaas-agent
+    tags:
+    - ch-k8s-lbaas
+    - ch-k8s-lbaas-agent
+...
