@@ -30,6 +30,15 @@ vault_status="$(docker inspect -f '{{.State.Status}}' "$vault_container_name" 2>
 if [ -z "$vault_status" ] || [ "$vault_status" = 'exited' ]; then
     # always upgrade vault when it's not running
     run docker rm -f "$vault_container_name" >/dev/null || true
+    if [ "$VAULT_IN_DOCKER_USE_ROOTLESS" = "true" ]; then
+        run docker run \
+            --name "${vault_container_name}-chown" \
+            -v "$vault_dir/config":/vault/config \
+            -v "$vault_dir/tls":/vault/tls \
+            -v "$vault_dir/data":/vault/file \
+            --rm \
+            "$vault_image" chown -R "$(id -u):$(id -g)" /vault
+    fi
     run docker run -d \
         --name "$vault_container_name" \
         -p 8200 \
