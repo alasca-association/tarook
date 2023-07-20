@@ -2,7 +2,6 @@
 layout_poetry() {
   poetry_dir="${1:-${PWD}}"
   poetry_hash_file="$PWD/.direnv/poetry.lock.sha256"
-  poetry_lock_file="$poetry_dir/poetry.lock"
   PYPROJECT_TOML="${PYPROJECT_TOML:-${poetry_dir}/pyproject.toml}"
   if [[ ! -f "$PYPROJECT_TOML" ]]; then
       log_status "No pyproject.toml found. Executing \`poetry init\` to create a \`$PYPROJECT_TOML\` first."
@@ -15,20 +14,20 @@ layout_poetry() {
       log_status "No virtual environment exists. Executing \`poetry install\` to create one."    
       poetry -C "$poetry_dir" install
       VIRTUAL_ENV=$(poetry -C "$poetry_dir" env info --path)
-      mkdir -p "$(dirname "$poetry_hash_file")" && sha256sum "$poetry_lock_file" > "$poetry_hash_file"
+      mkdir -p "$(dirname "$poetry_hash_file")" && (cd "$poetry_dir" && sha256sum poetry.lock) > "$poetry_hash_file"
   fi
 
-  if ! (sha256sum --check --status "$poetry_hash_file"); then
-      echo "$poetry_lock_file changed. Updating virtual env..."
+  if ! (cd "$poetry_dir" && sha256sum --check --status "$poetry_hash_file"); then
+      echo "poetry.lock changed. Updating virtual env..."
       poetry -C "$poetry_dir" install --sync
-      mkdir -p "$(dirname "$poetry_hash_file")" && sha256sum "$poetry_lock_file" > "$poetry_hash_file"
+      mkdir -p "$(dirname "$poetry_hash_file")" && (cd "$poetry_dir" && sha256sum poetry.lock) > "$poetry_hash_file"
   fi
 
   PATH_add "$VIRTUAL_ENV/bin"
   export POETRY_ACTIVE=1
   export VIRTUAL_ENV
   watch_file "$PYPROJECT_TOML"
-  watch_file "$poetry_lock_file"
+  watch_file "$poetry_dir/poetry.lock"
 }
 
 use_flake_if_nix() {
