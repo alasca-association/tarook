@@ -247,13 +247,6 @@
     - role: calico-tigera-operator
       tags:
         - calico
-    # the nvidia-device-plugin becomes unhealthy after Tigera migration
-    # so we want to rollout restart it in that case
-    - role: nvidia-device-plugin
-      tags:
-        - calico
-        - nvidia-device-plugin
-        - gpu-support
 
 - name: Update ch-k8s-lbaas-controller
   hosts: masters

@@ -41,15 +41,10 @@
     - calico_typha_deployment | length >= 1 | bool
     - not tigera_operator_exists
     - _allow_disruption
-  block:
-    - name: Include manifest-based calico deletion tasks
-      ansible.builtin.include_role:
-        name: calico-control-plane
-        tasks_from: delete_everything.yaml
-        apply:
-          tags:
-            - calico
-    - name: Set fact that we migrated
-      ansible.builtin.set_fact:
-        calico_tigera_migrated: true
+  ansible.builtin.include_role:
+    name: calico-control-plane
+    tasks_from: delete_everything.yaml
+    apply:
+      tags:
+        - calico
 ...

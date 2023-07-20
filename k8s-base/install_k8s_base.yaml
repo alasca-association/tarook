@@ -293,7 +293,6 @@
     tags:
     - gpu-support
     - nvidia-device-plugin
-    - calico
 
 # yahrens: This play resides only transitionally here.
 # See https://gitlab.com/yaook/k8s/-/issues/349 for details
