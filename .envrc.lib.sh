@@ -1,6 +1,7 @@
 # shellcheck shell=bash
 layout_poetry() {
   poetry_dir="${1:-${PWD}}"
+  poetry_hash_file="$PWD/.direnv/poetry.lock.sha256"
   PYPROJECT_TOML="${PYPROJECT_TOML:-${poetry_dir}/pyproject.toml}"
   if [[ ! -f "$PYPROJECT_TOML" ]]; then
       log_status "No pyproject.toml found. Executing \`poetry init\` to create a \`$PYPROJECT_TOML\` first."
@@ -13,6 +14,13 @@ layout_poetry() {
       log_status "No virtual environment exists. Executing \`poetry install\` to create one."    
       poetry -C "$poetry_dir" install
       VIRTUAL_ENV=$(poetry -C "$poetry_dir" env info --path)
+      mkdir -p "$(dirname "$poetry_hash_file")" && sha256sum poetry.lock > "$poetry_hash_file"
+  fi
+
+  if ! (cd "$poetry_dir" && sha256sum --check --status "$poetry_hash_file"); then
+      echo "poetry.lock changed. Updating virtual env..."
+      poetry -C "$poetry_dir" install --sync
+      mkdir -p "$(dirname "$poetry_hash_file")" && sha256sum poetry.lock > "$poetry_hash_file"
   fi
 
   PATH_add "$VIRTUAL_ENV/bin"
@@ -27,6 +35,9 @@ use_flake_if_nix() {
   if has nix; then
     if [ -z "$(comm -13 <(nix show-config | grep -Po 'experimental-features = \K(.*)' | tr " " "\n" |  sort) <(echo "flakes nix-command" | tr " " "\n"))" ];
     then
+      if ! has nix_direnv_version || ! nix_direnv_version 2.3.0; then
+        source_url "https://raw.githubusercontent.com/nix-community/nix-direnv/2.3.0/direnvrc" "sha256-Dmd+j63L84wuzgyjITIfSxSD57Tx7v51DMxVZOsiUD8="
+      fi
       use flake "$flake_dir"
     else
       echo "Not loading flake. Nix is installed, but flakes are not enabled."
