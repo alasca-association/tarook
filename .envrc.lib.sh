@@ -14,13 +14,13 @@ layout_poetry() {
       log_status "No virtual environment exists. Executing \`poetry install\` to create one."    
       poetry -C "$poetry_dir" install
       VIRTUAL_ENV=$(poetry -C "$poetry_dir" env info --path)
-      mkdir -p "$(dirname "$poetry_hash_file")" && sha256sum poetry.lock > "$poetry_hash_file"
+      mkdir -p "$(dirname "$poetry_hash_file")" && (cd "$poetry_dir" && sha256sum poetry.lock) > "$poetry_hash_file"
   fi
 
   if ! (cd "$poetry_dir" && sha256sum --check --status "$poetry_hash_file"); then
       echo "poetry.lock changed. Updating virtual env..."
       poetry -C "$poetry_dir" install --sync
-      mkdir -p "$(dirname "$poetry_hash_file")" && sha256sum poetry.lock > "$poetry_hash_file"
+      mkdir -p "$(dirname "$poetry_hash_file")" && (cd "$poetry_dir" && sha256sum poetry.lock) > "$poetry_hash_file"
   fi
 
   PATH_add "$VIRTUAL_ENV/bin"
