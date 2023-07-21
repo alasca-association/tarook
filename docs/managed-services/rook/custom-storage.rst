@@ -2,7 +2,7 @@ Custom Storage Configuration
 ============================
 
 .. hint::
-   
+
    Custom storage configuration is only available for rook
    v1.6 and above.
 
@@ -20,7 +20,7 @@ variable to ``false``:
    rook_on_openstack = false
 
 .. note::
-   
+
    All the subsequent described configuration does only take
    effect if you disabled ``rook_on_openstack``.
 

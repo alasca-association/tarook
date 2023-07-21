@@ -16,7 +16,7 @@ fi
 var_file="$terraform_state_dir/config.tfvars.json"
 
 cd "$terraform_state_dir"
-export TF_DATA_DIR="$terraform_state_dir/.terraform" 
+export TF_DATA_DIR="$terraform_state_dir/.terraform"
 run terraform -chdir="$terraform_module" init
 
 # Prepare possible migration steps

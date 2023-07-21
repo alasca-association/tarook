@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # Tooling for simulating offline conditions in a mk8s cluster deployed
 # atop an OpenStack cloud.

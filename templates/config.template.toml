@@ -616,7 +616,7 @@ use_helm = true
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
 #blackbox_version = "7.0.0"
 
-# By default, prometheus and alertmanager only consider global rules from the monitoring 
+# By default, prometheus and alertmanager only consider global rules from the monitoring
 # namespace while other rules can only alert on their own namespace. If this variable is
 # set, cluster wide rules are considered from all namespaces.
 #allow_external_rules = false
@@ -824,7 +824,7 @@ enabled = false # •ᴗ•
 # Storage size for the vault file storage backend.
 #storage_size = "8Gi"
 
-# If `ingress=True` and `dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use 
+# If `ingress=True` and `dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use
 # for your ACME service.
 #external_ingress_issuer_name = ""
 

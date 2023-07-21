@@ -2,7 +2,7 @@ Abstraction Layers
 ==================
 
 .. todo::
-   
+
    This document needs more details!
 
 
@@ -83,7 +83,7 @@ yk8s on Bare Metal
 ~~~~~~~~~~~~~~~~~~
 
 .. todo::
-   
+
    Merge information from
    `incubator/installation-guide!5 <https://gitlab.com/yaook/incubator/installation-guide/-/merge_requests/5/>`__
 

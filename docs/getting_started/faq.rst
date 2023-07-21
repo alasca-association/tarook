@@ -40,10 +40,10 @@ FAQ - Frequently Asked Questions
       wireguard tunnel.
 
       -  If it is not already up, you can set it up by running the
-         :ref:`wg-up.sh <actions-references.wg-upsh>` script. 
-         
+         :ref:`wg-up.sh <actions-references.wg-upsh>` script.
+
          .. code:: console
-            
+
             $ ./managed-k8s/actions/wg-up.sh
 
 “How can I test my yk8s-Cluster?”
@@ -64,7 +64,7 @@ You can delete the yk8s-Cluster and all associated OpenStack resources
 by triggering the :ref:`destroy.sh <actions-references.destroysh>` script.
 
 .. Warning::
-   
+
    Destroying a cluster cannot be undone.
 
 .. note::
@@ -105,9 +105,9 @@ Troubleshooting
    -  or by setting the variable ``ansible_ssh_private_key_file`` on the
       command line via
       :ref:`the AFLAGS environment variable <envirnomental-variables.behavior-altering-variables>`:
-      
+
       .. code:: console
-      
+
          $ AFLAGS='-e ansible_ssh_private_key_file=/path/to/private_key_file' ./managed-k8s/actions/apply.sh
 
 -  Further information is available `in the upstream documentation on
@@ -124,7 +124,7 @@ Troubleshooting
 
    ``NO MORE HOSTS LEFT``
 
--  Did you step away from your desk and missed the prompt to enter the 
+-  Did you step away from your desk and missed the prompt to enter the
    passphrase for your gpg key?
 
 “My private wireguard key cannot be found”

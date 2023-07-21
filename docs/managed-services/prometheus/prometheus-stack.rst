@@ -38,7 +38,7 @@ configured to pick up *additional* dashboards/datasources in *any*
 namespace. These extra resources can reside either in k8s ``Secrets`` or
 in ``ConfigMaps``. They have to have a label ``grafana_dashboard`` set.
 To configure a custom, *logical* folder for one or more dashboard, add
-the annotation ``customer-dashboards=<Folder name>``. 
+the annotation ``customer-dashboards=<Folder name>``.
 
 .. note::
    After 30s seconds of research the author came to the conclusion that one
@@ -119,7 +119,7 @@ A silly example:
    The author hasn’t worked much with ``Alertmanager(Config)`` in
    the past and only ensured that manifests are read correctly. Their test
    was looking at
-   
+
    .. code:: console
 
       $ k exec -ti -n monitoring alertmanager-prometheus-stack-kube-prom-alertmanager-0 -- amtool --alertmanager.url=http://127.0.0.1:9093 config
@@ -142,11 +142,11 @@ default, it writes its metrics into a SWIFT object storage container
 that resides in the same OpenStack project.
 
 .. todo::
-   
+
    Add more information, e.g., on ``thanos compact``.
 
 .. warning::
-   
+
    If you want to use application credentials, then you
    have to disable the thanos monitoring component
    (``use_thanos = false``) for now. See

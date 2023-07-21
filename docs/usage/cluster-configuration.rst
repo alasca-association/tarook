@@ -19,7 +19,7 @@ The ``config.toml`` configuration file is created during the
 ``templates/config.template.toml`` file. You can (and must) adjust some
 of it’s values.
 
-Before triggering an action script, the 
+Before triggering an action script, the
 :ref:`inventory updater <actions-references.update_inventorypy>`
 automatically reads the configuration file, processes it, and puts
 variables into the ``inventory/``. The ``inventory/`` is automatically
@@ -37,7 +37,7 @@ need to adjust these values if you e.g. want to enable
 :doc:`rook </managed-services/rook/overview>`.
 
 .. note::
-   
+
    Right now there is a variable ``masters`` to configure the k8s
    controller server count and ``workers`` for the k8s node count. However
    there is no explicit variable for the gateway node count! This is
@@ -117,7 +117,7 @@ Kubernetes Cluster Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This section contains generic information about the Kubernetes cluster
-configuration. 
+configuration.
 
 Basic Cluster Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -239,7 +239,7 @@ an external endpoint like e.g. a monitoring-cluster. The following
 section can be used to enable and configure that.
 
 .. note::
-   
+
    This requires changes and therefore the (re-)appliance of
    all layers.
 
@@ -265,7 +265,7 @@ Network Configuration
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
-   
+
    To enable the calico network plugin,
    ``kubernetes.network.plugin`` needs to be set to ``calico``.
 
@@ -294,7 +294,7 @@ The LCM supports the customization of certain variables of ``kubelet``
 for (meta-)worker nodes.
 
 .. note::
-   
+
    Applying changes requires to enable
    :ref:`disruptive actions <envirnomental-variables.behavior-altering-variables>`.
 
@@ -312,7 +312,7 @@ for (meta-)worker nodes.
 
    </details>
 
-| 
+|
 
 KSL - Kubernetes Service Layer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -326,7 +326,7 @@ The used rook setup is explained in more detail
 :doc:`here </managed-services/rook/overview>`.
 
 .. note::
-   
+
    To enable rook in a cluster on top of OpenStack, you need
    to set both ``k8s-service-layer.rook.nosds`` and
    ``k8s-service-layer.rook.osd_volume_size``, as well as enable
@@ -358,7 +358,7 @@ The used prometheus-based monitoring setup will be explained in more
 detail soon :)
 
 .. note::
-   
+
    To enable prometheus,
    ``k8s-serice-layer.prometheus.install`` and
    ``kubernetes.monitoring.enabled`` need to be set to ``true``.
@@ -386,7 +386,7 @@ The used NGINX ingress controller setup will be explained in more detail
 soon :)
 
 .. note::
-   
+
    To enable an ingress controller,
    ``k8s-service-layer.ingress.enabled`` needs to be set to ``true``.
 
@@ -454,7 +454,7 @@ form of a JSON object/dict with the keys ``access_key`` and
 ``secret_key``.
 
 .. note::
-   
+
    To enable etcd-backup,
    ``k8s-service-layer.etcd-backup.enabled`` needs to be set to
    ``true``.

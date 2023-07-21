@@ -2,16 +2,16 @@
 # shellcheck shell=bash
 
 # This file is meant to be checked into the VCS and to contain
-# environment variables specific to the cluster and shared 
+# environment variables specific to the cluster and shared
 # between users.
 
 # User specific variables are read from 3 locations.
-# 
+#
 #   1. ~/.config/yaook-k8s/env
 #   2. the next .envrc in parent directories
 #      (vie source_up)
 #   3. .envrc.local
-# 
+#
 # The first can contain user specific variables
 # that apply to all clusters.
 # The second can be used to target subsets of
@@ -67,7 +67,7 @@ export USE_VAULT_IN_DOCKER=false
 #VAULT_DIR="$(pwd)/vault"
 #export VAULT_DIR
 
-# Vault: Env var script for the Vault docker instance 
+# Vault: Env var script for the Vault docker instance
 # Resource your envrc.sh file again after you've started Vault,
 # to source Vault related information, like VAULT_ADDR, VAULT_ROOT_TOKEN
 #. "$(pwd)/managed-k8s/actions/vault_env.sh"

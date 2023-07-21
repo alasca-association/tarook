@@ -52,8 +52,8 @@ we decided to save the overhead of implementing and testing a migration path.
 If you have GPU nodes in your cluster and support for these breaks by the reworked code,
 please create an issue or consider rebuilding the nodes with the new procedure.
 
-[1] [GPU Support Documentation](./docs/src/operation/gpu-and-vgpu.md#internal-usage)  
-[2] https://gitlab.com/yaook/meta#subscribe-to-meetings  
+[1] [GPU Support Documentation](./docs/src/operation/gpu-and-vgpu.md#internal-usage)
+[2] https://gitlab.com/yaook/meta#subscribe-to-meetings
 [3] https://gitlab.com/yaook/meta/-/wikis/home#chat
 
 ## Change kube-apiserver Service-Account-Issuer
@@ -192,4 +192,3 @@ The `init.sh`-script will move your enabled submodules into the `submodules/` di
 Otherwise at least the symlink to the [`ch-role-users`-role](k8s-base/roles/ch-role-users) will be broken.
 
 > **NOTE:** By re-executing the `init.sh`, the latest `devel` branch of the `managed-k8s`-module will be checked out under normal circumstances!
-
