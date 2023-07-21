@@ -62,7 +62,7 @@ Environment Variable            Default     Description
                                             whether they are running inside a tty. If
                                             they are, they will use coloured output.
                                             This environment variable can be set to
-                                            override the auto-detection. 
+                                            override the auto-detection.
 =============================   ========    =============
 
 .. _envirnomental-variables.openstack-credentials:
@@ -115,7 +115,7 @@ provide.
 Sample openrc for user name/password based authentication
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: shell 
+.. code:: shell
 
    export OS_AUTH_TYPE=v3password # optional
    export OS_AUTH_URL=https://identity.xyz:5000/v3
@@ -150,9 +150,9 @@ External resources
 Environment Variable                    Default                                                                 Description
 ======================================= ======================================================================= ===================================================
 ``MANAGED_K8S_GIT``                     ``gitlab.com:yaook/k8s``                                                This git URL is used by ``init.sh`` to
-                                                                                                                bootstrap the LCM (``yaook/k8s``)     
-                                                                                                                repository. Can be used to override   
-                                                                                                                the repository to use another mirror. 
+                                                                                                                bootstrap the LCM (``yaook/k8s``)
+                                                                                                                repository. Can be used to override
+                                                                                                                the repository to use another mirror.
 ``MANAGED_K8S_WG_USER_GIT``             ``gitlab.cloudandheat.com:lcm/wg_user``                                 Git URL to a repository with wireguard
                                                                                                                 keys to provision. Can be enabled by
                                                                                                                 setting ``WG_COMPANY_USERS`` (see below).
@@ -162,17 +162,17 @@ Environment Variable                    Default                                 
                                                                                                                 (see below).
 ``MANAGED_CH_ROLE_USER_GIT``            ``gitlab.cloudandheat.com:operations/ansible-roles/ch-role-users.git``  RL to the ch-role-users role submodule.
                                                                                                                 Can be enabled by setting ``SSH_COMPANY_USERS``
-                                                                                                                (see below).                 
+                                                                                                                (see below).
 ``TERRAFORM_MODULE_PATH``               ``../terraform``                                                        Path to the Terraform root module to
                                                                                                                 change the working directory for the
-                                                                                                                execution of the Terraform commands.     
+                                                                                                                execution of the Terraform commands.
 ======================================= ======================================================================= ===================================================
 
 Secret Management
 -----------------
 
 ======================= =========== ================
-Environment Variable    Default     Description   
+Environment Variable    Default     Description
 ======================= =========== ================
 ``PASS_COMPANY_USERS``  ``false``   If set to true, ``init.sh`` will clone the
                                     repository ``MANAGED_K8S_PASSWORDSTORE_USER_GIT``.
@@ -185,7 +185,7 @@ VPN Configuration
 -----------------
 
 =========================== ======================= =======================
-Environment Variable        Default                 Description  
+Environment Variable        Default                 Description
 =========================== ======================= =======================
 ``wg_conf_name``            ``"wg0"``               This variable defines the name
                                                     of the WireGuard interface to
@@ -203,7 +203,7 @@ Environment Variable        Default                 Description
                                                     up. You **MUST** adjust this
                                                     variable or ``wg_private_key``.
                                                     This variable is used by the
-                                                    ``wg-up.sh``-:ref:`script <actions-references.wg-upsh>`. 
+                                                    ``wg-up.sh``-:ref:`script <actions-references.wg-upsh>`.
 ``wg_private_key``                                  Alternatively you can directly
                                                     export your WireGuard private key
                                                     instead of a path to it. The key
@@ -221,7 +221,7 @@ Environment Variable        Default                 Description
                                                     ``MANAGED_K8S_WG_USER_GIT``. The
                                                     inventory updater will then
                                                     configure the wireguard users from
-                                                    that repository.       
+                                                    that repository.
 =========================== ======================= =======================
 
 .. _envirnomental-variables.ssh-configuration:
@@ -230,11 +230,11 @@ SSH Configuration
 -----------------
 
 =========================== =========================================== ====================
-Environment Variable        Default                                     Description 
+Environment Variable        Default                                     Description
 =========================== =========================================== ====================
 ``TF_VAR_keypair``          ``"firstnamelastname-hostname-gendate"``    Defines the keypair name (in OpenStack) which will be used during the creation of new instances. Does not affect instances which have already been created. You **MUST** adjust this variable if you want to deploy on top of OpenStack. This variable is used by the ``apply-terraform.sh``:ref:`-script<actions-references.apply-terraformsh>`.
 ``MANAGED_K8S_SSH_USER``                                                The SSH user to use to log into the machines. This variable *SHOULD* be set. By default, the Ansible automation is written such that it’ll auto-detect one of the default SSH users (``centos``, ``debian``, ``ubuntu``) to connect to the machines. This only works if the machines were created with a keypair of which you hold the private key (see ``TF_VAR_keypair``). If the LCM is configured to roll out all relevant users from the `ch-users-databag <https://gitlab.cloudandheat.com/configs/ch-users-databag/>`__ via `ch-role-users <https://gitlab.cloudandheat.com/operations/ansible-roles/ch-role-users>`__ (see ``SSH_COMPANY_USERS``), you'll need to ensure that this the correct user is used when trying to bring up the SSH connection.
-``SSH_COMPANY_USERS``       ``false``                                   If set to true, ``init.sh`` will clone the repository ``MANAGED_CH_ROLE_USER_GIT``. The inventory updater will then configure your inventory such that the ``ch-role-users`` role is executed in stage2 and stage3. 
+``SSH_COMPANY_USERS``       ``false``                                   If set to true, ``init.sh`` will clone the repository ``MANAGED_CH_ROLE_USER_GIT``. The inventory updater will then configure your inventory such that the ``ch-role-users`` role is executed in stage2 and stage3.
 =========================== =========================================== ====================
 
 .. _envirnomental-variables.behavior-altering-variables:
@@ -249,14 +249,14 @@ operations.
 .. _envirnomental-variables.enabling-the-customization-layer:
 
 =========================================== =========== ===================
-Environment Variable                        Default     Description  
+Environment Variable                        Default     Description
 =========================================== =========== ===================
-``MANAGED_K8S_RELEASE_THE_KRAKEN``          ``false``   Boolean value which defaults to false. If set to ``true``, this allows the LCM to perform disruptive actions. See the documentation on Disruption actions for details. By default, ansible and terraform will avoid to perform any actions which could cause a loss of data or loss of availability to the customer. This comes at the cost of not performing certain operations or refusing to continue at some places.  
-``MANAGED_K8S_NUKE_FROM_ORBIT``             ``false``   Boolean value which defaults to false. If set to ``true``, it will delete all Thanos monitoring data from the object store before destruction.  
+``MANAGED_K8S_RELEASE_THE_KRAKEN``          ``false``   Boolean value which defaults to false. If set to ``true``, this allows the LCM to perform disruptive actions. See the documentation on Disruption actions for details. By default, ansible and terraform will avoid to perform any actions which could cause a loss of data or loss of availability to the customer. This comes at the cost of not performing certain operations or refusing to continue at some places.
+``MANAGED_K8S_NUKE_FROM_ORBIT``             ``false``   Boolean value which defaults to false. If set to ``true``, it will delete all Thanos monitoring data from the object store before destruction.
 ``MANAGED_K8S_IGNORE_WIREGUARD_ROUTE``                  By default, ``wg-up.sh`` will check if an explicit route for the cluster network exists on your machine. If such a route exists and does not belong to the wireguard interface set via ``wg_conf_name``, the script will abort with an error.  The reason for that is that it is unlikely that you’ll be able to connect to the cluster this way and that weird stuff is bound to happen. If you know what you’re doing (I certainly don’t), you can set to any non-empty value to override this check.
-``TF_USAGE``                                ``true``    Allows to disable execution of the terraform stage by setting it to false. This is also taken into account by the inventory helper. Intended use case are bare-metal or otherwise pre-provisioned setups. 
-``AFLAGS``                                              This allows to pass additional flags to Ansible. The variable is interpolated into the ansible call without further quoting, so it can be used to do all kinds of fun stuff. A primary use is to force diff output or only execute some tags: ``AFLAGS="--diff -t some-tag"``.  
-``K8S_CUSTOM_STAGE_USAGE``                  ``false``   If set to true, ``init.sh`` will create a base skeleton for the :ref:`customization layer<abstraction-layers.customization>` in your cluster repository. Also the ``apply.sh``:ref:`-script<actions-references.applysh>` will now include the appliance of this stage.  
+``TF_USAGE``                                ``true``    Allows to disable execution of the terraform stage by setting it to false. This is also taken into account by the inventory helper. Intended use case are bare-metal or otherwise pre-provisioned setups.
+``AFLAGS``                                              This allows to pass additional flags to Ansible. The variable is interpolated into the ansible call without further quoting, so it can be used to do all kinds of fun stuff. A primary use is to force diff output or only execute some tags: ``AFLAGS="--diff -t some-tag"``.
+``K8S_CUSTOM_STAGE_USAGE``                  ``false``   If set to true, ``init.sh`` will create a base skeleton for the :ref:`customization layer<abstraction-layers.customization>` in your cluster repository. Also the ``apply.sh``:ref:`-script<actions-references.applysh>` will now include the appliance of this stage.
 =========================================== =========== ===================
 
 .. note::
@@ -269,7 +269,7 @@ Environment Variable                        Default     Description
    be explicitly saved before destroying the cluster.
 
 .. note::
-   
+
    You should not use the ``AFLAGS``-mechanism to pass
    sustained variables to Ansible. These variables should be set in your
    Ansible configuration file or hosts file(s).
@@ -341,4 +341,3 @@ The template file is located at ``templates/envrc.template.sh``.
 
 .. literalinclude:: /templates/envrc.template.sh
    :language: bash
-

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 cluster="$1"
 # shellcheck source=tools/vault/lib.sh

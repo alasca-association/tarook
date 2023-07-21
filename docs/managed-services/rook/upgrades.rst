@@ -50,7 +50,7 @@ A word of warning / Things to be considered
 -------------------------------------------
 
 .. warning::
-   
+
    Upgrading a Rook cluster is not without risk. There may
    be unexpected issues or obstacles that damage the integrity and
    health of your storage cluster, including data loss. Only proceed
@@ -112,11 +112,11 @@ Steps to perform an upgrade
    currently configured rook version in your managed-k8s cluster
    configuration file. To be sure, you can check the actual deployed
    version with the following commands:
-   
+
    .. code:: shell
-      
+
       # Determine the actual rook-ceph-operator Pod name
-      POD_NAME=$(kubectl -n rook-ceph get pod \     
+      POD_NAME=$(kubectl -n rook-ceph get pod \
       -o custom-columns=name:.metadata.name --no-headers \
       | grep rook-ceph-operator)
       # Get the configured rook version
@@ -153,7 +153,7 @@ Steps to perform an upgrade
       version = "v1.6.7"
       [...]
 
-6. Execute ``stage4``, or at least the ``rook_v1/2`` role. 
+6. Execute ``stage4``, or at least the ``rook_v1/2`` role.
 
    .. note::
 
@@ -173,9 +173,9 @@ Steps to perform an upgrade
 
 8. After the upgrade has been proceeded, check that your managed-k8s
    cluster still is in a sane state via the smoke tests.
-   
+
    .. code:: console
-      
+
       $ bash managed-k8s/actions/test.sh
 
 9. Continue with steps ``{1,3..10}`` until you have reached your final

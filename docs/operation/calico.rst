@@ -5,7 +5,7 @@ General Information
 -------------------
 
 .. note::
-   
+
    Calico versions below ``v3.24`` can’t be set up via the
    Tigera operator. Please update to Kubernetes ``v1.24``, which maps
    Calico ``v3.24.5`` by default, in advance.
@@ -102,7 +102,7 @@ If you want to postpone migration, set
 ``config/config.toml``.
 
 .. note::
-   
+
    The migration is disruptive. In-between the removal of the
    resources of the manifest-based installation and the deployment and
    setup of the Tigera operator which then sets up a new Calico
@@ -137,7 +137,7 @@ triggered as followed:
    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="--diff -t calico" bash managed-k8s/actions/apply-stage3.sh
 
 .. hint::
-   
+
    During and after the migration you should check the Tigera
    operator logs.
 

@@ -54,7 +54,7 @@ negative. In addition, the procedure was repeated three times.
    highest-numbered cinder volume PVC.
 
    .. note::
-      
+
       The numbering of the PVCs and OSDs is **not** equal. That
       means that OSD 0 may use volume 3 and OSD 3 may use volume 2 and OSD
       2 may use volume 0. You *always* have to discover the used volume
@@ -110,9 +110,9 @@ negative. In addition, the procedure was repeated three times.
       toolbox# ceph osd crush reweight $name 0
 
    .. note::
-      
+
       There is a difference between ``ceph osd crush reweight`` and
-      ``ceph osd reweight`` (see 
+      ``ceph osd reweight`` (see
       `here <https://ceph.io/geen-categorie/difference-between-ceph-osd-reweight-and-ceph-osd-crush-reweight/>`__).
       ``ceph osd crush reweight`` is a permanent weighting measure, while
       ``ceph osd reweight`` is a temporary measure which gets lost on a
@@ -229,7 +229,7 @@ negative. In addition, the procedure was repeated three times.
       toolbox# ceph osd purge $name
 
    .. note::
-      
+
       You do not need ``--yes-i-really-mean-it`` since all data
       was moved to another device. If ceph asks you for
       ``--yes-i-really-mean-it`` something is wrong!

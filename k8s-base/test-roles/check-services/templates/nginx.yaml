@@ -36,4 +36,3 @@ spec:
   dnsPolicy: ClusterFirst
   restartPolicy: Never
 status: {}
-

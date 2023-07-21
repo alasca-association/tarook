@@ -61,7 +61,7 @@ vault_initialized=false
 for attempt in $(seq 1 60) ; do
     vault_init_status="$( (docker exec "$vault_container_name" vault status --format=json 2>/dev/null || true) | jq -r .initialized)"
     printf "Initialization status: %s\n" "$vault_init_status"
-    
+
     if [ "$vault_init_status" = "false" ]; then
         init_out="$(docker exec "$vault_container_name" vault operator init -key-shares=1 -key-threshold=1 -format=json)"
         jq .unseal_keys_b64[0] -cr <<<"$init_out" > "$vault_dir/unseal.key"

@@ -15,5 +15,5 @@ This LCM uses the
 provided by the Prometheus community.
 
 .. todo::
-    
+
    needs details
