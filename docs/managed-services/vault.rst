@@ -12,7 +12,7 @@ via the
 `Vault Helm Chart <https://github.com/hashicorp/vault-helm/>`__.
 
 .. note::
-   
+
    The Vault integration is considered ready for production. It’s
    deployed in a highly available fashion (n=3) and comes with support for
    backups and monitoring. The initial unseal keys are written to the file

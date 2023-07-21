@@ -62,4 +62,3 @@ To upgrade the Calico resources, basically follow this guide: [Upgrading an inst
   * refer [`k8s-config`](../k8s-config/defaults/main.yaml)
 * Which AS number is used by for the peering of gateway nodes and masters?
   * refer [`k8s-config`](../k8s-config/defaults/main.yaml)
-

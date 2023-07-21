@@ -1,12 +1,12 @@
 Wireguard
 =========
 
-.. todo:: 
+.. todo::
 
    needs updating with current LCM
 
 .. warning::
-    
+
     Outdated.
 
 Basic setup

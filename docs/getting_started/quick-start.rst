@@ -41,9 +41,9 @@ If you are having problems, please visit our :doc:`FAQ </getting_started/faq>`.
 
 5. :ref:`Initialize the Vault secret store. <initialization.initialize-vault-for-a-development-setup>`
 6. Deploy cluster by executing the :ref:`apply.sh <actions-references.applysh>` script.
-   
+
    .. code:: console
-   
+
       $ ./managed-k8s/actions/apply.sh
 
 7. Get yourself a hot beverage and joyfully watch as your yk8s cluster
@@ -51,4 +51,3 @@ If you are having problems, please visit our :doc:`FAQ </getting_started/faq>`.
 
 
 8. :ref:`Start using your cluster <faq.how-do-i-ssh-into-my-cluster-nodes>`.
-

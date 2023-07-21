@@ -17,5 +17,5 @@ Rook
 Kubernetes.
 
 .. todo::
-   
+
    needs details

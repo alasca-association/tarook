@@ -2,7 +2,7 @@ Backups
 =======
 
 .. todo::
-   
+
    needs updates and details
 
 Backups should be made of all credentials (certificates), the etcd

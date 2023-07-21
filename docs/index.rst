@@ -9,12 +9,12 @@ Welcome to Yaook k8s' documentation!
    getting_started/introduction
    Quick Start: How to Deploy a yk8s Cluster <getting_started/quick-start>
    getting_started/faq
-   
+
 .. toctree::
    :maxdepth: 2
    :caption: Concept
    :hidden:
-   
+
    concepts/cluster-repository
    concepts/abstraction-layers
 
@@ -22,11 +22,11 @@ Welcome to Yaook k8s' documentation!
    :maxdepth: 2
    :caption: LCM Usage Guide
    :hidden:
-   
+
    Cluster Repository Initialization <usage/initialization>
    Environment Variables <usage/environmental-variables>
    Cluster Configuration <usage/cluster-configuration>
-   
+
 .. toctree::
    :maxdepth: 2
    :caption: Operating a yk8s-Cluster
@@ -62,10 +62,10 @@ Welcome to Yaook k8s' documentation!
    :maxdepth: 2
    :caption: VPN
    :hidden:
-   
+
    vpn/wireguard
    vpn/ipsec
- 
+
 .. toctree::
    :maxdepth: 2
    :caption: Development
@@ -73,12 +73,12 @@ Welcome to Yaook k8s' documentation!
 
    development/coding-guide
    development/vault
-   
+
 .. toctree::
    :maxdepth: 2
    :caption: MISC
    :hidden:
-   
+
    DualStack-Support <misc/dualstack>
    misc/rook-ceph-notes
    misc/increase-cluster-cidr
