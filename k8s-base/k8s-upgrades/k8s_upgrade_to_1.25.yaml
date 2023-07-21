@@ -139,7 +139,18 @@
       when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-upgrade-kubelet
       when: "not (k8s_upgrade_done | default(False))"
-    - role: kubeadm-uncordon-node
+  # The nvidia-device-plugin marks a GPU as unhealthy
+  # on systemctl daemon-reloads + kubelet restarts,
+  # but the Pod does not fail. We have to manually restart the Pod.
+  tasks:
+    - name: Restart nvidia-device-plugin Pod on node
+      when: k8s_is_gpu_cluster | bool
+      ansible.builtin.include_role:
+        name: nvidia-device-plugin
+        tasks_from: restart_ndp_pod.yaml
+    - name: Uncordon the node
+      ansible.builtin.include_role:
+        name: kubeadm-uncordon-node
       when: "not (k8s_upgrade_done | default(False))"
 
 - name: Update OpenStack cloud provider integration components

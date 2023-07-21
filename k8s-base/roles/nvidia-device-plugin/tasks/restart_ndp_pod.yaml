@@ -1,0 +1,42 @@
+---
+# These tasks restart the nvidida device plugin Pod on a node.
+# This is needed during Kubernetes upgrades as the GPU gets marked
+# as unhealthy on systemctl reloads + kubelet restarts.
+- name: Restart nvdp Pod
+  delegate_to: localhost
+  when: node_has_gpu
+  block:
+  - name: "Get nvidia-device-plugin Pod running on node {{ inventory_hostname }}"
+    kubernetes.core.k8s_info:
+      kind: Pod
+      namespace: "{{ k8s_nvidia_device_plugin_namespace }}"
+      field_selectors:
+      - "spec.nodeName={{ inventory_hostname }}"
+      label_selectors:
+      - app.kubernetes.io/instance=nvdp
+      - app.kubernetes.io/name=nvidia-device-plugin
+    # Retry this task on failures
+    register: k8s_info
+    until: k8s_info is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+
+  # We're deleting the Pod so a new one will be re-created by the DS.
+  - name: "Delete Pod {{ pod_name }} running on {{ inventory_hostname }}"
+    vars:
+      pod_name: "{{ k8s_info.resources[0].metadata.name }}"
+    kubernetes.core.k8s:
+      state: absent
+      kind: Pod
+      namespace: "{{ k8s_nvidia_device_plugin_namespace }}"
+      name: "{{ pod_name }}"
+      label_selectors:
+      - app.kubernetes.io/instance=nvdp
+      - app.kubernetes.io/name=nvidia-device-plugin
+      wait: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+...
