@@ -25,8 +25,7 @@
 
   # The base version is 33.x consider only versions newer than 33.x
   - name: Trigger the version-specific CRDs update
-    when: prom_stack_depl_major_version in monitoring_crds_update_required and
-          not prom_stack_version_is_equal_major
+    when: not prom_stack_version_is_equal_major
     with_sequence:
     - start="{{ (prom_stack_depl_major_version | int) + 1 }}" end="{{ prom_stack_conf_major_version }}"
     ansible.builtin.include_tasks: apply_crds.yaml

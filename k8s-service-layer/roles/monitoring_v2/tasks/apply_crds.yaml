@@ -58,4 +58,26 @@
   loop_control:
     loop_var: inner_item
   changed_when: false
+
+# Introduced in https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#from-45x-to-46x
+- name: "Apply CRDs for app versions > 0.65.1"
+  when: app_version is version('0.65', '>=')
+  vars:
+    app_version: "{{ (helm_chart.stdout | from_yaml).appVersion | replace('v','') }}"
+  ansible.builtin.command:
+  args:
+    argv:
+    - kubectl
+    - apply
+    - --server-side
+    - --force-conflicts
+    - -f
+    - "https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/\
+        v{{ app_version }}/example/prometheus-operator-crd/monitoring.coreos.com_{{ inner_item }}.yaml"
+  loop:
+  - prometheusagents
+  - scrapeconfigs
+  loop_control:
+    loop_var: inner_item
+  changed_when: false
 ...
