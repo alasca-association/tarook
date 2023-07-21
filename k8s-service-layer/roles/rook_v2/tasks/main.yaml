@@ -21,20 +21,27 @@
         name: "{{ rook_osd_storage_class }}"
       register: osd_storage_class
       failed_when: "not osd_storage_class.resources"
+      when: rook_on_openstack
     - name: Apply operator chart
       ansible.builtin.include_tasks: apply_operator.yaml
-    - name: Wait for rook to become ready
-      ansible.builtin.include_tasks: wait_for_rook_upgrade.yaml
+    - name: Wait for rook to become ready  # noqa no-handler
       when: operator_status.changed
-      tags:
-        - skip_ansible_lint
+      block:
+        - name: Pause for 20 seconds, give the cluster time to converge
+          ansible.builtin.pause:
+            seconds: 20
+        - name: Include rook upgrade verification
+          ansible.builtin.include_tasks: wait_for_rook_upgrade.yaml
     - name: Apply cluster chart
       ansible.builtin.include_tasks: apply_cluster.yaml
-    - name: Wait for ceph to become ready
-      ansible.builtin.include_tasks: wait_for_ceph_upgrade.yaml
+    - name: Wait for ceph to become ready  # noqa no-handler
       when: cluster_status.changed
-      tags:
-        - skip_ansible_lint
+      block:
+        - name: Pause for 20 seconds, give the cluster time to converge
+          ansible.builtin.pause:
+            seconds: 60
+        - name: Include ceph upgrade verification
+          ansible.builtin.include_tasks: wait_for_ceph_upgrade.yaml
     - name: Wait for cluster to become ready
       kubernetes.core.k8s_info:
         kind: CephCluster

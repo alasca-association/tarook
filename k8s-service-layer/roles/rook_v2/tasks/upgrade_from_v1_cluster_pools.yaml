@@ -25,5 +25,5 @@
           "meta.helm.sh/release-name": "{{ rook_helm_release_name_cluster }}"
         labels:
           "app.kubernetes.io/managed-by": "Helm"
-  when: blockpool.create_storage_class
+  when: blockpool.create_storage_class | default(False)
 ...

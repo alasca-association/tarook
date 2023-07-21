@@ -1,5 +1,3 @@
-{% from "roles/rook_v1/templates/utils.j2" import resource_constraints %}
-
 toolbox:
   enabled: true
 {% if rook_scheduling_key %}
@@ -22,9 +20,11 @@ monitoring:
 
 clusterName: "{{ rook_cluster_name }}"
 cephClusterSpec:
+{% if rook_custom_ceph_version is defined %}
   cephVersion:
-    image: "quay.io/ceph/ceph:{{ rook_ceph_versions.ceph }}"
-    allowUnsupported: false
+    image: "quay.io/ceph/ceph:{{ rook_custom_ceph_version }}"
+    allowUnsupported: true
+{% endif %}
   dataDirHostPath: /var/lib/rook
   skipUpgradeChecks: {{ rook_skip_upgrade_checks | to_json }}
   continueUpgradeAfterChecksEvenIfNotHealthy: {{ rook_skip_upgrade_checks | to_json }}
@@ -52,8 +52,18 @@ cephClusterSpec:
   dashboard:
     enabled: false
     ssl: true
+{% if rook_version[1:] is version('1.9', '>=') and k8s_monitoring_enabled %}
+    createPrometheusRules: true
+{% endif %}
+
 {% if rook_use_host_networking %}
   network:
+{% if rook_version is version('v1.11.0', '<') %}
+    provider: host
+{% else %}
+    connections:
+      provider: host
+{% endif %}
 {% endif %}
   crashCollector:
     disable: false
@@ -112,27 +122,65 @@ cephClusterSpec:
 {% endfor %}
 {% endif %}
   resources:
-    mgr: {
-{% call resource_constraints(
-  rook_mgr_memory_request,
-  rook_mgr_cpu_request,
-  rook_mgr_memory_limit,
-  rook_mgr_cpu_limit) %}{% endcall %}
-    }
-    mon: {
-{% call resource_constraints(
-  rook_mon_memory_request,
-  rook_mon_cpu_request,
-  rook_mon_memory_limit,
-  rook_mon_cpu_limit) %}{% endcall %}
-    }
+    mgr:
+      limits:
+        cpu: "{{ rook_mgr_cpu_limit }}"
+        memory: "{{ rook_mgr_memory_limit }}"
+      requests:
+        cpu: "{{ rook_mgr_cpu_request }}"
+        memory: "{{ rook_mgr_memory_request }}"
+    mon:
+      limits:
+        cpu: "{{ rook_mon_cpu_limit }}"
+        memory: "{{ rook_mon_memory_limit }}"
+      requests:
+        cpu: "{{ rook_mon_cpu_request }}"
+        memory: "{{ rook_mon_memory_request }}"
+    osd:
+      limits:
+        cpu: "{{ rook_osd_cpu_limit }}"
+        memory: "{{ rook_osd_memory_limit }}"
+      requests:
+        cpu: "{{ rook_osd_cpu_request }}"
+        memory: "{{ rook_osd_memory_request }}"
+    prepareosd:
+    mgr-sidecar:
+    crashcollector:
+    logcollector:
+    cleanup:
   removeOSDsIfOutAndSafeToRemove: {{ rook_osd_autodestroy_safe }}
   storage: # cluster level storage configuration and selection
+{% if rook_on_openstack %}
     useAllNodes: false
     useAllDevices: false
+{% else %}
+    useAllNodes: {{ rook_use_all_available_nodes }}
+    useAllDevices: {{ rook_use_all_available_devices }}
+{% endif %}
     config:
       encryptedDevice: "{{ rook_encrypt_osds }}" # the default value for this option is "false"
     onlyApplyOSDPlacement: false
+# Bare Metal custom configuration
+{% if not rook_on_openstack and not rook_use_all_available_nodes %}
+    nodes:
+{% for node in rook_nodes %}
+    - name: {{ node.name | to_json }}
+{% if not rook_use_all_available_devices %}
+{% if node.devices %}
+      devices:
+{% for device_name, device_cfg in node.devices.items() %}
+      - name: {{ device_name | to_json }}
+        config:
+          {{ device_cfg.config | default({}) | to_nice_yaml | indent(10) }}
+{% endfor %}
+{% endif %}
+{% endif %}
+      config:
+        {{ node.config | default({}) | to_nice_yaml | indent(8) }}
+{% endfor %}
+{% endif %}
+# OpenStack configuration
+{% if rook_on_openstack %}
     storageClassDeviceSets:
     - name: cinder
       count: {{ rook_nosds }}
@@ -179,13 +227,13 @@ cephClusterSpec:
           operator: Exists
 {% endif %}
 {% endif %}
-      resources: {
-{% call resource_constraints(
-  rook_osd_memory_request,
-  rook_osd_cpu_request,
-  rook_osd_memory_limit,
-  rook_osd_cpu_limit) %}{% endcall %}
-      }
+      resources:
+        limits:
+          cpu: "{{ rook_osd_cpu_limit }}"
+          memory: "{{ rook_osd_memory_limit }}"
+        requests:
+          cpu: "{{ rook_osd_cpu_request }}"
+          memory: "{{ rook_osd_memory_request }}"
       volumeClaimTemplates:
       - metadata:
           creationTimestamp: null
@@ -198,6 +246,7 @@ cephClusterSpec:
           volumeMode: Block
           accessModes:
           - ReadWriteOnce
+{% endif %}
   disruptionManagement:
     managePodBudgets: {{ rook_manage_pod_budgets | bool }}
     osdMaintenanceTimeout: 30
@@ -331,13 +380,13 @@ cephFileSystems:
                   topologyKey: topology.kubernetes.io/zone
         annotations:
         labels:
-        resources: {
-    {% call resource_constraints(
-      rook_mds_memory_request,
-      rook_mds_cpu_request,
-      rook_mds_memory_limit,
-      rook_mds_cpu_limit) %}{% endcall %}
-        }
+        resources:
+          limits:
+            cpu: "{{ rook_mds_cpu_limit }}"
+            memory: "{{ rook_mds_memory_limit }}"
+          requests:
+            cpu: "{{ rook_mds_cpu_request }}"
+            memory: "{{ rook_mds_memory_request }}"
       mirroring:
         enabled: false
     storageClass:

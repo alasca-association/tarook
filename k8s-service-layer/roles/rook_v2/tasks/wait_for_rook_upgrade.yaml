@@ -15,20 +15,38 @@
       - rook_cluster = {{ rook_namespace }}
     register: rook_deployments_info
 
-  - name: Validate that the new rook version is rolled out
+  - name: Print rook version and replica information of deployments
+    vars:
+      rook_version_deployed: "{{ item.metadata.labels['rook-version'] | string }}"
+      deployment_replicas: "{{ item.status.replicas | int }}"
+      deployment_ready_replicas: "{{ item.status.readyReplicas | int }}"
     ansible.builtin.debug:
       msg: |
         Deployment {{ item.metadata.name }} has rook version {{ item.metadata.labels['rook-version'] }}
-        Configured Replicas:  {{ item.status.replicas }}
-        Updated Replicas:     {{ item.status.updatedReplicas }}
-        Ready Replicas:       {{ item.status.readyReplicas }}
-    failed_when: |
-      ((item.status.replicas | int) != (item.status.updatedReplicas | int))
-      or ((item.status.replicas | int) != (item.status.readyReplicas | int))
-      or (not ((item.metadata.labels['rook-version']) is version(rook_version, operator='eq')))
+        Configured Replicas:  {{ item.status.replicas | default("Unknown") }}
+        Updated Replicas:     {{ item.status.updatedReplicas | default("Unknown") }}
+        Ready Replicas:       {{ item.status.readyReplicas | default("Unknown") }}
     with_items: "{{ rook_deployments_info.resources }}"
     loop_control:
       label: "Deployment: {{ item.metadata.name }}"
+
+  - name: Validate deployments info
+    vars:
+      rook_version_deployed: "{{ item.metadata.labels['rook-version'] | string }}"
+      deployment_replicas: "{{ item.status.replicas | int }}"
+      deployment_ready_replicas: "{{ item.status.readyReplicas | int }}"
+    ansible.builtin.assert:
+      quiet: true
+      fail_msg: "{{ item.metadata.name }} has not been updated, yet"
+      that:
+      - deployment_replicas == deployment_ready_replicas
+      - rook_version_deployed is version(rook_version, operator='eq')
+    with_items: "{{ rook_deployments_info.resources }}"
+    loop_control:
+      label: "Deployment: {{ item.metadata.name }}"
+    # The whole deployment manifest may be outputted
+    # which makes comprehending ansible logs very hard
+    no_log: true
 
   rescue:
   - name: Fail if the cluster did not converge
