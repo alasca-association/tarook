@@ -236,13 +236,14 @@ Read the corresponding upgrade page at the
 -  In case any changes need to be made to the values of one of the charts,
    place them inside an if block, e.g.:
 
-   .. code:: yaml
+   .. code:: jinja
 
-   {% if rook_version[1:] is version('1.9', '>=') %}
-      createPrometheusRules: true
-   {% endif %}
+      {% if rook_version[1:] is version('1.9', '>=') %}
+         createPrometheusRules: true
+      {% endif %}
 
--  If necessary, implement any additional steps described in the [rook Docs](https://rook.io/docs/rook/)
+-  If necessary, implement any additional steps described in the `rook Docs <https://rook.io/docs/rook/latest/>`__
+
    -  Please also include the cluster health verification task prior and
       subsequent to the actual upgrade steps. As the ``ceph status``
       update can slightly differ from release to release, you may need
