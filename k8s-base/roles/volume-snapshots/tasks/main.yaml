@@ -3,10 +3,12 @@
   become: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
+  vars:
+    files_folder: "{{ image_versions.volume_snapshot_controller + '/' }}"
   block:
   - name: Create Custom Snapshot Resource Definitions
     kubernetes.core.k8s:
-      definition: "{{ lookup('file', 'crds/snapshot.storage.k8s.io.yaml') }}"
+      definition: "{{ lookup('file', files_folder + 'crds/snapshot.storage.k8s.io.yaml') }}"
       apply: true
       state: present
       validate:
@@ -22,7 +24,7 @@
     kubernetes.core.k8s:
       state: present
       apply: true
-      definition: "{{ lookup('file', 'snapshot-controller/' + item) }}"
+      definition: "{{ lookup('file', files_folder + 'snapshot-controller/' + item) }}"
       validate:
         fail_on_error: true
         strict: true

@@ -178,6 +178,21 @@
         name: kubeadm-uncordon-node
       when: "not (k8s_upgrade_done | default(False))"
 
+- name: Update volume snapshot controller
+  hosts: masters
+  gather_facts: false
+  vars_files:
+    - ../vars/retries.yaml
+  pre_tasks:
+    - name: Overwrite k8s_version with next_k8s_version
+      ansible.builtin.set_fact:
+        k8s_version: "{{ next_k8s_version }}"
+  roles:
+    - role: volume-snapshots
+      tags:
+        - volume-snapshot
+        - volume-snapshot-controller
+
 - name: Update OpenStack cloud provider integration components
   hosts: masters
   run_once: true  # to avoid redundant appliance
