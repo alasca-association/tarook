@@ -96,6 +96,76 @@
       msg: "Reader pod is in condition {{ reader_state.resources[0].status.phase }}"
     failed_when: 'reader_state.resources[0].status.phase == "Failed"'
 
+  - name: test volume snapshot
+    when: volume_snapshot_class is defined
+    block:
+    - name: create snapshot
+      kubernetes.core.k8s:
+        definition: "{{ lookup('template', 'snapshot.yaml') }}"
+        state: present
+        validate:
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
+
+    - name: check snapshot creation success
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: VolumeSnapshot
+        name: csi-do-test-snapshot
+        namespace: "{{ check_block_storage_namespace }}"
+      register: snapshot_state
+      until: "snapshot_state.resources and snapshot_state.resources[0].status.readyToUse == true"
+      delay: 5
+      retries: 240
+
+    - name: rehydrate snapshot
+      kubernetes.core.k8s:
+        definition: "{{ lookup('template', 'rehydrate_snapshot.yaml') }}"
+        state: present
+        validate:
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
+
+    - name: get rehydration state
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: PersistentVolumeClaim
+        name: pvc-restore-test
+        namespace: "{{ check_block_storage_namespace }}"
+      register: rehydration_state
+      until: "rehydration_state.resources and rehydration_state.resources[0].status.phase != 'Pending'"
+      delay: 5
+      retries: 240
+
+    - name: check rehydration success
+      ansible.builtin.debug:
+        msg: "Rehydration of snapshot is {{ rehydration_state.resources[0].status.phase }}"
+      failed_when: 'rehydration_state.resources[0].status.phase != "Bound"'
+      when: on_openstack | default(True)
+
+    - name: delete rehydrated volume
+      kubernetes.core.k8s:
+        definition: "{{ lookup('template', 'rehydrate_snapshot.yaml') }}"
+        state: absent
+        validate:
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
+
   - name: delete namespace
     kubernetes.core.k8s:
       api_version: v1

@@ -4,6 +4,14 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## [Create volume snapshot CRDs  (!763) · Merge requests · YAOOK / k8s · GitLab](https://gitlab.com/yaook/k8s/-/merge_requests/763)
+
+You can now create snapshots of your openstack PVCs.
+Missing CRDs and the snapshot-controller from [1] and [2] where added.
+
+[1] https://github.com/kubernetes-csi/external-snapshotter/tree/master/client/config/crd
+[2] https://github.com/kubernetes-csi/external-snapshotter/tree/master/deploy/kubernetes/snapshot-controller
+
 ## Add support for rook v1.8.10
 Update by setting `version=1.8.10` and running `MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="--diff --tags mk8s-sl/rook" managed-k8s/actions/apply-stage4.sh`
 
