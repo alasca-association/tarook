@@ -67,9 +67,10 @@ ansible-lint:
     - docker
 
 flake8:
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3"
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  before_script:
+    - poetry install --with ci --sync
   script:
-    - "pip3 install flake8"
     - 'python3 -m flake8 --max-line-length 88 --filename="*.py"'
   stage: lint
   tags:

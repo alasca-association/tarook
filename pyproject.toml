@@ -27,6 +27,7 @@ optional = true
 
 [tool.poetry.group.ci.dependencies]
 ansible-lint = { version = "^6.14.6", markers = "platform_system != 'Windows'" }
+flake8 = "^6.0.0"
 
 [tool.poetry.group.offline-installation.dependencies]
 semver = "^3.0.1"
