@@ -80,7 +80,7 @@ build-docs-check:
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3.11"
   script:
     - pip install sphinx sphinx-rtd-theme sphinx-tabs myst-parser furo
-    - sphinx-build docs _build/html
+    - sphinx-build -W docs _build/html
     - mv _build/html public
   needs: []
   artifacts:
@@ -447,7 +447,7 @@ pages:
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3.11"
   script:
     - pip install sphinx sphinx-rtd-theme sphinx-tabs myst-parser furo
-    - sphinx-build docs _build/html
+    - sphinx-build -W docs _build/html
     - mv _build/html public
   needs: []
   artifacts:
