@@ -77,9 +77,10 @@ flake8:
 
 build-docs-check:
   stage: lint
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3.11"
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  before_script:
+    - poetry install --with docs --sync
   script:
-    - pip install sphinx sphinx-rtd-theme sphinx-tabs myst-parser furo
     - sphinx-build -W docs _build/html
     - mv _build/html public
   needs: []
@@ -444,9 +445,10 @@ containerd-manual:
 
 pages:
   stage: pages
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3.11"
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  before_script:
+    - poetry install --with docs --sync
   script:
-    - pip install sphinx sphinx-rtd-theme sphinx-tabs myst-parser furo
     - sphinx-build -W docs _build/html
     - mv _build/html public
   needs: []
