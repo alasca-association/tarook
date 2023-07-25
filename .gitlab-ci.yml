@@ -86,6 +86,27 @@ pre-commit-hooks:
   tags:
     - docker
 
+check-for-releasenote:
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3.11"
+  stage: lint
+  needs: []
+  before_script:
+  - git fetch origin "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
+  script:
+  - |-
+    FILES=$(git diff origin/"${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}" --name-only -- docs/_releasenotes | wc -l)
+    if [ $FILES -gt 0 ];then
+      exit 0
+    else
+      exit 1
+    fi
+  tags:
+    - docker
+  rules:
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE
+      when: on_success
+    - when: never
+
 build-docs-check:
   stage: lint
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"

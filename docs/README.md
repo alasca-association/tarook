@@ -1,6 +1,6 @@
 # Managed Kubernetes Handbook
 
-This is an mdbook.
+This docu is generated using sphinx.
 
 ## Table of Contents
 
