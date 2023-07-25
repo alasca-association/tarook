@@ -4,6 +4,14 @@ Maybe `git log --no-merges` will help you to get a rough overview of recent chan
 
 Nonetheless, as we're having a continuously growing user base, some important notes can be found below:
 
+## Add .pre-commit-config.yaml
+This repository now contains pre-commit hooks to validate the linting stage
+of our CI (except ansible-lint) before committing. This allows for a smoother
+development experience as mistakes can be catched quicker. To use is, install
+[pre-commit](https://pre-commit.com) (if you use Nix flakes, it is automatically
+installed for you) and then run `pre-commit install` to enable the hooks in the
+repo (if you use direnv, they are automatically enabled for you).
+
 ## [Create volume snapshot CRDs  (!763) · Merge requests · YAOOK / k8s · GitLab](https://gitlab.com/yaook/k8s/-/merge_requests/763)
 
 You can now create snapshots of your openstack PVCs.

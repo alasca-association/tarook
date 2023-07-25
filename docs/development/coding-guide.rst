@@ -5,6 +5,14 @@ This document contains a coding guideline specifically written for this
 repository. For general information please refer to the
 `Yaook Development Process Documentation <https://yaook.gitlab.io/meta/01-development-process.html>`__.
 
+pre-commit-hooks
+----------------
+This repository contains pre-commit hooks to validate the linting stage of our
+CI (except ansible-lint) before committing. To use is, install [pre-commit]
+(https://pre-commit.com) (if you use Nix flakes, it is automatically installed
+for you) and then run `pre-commit install` to enable the hooks in the repo (if
+you use direnv, they are automatically enabled for you).
+
 Disruption
 ----------
 
