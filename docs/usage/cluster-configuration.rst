@@ -754,7 +754,7 @@ via:
 
 .. code:: console
 
-   $ terraform-docs markdown table terraform
+   $ terraform-docs markdown table --anchor=false --indent=1 terraform
 
 and should be kept up to date on a regular base.
 
