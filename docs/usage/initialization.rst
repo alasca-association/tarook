@@ -226,7 +226,7 @@ To initialize a **local** Vault instance for **development purposes**, do the fo
 
    .. Note::
       If you are using rootless docker or podman, set ``VAULT_IN_DOCKER_USE_ROOTLESS=true``
-      in ``~/.config/yaook-k8s/env``, otherwise this will fail.
+      in ``~/.config/yaook-k8s/env``
 
 2. Ensure that sourcing ``managed-k8s/actions/vault_env.sh`` is part of your ``.envrc``.
 
