@@ -2,7 +2,7 @@ Rook - General information
 ==========================
 
 .. todo::
-   
+
    needs updates (differentiate between on OpenStack and on Bare
    Metal)
 

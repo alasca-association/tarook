@@ -3,7 +3,7 @@ Actions References
 
 The ``managed-k8s`` submodule provides the following ready-to-use action
 scripts to work with the cluster repository. The scripts extensively
-rely on environment variables. See the 
+rely on environment variables. See the
 :doc:`Environment Variables Reference </usage/environmental-variables>`
 for details.
 
@@ -21,13 +21,13 @@ Additional operating scripts:
 
 - :ref:`system_update_nodes.sh<actions-references.system_update_nodessh>`
 - :ref:`destroy.sh<actions-references.destroysh>`
-- :ref:`wg-up.sh<actions-references.wg-upsh>` 
-- :ref:`manage_roles.py<actions-references.manage_rolespy>` 
-- :ref:`manual-terraform.sh<actions-references.manual-terraformsh>` 
+- :ref:`wg-up.sh<actions-references.wg-upsh>`
+- :ref:`manage_roles.py<actions-references.manage_rolespy>`
+- :ref:`manual-terraform.sh<actions-references.manual-terraformsh>`
 - :ref:`Examples <actions-references.examples>`
-- :ref:`update_inventory.py<actions-references.update_inventorypy>` 
+- :ref:`update_inventory.py<actions-references.update_inventorypy>`
 - :ref:`upgrade.sh<actions-references.upgradesh>`
-- :ref:`migrate-docker-containerd.sh<actions-references.migrate-docker-containerdsh>` 
+- :ref:`migrate-docker-containerd.sh<actions-references.migrate-docker-containerdsh>`
 - :ref:`lib.sh<actions-references.libsh>`
 
 .. _actions-references.initsh:
@@ -190,7 +190,7 @@ This triggers system updates of the host nodes (harbour infrastructure
 layer). That includes updates of the frontend nodes and as well as
 Kubernetes nodes. As this may be a disruptive action, you have to
 explicitly allow system updates by setting
-``MANAGED_K8S_RELEASE_THE_KRAKEN`` (see 
+``MANAGED_K8S_RELEASE_THE_KRAKEN`` (see
 :ref:`Environment Variables <envirnomental-variables.behavior-altering-variables>`.
 Nodes will get updated one after another if they are already
 initialized. Between the node updates, it is verified that the cluster

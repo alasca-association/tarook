@@ -49,7 +49,7 @@ we don’t want to change the overall amount of OSDs, we’ll never decrease
 the OSD count.
 
 .. caution::
-   
+
    This process will create and attach Cinder Volumes. Due to a
    known kernel bug, this may crash the Ceph workers. Ceph will recover
    from this, however, it may lead to temporarily unavailable data.
@@ -133,7 +133,7 @@ the OSD count.
    -  All placement groups show as active+clean in ``ceph -s``
 
    .. note::
-      
+
       The ``RAW USE`` column of the ``ceph osd df`` output does not
       decrease for some reason. The column to look at is ``DATA``, which
       should reduce to something in the order of ``10 MiB``.
@@ -224,7 +224,7 @@ the OSD count.
       toolbox# ceph osd purge $name
 
    .. note::
-      
+
       You do not need ``--yes-i-really-mean-it`` since all data
       was moved to another device. If ceph asks you for
       ``--yes-i-really-mean-it`` something is wrong!
@@ -236,7 +236,7 @@ the OSD count.
 9. Delete the preparation job and the PVC.
 
    .. caution::
-      
+
       Deleting the wrong job + pvc will inevitably lead to
       loss of data! Double-check that you’re killing the correct volume by
       first running:

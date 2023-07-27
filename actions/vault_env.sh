@@ -47,4 +47,4 @@ echo "Root Token:               $VAULT_TOKEN"
 echo "---------------------------------------------------------------------------------"
 
 # Restore shell options
-eval "$flags" 
+eval "$flags"

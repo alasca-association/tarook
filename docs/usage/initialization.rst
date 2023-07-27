@@ -18,11 +18,11 @@ Install System Requirements
 
       1. `Install Nix <https://nixos.org/download.html#download-nix>`__
       2. `Enable flake support <https://nixos.wiki/wiki/Flakes#Permanent>`__ by adding the line
-         
+
          .. code:: ini
 
             experimental-features = nix-command flakes
-         
+
          to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``
       3. Run ``nix shell`` in this directory to enter the an environment with all requirements available
          If you use direnv, it will automatically load all requirements once you enter the directory.
@@ -86,7 +86,7 @@ Install System Requirements
 
          <details>
          <summary>Install helm</summary>
-         
+
       Follow `the upstream instructions on installing
       Helm. <https://helm.sh/docs/intro/install/>`__
 
@@ -172,7 +172,7 @@ serve as your :doc:`cluster repository </concepts/cluster-repository>`:
    .. code:: console
 
       $ $somewhere_else/k8s/actions/init.sh
-      
+
    This ``init.sh`` script will:
 
    -  Add all necessary submodules.
@@ -193,11 +193,11 @@ serve as your :doc:`cluster repository </concepts/cluster-repository>`:
 7. Activate the virtual environment with all python dependencies
 
    .. note::
-      
+
       This is handled automatically for you if you use the default .envrc
-    
+
    .. code:: console
-   
+
       $ poetry shell -C managed-k8s
 
 .. _initialization.initialize-vault-for-a-development-setup:
@@ -216,9 +216,9 @@ To initialize a **local** Vault instance for **development purposes**, do the fo
 1. Start the docker container:
 
    .. code:: console
-    
+
       $ ./managed-k8s/actions/vault.sh
-    
+
 
    .. Note::
       This is not suited for productive deployments or production use,
@@ -245,7 +245,7 @@ Appendix
 Allowed cryptographic algorithms for SSH
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: /templates/ssh-hardening-vars.yaml 
+.. literalinclude:: /templates/ssh-hardening-vars.yaml
    :language: yaml
 
 SSH key generation

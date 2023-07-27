@@ -38,4 +38,3 @@ ProtectHome=tmpfs
 # MemoryDenyWriteExecute=true
 # RestrictRealtime=true
 # RestrictSUIDSGID=true
-

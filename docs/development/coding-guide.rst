@@ -2,14 +2,22 @@ Coding Guide
 ============
 
 This document contains a coding guideline specifically written for this
-repository. For general information please refer to the 
+repository. For general information please refer to the
 `Yaook Development Process Documentation <https://yaook.gitlab.io/meta/01-development-process.html>`__.
+
+pre-commit-hooks
+----------------
+This repository contains pre-commit hooks to validate the linting stage of our
+CI (except ansible-lint) before committing. To use is, install [pre-commit]
+(https://pre-commit.com) (if you use Nix flakes, it is automatically installed
+for you) and then run `pre-commit install` to enable the hooks in the repo (if
+you use direnv, they are automatically enabled for you).
 
 Disruption
 ----------
 
 **disruption**
-   
+
    A *disruption* is defined as a loss of state or data or
    loss of availability.
 
@@ -61,7 +69,7 @@ New-style module syntax
      dnf: name=* state=latest
 
 .. admonition:: Rationale
-   
+
    The first version is easier to scan. It also supports the
    use of Jinja2 templates without having to worry about quotation and
    spaces.
@@ -99,7 +107,7 @@ Command module usage
      command: "kubectl describe node {{ inventory_hostname }}"
 
 .. admonition:: Rationale
-   
+
    Spaces and possibly quotes in the hostname would lead to
    issues.
 
@@ -128,13 +136,13 @@ Shell module usage
      shell: "set -o pipefail && cat {{ wg_local_priv_path }} | wg pubkey > {{ wg_local_pub_path | quote }}"
 
 .. admonition:: Rationale
-   
+
    - Using pipes in the shell module can lead to silent
-     failures without ``set -o pipefail`` 
+     failures without ``set -o pipefail``
    - Variables should be properly escaped. A ‘;’ or a ‘&&’ in, e.g.,
      the path can lead to funny things.
      Especially critial if the content of the variable can be influenced from
-     the outside. 
+     the outside.
    - `The use of cat here is redundant <http://porkmail.org/era/unix/award.html#cat>`__
 
 Use ``to_json`` in templates when writing YAML or JSON
@@ -165,7 +173,7 @@ Use ``to_json`` in templates when writing YAML or JSON
    }
 
 .. admonition:: Rationale
-   
+
    If ``some_variable`` contains data which can be
    interpreted as different data type in YAML (such as ``no`` or ``true``
    or ``00:01``) or quotes which would break the JSON string, unexpected
@@ -197,7 +205,7 @@ Use jsonencode in templates when writing YAML
    subnet_id: "${some_subnet_id}"
 
 .. admonition:: Rationale
-   
+
    If ``some_subnet_id`` contains data which can be
    interpreted as different data type in YAML (such as ``no`` or ``true``
    or ``00:01``), unexpected effects can occur. ``jsonencode()`` will wrap

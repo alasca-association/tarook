@@ -126,9 +126,9 @@ A distinction must be made between two cases.
    Find the folder with your desired vGPU configuration. Replace `"vgpu-type"` with your chosen vGPU configuration.
 
    .. code:: console
-      
+
       $ grep -l "vgpu-type" nvidia-*/name
-   
+
 2. NVIDIA GPU that supports SR-IOV. (All GPUs of the Ampere architecture
    or newer)
 

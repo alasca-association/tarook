@@ -168,7 +168,7 @@ and ``VAULT_SECRET_ID`` environment variables (see also
    needed.
 
 .. note::
-   
+
    The approle-related environment variables described above are
    only supported by the ansible LCM. They are not supported by the
    ``vault`` CLI tool or the vault scripts. To use different privileges
@@ -250,7 +250,7 @@ There are two choices to migrate your cluster to Vault:
 .. tabs::
 
    .. tab:: Root CA only
-      
+
       In this mode, the existing root CA keys will be copied into Vault. This
       is the simplest mode of operation, but may not be compliant with your
       security requirements, as the root CA keys are held “online” within
@@ -373,13 +373,13 @@ prerequisites are necessary:
 -  No Vault has been deployed with yaook/k8s inside the cluster yet.
 
    .. note::
-      
+
       If there already exists a Vault instance with yaook/k8s
       inside the cluster, all data inside it will be erased by following
       this procedure.
 
 .. note::
-   
+
    In general, it is not possible to pivot the cluster except by
    restoring a Vault raft snapshot into the cluster. This implies that
    *all* data from the source Vault is imported into the cluster. Thus, if
@@ -388,7 +388,7 @@ prerequisites are necessary:
    there.
 
 .. note::
-   
+
    An exception to the above rule exists if the cluster has been
    migrated and the original CA files still exist. In that case, it can be
    migrated *again* into the Vault it hosts itself. In this case, you may
@@ -477,7 +477,7 @@ Procedure
             Raft Applied Index      44
 
          .. tip::
-            
+
             Verify that you’re talking to the *target Vault* by checking
             the *Active Since* timestamp.
 
@@ -490,12 +490,12 @@ Procedure
       6. Delete the PVCs of the other replicas.
 
          .. note::
-            
+
             We are entering the danger zone now. Double-check always
             that you are operating on the correct cluster and with the correct
             vault.
 
-      7. 
+      7.
          .. danger::
             THIS WILL IRREVERSIBLY DELETE THE DATA IN THE *target
             Vault*. Double-check you are talking to the correct vault! Take a
@@ -596,4 +596,3 @@ Procedure
          parameters.
 
       4. Done.
-

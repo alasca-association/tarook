@@ -11,7 +11,7 @@ layout_poetry() {
   VIRTUAL_ENV=$(poetry -C "$poetry_dir" env info --path 2>/dev/null ; true)
 
   if [[ -z $VIRTUAL_ENV || ! -d $VIRTUAL_ENV ]]; then
-      log_status "No virtual environment exists. Executing \`poetry install\` to create one."    
+      log_status "No virtual environment exists. Executing \`poetry install\` to create one."
       poetry -C "$poetry_dir" install
       VIRTUAL_ENV=$(poetry -C "$poetry_dir" env info --path)
       mkdir -p "$(dirname "$poetry_hash_file")" && (cd "$poetry_dir" && sha256sum poetry.lock) > "$poetry_hash_file"
@@ -30,10 +30,14 @@ layout_poetry() {
   watch_file "$poetry_dir/poetry.lock"
 }
 
+has_flake_support() {
+    test -z "$(comm -13 <(nix show-config | grep -Po 'experimental-features = \K(.*)' | tr " " "\n" |  sort) <(echo "flakes nix-command" | tr " " "\n"))"
+}
+
 use_flake_if_nix() {
   flake_dir="${1:-${PWD}}"
   if has nix; then
-    if [ -z "$(comm -13 <(nix show-config | grep -Po 'experimental-features = \K(.*)' | tr " " "\n" |  sort) <(echo "flakes nix-command" | tr " " "\n"))" ];
+    if has_flake_support;
     then
       if ! has nix_direnv_version || ! nix_direnv_version 2.3.0; then
         source_url "https://raw.githubusercontent.com/nix-community/nix-direnv/2.3.0/direnvrc" "sha256-Dmd+j63L84wuzgyjITIfSxSD57Tx7v51DMxVZOsiUD8="

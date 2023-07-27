@@ -126,7 +126,7 @@ also forward IPsec traffic is to add a rule that looks something like
 this:
 
 ::
-   
+
    iifname $wan ip saddr 10.3.0.0/24 oifname $wan ct state new counter accept;
 
 ``10.3.0.0/24`` is the virtual IP pool out of which an IP was assigned
@@ -139,7 +139,7 @@ nft >= 0.9.1 knows ``meta ipsec exists``, nft >= 0.8.2 knows
 Consequently the rule above becomes:
 
 ::
-   
+
    meta secpath exists iifname $wan ip saddr 10.3.0.0/24 oifname $wan ct state new counter accept;
 
 Failover

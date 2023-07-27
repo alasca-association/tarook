@@ -4,7 +4,7 @@
 .direnv/
 *.kube
 .etc
-.envrc
+.envrc.local
 cloud-configs/
 *.tfstate*
 .idea/

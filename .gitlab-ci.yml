@@ -71,7 +71,17 @@ flake8:
   before_script:
     - poetry install --with ci --sync
   script:
-    - 'python3 -m flake8 --max-line-length 88 --filename="*.py"'
+    - 'python3 -m flake8'
+  stage: lint
+  tags:
+    - docker
+
+pre-commit-hooks:
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  before_script:
+    - poetry install --sync
+  script:
+    - 'SKIP=shellcheck,yamllint,flake8,check-flake pre-commit run --all-files'
   stage: lint
   tags:
     - docker

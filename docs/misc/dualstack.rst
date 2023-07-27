@@ -177,12 +177,12 @@ The environment variables for
 `calico/node <https://docs.projectcalico.org/reference/node/configuration>`__
 have to be adjusted:
 
--  ``IP6=autodetect`` 
-   
+-  ``IP6=autodetect``
+
    -  Calico will detect the
       node’s IPv6 address and use this in its BGP IPv6 config
 
--  ``FELIX_IPV6SUPPORT=true`` 
+-  ``FELIX_IPV6SUPPORT=true``
 
    -  so that Felix knows to program routing and
       iptables for IPv6 as well as for IPv4
@@ -205,7 +205,7 @@ automatically connects to the k8s nodes. This way, the k8s nodes know
 the correct route to the currently active gateway.
 
 .. note::
-   
+
    All gateways think they have a route to the wireguard subnet,
    but only the current LB-master has.
    It is **not possible** to ssh to the secondary gateways **directly**

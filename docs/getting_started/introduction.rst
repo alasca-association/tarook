@@ -6,8 +6,8 @@ scalable and flexible kubeadm-based k8s cluster installation and
 lifecycle-management on top of OpenStack or bare-metal.
 
 .. hint::
-   
-   If you want to get your cluster up and running, the 
+
+   If you want to get your cluster up and running, the
    :doc:`/getting_started/quick-start` is a good place to begin.
 
 **Main Feature Selling Points**
@@ -36,23 +36,23 @@ Architecture Overview
 There are four kinds of host nodes:
 
 .. table::
-   
+
    ====================    ==============================
-   Type                    Short Description                                                                                                                                                                                                                                   
+   Type                    Short Description
    ====================    ==============================
    Frontend Node           The frontend nodes act as entry point to the Kubernetes Cluster.
-                           They are highly available, support load-balancing and act as a firewall.                                                                                                           
+                           They are highly available, support load-balancing and act as a firewall.
    Control Plane Node      The control plane nodes build the k8s control
                            plane manage the (meta-)workers and the Pods in the cluster.
-                           More details can be found in the official 
-                           `k8s docs <https://kubernetes.io/docs/concepts/overview/components/#control-plane-components>`__. 
+                           More details can be found in the official
+                           `k8s docs <https://kubernetes.io/docs/concepts/overview/components/#control-plane-components>`__.
    Meta-Worker             The meta-workers host the management application workload,
                            e.g.  of the :doc:`rook storage solution </managed-services/rook/overview>`
-                           or the prometheus-based monitoring stack (more details soon).                                                  
-   Worker                  The workers host the user application workload.                                                                                                                                                                                                     
+                           or the prometheus-based monitoring stack (more details soon).
+   Worker                  The workers host the user application workload.
    ====================    ==============================
 
-   
+
 .. note::
 
    A control plane node can also act as a frontend node.
@@ -86,5 +86,3 @@ be up with 3 control plane nodes, one can fail without problem.
 With two out, the last one will stop working because it does not know if
 this is just a network partitioning.
 Five nodes can handle two failed nodes.
-
-
