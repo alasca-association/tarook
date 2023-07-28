@@ -1,0 +1,1 @@
+Support the bitnami thanos helm chart - this will create new service names for thanos in k8s

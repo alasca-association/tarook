@@ -38,4 +38,7 @@ monitoring_nvidia_dcgm_exporter_helm_version: ""  # if not specified, latest
 monitoring_alertmanager_replicas: 1
 
 monitoring_allow_external_rules: false
+
+monitoring_thanos_objectstorage_container_name: "managed-k8s-monitoring-thanos-data"
+monitoring_thanos_objectstorage_config_file: ""
 ...
