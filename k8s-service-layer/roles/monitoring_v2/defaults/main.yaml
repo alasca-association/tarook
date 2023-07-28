@@ -51,4 +51,12 @@ monitoring_grafana_cpu_request: "100m"
 
 monitoring_prometheus_persistent_storage_class: ""
 monitoring_prometheus_persistent_storage_resource_request: "50Gi"
+
+# If true, add blackbox-exporter to test basic internet connectivity
+monitoring_internet_probe: false
+# List of hosts to probe. Override in config.toml
+monitoring_internet_probe_targets: []
+monitoring_blackbox_version: "7.0.0"
+
+fluxcd_namespace: "k8s-svc-flux-system"
 ...
