@@ -14,6 +14,7 @@
 #masters = 3
 #workers = 3
 #worker_flavors = ["L", "M", "L"]
+#bucket_names = []
 
 # if set to true one must set proper values for the "azs" array according to the cloud in use
 #enable_az_management = false

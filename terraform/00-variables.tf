@@ -226,4 +226,10 @@ variable "monitoring_manage_thanos_bucket" {
   description = "Create an object storage container for thanos."
 }
 
+variable "bucket_names" {
+  type = list(string)
+  default = []
+  description = "Create object storage buckets."
+}
+
 # ANCHOR_END: terraform_variables
