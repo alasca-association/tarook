@@ -13,9 +13,6 @@ submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/yaook/k8s.git}"
 submodule_wg_user_name="wg_user"
 submodule_wg_user_git="${MANAGED_K8S_WG_USER_GIT:-git@gitlab.cloudandheat.com:lcm/wg_user}"
 
-submodule_ch_role_users_repo_name="ch-role-users"
-submodule_ch_role_user_git="${MANAGED_CH_ROLE_USER_GIT:-git@gitlab.cloudandheat.com:operations/ansible-roles/ch-role-users.git}"
-
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     if [ ! -d "$submodule_managed_k8s_name" ]; then
         if [ "${MANAGED_K8S_LATEST_RELEASE:-true}"  == "true" ]; then
@@ -60,25 +57,6 @@ if [ "${WG_COMPANY_USERS:-true}" == "true" ]; then
     else
         run git clone "$submodule_wg_user_git" "$submodule_base/$submodule_wg_user_name"
     fi
-fi
-
-# Add the Cloud&Heat cah-role-users repository as submodule
-if [ "${SSH_COMPANY_USERS:-true}" == "true" ]; then
-  if [ "$(git rev-parse --is-inside-work-tree)" == "true" ]; then
-        if [ -d "$submodule_ch_role_users_repo_name" ]; then
-            run git mv "$submodule_ch_role_users_repo_name" "$submodule_base/$submodule_ch_role_users_repo_name"
-        else
-            if [ ! -d "$submodule_base/$submodule_ch_role_users_repo_name" ]; then
-                run git submodule add "$submodule_ch_role_user_git" "$submodule_base/$submodule_ch_role_users_repo_name"
-            else
-                pushd "$cluster_repository/$submodule_base/$submodule_ch_role_users_repo_name" > /dev/null
-                run git remote set-url origin "$submodule_ch_role_user_git"
-                popd > /dev/null
-            fi
-        fi
-  else
-    run git clone "$submodule_ch_role_user_git" "$submodule_base/$submodule_ch_role_users_repo_name"
-  fi
 fi
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then

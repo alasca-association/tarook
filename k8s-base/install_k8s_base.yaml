@@ -87,17 +87,6 @@
     tags: k8s-global-monitoring  # ToDo: find better tag
     when: k8s_global_monitoring_enabled
 
-- name: Rollout company users
-  hosts: k8s_nodes
-  gather_facts: true
-  tasks:
-  - name: Rollout company users
-    when: cah_users_rollout
-    ansible.builtin.include_role:
-      name: ch-role-users
-    tags:
-    - ch-role-users
-
 - name: Prepare the k8s nodes
   hosts: k8s_nodes
   gather_facts: true
