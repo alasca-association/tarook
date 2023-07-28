@@ -34,13 +34,6 @@
   - role: vault-onboarded
     tags: vault-onboarded
 
-- name: Disable SELinux
-  hosts: frontend
-  roles:
-  - role: disable_selinux
-    tags: disable_selinux
-    when: ansible_os_family == 'RedHat'
-
 - name: Harden SSH
   hosts: frontend
   become: true

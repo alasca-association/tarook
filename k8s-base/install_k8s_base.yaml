@@ -38,13 +38,6 @@
   - role: vault-onboarded
     tags: vault-onboarded
 
-- name: Disable SELinux
-  hosts: k8s_nodes
-  roles:
-  - role: disable_selinux
-    tags: disable_selinux
-    when: ansible_os_family == 'RedHat'
-
 - name: Harden SSH
   hosts: k8s_nodes
   become: true
