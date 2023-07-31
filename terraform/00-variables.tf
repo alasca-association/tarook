@@ -5,11 +5,6 @@ variable "cluster_name" {
   default = "managed-k8s"
 }
 
-variable "haproxy_ports" {
-  type = list(number)
-  default = [30000, 30060]
-}
-
 variable "subnet_cidr" {
   type = string
   default = "172.30.154.0/24"
@@ -24,11 +19,6 @@ variable "subnet_v6_cidr" {
 variable "dualstack_support" {
   description = "If set to true, dualstack support related resources will be (re-)created"
   type = bool
-}
-
-variable "ssh_cidrs" {
-  type    = list(string)
-  default = ["0.0.0.0/0"]
 }
 
 variable "public_network" {
