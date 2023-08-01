@@ -9,6 +9,7 @@ Welcome to Yaook k8s' documentation!
    getting_started/introduction
    Quick Start: How to Deploy a yk8s Cluster <getting_started/quick-start>
    getting_started/faq
+   releasenotes
 
 .. toctree::
    :maxdepth: 2

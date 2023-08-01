@@ -8,9 +8,10 @@ repository. For general information please refer to the
 pre-commit-hooks
 ----------------
 This repository contains pre-commit hooks to validate the linting stage of our
-CI (except ansible-lint) before committing. To use is, install [pre-commit]
-(https://pre-commit.com) (if you use Nix flakes, it is automatically installed
-for you) and then run `pre-commit install` to enable the hooks in the repo (if
+CI (except ansible-lint) before committing. To use this, install
+`pre-commit <https://pre-commit.com>`__
+(if you use Nix flakes, it is automatically installed
+for you) and then run ``pre-commit install`` to enable the hooks in the repo (if
 you use direnv, they are automatically enabled for you).
 
 Disruption
@@ -97,7 +98,7 @@ Command module usage
    - name: Get node info
      command:
      args:
-       argv: ["kubectl", "describe", "node", "{{ inventory_hostname }}"
+       argv: ["kubectl", "describe", "node", "{{ inventory_hostname }}"]
 
 **Not correct**
 
@@ -211,3 +212,70 @@ Use jsonencode in templates when writing YAML
    or ``00:01``), unexpected effects can occur. ``jsonencode()`` will wrap
    the ``some_subnet_id`` in quotes and also take care of any necessary
    escaping.
+
+.. _coding-guide.towncrier:
+
+Creation of release notes
+-------------------------
+
+.. attention::
+
+   No direct editing of the CHANGELOG-file!
+
+We use `towncrier <https://github.com/twisted/towncrier>`__ for
+the management of our release notes. Therefore developers must adhere to some
+conventions.
+
+- For every MR you need to place a file called
+  ``<ticket-ID>.<type>[.BREAKING][.<whatever-you-want>]`` into ``/docs/_releasenotes``.
+  The content of the file is the actual release note.
+
+Currently we use the following types:
+
+.. table::
+
+   ============================= ===================================
+   type                          description
+   ============================= ===================================
+   ``feature`` / added           new feature introduced
+   ``changed`` / updated         old functionality changed
+   ``fix`` ed / bugfixes         any bugfixes
+   ``removal`` and deprecations  soon-to-be-removed and removed features
+   ``docs``                      changes in the documentation
+   ``security``                  security patches
+   ``chore``                     behind the scenes stuff
+   ``misc``                      everything not needing a description
+                                 (even if there is content it's not written
+                                 in the releasenotes-file)
+   ============================= ===================================
+
+**Breaking changes**
+
+   have to be indicated using ``BREAKING`` like seen above
+
+**No issue related to the MR**
+
+   use ``+`` as ``<ticket-id>``
+
+**Nothing to add to releasenotes**
+
+   name your file ``+.misc.<random>``, this will not provide an entry in the releasenotes
+
+So the following file-names would be valid examples:
+
+.. code:: none
+
+   123.feature
+   123.feature.addedsomethingdifferent
+   12.docs.rst
+   +.misc
+   +something.chore.rst
+   99.feature.BREAKING.rst
+   100.fix.BREAKING.idestroyedeverything.rst
+
+The content in the file can be formated using rst-syntax. Headlines are not allowed.
+For further informations see the
+`towncrier docu <https://towncrier.readthedocs.io/en/stable/tutorial.html#creating-news-fragments>`__.
+
+Try to keep it short (see `keepachangelog <https://keepachangelog.com/en/1.1.0/>`__) and provide
+further information in the related issue/MR.
