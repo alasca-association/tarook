@@ -1,7 +1,7 @@
 yk8s - Introduction
 ===================
 
-This project uses Ansible to provide a customizable, highly available,
+This project uses mostly Ansible to provide a customizable, highly available,
 scalable and flexible kubeadm-based k8s cluster installation and
 lifecycle-management on top of OpenStack or bare-metal.
 
@@ -12,14 +12,16 @@ lifecycle-management on top of OpenStack or bare-metal.
 
 **Main Feature Selling Points**
 
-* can be deployed on OpenStack and on bare metal
-* on OpenStack, self-developed Load-Balancing-as-a-Service solution (no Octavia)
+* Can be deployed on OpenStack or on bare metal
+* On OpenStack, self-developed Load-Balancing-as-a-Service solution (no Octavia)
 * Nvidia GPU and vGPU Support
-* Prometheus-based Monitoring Stack
+* Prometheus-based holistic Monitoring Stack
 * Rook-based Ceph Storage
 * NGINX Ingress Controller
 * Cert-Manager
 * Network Policies Support
+* etcd-backups
+* Flux support
 
 Architecture Overview
 ---------------------
@@ -64,7 +66,7 @@ Frontend Nodes
 ^^^^^^^^^^^^^^
 
 Frontend nodes are the only entry-points into the private network because
-they are the only ones holding floating IPs. They do also act as SSH
+they are the only ones holding floating IPs. They may also act as SSH
 jumphosts. Frontend nodes are made redundant via
 `keepalived <https://keepalived.readthedocs.io/en/latest/index.html>`__.
 Each frontend node hosts an instance of
@@ -73,7 +75,7 @@ HAProxy acts as a load-balancing endpoint for the k8s API server.
 An extra network port is used to hold both, the private and the public
 virtual IP (VIP). As a health check, a script queries the ``/healthz``
 resource of HAProxy.
-Both services run in docker containers for isolation.
+Both services run in containers for isolation.
 However, they might be jailed by ``systemd`` in the future instead.
 
 Control Plane Nodes

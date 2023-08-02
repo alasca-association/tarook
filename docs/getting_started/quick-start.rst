@@ -1,7 +1,7 @@
 Quick Start Guide
 =================
 
-If you want to create a yk8s cluster on OpenStack, follow the following
+If you want to create a yaook/k8s cluster on OpenStack, follow the following
 steps. A bare-metal yk8s cluster requires further preparations.
 
 Commands are assumed to be executed at the top level of the :doc:`/concepts/cluster-repository`,
@@ -35,13 +35,13 @@ If you are having problems, please visit our :doc:`FAQ </getting_started/faq>`.
          ``ch-k8s-lbaas.shared_secret`` secret.
 
 5. :ref:`Initialize the Vault secret store. <initialization.initialize-vault-for-a-development-setup>`
-6. Deploy cluster by executing the :ref:`apply.sh <actions-references.applysh>` script.
+6. Deploy cluster by executing the :ref:`apply-all.sh <actions-references.applysh>` script.
 
    .. code:: console
 
       $ ./managed-k8s/actions/apply.sh
 
-7. Get yourself a hot beverage and joyfully watch as your yk8s cluster
+7. Get yourself a hot beverage and joyfully watch as your yaook/k8s cluster
    gets created and tested.
 
 
