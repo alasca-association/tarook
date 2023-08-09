@@ -1,16 +1,32 @@
-# Pipelines run on devel/stable branch and merge requests
+variables:
+  YAOOK_K8S_RELEASE_BRANCH_PREFIX: release/v
+  YAOOK_K8S_RELEASE_PREPARE_BRANCH_PREFIX: release-prepare/v
+  YAOOK_K8S_RELEASE_HOTFIX_BRANCH_PREFIX: hotfix/
+  YAOOK_K8S_DEFAULT_BRANCH: devel
+
+  REGEX_RELEASE_BRANCH_PREFIX: /^release\/v\S+$/
+  REGEX_RELEASE_PREPARE_BRANCH_PREFIX: /^release-prepare\/v\S+$/
+  REGEX_RELEASE_HOTFIX_BRANCH_PREFIX: /^hotfix\/\S+$/
+
+# Pipelines run on devel branch, release-(prepare)-branches, hotfix-branches and merge requests
 workflow:
   rules:
-    - if: $CI_COMMIT_REF_NAME == 'devel'
-    - if: $CI_COMMIT_REF_NAME == 'stable'
+    - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_HOTFIX_BRANCH_PREFIX'
     - if: $CI_MERGE_REQUEST_EVENT_TYPE
+
+# always lint
+.default_lint_rules:
+  rules:
+    - when: on_success
 
 stages:
 - lint
-- pages
 - spawn-cluster
 - cluster-upgrades
-- deploy
+- release
 
 tflint:
   image:
@@ -21,6 +37,8 @@ tflint:
     - tflint --chdir=terraform/
   tags:
     - docker
+  rules:
+    - !reference [.default_lint_rules, rules]
 
 shellcheck:
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/koalaman/shellcheck-alpine:v0.9.0"
@@ -29,6 +47,8 @@ shellcheck:
     - "find -iname '*.sh' '!' -ipath './jsonnet-sources/*/vendor/**' '!' -ipath './.git/**' -print0 | xargs -0 -- shellcheck -Calways"
   tags:
     - docker
+  rules:
+    - !reference [.default_lint_rules, rules]
 
 yamllint:
   stage: lint
@@ -37,6 +57,8 @@ yamllint:
   image: registry.gitlab.com/pipeline-components/yamllint:latest
   script:
     - yamllint .
+  rules:
+    - !reference [.default_lint_rules, rules]
 
 detect-vault-image:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
@@ -45,6 +67,8 @@ detect-vault-image:
     - bash ./actions/detect-vault-image.sh
   tags:
     - docker
+  rules:
+    - !reference [.default_lint_rules, rules]
 
 ansible-lint:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
@@ -56,6 +80,8 @@ ansible-lint:
     - "ANSIBLE_ROLES_PATH=./k8s-base/roles:./k8s-managed-services/roles/:./k8s-service-layer/roles:./k8s-base/test-roles/:./k8s-service-layer/test-roles/:./k8s-managed-services/test-roles ansible-lint -c ci/lint/ansible-lint-conf --offline --exclude .gitlab-ci.yml --exclude .pre-commit-config.yaml"
   tags:
     - docker
+  rules:
+    - !reference [.default_lint_rules, rules]
 
 flake8:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
@@ -66,6 +92,8 @@ flake8:
   stage: lint
   tags:
     - docker
+  rules:
+    - !reference [.default_lint_rules, rules]
 
 poetry-lock:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
@@ -78,6 +106,8 @@ poetry-lock:
   stage: lint
   tags:
     - docker
+  rules:
+    - !reference [.default_lint_rules, rules]
 
 pre-commit-hooks:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
@@ -91,49 +121,8 @@ pre-commit-hooks:
   stage: lint
   tags:
     - docker
-
-release-note-file-check:
-  stage: lint
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
-  variables:
-    CONFIG_FILE: towncrier.toml
-    SOURCE_BRANCH: origin/${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
-    TARGET_BRANCH: origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
-    COMMIT_MESSAGE: MR-number for releasenote(s) changed
-    COMMIT_FILES: docs/_releasenotes
-  before_script:
-    - poetry install --with ci --sync
-    - git fetch origin "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
-    - |
-      if [ "${CI_MERGE_REQUEST_PROJECT_URL}" = "${CI_MERGE_REQUEST_SOURCE_PROJECT_URL}" ]; then
-        FORK=False
-      else
-        FORK=True
-      fi
-    - git config --global user.name "${GITLAB_USER_NAME}"
-    - git config --global user.email "${GITLAB_USER_EMAIL}"
-  script:
-    - python3 ci/lint/check-releasenote-file.py "${CI_PROJECT_DIR}" "${TARGET_BRANCH}" "${CONFIG_FILE}" "${CI_MERGE_REQUEST_IID}" "${FORK}"
-    - |
-      if [ ${FORK} = "False" ]; then
-        git fetch origin "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
-        git checkout "${SOURCE_BRANCH}"
-        git status
-        CHANGES=$(git diff "${SOURCE_BRANCH}" --name-only -- ${COMMIT_FILES} | wc -l)
-        if [ "${CHANGES}" -gt 0 ]; then
-          echo "committing"
-          git add ${COMMIT_FILES}
-          git commit --amend --no-edit
-          git push --force -o ci.skip "https://gitlab-ci-token:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}" HEAD:"${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
-        fi
-      fi
-  tags:
-    - docker
-  retry: 1
   rules:
-    - if: $CI_MERGE_REQUEST_EVENT_TYPE
-      when: on_success
-    - when: never
+    - !reference [.default_lint_rules, rules]
 
 build-docs-check:
   stage: lint
@@ -149,11 +138,56 @@ build-docs-check:
     paths:
       - public/
   rules:
-    - if: "$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/"
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
       when: never
     - when: on_success
   tags:
     - docker
+
+release-note-file-check:
+  stage: lint
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  variables:
+    CONFIG_FILE: towncrier.toml
+    SOURCE_BRANCH: origin/${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
+    TARGET_BRANCH: origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
+    COMMIT_MESSAGE: MR-number for releasenote(s) changed
+    COMMIT_FILES: docs/_releasenotes
+  before_script:
+    - poetry install --with ci --with docs --sync
+    - git fetch origin "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
+    - |
+      if [ "${CI_MERGE_REQUEST_PROJECT_URL}" = "${CI_MERGE_REQUEST_SOURCE_PROJECT_URL}" ]; then
+        FORK=False
+      else
+        FORK=True
+      fi
+    - git config --global user.name "${GITLAB_USER_NAME}"
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+  script:
+    - python3 ci/lint/check-releasenote-file.py "${CI_PROJECT_DIR}" "${TARGET_BRANCH}" "${CONFIG_FILE}" "${CI_MERGE_REQUEST_IID}" "${FORK}"
+    - towncrier build --version x.x.x --draft
+    - |
+      if [ "${FORK}" = "False" ]; then
+        git fetch origin "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+        git checkout "${SOURCE_BRANCH}"
+        git status
+        CHANGES=$(git diff "${SOURCE_BRANCH}" --name-only -- ${COMMIT_FILES} | wc -l)
+        if [ "${CHANGES}" -gt 0 ]; then
+          echo "committing"
+          git add ${COMMIT_FILES}
+          git commit --amend --no-edit
+          git push --force -o ci.skip "https://gitlab-ci-token:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}" HEAD:"${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+        fi
+      fi
+  tags:
+    - docker
+  retry: 1
+  rules:
+    # run only for MRs on devel
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+      when: on_success
+    - when: never
 
 .prepare_spawn_test_cleanup_k8s_cluster:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
@@ -430,13 +464,11 @@ containerd-k8s-upgrade:
   environment:
     name: spawn-cluster
   rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: never
-    - if: $CI_COMMIT_REF_NAME == 'devel'
-      when: never
-    - if: $CI_COMMIT_REF_NAME == 'stable'
-      when: never
-    - when: on_success
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      when: on_success
+    - when: never
   extends: .test_upgrade_path_k8s_cluster
   stage: cluster-upgrades
   retry: 2
@@ -456,13 +488,11 @@ containerd-k8s-upgrade:
 # Manually spawn a cluster and test the k8s upgrade path (w/ calico)
 containerd-k8s-upgrade-manual:
   rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: manual
-    - if: $CI_COMMIT_REF_NAME == 'devel'
-      when: manual
-    - if: $CI_COMMIT_REF_NAME == 'stable'
-      when: manual
-    - when: never
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      when: never
+    - when: manual
   extends: containerd-k8s-upgrade
   allow_failure: true
   retry: 0
@@ -502,7 +532,7 @@ containerd-manual:
   retry: 0
 
 pages:
-  stage: pages
+  stage: release
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
   before_script:
     - poetry install --with docs --sync
@@ -513,8 +543,92 @@ pages:
     paths:
       - public/
   rules:
-    - if: "$CI_COMMIT_REF_NAME =~ /^(devel|stable)$/"
+    # run only on release-branches
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
       when: on_success
     - when: never
   tags:
     - docker
+
+tag-release:
+  stage: release
+  tags:
+    - docker
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  ## if you change the project wide setting back to GIT_STRATEGY=fetch keep in mind this jobs needs
+  ## to be run with GIT_STRATEGY=clone
+  # variables:
+  #   GIT_STRATEGY: clone
+  script:
+    - YAOOK_K8S_BUILD_VERSION=$(cat ./version)
+    - |
+      if echo "$CI_COMMIT_BRANCH" | grep -F "${YAOOK_K8S_RELEASE_PREPARE_BRANCH_PREFIX}"; then
+        if echo "${YAOOK_K8S_BUILD_VERSION: -2}" | grep -qE '.0'; then
+          # tag with -rc.<buildnr>
+          echo "This is a major or minor release, I will tag that as a release candidate.";
+          YAOOK_K8S_BUILD_VERSION="${YAOOK_K8S_BUILD_VERSION}-rc"
+          git fetch --all --tags
+          last_tag=$(git tag -l --sort=-version:refname "*${YAOOK_K8S_BUILD_VERSION}*" | head -n1)
+          rc_value=${last_tag##*.}; rc_value=${rc_value:-"-1"}
+          rc_value=$((rc_value + 1))
+          YAOOK_K8S_BUILD_VERSION=$YAOOK_K8S_BUILD_VERSION.$rc_value
+        fi
+      fi
+      echo "version: ${YAOOK_K8S_BUILD_VERSION}"
+    - git config --global user.name "${GITLAB_USER_NAME}"
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+    - git remote set-url origin https://gitlab-ci-token:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
+    # tag with v$Major.$Minor.$Patch (note the "v"!)
+    # - git tag -a "v${YAOOK_K8S_BUILD_VERSION}" -m "Version v${YAOOK_K8S_BUILD_VERSION}"
+    # - git push origin "v${YAOOK_K8S_BUILD_VERSION}"
+  rules:
+    # run only on release and YAOOK_K8S_RELEASE_PREPARE_BRANCH-branches
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX || $CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      when: on_success
+    - when: never
+
+merge-to-release-branch:
+  stage: release
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  ## if you change the project wide setting back to GIT_STRATEGY=fetch keep in mind this jobs needs
+  ## to be run with GIT_STRATEGY=clone
+  # variables:
+  #   GIT_STRATEGY: clone
+  before_script:
+    - git config --global user.name "${GITLAB_USER_NAME}"
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+    - git remote set-url origin https://gitlab-ci-token:"${PUSH_TOKEN}"@"${CI_SERVER_HOST}"/"${CI_PROJECT_PATH}".git
+    - git checkout -b "${CI_COMMIT_BRANCH}"
+  script:
+    - YAOOK_K8S_BUILD_VERSION=$(cat ./version)
+    - cat ./version
+    - |
+      BRANCH_NAME="${YAOOK_K8S_RELEASE_BRANCH_PREFIX}${YAOOK_K8S_BUILD_VERSION%.*}"
+      if echo "${YAOOK_K8S_BUILD_VERSION: -2}" | grep -qE '.0'; then
+        echo "This is a major or minor release, I will create a new release-branch ${BRANCH_NAME}."
+        git checkout -b "${BRANCH_NAME}" origin/"${CI_COMMIT_BRANCH}"
+        git push --set-upstream origin "${BRANCH_NAME}"
+      else
+        echo "This is a fix release, I will merge it in the last release-branch ${BRANCH_NAME}"
+        git fetch origin ${BRANCH_NAME}
+        git checkout "${BRANCH_NAME}"
+        git merge origin/"${CI_COMMIT_BRANCH}"
+        git push
+      fi
+    - git checkout "${CI_COMMIT_BRANCH}"
+    - echo "new release ${YAOOK_K8S_BUILD_VERSION}" > docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"  # place a releasenote (for MR to devel)
+    - git add docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"
+    - git commit -m "Trigger MR to devel for "${CI_COMMIT_BRANCH}" of ${YAOOK_K8S_BUILD_VERSION}" --allow-empty
+    - |
+      git push -o ci.skip --set-upstream origin "${CI_COMMIT_BRANCH}" \
+        -o merge_request.create -o merge_request.target="${YAOOK_K8S_DEFAULT_BRANCH}" -o merge_request.label="Release" \
+        -o merge_request.title="Version bump for ${CI_COMMIT_BRANCH}" -o merge_request.remove_source_branch
+  needs: ["tag-release"]
+  rules:
+    # run only on YAOOK_K8S_RELEASE_PREPARE_BRANCH-branches
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      when: delayed
+      # it's not possible to use a variable here (https://docs.gitlab.com/ee/ci/variables/where_variables_can_be_used.html)
+      # but we can manually start the job earlier, if wanted
+      start_in: 1 week
+    - when: never
