@@ -115,7 +115,7 @@ cephClusterSpec:
   labels:
 # Workaround as we can't directly overwrite the created ServiceMonitors
 # persistently currently: https://github.com/rook/rook/issues/9618
-{% if k8s_monitoring_enabled | bool and monitoring_common_labels is defined | default(False) %}
+{% if k8s_monitoring_enabled | bool and monitoring_common_labels | default(False) %}
     all:
 {% for label_key, label_value in monitoring_common_labels.items() %}
       {{ label_key | to_json }}: {{ label_value | to_json }}
