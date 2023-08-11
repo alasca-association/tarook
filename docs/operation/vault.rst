@@ -357,7 +357,7 @@ prerequisites are necessary:
 -  Case 1: Migrating from a development or other Vault
 
    -  The cluster has been deployed or migrated to use another Vault
-      (the *soucre Vault*). This can be the development Vault setup
+      (the *source Vault*). This can be the development Vault setup
       provided with yaook/k8s.
 
    -  The *source Vault* instance uses Raft.
