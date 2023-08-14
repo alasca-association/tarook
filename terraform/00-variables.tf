@@ -42,7 +42,7 @@ variable "default_worker_image_name" {
 
 variable "gateway_image_name" {
   type    = string
-  default = "Debian 11 (bullseye)"
+  default = "Debian 12 (bookworm)"
 }
 
 variable "gateway_flavor" {

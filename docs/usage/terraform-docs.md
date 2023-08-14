@@ -71,7 +71,7 @@ No modules.
 | dualstack\_support | If set to true, dualstack support related resources will be (re-)created | `bool` | n/a | yes |
 | enable\_az\_management | If set to false, the availability zone of instances will not be managed. This is useful in CI environments if the Cloud Is Full. | `bool` | `true` | no |
 | gateway\_flavor | n/a | `string` | `"XS"` | no |
-| gateway\_image\_name | n/a | `string` | `"Debian 11 (bullseye)"` | no |
+| gateway\_image\_name | n/a | `string` | `"Debian 12 (bookworm)"` | no |
 | gateway\_root\_disk\_volume\_size | If 'create\_root\_disk\_on\_volume=true' and the gateway flavor does not specify a disk size, the root disk volume will have this size. | `number` | `10` | no |
 | gateway\_root\_disk\_volume\_type | If 'create\_root\_disk\_on\_volume=true', set the volume type of the root disk volume for Gateways. Can't be configured separately for each instance | `string` | `""` | no |
 | haproxy\_ports | n/a | `list(number)` | <pre>[<br>  30000,<br>  30060<br>]</pre> | no |

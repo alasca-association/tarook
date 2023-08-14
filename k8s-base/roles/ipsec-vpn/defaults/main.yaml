@@ -18,7 +18,7 @@ ipsec_packages:
 - libcharon-extra-plugins
 - libstrongswan-extra-plugins
 
-strongswan_service: '{{ (ansible_distribution_release == "bullseye") | ternary("strongswan", "strongswan-swanctl") }}'
+strongswan_service: '{{ (ansible_distribution_release in ["bullseye", "bookworm"]) | ternary("strongswan", "strongswan-swanctl") }}'
 
 # NOTE:
 # This is a pragmatic workaround. The k8s API configuration has been moved
