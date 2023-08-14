@@ -1,0 +1,4 @@
+Fix the vault.sh script
+
+The script will stop if a config.hcl file already exists.
+This can be avoided with a prior existence check.
