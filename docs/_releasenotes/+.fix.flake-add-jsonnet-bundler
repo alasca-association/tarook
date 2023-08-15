@@ -1,0 +1,1 @@
+Added a missing dependency for monitoring_thanos_v1 to flake.nix
