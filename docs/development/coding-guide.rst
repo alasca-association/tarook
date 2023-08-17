@@ -237,14 +237,22 @@ Currently we use the following types:
    ============================= ===================================
    type                          description
    ============================= ===================================
-   ``feature`` / added           new feature introduced
-   ``changed`` / updated         old functionality changed
-   ``fix`` ed / bugfixes         any bugfixes
-   ``removal`` and deprecations  soon-to-be-removed and removed features
-   ``docs``                      changes in the documentation
+   ``feature``                   new feature introduced
+   ``changed``                   old functionality changed/updated
+   ``fix``                       any bugfixes
+   ``removal``                   soon-to-be-removed and removed features
+   ``docs``                      any changes in the documentation
    ``security``                  security patches
-   ``chore``                     behind the scenes stuff
-   ``misc``                      everything not needing a description
+   ``chore``                     updating grunt tasks etc, no production
+                                 code change, non-user-facing-changes e.g.
+
+                                 - configuration changes (like .gitignore)
+                                 - private methods
+                                 - update dependencies
+                                 - refactoring
+
+   ``misc``                      everything not needing a description and
+                                 not of interest to users
                                  (even if there is content it's not written
                                  in the releasenotes-file)
    ============================= ===================================
