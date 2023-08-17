@@ -232,7 +232,9 @@ To initialize a **local** Vault instance for **development purposes**, do the fo
 
 3. Run ``./managed-k8s/tools/vault/init.sh``
 
-4. Run ``./managed-k8s/tools/vault/mkcluster-root.sh devcluster``. Note that ``devcluster``
+4. Run ``./managed-k8s/tools/vault/mkcluster-root.sh devcluster`` if you are starting
+   with a newly created cluster. If you are migrating an old cluster see
+   :ref:`here <vault.migrating-an-existing-cluster-to-vault>`. Note that ``devcluster``
    must be the same as the ``cluster_name`` set in the ``config.toml``
    in the ``[vault]`` section.
 
