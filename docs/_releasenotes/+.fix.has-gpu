@@ -1,0 +1,10 @@
+Fix non-gpu clusters
+
+For non-gpu clusters, the roles containerd and kubeadm-join would fail,
+because the variable has_gpu was not defined. This commit changes the
+order of the condition, so has_gpu is only checked if gpu support is
+enabled for the cluster.
+
+This is actually kind of a workaround for a bug in Ansible. has_gpu
+would be set in a dependency of both roles, but Ansible skips
+dependencies if they have already been skipped earlier in the play.
