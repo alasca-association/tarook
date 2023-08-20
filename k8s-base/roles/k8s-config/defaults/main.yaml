@@ -10,10 +10,7 @@ k8s_network_service_subnet_v6: fdff:3::/108
 k8s_network_bgp_worker_as: 64512
 k8s_network_bgp_gateway_as: 65000
 k8s_network_calico_ipipmode: "Never"
-k8s_cri_url: "{{ {
-  'containerd': 'unix:///var/run/containerd/containerd.sock',
-  'docker': 'unix:///var/run/dockershim.sock',
-}[container_runtime] }}"
+k8s_cri_url: 'unix:///var/run/containerd/containerd.sock'
 
 supported_k8s_versions:
   - '1.24'

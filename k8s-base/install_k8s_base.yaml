@@ -181,7 +181,6 @@
   # of calico – but only when using containerd, go figure!
   - name: Restart containerd
     when:
-    - container_runtime == 'containerd'
     - install_status == 'k8s_not_installed'
     become: true
     ansible.builtin.systemd:
@@ -215,7 +214,6 @@
   # of calico – but only when using containerd, go figure!
   - name: Restart containerd
     when:
-    - container_runtime == 'containerd'
     - install_status == 'k8s_not_installed'
     become: true
     ansible.builtin.systemd:

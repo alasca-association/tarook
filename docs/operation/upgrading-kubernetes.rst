@@ -25,36 +25,6 @@ General procedure
 Upgrading specific versions
 ---------------------------
 
-Upgrading to 1.18.x (from 1.17.x or 1.18.x)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-1. Pick the version to upgrade to. Ideally, this is the most recent
-   1.18.x release. In this example, we’ll use 1.18.1.
-
-2. Execute the upgrade playbook from within the cluster repository:
-
-   .. code:: console
-
-      $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.18.1
-
-3. Once the upgrade executed successfully, update your ``config.toml``
-   to point to the new k8s version:
-
-   .. code:: toml
-
-      [kubernetes]
-      version="1.18.1"
-
-Upgrade to Kubernetes v1.24
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Prior** to the upgrade to Kubernetes v1.24, one must migrate to use
-containerd as CRI. This migration has been automated.
-
-If you have docker configured as CRI, please have a look at
-:doc:`the migration documentation </operation/migrate-docker-containerd>`
-for information on how to migrate.
-
 Skip Intermittent Cluster Health Verification
 ---------------------------------------------
 

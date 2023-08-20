@@ -184,9 +184,7 @@ cluster to one as usual via:
 
 .. note::
 
-   If you’re using docker as CRI, you **must**
-   :doc:`migrate to containerd </operation/migrate-docker-containerd>`
-   in advance.
+   If you’re using docker as CRI, you **must** migrate to containerd in advance.
 
 Further information are given in the
 :doc:`Upgrading Kubernetes documentation </operation/upgrading-kubernetes>`.
@@ -196,8 +194,7 @@ Implement automated docker to containerd migration
 
 A migration path to change the container runtime on each node of a
 cluster from docker to containerd has been added. More information about
-this can be found in the
-:doc:`documentation </operation/migrate-docker-containerd>`.
+this can be found in the documentation.
 
 Drop support for kube-router
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
