@@ -1,5 +1,10 @@
 ---
 - name: Configure IPSec and related services
+  ansible.builtin.include_role:
+    name: passwordstore
+  when: ipsec_enabled
+
+- name: Configure IPSec and related services
   ansible.builtin.include_tasks: configure_ipsec.yaml
   when: ipsec_enabled
 
