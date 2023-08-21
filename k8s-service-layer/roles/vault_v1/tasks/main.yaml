@@ -138,6 +138,7 @@
 
 - name: Add monitoring
   ansible.builtin.import_tasks: monitoring.yaml
+  when: "{{ k8s_monitoring_enabled | bool }}"
 
 - name: Add backups
   when: yaook_vault_enable_backups

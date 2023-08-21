@@ -1,0 +1,3 @@
+Fix vault for clusters without prometheus
+
+Previously, the vault role would always try to create ServiceMonitors, which would fail without Prometheus' CRD. This change makes the creation dependent on whether monitoring is enabled or not.
