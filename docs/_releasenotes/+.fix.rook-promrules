@@ -1,0 +1,3 @@
+Fix rook for clusters without prometheus
+
+Previously, the rook cluster chart would always try to create PrometheusRules, which would fail without Prometheus' CRD. This change makes the creation dependent on whether monitoring is enabled or not.

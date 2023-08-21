@@ -9,9 +9,13 @@ for the first time.
 
 .. tip::
 
-   It is recommended to use a local (uncommitted) `direnv <https://direnv.net/>`__
-   ``.envrc`` to have your shell automatically
-   set the required variables.
+   It is recommended to use `direnv <https://direnv.net/>` to automatically
+   set the required variables. The cluster repository contains an ``.envrc``
+   which should be committed and contain all cluster specific settings.
+   It sources `~/.config/yaook-k8s/env` which should contain all user specific
+   settings which apply to all clusters.
+   Additionally, `.envrc.local` is sourced which should not be committed and
+   contain settings which are specific to cluster and user.
 
 .. hint::
 
@@ -32,17 +36,17 @@ minimally (sic!) adjust the following ones:
    -  :ref:`OpenStack Credentials <envirnomental-variables.openstack-credentials>`
    -  SSH Configuration
 
-      -  ``TF_VAR_keypair``
+      -  ``TF_VAR_keypair`` (user specific)
 
    -  VPN Configuration
 
-      -  ``wg_private_key_file``
-      -  ``wg_user``
+      -  ``wg_private_key_file`` (user specific)
+      -  ``wg_user`` (user specific)
 
 -  If you’re deploying on top of Bare Metal:
 
-   -  Disable ``TF_USAGE``
-   -  Disable ``WG_USAGE``
+   -  Disable ``TF_USAGE`` (cluster specific)
+   -  Disable ``WG_USAGE`` (cluster specific)
 
 -  For potentially productive setups, setting
    ``YAOOK_K8S_CA_*_OVERRIDE`` as described in the template is
