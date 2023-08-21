@@ -15,7 +15,7 @@ toolbox:
 
 monitoring:
   enabled: {{ k8s_monitoring_enabled | bool }}
-  createPrometheusRules: true
+  createPrometheusRules: {{ k8s_monitoring_enabled | bool }}
   rulesNamespaceOverride: "{{ rook_namespace }}"
 
 clusterName: "{{ rook_cluster_name }}"
