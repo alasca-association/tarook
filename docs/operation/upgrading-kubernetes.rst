@@ -20,40 +20,19 @@ General procedure
    Running or Completed. Pods managed by the customer should also be in
    such states; but if they are not, there’s nothing we can do about it.
 
-3. Execute the upgrade. See below for version-specific information.
-
-Upgrading specific versions
----------------------------
-
-Upgrading to 1.18.x (from 1.17.x or 1.18.x)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-1. Pick the version to upgrade to. Ideally, this is the most recent
-   1.18.x release. In this example, we’ll use 1.18.1.
-
-2. Execute the upgrade playbook from within the cluster repository:
+3. Execute the upgrade playbook from within the cluster repository:
 
    .. code:: console
 
-      $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.18.1
+      $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.x.y
 
-3. Once the upgrade executed successfully, update your ``config.toml``
+4. Once the upgrade executed successfully, update your ``config.toml``
    to point to the new k8s version:
 
    .. code:: toml
 
       [kubernetes]
-      version="1.18.1"
-
-Upgrade to Kubernetes v1.24
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Prior** to the upgrade to Kubernetes v1.24, one must migrate to use
-containerd as CRI. This migration has been automated.
-
-If you have docker configured as CRI, please have a look at
-:doc:`the migration documentation </operation/migrate-docker-containerd>`
-for information on how to migrate.
+      version="1.x.y"
 
 Skip Intermittent Cluster Health Verification
 ---------------------------------------------
