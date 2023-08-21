@@ -22,8 +22,10 @@
           pkgs.jsonnet
           pkgs.terraform
           pkgs.vault
+          pkgs.openssl
           pkgs.wireguard-tools
-          poetry_v1_3_2
+          # poetry_v1_3_2
+          pkgs.poetry
         ];
       };
     });
