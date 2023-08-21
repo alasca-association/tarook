@@ -27,7 +27,6 @@ Additional operating scripts:
 - :ref:`Examples <actions-references.examples>`
 - :ref:`update_inventory.py<actions-references.update_inventorypy>`
 - :ref:`upgrade.sh<actions-references.upgradesh>`
-- :ref:`migrate-docker-containerd.sh<actions-references.migrate-docker-containerdsh>`
 - :ref:`lib.sh<actions-references.libsh>`
 
 .. _actions-references.initsh:
@@ -307,27 +306,6 @@ variable/value pairs from your configuration file are used.
 
 This script can be used to trigger a Kubernetes upgrade. More details
 about that can be found :doc:`here </operation/upgrading-kubernetes>`.
-
-.. _actions-references.migrate-docker-containerdsh:
-
-``migrate-docker-containerd.sh``
---------------------------------
-
-This script can be used to migrate the CRI of all nodes of a cluster
-from docker to containerd. It is a wrapper script for the
-``migrate-docker-to-containerd`` playbook located in
-``k8s-base/migrate-docker-to-containerd.yaml``. More details about this
-procedure can be found in this
-:doc:`dedicated operation document </operation/migrate-docker-containerd>`.
-
-Intermediate cluster health verification tasks can be skipped via
-``-s``. This is not recommended.
-
-Disruption needs to be allowed explicitly.
-
-.. code:: console
-
-   $ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/migrate-docker-containerd.sh [-s]
 
 .. _actions-references.libsh:
 

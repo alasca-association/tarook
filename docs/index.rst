@@ -42,7 +42,6 @@ Welcome to Yaook k8s' documentation!
    operation/resetting-kubernetes
    operation/backups
    operation/snapshots
-   operation/migrate-docker-containerd
    Calico (CNI) <operation/calico>
    Vault secret store <operation/vault>
 
