@@ -42,6 +42,7 @@
           pkgs.wireguard-tools
           # poetry_v1_3_2
           pkgs.poetry
+          pkgs.mob
         ];
       };
     });
