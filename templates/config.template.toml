@@ -611,7 +611,7 @@ use_helm = true
 #thanos_objectstorage_config_path = "{{ ksl_vars_directory }}/../../config/"
 
 # Scrape external targets via blackbox exporter
-# https://github.com/helm/charts/tree/master/stable/prometheus-blackbox-exporter
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
 #internet_probe = false
 
 # Provide a list of DNS endpoints for additional thanos store endpoints.
