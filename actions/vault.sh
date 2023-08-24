@@ -13,8 +13,12 @@ mkdir -p "$vault_dir/config"
 mkdir -p "$vault_dir/data"
 cd "$vault_dir"
 
-# Copy Vault config template
-cp --no-clobber "$code_repository/templates/config.template.hcl" "$vault_dir/config/config.hcl"
+# Copy Vault config template; don't overwrite (--no-clobber); check for existence to avoid stopping here
+# Coreutils v9.2 changed the behaviour of --no-clobber[1].
+# [1] https://github.com/coreutils/coreutils/blob/df4e4fbc7d4605b7e1c69bff33fd6af8727cf1bf/NEWS#L88
+if [ ! -f "$vault_dir/config/config.hcl" ]; then
+    cp --no-clobber "$code_repository/templates/config.template.hcl" "$vault_dir/config/config.hcl"
+fi
 
 # TLS certificate creation
 if [ ! -f "$vault_dir/tls/vault.crt" ]; then

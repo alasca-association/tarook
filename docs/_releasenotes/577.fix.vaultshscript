@@ -1,0 +1,7 @@
+Fix the vault.sh script
+
+The script will stop if a config.hcl file already exists.
+This can be avoided with a prior existence check.
+Coreutils v9.2 changed the behaviour of --no-clobber[1].
+
+[1] https://github.com/coreutils/coreutils/blob/df4e4fbc7d4605b7e1c69bff33fd6af8727cf1bf/NEWS#L88
