@@ -1,0 +1,1 @@
+Docker support has been removed along with k8s versions <1.24, but some places remained dependent on the now unnecessary variable `container_runtime`. This change removes every use of the variable along with the documentation for migrating from docker to containerd.
