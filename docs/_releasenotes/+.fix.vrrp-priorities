@@ -1,0 +1,3 @@
+Change the default VRRP priorities from 150/100/80 to 150/100/50. This
+makes it less likely that two backup nodes attempt to become primary
+at the same time, avoiding race conditions and flappiness.
