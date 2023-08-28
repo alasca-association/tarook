@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import tomllib
+import git
+
+
+def load_types_from_file(config_file: str) -> list:
+    with open(config_file, "rb") as conffile:
+        config = tomllib.load(conffile)
+
+    types = []
+    for type in config['tool']['towncrier']['type']:
+        types.append(type['directory'])
+
+    return types
+
+
+def get_releasenote_files(
+        repository, source_branch: str, target_branch: str) -> list:
+    for remote in repository.remotes:
+        remote.fetch()
+
+    note_files = repository.git.diff(
+        target_branch, source_branch,
+        "--name-only", "--diff-filter=A",
+        "--", "docs/_releasenotes"
+    )
+
+    print(note_files)
+
+    if not note_files:
+        raise RuntimeError("No releasenote file added. \
+            Make sure to provide a file with your MR.")
+
+    files_list = (str(note_files).split("\n"))
+
+    return files_list
+
+
+def split_filename(file: str) -> [str, str]:
+    fname = os.path.basename(file)
+    splitted = fname.split('.')
+    number = splitted[0]
+    type = splitted[1]
+
+    return number, type
+
+
+if __name__ == "__main__":
+
+    print(sys.argv)
+
+    repo_adr = sys.argv[1]
+    source_branch = sys.argv[2]
+    target_branch = sys.argv[3]
+    towncrier_config = sys.argv[4]
+    MR_IID = sys.argv[5]
+
+    repository = git.Repo(repo_adr)
+
+    types = load_types_from_file(towncrier_config)
+    note_files = get_releasenote_files(repository, source_branch, target_branch)
+
+    for file in note_files:
+        number, note = split_filename(file)
+        if note not in types:
+            raise RuntimeError("Releasenote type not supported. Supported types are: ",
+                               types)
+
+        if (number != MR_IID and number != "+"):
+            fname = os.path.basename(file).split('.')
+            dirname = os.path.dirname(file)
+            fname[0] = MR_IID
+            new_base = '.'.join(fname)
+            newpath = os.path.join(dirname, new_base)
+            os.rename(file, newpath)
+            print(fname, newpath)

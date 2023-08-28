@@ -87,20 +87,36 @@ pre-commit-hooks:
   tags:
     - docker
 
-check-for-releasenote:
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3.11"
+release-note-file-check:
   stage: lint
-  needs: []
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  variables:
+    CONFIG_FILE: towncrier.toml
+    SOURCE_BRANCH: origin/${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
+    TARGET_BRANCH: origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
+    COMMIT_MESSAGE: MR-number for releasenote(s) changed
+    COMMIT_FILES: docs/_releasenotes
+
   before_script:
-  - git fetch origin "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
+    - poetry install --with ci --sync
+    - git fetch origin "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
+    - git fetch origin "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
   script:
-  - |-
-    FILES=$(git diff origin/"${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}" --name-only -- docs/_releasenotes | wc -l)
-    if [ $FILES -gt 0 ];then
-      exit 0
-    else
-      exit 1
-    fi
+    - python3 ci/lint/check-releasenote-file.py ${CI_PROJECT_DIR} ${SOURCE_BRANCH} ${TARGET_BRANCH} ${CONFIG_FILE} ${CI_MERGE_REQUEST_IID}
+    - |-
+      git checkout ${SOURCE_BRANCH}
+      CHANGES=$(git diff "${SOURCE_BRANCH}" --name-only -- ${COMMIT_FILES} | wc -l)
+      if [ $CHANGES -gt 0 ];then
+        echo "committing"
+        git config --global user.name "${GITLAB_USER_NAME}"
+        git config --global user.email "${GITLAB_USER_EMAIL}"
+        git add ${COMMIT_FILES}
+        git commit --amend --no-edit
+        git push --force -o ci.skip https://gitlab-ci-token:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH} HEAD:${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
+      else
+        echo "no change, nothing to commit"
+      fi
+  needs: []
   tags:
     - docker
   rules:
