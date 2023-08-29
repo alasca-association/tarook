@@ -24,7 +24,7 @@ Install System Requirements
             experimental-features = nix-command flakes
 
          to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``
-      3. Run ``nix shell`` in this directory to enter the an environment with all requirements available
+      3. Run ``nix shell`` in this directory to enter an environment with all requirements available
          If you use direnv, it will automatically load all requirements once you enter the directory.
 
    .. tab:: Install requirements manually
@@ -76,7 +76,7 @@ Install System Requirements
          <details>
          <summary>Install Terraform</summary>
 
-      Follow `the upstream instructions on installing Terrafrom <https://www.terraform.io/downloads>`__.
+      Follow `the upstream instructions on installing Terraform <https://www.terraform.io/downloads>`__.
 
       .. raw:: html
 
