@@ -9,7 +9,7 @@
 #
 #   1. ~/.config/yaook-k8s/env
 #   2. the next .envrc in parent directories
-#      (vie source_up)
+#      (via source_up)
 #   3. .envrc.local
 #
 # The first can contain user specific variables
@@ -76,7 +76,7 @@ export USE_VAULT_IN_DOCKER=false
 KUBECONFIG="$(pwd)/inventory/.etc/admin.conf"
 export KUBECONFIG
 
-# Optional: Use custom roles that can be droped into the
+# Optional: Use custom roles that can be dropped into the
 # 'cluster_repository/k8s-custom' folder and executed after
 # after initialization through the included main.yaml
 export K8S_CUSTOM_STAGE_USAGE=false
