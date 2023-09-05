@@ -9,4 +9,5 @@ monitoring_internet_probe_targets: []
 monitoring_common_labels: {}
 
 monitoring_blackbox_version: "7.0.0"
+monitoring_scheduling_key: null
 ...
