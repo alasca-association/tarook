@@ -14,11 +14,11 @@ stages:
 
 tflint:
   image:
-    name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/wata727/tflint:latest"
+    name: "ghcr.io/terraform-linters/tflint:v0.47.0"
     entrypoint: ["/bin/sh", "-c"]
   stage: lint
   script:
-    - tflint terraform
+    - tflint --chdir=terraform/
   tags:
     - docker
 
