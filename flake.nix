@@ -20,8 +20,10 @@
           pkgs.jq
           pkgs.moreutils
           pkgs.jsonnet
+          pkgs.jsonnet-bundler
           pkgs.terraform
           pkgs.vault
+          pkgs.openssl
           pkgs.wireguard-tools
           poetry_v1_3_2
         ];
