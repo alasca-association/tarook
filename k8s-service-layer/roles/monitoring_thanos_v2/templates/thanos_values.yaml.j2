@@ -26,12 +26,7 @@ compactor:
         nodeSelectorTerms:
           - matchExpressions:
               - key: "{{ monitoring_scheduling_key }}"
-{% if monitoring_scheduling_value %}
-                operator: 'Equals',
-                value: {{ monitoring_scheduling_value | to_json }},
-{% else %}
-                operator: 'Exists',
-{% endif %}
+                operator: Exists
 {% endif %}
 
 storegateway:
@@ -54,12 +49,7 @@ storegateway:
         nodeSelectorTerms:
           - matchExpressions:
               - key: "{{ monitoring_scheduling_key }}"
-{% if monitoring_scheduling_value %}
-                operator: 'Equals',
-                value: {{ monitoring_scheduling_value | to_json }},
-{% else %}
-                operator: 'Exists',
-{% endif %}
+                operator: Exists
 {% endif %}
 
 query:
@@ -88,12 +78,7 @@ query:
         nodeSelectorTerms:
           - matchExpressions:
               - key: "{{ monitoring_scheduling_key }}"
-{% if monitoring_scheduling_value %}
-                operator: 'Equals',
-                value: {{ monitoring_scheduling_value | to_json }},
-{% else %}
-                operator: 'Exists',
-{% endif %}
+                operator: Exists
 {% endif %}
 
 queryFrontend:
