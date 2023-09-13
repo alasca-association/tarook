@@ -22,6 +22,7 @@ monitoring_prometheus_adapter_release_name: "prometheus-adapter"
 
 monitoring_use_grafana: true
 monitoring_use_thanos: false
+monitoring_use_helm_thanos: true
 
 monitoring_grafana_admin_secret_name: "cah-grafana-admin"
 
@@ -41,4 +42,5 @@ monitoring_allow_external_rules: false
 
 monitoring_thanos_objectstorage_container_name: "managed-k8s-monitoring-thanos-data"
 monitoring_thanos_objectstorage_config_file: ""
+monitoring_thanos_objectstorage_config_path: "{{ ksl_vars_directory }}/../../config/"
 ...
