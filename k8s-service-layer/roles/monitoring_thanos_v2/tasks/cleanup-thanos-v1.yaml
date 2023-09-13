@@ -136,4 +136,16 @@
   loop: "{{ thanos_store_statefulset.resources }}"
   loop_control:
     label: "{{ item.metadata.name }}"
+
+- name: Delete thanos ServiceMonitors
+  kubernetes.core.k8s:
+    state: absent
+    kind: ServiceMonitor
+    api_version: monitoring.coreos.com/v1
+    name: "{{ item }}"
+    namespace: "{{ monitoring_namespace }}"
+  loop:
+  - thanos-compact
+  - thanos-query
+  - thanos-store
 ...
