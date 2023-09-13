@@ -175,8 +175,8 @@
   retries: 60
   delay: 3
 
-- name: Check thanos endpoints
-  when: monitoring_use_thanos | bool
+- name: Check thanos (v1) endpoints
+  when: monitoring_use_thanos | bool and not monitoring_use_helm_thanos | bool
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
@@ -198,6 +198,32 @@
       container: thanos-query
     - job: thanos-store
       container: thanos-store
+    - job: prometheus-stack-kube-prom-thanos-discovery
+      container: thanos-sidecar
+
+- name: Check thanos (v2) endpoints
+  when: monitoring_use_thanos | bool and monitoring_use_helm_thanos | bool
+  kubernetes.core.k8s_exec:
+    namespace: "{{ check_prometheus_scraping_namespace }}"
+    pod: prometheus-test-scraper
+    command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job={{ item.job | to_json }},container={{ item.container | to_json }}}'
+  register: metrics
+  until: |
+    metrics.failed == false and
+    metrics.rc == 0 and
+    metrics.stdout | from_json | json_query('status') == "success" and
+    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  retries: 60
+  delay: 3
+  loop:
+    # Look for both job and container. The thanos-sidecar is to blame because I don't consider 'prometheus-stack-kube-prom-thanos-discovery'
+    # to be a descriptive name for a ServiceMonitor :)
+    - job: thanos-compactor
+      container: compactor
+    - job: thanos-query
+      container: query
+    - job: thanos-storegateway
+      container: storegateway
     - job: prometheus-stack-kube-prom-thanos-discovery
       container: thanos-sidecar
 ...
