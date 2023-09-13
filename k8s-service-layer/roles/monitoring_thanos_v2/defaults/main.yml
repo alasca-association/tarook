@@ -5,7 +5,7 @@ monitoring_use_thanos: false
 
 monitoring_thanos_helm_repo_url: "https://charts.bitnami.com/bitnami"
 monitoring_thanos_chart_ref: "bitnami/thanos"
-monitoring_thanos_chart_version: "12.9.0"
+monitoring_thanos_chart_version: "12.13.3"
 monitoring_thanos_release_name: "thanos"
 
 monitoring_thanos_config_secret_name: "thanos-bucket-config"
