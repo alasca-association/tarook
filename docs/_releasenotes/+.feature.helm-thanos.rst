@@ -1,1 +1,4 @@
-Support the bitnami thanos helm chart - this will create new service names for thanos in k8s
+Support the bitnami thanos helm chart
+
+This will create new service names for thanos in k8s.
+The migration to the bitnami thanos helm chart is triggered by default.
