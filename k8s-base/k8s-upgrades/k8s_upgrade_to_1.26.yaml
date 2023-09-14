@@ -1,4 +1,4 @@
-# This upgrade file is only for the k8s version 1.25.
+# This upgrade file is only for the k8s version 1.26.
 # We keep for every minor update a separate upgrade file
 # to avoid accidental major changes of old upgrade files.
 ---
@@ -207,55 +207,8 @@
     - role: connect-k8s-to-openstack
       when: on_openstack | default(False) | bool
 
-- name: Update Calico (Control Plane)
-  hosts: masters
-  vars_files:
-    - ../vars/disruption.yaml
-    - ../vars/auto_generated_preamble.yaml
-    - ../vars/etc.yaml
-    - ../vars/retries.yaml
-  pre_tasks:
-    - name: Overwrite k8s_version with next_k8s_version
-      ansible.builtin.set_fact:
-        k8s_version: "{{ next_k8s_version }}"
-  roles:
-    - role: calico-control-plane
-      tags:
-        - calico
-        - calico-control-plane
-      when:
-        - k8s_network_plugin == 'calico'
-        - k8s_network_calico_use_tigera_operator | default(False)
-    - role: calico-worker
-      tags:
-        - calico
-        - calico-control-plane
-        - calico-worker
-      when:
-        - k8s_network_plugin == 'calico'
-        - k8s_network_calico_use_tigera_operator | default(False)
-
-- name: Update Calico (Worker)
-  hosts: workers
-  vars_files:
-    - ../vars/disruption.yaml
-    - ../vars/auto_generated_preamble.yaml
-    - ../vars/etc.yaml
-    - ../vars/retries.yaml
-  pre_tasks:
-    - name: Overwrite k8s_version with next_k8s_version
-      ansible.builtin.set_fact:
-        k8s_version: "{{ next_k8s_version }}"
-  roles:
-    - role: calico-worker
-      tags:
-        - calico
-        - calico-worker
-      when:
-        - k8s_network_plugin == 'calico'
-        - not k8s_network_calico_use_tigera_operator | default(False)
-
-- name: Install calico with the tigera operator
+# Note that we're force migrating here
+- name: Update calico with the tigera operator
   hosts: masters
   gather_facts: false
   vars:

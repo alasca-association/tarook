@@ -15,6 +15,7 @@ k8s_cri_url: 'unix:///var/run/containerd/containerd.sock'
 supported_k8s_versions:
   - '1.24'
   - '1.25'
+  - '1.26'
 
 # Minor version of k8s and Calico, e.g., '1.18.9' becomes '1.18'.
 k8s_version_minor: '{{ k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") }}'
@@ -46,6 +47,7 @@ image_version_map:
       csi_livenessprobe: "v2.9.0"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.24.5') }}"
     calico_use_tigera_operator: "{{ k8s_network_calico_use_tigera_operator  | default(False) }}"
+    volume_snapshot_controller: "v6.2.1"
 
   "1.25":
     openstack:
@@ -66,6 +68,29 @@ image_version_map:
       csi_livenessprobe: "v2.9.0"
     calico_version: "{{ k8s_network_calico_custom_version  | default('3.26.1') }}"
     calico_use_tigera_operator: "{{ k8s_network_calico_use_tigera_operator  | default(True) }}"
+    volume_snapshot_controller: "v6.2.1"
+
+  "1.26":
+    openstack:
+      # https://github.com/kubernetes/cloud-provider-openstack/releases/tag/v1.27.1
+      cinder_csi_plugin: "v1.27.1"
+      openstack_cloud_controller_manager: "v1.27.1"
+      # https://github.com/kubernetes-csi/external-attacher/releases/tag/v4.2.0
+      csi_attacher: "v4.3.0"
+      # https://github.com/kubernetes-csi/node-driver-registrar/releases/tag/v2.6.3
+      csi_node_driver_registrar: "v2.8.0"
+      # https://github.com/kubernetes-csi/external-provisioner/releases/tag/v3.4.1
+      csi_provisioner: "v3.5.0"
+      # https://github.com/kubernetes-csi/external-resizer/releases/tag/v1.7.0
+      csi_resizer: "v1.8.0"
+      # https://github.com/kubernetes-csi/external-snapshotter/releases/tag/v6.2.1
+      csi_snapshotter: "v6.2.2"
+      # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.9.0
+      csi_livenessprobe: "v2.10.0"
+    calico_version: "{{ k8s_network_calico_custom_version  | default('3.26.1') }}"
+    calico_use_tigera_operator: true # enforce
+    # https://kubernetes-csi.github.io/docs/snapshot-controller.html
+    volume_snapshot_controller: "v6.2.1"
 
 image_versions: "{{ image_version_map[k8s_version_minor] }}"
 ...

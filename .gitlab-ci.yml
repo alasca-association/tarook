@@ -63,6 +63,7 @@ ansible-lint:
     - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/system_update_nodes.yaml" # Check system update node
       # Check k8s upgrades
     - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.25.yaml"
+    - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.26.yaml"
   tags:
     - docker
 
@@ -393,6 +394,10 @@ build-docs-check:
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.25.11\"}}"'
   - AFLAGS="-t mk8s-ms/monitoring" ./managed-k8s/actions/apply-stage5.sh
     # Retest the cluster
+    # Upgrade cluster to k8s v1.26.8
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.26.8
+    # Update k8s version
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.26.8\"}}"'
   - ./managed-k8s/actions/test.sh
   after_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, after_script]
