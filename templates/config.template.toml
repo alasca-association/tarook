@@ -514,6 +514,10 @@ use_helm = true
 # [0] https://gitlab.com/yaook/k8s/-/issues/436#note_873556688
 #use_thanos = false
 
+# Use the bitnami helm chart to deploy thanos. If use_helm_thanos is false the deployment will be done with the help
+# of the deprecated jsonnet code.
+# use_helm_thanos = false
+
 # Let terraform create an object storage container / bucket for you if `true`.
 # If set to `false` one must provide a value for `thanos_objectstorage_config_file` to configure an external backend.
 # NOTE: If `thanos_objectstorage_config_file` is set, then it (`thanos_objectstorage_config_file`) will take precedence, i.e.,

@@ -1,0 +1,97 @@
+---
+global:
+  storageClass: {{ monitoring_thanos_metadata_volume_storage_class | quote }}
+
+existingObjstoreSecret: {{ monitoring_thanos_config_secret_name | quote }}
+compactor:
+  enabled: true
+  retentionResolutionRaw: {{ monitoring_thanos_retention_resolution_raw | quote }}
+  retentionResolution5m: {{ monitoring_thanos_retention_resolution_5m | quote }}
+  retentionResolution1: {{ monitoring_thanos_retention_resolution_1h | quote }}
+  resources:
+    requests:
+      memory: {{ monitoring_thanos_compact_memory_request | quote }}
+      cpu: {{ monitoring_thanos_compact_cpu_request | quote }}
+    limits:
+      memory: {{ monitoring_thanos_compact_memory_limit | quote }}
+      cpu: {{ monitoring_thanos_compact_cpu_limit | quote }}
+{% if monitoring_scheduling_key %}
+  tolerations:
+    - key: "{{ monitoring_scheduling_key }}"
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: "{{ monitoring_scheduling_key }}"
+                operator: Exists
+{% endif %}
+
+storegateway:
+  enabled: true
+  resources:
+    requests:
+      memory: {{ monitoring_thanos_store_memory_request | quote }}
+      cpu: {{ monitoring_thanos_store_cpu_request | quote }}
+    limits:
+      memory: {{ monitoring_thanos_store_memory_limit | quote }}
+      cpu: {{ monitoring_thanos_store_cpu_limit | quote }}
+{% if monitoring_scheduling_key %}
+  tolerations:
+    - key: "{{ monitoring_scheduling_key }}"
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: "{{ monitoring_scheduling_key }}"
+                operator: Exists
+{% endif %}
+
+query:
+  enabled: true
+  persistence:
+    size: {{ monitoring_thanos_metadata_volume_size }}
+  resources:
+    requests:
+      memory: {{ monitoring_thanos_query_memory_request | quote }}
+      cpu: {{ monitoring_thanos_query_cpu_request | quote }}
+    limits:
+      memory: {{ monitoring_thanos_query_memory_limit | quote }}
+      cpu: {{ monitoring_thanos_query_cpu_limit | quote }}
+  dnsDiscovery:
+    enabled: true
+    sidecarsService: "prometheus-operated"
+    sidecarsNamespace: "{{ monitoring_namespace }}"
+{% if monitoring_scheduling_key %}
+  tolerations:
+    - key: "{{ monitoring_scheduling_key }}"
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: "{{ monitoring_scheduling_key }}"
+                operator: Exists
+{% endif %}
+
+queryFrontend:
+  enabled: false
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+{% if monitoring_common_labels %}
+    labels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+      {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
+...

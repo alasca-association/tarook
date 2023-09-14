@@ -137,21 +137,27 @@ A silly example:
 Thanos
 ------
 
-Thanos is deployed outside of the kube-prometheus-stack helm chart. By
-default, it writes its metrics into a SWIFT object storage container
+`Thanos <https://thanos.io/>`__ is deployed outside of the kube-prometheus-stack helm chart.
+By default, it writes its metrics into a SWIFT object storage container
 that resides in the same OpenStack project.
 
-.. todo::
+We're deploying the `Bitnami Thanos helm chart <https://github.com/bitnami/charts/tree/main/bitnami/thanos>`__
+with adjusted values by default.
+Please refer to its documentation for further details.
 
-   Add more information, e.g., on ``thanos compact``.
+In previous times, Thanos has been deployed via JSONNET.
+You must migrate to the helm chart as soon as possible as the
+JSONNET-based installation method is deprecated and will be dropped very soon.
+The migration is automatically triggered on a subsequent rollout of ``monitoring_v2``.
+If you want to postpone this, you must set the following in your ``config/config.toml``:
 
-.. warning::
+.. code:: toml
 
-   If you want to use application credentials, then you
-   have to disable the thanos monitoring component
-   (``use_thanos = false``) for now. See
-   `here <https://gitlab.com/yaook/k8s/-/issues/436#note_873556688>`__
-   for more context.
+   ...
+   [k8s-service-layer.prometheus]
+   ...
+   use_helm_thanos = false
+   ...
 
 Prometheus Adapter (metrics server)
 -----------------------------------
