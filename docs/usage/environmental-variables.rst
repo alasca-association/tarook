@@ -9,12 +9,12 @@ for the first time.
 
 .. tip::
 
-   It is recommended to use `direnv <https://direnv.net/>` to automatically
+   It is recommended to use `direnv <https://direnv.net/>`__ to automatically
    set the required variables. The cluster repository contains an ``.envrc``
    which should be committed and contain all cluster specific settings.
-   It sources `~/.config/yaook-k8s/env` which should contain all user specific
+   It sources ``~/.config/yaook-k8s/env`` which should contain all user specific
    settings which apply to all clusters.
-   Additionally, `.envrc.local` is sourced which should not be committed and
+   Additionally, ``.envrc.local`` is sourced which should not be committed and
    contain settings which are specific to cluster and user.
 
 .. hint::
