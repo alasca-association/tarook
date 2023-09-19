@@ -9,24 +9,6 @@ Install System Requirements
 
 .. tabs::
 
-   .. tab:: Install requirements using Nix
-
-      `Nix <https://nixos.org>`__ is a declarative package manager
-      which powers NixOS but can also be installed as an additional package manager on any
-      other distribution. This repository contains a flake.nix which references all necessary
-      dependencies which are locked to specific versions so everybody uses an identical environment.
-
-      1. `Install Nix <https://nixos.org/download.html#download-nix>`__
-      2. `Enable flake support <https://nixos.wiki/wiki/Flakes#Permanent>`__ by adding the line
-
-         .. code:: ini
-
-            experimental-features = nix-command flakes
-
-         to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``
-      3. Run ``nix shell`` in this directory to enter an environment with all requirements available
-         If you use direnv, it will automatically load all requirements once you enter the directory.
-
    .. tab:: Install requirements manually
 
       .. raw:: html
@@ -93,6 +75,24 @@ Install System Requirements
       .. raw:: html
 
          </details>
+
+   .. tab:: Install requirements using Nix
+
+      `Nix <https://nixos.org>`__ is a declarative package manager
+      which powers NixOS but can also be installed as an additional package manager on any
+      other distribution. This repository contains a flake.nix which references all necessary
+      dependencies which are locked to specific versions so everybody uses an identical environment.
+
+      1. `Install Nix <https://nixos.org/download.html#download-nix>`__
+      2. `Enable flake support <https://nixos.wiki/wiki/Flakes#Permanent>`__ by adding the line
+
+         .. code:: ini
+
+            experimental-features = nix-command flakes
+
+         to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``
+      3. Run ``nix shell`` in this directory to enter an environment with all requirements available
+         If you use direnv, it will automatically load all requirements once you enter the directory.
 
 We also strongly recommend installing and using:
 
