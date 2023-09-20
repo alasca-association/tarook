@@ -11,7 +11,7 @@ monitoring_thanos_release_name: "thanos"
 monitoring_thanos_config_secret_name: "thanos-bucket-config"
 monitoring_thanos_objectstorage_config_file: ""
 
-monitoring_thanos_objectstorage_container_name: "managed-k8s-monitoring-thanos-data"
+monitoring_thanos_objectstorage_container_name: "{{ cluster_name }}-monitoring-thanos-data"
 
 monitoring_thanos_metadata_volume_size: "10Gi"
 monitoring_thanos_metadata_volume_storage_class: "csi-sc-cinderplugin"

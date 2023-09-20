@@ -1,0 +1,1 @@
+Fixed incorrect templating of Thanos secrets for buckets managed by Terraform and clusters with custom names
