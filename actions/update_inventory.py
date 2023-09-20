@@ -312,6 +312,17 @@ def main():
         tf_config["monitoring_manage_thanos_bucket"] = use_thanos and \
             manage_thanos_bucket
         terraform_helper.deploy_terraform_config(tf_config)
+        # Pass the cluster name to inventory
+        for stage in ["stage2", "stage3", "stage4"]:
+            tf_ansible_inventory_path = (
+                ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES[stage] /
+                "group_vars" / "all" / "cluster.yaml"
+            )
+            dump_to_ansible_inventory(
+                {'cluster_name': tf_config.get("cluster_name", "managed-k8s")},
+                tf_ansible_inventory_path,
+                ""
+            )
 
     # ---
     # VAULT
