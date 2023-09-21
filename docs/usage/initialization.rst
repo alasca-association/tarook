@@ -19,7 +19,7 @@ Install System Requirements
 
       yaook/k8s requires the following packages:
 
-      - `poetry <https://github.com/python-poetry/install.python-poetry.org>`__
+      - `poetry <https://github.com/python-poetry/install.python-poetry.org>`__ > v1.5.0
       - jq
       - moreutils (for ``sponge``)
       - wireguard
