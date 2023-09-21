@@ -154,31 +154,33 @@ serve as your :doc:`cluster repository </concepts/cluster-repository>`:
 
 3. Setup your environment variables:
 
-   1. If not already done:
+   1. User specific variables (if not already exists):
 
       1. Copy the template located at
          ``$somewhere_else/k8s/templates/yaook-k8s-env.template.sh``
-         to ``~/config/yaook-k8s/env/.envrc``.
+         to ``~/.config/yaook-k8s/env``.
 
          .. code:: console
 
-            $ cp $somewhere_else/k8s/templates/yaook-k8s-env.template.sh ~/config/yaook-k8s/env/.envrc
+            $ cp $somewhere_else/k8s/templates/yaook-k8s-env.template.sh ~/.config/yaook-k8s/env
 
       2. Make the **user specific**
          :ref:`minimal changes <envirnomental-variables.minimal-required-changes>`
-         to ``~/config/yaook-k8s/env/.envrc``.
+         to ``~/.config/yaook-k8s/env``.
 
-   2. Copy the template located at
-      :ref:`$somewhere_else/k8s/templates/envrc.template.sh <envirnomental-variables.template>`
-      to ``./.envrc``.
+   2. Cluster specific variables:
 
-      .. code:: console
+      1. Copy the template located at
+         :ref:`$somewhere_else/k8s/templates/envrc.template.sh <envirnomental-variables.template>`
+         to ``./.envrc``.
 
-         $ cp $somewhere_else/k8s/templates/envrc.template.sh ./.envrc
+         .. code:: console
 
-   2. Make the **cluster specific**
-      :ref:`minimal changes <envirnomental-variables.minimal-required-changes>`
-      to ``./.envrc``.
+            $ cp $somewhere_else/k8s/templates/envrc.template.sh ./.envrc
+
+      2. Make the **cluster specific**
+         :ref:`minimal changes <envirnomental-variables.minimal-required-changes>`
+         to ``./.envrc``.
    3. Make sure they have taken effect by running ``direnv allow``.
 
 4. Initialize the cluster repository:
@@ -194,21 +196,14 @@ serve as your :doc:`cluster repository </concepts/cluster-repository>`:
       config exists in the cluster repository yet.
    -  Update ``.gitignore`` to current standards.
 
-5. In the ``[defaults]`` section of the :ref:`ansible configuration
-   file <cluster-configuration.ansible-configuration>`
-   ``./managed-k8s/ansible/ansible.cfg``, set the environment variable
-   ``private_key_file`` to the path of the private key file of the
-   keypair, which in the ``./.envrc`` file was specified by the
-   ``$TF_VAR_keypair`` environment variable.
-
-6. Make sure poetry is up to date (otherwise installing the dependencies might fail),
+5. Make sure poetry is up to date (otherwise installing the dependencies might fail),
    see `here <https://python-poetry.org/docs/#installation>`__
 
-7. Activate the virtual environment with all python dependencies
+6. Activate the virtual environment with all python dependencies
 
    .. note::
 
-      This is handled automatically for you if you use the default .envrc
+      This is handled automatically for you if you use the default ``.envrc``
 
    .. code:: console
 

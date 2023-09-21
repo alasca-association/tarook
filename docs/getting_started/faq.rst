@@ -88,27 +88,14 @@ Troubleshooting
 -  First make sure you can :ref:`manually connect to the host nodes <faq.how-do-i-ssh-into-my-cluster-nodes>`.
 -  You may need to explicitly specify which key Ansible shall use for connections, i.e.
    the private key file corresponding to the OpenStack key pair specified by the
-   environment variable ``TF_VAR_keypair`` in ``./.envrc``.
--  You can do this either
+   environment variable ``TF_VAR_keypair`` in ``~/.config/yaook-k8s/env``.
+-  You can do this by setting the variable ``ansible_ssh_private_key_file`` on the
+   command line via
+   :ref:`the AFLAGS environment variable <envirnomental-variables.behavior-altering-variables>`:
 
+   .. code:: console
 
-   -  in your :ref:`Ansible configuration file <cluster-configuration.ansible-configuration>`
-      ``./managed-k8s/ansible/ansible.cfg`` (recommended):
-
-      .. code:: ini
-
-         ...
-         [defaults]
-         private_key_file = /path/to/private_key_file
-         ...
-
-   -  or by setting the variable ``ansible_ssh_private_key_file`` on the
-      command line via
-      :ref:`the AFLAGS environment variable <envirnomental-variables.behavior-altering-variables>`:
-
-      .. code:: console
-
-         $ AFLAGS='-e ansible_ssh_private_key_file=/path/to/private_key_file' ./managed-k8s/actions/apply.sh
+      $ AFLAGS='-e ansible_ssh_private_key_file=/path/to/private_key_file' ./managed-k8s/actions/apply.sh
 
 -  Further information is available `in the upstream documentation on
    Ansible connections <https://docs.ansible.com/ansible/latest/user_guide/connection_details.html>`__.
@@ -134,7 +121,7 @@ Troubleshooting
 ``cat: '~/.wireguard/wg.key': No such file or directory``
 
 -  Use an absolute path to specify the ``wg_private_key_file``
-   environment variable in ``./.envrc``.
+   environment variable in ``~/.config/yaook-k8s/env``.
 
 “I can't ssh into my cluster nodes”
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
