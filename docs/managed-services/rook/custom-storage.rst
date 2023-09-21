@@ -63,5 +63,15 @@ node-device-configuration can be found:
    [k8s-service-layer.rook.nodes.devices."/dev/disk/by-id/x".config]
    metadataDevice = "nvme0n1"
 
+You can use the tool ``tools/assemble_cephcluster_storage_nodes_yaml.py``
+to generate node-device-configuration to be included in the CephCluster
+manifest. The output can manually transformed to be included in the
+``config.toml`` file as shown above. The tool has to be executed on each
+storage node after the operation system has been installed. It automatically
+determines the disks suitable for OSDs and metadata devices and distributes
+the OSDs evenly across the metadata devices. This half-automated way of
+generating node-device-configuration helps to avoid misconfiguration and
+thus to avoid time consuming correction of a wrongly deployed Ceph cluster.
+
 For node- and device-specific configuration options please refer to the
 `official rook documentation <https://rook.io/docs/rook/v1.9/CRDs/Cluster/ceph-cluster-crd/#cluster-settings>`__.
