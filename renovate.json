@@ -1,0 +1,15 @@
+{
+  "enabledManagers": [
+    "pip_setup",
+    "dockerfile",
+    "gitlabci",
+    "pip_requirements",
+    "regex",
+    "poetry",
+    "terraform",
+    "ansible"
+  ],
+  "pre-commit": {
+    "enabled": true
+  }
+}
