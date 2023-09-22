@@ -1303,12 +1303,13 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "openshift"
-version = "0.13.1"
+version = "0.13.2"
 description = "OpenShift python client"
 optional = false
 python-versions = "*"
 files = [
-    {file = "openshift-0.13.1.tar.gz", hash = "sha256:a060afb7565dda18b2749857867d80ab22b2f4143264519f493a9cabccc3b8a8"},
+    {file = "openshift-0.13.2-py3-none-any.whl", hash = "sha256:f1459006fc7f96ff7d2f6c0c00bdef5cb2e75a1b466f601997d9084a816a8949"},
+    {file = "openshift-0.13.2.tar.gz", hash = "sha256:f55789fce56fcbf7e2cd9377a68c4a99ab406074d3324b9abcca98477d101471"},
 ]
 
 [package.dependencies]
