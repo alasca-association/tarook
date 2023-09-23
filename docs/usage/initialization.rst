@@ -19,18 +19,26 @@ Install System Requirements
 
       yaook/k8s requires the following packages:
 
-      - `poetry <https://github.com/python-poetry/install.python-poetry.org>`__ > v1.5.0
+      - `python3-poetry <https://github.com/python-poetry/install.python-poetry.org>`__
+        - please note that a version > v1.5.0 is required
       - jq
       - moreutils (for ``sponge``)
       - wireguard
       - pass
       - uuid-runtime
-      - `kubectl <https://kubernetes.io/docs/tasks/tools/install-kubectl-linux>`__
       - openssl
 
+      For Debian-based distros you can do:
 
-      Please consult the documentation of your operation system to fulfill
-      these dependencies.
+      .. code:: console
+
+         sudo apt install python3-poetry jq moreutils wireguard pass uuid-runtime kubectl openssl
+
+      Additionally, `kubectl <https://kubernetes.io/docs/tasks/tools/install-kubectl-linux>`__
+      is needed.
+
+      Furthermoe, please consult the documentations for your operation system to fulfill
+      the following dependencies.
 
       .. raw:: html
 
