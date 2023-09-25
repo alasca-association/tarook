@@ -21,4 +21,8 @@
     - "--force"
     - "--ignore-daemonsets"
     - "--delete-emptydir-data=true"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 ...
