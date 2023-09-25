@@ -24,11 +24,11 @@
     state: absent
 
 - name: Unhold k8s tools # noqa no-changed-when
-  become: yes
+  become: true
   command: apt-mark unhold kubeadm kubectl kubelet
 
 - name: Remove k8s tools
-  become: yes
+  become: true
   apt:
     state: absent
     name:

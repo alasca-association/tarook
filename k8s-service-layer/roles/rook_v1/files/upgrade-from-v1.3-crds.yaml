@@ -1,3 +1,4 @@
+---
 # https://github.com/rook/rook/releases/tag/v1.4.9
 # $YOUR_ROOK_REPO/cluster/examples/kubernetes/ceph/
 
@@ -192,29 +193,29 @@ spec:
   subresources:
     status: {}
   additionalPrinterColumns:
-    - name: DataDirHostPath
-      type: string
-      description: Directory used on the K8s nodes
-      JSONPath: .spec.dataDirHostPath
-    - name: MonCount
-      type: string
-      description: Number of MONs
-      JSONPath: .spec.mon.count
-    - name: Age
-      type: date
-      JSONPath: .metadata.creationTimestamp
-    - name: Phase
-      type: string
-      description: Phase
-      JSONPath: .status.phase
-    - name: Message
-      type: string
-      description: Message
-      JSONPath: .status.message
-    - name: Health
-      type: string
-      description: Ceph Health
-      JSONPath: .status.ceph.health
+  - name: DataDirHostPath
+    type: string
+    description: Directory used on the K8s nodes
+    JSONPath: .spec.dataDirHostPath
+  - name: MonCount
+    type: string
+    description: Number of MONs
+    JSONPath: .spec.mon.count
+  - name: Age
+    type: date
+    JSONPath: .metadata.creationTimestamp
+  - name: Phase
+    type: string
+    description: Phase
+    JSONPath: .status.phase
+  - name: Message
+    type: string
+    description: Message
+    JSONPath: .status.message
+  - name: Health
+    type: string
+    description: Ceph Health
+    JSONPath: .status.ceph.health
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -364,13 +365,13 @@ spec:
             preservePoolsOnDelete:
               type: boolean
   additionalPrinterColumns:
-    - name: ActiveMDS
-      type: string
-      description: Number of desired active MDS daemons
-      JSONPath: .spec.metadataServer.activeCount
-    - name: Age
-      type: date
-      JSONPath: .metadata.creationTimestamp
+  - name: ActiveMDS
+    type: string
+    description: Number of desired active MDS daemons
+    JSONPath: .spec.metadataServer.activeCount
+  - name: Age
+    type: date
+    JSONPath: .metadata.creationTimestamp
   subresources:
     status: {}
 ---
@@ -604,9 +605,9 @@ spec:
         spec:
           properties:
             failureDomain:
-                type: string
+              type: string
             crushRoot:
-                type: string
+              type: string
             replicated:
               properties:
                 size:
@@ -669,17 +670,17 @@ metadata:
 spec:
   group: objectbucket.io
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
   names:
     kind: ObjectBucket
     listKind: ObjectBucketList
     plural: objectbuckets
     singular: objectbucket
     shortNames:
-      - ob
-      - obs
+    - ob
+    - obs
   scope: Cluster
   subresources:
     status: {}
@@ -690,9 +691,9 @@ metadata:
   name: objectbucketclaims.objectbucket.io
 spec:
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
   group: objectbucket.io
   names:
     kind: ObjectBucketClaim
@@ -700,8 +701,8 @@ spec:
     plural: objectbucketclaims
     singular: objectbucketclaim
     shortNames:
-      - obc
-      - obcs
+    - obc
+    - obcs
   scope: Namespaced
   subresources:
     status: {}

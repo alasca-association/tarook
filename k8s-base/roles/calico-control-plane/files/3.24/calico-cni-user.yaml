@@ -1,3 +1,4 @@
+---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -17,7 +18,7 @@ rules:
       - pods/status
     verbs:
       - patch
- # These permissions are required for Calico CNI to perform IPAM allocations.
+  # These permissions are required for Calico CNI to perform IPAM allocations.
   - apiGroups: ["crd.projectcalico.org"]
     resources:
       - blockaffinities
@@ -50,6 +51,7 @@ roleRef:
   kind: ClusterRole
   name: calico-cni
 subjects:
-- apiGroup: rbac.authorization.k8s.io
-  kind: User
-  name: calico-cni
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: calico-cni
+...

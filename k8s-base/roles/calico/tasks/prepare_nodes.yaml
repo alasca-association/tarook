@@ -21,7 +21,7 @@
 
   - name: Define Calico download folder # noqa yaml[line-length]
     set_fact:
-      calico_cache_dir: "{% if lookup('env', 'XDG_CACHE_HOME') == '' %}{{lookup('env', 'HOME') + '/.cache' + '/yaook-k8s-ansible/calico-binaries'}}{% else %}{{lookup('env', 'XDG_CACHE_HOME')  + '/yaook-k8s-ansible/calico-binaries'}}{% endif %}"
+      calico_cache_dir: "{% if lookup('env', 'XDG_CACHE_HOME') == '' %}{{ lookup('env', 'HOME') + '/.cache' + '/yaook-k8s-ansible/calico-binaries' }}{% else %}{{ lookup('env', 'XDG_CACHE_HOME') + '/yaook-k8s-ansible/calico-binaries' }}{% endif %}"
 
   - name: Check if Calico has been already downloaded
     stat:
@@ -55,9 +55,9 @@
       mode: 0750
       src: "{{ calico_cache_dir }}/release-v{{ image_versions.calico_version }}.tgz"
       include:
-        - "release-v{{ image_versions.calico_version }}/bin/calicoctl/calicoctl-linux-amd64"
-        - "release-v{{ image_versions.calico_version }}/bin/cni/amd64/calico"
-        - "release-v{{ image_versions.calico_version }}/bin/cni/amd64/calico-ipam"
+      - "release-v{{ image_versions.calico_version }}/bin/calicoctl/calicoctl-linux-amd64"
+      - "release-v{{ image_versions.calico_version }}/bin/cni/amd64/calico"
+      - "release-v{{ image_versions.calico_version }}/bin/cni/amd64/calico-ipam"
       dest: "{{ calico_cache_dir }}"
 
 - name: Copy Calico binaries to node
@@ -69,9 +69,9 @@
     group: root
     mode: 0750
   loop:
-    - {key: "{{ calico_cache_dir }}/release-v{{ image_versions.calico_version }}/bin/calicoctl/calicoctl-linux-amd64", value: "/usr/local/bin/calicoctl"}
-    - {key: "{{ calico_cache_dir }}/release-v{{ image_versions.calico_version }}/bin/cni/amd64/calico", value: "/opt/cni/bin/calico"}
-    - {key: "{{ calico_cache_dir }}/release-v{{ image_versions.calico_version }}/bin/cni/amd64/calico-ipam", value: "/opt/cni/bin/calico-ipam"}
+  - {key: "{{ calico_cache_dir }}/release-v{{ image_versions.calico_version }}/bin/calicoctl/calicoctl-linux-amd64", value: "/usr/local/bin/calicoctl"}
+  - {key: "{{ calico_cache_dir }}/release-v{{ image_versions.calico_version }}/bin/cni/amd64/calico", value: "/opt/cni/bin/calico"}
+  - {key: "{{ calico_cache_dir }}/release-v{{ image_versions.calico_version }}/bin/cni/amd64/calico-ipam", value: "/opt/cni/bin/calico-ipam"}
   when: image_versions.calico_version is version('3.21.3', '>=')
 
 - name: Ensure that /etc/cni/net.d/ exists on all k8s_nodes

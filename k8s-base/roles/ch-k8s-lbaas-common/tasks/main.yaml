@@ -3,7 +3,7 @@
   # Split validation into two tasks to improve error messaging
   when: ch_k8s_lbaas_enabled
   block:
-  - name: Attempt to decode the shared secret
+  - name: Attempt to decode the shared secret  # noqa ignore-errors
     set_fact:
       _: "{{ ch_k8s_lbaas_shared_secret | b64decode }}"
     ignore_errors: true

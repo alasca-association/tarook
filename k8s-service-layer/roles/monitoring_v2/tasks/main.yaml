@@ -163,7 +163,7 @@
 
 - name: Create storage bucket secret for thanos sidecar
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: v1
       type: Opaque
@@ -174,8 +174,8 @@
       data:
         thanos.yaml: "{{ lookup('template', 'thanos-sidecar-bucket-credentials.yaml.j2') | b64encode }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed

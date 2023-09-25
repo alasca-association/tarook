@@ -44,5 +44,5 @@
   ansible.builtin.fetch:
     src: /etc/install-node/ca/ca.crt
     dest: "{{ etc_dir }}/install-node-mirror-ca.pem"
-    flat: yes
+    flat: true
 ...

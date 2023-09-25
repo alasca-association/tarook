@@ -7,7 +7,6 @@
 - name: Establish connectivity to the nodes
   hosts: frontend
   gather_facts: false
-  strategy: free
   vars_files:
   - vars/disruption.yaml
   - vars/etc.yaml
@@ -18,15 +17,15 @@
 - name: Online the Cluster
   hosts: frontend
   gather_facts: false
-  become: yes
+  become: true
   tasks:
   - name: Remove nftables config to offline the nodes
-    file:
+    ansible.builtin.file:
       path: /etc/nft.d/00take-offline.conf
       state: absent
 
   - name: Restart nftables
-    service:
+    ansible.builtin.service:
       name: nftables
       state: restarted
 ...
