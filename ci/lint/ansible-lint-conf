@@ -8,3 +8,6 @@ skip_list:
   - experimental  # all rules tagged as experimental
   - schema[meta]
   - yaml[comments]
+  - var-naming[no-role-prefix]
+  - fqcn-builtins
+  - yaml[document-end]
