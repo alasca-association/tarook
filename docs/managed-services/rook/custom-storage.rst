@@ -17,12 +17,12 @@ variable to ``false``:
 
 .. code:: toml
 
-   rook_on_openstack = false
+   on_openstack = false
 
 .. note::
 
    All the subsequent described configuration does only take
-   effect if you disabled ``rook_on_openstack``.
+   effect if you disabled ``on_openstack``.
 
 You can configure to automatically use all available nodes and/or
 devices:
