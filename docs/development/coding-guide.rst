@@ -40,7 +40,7 @@ For every MR you need to place a file called
 The content of the file is the actual release note.
 
 The ``merge-request-ID`` will automatically be added/corrected for you.
-So if you don't know the ``merge-request-ID`` in advance, just type anything (except ``x``,
+So if you don't know the ``merge-request-ID`` in advance, just type anything (except ``+``,
 which will not be replaced and mark a note with no link to a MR)
 instead of the ID. Please provide the file in your last commit as the pipeline will
 ``git commit --amend`` and ``git push --force`` the corrected filename back to
@@ -84,7 +84,7 @@ your branch. Don't forget to ``git pull`` afterwards, if you make new changes.
 **Really nothing to add to releasenotes**
 
    if you just correct a typo or something which really no user cares,
-   name your file ``x.misc.<random>``, this will not provide an entry in the releasenotes
+   name your file ``+.misc.<random>``, this will not provide an entry in the releasenotes
    (and no link to a MR)
 
 So the following file-names would be valid examples:
@@ -94,7 +94,7 @@ So the following file-names would be valid examples:
    123.feature
    12ads3.feature.addedsomethingdifferent
    12.docs.rst
-   x.misc.jkdfskjhsfd2
+   +.misc.jkdfskjhsfd2
    something.chore.rst
    99.feature.BREAKING.rst
    100.fix.BREAKING.idestroyedeverything.rst
