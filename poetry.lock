@@ -968,12 +968,12 @@ adal = ["adal (>=1.0.2)"]
 
 [[package]]
 name = "kubernetes-validate"
-version = "1.27.0"
+version = "1.28.0"
 description = "validates kubernetes resource definitions against schemas"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "kubernetes-validate-1.27.0.tar.gz", hash = "sha256:3b66e70c78cf6acb92051840ba65f78ba88fa5babc0e0801ab47b5907e235af8"},
+    {file = "kubernetes-validate-1.28.0.tar.gz", hash = "sha256:ef5801658bda76cd999436e900adf694ace73885b0eeb6a6ea0556acfa9076a8"},
 ]
 
 [package.dependencies]
