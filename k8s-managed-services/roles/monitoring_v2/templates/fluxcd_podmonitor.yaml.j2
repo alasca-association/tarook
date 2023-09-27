@@ -2,7 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: flux-system
-  namespace: "{{ k8s_fluxcd_namespace | default("k8s-svc-flux-system") }}"
+  namespace: "{{ fluxcd_namespace }}"
   labels:
     app.kubernetes.io/part-of: flux
     app.kubernetes.io/component: monitoring
@@ -10,7 +10,7 @@ metadata:
 spec:
   namespaceSelector:
     matchNames:
-      - "{{ k8s_fluxcd_namespace | default("k8s-svc-flux-system") }}"
+      - "{{ fluxcd_namespace }}"
   selector:
     matchExpressions:
       - key: app

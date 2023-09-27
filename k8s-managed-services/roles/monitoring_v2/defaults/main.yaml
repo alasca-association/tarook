@@ -10,4 +10,6 @@ monitoring_common_labels: {}
 
 monitoring_blackbox_version: "7.0.0"
 monitoring_scheduling_key: null
+
+fluxcd_namespace: "k8s-svc-flux-system"
 ...

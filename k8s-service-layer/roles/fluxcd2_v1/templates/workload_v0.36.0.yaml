@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/instance: flux-system
     app.kubernetes.io/part-of: flux
   name: helm-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -17,7 +17,7 @@ metadata:
     app.kubernetes.io/instance: flux-system
     app.kubernetes.io/part-of: flux
   name: image-automation-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -27,7 +27,7 @@ metadata:
     app.kubernetes.io/instance: flux-system
     app.kubernetes.io/part-of: flux
   name: image-reflector-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -37,7 +37,7 @@ metadata:
     app.kubernetes.io/instance: flux-system
     app.kubernetes.io/part-of: flux
   name: kustomize-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -47,7 +47,7 @@ metadata:
     app.kubernetes.io/instance: flux-system
     app.kubernetes.io/part-of: flux
   name: notification-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -57,7 +57,7 @@ metadata:
     app.kubernetes.io/instance: flux-system
     app.kubernetes.io/part-of: flux
   name: source-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -162,10 +162,10 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: kustomize-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 - kind: ServiceAccount
   name: helm-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -181,22 +181,22 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: kustomize-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 - kind: ServiceAccount
   name: helm-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 - kind: ServiceAccount
   name: source-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 - kind: ServiceAccount
   name: notification-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 - kind: ServiceAccount
   name: image-reflector-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 - kind: ServiceAccount
   name: image-automation-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 ---
 apiVersion: v1
 kind: Service
@@ -207,7 +207,7 @@ metadata:
     app.kubernetes.io/part-of: flux
     control-plane: controller
   name: notification-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 spec:
   ports:
   - name: http
@@ -227,7 +227,7 @@ metadata:
     app.kubernetes.io/part-of: flux
     control-plane: controller
   name: source-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 spec:
   ports:
   - name: http
@@ -247,7 +247,7 @@ metadata:
     app.kubernetes.io/part-of: flux
     control-plane: controller
   name: webhook-receiver
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 spec:
   ports:
   - name: http
@@ -267,7 +267,7 @@ metadata:
     app.kubernetes.io/part-of: flux
     control-plane: controller
   name: helm-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 spec:
   replicas: 1
   selector:
@@ -284,7 +284,7 @@ spec:
       priorityClassName: system-cluster-critical
       containers:
       - args:
-        - --events-addr=http://notification-controller.{{ k8s_fluxcd_namespace }}.svc.cluster.local./
+        - --events-addr=http://notification-controller.{{ fluxcd_namespace }}.svc.cluster.local./
         - --watch-all-namespaces
         - --log-level=info
         - --log-encoding=json
@@ -348,7 +348,7 @@ metadata:
     app.kubernetes.io/part-of: flux
     control-plane: controller
   name: image-automation-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 spec:
   replicas: 1
   selector:
@@ -365,7 +365,7 @@ spec:
       priorityClassName: system-cluster-critical
       containers:
       - args:
-        - --events-addr=http://notification-controller.{{ k8s_fluxcd_namespace }}.svc.cluster.local./
+        - --events-addr=http://notification-controller.{{ fluxcd_namespace }}.svc.cluster.local./
         - --watch-all-namespaces
         - --log-level=info
         - --log-encoding=json
@@ -429,7 +429,7 @@ metadata:
     app.kubernetes.io/part-of: flux
     control-plane: controller
   name: image-reflector-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 spec:
   replicas: 1
   selector:
@@ -446,7 +446,7 @@ spec:
       priorityClassName: system-cluster-critical
       containers:
       - args:
-        - --events-addr=http://notification-controller.{{ k8s_fluxcd_namespace }}.svc.cluster.local./
+        - --events-addr=http://notification-controller.{{ fluxcd_namespace }}.svc.cluster.local./
         - --watch-all-namespaces
         - --log-level=info
         - --log-encoding=json
@@ -514,7 +514,7 @@ metadata:
     app.kubernetes.io/part-of: flux
     control-plane: controller
   name: kustomize-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 spec:
   replicas: 1
   selector:
@@ -531,7 +531,7 @@ spec:
       priorityClassName: system-cluster-critical
       containers:
       - args:
-        - --events-addr=http://notification-controller.{{ k8s_fluxcd_namespace }}.svc.cluster.local./
+        - --events-addr=http://notification-controller.{{ fluxcd_namespace }}.svc.cluster.local./
         - --watch-all-namespaces
         - --log-level=info
         - --log-encoding=json
@@ -595,7 +595,7 @@ metadata:
     app.kubernetes.io/part-of: flux
     control-plane: controller
   name: notification-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 spec:
   replicas: 1
   selector:
@@ -681,7 +681,7 @@ metadata:
     app.kubernetes.io/part-of: flux
     control-plane: controller
   name: source-controller
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 spec:
   replicas: 1
   selector:
@@ -700,7 +700,7 @@ spec:
       priorityClassName: system-cluster-critical
       containers:
       - args:
-        - --events-addr=http://notification-controller.{{ k8s_fluxcd_namespace }}.svc.cluster.local./
+        - --events-addr=http://notification-controller.{{ fluxcd_namespace }}.svc.cluster.local./
         - --watch-all-namespaces
         - --log-level=info
         - --log-encoding=json
@@ -773,7 +773,7 @@ metadata:
     app.kubernetes.io/instance: flux-system
     app.kubernetes.io/part-of: flux
   name: allow-egress
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 spec:
   egress:
   - {}
@@ -792,7 +792,7 @@ metadata:
     app.kubernetes.io/instance: flux-system
     app.kubernetes.io/part-of: flux
   name: allow-scraping
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 spec:
   ingress:
   - from:
@@ -811,7 +811,7 @@ metadata:
     app.kubernetes.io/instance: flux-system
     app.kubernetes.io/part-of: flux
   name: allow-webhooks
-  namespace: "{{ k8s_fluxcd_namespace }}"
+  namespace: "{{ fluxcd_namespace }}"
 spec:
   ingress:
   - from:
