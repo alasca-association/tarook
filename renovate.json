@@ -13,7 +13,7 @@
     "enabled": true
   },
   "postUpgradeTasks": {
-    "commands": ["touch docs/_releasenotes/+.chore.$(pwgen 16 1)"],
+    "commands": ["touch docs/_releasenotes/?.chore.$(pwgen 16 1)"],
     "executionMode": "branch"
   }
 }
