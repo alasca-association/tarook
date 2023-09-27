@@ -351,6 +351,8 @@ The used rook setup is explained in more detail
 
 |
 
+.. _cluster-configuration.prometheus-configuration:
+
 Prometheus-based Monitoring Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -517,8 +519,16 @@ Variable           Description
 
 |
 
+.. _cluster-configuration.node-scheduling-labels-taints-configuration:
+
 Node-Scheduling: Labels and Taints Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+   Nodes get their labels and taints during the Kubernetes
+   cluster initialization and node-join process.
+   Once a node has joined the cluster,
+   its labels and taints will **not** get updated anymore.
 
 More details about the labels and taints configuration can be found
 :doc:`here </operation/node-scheduling>`.
@@ -526,7 +536,7 @@ More details about the labels and taints configuration can be found
 .. raw:: html
 
    <details>
-   <summary>config.toml: KSL - Node-Scheduling: Labels and Taints Configuration</summary>
+   <summary>config.toml: Node-Scheduling: Labels and Taints Configuration</summary>
 
 .. literalinclude:: /templates/config.template.toml
    :language: toml
