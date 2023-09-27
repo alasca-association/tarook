@@ -53,7 +53,12 @@
     - mk8s-sl/vault
 
   - role: fluxcd2_v1
-    when: (fluxcd_enabled is defined) and (fluxcd_enabled | bool)
+    when: fluxcd_enabled and fluxcd_legacy | default(False)
+    tags:
+    - mk8s-sl/fluxcd
+
+  - role: fluxcd2_v2
+    when: fluxcd_enabled
     tags:
     - mk8s-sl/fluxcd
 ...

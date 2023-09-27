@@ -1,0 +1,63 @@
+---
+- name: Include migration if needed
+  block:
+  - name: Check if namespace already exists
+    kubernetes.core.k8s_info:
+      kind: namespace
+      name: "{{ fluxcd_namespace }}"
+    register: flux_ns_info
+
+  - name: Check if helm chart is already deployed
+    kubernetes.core.helm_info:
+      name: flux2
+      release_namespace: "{{ fluxcd_namespace }}"
+    register: flux_helm_info
+
+  - name: Trigger migration
+    include_tasks: migrate_from_v1.yaml
+    when:
+    - flux_ns_info.resources | length > 0
+    - flux_helm_info.status.hooks | length == 0
+
+- name: Create namespace for fluxcd
+  kubernetes.core.k8s:
+    apply: true
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ fluxcd_namespace }}"
+        labels:
+          app.kubernetes.io/instance: flux-system
+          app.kubernetes.io/part-of: flux
+          pod-security.kubernetes.io/warn: restricted
+          pod-security.kubernetes.io/warn-version: latest
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+
+- name: "{{ fluxcd_install | ternary('Add', 'Remove') }} fluxcd2 helm repository"
+  kubernetes.core.helm_repository:
+    name: fluxcd-community
+    repo_url: "{{ fluxcd_helm_repo_url }}"
+    repo_state: "{{ fluxcd_install | ternary('present', 'absent') }}"
+
+- name: Install fluxcdv2
+  kubernetes.core.helm:
+    chart_ref: fluxcd-community/flux2
+    release_namespace: "{{ fluxcd_namespace }}"
+    release_name: flux2
+    release_state: "{{ fluxcd_install | ternary('present', 'absent') }}"
+    update_repo_cache: true
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+    chart_version: "{{ fluxcd_version }}"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
+...

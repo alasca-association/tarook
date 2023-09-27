@@ -1,0 +1,6 @@
+Rework installation procedure of flux
+
+Flux will be deployed via the community helm chart from now on.
+A migration is automatically triggered (but can be prevented,
+see our flux documentation for further information).
+The old installation method will be dropped very soon.

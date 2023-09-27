@@ -1,0 +1,18 @@
+helmController:
+  priorityClassName: system-cluster-critical
+imageAutomationController:
+  priorityClassName: system-cluster-critical
+imageReflectionController:
+  priorityClassName: system-cluster-critical
+kustomizeController:
+  priorityClassName: system-cluster-critical
+notificationController:
+  priorityClassName: system-cluster-critical
+sourceController:
+  priorityClassName: system-cluster-critical
+prometheus:
+  podMonitor:
+    create: {{ monitoring_install | bool }}
+    additionalLabels:
+      app.kubernetes.io/component: monitoring
+      release: prometheus-stack  # That's the default podmonitor selector of our prometheus

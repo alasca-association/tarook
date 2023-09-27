@@ -189,9 +189,9 @@
   delay: 3
 
 - name: Check fluxcd's monitoring endpoints
-  when: (fluxcd_enabled | default(False)) | bool
+  when: fluxcd_enabled
   vars:
-    job_name: "{{ k8s_fluxcd_namespace | default('k8s-svc-flux-system') }}/flux-system"
+    job_name: "{{ fluxcd_namespace | default('k8s-svc-flux-system') }}/flux-system"
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper

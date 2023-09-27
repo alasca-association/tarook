@@ -1,0 +1,144 @@
+---
+- name: Migrate CRDs
+  block:
+  - name: Get all fluxcd2 CRDs of group notification.toolkit.fluxcd.io  # noqa no-changed-when
+    ansible.builtin.command: "kubectl api-resources --api-group=notification.toolkit.fluxcd.io -o name"
+    register: fluxcd2_crds
+
+  - name: Add annotations and labels for Helm to fluxcd2 CRDs of group notification.toolkit.fluxcd.io
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: "apiextensions.k8s.io/v1"
+        kind: "CustomResourceDefinition"
+        metadata:
+          name: "{{ item }}"
+          annotations:
+            "meta.helm.sh/release-namespace": "{{ fluxcd_namespace }}"
+            "meta.helm.sh/release-name": "flux2"
+          labels:
+            "app.kubernetes.io/managed-by": "Helm"
+    loop: "{{ fluxcd2_crds.stdout_lines }}"
+
+  - name: Get all fluxcd2 CRDs of group source.toolkit.fluxcd.io  # noqa no-changed-when
+    ansible.builtin.command: "kubectl api-resources --api-group=source.toolkit.fluxcd.io -o name"
+    register: fluxcd2_crds
+
+  - name: Add annotations and labels for Helm to fluxcd2 CRDs of group source.toolkit.fluxcd.io
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: "apiextensions.k8s.io/v1"
+        kind: "CustomResourceDefinition"
+        metadata:
+          name: "{{ item }}"
+          annotations:
+            "meta.helm.sh/release-namespace": "{{ fluxcd_namespace }}"
+            "meta.helm.sh/release-name": "flux2"
+          labels:
+            "app.kubernetes.io/managed-by": "Helm"
+    loop: "{{ fluxcd2_crds.stdout_lines }}"
+
+  - name: Get all fluxcd2 CRDs of group helm.toolkit.fluxcd.io  # noqa no-changed-when
+    ansible.builtin.command: "kubectl api-resources --api-group=helm.toolkit.fluxcd.io -o name"
+    register: fluxcd2_crds
+
+  - name: Add annotations and labels for Helm to fluxcd2 CRDs of group helm.toolkit.fluxcd.io
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: "apiextensions.k8s.io/v1"
+        kind: "CustomResourceDefinition"
+        metadata:
+          name: "{{ item }}"
+          annotations:
+            "meta.helm.sh/release-namespace": "{{ fluxcd_namespace }}"
+            "meta.helm.sh/release-name": "flux2"
+          labels:
+            "app.kubernetes.io/managed-by": "Helm"
+    loop: "{{ fluxcd2_crds.stdout_lines }}"
+
+  - name: Get all fluxcd2 CRDs of group image.toolkit.fluxcd.io  # noqa no-changed-when
+    ansible.builtin.command: "kubectl api-resources --api-group=image.toolkit.fluxcd.io -o name"
+    register: fluxcd2_crds
+
+  - name: Add annotations and labels for Helm to fluxcd2 CRDs of group image.toolkit.fluxcd.io
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: "apiextensions.k8s.io/v1"
+        kind: "CustomResourceDefinition"
+        metadata:
+          name: "{{ item }}"
+          annotations:
+            "meta.helm.sh/release-namespace": "{{ fluxcd_namespace }}"
+            "meta.helm.sh/release-name": "flux2"
+          labels:
+            "app.kubernetes.io/managed-by": "Helm"
+    loop: "{{ fluxcd2_crds.stdout_lines }}"
+
+  - name: Get all fluxcd2 CRDs of group kustomize.toolkit.fluxcd.io  # noqa no-changed-when
+    ansible.builtin.command: "kubectl api-resources --api-group=kustomize.toolkit.fluxcd.io -o name"
+    register: fluxcd2_crds
+
+  - name: Add annotations and labels for Helm to fluxcd2 CRDs of group kustomize.toolkit.fluxcd.io
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: "apiextensions.k8s.io/v1"
+        kind: "CustomResourceDefinition"
+        metadata:
+          name: "{{ item }}"
+          annotations:
+            "meta.helm.sh/release-namespace": "{{ fluxcd_namespace }}"
+            "meta.helm.sh/release-name": "flux2"
+          labels:
+            "app.kubernetes.io/managed-by": "Helm"
+    loop: "{{ fluxcd2_crds.stdout_lines }}"
+
+- name: Migrate Clusterroles
+  block:
+  - name: Add annotations and labels for Helm to cluster wide resources
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: "{{ item.0 }}"
+        kind: "{{ item.1 }}"
+        metadata:
+          name: "{{ item.2 }}"
+          annotations:
+            "meta.helm.sh/release-namespace": "{{ fluxcd_namespace }}"
+            "meta.helm.sh/release-name": "flux2"
+          labels:
+            "app.kubernetes.io/managed-by": "Helm"
+    loop:
+    - ["rbac.authorization.k8s.io/v1", "ClusterRole", "flux-edit"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRole", "flux-view"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRole", "crd-controller"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRoleBinding", "crd-controller"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRoleBinding", "cluster-reconciler"]
+
+- name: Migrate namespaced objects
+  block:
+  - name: Add annotations and labels for Helm to namespaced resources
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: "{{ item.0 }}"
+        kind: "{{ item.1 }}"
+        metadata:
+          namespace: "{{ fluxcd_namespace }}"
+          name: "{{ item.2 }}"
+          annotations:
+            "meta.helm.sh/release-namespace": "{{ fluxcd_namespace }}"
+            "meta.helm.sh/release-name": "flux2"
+          labels:
+            "app.kubernetes.io/managed-by": "Helm"
+    loop:
+    - ["v1", "Service", "notification-controller"]
+    - ["v1", "Service", "source-controller"]
+    - ["v1", "Service", "webhook-receiver"]
+    - ["v1", "ServiceAccount", "default"]
+    - ["v1", "ServiceAccount", "helm-controller"]
+    - ["v1", "ServiceAccount", "image-automation-controller"]
+    - ["v1", "ServiceAccount", "image-reflector-controller"]
+    - ["v1", "ServiceAccount", "kustomize-controller"]
+    - ["v1", "ServiceAccount", "notification-controller"]
+    - ["v1", "ServiceAccount", "source-controller"]
+    - ["networking.k8s.io/v1", "NetworkPolicy", "allow-egress"]
+    - ["networking.k8s.io/v1", "NetworkPolicy", "allow-scraping"]
+    - ["networking.k8s.io/v1", "NetworkPolicy", "allow-webhooks"]
+...

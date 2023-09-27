@@ -553,6 +553,32 @@ Variable           Description
 
 |
 
+.. _cluster-configuration.flux:
+
+Flux
+~~~~~~~
+
+More details about our FluxCD2 implementation can be found
+:doc: `here </managed-services/fluxcd.rst>`.
+
+The following configuration options are available:
+
+.. raw:: html
+
+   <details>
+   <summary>config.toml: KSL - Flux</summary>
+
+.. literalinclude:: /templates/config.template.toml
+   :language: toml
+   :start-after: # ANCHOR: ksl_fluxcd_configuration
+   :end-before: # ANCHOR_END: ksl_fluxcd_configuration
+
+.. raw:: html
+
+   </details>
+
+|
+
 .. _cluster-configuration.node-scheduling-labels-taints-configuration:
 
 Node-Scheduling: Labels and Taints Configuration
