@@ -1,19 +1,19 @@
 ---
 - name: Create passwordstore directory
-  become: no
+  become: false
   delegate_to: localhost
-  run_once: yes
+  run_once: true
   file:
     path: "{{ etc_dir }}/passwordstore"
     state: directory
     mode: 0755
 
-- name: Initialize passwordstore
-  become: no
+- name: Initialize passwordstore  # noqa jinja[spacing]
+  become: false
   delegate_to: localhost
-  run_once: yes
+  run_once: true
   # Technically `pass init` might change something but this change isn't relevant for us.
-  changed_when: False
+  changed_when: false
   command:
   args:
     argv: >

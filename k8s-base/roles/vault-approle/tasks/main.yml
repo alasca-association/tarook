@@ -1,5 +1,6 @@
+---
 - name: Read role-id
-  become: yes
+  become: true
   # We cannot use a lookup('file', ..) here, because lookup is executed
   # locally. We need to read the role-id and secret-id from the potentially
   # remote node though.
@@ -12,7 +13,7 @@
   changed_when: false
 
 - name: Read secret-id
-  become: yes
+  become: true
   # We cannot use a lookup('file', ..) here, because lookup is executed
   # locally. We need to read the role-id and secret-id from the potentially
   # remote node though.

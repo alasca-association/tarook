@@ -1,6 +1,6 @@
 ---
 - name: Ensure that pip is installed
-  become: yes
+  become: true
   package:
     state: present
     name:
@@ -12,8 +12,8 @@
   tags:
   - k8s-tools
 
-- name: Ensure that kubernetes libraries are installed
-  become: yes
+- name: Ensure that kubernetes libraries are installed  # noqa package-latest
+  become: true
   pip:
     name:
     - openshift

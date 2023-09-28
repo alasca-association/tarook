@@ -1,6 +1,6 @@
 ---
 - name: Enable IP forwarding
-  become: yes
+  become: true
   block:
   - name: Create /etc/sysctl.d/forward.conf
     template:
@@ -13,8 +13,8 @@
   - name: Load /etc/sysctl.d/forward.conf
     command:
       argv:
-        - sysctl
-        - -p
-        - /etc/sysctl.d/forward.conf
+      - sysctl
+      - -p
+      - /etc/sysctl.d/forward.conf
     changed_when: false
 ...

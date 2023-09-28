@@ -1,6 +1,6 @@
 ---
 - name: Add in config the modules to load at boot time
-  become: yes
+  become: true
   copy:
     dest: /etc/modules-load.d/custom-network-conf.conf
     content: |
@@ -19,15 +19,15 @@
     mode: 0600
 
 - name: Reload kernel modules
-  become: yes
+  become: true
   systemd:
-    enabled: yes
+    enabled: true
     state: restarted
     name: systemd-modules-load
 
 - name: Manage sysctl entries
-  become: yes
-  sysctl:
+  become: true
+  ansible.posix.sysctl:
     name: "{{ item.key }}"
     value: "{{ item.value }}"
     state: present
@@ -41,7 +41,7 @@
 # To get access to iptables-save
 # Using yum module as this role is only targeting CentOS hosts
 - name: Install the legacy network scripts
-  become: yes
+  become: true
   yum:
     name: network-scripts
 ...

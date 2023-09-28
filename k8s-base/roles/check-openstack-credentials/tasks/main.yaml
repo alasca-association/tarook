@@ -2,7 +2,7 @@
 - name: Check OpenStack credentials
   when: ((on_openstack | default(False)) | bool) and ((check_openstack_credentials | default(True)) | bool)
   delegate_to: localhost
-  run_once: yes
+  run_once: true
   become: false
   block:
   - name: Are we using application credentials?
@@ -11,8 +11,8 @@
   - name: Attempt to get a keystone token to validate the existence of credentials
     ansible.builtin.uri:
       url: "{{ lookup('env', 'OS_AUTH_URL') }}/auth/tokens"
-      validate_certs: yes
-      return_content: yes
+      validate_certs: true
+      return_content: true
       method: POST
       status_code: 201 # "Created"
       headers:
@@ -20,7 +20,7 @@
       body_format: json
       body: "{{ lookup('template', 'keystone_request.json.j2') }}"
     register: response
-    ignore_errors: True
+    ignore_errors: true
   - name: Something went wrong with the token request
     when: response.failed
     fail:

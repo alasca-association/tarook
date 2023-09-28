@@ -28,18 +28,18 @@
 # secrets and the LCM will create a fresh pair.
 - name: Check if the etcd-metrics-proxy cert secret already exists (kube-system)
   kubernetes.core.k8s_info:
-      api_version: v1
-      kind: Secret
-      namespace: kube-system
-      name: etcd-metrics-proxy
+    api_version: v1
+    kind: Secret
+    namespace: kube-system
+    name: etcd-metrics-proxy
   register: server_cert_state
 
 - name: Check if the etcd-metrics-proxy cert secret already exists (monitoring)
   kubernetes.core.k8s_info:
-      api_version: v1
-      kind: Secret
-      namespace: monitoring
-      name: etcd-metrics-proxy
+    api_version: v1
+    kind: Secret
+    namespace: monitoring
+    name: etcd-metrics-proxy
   register: client_cert_state
 
 # We need a "server" certificate for the etcd-metrics-proxy endpoint
@@ -98,7 +98,7 @@
 
     - name: Create the secret for the etcd-metrics-proxy endpoint
       kubernetes.core.k8s:
-        apply: yes
+        apply: true
         definition:
           apiVersion: v1
           kind: Secret
@@ -111,12 +111,12 @@
             name: etcd-metrics-proxy
             namespace: kube-system
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
 
     - name: Create the secret for the prometheus scraper
       kubernetes.core.k8s:
-        apply: yes
+        apply: true
         definition:
           apiVersion: v1
           kind: Secret
@@ -129,8 +129,8 @@
             name: etcd-metrics-proxy
             namespace: monitoring
         validate:
-          fail_on_error: yes
-          strict: yes
+          fail_on_error: true
+          strict: true
 
     # Restarting pods after configuration changes is messy business.
     # Note: I'd love to use handlers here but as the operation is split in two [0]
@@ -150,7 +150,7 @@
             name: prometheus-prometheus-stack-kube-prom-prometheus
           register: prometheus
 
-        - name: Restart prometheus
+        - name: Restart prometheus  # noqa no-changed-when
           when: prometheus.resources
           command: "kubectl rollout restart statefulset -n monitoring prometheus-prometheus-stack-kube-prom-prometheus"
 
@@ -163,16 +163,16 @@
             name: etcd-metrics-proxy
           register: etcd_metrics_proxy
 
-        - name: Restart etcd-metrics-proxy
+        - name: Restart etcd-metrics-proxy  # noqa no-changed-when
           when: etcd_metrics_proxy.resources
           command: "kubectl rollout restart daemonset -n kube-system etcd-metrics-proxy"
 
 - name: Deploy the proxy
   kubernetes.core.k8s:
     state: present
-    apply: yes
-    definition: "{{ lookup('template', 'proxy.yaml' ) }}"
+    apply: true
+    definition: "{{ lookup('template', 'proxy.yaml') }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
 ...

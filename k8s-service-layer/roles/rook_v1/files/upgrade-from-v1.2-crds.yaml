@@ -271,11 +271,11 @@ spec:
                 compressionMode:
                   type: string
                   enum:
-                  - ""
-                  - none
-                  - passive
-                  - aggressive
-                  - force
+                    - ""
+                    - none
+                    - passive
+                    - aggressive
+                    - force
                 parameters:
                   type: object
             dataPools:
@@ -305,11 +305,11 @@ spec:
                   compressionMode:
                     type: string
                     enum:
-                    - ""
-                    - none
-                    - passive
-                    - aggressive
-                    - force
+                      - ""
+                      - none
+                      - passive
+                      - aggressive
+                      - force
                 parameters:
                   type: object
             preservePoolsOnDelete:
@@ -337,7 +337,7 @@ spec:
     plural: cephnfses
     singular: cephnfs
     shortNames:
-    - nfs
+      - nfs
   scope: Namespaced
   version: v1
   validation:
@@ -413,11 +413,11 @@ spec:
                 compressionMode:
                   type: string
                   enum:
-                  - ""
-                  - none
-                  - passive
-                  - aggressive
-                  - force
+                    - ""
+                    - none
+                    - passive
+                    - aggressive
+                    - force
                 parameters:
                   type: object
             dataPool:
@@ -439,11 +439,11 @@ spec:
                 compressionMode:
                   type: string
                   enum:
-                  - ""
-                  - none
-                  - passive
-                  - aggressive
-                  - force
+                    - ""
+                    - none
+                    - passive
+                    - aggressive
+                    - force
                 parameters:
                   type: object
             preservePoolsOnDelete:
@@ -463,8 +463,8 @@ spec:
     plural: cephobjectstoreusers
     singular: cephobjectstoreuser
     shortNames:
-    - rcou
-    - objectuser
+      - rcou
+      - objectuser
   scope: Namespaced
   version: v1
   subresources:
@@ -489,7 +489,7 @@ spec:
         spec:
           properties:
             failureDomain:
-                type: string
+              type: string
             replicated:
               properties:
                 size:
@@ -513,11 +513,11 @@ spec:
             compressionMode:
               type: string
               enum:
-              - ""
-              - none
-              - passive
-              - aggressive
-              - force
+                - ""
+                - none
+                - passive
+                - aggressive
+                - force
             parameters:
               type: object
   subresources:
@@ -535,7 +535,7 @@ spec:
     plural: volumes
     singular: volume
     shortNames:
-    - rv
+      - rv
   scope: Namespaced
   version: v1alpha2
   subresources:

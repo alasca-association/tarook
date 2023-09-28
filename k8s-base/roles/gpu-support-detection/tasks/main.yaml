@@ -1,6 +1,6 @@
 ---
 - name: Install lspci
-  become: yes
+  become: true
   package:
     name:
     - pciutils

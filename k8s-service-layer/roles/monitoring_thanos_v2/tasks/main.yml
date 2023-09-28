@@ -29,15 +29,15 @@
 
 - name: Create namespace
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: v1
       kind: Namespace
       metadata:
         name: "{{ monitoring_namespace }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -55,7 +55,7 @@
       api_version: v1
       namespace: "{{ monitoring_namespace }}"
       label_selectors:
-        - app.kubernetes.io/version=v0.26.0
+      - app.kubernetes.io/version=v0.26.0
     register: k8s_get_thanos_v1
     until: k8s_get_thanos_v1 is not failed
     retries: "{{ k8s_error_retries }}"
@@ -71,7 +71,7 @@
 
 - name: Create thanos secret
   kubernetes.core.k8s:
-    apply: yes
+    apply: true
     definition:
       apiVersion: v1
       type: Opaque
@@ -82,8 +82,8 @@
       data:
         objstore.yml: "{{ lookup('template', 'thanos-objectstorage.yaml.j2') | b64encode }}"
     validate:
-      fail_on_error: yes
-      strict: yes
+      fail_on_error: true
+      strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed

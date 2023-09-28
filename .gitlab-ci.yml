@@ -53,17 +53,7 @@ ansible-lint:
     - poetry install --with ci --sync
   script:
     - "ansible-galaxy install -r ansible/requirements.yaml"
-    - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/install_frontend.yaml" # Check stage 2
-    - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/install_k8s_base.yaml" # Check stage 3
-    - "ansible-lint -c ci/lint/ansible-lint-conf k8s-service-layer/install.yaml" # Check stage 4
-    - "ansible-lint -c ci/lint/ansible-lint-conf k8s-managed-services/install.yaml" # Check stage 5
-    - "ANSIBLE_ROLES_PATH=k8s-base/test-roles ansible-lint -c ci/lint/ansible-lint-conf k8s-base/test.yaml" # Check smoke tests
-    - "ANSIBLE_ROLES_PATH=k8s-service-layer/test-roles ansible-lint -c ci/lint/ansible-lint-conf k8s-service-layer/test.yaml" # Check ksl tests
-    - "ANSIBLE_ROLES_PATH=k8s-managed-services/test-roles ansible-lint -c ci/lint/ansible-lint-conf k8s-managed-services/test.yaml" # Check ksm tests
-    - "ansible-lint -c ci/lint/ansible-lint-conf k8s-base/system_update_nodes.yaml" # Check system update node
-      # Check k8s upgrades
-    - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.25.yaml"
-    - "ANSIBLE_ROLES_PATH=k8s-base/roles ansible-lint -c ci/lint/ansible-lint-conf  k8s-base/k8s-upgrades/k8s_upgrade_to_1.26.yaml"
+    - "ANSIBLE_ROLES_PATH=./k8s-base/roles:./k8s-managed-services/roles/:./k8s-service-layer/roles:./k8s-base/test-roles/:./k8s-service-layer/test-roles/:./k8s-managed-services/test-roles ansible-lint -c ci/lint/ansible-lint-conf --offline --exclude .gitlab-ci.yml --exclude .pre-commit-config.yaml"
   tags:
     - docker
 

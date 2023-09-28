@@ -1,6 +1,6 @@
 ---
 - name: Prepare wireguard install on Debian
-  become: yes
+  become: true
   # wireguard is included in the bullseye (11) repos, so we only need to add 'unstable' for buster (10).
   # Note: I'm not sure if they were available at that time, but buster-backports would have been more appropriate :)
   when: 'ansible_distribution == "Debian" and ansible_distribution_release == "buster"'
@@ -21,7 +21,7 @@
   - name: Add 'unstable' repo to sources.list.d
     lineinfile:
       path: /etc/apt/sources.list.d/unstable.list
-      create: yes
+      create: true
       state: present
       line: deb http://deb.debian.org/debian/ unstable main
       owner: root
@@ -31,32 +31,32 @@
   # This is an extra task because I'm not sure about the order packages are installed.
   # The header files must be available when DKMS wants to build the module
   - name: Install dependencies so wg dkms module is built
-    become: yes
+    become: true
     apt:
       state: present
-      update_cache: yes
+      update_cache: true
       name:
-        - linux-headers-cloud-amd64
-        - bc
+      - linux-headers-cloud-amd64
+      - bc
       register: task_result
       until: task_result is not failed
       retries: "{{ network_error_retries }}"
       delay: "{{ network_error_delay }}"
 
 - name: Install wireguard
-  become: yes
+  become: true
   apt:
     state: present
     name:
-      - wireguard
+    - wireguard
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
 
 - name: Modprobe the wireguard module to ensure its existence
-  become: yes
-  modprobe:
+  become: true
+  community.general.modprobe:
     name: wireguard
     state: present
 ...
