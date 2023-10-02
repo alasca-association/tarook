@@ -110,6 +110,12 @@ release-note-file-check:
   tags:
     - docker
   rules:
+      # Skip for renovate MRs
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\/*/ && $CI_COMMIT_TITLE =~ /^chore(deps):*/
+      when: never
+      # Skip for merges
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TITLE =~ /^Merge branch.*/
+      when: never
     - if: $CI_MERGE_REQUEST_EVENT_TYPE
       when: on_success
     - when: never
