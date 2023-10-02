@@ -18,12 +18,12 @@ def load_types_from_file(config_file: str) -> list:
 
 
 def get_releasenote_files(
-        repository, source_branch: str, target_branch: str) -> list:
+        repository, target_branch: str) -> list:
     for remote in repository.remotes:
         remote.fetch()
 
     note_files = repository.git.diff(
-        target_branch, source_branch,
+        target_branch,
         "--name-only", "--diff-filter=A",
         "--", "docs/_releasenotes"
     )
@@ -49,19 +49,16 @@ def split_filename(file: str) -> [str, str]:
 
 
 if __name__ == "__main__":
-
-    print(sys.argv)
-
     repo_adr = sys.argv[1]
-    source_branch = sys.argv[2]
-    target_branch = sys.argv[3]
-    towncrier_config = sys.argv[4]
-    MR_IID = sys.argv[5]
+    target_branch = sys.argv[2]
+    towncrier_config = sys.argv[3]
+    MR_IID = sys.argv[4]
+    fork = sys.argv[5]
 
     repository = git.Repo(repo_adr)
 
     types = load_types_from_file(towncrier_config)
-    note_files = get_releasenote_files(repository, source_branch, target_branch)
+    note_files = get_releasenote_files(repository, target_branch)
 
     for file in note_files:
         number, note = split_filename(file)
@@ -70,6 +67,9 @@ if __name__ == "__main__":
                                types)
 
         if (number != MR_IID and number != "+"):
+            if (fork == "True"):
+                raise RuntimeError("Provided MR-ID in releasenotes doesn't \
+                                    match the actual MR-ID.")
             fname = os.path.basename(file).split('.')
             dirname = os.path.dirname(file)
             fname[0] = MR_IID
