@@ -58,12 +58,7 @@ cephClusterSpec:
 
 {% if rook_use_host_networking %}
   network:
-{% if rook_version is version('v1.11.0', '<') %}
     provider: host
-{% else %}
-    connections:
-      provider: host
-{% endif %}
 {% endif %}
   crashCollector:
     disable: false
