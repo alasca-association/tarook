@@ -886,6 +886,8 @@ scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 
 # --- NODE SCHEDULING: LABELS (sent to ansible as k8s_node_labels!) ---
 [node-scheduling.labels]
+# Labels are assigned to a node during its initialization/join process only!
+#
 # The following fields are commented out because they make assumptions on the existence
 # and naming scheme of nodes. Use them for inspiration :)
 #managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true"]
@@ -897,6 +899,8 @@ scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 #
 # --- NODE SCHEDULING: TAINTS (sent to ansible as k8s_node_taints!) ---
 [node-scheduling.taints]
+# Taints are assigned to a node during its initialization/join process only!
+#
 # The following fields are commented out because they make assumptions on the existence
 # and naming scheme of nodes. Use them for inspiration :)
 #managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
