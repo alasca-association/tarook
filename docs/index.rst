@@ -27,6 +27,7 @@ Welcome to Yaook k8s' documentation!
    Cluster Repository Initialization <usage/initialization>
    Environment Variables <usage/environmental-variables>
    Cluster Configuration <usage/cluster-configuration>
+   Terraform Documentation <usage/terraform-docs>
 
 .. toctree::
    :maxdepth: 2

@@ -770,5 +770,5 @@ and should be kept up to date on a regular base.
 
 |
 
-.. include:: terraform-docs.md
+.. include:: terraform-docs.rst
    :parser: myst_parser.sphinx_
