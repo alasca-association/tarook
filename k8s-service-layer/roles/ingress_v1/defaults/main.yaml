@@ -8,4 +8,5 @@ k8s_ingress_nodeport_https: 32443
 k8s_ingress_replica_count: 1
 k8s_ingress_enable_ssl_passthrough: "true"
 k8s_ingress_helm_repo_url: "https://kubernetes.github.io/ingress-nginx"
+k8s_ingress_allow_snippet_annotations: false
 ...

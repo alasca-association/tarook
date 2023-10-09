@@ -13,6 +13,7 @@ controller:
     enable-ssl-passthrough: "{{ k8s_ingress_enable_ssl_passthrough }}"
   priorityClassName: "system-cluster-critical"
   replicaCount: "{{ k8s_ingress_replica_count }}"
+  allowSnippetAnnotations: {{ k8s_ingress_allow_snippet_annotations | bool }}
 {% if k8s_monitoring_enabled %}
   metrics:
     enabled: true
