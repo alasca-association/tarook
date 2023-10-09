@@ -44,7 +44,18 @@ So if you don't know the ``merge-request-ID`` in advance, just type anything (ex
 which will not be replaced and mark a note with no link to a MR)
 instead of the ID. Please provide the file in your last commit as the pipeline will
 ``git commit --amend`` and ``git push --force`` the corrected filename back to
-your branch. Don't forget to ``git pull`` afterwards, if you make new changes.
+your branch. Don't forget to ``git pull --rebase=true`` afterwards, if you make new changes.
+
+.. note::
+
+   When you are working in a fork the file won't be changed, but the pipeline will
+   fail. Please edit the file manually.
+
+.. note::
+
+   Sometimes the pipeline fails with ``RuntimeError: No releasenote file added.
+   Make sure to provide a file with your MR.`` If you provided a note it's likely
+   that you have to rebase to ``origin/devel`` to make the pipeline pass.
 
 **Currently we use the following types:**
 
