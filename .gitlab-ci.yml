@@ -114,6 +114,7 @@ release-note-file-check:
       fi
   tags:
     - docker
+  retry: 1
   rules:
     - if: $CI_MERGE_REQUEST_EVENT_TYPE
       when: on_success
