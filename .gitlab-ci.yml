@@ -86,7 +86,6 @@ release-note-file-check:
     TARGET_BRANCH: origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
     COMMIT_MESSAGE: MR-number for releasenote(s) changed
     COMMIT_FILES: docs/_releasenotes
-
   before_script:
     - poetry install --with ci --sync
     - git fetch origin "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
@@ -113,7 +112,6 @@ release-note-file-check:
           git push --force -o ci.skip https://gitlab-ci-token:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH} HEAD:${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
         fi
       fi
-  needs: []
   tags:
     - docker
   rules:
@@ -129,7 +127,6 @@ build-docs-check:
   script:
     - sphinx-build -W docs _build/html
     - mv _build/html public
-  needs: []
   artifacts:
     expose_as: "Rendered Docs"
     expire_in: "7 days"
@@ -501,7 +498,6 @@ pages:
   script:
     - sphinx-build -W docs _build/html
     - mv _build/html public
-  needs: []
   artifacts:
     paths:
       - public/
