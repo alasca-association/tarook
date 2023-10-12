@@ -18,8 +18,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.todo',
-    # 'sphinx.ext.autosectionlabel',
-    'myst_parser',
     'sphinx_tabs.tabs'
 ]
 

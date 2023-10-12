@@ -20,14 +20,13 @@ Welcome to Yaook k8s' documentation!
    concepts/abstraction-layers
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: LCM Usage Guide
    :hidden:
 
    Cluster Repository Initialization <usage/initialization>
    Environment Variables <usage/environmental-variables>
    Cluster Configuration <usage/cluster-configuration>
-   Terraform Documentation <usage/terraform-docs>
 
 .. toctree::
    :maxdepth: 2
