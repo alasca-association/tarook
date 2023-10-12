@@ -12,6 +12,7 @@ resource "openstack_networking_subnet_v2" "cluster_subnet" {
   network_id = openstack_networking_network_v2.cluster_network.id
   cidr       = var.subnet_cidr
   ip_version = 4
+  dns_nameservers = var.dns_nameservers_v4
 }
 
 resource "openstack_networking_subnet_v2" "cluster_v6_subnet" {

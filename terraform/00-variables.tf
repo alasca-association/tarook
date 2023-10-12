@@ -210,6 +210,12 @@ variable "network_mtu" {
   description = "MTU for the network used for the cluster."
 }
 
+variable "dns_nameservers_v4" {
+  type = list(string)
+  default = []
+  description = "A list of IPv4 addresses which will be configured as DNS nameservers of the IPv4 subnet."
+}
+
 variable "monitoring_manage_thanos_bucket" {
   type = bool
   default = false
