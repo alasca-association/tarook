@@ -90,7 +90,7 @@
 
     - name: Join the k8s cluster as another worker  # noqa no-changed-when
       # XXX: ansible command module does not support setting the umask
-      ansible.builtin.shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml --ignore-preflight-errors=FileAvailable--etc-kubernetes-kubelet.conf --ignore-preflight-errors=FileAvailable--etc-kubernetes-pki-ca.crt"
+      ansible.builtin.shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml"
 
     - name: Remove kubeadm-join-config.yaml
       ansible.builtin.file:
