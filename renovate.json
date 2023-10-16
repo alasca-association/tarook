@@ -9,6 +9,12 @@
     "terraform",
     "ansible"
   ],
+  "nix": {
+    "enabled": true
+  },
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "pre-commit": {
     "enabled": true
   },
