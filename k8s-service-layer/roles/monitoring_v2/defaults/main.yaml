@@ -48,4 +48,7 @@ monitoring_grafana_memory_limit: "512Mi"
 monitoring_grafana_memory_request: "256Mi"
 monitoring_grafana_cpu_limit: "500m"
 monitoring_grafana_cpu_request: "100m"
+
+monitoring_prometheus_persistent_storage_class: ""
+monitoring_prometheus_persistent_storage_resource_request: "50Gi"
 ...

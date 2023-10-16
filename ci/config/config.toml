@@ -147,6 +147,7 @@ mgr_scheduling_key = "{{ scheduling_key_prefix }}/rook-mgr"
 use_thanos                          = true
 use_grafana                         = true
 grafana_persistent_storage_class    = "rook-ceph-cephfs"
+prometheus_persistent_storage_class = "csi-sc-cinderplugin"
 thanos_objectstorage_container_name = "ci-monitoring-thanos-data"
 scheduling_key                      = "{{ scheduling_key_prefix }}/monitoring"
 grafana_memory_limit = "768Mi"

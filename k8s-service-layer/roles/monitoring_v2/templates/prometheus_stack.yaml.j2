@@ -404,6 +404,16 @@ prometheus:
     secrets:
       - etcd-metrics-proxy
     serviceMonitorSelectorNilUsesHelmValues: {{  monitoring_common_labels | ternary(true, false) }}
+{% if monitoring_prometheus_persistent_storage_class %}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: {{ monitoring_prometheus_persistent_storage_class | to_json }}
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: {{ monitoring_prometheus_persistent_storage_resource_request | to_json }}
+{% endif %}
 {% if monitoring_common_labels %}
     serviceMonitorSelector:
       matchLabels:
