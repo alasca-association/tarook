@@ -245,12 +245,22 @@ To initialize a **local** Vault instance for **development purposes**, do the fo
       If you are using rootless docker or podman, set ``VAULT_IN_DOCKER_USE_ROOTLESS=true``
       in ``~/.config/yaook-k8s/env``
 
-2. Ensure that sourcing ``managed-k8s/actions/vault_env.sh`` is part of your ``.envrc``.
+2. Ensure that sourcing (comment in) ``vault_env.sh`` is part of your ``.envrc``.
+   .. code:: console
 
-3. Run ``./managed-k8s/tools/vault/init.sh``
+      $ sed -i '/#source \"\$(pwd)\/managed-k8s\/actions\/vault_env.sh\"/s/^#//g' .envrc
 
-4. Run ``./managed-k8s/tools/vault/mkcluster-root.sh devcluster`` if you are starting
-   with a newly created cluster. If you are migrating an old cluster see
+3. Run the init command for vault
+   .. code:: console
+
+      $  ./managed-k8s/tools/vault/init.sh
+
+4. If you are starting with a new created cluster run:
+   .. code:: console
+
+      $ ./managed-k8s/tools/vault/mkcluster-root.sh devcluster
+
+   If you are migrating an old cluster see
    :ref:`here <vault.migrating-an-existing-cluster-to-vault>`. Note that ``devcluster``
    must be the same as the ``cluster_name`` set in the ``config.toml``
    in the ``[vault]`` section.
