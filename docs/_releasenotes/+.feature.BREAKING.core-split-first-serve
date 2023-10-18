@@ -1,0 +1,4 @@
+The first and main serve of the core-split has been merged and the code base has been tossed around.
+One MUST take actions to migrate a pre-core-split cluster.
+This BREAKS the air-gapped and cluster-behind-proxy functionality.
+Please refer to the respective documentation: TODO

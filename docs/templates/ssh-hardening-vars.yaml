@@ -1,1 +1,1 @@
-../../k8s-base/vars/ssh-hardening.yaml
+../../k8s-core/ansible/vars/ssh-hardening.yaml
