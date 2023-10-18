@@ -1,7 +1,6 @@
 ---
 # tasks file for cluster-health-verification
-
 - name: Ensure that the rook-based Ceph cluster is happy
-  ansible.builtin.include_tasks: rook-ceph.yaml
-  when: k8s_storage_rook_enabled
+  ansible.builtin.import_role:
+    name: common/rook-health-verification
 ...
