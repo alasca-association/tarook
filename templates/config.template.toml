@@ -1030,34 +1030,6 @@ ip_gw   = "172.30.153.65/26"
 
 # ANCHOR_END: ipsec_configuration
 
-# ANCHOR: ch-role-users_configuration
-# --- C&H USERS ---
-# ansible prefix: "cah_users_"
-[cah-users]
-rollout = false # •ᴗ•
-
-# Include and exclude C&H users from rollout
-# C&H users refers to items in the ch-users-databag repository
-# For additional information refer the ch-role-users repository
-# The users have to be provided as List<String>
-# Possible Configurations:
-# - roll_out_users_from
-#   - include specific user group
-#   - Default: ["opsi", "it-operations", "head"]
-# - exclude_users_from
-#   - exclude specific user group
-#   - Default: ["students", "service"]
-# - include_users
-#   - include specific user(s)
-#   - Default: []
-# - exclude_users
-#   - exclude specific user(s)
-#   - Default: ["deployer"]
-# Example Usage:
-# include_users = ["<user>", "<user>"]
-
-# ANCHOR_END: ch-role-users_configuration
-
 # ANCHOR: testing_test_nodes_configuration
 # --- TESTING: TEST NODES ---
 # You can define specifc nodes for some

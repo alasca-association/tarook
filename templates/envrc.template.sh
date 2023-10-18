@@ -42,9 +42,6 @@ export WG_USAGE=true
 # Wireguard: Role out C&H company members
 export WG_COMPANY_USERS=false
 
-# Auto-configure C&H company members as users on the nodes
-export SSH_COMPANY_USERS=false
-
 # Wireguard: Interface and config file name
 wg_conf_name='wg0'
 export wg_conf_name

@@ -166,8 +166,6 @@ Environment Variable                    Default                                 
 ``MANAGED_K8S_WG_USER_GIT``             ``gitlab.cloudandheat.com:lcm/wg_user``                                 Git URL to a repository with wireguard
                                                                                                                 keys to provision. Can be enabled by
                                                                                                                 setting ``WG_COMPANY_USERS`` (see below).
-``MANAGED_CH_ROLE_USER_GIT``            ``gitlab.cloudandheat.com:operations/ansible-roles/ch-role-users.git``  RL to the ch-role-users role submodule.
-                                                                                                                Can be enabled by setting ``SSH_COMPANY_USERS``
                                                                                                                 (see below).
 ``TERRAFORM_MODULE_PATH``               ``../terraform``                                                        Path to the Terraform root module to
                                                                                                                 change the working directory for the
@@ -237,8 +235,7 @@ SSH Configuration
 Environment Variable        Default                                     Description
 =========================== =========================================== ====================
 ``TF_VAR_keypair``          ``"firstnamelastname-hostname-gendate"``    Defines the keypair name (in OpenStack) which will be used during the creation of new instances. Does not affect instances which have already been created. You **MUST** adjust this variable if you want to deploy on top of OpenStack. This variable is used by the ``apply-terraform.sh``:ref:`-script<actions-references.apply-terraformsh>`.
-``MANAGED_K8S_SSH_USER``                                                The SSH user to use to log into the machines. This variable *SHOULD* be set. By default, the Ansible automation is written such that it’ll auto-detect one of the default SSH users (``centos``, ``debian``, ``ubuntu``) to connect to the machines. This only works if the machines were created with a keypair of which you hold the private key (see ``TF_VAR_keypair``). If the LCM is configured to roll out all relevant users from the `ch-users-databag <https://gitlab.cloudandheat.com/configs/ch-users-databag/>`__ via `ch-role-users <https://gitlab.cloudandheat.com/operations/ansible-roles/ch-role-users>`__ (see ``SSH_COMPANY_USERS``), you'll need to ensure that this the correct user is used when trying to bring up the SSH connection.
-``SSH_COMPANY_USERS``       ``false``                                   If set to true, ``init.sh`` will clone the repository ``MANAGED_CH_ROLE_USER_GIT``. The inventory updater will then configure your inventory such that the ``ch-role-users`` role is executed in stage2 and stage3.
+``MANAGED_K8S_SSH_USER``                                                The SSH user to use to log into the machines. This variable *SHOULD* be set. By default, the Ansible automation is written such that it’ll auto-detect one of the default SSH users (``centos``, ``debian``, ``ubuntu``) to connect to the machines. This only works if the machines were created with a keypair of which you hold the private key (see ``TF_VAR_keypair``).
 =========================== =========================================== ====================
 
 .. _environmental-variables.behavior-altering-variables:

@@ -32,7 +32,6 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "terraform",
     "wireguard",
     "ipsec",
-    "cah-users",
     "etcd-backup",
     "custom",
     "vault",
@@ -75,7 +74,6 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "kubernetes": "k8s",
     "wireguard": "wg",
     "ipsec": "ipsec",
-    "cah-users": "cah_users",
     "rook": "rook",
     "prometheus": "monitoring",
     "cert-manager": "k8s_cert_manager",
@@ -622,21 +620,6 @@ def main():
             config.get("load-balancing", dict()),
             load_balancing_inventory_path,
             SECTION_VARIABLE_PREFIX_MAP.get("load-balancing", "")
-        )
-
-    # ---
-    # CAH USERS
-    # ---
-    print_process_state("C&H-Users")
-    for stage in ["yaook-k8s"]:
-        cah_users_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage /
-            "group_vars" / "all" / "cah-users.yaml"
-        )
-        dump_to_ansible_inventory(
-            config.get("cah-users", dict()),
-            cah_users_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("cah-users", "")
         )
 
     # ---

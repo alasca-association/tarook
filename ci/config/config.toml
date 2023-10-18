@@ -248,9 +248,6 @@ remote_addrs         = ["185.128.117.230"]
 remote_name          = "185.128.117.230"
 remote_private_addrs = "172.20.150.154"
 
-[cah-users]
-rollout = false
-
 [miscellaneous]
 wireguard_on_workers = false
 
