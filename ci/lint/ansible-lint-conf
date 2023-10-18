@@ -16,3 +16,7 @@ exclude_paths:
   - .gitlab-ci.yml
   - .pre-commit-config.yaml
   - ci/*.yaml
+  - k8s-air-gapped
+
+extra_vars:
+  ansible_k8s_core_dir: "{{ playbook_dir }}/../../k8s-core/ansible"

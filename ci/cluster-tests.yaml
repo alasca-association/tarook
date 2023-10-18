@@ -237,12 +237,9 @@
     - cp custom-play.yaml k8s-custom/main.yaml
     - ./managed-k8s/actions/apply-terraform.sh
     - ./reachability-or-recreate.sh
-    - ./managed-k8s/actions/apply-stage2.sh
-    - ./managed-k8s/actions/apply-stage3.sh
-    - ./managed-k8s/actions/apply-stage4.sh
-    - ./managed-k8s/actions/apply-stage5.sh
-    - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/system_update_nodes.sh
-    - ./managed-k8s/actions/apply-custom.sh
+    - ./managed-k8s/actions/apply-all.sh
+    - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-frontend-nodes.sh
+    - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-kubernetes-nodes.sh
     - ./managed-k8s/actions/test.sh
   after_script:
     - cd ci/

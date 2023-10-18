@@ -8,8 +8,8 @@ set -euo pipefail
 export wg_conf_name="wg0"
 ./managed-k8s/actions/wg-up.sh || true
 
-if [ -f "$PWD/inventory/.etc/admin.conf" ]; then
-    export KUBECONFIG="$PWD/inventory/.etc/admin.conf"
+if [ -f "$PWD/etc/admin.conf" ]; then
+    export KUBECONFIG="$PWD/etc/admin.conf"
     ./managed-k8s/tools/dump-k8s.sh podlogs --all-namespaces '' pod deployment pvc statefulset daemonset configmap secrets || true
 fi
 

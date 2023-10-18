@@ -100,7 +100,7 @@ ansible-lint:
     - poetry install --with ci --sync
   script:
     - "ansible-galaxy install -r ansible/requirements.yaml"
-    - "ANSIBLE_ROLES_PATH=./k8s-base/roles:./k8s-managed-services/roles/:./k8s-service-layer/roles:./k8s-base/test-roles/:./k8s-service-layer/test-roles/:./k8s-managed-services/test-roles ansible-lint -c ci/lint/ansible-lint-conf --offline"
+    - "ANSIBLE_ROLES_PATH=./k8s-core/ansible/roles:./k8s-supplements/ansible/roles:./k8s-supplements/ansible/test-roles ansible-lint -c ci/lint/ansible-lint-conf --offline"
   tags:
     - docker
   rules:
