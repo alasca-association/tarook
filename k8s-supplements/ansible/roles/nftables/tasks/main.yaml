@@ -41,11 +41,22 @@
     group: root
     mode: 0600
 
+- name: Create nftables config for k8s API server
+  become: true
+  when: on_openstack | bool
+  ansible.builtin.template:
+    src: k8s-apiserver.conf.j2
+    dest: /etc/nft.d/k8s_apiserver.conf
+    owner: root
+    group: root
+    mode: 0600
+  notify: reload nftables
+
 - name: Start&enable nftables systemd service
   become: true
   ansible.builtin.systemd:
     name: nftables
-    state: restarted
+    state: started
     enabled: true
     masked: false
 ...

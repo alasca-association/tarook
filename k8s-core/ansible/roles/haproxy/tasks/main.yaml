@@ -28,7 +28,7 @@
     mode: 0600
     owner: root
     group: root
-  register: haproxy
+  notify: Restart the haproxy service
 
 - name: Configure HAProxy to use the directory as config source
   become: true
@@ -38,14 +38,23 @@
     owner: root
     group: root
     mode: 0640
-  register: haproxy_config
+  notify: Restart the haproxy service
 
-- name: Start the haproxy service  # noqa no-handler
+- name: Create HAProxy config for the k8s API server
+  become: true
+  ansible.builtin.template:
+    src: k8s-apiserver.cfg.j2
+    dest: /etc/haproxy/conf.d/20_k8s-apiserver.cfg
+    validate: haproxy -f %s -c
+    mode: 0600
+    owner: root
+    group: root
+  notify: Restart the haproxy service
+
+- name: Ensure the haproxy service is enabled and started
   become: true
   ansible.builtin.systemd:
-    daemon_reload: true
     enabled: true
-    state: restarted
+    state: started
     name: haproxy
-  when: haproxy is changed or haproxy_config is changed
 ...

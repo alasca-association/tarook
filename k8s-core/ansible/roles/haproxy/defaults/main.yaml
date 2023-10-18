@@ -7,4 +7,5 @@ haproxy_service_config_map:
 haproxy_stats_port: 48981
 haproxy_global_maxconn: 60000
 haproxy_frontend_nodeport_maxconn: 2000
+haproxy_frontend_k8s_api_maxconn: 2000
 ...
