@@ -10,3 +10,4 @@ vault_caller_auth_method: "{{ lookup('env', 'VAULT_METHOD') or (lookup('env', 'V
 vault_caller_token: "{{ lookup('env', 'VAULT_TOKEN') }}"
 vault_caller_role_id: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
 vault_caller_secret_id: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
+...
