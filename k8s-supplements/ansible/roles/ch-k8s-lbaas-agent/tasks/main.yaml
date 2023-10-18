@@ -1,7 +1,6 @@
 ---
 - name: Deploy LBaaS agent
-  when: ch_k8s_lbaas_enabled
-
+  become: true
   block:
   - name: Create user
     ansible.builtin.user:
