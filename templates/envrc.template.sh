@@ -75,7 +75,7 @@ export USE_VAULT_IN_DOCKER=false
 #source "$(pwd)/managed-k8s/actions/vault_env.sh"
 
 # Optional: Useful to be able to interact with the cluster via kubectl.
-KUBECONFIG="$(pwd)/inventory/.etc/admin.conf"
+KUBECONFIG="$(pwd)/etc/admin.conf"
 export KUBECONFIG
 
 # Optional: Use custom roles that can be dropped into the
