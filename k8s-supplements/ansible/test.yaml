@@ -1,11 +1,50 @@
 ---
+- name: Check monitoring
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
+  tags:
+  - test-mk8s-ms
+  - check-mk8s-ms
+  roles:
+  - role: monitoring_v2_test
+    tags:
+    - test-mk8s-ms/monitoring_v2
+    - check-mk8s-ms/monitoring_v2
+    - monitoring_v2_test
+    when: (k8s_monitoring_enabled | bool) and not (monitoring_use_jsonnet_setup | default(False))
+
+- name: Service Tests
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
+  tags:
+  - test-mk8s-sl
+  - check-mk8s-sl
+  roles:
+  - role: cert_manager_v1_test
+    when: k8s_cert_manager_enabled | bool
+    tags:
+    - test-mk8s-sl/cert-manager
+    - check-mk8s-sl/cert-manager
+    - cert_manager_v1_test
+
+  - role: fluxcd2_v1_test
+    when: (fluxcd_enabled is defined) and (fluxcd_enabled | bool)
+    tags:
+    - test-mk8s-sl/fluxcd
+    - check-mk8s-sl/fluxcd
+    - fluxcd2_v1_test
+
 - name: Detect user
   hosts: k8s_nodes
   gather_facts: false
   vars_files:
   - vars/etc.yaml
   roles:
-  - detect_user
+  - bootstrap/detect-user
 
 - name: Check K8s setup
   hosts: k8s_nodes
@@ -170,20 +209,6 @@
   gather_facts: false
   vars_files:
   - vars/retries.yaml
-  pre_tasks:
-  # include default vars of rook
-  - name: include rook defaults
-    when: k8s_storage_rook_enabled | bool
-    ansible.builtin.include_vars:
-      file: "{{ ksl_playbook_directory }}/roles/rook_v1/defaults/main.yaml"
-    tags:
-    - always
-  - name: include ksl inventory variables
-    when: ksl_vars_directory is defined
-    ansible.builtin.include_vars:
-      file: "{{ ksl_vars_directory }}/rook.yaml"
-    tags:
-    - always
   vars:
     gateway: "{{ groups['gateways'] | first }}"
   tasks:
