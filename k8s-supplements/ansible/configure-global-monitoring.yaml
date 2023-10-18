@@ -1,0 +1,11 @@
+---
+- name: Install monitoring supplements on Kubernetes frontend
+  hosts: frontend
+  vars_files:
+  - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
+  roles:
+  - role: global-monitoring-frontend
+    tags: global-monitoring-frontend
+    when: k8s_global_monitoring_enabled
+...
