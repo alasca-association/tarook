@@ -3,6 +3,8 @@ cluster_repository="$(realpath ".")"
 code_repository="$(realpath "$actions_dir/../")"
 etc_directory="$(realpath "etc")"
 
+submodule_managed_k8s_name="managed-k8s"
+
 terraform_min_version="0.14.0"
 terraform_state_dir="$cluster_repository/terraform"
 terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"

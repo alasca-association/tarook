@@ -7,7 +7,6 @@ actions_dir="$(dirname "$0")"
 
 submodule_base="submodules"
 
-submodule_managed_k8s_name="managed-k8s"
 submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/yaook/k8s.git}"
 
 submodule_wg_user_name="wg_user"
