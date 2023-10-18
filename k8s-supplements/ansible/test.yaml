@@ -241,7 +241,7 @@
   - role: check-shared-fs
     vars:
       fs_storage_class: rook-ceph-cephfs
-    when: "(k8s_storage_rook_enabled | bool) and (rook_ceph_fs | bool)"
+    when: "(k8s_storage_rook_enabled | bool) and (rook_ceph_fs | default(False) | bool)"
     tags:
     - test-ceph-shared-filesystem
     - check-ceph-shared-filesystem
