@@ -4,9 +4,7 @@ galaxy_info:
   author: Yaook Authors
 dependencies:
 - wireguard-support
-- net-forwarding
 - bird
 - nftables
-- vault-config
-- vault-approle
+- helpers/vault-approle
 ...

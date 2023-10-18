@@ -1,0 +1,41 @@
+---
+- name: Initial sanity checks
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+  - vars/etc.yaml
+  roles:
+  - role: vault-migrated
+    tags: vault-migrated
+
+- name: Bootstrap Gateway nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/bootstrap.yaml"
+  vars:
+    target_hosts: gateways
+
+- name: System update Gateway nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/update-frontend-nodes.yaml"
+
+- name: Install frontend services
+  import_playbook: "{{ ansible_k8s_core_dir }}/install-frontend-services.yaml"
+
+- name: Configure load balancer and VPN on Gateways nodes
+  hosts: gateways
+  gather_facts: true
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  - vars/vault-config.yaml
+  - vars/vrrp-common.yaml
+  roles:
+  - role: bird
+    tags: bird
+  - role: nftables
+    tags: nftables
+  - role: wireguard
+    tags: wireguard
+  - role: ipsec-vpn
+    tags: ipsec-vpn
+...
