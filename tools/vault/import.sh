@@ -28,11 +28,11 @@ mode="$2"
 . "$(dirname "$0")/lib.sh"
 scriptdir="$(dirname "$0")"
 
-inventory_etc=inventory/.etc
+inventory_etc=etc
 flag_file="$inventory_etc/migrated-to-vault"
 
-if [ ! -d 'inventory/.etc' ]; then
-    echo "$0: inventory/.etc does not exist. are you running this from the right place?" >&2
+if [ ! -d 'etc' ]; then
+    echo "$0: ./etc does not exist. are you running this from the right place?" >&2
     exit 1
 fi
 
@@ -42,13 +42,13 @@ if [ -e "$flag_file" ]; then
     exit 2
 fi
 
-if [ ! -e 'inventory/.etc/passwordstore/wg_gw_key.gpg' ] && [ "${WG_USAGE:-true}" == 'true' ]; then
+if [ ! -e 'etc/passwordstore/wg_gw_key.gpg' ] && [ "${WG_USAGE:-true}" == 'true' ]; then
     echo "$0: couldn't find wg_gw_key.gpg despite \$WG_USAGE being set to true" >&2
     echo "$0: refusing to continue, this does not look like an up-to-date, spawned cluster" >&2
     exit 2
 fi
 
-if [ ! -e 'inventory/.etc/sa.key' ]; then
+if [ ! -e 'etc/sa.key' ]; then
     echo "$0: couldn't find sa.key" >&2
     echo "$0: refusing to continue, this does not look like an up-to-date, spawned cluster" >&2
     exit 2

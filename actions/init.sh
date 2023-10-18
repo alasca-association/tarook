@@ -97,10 +97,10 @@ if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 fi
 
 if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then
-    mkdir -p "$ansible_inventory_base/99_custom"
+    mkdir -p "$ansible_inventory_base/k8s_custom"
     mkdir -p "$ansible_k8s_custom_playbook"
 
-    ln -sf ../03_k8s_base/hosts inventory/99_custom/hosts
+    ln -sf ../yaook-k8s/hosts inventory/k8s_custom/hosts
 
     if [ ! -d "$ansible_k8s_custom_playbook/inventory" ]; then
         cp -r "$code_repository/k8s-managed-services/inventory" "$ansible_k8s_custom_playbook/inventory"
@@ -113,8 +113,8 @@ if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then
     fi
 
     mkdir -p "$ansible_k8s_custom_playbook/vars"
-    ln -sf "../../managed-k8s/k8s-base/vars/" "$ansible_k8s_custom_playbook/vars/k8s-base-vars"
-    ln -sf "../../managed-k8s/k8s-service-layer/vars/" "$ansible_k8s_custom_playbook/vars/ksl-vars"
+    ln -sf "../../managed-k8s/k8s-core/ansible/vars/" "$ansible_k8s_custom_playbook/vars/k8s-core-vars"
+    ln -sf "../../managed-k8s/k8s-supplements/vars/" "$ansible_k8s_custom_playbook/vars/k8s-supplements-vars"
 fi
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then

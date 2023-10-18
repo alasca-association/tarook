@@ -8,14 +8,19 @@ python3 "$actions_dir/update_inventory.py"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
+require_vault_token
+
+install_prerequisites
+
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"
 
 export KUBECONFIG="$cluster_repository/inventory/.etc/admin.conf"
 
 # Make roles from all stages accessible
-ANSIBLE_ROLES_PATH="$ansible_k8s_base_playbook/roles:$ansible_k8s_sl_playbook/roles:$ansible_k8s_ms_playbook/roles:$ansible_k8s_custom_playbook/roles"
+ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles:$ansible_k8s_custom_playbook/roles"
 export ANSIBLE_ROLES_PATH
 
 cd "$ansible_k8s_custom_playbook"
-ansible_playbook -i "$ansible_inventoryfile_custom" -i "inventory/default.yaml" main.yaml "$@"
+ansible_playbook -i "$ansible_inventory_host_file" \
+  main.yaml "$@"
