@@ -246,16 +246,19 @@ To initialize a **local** Vault instance for **development purposes**, do the fo
       in ``~/.config/yaook-k8s/env``
 
 2. Ensure that sourcing (comment in) ``vault_env.sh`` is part of your ``.envrc``.
+
    .. code:: console
 
       $ sed -i '/#source \"\$(pwd)\/managed-k8s\/actions\/vault_env.sh\"/s/^#//g' .envrc
 
 3. Run the init command for vault
+
    .. code:: console
 
       $  ./managed-k8s/tools/vault/init.sh
 
 4. If you are starting with a new created cluster run:
+
    .. code:: console
 
       $ ./managed-k8s/tools/vault/mkcluster-root.sh devcluster
