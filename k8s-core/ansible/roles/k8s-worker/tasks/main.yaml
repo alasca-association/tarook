@@ -29,7 +29,7 @@
   include_tasks: obtain-kubeconfigs.yaml
 
 - name: Join the k8s cluster steps
-  when: install_status == 'k8s_not_installed'
+  when: k8s_install_status == "not_initialized"
   become: true
   block:
   - name: Create kubeadm-join-config.yaml

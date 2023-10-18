@@ -1,0 +1,95 @@
+---
+- name: Prepare the k8s nodes
+  hosts: k8s_nodes
+  gather_facts: true
+  vars_files:
+  - vars/etc.yaml
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
+  roles:
+  - role: k8s-networking
+    tags: k8s-networking
+  - role: nvidia-cuda-drivers
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    tags:
+    - gpu-support
+    - nvidia-cuda-drivers
+  - role: nvidia-container-toolkit
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    tags:
+    - gpu-support
+    - nvidia-container-toolkit
+  - role: vgpu-support
+    tags: vgpu-support
+    when: k8s_virtualize_gpu and not k8s_is_gpu_cluster
+  - role: containerd
+    tags: containerd
+  - role: k8s-packages
+    tags: k8s-packages
+  - role: k8s-tools
+    tags: k8s-tools
+
+- name: Configure sysctl on K8s workers
+  hosts: workers
+  gather_facts: false
+  roles:
+  - role: vm-max-map-count
+    when: "vm_max_map_count is defined"
+    tags: vm-max-map-count
+  - role: fs-inotify
+    tags: fs-inotify
+
+- name: Install frontend services
+  import_playbook: install-frontend-services.yaml
+
+- name: Clean up control plane
+  hosts: masters
+  gather_facts: true
+  serial: 1
+  roles:
+  - role: etcd-clean-stale-members
+    tags: etcd-clean-stale-members
+
+- name: Spawn the K8s control plane
+  hosts: masters
+  gather_facts: true
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  - vars/vault-config.yaml
+  serial:
+  - 1
+  - "100%"
+  roles:
+  - role: k8s-master
+    tags: k8s-master
+
+- name: Spawn and configure the K8s worker nodes
+  hosts: workers
+  gather_facts: true
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  - vars/vault-config.yaml
+  roles:
+  - role: k8s-worker
+    tags: k8s-worker
+  - role: kubelet-configuration
+    tags: kubelet-configuration
+
+- name: Configure Nvidia Device Plugin
+  hosts: workers
+  vars_files:
+  - vars/retries.yaml
+  roles:
+  - role: nvidia-device-plugin
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    tags:
+    - gpu-support
+    - nvidia-device-plugin
+...
