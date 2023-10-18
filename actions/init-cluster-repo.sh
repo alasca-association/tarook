@@ -64,22 +64,16 @@ fi
 
 new_actions_dir="$submodule_managed_k8s_name/actions"
 if [ "$(realpath "$new_actions_dir")" != "$(realpath "$actions_dir")" ]; then
-    if [ -x "$new_actions_dir/init.sh" ]; then
+    if [ -x "$new_actions_dir/init-cluster-repo.sh" ]; then
         # execute init from the cloned repository; it should not change anything
         # but it’ll provide a consistent state
-        hintf 're-executing init.sh from local submodule'
-        exec "$new_actions_dir/init.sh"
+        hintf 're-executing init-cluster-repo.sh from local submodule'
+        exec "$new_actions_dir/init-cluster-repo.sh"
     else
-        # huh? no executable init.sh in the cloned repository. weird, but let’s
-        # continue.
-        warningf "no executable init.sh action in the $submodule_managed_k8s_name submodule"
+        warningf "no executable init-cluster-repo.sh action in the $submodule_managed_k8s_name submodule"
         hintf "this means that the cloned $submodule_managed_k8s_name submodule is unexpectedly old"
-        hintf 'we will try continue to operate using the init.sh you called initially\n\n'
-
-        # reload all variables with the new base
-        actions_dir="$new_actions_dir"
-        # shellcheck source=actions/lib.sh
-        . "$actions_dir/lib.sh"
+        hintf 'we will fail now.'
+        exit 1
     fi
 fi
 
@@ -96,15 +90,7 @@ if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 fi
 
 if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then
-    mkdir -p "$ansible_inventory_base/k8s_custom"
     mkdir -p "$ansible_k8s_custom_playbook"
-
-    ln -sf ../yaook-k8s/hosts inventory/k8s_custom/hosts
-
-    if [ ! -d "$ansible_k8s_custom_playbook/inventory" ]; then
-        cp -r "$code_repository/k8s-managed-services/inventory" "$ansible_k8s_custom_playbook/inventory"
-    fi
-
     mkdir -p "$ansible_k8s_custom_playbook/roles"
 
     if [ ! -f "$ansible_k8s_custom_playbook/main.yaml" ]; then
@@ -113,7 +99,7 @@ if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then
 
     mkdir -p "$ansible_k8s_custom_playbook/vars"
     ln -sf "../../managed-k8s/k8s-core/ansible/vars/" "$ansible_k8s_custom_playbook/vars/k8s-core-vars"
-    ln -sf "../../managed-k8s/k8s-supplements/vars/" "$ansible_k8s_custom_playbook/vars/k8s-supplements-vars"
+    ln -sf "../../managed-k8s/k8s-supplements/ansible/vars/" "$ansible_k8s_custom_playbook/vars/k8s-supplements-vars"
 fi
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then

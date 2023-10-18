@@ -208,8 +208,8 @@
     - export MANAGED_K8S_GIT="$(realpath .)"
     - cd ci
     - git init
-    - ../actions/init.sh
-    - ../actions/init.sh # A second run to check idempotency
+    - ../actions/init-cluster-repo.sh
+    - ../actions/init-cluster-repo.sh # A second run to check idempotency
       # Note that this is basically a dummy keypair that is not used to protect any significant data
     - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
       # Ensure that the project is clean
