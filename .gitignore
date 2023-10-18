@@ -3,7 +3,7 @@
 *.retry
 .direnv/
 *.kube
-.etc
+etc
 .envrc.local
 cloud-configs/
 *.tfstate*
