@@ -1,0 +1,11 @@
+---
+- name: Install cert-manager
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
+  roles:
+  - role: cert_manager_v1
+    when: k8s_cert_manager_enabled | bool
+    tags: cert_manager_v1
+...
