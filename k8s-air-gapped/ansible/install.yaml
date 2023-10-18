@@ -1,0 +1,23 @@
+# TODO adjust vars files
+# maybe rename playbook file
+---
+- name: Initial node bootstrap
+  hosts: k8s_nodes
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  - role: configure-apt-proxy
+    tags: configure-apt-proxy
+
+- name: Configure a PyPI mirror
+  ansible.builtin.include_tasks:
+    file: configure_pip_mirror.yaml
+  when: "pip_mirror_url is defined"
+
+- name: Configure the misc mirror CA
+  ansible.builtin.include_tasks:
+    file: configure_mirror_ca.yaml
+...
