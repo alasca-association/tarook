@@ -1,21 +1,4 @@
 ---
-k8s_network_pod_subnet: 10.244.0.0/16
-k8s_network_service_subnet: 10.96.0.0/12
-k8s_network_pod_subnet_v6: fdff:2::/56
-# The service subnet is bounded; for 128-bit addresses, the mask must be >= 108
-# The service cluster IP range is validated by the kube-apiserver to have at most 20 host bits
-# https://github.com/kubernetes/kubernetes/blob/v1.9.2/cmd/kube-apiserver/app/options/validation.go#L29-L32
-# https://github.com/kubernetes/kubernetes/pull/12841
-k8s_network_service_subnet_v6: fdff:3::/108
-k8s_network_bgp_worker_as: 64512
-k8s_network_bgp_gateway_as: 65000
-k8s_network_calico_ipipmode: "Never"
-k8s_cri_url: 'unix:///var/run/containerd/containerd.sock'
-
-supported_k8s_versions:
-  - '1.26'
-  - '1.27'
-
 # Minor version of k8s and Calico, e.g., '1.18.9' becomes '1.18'.
 k8s_version_minor: '{{ k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") }}'
 next_k8s_version_minor: '{{ next_k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") if next_k8s_version is defined }}'
