@@ -14,7 +14,7 @@
 - name: configure bird
   become: true
   ansible.builtin.template:
-    src: bird.conf
+    src: bird.conf.j2
     dest: /etc/bird/bird.conf
     owner: bird
     group: bird
@@ -52,7 +52,7 @@
   block:
   - name: Create config for bird6 in /etc/bird/
     ansible.builtin.template:
-      src: bird6.conf
+      src: bird6.conf.j2
       dest: /etc/bird/bird6.conf
       owner: bird
       group: bird
@@ -72,4 +72,29 @@
       name: bird6
       enabled: true
       state: started
+
+- name: Setup BGP configuration for calico
+  become: true
+  tags:
+  - calico
+  - bird
+  block:
+  - name: Configure BIRD for calico (IPv4)
+    ansible.builtin.template:
+      src: bird-calico.conf.j2
+      dest: /etc/bird.d/10-k8s-calico.conf
+      owner: root
+      group: bird
+      mode: "u=rw,g=r,o-rwx"
+    notify: restart bird
+
+  - name: Configure BIRD for calico (IPv6)
+    ansible.builtin.template:
+      src: bird-calico-v6.conf.j2
+      dest: /etc/birdv6.d/10-k8s-calico-ipv6.conf
+      owner: root
+      group: bird
+      mode: "u=rw,g=r,o-rwx"
+    notify: restart bird6
+    when: dualstack_support
 ...

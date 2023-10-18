@@ -1,9 +1,0 @@
----
-- name: Setup BGP configuration for calico
-  ansible.builtin.include_tasks: setup_calico_bgp.yaml
-  when: k8s_network_plugin == 'calico'
-
-- name: Remove BGP configuration for calico
-  ansible.builtin.include_tasks: clear_calico_bgp.yaml
-  when: k8s_network_plugin != 'calico'
-...
