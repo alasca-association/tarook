@@ -1,0 +1,52 @@
+---
+- name: Establish connectivity to the k8s nodes
+  hosts: k8s_nodes
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  tags: update-kubernetes-nodes
+  roles:
+  - role: bootstrap/detect-user
+    tags: detect-user
+  - role: bootstrap/ssh-known-hosts
+    tags: ssh-known-hosts
+  - role: bootstrap/prepare-node
+    tags: prepare-node
+  - role: helpers/is-k8s-installed
+    tags: update-system
+
+- name: Upgrade initialized k8s nodes
+  hosts: initialized_kubernetes_nodes
+  gather_facts: true
+  serial: 1
+  vars_files:
+  - vars/disruption.yaml
+  - vars/retries.yaml
+  tags: update-kubernetes-nodes
+  roles:
+  - role: cluster-health-verification
+    delegate_to: localhost
+    when:
+    - not (k8s_skip_upgrade_checks | bool)
+    - _allow_disruption
+  - role: kubeadm-drain-node
+    when: _allow_disruption
+  - role: update-system
+    when: _allow_disruption
+  - role: kubeadm-uncordon-node
+    when: _allow_disruption
+
+- name: Upgrade uninitialized k8s nodes
+  hosts: not_initialized_frontend_nodes:&not_initialized_kubernetes_nodes
+  gather_facts: true
+  vars_files:
+  - vars/disruption.yaml
+  - vars/retries.yaml
+  tags: update-kubernetes-nodes
+  roles:
+  - role: update-system
+    tags: update-system
+...

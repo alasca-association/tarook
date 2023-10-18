@@ -1,0 +1,43 @@
+---
+- name: Establish connectivity to the frontend nodes
+  hosts: frontend
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  tags: update-frontend-nodes
+  roles:
+  - role: bootstrap/detect-user
+    tags: detect-user
+  - role: bootstrap/ssh-known-hosts
+    tags: ssh-known-hosts
+  - role: bootstrap/prepare-node
+    tags: prepare-node
+  - role: helpers/is-frontend-initialized
+    tags: update-system
+
+- name: Upgrade uninitialized frontend nodes
+  gather_facts: true
+  hosts: not_initialized_frontend_nodes:&not_initialized_kubernetes_nodes
+  vars_files:
+  - vars/disruption.yaml
+  - vars/retries.yaml
+  tags: update-frontend-nodes
+  roles:
+  - role: update-system
+    tags: update-system
+
+- name: Upgrade initialized frontend nodes
+  gather_facts: true
+  hosts: initialized_frontend_nodes
+  vars_files:
+  - vars/disruption.yaml
+  - vars/retries.yaml
+  serial: 1
+  tags: update-frontend-nodes
+  roles:
+  - role: update-system
+    tags: update-system
+    when: _allow_disruption
+...
