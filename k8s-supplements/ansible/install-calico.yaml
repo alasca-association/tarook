@@ -1,0 +1,20 @@
+---
+- name: Connect to Kubernetes nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
+  vars:
+    target_hosts: k8s_nodes
+
+- name: Install calico with the tigera operator
+  hosts: masters
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  roles:
+  - role: calico-tigera-operator
+    tags:
+    - calico
+    - calico-tigera-operator
+...
