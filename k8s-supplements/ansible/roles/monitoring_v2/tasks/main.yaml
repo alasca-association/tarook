@@ -178,4 +178,6 @@
   retries: "{{ network_error_retries }}"
   delay: "{{ network_error_delay }}"
 
+- name: "Configure tailored ServiceMonitors"
+  ansible.builtin.include_tasks: install_monitors.yaml
 ...

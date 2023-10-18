@@ -1,0 +1,43 @@
+---
+- name: Install monitoring stack
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/retries.yaml
+  roles:
+  - role: monitoring_v2
+    when: k8s_monitoring_enabled | bool
+    tags: monitoring_v2
+
+- name: Install monitoring supplements on Kubernetes frontend
+  hosts: frontend
+  vars_files:
+  - vars/auto_generated_preamble.yaml
+  - vars/disruption.yaml
+  - vars/retries.yaml
+  roles:
+  - role: prometheus-haproxy-exporter
+    when: k8s_monitoring_enabled | bool
+    tags: prometheus-haproxy-exporter
+  - role: prometheus-keepalived-exporter
+    when: k8s_monitoring_enabled | bool
+    tags: prometheus-keepalived-exporter
+
+- name: Install monitoring supplements on gateways
+  hosts: gateways
+  vars_files:
+  - vars/auto_generated_preamble.yaml
+  - vars/disruption.yaml
+  - vars/retries.yaml
+  roles:
+  - role: prometheus-bird-exporter
+    when: k8s_monitoring_enabled | bool
+    tags: prometheus-bird-exporter
+  - role: prometheus-node-exporter
+    when: k8s_monitoring_enabled | bool
+    tags: prometheus-node-exporter
+  - role: monitoring-system-update-status
+    when: k8s_monitoring_enabled | bool
+    tags: monitoring-system-update-status
+...

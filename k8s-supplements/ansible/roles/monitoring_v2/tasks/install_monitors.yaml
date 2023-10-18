@@ -129,7 +129,7 @@
       validate:
         fail_on_error: true
         strict: true
-    when: etcd_backup_enabled | default(False) | bool
+    when: etcd_backup_enabled | bool
     tags:
     - etcd-backup-service-monitor
 
