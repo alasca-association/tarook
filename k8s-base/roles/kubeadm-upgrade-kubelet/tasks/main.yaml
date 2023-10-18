@@ -3,7 +3,7 @@
   vars:
     k8s_version: "{{ next_k8s_version }}"
   include_role:
-    name: kubeadm
+    name: k8s-packages
     tasks_from: configure-package-repo.yaml
 
 - name: Upgrade kubelet on apt systems

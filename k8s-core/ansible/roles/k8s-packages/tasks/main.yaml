@@ -64,7 +64,7 @@
       delay: "{{ network_error_delay }}"
       notify: Restart kubelet
 
-    - name: Prevent the k8s packages for being updated (apt)  # noqa no-changed-when
+    - name: Prevent the k8s packages for being updated  # noqa no-changed-when
       become: true
       ansible.builtin.command: apt-mark hold kubelet kubeadm kubectl
 
