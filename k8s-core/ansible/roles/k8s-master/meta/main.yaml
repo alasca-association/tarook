@@ -3,9 +3,7 @@ galaxy_info:
   license: Apache-2.0
   author: Yaook Authors
 dependencies:
+- config/k8s-config
 - k8s-tools
-- k8s-config
-- net-forwarding
-- vault-config
-- vault-approle
+- helpers/vault-approle
 ...

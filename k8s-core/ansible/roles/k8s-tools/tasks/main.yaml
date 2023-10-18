@@ -1,7 +1,7 @@
 ---
 - name: Ensure that pip is installed
   become: true
-  package:
+  ansible.builtin.package:
     state: present
     name:
     - python3-pip
@@ -14,7 +14,7 @@
 
 - name: Ensure that kubernetes libraries are installed  # noqa package-latest
   become: true
-  pip:
+  ansible.builtin.pip:
     name:
     - openshift
     - kubernetes
