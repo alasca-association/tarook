@@ -1,4 +1,3 @@
-# TODO: Only on Ubuntu ?
 ---
 - name: Remove the snap service
   become: true

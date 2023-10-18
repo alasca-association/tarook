@@ -1,6 +1,6 @@
 ---
 - name: Configure journald
-  when: _allow_disruption or install_status == 'k8s_not_installed'
+  when: _allow_disruption or k8s_install_status == 'not_initialized' or frontend_install_status == 'not_initialized'
   block:
   - name: Create configuration for journald
     become: true
