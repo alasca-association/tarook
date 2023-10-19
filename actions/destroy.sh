@@ -33,12 +33,12 @@ fi
 # If it doesn’t work, we have to retry. By the time terraform fails deleting
 # the router (which is what is blocked by this operation), all instances are
 # already deleted, so the second run is guaranteed to succeed.
-IFS=$'\n' read -r -d '' -a floating_ip_ids < <( openstack floating ip list --any-tag 'cah-loadbalancer.k8s.cloudandheat.com/managed' -f value -c ID && printf '\0' )
+IFS=$'\n' read -r -d '' -a floating_ip_ids < <( openstack floating ip list --project "$OS_PROJECT_ID" --any-tag 'cah-loadbalancer.k8s.cloudandheat.com/managed' -f value -c ID && printf '\0' )
 if [ "${#floating_ip_ids[@]}" != 0 ]; then
     run openstack floating ip delete "${floating_ip_ids[@]}"
 fi
 
-IFS=$'\n' read -r -d '' -a port_ids < <( openstack port list --any-tag 'cah-loadbalancer.k8s.cloudandheat.com/managed' -f value -c ID && printf '\0' )
+IFS=$'\n' read -r -d '' -a port_ids < <( openstack port list --project "$OS_PROJECT_ID" --any-tag 'cah-loadbalancer.k8s.cloudandheat.com/managed' -f value -c ID && printf '\0' )
 if [ "${#port_ids[@]}" != 0 ]; then
     run openstack port delete "${port_ids[@]}"
 fi
@@ -52,7 +52,7 @@ run terraform -chdir="$terraform_module" destroy --var-file="$terraform_state_di
 # Purge the remaining terraform directory. Its existence is a condition for additional disruption checks.
 rm -f "$terraform_state_dir/config.tfvars.json"
 
-IFS=$'\n' read -r -d '' -a volume_ids < <( openstack volume list -f value -c ID && printf '\0' )
+IFS=$'\n' read -r -d '' -a volume_ids < <( openstack volume list --project "$OS_PROJECT_ID" -f value -c ID && printf '\0' )
 if [ "${#volume_ids[@]}" != 0 ]; then
     run openstack volume delete "${volume_ids[@]}"
 fi
