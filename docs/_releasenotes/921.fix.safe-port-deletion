@@ -1,0 +1,1 @@
+* Only delete volumes, ports and floating IPs from the current OpenStack project on destroy, even if the OpenStack credentials can access more than this project.
