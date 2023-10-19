@@ -1,0 +1,3 @@
+---
+install_node_service_reload_image: registry.gitlab.com/yaook/images/service-reload/service-reload:1.0.50
+...

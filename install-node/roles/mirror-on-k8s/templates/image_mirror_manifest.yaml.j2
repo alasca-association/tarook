@@ -1,0 +1,196 @@
+{% set mangled_name = 'registry-{}-{}'.format(item.name | replace('.', '-'), item.name | hash('sha256') | truncate(5, True, '')) %}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ mangled_name | to_json }}
+  labels:
+    app.kubernetes.io/name: docker-registry
+    app.kubernetes.io/component: container-registry
+    app.kubernetes.io/instance: {{ item.name | to_json }}
+spec:
+  type: NodePort
+  ports:
+  - port: 5001
+    name: registry-public
+    nodePort: {{ item.port | to_json }}
+  selector:
+    app.kubernetes.io/name: docker-registry
+    app.kubernetes.io/component: container-registry
+    app.kubernetes.io/instance: {{ item.name | to_json }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ mangled_name | to_json }}
+  labels:
+    app.kubernetes.io/name: docker-registry
+    app.kubernetes.io/component: container-registry
+    app.kubernetes.io/instance: {{ item.name | to_json }}
+spec:
+  secretName: {{ (mangled_name ~ "-cert") | to_json }}
+  secretTemplate:
+    labels:
+      app.kubernetes.io/name: docker-registry
+      app.kubernetes.io/component: container-registry
+      app.kubernetes.io/instance: {{ item.name | to_json }}
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  subject:
+    organizations:
+    - "Cloud&Heat"
+  commonName: {{ container_mirror_default_host | to_json }}
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+  usages:
+  - server auth
+  - client auth
+  dnsNames:
+  - {{ container_mirror_default_host | to_json }}
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ mangled_name | to_json }}
+  labels:
+    app.kubernetes.io/name: docker-registry
+    app.kubernetes.io/component: container-registry
+    app.kubernetes.io/instance: {{ item.name | to_json }}
+data:
+  registry-config.yaml: |
+    version: 0.1
+    storage:
+      filesystem:
+        rootdirectory: /var/lib/registry
+    http:
+      addr: 127.0.0.1:5000
+{%  if install_node_online_mode %}
+    proxy:
+      remoteurl: {{ item.upstream | to_json }}
+{%    if 'upstream_username' in item %}
+      username: {{ item.upstream_username | to_json }}
+{%    endif %}
+{%    if 'upstream_password' in item %}
+      password: {{ item.upstream_password | to_json }}
+{%    endif %}
+{%  endif %}
+  nginx.conf: |
+    events {
+
+    }
+
+    http {
+      # tls settings
+      ssl_protocols TLSv1.2 TLSv1.3;
+      ssl_ciphers   HIGH:!aNULL:!MD5;
+
+      server {
+        server_name _;
+        listen 5001 ssl;
+        ssl_certificate /etc/ssl/private/tls.crt;
+        ssl_certificate_key /etc/ssl/private/tls.key;
+
+        add_header "Docker-Distribution-Api-Version" "registry/2.0";
+
+        location /v2/ {
+          proxy_pass http://localhost:5000/v2/;
+          proxy_set_header X-Forwarded-Proto "https";
+          limit_except GET {
+            # by adding auth here we can allow pushing for authenticated users!
+            deny all;
+          }
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ mangled_name | to_json }}
+  labels:
+    app.kubernetes.io/name: docker-registry
+    app.kubernetes.io/component: container-registry
+    app.kubernetes.io/instance: {{ item.name | to_json }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: docker-registry
+      app.kubernetes.io/component: container-registry
+      app.kubernetes.io/instance: {{ item.name | to_json }}
+  serviceName: {{ mangled_name | to_json }}
+  replicas: 1 # don't increase this unless you make the storage multi-read-multi-write and provide a joint secret!
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: docker-registry
+        app.kubernetes.io/component: container-registry
+        app.kubernetes.io/instance: {{ item.name | to_json }}
+    spec:
+      shareProcessNamespace: true
+      containers:
+      - name: registry
+        image: {{ install_node_registry_image | to_json }}
+        volumeMounts:
+        - name: registry-data
+          mountPath: /var/lib/registry
+        - name: registry-config
+          mountPath: /etc/docker/registry
+      - name: nginx
+        image: {{ install_node_httpd_image | to_json }}
+        ports:
+        - containerPort: 5001
+          name: registry-public
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: tls-cert
+          mountPath: /etc/ssl/private
+      - name: service-reload
+        image: {{ install_node_service_reload_image | to_json }}
+        volumeMounts:
+        - name: tls-cert
+          mountPath: /data
+        env:
+        - name: YAOOK_SERVICE_RELOAD_MODULE
+          value: nginx
+        - name: TINI_SUBREAPER
+          value: 1
+        args:
+        - /data/
+      volumes:
+      - name: registry-config
+        configMap:
+          name: {{ mangled_name | to_json }}
+          items:
+          - key: registry-config.yaml
+            path: config.yml
+      - name: nginx-config
+        configMap:
+          name: {{ mangled_name | to_json }}
+          items:
+          - key: nginx.conf
+            path: nginx.conf
+      - name: tls-cert
+        secret:
+          secretName: {{ (mangled_name ~ "-cert") | to_json }}
+  volumeClaimTemplates:
+  - metadata:
+      name: registry-data
+      labels:
+        app.kubernetes.io/name: docker-registry
+        app.kubernetes.io/component: container-registry
+        app.kubernetes.io/instance: {{ item.name | to_json }}
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: {{ yaook_offline_mirror_storage_class | default('local-storage') | to_json }}
+      resources:
+        requests:
+          storage: 5Gi
+...
