@@ -26,11 +26,13 @@ if [ "${MANAGED_K8S_NUKE_FROM_ORBIT:-}" = 'true' ]; then
     fi
 fi
 
-if [ -z "${OS_PROJECT_ID+x}" ] && [ -n "${OS_PROJECT_NAME+x}" ]; then
-    OS_PROJECT_ID="$(openstack project show "$OS_PROJECT_NAME" -f value -c id)"
-else
-    errorf 'Neither OS_PROJECT_ID nor OS_PROJECT_NAME are set'
-    exit 1
+if [[ -z "${OS_PROJECT_ID+x}" ]]; then
+    if [[ -n "${OS_PROJECT_NAME+x}" ]]; then
+        OS_PROJECT_ID="$(openstack project show "$OS_PROJECT_NAME" -f value -c id)"
+    else
+        errorf 'Neither OS_PROJECT_ID nor OS_PROJECT_NAME are set'
+        exit 1
+    fi
 fi
 # Remove floating IPs and ports managed by the C&H LBaaS controller.
 # Those are annotated with a specific tag.
