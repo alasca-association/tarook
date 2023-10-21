@@ -7,12 +7,8 @@ serviceMonitor:
 {% endfor %}
 {% endif %}
 tolerations:
-  - key: k8s.yaook.cloud/gpu-node
+  - key: ""
     operator: Exists
-    effect: NoSchedule
-  - key: k8s.yaook.cloud/gpu-node
-    operator: Exists
-    effect: PreferNoSchedule
 nodeSelector:
   k8s.yaook.cloud/gpu-node: "true"
 # TODO (low prio, needs discussion and probably desired for all scrape jobs):
