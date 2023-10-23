@@ -25,7 +25,7 @@ automatically executed and are on the top of the abstraction layer as
 they rely on a working yk8s cluster.
 
 The customization layer can be enabled via
-:ref:`an environment variable <envirnomental-variables.enabling-the-customization-layer>`.
+:ref:`an environment variable <environmental-variables.enabling-the-customization-layer>`.
 
 KMS - Kubernetes Managed Services
 ---------------------------------

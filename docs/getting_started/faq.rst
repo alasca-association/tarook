@@ -91,7 +91,7 @@ Troubleshooting
    environment variable ``TF_VAR_keypair`` in ``~/.config/yaook-k8s/env``.
 -  You can do this by setting the variable ``ansible_ssh_private_key_file`` on the
    command line via
-   :ref:`the AFLAGS environment variable <envirnomental-variables.behavior-altering-variables>`:
+   :ref:`the AFLAGS environment variable <environmental-variables.behavior-altering-variables>`:
 
    .. code:: console
 
