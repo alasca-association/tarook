@@ -57,6 +57,18 @@
 - name: Install Flux
   import_playbook: install-flux.yaml
 
+- name: Configure tailored ServiceMonitors for monitoring
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
+  tasks:
+  - name: Configure tailored ServiceMonitors for monitoring
+    when: k8s_monitoring_enabled | bool
+    include_role:
+      name: monitoring_v2
+      tasks_from: install_monitors.yaml
+
 # ---
 # TODO: Should be factored out
 - name: Configure global monitoring
