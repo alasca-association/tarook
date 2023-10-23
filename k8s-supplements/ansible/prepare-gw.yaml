@@ -8,7 +8,7 @@
   - role: vault-migrated
     tags: vault-migrated
 
-- name: Bootstrap Gateway nodes
+- name: Connect to, prepare & bootstrap Gateway nodes
   import_playbook: "{{ ansible_k8s_core_dir }}/bootstrap.yaml"
   vars:
     target_hosts: gateways

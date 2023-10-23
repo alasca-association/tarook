@@ -1,20 +1,6 @@
 ---
-- name: Initial node bootstrap
-  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
-  gather_facts: false
-  vars_files:
-  - vars/disruption.yaml
-  - vars/auto_generated_preamble.yaml
-  - vars/etc.yaml
-  - vars/retries.yaml
-  - vars/vault-config.yaml
-  roles:
-  - role: bootstrap/detect-user
-    tags: detect-user
-  - role: bootstrap/prepare-node
-    tags: prepare-node
-  - role: helpers/vault-onboarded
-    tags: vault-onboarded
+- name: Initialize node connection
+  import_playbook: "connect-to-nodes.yaml"
 
 - name: Prepare node
   hosts: "{{ target_hosts | default('all:!orchestrator') }}"
@@ -30,8 +16,6 @@
     apt:
       update_cache: true
   roles:
-  - role: bootstrap/ssh-known-hosts
-    tags: ssh-known-hosts
   - role: bootstrap/journald
     tags: journald
   - role: bootstrap/configure-automatic-system-updates

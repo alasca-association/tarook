@@ -1,19 +1,17 @@
 ---
-- name: Establish connectivity to the frontend nodes
+- name: Initialize node connection
+  import_playbook: "connect-to-nodes.yaml"
+  vars:
+    target_hosts: frontend
+
+- name: Check if frontend nodes are initialized
   hosts: frontend
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
-  - vars/etc.yaml
   - vars/retries.yaml
   tags: update-frontend-nodes
   roles:
-  - role: bootstrap/detect-user
-    tags: detect-user
-  - role: bootstrap/ssh-known-hosts
-    tags: ssh-known-hosts
-  - role: bootstrap/prepare-node
-    tags: prepare-node
   - role: helpers/is-frontend-initialized
     tags: update-system
 

@@ -1,4 +1,7 @@
 ---
+- name: Initialize node connection
+  import_playbook: "connect-to-nodes.yaml"
+
 - name: Prepare the k8s nodes
   hosts: k8s_nodes
   gather_facts: true

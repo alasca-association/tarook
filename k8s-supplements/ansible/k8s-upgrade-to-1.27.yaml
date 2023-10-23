@@ -1,14 +1,8 @@
 ---
-- name: Detect user
-  hosts: k8s_nodes
-  gather_facts: false
-  # we need *all* hosts.
-  any_errors_fatal: true
-  vars_files:
-    - vars/etc.yaml
-  roles:
-    - role: bootstrap/detect-user
-      tags: detect-user
+- name: Connect to Kubernetes nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
+  vars:
+    target_hosts: k8s_nodes
 
 - name: Upgrade Kubernetes nodes
   import_playbook: "{{ ansible_k8s_core_dir }}/upgrade-k8s.yaml"

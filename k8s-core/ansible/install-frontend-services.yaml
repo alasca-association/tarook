@@ -1,4 +1,9 @@
 ---
+- name: Initialize node connection
+  import_playbook: "connect-to-nodes.yaml"
+  vars:
+    target_hosts: frontend
+
 - name: Install & configure frontend services
   hosts: frontend
   gather_facts: true

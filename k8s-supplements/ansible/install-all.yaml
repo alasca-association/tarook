@@ -7,7 +7,7 @@
   roles:
   - vault-migrated
 
-- name: Prepare Kubernetes nodes
+- name: Connect to, prepare & bootstrap Kubernetes nodes
   import_playbook: "{{ ansible_k8s_core_dir }}/bootstrap.yaml"
   vars:
     target_hosts: k8s_nodes

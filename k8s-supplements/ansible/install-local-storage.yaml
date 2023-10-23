@@ -1,4 +1,9 @@
 ---
+- name: Connect to Kubernetes nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
+  vars:
+    target_hosts: k8s_nodes
+
 - name: Configure the local-storage controllers
   hosts: k8s_nodes
   vars_files:

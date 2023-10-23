@@ -10,6 +10,11 @@
     when: k8s_monitoring_enabled | bool
     tags: monitoring_v2
 
+- name: Connect to Kubernetes nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
+  vars:
+    target_hosts: frontend:gateways
+
 - name: Install monitoring supplements on Kubernetes frontend
   hosts: frontend
   vars_files:

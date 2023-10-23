@@ -38,13 +38,10 @@
     - check-mk8s-sl/fluxcd
     - fluxcd2_v1_test
 
-- name: Detect user
-  hosts: k8s_nodes
-  gather_facts: false
-  vars_files:
-  - vars/etc.yaml
-  roles:
-  - bootstrap/detect-user
+- name: Connect to Kubernetes nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
+  vars:
+    target_hosts: k8s_nodes
 
 - name: Check K8s setup
   hosts: k8s_nodes

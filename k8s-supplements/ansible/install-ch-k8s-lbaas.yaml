@@ -1,4 +1,9 @@
 ---
+- name: Connect to Kubernetes nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
+  vars:
+    target_hosts: masters:frontend
+
 - name: Install ch-k8s-lbaas
   hosts: masters
   become: true
