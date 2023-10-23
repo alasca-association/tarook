@@ -1,9 +1,5 @@
 ---
 - name: Initialize Snapshots
-  become: true
-  run_once: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   vars:
     files_folder: "{{ image_versions.volume_snapshot_controller + '/' }}"
   block:

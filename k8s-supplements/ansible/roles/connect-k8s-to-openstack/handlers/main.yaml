@@ -1,8 +1,5 @@
 ---
 - name: restart CCM  # noqa no-changed-when
-  become: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   ansible.builtin.command:
   args:
     argv:
@@ -14,9 +11,6 @@
     - "daemonset.apps/openstack-cloud-controller-manager"
 
 - name: restart octavia-ingress-controller  # noqa no-changed-when
-  become: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   ansible.builtin.command:
   args:
     argv:

@@ -1,13 +1,11 @@
 ---
 - name: Connect Kubernetes to OpenStack
-  hosts: masters
-  become: true
+  hosts: orchestrator
   gather_facts: false
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
   - vars/retries.yaml
-  run_once: true
   roles:
   - role: connect-k8s-to-openstack
     tags: connect-k8s-to-openstack
