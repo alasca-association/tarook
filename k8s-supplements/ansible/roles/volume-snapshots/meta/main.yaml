@@ -3,6 +3,5 @@ galaxy_info:
   license: Apache-2.0
   author: Yaook Authors
 dependencies:
-- k8s-tools
 - config/version-map
 ...

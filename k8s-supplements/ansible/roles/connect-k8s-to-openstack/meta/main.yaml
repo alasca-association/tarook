@@ -5,4 +5,5 @@ galaxy_info:
 dependencies:
 - check-openstack-credentials
 - config/version-map
+- volume-snapshots
 ...

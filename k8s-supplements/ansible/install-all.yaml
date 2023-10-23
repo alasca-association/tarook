@@ -24,11 +24,11 @@
 - name: Install Calico
   import_playbook: install-calico.yaml
 
-- name: Connect to OpenStack
-  import_playbook: connect-k8s-to-openstack.yaml
-
 - name: Install volume snapshot controller
   import_playbook: install-volume-snapshot-controller.yaml
+
+- name: Connect to OpenStack
+  import_playbook: connect-k8s-to-openstack.yaml
 
 - name: Install ch-k8s-lbaas
   import_playbook: install-ch-k8s-lbaas.yaml
