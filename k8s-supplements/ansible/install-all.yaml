@@ -21,14 +21,14 @@
 - name: Spawn Kubernetes
   import_playbook: "{{ ansible_k8s_core_dir }}/install-k8s.yaml"
 
-- name: Install Calico
-  import_playbook: install-calico.yaml
-
 - name: Install volume snapshot controller
   import_playbook: install-volume-snapshot-controller.yaml
 
 - name: Connect to OpenStack
   import_playbook: connect-k8s-to-openstack.yaml
+
+- name: Install Calico
+  import_playbook: install-calico.yaml
 
 - name: Install ch-k8s-lbaas
   import_playbook: install-ch-k8s-lbaas.yaml
