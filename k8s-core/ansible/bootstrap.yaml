@@ -24,6 +24,11 @@
   - vars/disruption.yaml
   - vars/etc.yaml
   - vars/retries.yaml
+  pre_tasks:
+  - name: Update apt repositories cache
+    become: true
+    apt:
+      update_cache: true
   roles:
   - role: bootstrap/ssh-known-hosts
     tags: ssh-known-hosts
