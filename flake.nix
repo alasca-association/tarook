@@ -3,6 +3,10 @@
   inputs.nixpkgs-terraform157.url = "github:NixOS/nixpkgs/39ed4b64ba5929e8e9221d06b719a758915e619b";
   inputs.nixpkgs-vault1148.url = "github:NixOS/nixpkgs/7cf8d6878561e8b2e4b1186f79f1c0e66963bdac";
   inputs.flake-parts.url = "github:hercules-ci/flake-parts";
+  inputs.poetry2nix = {
+    url = "github:nix-community/poetry2nix";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
 
   outputs = inputs @ {
     self,
@@ -16,10 +20,30 @@
       systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
       perSystem = {
         pkgs,
+        lib,
         system,
         inputs',
         ...
       }: let
+        inherit (inputs.poetry2nix.lib.mkPoetry2Nix {inherit pkgs;}) mkPoetryEnv overrides;
+        poetryEnv = mkPoetryEnv {
+          projectDir = ./.;
+          groups = ["ci"];
+          overrides = overrides.withDefaults (final: prev:
+            lib.attrsets.mapAttrs (n: v:
+              prev.${n}.overridePythonAttrs (old: {
+                nativeBuildInputs =
+                  old.nativeBuildInputs
+                  or []
+                  ++ map (p: pkgs.python312Packages.${p}) v;
+              }))
+            {
+              os-client-config = ["setuptools"];
+              kubernetes-validate = ["setuptools"];
+              sphinx-multiversion = ["setuptools"];
+            });
+          python = pkgs.python312;
+        };
         dependencies = with pkgs; {
           yk8s = [
             coreutils
@@ -34,8 +58,8 @@
             moreutils
             openssh
             openssl
-            openstackclient
             poetry
+            poetryEnv
             inputs'.nixpkgs-terraform157.legacyPackages.terraform
             util-linux # for uuidgen
             inputs'.nixpkgs-vault1148.legacyPackages.vault
@@ -66,6 +90,7 @@
           nativeBuildInputs = dependencies.interactive;
           buildInputs = dependencies.yk8s;
         };
+        devShells.poetry = poetryEnv.env;
         packages = let
           container-image = import ./ci/container-image {inherit pkgs dependencies;};
         in {
