@@ -27,7 +27,7 @@
           pkgs.kubectl
           pkgs.jq
           pkgs.moreutils
-          pkgs.terraform
+          pkgs.opentofu
           pkgs.vault
           pkgs.openssl
           pkgs.wireguard-tools
