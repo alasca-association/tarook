@@ -39,7 +39,7 @@
     };
   };
   # NOTE: Some options are not used by Ansible but other parts of the LCM,
-  #       such as Terraform. Therefore they are filtered out.
+  #       such as OpenTofu. Therefore they are filtered out.
   nonAnsibleOptions = [
     "public_network"
     "keypair"
@@ -70,14 +70,14 @@ in {
          It defaults to the number of elements in the ``azs`` array when
          ``spread_gateways_across_azs=true`` and 3 otherwise.
 
-      .. [1] Caveat: Changing the role of a Terraform node
+      .. [1] Caveat: Changing the role of a OpenTofu node
                      will completely rebuild the node.
 
       .. attention::
 
           You must configure at least one master node.
 
-      You can add and delete Terraform nodes simply
+      You can add and delete OpenTofu nodes simply
       by adding and removing their entries to/from the config
       or tuning ``gateway_count`` for gateway nodes.
       Consider the following example:
@@ -328,7 +328,7 @@ in {
       }
       {
         assertion = config.yk8s.infra.ipv4_enabled;
-        message = "YAOOK/k8s Terraform does not yet support IPv6-only, see #685";
+        message = "YAOOK/k8s OpenTofu does not yet support IPv6-only, see #685";
       }
       (let
         current_config_file =

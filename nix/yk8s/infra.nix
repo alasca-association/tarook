@@ -21,7 +21,7 @@ in {
       ^^^^^^^^^^^^^^^^^^^
 
       This section contains various configuration options necessary for all
-      cluster types, Terraform and bare-metal based.
+      cluster types, OpenTofu and bare-metal based.
     '';
 
     cluster_name = mkOption {

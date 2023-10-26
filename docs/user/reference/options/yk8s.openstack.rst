@@ -14,14 +14,14 @@ yk8s.openstack
    It defaults to the number of elements in the ``azs`` array when
    ``spread_gateways_across_azs=true`` and 3 otherwise.
 
-.. [1] Caveat: Changing the role of a Terraform node
+.. [1] Caveat: Changing the role of a OpenTofu node
                will completely rebuild the node.
 
 .. attention::
 
     You must configure at least one master node.
 
-You can add and delete Terraform nodes simply
+You can add and delete OpenTofu nodes simply
 by adding and removing their entries to/from the config
 or tuning ``gateway_count`` for gateway nodes.
 Consider the following example:

@@ -36,6 +36,11 @@
           openssh
           openssl
           opentofu
+          # provide a wrapper to ensure backwards compatibility
+          (writeScriptBin "terraform" ''
+            #!/usr/bin/env bash
+            exec tofu $@
+          '')
           pre-commit
           util-linux # for uuidgen
         ];

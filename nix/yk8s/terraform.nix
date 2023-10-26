@@ -17,7 +17,7 @@
   inherit (builtins) fromJSON readFile pathExists length;
   tfvars_file_path = "terraform/config.tfvars.json";
 
-  openstackTerraformOptions = [
+  openstackOpenTofuOptions = [
     "public_network"
     "keypair"
     "azs"
@@ -33,7 +33,7 @@
     "worker_defaults"
     "nodes"
   ];
-  infraTerraformOptions = [
+  infraOpenTofuOptions = [
     "cluster_name"
     "ipv4_enabled"
     "ipv6_enabled"
@@ -67,11 +67,11 @@ in {
   options.yk8s.terraform = mkTopSection {
     _docs.order = 1;
     _docs.preface = ''
-      Gitlab Terraform backend
+      Gitlab OpenTofu backend
       """"""""""""""""""""""""
 
-      To activate automatic backend of Terraform statefiles to Gitlab,
-      adapt the Terraform section of your config:
+      To activate automatic backend of OpenTofu statefiles to Gitlab,
+      adapt the OpenTofu section of your config:
       set `gitlab_backend` to True,
       set the URL of the Gitlab project and
       the name of the Gitlab state object.
@@ -93,20 +93,20 @@ in {
       Please see GitLab documentation for creating a
       `personal access token <https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html>`__.
 
-      To successful migrate from the "local" to "http" Terraform backend method,
+      To successful migrate from the "local" to "http" OpenTofu backend method,
       ensure that `gitlab_backend` is set to `true`
       and all other required variables are set correctly.
       Incorrect data entry may result in an HTTP error respond,
       such as a HTTP/401 error for incorrect credentials.
       Assuming correct credentials in the case of an HTTP/404 error,
-      Terraform is executed and the state is migrated to Gitlab.
+      OpenTofu is executed and the state is migrated to Gitlab.
 
-      To migrate from the "http" to "local" Terraform backend method,
+      To migrate from the "http" to "local" OpenTofu backend method,
       set `gitlab_backend=false`,
       `MANAGED_K8S_NUKE_FROM_ORBIT=true`,
       and assume
       that all variables above are properly set
-      and the Terraform state exists on GitLab.
+      and the OpenTofu state exists on GitLab.
       Once the migration is successful,
       unset the variables above
       to continue using the "local" backend method.
@@ -123,7 +123,7 @@ in {
 
     prevent_disruption = mkOption {
       description = ''
-        If true, prevent Terraform from performing disruptive action
+        If true, prevent OpenTofu from performing disruptive action
         defaults to true if unset
       '';
       type = types.bool;
@@ -136,8 +136,8 @@ in {
     };
 
     gitlab_backend = mkEnableOption ''
-      GitLab-managed Terraform backend
-      If true, the Terraform state will be stored inside the provided gitlab project.
+      GitLab-managed OpenTofu backend
+      If true, the OpenTofu state will be stored inside the provided gitlab project.
       If set, the environment `TF_HTTP_USERNAME` and `TF_HTTP_PASSWO = mkOptionD`
       must be configured in a separate file `~/.config/yaook-k8s/env`.
     '';
@@ -169,7 +169,7 @@ in {
 
     gitlab_state_name = mkOption {
       description = ''
-        The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'
+        The name of the Gitlab state object in which to store the OpenTofu state, e.g. 'tf-state'
       '';
       type = with types; nullOr nonEmptyStr;
       default = null;
@@ -190,7 +190,7 @@ in {
             if config.yk8s.state_directory != null && builtins.pathExists "${config.yk8s.state_directory}/${source}"
             then [(linkToPath "${config.yk8s.state_directory}/${source}" target)]
             else
-              builtins.trace "INFO: ${config.yk8s._state_base_path}/${source} does not yet exist. Terraform stage needs to be run first."
+              builtins.trace "INFO: ${config.yk8s._state_base_path}/${source} does not yet exist. OpenTofu stage needs to be run first."
               [];
         in
           (linkTfstateIfExists "terraform/rendered/hosts" "hosts")
@@ -200,12 +200,12 @@ in {
     _state_packages = [
       (
         let
-          filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["prevent_disruption"]];
-          filteredInfraCfg = lib.attrsets.getAttrs infraTerraformOptions config.yk8s.infra;
-          filteredOpenstackCfg = lib.attrsets.getAttrs openstackTerraformOptions config.yk8s.openstack;
+          filteredOpenTofuCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["prevent_disruption"]];
+          filteredInfraCfg = lib.attrsets.getAttrs infraOpenTofuOptions config.yk8s.infra;
+          filteredOpenstackCfg = lib.attrsets.getAttrs openstackOpenTofuOptions config.yk8s.openstack;
           mergedCfg =
             builtins.foldl' (acc: e: lib.attrsets.recursiveUpdate acc (removeObsoleteOptions e)) {}
-            [filteredTerraformCfg filteredInfraCfg filteredOpenstackCfg];
+            [filteredOpenTofuCfg filteredInfraCfg filteredOpenstackCfg];
           transformations = [filterInternal filterNull];
           varsFile = mkJson "tfvars.json" (pipe mergedCfg transformations);
         in (pkgs.runCommandLocal "tfvars.json" {} ''

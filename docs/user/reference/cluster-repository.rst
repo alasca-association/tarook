@@ -7,7 +7,7 @@ consists of:
 
 -  The version of the LCM code to deploy the cluster
 -  The version of the WireGuard user information
--  State of Terraform
+-  State of OpenTofu
 -  State of the WireGuard IP address management (IPAM)
 -  Secrets and credentials obtained while deploying the cluster
 -  A :doc:`configuration </user/reference/cluster-configuration>` file which
@@ -40,13 +40,13 @@ will most certainly have more files than these.
    ├── state/                            # Place for state files
    │   ├── wireguard/
    │   |   └── ipam.toml                 # WireGuard IPAM
-   │   ├── terraform/                    # Terraform specific state files
+   │   ├── terraform/                    # OpenTofu specific state files
    │   |   ├── .terraform/
    │   |   │   └── plugins/
    │   |   │       └── linux_amd64/
-   │   |   │           └── lock.json     # Terraform plugin version lock
-   │   |   ├── terraform.tfstate         # Terraform state
-   │   |   └── terraform.tfstate.backup  # Terraform state backup
+   │   |   │           └── lock.json     # OpenTofu plugin version lock
+   │   |   ├── terraform.tfstate         # OpenTofu state
+   │   |   └── terraform.tfstate.backup  # OpenTofu state backup
    ├── vault/                            # Local vault data
    ├── .envrc                            # direnv (environment variables) configuration
    ├── .gitattributes

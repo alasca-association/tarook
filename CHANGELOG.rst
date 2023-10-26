@@ -277,7 +277,7 @@ Breaking changes
      ├── state/                            # Auto-generated files that need to be preserved. MUST be checked into version control
      │   ├── wireguard/
      │   │   └── ipam.toml                 # WireGuard IP address management
-     │   ├── terraform/                    # Terraform specific state files
+     │   ├── terraform/                    # OpenTofu specific state files
      ┊   ┊
 
 
@@ -304,7 +304,7 @@ Breaking changes
       The migration script will point out these cases.
 
   _ (`!1265 <https://gitlab.com/yaook/k8s/-/merge_requests/1265>`_)
-- The following Terraform resources are deprecated and have been updated:
+- The following OpenTofu resources are deprecated and have been updated:
 
   - ``openstack_compute_floatingip_associate_v2``
     replaced by ``openstack_networking_floatingip_associate_v2``
@@ -432,7 +432,7 @@ Changed functionality
   _ (`!1456 <https://gitlab.com/yaook/k8s/-/merge_requests/1456>`_)
 - Most options from the terraform configuration section have moved into one of two new sections, either ``openstack`` for OpenStack specific options or ``infra`` for options used by all clusters. Have a look at the deprecation warnings during Nix evaluation. (`!1466 <https://gitlab.com/yaook/k8s/-/merge_requests/1466>`_)
 - ``vault.cluster_name`` now defaults to ``infra.cluster_name`` (`!1466 <https://gitlab.com/yaook/k8s/-/merge_requests/1466>`_)
-- Cloud&Heat specific default have been removed from the Terraform module. (`!1504 <https://gitlab.com/yaook/k8s/-/merge_requests/1504>`_)
+- Cloud&Heat specific default have been removed from the OpenTofu module. (`!1504 <https://gitlab.com/yaook/k8s/-/merge_requests/1504>`_)
 - Depending on the IP version enabled, node address autodetection is explicitly set to ``{}``. (`!1529 <https://gitlab.com/yaook/k8s/-/merge_requests/1529>`_)
 - Additional testing in the CI pipeline has been added that verifies that :doc:`Kubernetes certificate signing </user/guide/kubernetes/restore-certificate-signing-ability>` is functional. (`!1543 <https://gitlab.com/yaook/k8s/-/merge_requests/1543>`_)
 - The default blackbox-exporter version has been bumped to v9.1.0. (`!1575 <https://gitlab.com/yaook/k8s/-/merge_requests/1575>`_)
@@ -477,7 +477,7 @@ Bugfixes
 - Thanos compactor is now restarted on failure.
   Previously it just stopped operation but never exited
   (see `issue #724 <https://gitlab.com/yaook/k8s/-/issues/724>`_). (`!1592 <https://gitlab.com/yaook/k8s/-/merge_requests/1592>`_)
-- The YAOOK/K8s Terraform module does not fail anymore
+- The YAOOK/K8s OpenTofu module does not fail anymore
   if there are multiple Openstack images with the same name
   but simply selects the most recent one. (`!1598 <https://gitlab.com/yaook/k8s/-/merge_requests/1598>`_)
 - A bug has been fixed which caused Kubernetes upgrades to fail if :ref:`configuration-options.yk8s.kubernetes.controller_manager.enable_signing_requests` is enabled. (`!1608 <https://gitlab.com/yaook/k8s/-/merge_requests/1608>`_, `!1675 <https://gitlab.com/yaook/k8s/-/merge_requests/1675>`_)
@@ -498,7 +498,7 @@ Changes in the Documentation
 - A short description about ``tools/vault/update.sh`` has been added. (`!1599 <https://gitlab.com/yaook/k8s/-/merge_requests/1599>`_)
 - A user facing :doc:`tutorial <user/tutorial/upgrade-release>` has been created,
   which describes how to upgrade to a new YAOOK/K8s release. (`!1602 <https://gitlab.com/yaook/k8s/-/merge_requests/1602>`_, `!1660 <https://gitlab.com/yaook/k8s/-/merge_requests/1660>`_)
-- The Terraform developer reference documentation has been dropped in favor of :ref:`configuration-options.yk8s.terraform`. (`!1611 <https://gitlab.com/yaook/k8s/-/merge_requests/1611>`_)
+- The OpenTofu developer reference documentation has been dropped in favor of :ref:`configuration-options.yk8s.terraform`. (`!1611 <https://gitlab.com/yaook/k8s/-/merge_requests/1611>`_)
 - Some typos have been fixed (`!1615 <https://gitlab.com/yaook/k8s/-/merge_requests/1615>`_)
 - Minor fixes in the docs. (`!1642 <https://gitlab.com/yaook/k8s/-/merge_requests/1642>`_)
 
@@ -720,12 +720,12 @@ v8.0.0 (2024-08-28)
 Breaking changes
 ~~~~~~~~~~~~~~~~
 
-- The YAOOK/K8s Terraform module now allows worker nodes
+- The YAOOK/K8s OpenTofu module now allows worker nodes
   to be joined into individual anti affinity groups.
 
   .. attention:: Action required
 
-     You must migrate your Terraform state
+     You must migrate your OpenTofu state
      by running the migration script.
 
      .. code:: shell
@@ -733,10 +733,10 @@ Breaking changes
         ./managed-k8s/actions/migrate-to-release.sh
 
   _ (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
-- The YAOOK/K8s Terraform module
+- The YAOOK/K8s OpenTofu module
   does not build a default set of nodes (3 masters + 4 workers) anymore
   when no nodes are given. (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
-- The automatic just-in-time migration of Terraform resources
+- The automatic just-in-time migration of OpenTofu resources
   from ``count`` to ``for_each`` introduced in July 2022
   was removed in favor of a once-and-for-all migration.
 
@@ -745,7 +745,7 @@ Breaking changes
       ./managed-k8s/actions/migrate-to-release.sh
 
   _ (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
-- YAOOK/K8s Terraform does not implicitly assign
+- YAOOK/K8s OpenTofu does not implicitly assign
   nodes to availability zones anymore
   if actually none was configured for a node.
 
@@ -761,9 +761,9 @@ Breaking changes
 
   .. attention:: Action required
 
-     To prevent Terraform from unneccessarily rebuilding master and worker nodes,
+     To prevent OpenTofu from unneccessarily rebuilding master and worker nodes,
      you must run the migration script.
-     This will determine each nodes' availability zone in the Terraform state
+     This will determine each nodes' availability zone in the OpenTofu state
      to set in the config for you.
 
      .. code::
@@ -773,10 +773,10 @@ Breaking changes
   _ (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
 - The format of the ``[terraform]`` config section changed significantly.
 
-  Terraform nodes are now to be configured as blocks of values
+  OpenTofu nodes are now to be configured as blocks of values
   rather than across separate lists for each type of value.
 
-  Furthermore you now have control over the whole name of Terraform nodes,
+  Furthermore you now have control over the whole name of OpenTofu nodes,
   see :ref:`the documentation <configuration-options.yk8s.terraform>`
   for further details.
 
@@ -874,7 +874,7 @@ Breaking changes
 
   .. attention:: Action required
 
-     To prevent Terraform from unnecessarily rebuilding gateway nodes,
+     To prevent OpenTofu from unnecessarily rebuilding gateway nodes,
      you must run the migration script.
 
      .. code:: shell
@@ -887,8 +887,8 @@ Breaking changes
 New Features
 ~~~~~~~~~~~~
 
-- Terraform: Anti affinity group settings are now configurable per worker node. (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
-- Terraform: The amount of gateway nodes created is not dependent
+- OpenTofu: Anti affinity group settings are now configurable per worker node. (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
+- OpenTofu: The amount of gateway nodes created is not dependent
   on the amount of availability zones anymore
   and can be set with ``[terraform].gateway_count``.
   The setting's default yields the previous behavior
@@ -905,7 +905,7 @@ New Features
 Changed functionality
 ~~~~~~~~~~~~~~~~~~~~~
 
-- The minimum Terraform version is increased to 1.3 (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
+- The minimum OpenTofu version is increased to 1.3 (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
 
 
 Bugfixes
@@ -917,7 +917,7 @@ Bugfixes
 Other Tasks
 ~~~~~~~~~~~
 
-- The Terraform code responsible for generating the instance resources
+- The OpenTofu code responsible for generating the instance resources
   was streamlined. (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
 - `!1441 <https://gitlab.com/yaook/k8s/-/merge_requests/1441>`_, `!1442 <https://gitlab.com/yaook/k8s/-/merge_requests/1442>`_, `!1444 <https://gitlab.com/yaook/k8s/-/merge_requests/1444>`_, `!1445 <https://gitlab.com/yaook/k8s/-/merge_requests/1445>`_
 
@@ -959,7 +959,7 @@ Breaking changes
     -dualstack_support = false
     +ipv6_enabled = false
 
-  Existing clusters running on OpenStack must execute the Terraform stage once:
+  Existing clusters running on OpenStack must execute the OpenTofu stage once:
 
   .. code:: console
 
@@ -1005,7 +1005,7 @@ Changes in the Documentation
   in the :doc:`Release and Versioning Policy </developer/explanation/release-and-versioning-policy>` (`!1376 <https://gitlab.com/yaook/k8s/-/merge_requests/1376>`_)
 - The documentation now links to the latest version of the Calico docs
   instead of a specific version (where possible). (`!1408 <https://gitlab.com/yaook/k8s/-/merge_requests/1408>`_)
-- The generated Terraform docs was updated. (`!1434 <https://gitlab.com/yaook/k8s/-/merge_requests/1434>`_)
+- The generated OpenTofu docs was updated. (`!1434 <https://gitlab.com/yaook/k8s/-/merge_requests/1434>`_)
 
 
 Deprecations and Removals
@@ -1291,14 +1291,14 @@ Breaking changes
 
   If you have ``[terraform].create_root_disk_on_volume = true`` set in your config,
   you must migrate the ``openstack_blockstorage_volume_v2`` resources
-  in your Terraform state to the v3 resource type
+  in your OpenTofu state to the v3 resource type
   in order to prevent rebuilds of all servers and their volumes.
 
   .. code:: shell
 
       # Execute the lines produced by the following script
       # This will import all v2 volumes as v3 volumes
-      #  and remove the v2 volume resources from the Terraform state.
+      #  and remove the v2 volume resources from the OpenTofu state.
 
       terraform_module="managed-k8s/terraform"
       terraform_config="../../terraform/config.tfvars.json"
@@ -1455,7 +1455,7 @@ Bugfixes
 Changes in the Documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Terraform references updated (`!1189 <https://gitlab.com/yaook/k8s/-/merge_requests/1189>`_)
+- OpenTofu references updated (`!1189 <https://gitlab.com/yaook/k8s/-/merge_requests/1189>`_)
 - A guide on how to simulate a self-managed bare metal cluster on
   top of OpenStack has been added to the :doc:`documentation </developer/guide/simulate-bm>`. (`!1231 <https://gitlab.com/yaook/k8s/-/merge_requests/1231>`_)
 - Instructions to install Vault have been added to the installation guide (`!1247 <https://gitlab.com/yaook/k8s/-/merge_requests/1247>`_)
@@ -1515,7 +1515,7 @@ Breaking changes
 
   ``[terraform].prevent_disruption`` has been added in the config
   to allow the environment variable to be overridden
-  when Terraform is used (``TF_USAGE=true``).
+  when OpenTofu is used (``TF_USAGE=true``).
   It is set to ``true`` by default.
 
   Ultimately this prevents unintended destruction of the harbour infrastructure
@@ -1758,7 +1758,7 @@ Bugfixes
 - Fix & generalize scheduling_key usage for managed K8s services (`!1088 <https://gitlab.com/yaook/k8s/-/merge_requests/1088>`_)
 - Fix vault import for non-OpenStack clusters (`!1090 <https://gitlab.com/yaook/k8s/-/merge_requests/1090>`_)
 - Don't create Flux PodMonitos if monitoring is disabled (`!1092 <https://gitlab.com/yaook/k8s/-/merge_requests/1092>`_)
-- Fix a bug which prevented nuking a cluster if Gitlab is used as Terraform backend (`!1093 <https://gitlab.com/yaook/k8s/-/merge_requests/1093>`_)
+- Fix a bug which prevented nuking a cluster if Gitlab is used as OpenTofu backend (`!1093 <https://gitlab.com/yaook/k8s/-/merge_requests/1093>`_)
 - Fix tool ``tools/assemble_cephcluster_storage_nodes_yaml.py`` to produce
   valid yaml.
 
@@ -1854,7 +1854,7 @@ Deprecations and Removals
 Other Tasks
 ~~~~~~~~~~~
 
-- Update flake dependencies and allow unfree license for Terraform (`!929 <https://gitlab.com/yaook/k8s/-/merge_requests/929>`_)
+- Update flake dependencies and allow unfree license for OpenTofu (`!929 <https://gitlab.com/yaook/k8s/-/merge_requests/929>`_)
 
 
 Misc
@@ -1942,7 +1942,7 @@ New Features
 - Add option to allow snippet annotations for NGINX Ingress controller (`!906 <https://gitlab.com/yaook/k8s/-/merge_requests/906>`_)
 - Add configuration option for persistent storage for Prometheus (`!917 <https://gitlab.com/yaook/k8s/-/merge_requests/917>`_)
 - Add optional configuration options for soft and hard disk pressure eviction to the ``config.toml``. (`!948 <https://gitlab.com/yaook/k8s/-/merge_requests/948>`_)
-- Additionally pull a local copy of the Terraform state for disaster recovery purposes if Gitlab is configured as backend. (`!968 <https://gitlab.com/yaook/k8s/-/merge_requests/968>`_)
+- Additionally pull a local copy of the OpenTofu state for disaster recovery purposes if Gitlab is configured as backend. (`!968 <https://gitlab.com/yaook/k8s/-/merge_requests/968>`_)
 
 
 Changed functionality
@@ -2011,7 +2011,7 @@ Bugfixes
   makes it less likely that two backup nodes attempt to become primary
   at the same time, avoiding race conditions and flappiness. (`!841 <https://gitlab.com/yaook/k8s/-/merge_requests/841>`_)
 - Fix Thanos v1 cleanup tasks during migration to prevent accidental double deletion of resources (`!849 <https://gitlab.com/yaook/k8s/-/merge_requests/849>`_)
-- Fixed incorrect templating of Thanos secrets for buckets managed by Terraform and clusters with custom names (`!854 <https://gitlab.com/yaook/k8s/-/merge_requests/854>`_)
+- Fixed incorrect templating of Thanos secrets for buckets managed by OpenTofu and clusters with custom names (`!854 <https://gitlab.com/yaook/k8s/-/merge_requests/854>`_)
 - Rename rook_on_openstack field in config.toml to on_openstack (`!888 <https://gitlab.com/yaook/k8s/-/merge_requests/888>`_)
 -  (`!889 <https://gitlab.com/yaook/k8s/-/merge_requests/889>`_, `!910 <https://gitlab.com/yaook/k8s/-/merge_requests/910>`_)
 - Fixed configuration of host network mode for rook/ceph (`!899 <https://gitlab.com/yaook/k8s/-/merge_requests/899>`_)
@@ -2030,7 +2030,7 @@ Bugfixes
 - It is ensured that the values passed to the cloud-config secret are proper strings. (`!980 <https://gitlab.com/yaook/k8s/-/merge_requests/980>`_)
 - Fix configuration of Grafana resource limits & requests (`!982 <https://gitlab.com/yaook/k8s/-/merge_requests/982>`_)
 - Bump to latest K8s patch releases (`!994 <https://gitlab.com/yaook/k8s/-/merge_requests/994>`_)
-- Fix the behaviour of the Terraform backend
+- Fix the behaviour of the OpenTofu backend
   when multiple users are maintaining the same cluster,
   especially when migrating the backend from local to http. (`!998 <https://gitlab.com/yaook/k8s/-/merge_requests/998>`_)
 - Constrain kubernetes-validate pip package on Kubernetes nodes (`!1004 <https://gitlab.com/yaook/k8s/-/merge_requests/1004>`_)
@@ -2048,7 +2048,7 @@ Changes in the Documentation
 - The repo link to the prometheus blackbox exporter changed (`!840 <https://gitlab.com/yaook/k8s/-/merge_requests/840>`_)
 -  (`!851 <https://gitlab.com/yaook/k8s/-/merge_requests/851>`_, `!853 <https://gitlab.com/yaook/k8s/-/merge_requests/853>`_, `!908 <https://gitlab.com/yaook/k8s/-/merge_requests/908>`_, `!979 <https://gitlab.com/yaook/k8s/-/merge_requests/979>`_)
 - Added clarification in initialization for the different ``.envrc`` used. (`!852 <https://gitlab.com/yaook/k8s/-/merge_requests/852>`_)
-- Update and convert Terraform documentation to restructured Text (`!904 <https://gitlab.com/yaook/k8s/-/merge_requests/904>`_)
+- Update and convert OpenTofu documentation to restructured Text (`!904 <https://gitlab.com/yaook/k8s/-/merge_requests/904>`_)
 - rook-ceph: Clarify role of mon_volume_storage_class (`!955 <https://gitlab.com/yaook/k8s/-/merge_requests/955>`_)
 
 

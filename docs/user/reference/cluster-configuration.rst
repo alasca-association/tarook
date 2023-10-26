@@ -25,7 +25,7 @@ The cluster repository layout
    ├── state/                            # Auto-generated files that need to be preserved. MUST be checked into version control
    │   ├── wireguard/
    │   │   └── ipam.toml                 # WireGuard IP address management
-   │   ├── terraform/                    # Terraform specific state files
+   │   ├── terraform/                    # OpenTofu specific state files
    ┊   ┊
 
 The ``./config`` directory is completely handled by the user.

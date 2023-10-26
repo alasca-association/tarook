@@ -106,7 +106,7 @@ function harbour_disruption_allowed() {
     load_conf_vars
     [ "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" = 'true' ] \
  && [ "${tf_usage:-true}+${terraform_prevent_disruption:-true}" != 'true+true' ]
-    # when Terraform is used also factor in its config
+    # when OpenTofu is used also factor in its config
 }
 
 function require_ansible_disruption() {
@@ -352,7 +352,7 @@ function tf_init() {
 
     if all_gitlab_vars_are_set; then
         if tf_state_present_on_gitlab && [ -f "$terraform_state_dir/terraform.tfstate" ]; then
-            errorf "Several Terraform statefiles were found: locally and on GitLab."
+            errorf "Several OpenTofu statefiles were found: locally and on GitLab."
             exit 1
         fi
     fi
@@ -389,7 +389,7 @@ EOF
     else
         if ! all_gitlab_vars_are_set && ! all_gitlab_vars_are_unset; then
             errorf "'gitlab_backend=false' but some GitLab variables are provided."
-            errorf "(1) If you want to migrate the Terraform backend method from 'http' to 'local',"
+            errorf "(1) If you want to migrate the OpenTofu backend method from 'http' to 'local',"
             errorf "you should provide all the GitLab variables"
             errorf "(2) If you want to init a cluster with local backend,"
             errorf "make sure that all the following GitLab variables are unset:"
@@ -402,18 +402,18 @@ EOF
         if all_gitlab_vars_are_set; then
             if tf_state_present_on_gitlab; then
                 rm -f "$OVERRIDE_FILE"
-                notef "Terraform statefile on GitLab found. Migration from http to local."
+                notef "OpenTofu statefile on GitLab found. Migration from http to local."
                 if tf_init_local_migrate; then
                     # delete tf_statefile from GitLab
                     GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" --request DELETE "$backend_address")
                     check_return_code "$GITLAB_RESPONSE"
                 else
-                    warningf "Terraform init was not successful. The Terraform state on GitLab was not deleted."
+                    warningf "OpenTofu init was not successful. The OpenTofu state on GitLab was not deleted."
                 fi
             else
                 errorf "'gitlab_backend=false', all GitLab variables are provided,"
                 errorf "but the Terrafrom state file could not be found on GitLab in order to migrate from 'http' to 'local'."
-                errorf "(1) If you want to migrate, make sure the Terraform state file exists on GitLab."
+                errorf "(1) If you want to migrate, make sure the OpenTofu state file exists on GitLab."
                 errorf "(2) If you want to init a cluster with local backend,"
                 errorf "make sure that all the following GitLab variables are unset:"
                 for var in "${all_gitlab_vars[@]}"; do

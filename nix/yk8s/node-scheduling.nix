@@ -48,7 +48,7 @@ in {
         builtins.seq (builtins.all (e:
           if config.yk8s.terraform.enabled -> builtins.elem e nodeNames
           then true
-          else throw "(node-scheduling) Label defined for ${e}, but node not found in Terraform config") (builtins.attrNames v))
+          else throw "(node-scheduling) Label defined for ${e}, but node not found in OpenTofu config") (builtins.attrNames v))
         v;
     };
     taints = mkOption {
@@ -66,7 +66,7 @@ in {
         builtins.seq (builtins.all (e:
           if config.yk8s.terraform.enabled -> builtins.elem e nodeNames
           then true
-          else throw "(node-scheduling) Taint defined for ${e}, but node not found in Terraform config") (builtins.attrNames v))
+          else throw "(node-scheduling) Taint defined for ${e}, but node not found in OpenTofu config") (builtins.attrNames v))
         v;
     };
   };

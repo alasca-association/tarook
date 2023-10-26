@@ -13,7 +13,7 @@ load_conf_vars
 check_venv
 
 if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraform_version')" "$terraform_min_version")" -lt 0 ]; then
-    errorf 'Please upgrade Terraform to at least v'"$terraform_min_version"
+    errorf 'Please upgrade OpenTofu to at least v'"$terraform_min_version"
     exit 5
 fi
 
@@ -49,7 +49,7 @@ fi
 run terraform -chdir="$terraform_module" apply "$terraform_plan"
 
 if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ]; then
-    notef 'Pulling latest Terraform state from Gitlab for disaster recovery purposes.'
+    notef 'Pulling latest OpenTofu state from Gitlab for disaster recovery purposes.'
     # don't use the "run" function here as it would print the token
     curl -s -o "$terraform_state_dir/disaster-recovery.tfstate.bak" \
         --header "Private-Token: $TF_HTTP_PASSWORD" "$backend_address"

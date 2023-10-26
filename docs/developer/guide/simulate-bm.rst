@@ -6,7 +6,7 @@ can be simulated with OpenStack resources.
 That's useful if you want to verify this use case
 without having spare hardware available to do so.
 
-The general approach is to utilize the Terraform stage
+The general approach is to utilize the OpenTofu stage
 to create the harbour infrastructure
 but then disable and remove everything in the environment
 that is specific to the Openstack based setup path
@@ -21,7 +21,7 @@ Cluster repository initialization
 Follow the cluster :doc:`initialization documentation</user/guide/initialization>`.
 
 Disable Wireguard,
-but enable Terraform because we want to use it to create
+but enable OpenTofu because we want to use it to create
 OpenStack resources,
 and configure the infrastructure layer.
 
@@ -99,7 +99,7 @@ Reconfigure the inventory ``inventory/yaook-k8s/hosts``:
 Also remove the ``[gateways]`` section from ``config/hosts``
 and replace ``gateways`` with ``masters`` in the ``[frontend:children]`` section.
 
-We can now disable Terraform:
+We can now disable OpenTofu:
 
 .. code:: nix
 
@@ -138,13 +138,13 @@ Creating and attaching a floating ip to the jump host:
 The jump host should be accessible via the attached floating IP now.
 We still want to harden it though.
 For the LCM to work, we have to adjust the hosts file
-which has been created previously by Terraform
+which has been created previously by OpenTofu
 ``config/hosts``.
 
 * Set ``openstack.enabled`` to ``false``
-* Set ``networking_fixed_ip`` to the networking fixed ip created by Terraform
+* Set ``networking_fixed_ip`` to the networking fixed ip created by OpenTofu
   * Check out the following vars-file: ``inventory/yaook-k8s/group_vars/all/terraform_networking-trampoline.yaml``
-* Set ``subnet_cidr`` to the subnet cidr created by Terraform (and configured above)
+* Set ``subnet_cidr`` to the subnet cidr created by OpenTofu (and configured above)
   * Check out the following vars-file: ``inventory/yaook-k8s/group_vars/all/terraform_networking-trampoline.yaml``
 * Add the jump host as target
 

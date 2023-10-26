@@ -220,7 +220,7 @@ of the gateway nodes in front of the Kubernetes cluster.
 
 .. figure:: /img/apply-terraform.svg
    :scale: 80%
-   :alt: Apply Terraform Script Visualization
+   :alt: Apply OpenTofu Script Visualization
    :align: center
 
 |
@@ -369,8 +369,8 @@ For further information on Ansible meta information take a look
 ``manual-terraform.sh``
 -----------------------
 
-This is a thin wrapper around Terraform. The arguments are passed on to
-Terraform, and the environment for it is set to use the same module and
+This is a thin wrapper around OpenTofu. The arguments are passed on to
+OpenTofu, and the environment for it is set to use the same module and
 state as when run from ``apply-terraform.sh``.
 
 This is useful for operational interventions, debugging and development

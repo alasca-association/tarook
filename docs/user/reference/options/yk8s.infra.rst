@@ -10,7 +10,7 @@ Infra Configuration
 ^^^^^^^^^^^^^^^^^^^
 
 This section contains various configuration options necessary for all
-cluster types, Terraform and bare-metal based.
+cluster types, OpenTofu and bare-metal based.
 
 .. _configuration-options.yk8s.infra.cluster_name:
 

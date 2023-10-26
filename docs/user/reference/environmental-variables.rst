@@ -99,7 +99,7 @@ provide.
 
 -  These **MUST** be set if you want to deploy on OpenStack.
 
--  These variables are used by Terraform to create, maintain and destroy
+-  These variables are used by OpenTofu to create, maintain and destroy
    the underlying harbour infrastructure layer. They are also needed by
    the `Cloud Controller Manager <https://kubernetes.io/docs/concepts/architecture/cloud-controller/>`__
    when applying the k8s-base layer.
@@ -167,9 +167,9 @@ Environment Variable                    Default                                 
 ``MANAGED_K8S_GIT_BRANCH``                                                                                      If set and ``MANAGED_K8S_LATEST_RELEASE`` set to
                                                                                                                 ``false``, the specified branch will be checked out by
                                                                                                                 ``init-cluster-repo.sh``.
-``TERRAFORM_MODULE_PATH``               ``../terraform``                                                        Path to the Terraform root module to
+``TERRAFORM_MODULE_PATH``               ``../terraform``                                                        Path to the OpenTofu root module to
                                                                                                                 change the working directory for the
-                                                                                                                execution of the Terraform commands.
+                                                                                                                execution of the OpenTofu commands.
 ======================================= ======================================================================= ===================================================
 
 .. _environment-variables.secret-management:
@@ -265,7 +265,7 @@ operations.
 Environment Variable                        Default     Description
 =========================================== =========== ===================
 ``MANAGED_K8S_RELEASE_THE_KRAKEN``          ``false``   Boolean value which defaults to false. If set to ``true``, this allows the LCM to perform disruptive actions with Ansible. See the documentation on Disruption actions for details. By default, Ansible will avoid to perform any actions which could cause a loss of data or loss of availability to the customer. This comes at the cost of not performing certain operations or refusing to continue at some places.
-``MANAGED_K8S_DISRUPT_THE_HARBOUR``         ``false``   Boolean value which defaults to false. If set to ``true``, this allows the LCM to perform disruptive actions to the harbour infrastructure (with Terraform).
+``MANAGED_K8S_DISRUPT_THE_HARBOUR``         ``false``   Boolean value which defaults to false. If set to ``true``, this allows the LCM to perform disruptive actions to the harbour infrastructure (with OpenTofu).
 ``MANAGED_K8S_NUKE_FROM_ORBIT``             ``false``   Boolean value which defaults to false. If set to ``true``, it will delete all Thanos monitoring data from the object store before destruction.
 ``MANAGED_K8S_IGNORE_WIREGUARD_ROUTE``                  By default, ``wg-up.sh`` will check if an explicit route for the cluster network exists on your machine. If such a route exists and does not belong to the wireguard interface set via ``wg_conf_name``, the script will abort with an error.  The reason for that is that it is unlikely that you’ll be able to connect to the cluster this way and that weird stuff is bound to happen. If you know what you’re doing (I certainly don’t), you can set to any non-empty value to override this check.
 ``AFLAGS``                                              This allows to pass additional flags to Ansible. The variable is interpolated into the ansible call without further quoting, so it can be used to do all kinds of fun stuff. A primary use is to force diff output or only execute some tags: ``AFLAGS="--diff -t some-tag"``.
