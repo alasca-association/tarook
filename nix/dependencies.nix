@@ -35,8 +35,8 @@
           moreutils
           openssh
           openssl
+          opentofu
           pre-commit
-          inputs'.nixpkgs-terraform157.legacyPackages.terraform
           util-linux # for uuidgen
         ];
         pythonPackages = ps:
