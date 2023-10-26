@@ -9,5 +9,4 @@ cloud-configs/
 *.tfstate*
 .idea/
 *.key
-terraform/02-moved-instances.tf
 _build

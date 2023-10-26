@@ -10,5 +10,4 @@ etc/manifests/
 /terraform/plan.tfplan
 .envrc.local
 /.direnv
-terraform/02-moved-instances.tf
 terraform/disaster-recovery.tfstate.bak

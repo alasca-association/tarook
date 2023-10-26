@@ -15,6 +15,12 @@ if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraf
     exit 5
 fi
 
+# delete "$terraform_module/02-moved-instances.tf"
+# after https://gitlab.com/yaook/k8s/-/merge_requests/933
+if [ -f "$terraform_module/02-moved-instances.tf" ]; then
+  run rm "$terraform_module/02-moved-instances.tf"
+fi
+
 var_file="$terraform_state_dir/config.tfvars.json"
 cd "$terraform_state_dir"
 export TF_DATA_DIR="$terraform_state_dir/.terraform"
@@ -166,16 +172,6 @@ else
         rm -f "$OVERRIDE_FILE"
         tf_init_local
     fi
-fi
-
-# Prepare possible migration steps
-# count -> foreach migration
-# shellcheck source=actions/helpers/migrate-count-to-for-each.sh
-
-if [ -f "$terraform_state_dir"/terraform.tfstate ]; then
-  # Only attempt to migrate if we have a terraform state in first place
-  source "$actions_dir"/helpers/migrate-count-to-for-each.sh
-  run terraform_migrate_foreach "$terraform_module/02-moved-instances.tf"
 fi
 
 run terraform -chdir="$terraform_module" plan --var-file="$var_file" --out "$terraform_plan"
