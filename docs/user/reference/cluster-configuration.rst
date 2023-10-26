@@ -26,11 +26,11 @@ variables into the ``inventory/``. The ``inventory/`` is automatically
 included. Following the concept of separation of concerns, variables are
 only available to stages/layers which need them.
 
-Configuring Terraform
-~~~~~~~~~~~~~~~~~~~~~
+Configuring OpenTofu
+~~~~~~~~~~~~~~~~~~~~
 
-You can overwrite all Terraform related variables (see below for
-where to find a complete list) in the Terraform section of your ``config.toml``.
+You can overwrite all OpenTofu related variables (see below for
+where to find a complete list) in the OpenTofu section of your ``config.toml``.
 
 By default 3 control plane nodes and 4 workers will get created. You’ll
 need to adjust these values if you e.g. want to enable
@@ -43,12 +43,12 @@ need to adjust these values if you e.g. want to enable
    there is no explicit variable for the gateway node count! This is
    implicitly defined by the number of elements in the ``azs`` array.
 
-Please not that with the introduction of ``for_each`` in our terraform
+Please not that with the introduction of ``for_each`` in our tofu
 module, you can delete individual nodes. Consider the following example:
 
 .. code:: toml
 
-   [terraform]
+   [opentofu]
    workers = 3
    worker_names = ["0", "1", "2"]
 
@@ -58,22 +58,22 @@ remove the suffix of the worker from the list. After removing, i.e.,
 
 .. code:: toml
 
-   [terraform]
+   [opentofu]
    workers = 2
    worker_names = ["0", "2"]
 
 For an auto-generated complete list of variables, please refer to
-:doc:`Terraform docs </developer/reference/terraform-docs>`.
+:doc:`OpenTofu docs </developer/reference/tofu-docs>`.
 
-To activate automatic backend of Terraform statefiles to Gitlab,
-adapt the Terraform section of your ``config.toml``:
+To activate automatic backend of OpenTofu statefiles to Gitlab,
+adapt the OpenTofu section of your ``config.toml``:
 set `gitlab_backend` to True,
 set the URL of the Gitlab project and
 the name of the Gitlab state object.
 
 .. code:: toml
 
-   [terraform]
+   [opentofu]
    gitlab_backend    = true
    gitlab_base_url   = "https://gitlab.com"
    gitlab_project_id = "012345678"
@@ -87,20 +87,20 @@ read/write access to the API.
 Please see GitLab documentation for creating a
 `personal access token <https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html>`__.
 
-To successful migrate from the "local" to "http" Terraform backend method,
+To successful migrate from the "local" to "http" OpenTofu backend method,
 ensure that `gitlab_backend` is set to `true`
 and all other required variables are set correctly.
 Incorrect data entry may result in an HTTP error respond,
 such as a HTTP/401 error for incorrect credentials.
 Assuming correct credentials in the case of an HTTP/404 error,
-Terraform is executed and the state is migrated to Gitlab.
+OpenTofu is executed and the state is migrated to Gitlab.
 
-To migrate from the "http" to "local" Terraform backend method,
+To migrate from the "http" to "local" OpenTofu backend method,
 set `gitlab_backend=false`,
 `MANAGED_K8S_NUKE_FROM_ORBIT=true`,
 and assume
 that all variables above are properly set
-and the Terraform state exists on GitLab.
+and the OpenTofu state exists on GitLab.
 Once the migration is successful,
 unset the variables above
 to continue using the "local" backend method.
@@ -115,13 +115,13 @@ Excerpt from ``templates/config.template-toml``:
 .. raw:: html
 
    <details>
-   <summary>config.toml: Terraform configuration</summary>
+   <summary>config.toml: OpenTofu configuration</summary>
 
 
 .. literalinclude:: /templates/config.template.toml
    :language: toml
-   :start-after: # ANCHOR: terraform_config
-   :end-before: # ANCHOR_END: terraform_config
+   :start-after: # ANCHOR: tofu_config
+   :end-before: # ANCHOR_END: tofu_config
 
 .. raw:: html
 

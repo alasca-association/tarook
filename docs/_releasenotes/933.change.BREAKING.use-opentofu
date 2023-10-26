@@ -1,0 +1,4 @@
+Instead of Terraform which changed its license we're moving on to OpenTofu.
+OpenTofu is an in-place replacement for Terraform.
+This is a breaking change as it requires to install OpenTofu.
+Check the requirements documentation for further information on how to do that.

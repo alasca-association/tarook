@@ -6,11 +6,11 @@
 # NOTE:For some sections the inventory updater will apply prefixes to
 # the variables before passing them over to the ansible inventories.
 
-# ANCHOR: terraform_config
-# --- TERRAFORM ---
+# ANCHOR: tofu_config
+# --- OpenTofu ---
 # ansible prefix: /
-[terraform]
-# If true, prevent Terraform from performing disruptive action
+[opentofu]
+# If true, prevent OpenTofu from performing disruptive action
 # defaults to true if unset
 prevent_disruption = true
 
@@ -35,8 +35,8 @@ dualstack_support = false # "•ᴗ•"
 # Volume type that is used if `create_root_disk_on_volume` is true.
 #root_disk_volume_type = "three_times_replicated"
 
-# Enable GitLab-managed Terraform backend
-# If true, the Terraform state will be stored inside the provided gitlab project.
+# Enable GitLab-managed OpenTofu backend
+# If true, the OpenTofu state will be stored inside the provided gitlab project.
 # If set, the environment variables `TF_HTTP_USERNAME` and `TF_HTTP_PASSWORD`
 # must be configured in a separate file `~/.config/yaook-k8s/env`.
 #gitlab_backend = false
@@ -47,10 +47,10 @@ dualstack_support = false # "•ᴗ•"
 # The unique ID of your GitLab project.
 #gitlab_project_id = "01234567"
 
-# The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'
+# The name of the Gitlab state object in which to store the OpenTofu state, e.g. 'tf-state'
 #gitlab_state_name = "tf-state"
 
-# ANCHOR_END: terraform_config
+# ANCHOR_END: tofu_config
 
 # ANCHOR: vault_configuration
 # --- VAULT BACKEND ---
@@ -536,7 +536,7 @@ use_helm = true
 # Enable use of Thanos
 #use_thanos = false
 
-# Let terraform create an object storage container / bucket for you if `true`.
+# Let tofu create an object storage container / bucket for you if `true`.
 # If set to `false` one must provide a valid configuration via Vault
 # See: https://yaook.gitlab.io/k8s/release/v3.0/managed-services/prometheus/prometheus-stack.html#custom-bucket-management
 #manage_thanos_bucket = true
@@ -626,9 +626,9 @@ use_helm = true
 # thanos_store_memory_request and thanos_store_memory_limit
 #thanos_store_in_memory_max_size = 0
 
-# WARNING: If you have set terraform.cluster_name, you must set this
-# variable to "${terraform.cluster_name}-monitoring-thanos-data".
-# The default terraform.cluster_name is "managed-k8s" which is why the
+# WARNING: If you have set opentofu.cluster_name, you must set this
+# variable to "${opentofu.cluster_name}-monitoring-thanos-data".
+# The default opentofu.cluster_name is "managed-k8s" which is why the
 # default object store container name is set to the following.
 #thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
 
@@ -959,7 +959,7 @@ enabled = true
 port = 7777 # •ᴗ•
 
 # IP address range to use for WireGuard clients. Must be set to a CIDR and must
-# not conflict with the terraform.subnet_cidr.
+# not conflict with the opentofu.subnet_cidr.
 # Should be chosen uniquely for all clusters of a customer at the very least
 # so that they can use all of their clusters at the same time without having
 # to tear down tunnels.
@@ -1072,7 +1072,7 @@ wireguard_on_workers = false
 # attached to two networks but the controller-manager should only pick up one. If
 # you don't understand the purpose of this field, there's a very high chance you
 # won't need to touch it/uncomment it.
-# Note: This network name isn't fetched automagically (by terraform) on purpose
+# Note: This network name isn't fetched automagically (by tofu) on purpose
 # because there might be situations where the CCM should not pick the managed network.
 #openstack_network_name = "managed-k8s-network"
 

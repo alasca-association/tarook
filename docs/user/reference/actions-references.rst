@@ -18,7 +18,7 @@ Overview
 -  :ref:`apply-k8s-core.sh <actions-references.apply-k8s-coresh>`
 -  :ref:`apply-k8s-supplements.sh <actions-references.apply-k8s-supplementssh>`
 -  :ref:`apply-prepare-gw.sh <actions-references.apply-prepare-gwsh>`
--  :ref:`apply-terraform.sh <actions-references.apply-terraformsh>`
+-  :ref:`apply-tofu.sh <actions-references.apply-tofush>`
 -  :ref:`test.sh <actions-references.testsh>`
 
 **Additional operating scripts**:
@@ -37,7 +37,7 @@ Overview
 **Additional helper scripts**:
 
 - :ref:`lib.sh<actions-references.libsh>`
-- :ref:`manual-terraform.sh<actions-references.manual-terraformsh>`
+- :ref:`manual-tofu.sh<actions-references.manual-tofush>`
 - :ref:`wg-up.sh<actions-references.wg-upsh>`
 - :ref:`update_inventory.py<actions-references.update_inventorypy>`
 
@@ -111,7 +111,7 @@ installs the Ansible galaxy requirements
 and applies the whole LCM by
 triggering the following other action scripts:
 
-- :ref:`apply-terraform.sh <actions-references.apply-terraformsh>`
+- :ref:`apply-tofu.sh <actions-references.apply-tofush>`
 - :ref:`apply-prepare-gw.sh <actions-references.apply-prepare-gwsh>`
 - :ref:`apply-k8s-supplements.sh <actions-references.apply-k8s-supplementssh>`
 - :ref:`apply-custom.sh <actions-references.apply-customsh>`
@@ -166,24 +166,24 @@ preparations to deploy a yaook-k8s-cluster on top of OpenStack
 which covers bootstrapping, preparation and configuration
 of the gateway nodes in front of the Kubernetes cluster.
 
-.. _actions-references.apply-terraformsh:
+.. _actions-references.apply-tofush:
 
-``apply-terraform.sh``
+``apply-tofu.sh``
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: /img/apply-terraform.svg
+.. figure:: /img/apply-tofu.svg
    :scale: 80%
-   :alt: Apply Terraform Script Visualization
+   :alt: Apply OpenTofu Script Visualization
    :align: center
 
 |
 
-The ``apply-terraform.sh``-script creates and updates the underlying
+The ``apply-tofu.sh``-script creates and updates the underlying
 harbour infrastructure layer as defined by the
 :doc:`configuration </user/reference/cluster-configuration>`. It also creates
 and updates the inventory files for ansible (``inventory/*/hosts``) and
 creates some variables in the inventory (all files created have the
-``terraform_`` prefix).
+``tofu_`` prefix).
 
 .. _actions-references.testsh:
 
@@ -317,14 +317,14 @@ For further information on Ansible meta information take a look
    optional arguments:
      -h, --help     show this help message and exit
 
-.. _actions-references.manual-terraformsh:
+.. _actions-references.manual-tofush:
 
-``manual-terraform.sh``
+``manual-tofu.sh``
 -----------------------
 
-This is a thin wrapper around Terraform. The arguments are passed on to
-Terraform, and the environment for it is set to use the same module and
-state as when run from ``apply-terraform.sh``.
+This is a thin wrapper around OpenTofu. The arguments are passed on to
+OpenTofu, and the environment for it is set to use the same module and
+state as when run from ``apply-tofu.sh``.
 
 This is useful for operational interventions, debugging and development
 work (e.g. to inspect the state or to taint a resource in order to have
@@ -334,7 +334,7 @@ Example usage:
 
 .. code:: console
 
-   $ ./managed-k8s/actions/manual-terraform.sh taint 'openstack_compute_instance_v2.master["managed-k8s-master-1"]'
+   $ ./managed-k8s/actions/manual-tofu.sh taint 'openstack_compute_instance_v2.master["managed-k8s-master-1"]'
 
 .. _actions-references.examples:
 

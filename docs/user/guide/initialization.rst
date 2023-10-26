@@ -46,9 +46,9 @@ Install System Requirements
       .. raw:: html
 
          <details>
-         <summary>Install Terraform</summary>
+         <summary>Install OpenTofu</summary>
 
-      Follow `the upstream instructions on installing Terraform <https://www.terraform.io/downloads>`__.
+      Follow `the upstream instructions on installing OpenTofu <https://opentofu.org/docs/intro/install/>`__.
 
       .. raw:: html
 

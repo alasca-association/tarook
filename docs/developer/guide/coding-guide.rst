@@ -289,8 +289,8 @@ Use ``to_json`` in templates when writing YAML or JSON
    effects or syntax errors can occur. ``to_json`` will properly encode the
    data.
 
-Terraform Styleguide
---------------------
+OpenTofu Styleguide
+-------------------
 
 Use jsonencode in templates when writing YAML
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -15,13 +15,13 @@ resource "local_file" "inventory_yaook-k8s" {
 
 resource "local_file" "trampoline_gateways" {
   content         = data.template_file.trampoline_gateways.rendered
-  filename        = "../../inventory/yaook-k8s/group_vars/all/terraform_networking-trampoline.yaml"
+  filename        = "../../inventory/yaook-k8s/group_vars/all/tofu_networking-trampoline.yaml"
   file_permission = 0640
 }
 
 resource "local_file" "final_group_all" {
   content         = data.template_file.trampoline_gateways.rendered
-  filename        = "../../inventory/yaook-k8s/group_vars/all/terraform_networking-trampoline.yaml"
+  filename        = "../../inventory/yaook-k8s/group_vars/all/tofu_networking-trampoline.yaml"
   file_permission = 0640
 }
 
@@ -33,7 +33,7 @@ resource "local_file" "final_networking" {
     subnet_cidr            = openstack_networking_subnet_v2.cluster_subnet.cidr,
     subnet_v6_cidr         = try(openstack_networking_subnet_v2.cluster_v6_subnet[0].cidr, null)
   })
-  filename        = "../../inventory/yaook-k8s/group_vars/all/terraform_networking.yaml"
+  filename        = "../../inventory/yaook-k8s/group_vars/all/tofu_networking.yaml"
   file_permission = 0640
 }
 
@@ -41,6 +41,6 @@ resource "local_file" "final_networking" {
 # it will override this local backend configuration
 terraform {
   backend "local" {
-    path = "../../terraform/terraform.tfstate"
+    path = "../../tofu/terraform.tfstate"
   }
 }

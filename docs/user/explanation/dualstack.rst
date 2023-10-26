@@ -36,7 +36,7 @@ Prerequisites
 -  Calico ``v3.11`` or later
 -  For managed-k8s-on-OpenStack clusters:
 
-   -  Terraform ``v0.12`` or later
+   -  OpenTofu ``v0.12`` or later
    -  `ch-k8s-lbaas <https://github.com/cloudandheat/ch-k8s-lbaas>`__
       ``v0.3.3`` or later
 
@@ -52,7 +52,7 @@ Adjust your ``config/config.toml`` to meet the following statements:
 
 -  specify ``subnet_v6_cidr``
 
-   -  this is the IPv6 subnet that will be created via Terraform
+   -  this is the IPv6 subnet that will be created via OpenTofu
    -  e.g.:
 
       -  ``subnet_v6_cidr = "fd00::/120"``
@@ -81,12 +81,12 @@ DualStack-Support in OpenStack
 
 A Kubernetes cluster with DualStack support requires IPv4 and IPv6
 connectivity between the cluster nodes. As we are deploying on top of
-OpenStack, we need to adjust Terraform to fulfill the prerequisites.
+OpenStack, we need to adjust OpenTofu to fulfill the prerequisites.
 
 In order for pods to be reachable from the outside world over IPv6
 the cluster nodes must provide this IPv6 connectivity.
 This is enabled with the dual stack support option
-and rolled out on the underlying OpenStack nodes via Terraform.
+and rolled out on the underlying OpenStack nodes via OpenTofu.
 
 `Enabling a DualStack network <https://docs.openstack.org/neutron/latest/admin/config-ipv6.html>`__
 in OpenStack requires:
@@ -148,7 +148,7 @@ DualStack support for the k8s control plane
 The ``controlPlaneEndpoint`` either has to be *one* IP address or a
 domain name. Because using a domain name would lead to the DNS
 resolution overhead, we decided to let the control plane be IPv4-only
-for now. However, a VIPv6 is created via Terraform and configured in
+for now. However, a VIPv6 is created via OpenTofu and configured in
 HAProxy such that it can be used to connect to the control plane.
 
 IPv6 load-balanced services

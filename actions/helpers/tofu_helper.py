@@ -5,9 +5,9 @@ import json
 import sys
 from hcl2 import loads
 
-TFVARS_DIR = pathlib.Path("terraform")
+TFVARS_DIR = pathlib.Path("tofu")
 TFVARS_FILE = TFVARS_DIR / "config.tfvars.json"
-TF_DEFAULTS_FILE = pathlib.Path("managed-k8s/terraform/00-variables.tf")
+TF_DEFAULTS_FILE = pathlib.Path("managed-k8s/tofu/00-variables.tf")
 
 
 def get_current_config():
@@ -25,7 +25,7 @@ def check_for_changed_cluster_name(current_config, new_config):
     cluster_name = current_config.get("cluster_name", "")
     candidate_cluster_name = new_config.get("cluster_name", "")
     if cluster_name != candidate_cluster_name:
-        print("[FATAL] Will not update terraform config because there is a mismatch between the deployed and future cluster_name. This would cause death and destruction.", file=sys.stderr) # NOQA
+        print("[FATAL] Will not update tofu config because there is a mismatch between the deployed and future cluster_name. This would cause death and destruction.", file=sys.stderr) # NOQA
         if cluster_name == "":
             print("[FATAL] `cluster_name` wasn't set before, so remove the field from the config.toml", file=sys.stderr) # NOQA
         else:
@@ -33,12 +33,12 @@ def check_for_changed_cluster_name(current_config, new_config):
         sys.exit(1)
 
 
-def deploy_terraform_config(terraform_config):
+def deploy_tofu_config(tofu_config):
     current_config = get_current_config()
-    check_for_changed_cluster_name(current_config, terraform_config)
+    check_for_changed_cluster_name(current_config, tofu_config)
     TFVARS_DIR.mkdir(exist_ok=True)
     with open(TFVARS_FILE, "w") as fout:
-        json.dump(terraform_config, fout, indent=2)
+        json.dump(tofu_config, fout, indent=2)
 
 
 def get_default_value_in_tf_vars(key, file_path=TF_DEFAULTS_FILE):

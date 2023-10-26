@@ -57,26 +57,33 @@ You can find the actual requirements
         uuid-runtime \
         wireguard
 
-Install Terraform
------------------
+Install OpenTofu
+----------------
 
-Terraform allows infrastructure to be expressed as code
+OpenTofu allows infrastructure to be expressed as code
 in a simple, human-readable language called HCL (HashiCorp Configuration Language).
 It reads configuration files and provides an execution plan of changes,
 which can be reviewed for safety and then applied and provisioned.
 
-To `install Terraform <https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli#install-terraform>`__,
+To `install OpenTofu <https://opentofu.org/docs/intro/install/>`__,
 we run these commands:
 
 .. code:: console
 
-    $ wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-    $ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-    $ sudo apt update
-    $ sudo apt install terraform
+    $ sudo install -m 0755 -d /etc/apt/keyrings
+    $ curl -fsSL https://get.opentofu.org/opentofu.gpg | sudo tee /etc/apt/keyrings/opentofu.gpg >/dev/null
+    $ curl -fsSL https://packages.opentofu.org/opentofu/tofu/gpgkey | sudo gpg --no-tty --batch --dearmor -o /etc/apt/keyrings/opentofu-repo.gpg >/dev/null
+    $ sudo chmod a+r /etc/apt/keyrings/opentofu.gpg /etc/apt/keyrings/opentofu-repo.gpg
+
+    $ echo "deb [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any/ any main
+    $ deb-src [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any/ any main" | sudo tee /etc/apt/sources.list.d/opentofu.list > /dev/null
+    $ sudo chmod a+r /etc/apt/sources.list.d/opentofu.list
+
+    $ sudo apt-get update
+    $ sudo apt-get install -y tofu
 
     $ # Check your installation
-    $ terraform version
+    $ tofu version
 
 Install Helm
 ------------
@@ -358,14 +365,14 @@ for what to execute in which order.
 
     .. code:: toml
 
-        [terraform]
+        [opentofu]
         prevent_disruption = false
 
     Than run
 
     .. code:: console
 
-        $ MANAGED_K8S_DISRUPT_THE_HARBOUR=true bash managed-k8s/actions/apply-terraform.sh
+        $ MANAGED_K8S_DISRUPT_THE_HARBOUR=true bash managed-k8s/actions/apply-tofu.sh
 
 From this point on
 you can use the k8s cluster for deploying any application.
@@ -399,7 +406,7 @@ To tear down your cluster, set the following in ``config/config.toml``:
 
 .. code:: toml
 
-    [terraform]
+    [opentofu]
     prevent_disruption = false
 
 Than run:

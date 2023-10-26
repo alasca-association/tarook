@@ -200,7 +200,7 @@ Automated bucket management
    is created on top of OpenStack and a valid OpenStack RC file is sourced.
 
 This method is enabled by default.
-This will let Terraform create an object storage container
+This will let OpenTofu create an object storage container
 inside your OpenStack project and automatically configures
 Thanos to use that container as primary storage.
 

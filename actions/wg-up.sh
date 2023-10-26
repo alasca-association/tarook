@@ -7,8 +7,8 @@ if [ "${WG_USAGE:-true}" == "true" ]; then
 
     validate_wireguard
 
-    wg_subnet="$(jq -r .subnet_cidr "$terraform_state_dir/config.tfvars.json")"
-    wg_subnet_v6="$(jq -r .subnet_v6_cidr "$terraform_state_dir/config.tfvars.json")"
+    wg_subnet="$(jq -r .subnet_cidr "$tofu_state_dir/config.tfvars.json")"
+    wg_subnet_v6="$(jq -r .subnet_v6_cidr "$tofu_state_dir/config.tfvars.json")"
     # the grep is there to ignore any routes going via the interface we're going to
     # take down later either way
     wg_existing_route="$(ip route show to "$wg_subnet" 2>/dev/null | grep -v "dev $wg_interface" || true)"

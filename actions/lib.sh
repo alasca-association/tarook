@@ -10,16 +10,16 @@ export KUBECONFIG="$cluster_repository/etc/admin.conf"
 
 submodule_managed_k8s_name="managed-k8s"
 
-terraform_min_version="0.14.0"
-terraform_state_dir="$cluster_repository/terraform"
-terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"
-terraform_plan="$terraform_state_dir/plan.tfplan"
-terraform_disruption_setting="terraform.prevent_disruption"
-terraform_prevent_disruption="$(
-    tomlq ".$terraform_disruption_setting"'
+tofu_min_version="0.14.0"
+tofu_state_dir="$cluster_repository/tofu"
+tofu_module="${TOFU_MODULE_PATH:-$code_repository/tofu}"
+tofu_plan="$tofu_state_dir/plan.tfplan"
+tofu_disruption_setting="opentofu.prevent_disruption"
+tofu_prevent_disruption="$(
+    tomlq ".$tofu_disruption_setting"'
            | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
           "$config_file" 2>/dev/null
-)" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
+)" || unset tofu_prevent_disruption  # unset when unset, invalid or file missing
 ansible_directory="$code_repository/ansible"
 
 ansible_inventory_base="$cluster_repository/inventory/yaook-k8s/"
@@ -76,8 +76,8 @@ function ansible_disruption_allowed() {
 
 function harbour_disruption_allowed() {
     [ "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" = 'true' ] \
- && [ "${TF_USAGE:-true}+${terraform_prevent_disruption:-true}" != 'true+true' ]
-    # when Terraform is used also factor in its config
+ && [ "${TF_USAGE:-true}+${tofu_prevent_disruption:-true}" != 'true+true' ]
+    # when OpenTofu is used also factor in its config
 }
 
 function require_ansible_disruption() {
@@ -94,11 +94,11 @@ function require_harbour_disruption() {
         # shellcheck disable=SC2016
         errorf '$MANAGED_K8S_DISRUPT_THE_HARBOUR is set to %q' "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" >&2
         if [ "${TF_USAGE:-true}" == 'true' ]; then
-            if [ -z ${terraform_prevent_disruption+x} ]; then
-                errorf "and ${terraform_disruption_setting} in ${config_file}"' is unset or invalid' >&2
+            if [ -z ${tofu_prevent_disruption+x} ]; then
+                errorf "and ${tofu_disruption_setting} in ${config_file}"' is unset or invalid' >&2
             else
-                errorf "and ${terraform_disruption_setting} in ${config_file}"' is set to %q' \
-                       "${terraform_prevent_disruption}" >&2
+                errorf "and ${tofu_disruption_setting} in ${config_file}"' is set to %q' \
+                       "${tofu_prevent_disruption}" >&2
             fi
         fi
         errorf 'aborting since disruptive operations on the harbour infra are not allowed' >&2
@@ -192,9 +192,9 @@ function ansible_playbook() {
 }
 
 function load_gitlab_vars() {
-    gitlab_base_url="$(jq -r .gitlab_base_url   "$terraform_state_dir/config.tfvars.json")"
-    gitlab_project_id="$(jq -r .gitlab_project_id "$terraform_state_dir/config.tfvars.json")"
-    gitlab_state_name="$(jq -r .gitlab_state_name "$terraform_state_dir/config.tfvars.json")"
+    gitlab_base_url="$(jq -r .gitlab_base_url   "$tofu_state_dir/config.tfvars.json")"
+    gitlab_project_id="$(jq -r .gitlab_project_id "$tofu_state_dir/config.tfvars.json")"
+    gitlab_state_name="$(jq -r .gitlab_state_name "$tofu_state_dir/config.tfvars.json")"
     backend_address="$gitlab_base_url/api/v4/projects/$gitlab_project_id/terraform/state/$gitlab_state_name"
 }
 

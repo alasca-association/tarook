@@ -7,7 +7,7 @@ consists of:
 
 -  The version of the LCM code to deploy the cluster
 -  The version of the WireGuard user information
--  State of Terraform
+-  State of OpenTofu
 -  State of the WireGuard IP address management (IPAM)
 -  Secrets and credentials obtained while deploying the cluster
 -  A :doc:`configuration </user/reference/cluster-configuration>` file which
@@ -37,13 +37,13 @@ will most certainly have more files than these.
    │   └── main.yaml                 # Customization playbook
    ├── managed-k8s/                  # Submodule with the LCM code
    ├── submodules/                   # Place for additional git submodules
-   ├── terraform/                    # Place for Terraform specific files
+   ├── tofu/                         # Place for OpenTofu specific files
    │   ├── .terraform/
    │   │   └── plugins/
    │   │       └── linux_amd64/
-   │   │           └── lock.json     # Terraform plugin version lock
-   │   ├── terraform.tfstate         # Terraform state
-   │   └── terraform.tfstate.backup  # Terraform state backup
+   │   │           └── lock.json     # OpenTofu plugin version lock
+   │   ├── terraform.tfstate         # OpenTofu state
+   │   └── terraform.tfstate.backup  # OpenTofu state backup
    ├── vault/                        # Local vault data
    ├── .envrc                        # direnv (environment variables) configuration
    ├── .gitattributes
@@ -91,10 +91,10 @@ Detailed explanation:
    the same state without changes again, even if the branch of
    ``managed-k8s`` has advanced in the meantime.
 
--  ``terraform/`` is a state-only directory for Terraform. You should
-   not need to manually operate in that directory at all. The terraform
+-  ``tofu/`` is a state-only directory for OpenTofu. You should
+   not need to manually operate in that directory at all. The tofu
    state is managed by the
-   :ref:`apply-terraform.sh <actions-references.apply-terraformsh>` script.
+   :ref:`apply-tofu.sh <actions-references.apply-tofush>` script.
 
 *Optional:*
 

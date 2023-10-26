@@ -64,7 +64,7 @@ configuration.
 
 Nova and the vGPU manager do not get along with parallel creation of
 vGPU VM. To avoid the crash use the option ``-parallelism=1`` with
-``terraform apply``
+``tofu apply``
 
 vGPU support requires i.e. the installation of a vGPU management
 software to slice the actual GPU into virtual ones. The responsible role
