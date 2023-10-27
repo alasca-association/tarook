@@ -257,7 +257,7 @@ Environment Variable                        Default     Description
 ``MANAGED_K8S_IGNORE_WIREGUARD_ROUTE``                  By default, ``wg-up.sh`` will check if an explicit route for the cluster network exists on your machine. If such a route exists and does not belong to the wireguard interface set via ``wg_conf_name``, the script will abort with an error.  The reason for that is that it is unlikely that you’ll be able to connect to the cluster this way and that weird stuff is bound to happen. If you know what you’re doing (I certainly don’t), you can set to any non-empty value to override this check.
 ``TF_USAGE``                                ``true``    Allows to disable execution of the terraform stage by setting it to false. This is also taken into account by the inventory helper. Intended use case are bare-metal or otherwise pre-provisioned setups.
 ``AFLAGS``                                              This allows to pass additional flags to Ansible. The variable is interpolated into the ansible call without further quoting, so it can be used to do all kinds of fun stuff. A primary use is to force diff output or only execute some tags: ``AFLAGS="--diff -t some-tag"``.
-``K8S_CUSTOM_STAGE_USAGE``                  ``false``   If set to true, ``init.sh`` will create a base skeleton for the :ref:`customization layer<abstraction-layers.customization>` in your cluster repository. Also the ``apply.sh``:ref:`-script<actions-references.applysh>` will now include the appliance of this stage.
+``K8S_CUSTOM_STAGE_USAGE``                  ``true``    If set to true, ``init-cluster-repo.sh`` will create a base skeleton for the :ref:`customization layer<abstraction-layers.customization>` in your cluster repository. Also the ``apply-all.sh``:ref:`-script<actions-references.apply-allsh>` will now include the appliance of this stage.
 =========================================== =========== ===================
 
 .. note::
@@ -279,7 +279,7 @@ Environment Variable                        Default     Description
 
    If you have already initialized you cluster repository,
    you’ll need to rerun the
-   ``init.sh``:ref:`-script <actions-references.initsh>`
+   ``init.sh``:ref:`-script <actions-references.init-cluster-reposh>`
    after enabling the Customization layer.
 
 .. _environmental-variables.vault-tooling-variables:

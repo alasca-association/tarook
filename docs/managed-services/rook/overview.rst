@@ -15,7 +15,3 @@ Rook
 
 `Rook <https://rook.io/>`__ is an open-source , cloud-native storage for
 Kubernetes.
-
-.. todo::
-
-   needs details

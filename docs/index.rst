@@ -1,4 +1,4 @@
-Welcome to Yaook k8s' documentation!
+Welcome to yaook/k8s' documentation!
 ====================================
 
 .. toctree::
@@ -41,7 +41,6 @@ Welcome to Yaook k8s' documentation!
    operation/upgrading-kubernetes
    operation/updating-host-nodes
    operation/gpu-and-vgpu
-   operation/resetting-kubernetes
    operation/backups
    operation/snapshots
    Calico (CNI) <operation/calico>
@@ -84,3 +83,10 @@ Welcome to Yaook k8s' documentation!
    DualStack-Support <misc/dualstack>
    misc/rook-ceph-notes
    misc/increase-cluster-cidr
+
+|
+
+.. image:: img/yaook-husky.png
+  :width: 250
+  :alt: The Yaook-Project logo. A husky looking to the left.
+  :align: center

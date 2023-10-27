@@ -736,7 +736,7 @@ Add action for system updates of initialized nodes `(!429) <https://gitlab.com/y
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The node system updates have been pulled out into a
-:ref:`separate action script <actions-references.system_update_nodessh>`.
+separate action script.
 The reason for that is, that even though one has not set
 ``MANAGED_K8S_RELEASE_THE_KRAKEN``, the cache of the package manager of
 the host node is updated in stage2 and stage3. That takes quite some
@@ -754,7 +754,7 @@ to get messy, latest after introducing the option to use
 
 As this is a breaking change, users which use at least one submodule
 **must** re-execute the
-``init.sh``- :ref:`script <actions-references.initsh>`!
+``init.sh``-script!
 The ``init.sh``-script will move your enabled submodules into the
 ``submodules/`` directory. Otherwise at least the symlink to the
 ``ch-role-users``- `role <https://gitlab.com/yaook/k8s/-/blob/devel/k8s-base/roles/ch-role-users>`__ will be

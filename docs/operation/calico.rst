@@ -54,7 +54,7 @@ following. Note that this is a (slightly) disruptive action:
 
 .. code:: console
 
-   $ MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="--diff -t calico" bash managed-k8s/actions/apply-stage3.sh
+   $ MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="--diff -t calico" bash managed-k8s/actions/apply-k8s-supplements.sh
 
 Optionally but recommended, you can verify the calico functionality
 afterwards by triggering the test role:

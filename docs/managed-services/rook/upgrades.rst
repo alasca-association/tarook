@@ -1,37 +1,13 @@
 Upgrading Rook and Ceph
 =======================
 
-The following sections describe how an existing rook-based ceph cluster
+The following sections describe how an existing rook-based Ceph cluster
 can be updated.
 
 .. _upgrades.supported-rookceph-versions-in-mk8s:
 
-Supported rook/ceph versions in mk8s
-------------------------------------
-
-The following table contains all rook versions that can be configured as
-well as the corresponding ceph version that will be deployed. The
-mapping of a rook to a ceph version is done in the ``k8s-config`` role.
-
-role rook_v1 (manifest based)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. table::
-   :align: center
-
-   ============ ============
-   rook version ceph version
-   ============ ============
-   ``v1.2.3``   ``v14.2.5``
-   ``v1.3.11``  ``v14.2.21``
-   ``v1.4.9``   ``v15.2.13``
-   ``v1.5.12``  ``v15.2.13``
-   ``v1.6.7``   ``v16.2.5``
-   ``v1.7.11``  ``v16.2.6``
-   ============ ============
-
-role rook_v2 (Helm based)
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Ansible role ``rook_v2`` (Helm-based installation)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The rook_v2 role should support any arbitrary helm chart version.
 We tested it both on bare metal and on OpenStack up to rook v1.11.
@@ -73,9 +49,8 @@ How to update an existing Cluster
 The rook version to be deployed can be defined in your managed-k8s
 cluster configuration via the variable ``version`` in the
 ``[k8s-service-layer.rook]`` section.
-
-This variable currently defaults to ``v1.2.3`` (which is mapped to ceph
-``v14.2.5``).
+If not explicitly defined, the latest version
+which has currently been tested is used.
 
 Upgrade to rook_v2 (Helm-based installation)
 --------------------------------------------
@@ -85,7 +60,7 @@ Upgrade to rook_v2 (Helm-based installation)
 
 2. Set ``use_helm=true`` in the ``[k8s-service-layer.rook]`` section
 
-3. Execute ``stage4``, or at least the ``rook_v1/2`` role.
+3. Apply  the k8s-supplements or at least the ``rook_v1/2`` role.
 
    .. note::
 
@@ -94,10 +69,10 @@ Upgrade to rook_v2 (Helm-based installation)
 
    .. code:: shell
 
-      # Trigger stage 4
-      MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage4.sh
+      # Trigger k8s-supplements
+      MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
       # Trigger only k8s-rook
-      AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage4.sh
+      AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
 
 
 Steps to perform an upgrade
@@ -153,7 +128,7 @@ Steps to perform an upgrade
       version = "v1.6.7"
       [...]
 
-6. Execute ``stage4``, or at least the ``rook_v1/2`` role.
+6. Apply  the k8s-supplements or at least the ``rook_v1/2`` role.
 
    .. note::
 
@@ -162,10 +137,10 @@ Steps to perform an upgrade
 
    .. code:: shell
 
-      # Trigger stage 4
-      MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage4.sh
+      # Trigger k8s-supplements
+      MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
       # Trigger only k8s-rook
-      AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-stage4.sh
+      AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
 
 7. Get yourself your favorite (non-alcoholic) drink and watch with
    fascinating enthusiasm how your rook-based ceph cluster gets

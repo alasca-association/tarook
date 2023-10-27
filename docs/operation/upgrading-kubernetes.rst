@@ -65,7 +65,7 @@ for Kubernetes to properly work to the Kubernetes version in the
 
 All versions of non-essential components are not mapped to the
 Kubernetes version, i.e. all components/services above the Kubernetes
-layer itself (“stage 3”) but on the service layer (“stage4”).
+layer itself.
 
 Calico
 ~~~~~~

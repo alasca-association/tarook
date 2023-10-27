@@ -78,8 +78,8 @@ by triggering the :ref:`destroy.sh <actions-references.destroysh>` script.
 Troubleshooting
 ---------------
 
-“The ``apply.sh`` script cannot connect to the host nodes”
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+“The ``apply-all.sh`` script cannot connect to the host nodes”
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Error message:** ``failed to detect a valid login!``
 

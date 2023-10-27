@@ -55,7 +55,7 @@ things are true in particular:
 
 -  The role-id and secret-id should be read from the filesystem on the
    remote node. By depending on ``vault-approle`` (only available in
-   stage 2 and stage 3), the credentials are made available in the
+   `k8s-core`), the credentials are made available in the
    ``vault_node_role_id`` and ``vault_node_secret_id`` facts. The
    role-id and secret-id are not otherwise known and it requires
    orchestrator access to obtain or reset them (which is not available

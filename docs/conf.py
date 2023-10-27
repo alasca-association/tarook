@@ -6,9 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Yaook k8s'
+project = 'yaook/k8s'
 copyright = '2020-2024, Yaook Authors'
-author = 'Yaook Authors'
+author = 'YAOOK Authors'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

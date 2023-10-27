@@ -498,6 +498,10 @@ size for each component like in the following.
    thanos_query_size = "ZGi"
    # [...]
 
+|
+
+.. _cluster-configuration.nginx-ingress-configuration:
+
 NGINX Ingress Controller Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -524,6 +528,8 @@ soon :)
    </details>
 
 |
+
+.. _cluster-configuration.cert-manager-configuration:
 
 Cert-Manager Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -12,7 +12,18 @@ To figure out the used version, you could use:
 Take a look at the ``values.yaml`` files of
 the individual helm charts to see what you can (or can`t) potentially
 modify.
+Note that not all values might be exposed in the
+``config.toml``. The data path is
+``config.toml -> inventory/prometheus.yaml -> monitoring_v2 -> templates/prometheus_stack.yaml.j2``.
+If a field that you need isn’t listed in ``prometheus_stack.yaml`` or
+statically configured, please
+`open an issue <https://gitlab.com/yaook/k8s/-/issues>`__
+or, even preferable,
+`submit a merge request :) <https://gitlab.com/yaook/k8s/-/merge_requests>`__.
+yaook/k8s’ developer guide can be found
+`here <https://yaook.gitlab.io/meta/01-developing.html#workflow>`__.
 
+Yaook/k8s also allows the upgrade of the kube-prometheus-stack.
 You can adjust the ``prometheus_stack_version`` in the ``config.toml``
 
 .. code:: toml
@@ -30,20 +41,15 @@ following call as ``monitoring_prometheus_stack_version``.
 
     $ cat managed-k8s/k8s-service-layer/roles/monitoring_v2/defaults/main.yaml
 
-The upgrade routine can be triggered by running the service-stage to update the
-cluster:
+This file also lists currently supported versions.
+As each upgrade requires further steps, i.e. updating the CRDs,
+you cannot simply jump ahead.
+
+The upgrade routine can be triggered by running the following:
 
 .. code:: console
 
-    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="-t mk8s-sl/monitoring --diff" bash managed-k8s/actions/apply-stage4.sh
-
-If a field that you need isn’t listed in ``prometheus_stack.yaml`` or
-statically configured, please
-`open an issue <https://gitlab.com/yaook/k8s/-/issues>`__
-or, even preferable,
-`submit a merge request :) <https://gitlab.com/yaook/k8s/-/merge_requests>`__.
-yaook/k8s’ developer guide can be found
-`here <https://yaook.gitlab.io/meta/01-developing.html#workflow>`__.
+    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="--diff -t monitoring" bash managed-k8s/actions/apply-k8s-supplements.sh
 
 Grafana
 -------
@@ -52,6 +58,10 @@ The LCM uses the
 `Grafana helm chart <https://github.com/grafana/helm-charts/tree/main/charts/grafana>`__
 with the version that comes with the current kube-prometheus-stack helm
 chart version.
+Grafana is not enabled by default,
+you can enable it in the
+:ref:`Prometheus configuration<cluster-configuration.prometheus-configuration>`.
+
 
 Custom dashboards and datasources
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -168,6 +178,9 @@ that resides in the same OpenStack project.
 We're deploying the `Bitnami Thanos helm chart <https://github.com/bitnami/charts/tree/main/bitnami/thanos>`__
 with adjusted values by default.
 Please refer to its documentation for further details.
+
+Thanos can be enabled and configured in the
+:ref:`Prometheus configuration<cluster-configuration.prometheus-configuration>`.
 
 In previous times, Thanos has been deployed via JSONNET.
 You must migrate to the helm chart as soon as possible as the
