@@ -1,6 +1,6 @@
-# Managed Kubernetes Handbook
+# Yaook/k8s Handbook
 
-This docu is generated using sphinx.
+This documentation is generated using sphinx.
 
 ## Table of Contents
 
@@ -8,14 +8,19 @@ See [index.rst](index.rst).
 
 ## How to render
 
-Install sphinx by executing
+Install sphinx by executing:
 
-```
+```shell
+# Install dependencies via poetry
 poetry install --with docs --sync
 ```
 
-To build the documentation use
+To build the documentation use:
 
-```
+```shell
+# Build documentation
 python3 -m sphinx docs _build/html
+
+# Open in Firefox
+firefox _build/html/index.html
 ```
