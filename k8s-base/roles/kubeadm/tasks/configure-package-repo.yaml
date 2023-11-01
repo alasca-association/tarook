@@ -1,0 +1,50 @@
+---
+- name: Add Kubernetes community-owned repository (apt)
+  become: true
+  block:
+    - name: Ensure keyrings directory exists
+      # ftr: this is present by default on Debian...
+      ansible.builtin.file:
+        state: directory
+        path: /etc/apt/keyrings
+        owner: root
+        group: root
+        mode: u=rwx,go=rx
+
+    - name: Deploy Kubernetes community-owned repository key
+      ansible.builtin.copy:
+        src: apt-key.gpg
+        dest: /etc/apt/keyrings/kubeadm.gpg
+        owner: root
+        group: root
+        mode: u=rw,go=r
+
+    - name: Drop deprecated Google's K8s repository
+      become: true
+      file:
+        path: /etc/apt/sources.list.d/kubernetes.list
+        state: absent
+
+    - name: Add Kubernetes community-owned repository to sources.list
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/kubernetes-community.list
+        content: |
+          {{ _auto_generated_preamble }}
+          {% if apt_proxy_url is defined %}
+          deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] http://pkgs.k8s.io/core:/stable:/v{{ k8s_version_minor }}/deb/ /
+          {% else %}
+          deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] https://pkgs.k8s.io/core:/stable:/v{{ k8s_version_minor }}/deb/ /
+          {% endif %}
+        owner: root
+        group: root
+        mode: 0640
+
+    - name: Update apt cache
+      # Note: check available version with `apt-cache policy <package name>`
+      ansible.builtin.apt:
+        update_cache: true
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ network_error_retries }}"
+      delay: "{{ network_error_delay }}"
+...

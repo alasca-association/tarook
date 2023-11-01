@@ -1,0 +1,4 @@
+Switch to new community-owned Kubernetes package repositories
+
+As the Google-hosted repository got frozen, we're switching over to the community-owned repositories.
+For more information, please refer to https://kubernetes.io/blog/2023/08/15/pkgs-k8s-io-introduction/#what-are-significant-differences-between-the-google-hosted-and-kubernetes-package-repositories
