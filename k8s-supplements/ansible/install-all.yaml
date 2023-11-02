@@ -68,6 +68,9 @@
     include_role:
       name: monitoring_v2
       tasks_from: install_monitors.yaml
+    tags:
+    - monitoring_v2
+    - monitoring
 
 # ---
 # TODO: Should be factored out

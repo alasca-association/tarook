@@ -11,6 +11,8 @@
   - vars/retries.yaml
   roles:
   - role: global-monitoring-frontend
-    tags: global-monitoring-frontend
+    tags:
+    - global-monitoring-frontend
+    - monitoring
     when: k8s_global_monitoring_enabled
 ...

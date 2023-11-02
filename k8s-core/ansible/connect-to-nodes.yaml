@@ -10,11 +10,23 @@
   - vars/vault-config.yaml
   roles:
   - role: bootstrap/detect-user
-    tags: detect-user
+    tags:
+    - detect-user
+    - bootstrap/detect-user
+    - always
   - role: bootstrap/prepare-node
-    tags: prepare-node
+    tags:
+    - prepare-node
+    - bootstrap/prepare-node
+    - always
   - role: helpers/vault-onboarded
-    tags: vault-onboarded
+    tags:
+    - vault-onboarded
+    - helpers/vault-onboarded
+    - always
   - role: bootstrap/ssh-known-hosts
-    tags: ssh-known-hosts
+    tags:
+    - ssh-known-hosts
+    - bootstrap/ssh-known-hosts
+    - always
 ...

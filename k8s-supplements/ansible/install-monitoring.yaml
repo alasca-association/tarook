@@ -8,7 +8,9 @@
   roles:
   - role: monitoring_v2
     when: k8s_monitoring_enabled | bool
-    tags: monitoring_v2
+    tags:
+    - monitoring_v2
+    - monitoring
 
 - name: Connect to Kubernetes nodes
   import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
@@ -24,10 +26,14 @@
   roles:
   - role: prometheus-haproxy-exporter
     when: k8s_monitoring_enabled | bool
-    tags: prometheus-haproxy-exporter
+    tags:
+    - prometheus-haproxy-exporter
+    - monitoring
   - role: prometheus-keepalived-exporter
     when: k8s_monitoring_enabled | bool
-    tags: prometheus-keepalived-exporter
+    tags:
+    - prometheus-keepalived-exporter
+    - monitoring
 
 - name: Install monitoring supplements on gateways
   hosts: gateways
@@ -38,11 +44,17 @@
   roles:
   - role: prometheus-bird-exporter
     when: k8s_monitoring_enabled | bool
-    tags: prometheus-bird-exporter
+    tags:
+    - prometheus-bird-exporter
+    - monitoring
   - role: prometheus-node-exporter
     when: k8s_monitoring_enabled | bool
-    tags: prometheus-node-exporter
+    tags:
+    - prometheus-node-exporter
+    - monitoring
   - role: monitoring-system-update-status
     when: k8s_monitoring_enabled | bool
-    tags: monitoring-system-update-status
+    tags:
+    - monitoring-system-update-status
+    - monitoring
 ...
