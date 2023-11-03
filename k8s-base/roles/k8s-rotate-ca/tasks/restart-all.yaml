@@ -1,0 +1,22 @@
+---
+- name: Restart all {{ resource_type }}s
+  delegate_to: localhost
+  run_once: true
+  block:
+    - name: Get all {{ resource_type }}s
+      command: kubectl get {{ resource_type }} -A -o json
+      register: get_res_request
+      changed_when: false
+
+    - name: Extract {{ resource_type }} names
+      set_fact:
+        all_resources: "{{ get_res_request.stdout | from_json | json_query('items[*]') }}"
+
+    - name: Restart each {{ resource_type }}
+      # TODO: doesn't seem to always work. maybe use patch instead and increment an annotation like "yaook.../ca-rotation: 1"
+      command: kubectl rollout restart -n {{ resource.metadata.namespace }} {{ resource_type }}/{{ resource.metadata.name }}
+      no_log: true
+      loop: "{{ all_resources }}"
+      loop_control:
+        loop_var: resource
+...

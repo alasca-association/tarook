@@ -141,6 +141,26 @@
       k8s_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-pki'}) }}"
       k8s_front_proxy_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-front-proxy-pki'}) }}"
 
+  - name: Get information on k8s ca certificate in vault
+    community.crypto.x509_certificate_info:
+      content: "{{ k8s_ca_cert }}"
+    register: k8s_ca_cert_info_vault
+
+  - name: Get information on current k8s ca certificate
+    become: true
+    community.crypto.x509_certificate_info:
+      path: /etc/kubernetes/pki/ca.crt
+    register: k8s_ca_cert_info_current
+
+  - name: Check if k8s ca certificate has changed
+    set_fact:
+      k8s_ca_key_changed: "{{ k8s_ca_cert_info_vault.public_key != k8s_ca_cert_info_current.public_key }}"
+
+  - name: Fail if ca certificate has changed
+    ansible.builtin.fail:
+      msg: "CA certificate has changed. Perform CA rotation first"
+    when: k8s_ca_key_changed
+
   - name: Write k8s CA file
     become: true
     ansible.builtin.copy:
@@ -170,50 +190,9 @@
       group: root
       mode: ugo=r
 
-  - name: Generate controller-manager kubeconfig
-    ansible.builtin.include_tasks: mkkubeconfig.yaml
-    vars:
-      vault_role_id: "{{ vault_node_role_id }}"
-      vault_secret_id: "{{ vault_node_secret_id }}"
-      kubeconfig_title: controller-manager
-      kubeconfig_destination: /etc/kubernetes/controller-manager.conf
-      kubeconfig_issuer: system-masters_controllers
-      kubeconfig_user: system:kube-controller-manager
-      kubeconfig_notify: Restart kube-controller-manager
-
-  - name: Generate scheduler kubeconfig
-    ansible.builtin.include_tasks: mkkubeconfig.yaml
-    vars:
-      vault_role_id: "{{ vault_node_role_id }}"
-      vault_secret_id: "{{ vault_node_secret_id }}"
-      kubeconfig_title: scheduler
-      kubeconfig_destination: /etc/kubernetes/scheduler.conf
-      kubeconfig_issuer: system-masters_controllers
-      kubeconfig_user: system:kube-scheduler
-      kubeconfig_notify: Restart kube-scheduler
-
-  - name: Generate kubelet kubeconfig
-    ansible.builtin.include_tasks: mkkubeconfig.yaml
-    vars:
-      vault_role_id: "{{ vault_node_role_id }}"
-      vault_secret_id: "{{ vault_node_secret_id }}"
-      kubeconfig_title: kubelet
-      kubeconfig_destination: /etc/kubernetes/kubelet.conf
-      kubeconfig_issuer: system-nodes_node
-      kubeconfig_user: "system:node:{{ inventory_hostname }}"
-      kubeconfig_external: true
-      kubeconfig_keypair_path: /var/lib/kubelet/pki/kubelet-client-current.pem
-      kubeconfig_notify: Restart only this kubelet
-
-  - name: Generate admin kubeconfig
-    ansible.builtin.include_tasks: mkkubeconfig.yaml
-    vars:
-      vault_role_id: "{{ vault_node_role_id }}"
-      vault_secret_id: "{{ vault_node_secret_id }}"
-      kubeconfig_title: admin
-      kubeconfig_destination: /etc/kubernetes/admin.conf
-      kubeconfig_issuer: system-masters_admin
-      kubeconfig_user: kubernetes-admin
+  - name: Generate kubeconfigs
+    ansible.builtin.include_tasks:
+        file: generate-kubeconfigs.yaml
 
   - name: Obtain etcd server certificate
     ansible.builtin.include_role:
