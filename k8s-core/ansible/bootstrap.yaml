@@ -15,19 +15,32 @@
     become: true
     apt:
       update_cache: true
+    tags: always
   roles:
   - role: bootstrap/journald
-    tags: journald
+    tags:
+    - journald
+    - bootstrap
   - role: bootstrap/configure-automatic-system-updates
-    tags: configure-automatic-system-updates
+    tags:
+    - configure-automatic-system-updates
+    - bootstrap
   - role: bootstrap/disable-swap
-    tags: disable-swap
+    tags:
+    - disable-swap
+    - bootstrap
   - role: bootstrap/remove_snap
-    tags: remove_snap
+    tags:
+    - remove_snap
+    - bootstrap
   - role: bootstrap/ntp
-    tags: ntp
+    tags:
+    - ntp
+    - bootstrap
   - role: bootstrap/net-forwarding
-    tags: net-forwarding
+    tags:
+    - net-forwarding
+    - bootstrap
 
 - name: Configure Proxy support
   hosts: "{{ target_hosts | default('all:!orchestrator') }}"

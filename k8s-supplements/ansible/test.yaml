@@ -5,13 +5,10 @@
   vars_files:
   - vars/retries.yaml
   tags:
-  - test-mk8s-ms
-  - check-mk8s-ms
+  - monitoring-test
   roles:
   - role: monitoring_v2_test
     tags:
-    - test-mk8s-ms/monitoring_v2
-    - check-mk8s-ms/monitoring_v2
     - monitoring_v2_test
     when: (k8s_monitoring_enabled | bool) and not (monitoring_use_jsonnet_setup | default(False))
 
@@ -21,21 +18,16 @@
   vars_files:
   - vars/retries.yaml
   tags:
-  - test-mk8s-sl
-  - check-mk8s-sl
+  - service-test
   roles:
   - role: cert_manager_v1_test
     when: k8s_cert_manager_enabled | bool
     tags:
-    - test-mk8s-sl/cert-manager
-    - check-mk8s-sl/cert-manager
     - cert_manager_v1_test
 
   - role: fluxcd2_v1_test
     when: (fluxcd_enabled is defined) and (fluxcd_enabled | bool)
     tags:
-    - test-mk8s-sl/fluxcd
-    - check-mk8s-sl/fluxcd
     - fluxcd2_v1_test
 
 - name: Connect to Kubernetes nodes

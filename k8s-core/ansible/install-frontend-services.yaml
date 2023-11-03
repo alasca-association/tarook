@@ -15,7 +15,11 @@
   - vars/vrrp-common.yaml
   roles:
   - role: keepalived
-    tags: keepalived
+    tags:
+    - keepalived
+    - frontend
   - role: haproxy
-    tags: haproxy
+    tags:
+    - haproxy
+    - frontend
 ...

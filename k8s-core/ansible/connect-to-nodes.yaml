@@ -12,21 +12,21 @@
   - role: bootstrap/detect-user
     tags:
     - detect-user
-    - bootstrap/detect-user
+    - bootstrap
     - always
   - role: bootstrap/prepare-node
     tags:
     - prepare-node
-    - bootstrap/prepare-node
+    - bootstrap
     - always
   - role: helpers/vault-onboarded
     tags:
     - vault-onboarded
-    - helpers/vault-onboarded
+    - helpers
     - always
   - role: bootstrap/ssh-known-hosts
     tags:
     - ssh-known-hosts
-    - bootstrap/ssh-known-hosts
+    - bootstrap
     - always
 ...

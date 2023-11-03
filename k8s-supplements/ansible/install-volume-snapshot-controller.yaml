@@ -7,6 +7,6 @@
   roles:
   - role: volume-snapshots
     tags:
-    - volume-snapshot
+    - volume-snapshots
     - volume-snapshot-controller
 ...

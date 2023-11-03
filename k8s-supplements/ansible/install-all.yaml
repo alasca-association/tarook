@@ -5,7 +5,8 @@
   vars_files:
   - vars/etc.yaml
   roles:
-  - vault-migrated
+  - role: vault-migrated
+    tags: always
 
 - name: Connect to, prepare & bootstrap Kubernetes nodes
   import_playbook: "{{ ansible_k8s_core_dir }}/bootstrap.yaml"

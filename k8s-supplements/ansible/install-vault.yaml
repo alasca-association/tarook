@@ -7,5 +7,7 @@
   roles:
   - role: vault_v1
     when: yaook_vault_enabled | bool
-    tags: vault_v1
+    tags:
+    - vault_v1
+    - vault
 ...

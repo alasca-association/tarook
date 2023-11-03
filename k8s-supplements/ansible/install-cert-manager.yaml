@@ -7,5 +7,7 @@
   roles:
   - role: cert_manager_v1
     when: k8s_cert_manager_enabled | bool
-    tags: cert_manager_v1
+    tags:
+    - cert_manager_v1
+    - cert-manager
 ...

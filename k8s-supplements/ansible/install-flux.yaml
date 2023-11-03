@@ -9,9 +9,11 @@
     when: fluxcd_enabled | bool and fluxcd_legacy | default(False)
     tags:
     - fluxcd
+    - fluxcd2_v1
 
   - role: fluxcd2_v2
     when: fluxcd_enabled and not fluxcd_legacy | default(False)
     tags:
     - fluxcd
+    - fluxcd2_v2
 ...
