@@ -25,7 +25,7 @@ spec:
       - name: controller
         image: {{ ch_k8s_lbaas_controller_image | to_json }}
         args: ["--config", "/config/controller-config.toml"]
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: config
           mountPath: /config
