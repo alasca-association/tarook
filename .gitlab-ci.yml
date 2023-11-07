@@ -371,6 +371,7 @@ build-docs-check:
     - bash ./managed-k8s/tools/vault/init.sh
     - bash ./managed-k8s/tools/vault/mkcluster-root.sh k8s.ci.yaook.cloud
     - export VAULT_TOKEN=$(cat $CI_PROJECT_DIR/root.key)
+    - cat ./config/config.toml
     - ./managed-k8s/actions/apply-terraform.sh
     - ./reachability-or-recreate.sh
     - ./managed-k8s/actions/apply-stage2.sh
