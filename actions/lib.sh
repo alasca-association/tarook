@@ -1,7 +1,11 @@
 # shellcheck shell=bash disable=SC2154,SC2034
+
+# Set kubeconfig
 cluster_repository="$(realpath ".")"
 code_repository="$(realpath "$actions_dir/../")"
 etc_directory="$(realpath "etc")"
+
+export KUBECONFIG="$cluster_repository/etc/admin.conf"
 
 submodule_managed_k8s_name="managed-k8s"
 
