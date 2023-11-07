@@ -284,7 +284,7 @@ def main():
                 ALLOWED_TOP_LEVEL_SECTIONS)
         )
 
-    config = merge(config_template, config)
+    config = merge({}, config_template, config)
 
     # Config looks good on first sight, be brave and cleanup the inventory
     print(
