@@ -243,6 +243,7 @@ stages:
     - bash ./managed-k8s/tools/vault/mkcluster-root.sh k8s.ci.yaook.cloud
     - export VAULT_TOKEN=$(cat $CI_PROJECT_DIR/root.key)
     - cat ./config/config.toml
+    - cat /builds/0/k8s/ci/terraform/config.tfvars.json | jq
     - ./managed-k8s/actions/apply-terraform.sh
     - ./reachability-or-recreate.sh
     - ./managed-k8s/actions/apply-stage2.sh
