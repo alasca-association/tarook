@@ -6,7 +6,6 @@ workflow:
     - if: $CI_MERGE_REQUEST_EVENT_TYPE
 
 stages:
-- lint
 - pages
 - spawn-cluster
 - cluster-upgrades
