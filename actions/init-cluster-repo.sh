@@ -89,7 +89,7 @@ if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 	run git add .gitignore config/config.toml
 fi
 
-if [ "${K8S_CUSTOM_STAGE_USAGE:-false}" == 'true' ]; then
+if [ "${K8S_CUSTOM_STAGE_USAGE:-true}" == 'true' ]; then
     mkdir -p "$ansible_k8s_custom_playbook"
     mkdir -p "$ansible_k8s_custom_playbook/roles"
 

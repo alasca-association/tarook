@@ -626,7 +626,7 @@ def main():
     # CUSTOM
     # ---
     # only if custom stage is used
-    if (os.getenv('K8S_CUSTOM_STAGE_USAGE', 'false') == 'true'):
+    if (os.getenv('K8S_CUSTOM_STAGE_USAGE', 'true') == 'true'):
         print_process_state("CUSTOM")
         stage = ANSIBLE_STAGES["custom"]
         custom_ansible_inventory_path = (

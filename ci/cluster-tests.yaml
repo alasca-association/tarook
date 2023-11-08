@@ -210,6 +210,7 @@
     - git init
     - ../actions/init-cluster-repo.sh
     - ../actions/init-cluster-repo.sh # A second run to check idempotency
+    - cp res/custom-play.yaml k8s-custom/main.yaml
       # Note that this is basically a dummy keypair that is not used to protect any significant data
     - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
       # Ensure that the project is clean

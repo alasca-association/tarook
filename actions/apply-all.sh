@@ -19,4 +19,6 @@ fi
 run "$actions_dir/apply-k8s-supplements.sh"
 
 # Invoke custom stage
-run "$actions_dir/apply-custom.sh"
+if [ "${K8S_CUSTOM_STAGE_USAGE:-true}" == 'true' ]; then
+  run "$actions_dir/apply-custom.sh"
+fi
