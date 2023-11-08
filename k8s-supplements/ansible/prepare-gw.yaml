@@ -40,4 +40,5 @@
     tags: wireguard
   - role: ipsec-vpn
     tags: ipsec-vpn
+    when: ipsec_enabled | bool
 ...

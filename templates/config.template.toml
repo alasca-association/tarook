@@ -766,7 +766,7 @@ enabled = false # •ᴗ•
 # --- KUBERNETES SERVICE LAYER : ETCD-BACKUP ---
 # ansible prefix: "etcd_backup_"
 [k8s-service-layer.etcd-backup]
-#enabled = false
+enabled = false
 
 # Configure value for the cron job schedule for etcd backups. If not set it will be
 # set to default value of  21 */12 * * *
@@ -813,7 +813,7 @@ enabled = false # •ᴗ•
 # NOTE: On the first run, the unseal keys and the root token will be printed IN
 # PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
 # LOCATION to use the Vault instance in the future!
-#enabled = false # •ᴗ•
+enabled = false
 
 # Create a publically reachable ingress resource for the API endpoint of vault.
 #ingress = false
@@ -986,7 +986,7 @@ ip_gw   = "172.30.153.65/26"
 # --- IPSEC ---
 # ansible prefix: "ipsec_"
 [ipsec]
-# enabled = false
+enabled = false
 
 # Flag to enable the test suite.
 # Must make sure a remote endpoint, with ipsec enabled, is running and open for connections.
