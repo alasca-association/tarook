@@ -6,6 +6,7 @@ dependencies:
 - wireguard-support
 - net-forwarding
 - bird
+- nftables
 - vault-config
 - vault-approle
 ...
