@@ -37,7 +37,7 @@ conventions.
 
 For every MR you need to place a file called
 ``<merge-request-ID>.<type>[.BREAKING][.<whatever-you-want>]`` into ``/docs/_releasenotes``.
-The content of the file is the actual release note.
+The content of the file is the actual release note and is in reStructuredText format.
 
 The ``merge-request-ID`` will automatically be added/corrected for you.
 So if you don't know the ``merge-request-ID`` in advance, just type anything (except ``+``,
