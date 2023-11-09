@@ -203,4 +203,24 @@
       ansible.builtin.file:
         path: "{{ etc_dir }}/wireguard/wg{{ endpoint.id }}"
         state: absent
+
+# Drop me soon
+- name: Cleanup legacy Wireguard configs
+  delegate_to: localhost
+  run_once: true
+  become: false
+  block:
+    - name: Find no longer needed legacy wg.conf files
+      ansible.builtin.find:
+        file_type: file
+        paths: "{{ etc_dir }}/wireguard"
+        recurse: false
+      register: legacy_config_files
+    - name: Delete legacy wg.conf files
+      ansible.builtin.file:
+        path: "{{ item['path'] }}"
+        state: absent
+      loop: "{{ legacy_config_files.files }}"
+      loop_control:
+        label: "{{ item['path'] }}"
 ...
