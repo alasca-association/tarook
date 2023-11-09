@@ -64,11 +64,6 @@ version = "1.26.8"
 is_gpu_cluster = true
 virtualize_gpu = false
 
-[kubernetes.kubelet]
-evictionsoft_memory_available = "1m25s"
-evictionhard_nodefs_available = "12%"
-evictionhard_nodefs_inodesFree = "7%"
-
 [kubernetes.apiserver]
 frontend_port = 8888
 

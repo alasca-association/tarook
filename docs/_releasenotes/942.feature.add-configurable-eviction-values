@@ -1,1 +1,0 @@
-Add the optional parameters evictionsoft_memory_available, evictionhard_nodefs_available, evictionhard_nodefs_inodesFree to the ``config.toml``.
