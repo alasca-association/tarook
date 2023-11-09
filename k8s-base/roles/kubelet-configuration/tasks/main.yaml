@@ -31,12 +31,12 @@
           evictionSoft:
             memory.available: "384Mi"
           evictionSoftGracePeriod:
-            memory.available: "{{ k8s_kubelet_evictionsoft_memory_available }}"
+            memory.available: "1m30s"
           evictionHard:
             memory.available: "256Mi"
-            nodefs.available: "{{ k8s_kubelet_evictionhard_nodefs_available }}"
+            nodefs.available: "10%"
             imagefs.available: "15%"
-            nodefs.inodesFree: "{{ k8s_kubelet_evictionhard_nodefs_inodesFree }}"
+            nodefs.inodesFree: "5%"
       ansible.builtin.copy:
         content: "{{ (kubelet_config.content | b64decode | from_yaml) | combine(eviction_values) | to_nice_yaml }}"
         dest: /var/lib/kubelet/config.yaml
