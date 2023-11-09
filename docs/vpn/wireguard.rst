@@ -94,6 +94,16 @@ to enable them to connect to the cluster.
 
 Legacy Configuration
 --------------------
+
+.. important::
+
+   You must update the ``orchestrator`` and ``gateway`` vault policies once
+   by executing:
+
+   .. code::
+
+      bash managed-k8s/tools/vault/init.sh
+
 With the switch from one fixed Wireguard endpoint to the option to have multiple
 Wireguard endpoints, the structure of the Wireguard config in ``config.toml`` has
 changed.
