@@ -248,9 +248,54 @@ Additional info on the usage in the LCM
    only support what was required.
 -  One example of that is the authentication means. We only support PSK
    here
--  The PSK is looked up from the passwordstore and resides, by default,
-   in ``inventory/.etc/passwordstore/ipsec_eap_psk``. Note: If you’re
-   bootstrapping a fresh cluster the passwordstore does not exist when
-   the playbook is executed for the first time. Therefore either create
-   the store in advance or re-run the playbook when you inserted the
-   secret.
+
+Upload an IPSec EAP PSK to Vault
+--------------------------------
+
+If you want to use IPSec, you have to upload the
+pre-shared key to vault before triggering the LCM.
+This can be done with the following command:
+
+.. note::
+
+   A root token is needed!
+   The ``orchestrator`` role does not have enough privileges.
+
+.. code:: shell
+
+   # Please substitute CLUSTERNAME & YOUR_IPSEC_EAP_PSK
+   vault kv put yaook/CLUSTERNAME/kv/ipsec-eap-psk ipsec_eap_psk=YOUR_IPSEC_EAP_PSK
+
+Migrate an existing PSK from Passwordstore to Vault
+---------------------------------------------------
+
+As we want to get rid of the legacy passwordstore solution
+to manage credentials and instead moved to using Hashicorp Vault
+as secret backend,
+one must migrate an existing IPSec EAP PSK to vault.
+
+To migrate an existing IPSec EAP PSK from the passwordstore
+to vault run the following:
+
+.. note::
+
+   A root token is needed!
+   The ``orchestrator`` role does not have enough privileges.
+
+Ensure you updated your vault policies by executing:
+
+.. code:: shell
+
+   ./managed-k8s/tools/vault/init.sh
+
+Then execute:
+
+.. code:: shell
+
+   # Please substitute CLUSTERNAME
+   ./managed-k8s/tools/vault/update.sh CLUSTERNAME
+
+.. hint::
+
+   Further information about these scripts can be found
+   :ref:`here <vault.managing-clusters-in-vault>`.
