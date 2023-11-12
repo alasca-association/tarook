@@ -14,7 +14,7 @@ stages:
 
 tflint:
   image:
-    name: "ghcr.io/terraform-linters/tflint:v0.48.0"
+    name: "ghcr.io/terraform-linters/tflint:v0.49.0"
     entrypoint: ["/bin/sh", "-c"]
   stage: lint
   script:
