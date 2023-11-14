@@ -36,6 +36,7 @@ if [ "$(jq -r .gitlab_backend "$terraform_state_dir/config.tfvars.json")" = true
     run terraform -chdir="$terraform_module" init \
                   -migrate-state \
                   -force-copy \
+                  -upgrade \
                   -backend-config="address=$backend_address" \
                   -backend-config="lock_address=$backend_address/lock" \
                   -backend-config="unlock_address=$backend_address/lock" \
@@ -48,7 +49,8 @@ else
     fi
     run terraform -chdir="$terraform_module" init \
                   -migrate-state \
-                  -force-copy
+                  -force-copy \
+                  -upgrade
 fi
 
 # Prepare possible migration steps
