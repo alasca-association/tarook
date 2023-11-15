@@ -14,10 +14,44 @@ if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraf
 fi
 
 var_file="$terraform_state_dir/config.tfvars.json"
-
 cd "$terraform_state_dir"
 export TF_DATA_DIR="$terraform_state_dir/.terraform"
-run terraform -chdir="$terraform_module" init
+
+OVERRIDE_FILE="$terraform_module/backend_override.tf"
+if [ "$(jq -r .gitlab_backend "$terraform_state_dir/config.tfvars.json")" = true ]; then
+    # Here we create a override file which overrides the `local` terraform backend to http(gitlab) backend
+    if [ ! -f "$OVERRIDE_FILE" ]; then
+		cat > "$OVERRIDE_FILE" <<-EOF
+		terraform {
+			backend "http" {}
+		}
+		EOF
+    fi
+    # setting vars for terraform backend config for gitlab-managed terraform backend
+    gitlab_base_url="$(jq -r .gitlab_base_url   "$terraform_state_dir/config.tfvars.json")"
+    gitlab_project_id="$(jq -r .gitlab_project_id "$terraform_state_dir/config.tfvars.json")"
+    gitlab_state_name="$(jq -r .gitlab_state_name "$terraform_state_dir/config.tfvars.json")"
+    backend_address="$gitlab_base_url/api/v4/projects/$gitlab_project_id/terraform/state/$gitlab_state_name"
+
+    run terraform -chdir="$terraform_module" init \
+                  -migrate-state \
+                  -force-copy \
+                  -upgrade \
+                  -backend-config="address=$backend_address" \
+                  -backend-config="lock_address=$backend_address/lock" \
+                  -backend-config="unlock_address=$backend_address/lock" \
+                  -backend-config="lock_method=POST" \
+                  -backend-config="unlock_method=DELETE" \
+                  -backend-config="retry_wait_min=5"
+else
+    if [ -f "$OVERRIDE_FILE" ]; then
+        rm "$OVERRIDE_FILE"
+    fi
+    run terraform -chdir="$terraform_module" init \
+                  -migrate-state \
+                  -force-copy \
+                  -upgrade
+fi
 
 # Prepare possible migration steps
 # count -> foreach migration

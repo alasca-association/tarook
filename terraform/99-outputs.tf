@@ -27,6 +27,8 @@ resource "local_file" "inventory_stage3" {
   file_permission = 0640
 }
 
+# Please note that if gitlab_backend is set to true in config.toml
+# it will override this local backend configuration
 terraform {
   backend "local" {
     path = "../../terraform/terraform.tfstate"

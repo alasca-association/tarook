@@ -222,4 +222,32 @@ variable "monitoring_manage_thanos_bucket" {
   description = "Create an object storage container for thanos."
 }
 
+# tflint-ignore: terraform_unused_declarations
+variable "gitlab_backend" {
+  type = bool
+  default = false
+  description = "If set to true, GitLab will be used as Terraform HTTP backend."
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "gitlab_base_url" {
+  type = string
+  default = "https://gitlab.com"
+  description = "Base URL of GitLab for Terraform HTTP backend if 'gitlab_backend=true'."
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "gitlab_project_id" {
+  type = string
+  default = null
+  description = "If 'gitlab_backend=true', the Terraform state will be stored in the GitLab repo with this ID."
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "gitlab_state_name" {
+  type = string
+  default = "tf-state"
+  description = "If 'gitlab_backend=true', the terraform state file will have this name."
+}
+
 # ANCHOR_END: terraform_variables
