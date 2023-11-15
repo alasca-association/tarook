@@ -38,13 +38,15 @@
     delay: "{{ k8s_error_delay }}"
 
   - name: start worker pods
+    vars:
+      test_worker_nodes: "{{ testing_nodes | default([groups['k8s_nodes'] | first, groups['k8s_nodes'] | last]) }}"
     kubernetes.core.k8s:
       state: present
       definition: "{{ lookup('template', 'pod.yaml') }}"
       validate:
         fail_on_error: true
         strict: true
-    loop: "{{ test_worker_nodes | map(attribute='name') | list }}"
+    loop: "{{ test_worker_nodes }}"
     register: worker_pods
     # Retry this task on failures
     until: worker_pods is not failed

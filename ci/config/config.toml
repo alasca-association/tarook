@@ -186,10 +186,8 @@ enable_backups = false
 [k8s-service-layer.fluxcd]
 enabled = true
 
-[testing.test-nodes]
-"ci-worker-cpu-0" = "worker0"
-"ci-worker-cpu-1" = "worker1"
-"ci-worker-gpu-0" = "worker2"
+[testing]
+nodes = ["ci-worker-cpu-0", "ci-worker-cpu-1", "ci-worker-gpu-0"]
 
 [node-scheduling]
 scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"

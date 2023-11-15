@@ -90,6 +90,7 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "vault": "yaook_vault",
     "nvidia": "nvidia",
     "vault_backend": "vault",
+    "testing": "testing",
 }
 
 
@@ -629,18 +630,12 @@ def main():
     # TESTING
     # ---
     print_process_state("Testing")
-    test_node_map = {"test_worker_nodes": []}
-    for node in config["testing"]["test-nodes"].keys():
-        test_node_map["test_worker_nodes"].append({
-            "worker": node,
-            "name": config["testing"]["test-nodes"][node]
-        })
     test_node_ansible_inventory_path = (
         ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["stage3"] /
         "group_vars" / "all" / "test-nodes.yaml"
     )
     dump_to_ansible_inventory(
-        test_node_map,
+        config.get("testing", dict()),
         test_node_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("testing", "")
     )

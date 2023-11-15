@@ -28,8 +28,8 @@ spec:
     persistentVolumeClaim:
       claimName: {{ check_local_storage_pvc_name | to_json }}
       readOnly: false
-{% if test_worker_nodes|length > 0 %}
+{% if testing_nodes is defined and testing_nodes | length > 0 %}
   nodeSelector:
-    name: {{ test_worker_nodes[1].name | default(test_worker_nodes[0].name) }}
+    kubernetes.io/hostname: {{ testing_nodes | first | to_json }}
 {% endif %}
   restartPolicy: Never
