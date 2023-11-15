@@ -335,6 +335,12 @@ plugin = "calico" # •ᴗ•
 # as more Pods can be packed into a single node.
 #pod_limit = 110
 
+# Config for soft and hard eviction values.
+# Note: To change these values you have to release the Kraken
+#evictionsoft_memory_period = "1m30s"
+#evictionhard_nodefs_available = "10%"
+#evictionhard_nodefs_inodesfree = "5%"
+
 # ANCHOR_END: kubernetes_kubelet_configuration
 
 # --- KUBERNETES SERVICE LAYER ---
