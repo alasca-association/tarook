@@ -44,6 +44,7 @@
       status: "True"
       reason: "PodCompleted"
   loop: "{{ gpu_nodes.resources }}"
+  when: item['status']['allocatable']['nvidia.com/gpu'] | int > 0
   # Retry this task on failures
   register: k8s_apply_cuda_pod
   until: k8s_apply_cuda_pod is not failed
