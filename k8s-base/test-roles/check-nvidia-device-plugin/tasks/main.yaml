@@ -26,9 +26,15 @@
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
 
+- name: Check if GPU nodes have GPU capacity
+  fail:
+    msg: "{{ item.metadata.name }} has no GPUs in its capacities"
+  loop: "{{ gpu_nodes.resources }}"
+  when: item['status']['capacity']['nvidia.com/gpu'] | default(0) | int == 0
+
 # This will spawn the test Pods on GPU nodes in serial
 # We're waiting for the Pod to get completed
-- name: Create Cuda-Test Pods
+- name: Create Cuda-Test Pod if a GPU is allocatable
   kubernetes.core.k8s:
     definition: "{{ lookup('template', 'test_pod.yaml.j2') | from_yaml }}"
     state: present
