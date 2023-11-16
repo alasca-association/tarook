@@ -1,0 +1,8 @@
+Add option to configure multiple Wireguard endpoints
+
+Note that you **must** update the vault policies once. See ``docs/vpn/wireguard.rst`` for further information.
+
+.. code::
+
+    # execute with root vault token sourced
+    bash managed-k8s/tools/vault/init.sh

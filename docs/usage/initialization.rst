@@ -173,13 +173,13 @@ serve as your :doc:`cluster repository </concepts/cluster-repository>`:
             $ cp $somewhere_else/k8s/templates/yaook-k8s-env.template.sh ~/.config/yaook-k8s/env
 
       2. Make the **user specific**
-         :ref:`minimal changes <envirnomental-variables.minimal-required-changes>`
+         :ref:`minimal changes <environmental-variables.minimal-required-changes>`
          to ``~/.config/yaook-k8s/env``.
 
    2. Cluster specific variables:
 
       1. Copy the template located at
-         :ref:`$somewhere_else/k8s/templates/envrc.template.sh <envirnomental-variables.template>`
+         :ref:`$somewhere_else/k8s/templates/envrc.template.sh <environmental-variables.template>`
          to ``./.envrc``.
 
          .. code:: console
@@ -187,7 +187,7 @@ serve as your :doc:`cluster repository </concepts/cluster-repository>`:
             $ cp $somewhere_else/k8s/templates/envrc.template.sh ./.envrc
 
       2. Make the **cluster specific**
-         :ref:`minimal changes <envirnomental-variables.minimal-required-changes>`
+         :ref:`minimal changes <environmental-variables.minimal-required-changes>`
          to ``./.envrc``.
    3. Make sure they have taken effect by running ``direnv allow``.
 

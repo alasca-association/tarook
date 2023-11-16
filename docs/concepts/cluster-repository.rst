@@ -72,7 +72,7 @@ Detailed explanation:
    :doc:`custom layer </concepts/abstraction-layers>`. It is the basic
    skeleton to enable custom Ansible plays. If you want to use this
    feature, you’ll need to
-   :ref:`enable it in your environment variables <envirnomental-variables.behavior-altering-variables>`.
+   :ref:`enable it in your environment variables <environmental-variables.behavior-altering-variables>`.
 
 -  ``managed-k8s/`` is a git submodule which refers to this (the
    ``yaook/k8s``) repository. By using a submodule, we get a pinning to

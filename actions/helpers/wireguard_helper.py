@@ -7,6 +7,7 @@ import typing
 import toml
 import itertools
 import random
+import copy
 import os
 
 WG_COMPANY_USERS_PATH = pathlib.Path("submodules/wg_user")
@@ -15,48 +16,55 @@ WG_IPAM_CONFIG_PATH = pathlib.Path("config/wireguard_ipam.toml")
 
 class WireGuardUser(collections.namedtuple(
         "WireGuardUser",
-        ["public_key", "name", "address_v4", "address_v6"])):
+        ["public_key", "name", "addresses_v4", "addresses_v6"])):
 
     @classmethod
     def fromdict(cls, d, *, with_address=True, address_optional=False):
+        addressesv4_ips = {}
+        addressesv6_ips = {}
+
         if with_address:
             try:
-                addressv4_interface = ipaddress.ip_interface(d["ip"])
-                addressv4_ip = addressv4_interface.ip
+                addresses_v4_dict = d['ips'] if 'ips' in d else {0: d['ip']}
             except KeyError:
-                addressv4_ip = None
+                pass
             else:
-                if addressv4_interface.network.prefixlen != 32:
-                    raise ValueError(
-                        "incorrect prefix length in IP address config: {} "
-                        "(from: {!r}".format(addressv4_interface, d)
-                    )
+                for endpoint, ip in addresses_v4_dict.items():
+                    addressv4_interface = ipaddress.ip_interface(ip)
+                    addressesv4_ips[int(endpoint)] = addressv4_interface.ip
+
+                    if addressv4_interface.network.prefixlen != 32:
+                        raise ValueError(
+                            "incorrect prefix length in IP address config: {} "
+                            "(from: {!r}".format(addressv4_interface, d)
+                        )
 
             try:
-                addressv6_interface = ipaddress.ip_interface(d["ipv6"])
-                addressv6_ip = addressv6_interface.ip
+                addresses_v6_dict = d['ipsv6'] if 'ipsv6' in d else {0: d['ipv6']}
             except KeyError:
-                addressv6_ip = None
+                pass
             else:
-                if addressv6_interface.network.prefixlen != 128:
-                    raise ValueError(
-                        "incorrect prefix lenght in IP address config: {} "
-                        "(from: {!r}".format(addressv6_interface, d)
-                    )
+                for endpoint, ip in addresses_v6_dict.items():
+                    addressv6_interface = ipaddress.ip_interface(ip)
+                    addressesv6_ips[int(endpoint)] = addressv6_interface.ip
 
-            if addressv4_ip is None and addressv6_ip is None and not address_optional: # NOQA
+                    if addressv6_interface.network.prefixlen != 128:
+                        raise ValueError(
+                            "incorrect prefix lenght in IP address config: {} "
+                            "(from: {!r}".format(addressv6_interface, d)
+                        )
+
+            if addressesv4_ips is None and addressesv6_ips is None \
+                and not address_optional: # NOQA
                 raise ValueError(
                     "ip address missing on user {!r}".format(d)
                 ) from None
-        else:
-            addressv4_ip = None
-            addressv6_ip = None
 
         return cls(
             public_key=d["pub_key"],
             name=d["ident"],
-            address_v4=addressv4_ip,
-            address_v6=addressv6_ip,
+            addresses_v4=addressesv4_ips,
+            addresses_v6=addressesv6_ips,
         )
 
     def todict(self) -> typing.Mapping[str, str]:
@@ -64,10 +72,12 @@ class WireGuardUser(collections.namedtuple(
             "pub_key": self.public_key,
             "ident": self.name,
         }
-        if self.address_v4 is not None:
-            result["ip"] = str(self.address_v4)
-        if self.address_v6 is not None:
-            result["ipv6"] = str(self.address_v6)
+        if self.addresses_v4 is not None:
+            result["ips"] = {endpoint: str(ip)
+                             for endpoint, ip in self.addresses_v4.items()}
+        if self.addresses_v6 is not None:
+            result["ipsv6"] = {endpoint: str(ip)
+                               for endpoint, ip in self.addresses_v6.items()}
         return result
 
 
@@ -123,29 +133,66 @@ def _require_unique_names(
     return True
 
 
-def _get_subnets_from_config(
+def _get_endpoints_from_config(
     wg_config: typing.MutableMapping
-) -> typing.Tuple[ipaddress.IPv4Network, ipaddress.IPv6Network]:
+) -> typing.List[dict]:
     """
-    load IPv4 and IPv6 subnet from the config and return them
+    load endpoints from the config and return them
     """
-    subnetv4 = None
-    subnetv6 = None
-    if "ip_cidr" in wg_config:
-        subnetv4 = ipaddress.IPv4Network(wg_config["ip_cidr"])
-    if "ipv6_cidr" in wg_config:
-        subnetv6 = ipaddress.IPv6Network(wg_config["ipv6_cidr"])
-    # legacy
-    if "wg_ip_cidr" in wg_config:
-        subnetv4 = ipaddress.IPv4Network(wg_config["wg_ip_cidr"])
-    if "wg_ipv6_cidr" in wg_config:
-        subnetv6 = ipaddress.IPv6Network(wg_config["wg_ipv6_cidr"])
-    if not subnetv4 and not subnetv6:
-        raise ValueError(
-            "Wireguard section has neither wg_ip_cidr nor wg_ipv6_cidr set ",
-        )
+    endpoints = copy.deepcopy(wg_config["endpoints"])
 
-    return subnetv4, subnetv6
+    for ep in endpoints:
+        if 'ip_cidr' in ep:
+            ep['ip_cidr'] = ipaddress.IPv4Network(ep['ip_cidr'])
+        if 'ipv6_cidr' in ep:
+            ep['ipv6_cidr'] = ipaddress.IPv6Network(ep['ipv6_cidr'])
+
+    return endpoints
+
+
+def _handle_legacy_options(
+    wg_config: typing.MutableMapping
+):
+    """
+    Transform legacy wireguard config options to endpoint with id 0
+    """
+
+    # If "old" wireguard endpoint config exists, use old config for endpoint 0
+    if 'port' in wg_config:
+        # Find endpoint with id 0
+        wg0 = next((ep for ep in wg_config["endpoints"] if ep['id'] == 0), None)
+
+        if wg0 is None:
+            raise ValueError("Old wireguard config parameters exists, "
+                             "but no endpoint with id 0 found.")
+
+        # Use "old" wireguard endpoint config for wg0
+        wg0["port"] = wg_config["port"]
+
+        if ('ip_gw' in wg_config and
+                ('ip_cidr' in wg_config or 'wg_ip_cidr' in wg_config)):
+            wg0["ip_gw"] = wg_config["ip_gw"]
+
+            if 'wg_ip_cidr' in wg_config:
+                wg0["ip_cidr"] = wg_config["wg_ip_cidr"]
+            elif 'ip_cidr' in wg_config:
+                wg0["ip_cidr"] = wg_config["ip_cidr"]
+
+        if ('ipv6_gw' in wg_config and
+                ('ipv6_cidr' in wg_config or 'wg_ipv6_cidr' in wg_config)):
+            wg0["ipv6_gw"] = wg_config["ipv6_gw"]
+
+            if 'wg_ipv6_cidr' in wg_config:
+                wg0["ipv6_cidr"] = wg_config["wg_ipv6_cidr"]
+            elif 'ipv6_cidr' in wg_config:
+                wg0["ipv6_cidr"] = wg_config["ipv6_cidr"]
+
+        wg_config.pop('port', None)
+        wg_config.pop('ip_gw', None)
+        wg_config.pop('wg_ip_cidr', None)
+        wg_config.pop('ip_cidr', None)
+        wg_config.pop('wg_ipv6_cidr', None)
+        wg_config.pop('ipv6_cidr', None)
 
 
 def _generate_ipaddress(
@@ -161,7 +208,8 @@ def _assign_ipv4_addresses(
         users: typing.Iterable[WireGuardUser],
         existing_assignment: typing.Mapping[str, WireGuardUser],
         subnet: ipaddress.IPv4Network,
-        reserved_addresses: typing.Set[ipaddress.IPv4Address]
+        reserved_addresses: typing.Set[ipaddress.IPv4Address],
+        endpoint_id: int,
 ) -> typing.Mapping[str, WireGuardUser]:
     """
     Assign IP addresses to users, taking the existing assignment into account.
@@ -169,8 +217,9 @@ def _assign_ipv4_addresses(
     :param users: An iterable of WireGuardUser objects for which to allocate
         addresses.
     :param subnet: The IPv4 or IPv6 subnet to allocate addresses from.
-    :param reserved_addresses: A set of addresess which will never be assigned
+    :param reserved_addresses: A set of addresses which will never be assigned
         to a client.
+    :param endpoint_id: ID of the wireguard endpoint
     :raises RuntimeError: If the subnet is too large.
     :raises ValueError: If an address conflict arises.
     :raises ValueError: If there are not enough addresses in the subnet to
@@ -189,19 +238,20 @@ def _assign_ipv4_addresses(
         )
 
     result = {}
-    for user in sorted(users, key=lambda x: x.address_v4 is None):
+    for user in sorted(users, key=lambda x: x.addresses_v4.get(endpoint_id) is None):
         new_user = user
 
         assert new_user.public_key not in result
 
         try:
-            existing_address = existing_assignment[
-                new_user.public_key].address_v4
+            existing_address = existing_assignment[new_user.public_key] \
+                .addresses_v4[endpoint_id]
         except KeyError:
-            existing_address = new_user.address_v4
+            existing_address = new_user.addresses_v4.get(endpoint_id) \
+                if new_user.addresses_v4 is not None else None
 
         if existing_address is not None:
-            if existing_address in reserved_addresses:
+            if existing_address in reserved_addresses or existing_address not in subnet:
                 raise ValueError(
                     "user {!r} has the address {!s} assigned which is not "
                     "in the subnet {!s} or already in use by a different "
@@ -212,7 +262,8 @@ def _assign_ipv4_addresses(
                     )
                 )
             reserved_addresses.add(existing_address)
-            new_user = new_user._replace(address_v4=existing_address)
+
+            address = existing_address
         else:
             # a new address is randomly generated, in a case of a collision
             # it is checked if the set of reserved_addresses is full
@@ -229,9 +280,10 @@ def _assign_ipv4_addresses(
                     reserved_addresses.add(address)
                     break
 
-            new_user = new_user._replace(
-                address_v4=address
-            )
+        if new_user.addresses_v4 is not None:
+            new_user.addresses_v4[endpoint_id] = address
+        else:
+            new_user.addresses_v4 = {endpoint_id: address}
 
         result[new_user.public_key] = new_user
 
@@ -242,7 +294,8 @@ def _assign_ipv6_addresses(
         users: typing.Iterable[WireGuardUser],
         existing_assignment: typing.Mapping[str, WireGuardUser],
         subnetv6: ipaddress.IPv6Network,
-        reserved_addresses: typing.Set[ipaddress.IPv6Address]
+        reserved_addresses: typing.Set[ipaddress.IPv6Address],
+        endpoint_id: int,
 ) -> typing.Mapping[str, WireGuardUser]:
     """
     Assign IP addresses to users, taking the existing assignment into account.
@@ -250,7 +303,7 @@ def _assign_ipv6_addresses(
     :param users: An iterable of WireGuardUser objects for which to allocate
         addresses.
     :param subnetv6: The IPv4 or IPv6 subnet to allocate addresses from.
-    :param reserved_addresses: A set of addresess which will never be assigned
+    :param reserved_addresses: A set of addresses which will never be assigned
         to a client.
     :raises RuntimeError: If the subnet is too large.
     :raises ValueError: If an address conflict arises.
@@ -270,19 +323,21 @@ def _assign_ipv6_addresses(
         )
 
     result = {}
-    for user in sorted(users, key=lambda x: x.address_v6 is None):
+    for user in sorted(users, key=lambda x: x.addresses_v6 is None):
         new_user = user
 
         assert new_user.public_key not in result
 
         try:
-            existing_address = existing_assignment[
-                new_user.public_key].address_v6
+            existing_address = existing_assignment[new_user.public_key] \
+                .addresses_v6[endpoint_id]
         except KeyError:
-            existing_address = new_user.address_v6
+            existing_address = new_user.addresses_v6.get(endpoint_id) \
+                if new_user.addresses_v6 is not None else None
 
         if existing_address is not None:
-            if existing_address in reserved_addresses:
+            if (existing_address in reserved_addresses or
+                    existing_address not in subnetv6):
                 raise ValueError(
                     "user {!r} has the address {!s} assigned which is not "
                     "in the subnet {!s} or already in use by a different "
@@ -293,7 +348,7 @@ def _assign_ipv6_addresses(
                     )
                 )
             reserved_addresses.add(existing_address)
-            new_user = new_user._replace(address_v6=existing_address)
+            address = existing_address
         else:
             # a new address is randomly generated, in a case of a collision
             # it is checked if the set of reserved_addresses is full
@@ -310,9 +365,10 @@ def _assign_ipv6_addresses(
                     reserved_addresses.add(address)
                     break
 
-            new_user = new_user._replace(
-                address_v6=address
-            )
+        if new_user.addresses_v6 is not None:
+            new_user.addresses_v6[endpoint_id] = address
+        else:
+            new_user.addresses_v6 = {endpoint_id: address}
 
         result[new_user.public_key] = new_user
 
@@ -320,33 +376,41 @@ def _assign_ipv6_addresses(
 
 
 def _assign_ip_addresses_to_wg_users(
-    subnetv4: ipaddress.IPv4Network,
-    subnetv6: ipaddress.IPv6Network,
     wireguard_users: typing.Mapping[str, WireGuardUser],
+    wireguard_endpoints: typing.List[dict],
 ) -> typing.Mapping[str, WireGuardUser]:
 
     # Init the (existing) IPAM config
     existing_ipam_users = _load_peers_from_ipam_config()
 
-    if subnetv4:
-        assigned_v4_users = _assign_ipv4_addresses(
-            wireguard_users.values(),
-            existing_ipam_users,
-            subnetv4,
-            {subnetv4[1], subnetv4.broadcast_address},
-        )
-        if not subnetv6:
-            assigned_users = assigned_v4_users
-    if subnetv6:
-        assigned_v6_users = _assign_ipv6_addresses(
-            wireguard_users.values(),
-            existing_ipam_users,
-            subnetv6,
-            {subnetv6[1]},
-        )
-        if not subnetv4:
-            assigned_users = assigned_v6_users
-    if subnetv4 and subnetv6:
+    assigned_v4_users = {}
+    assigned_v6_users = {}
+
+    for ep in wireguard_endpoints:
+        if 'ip_cidr' in ep:
+            assigned_v4_users = _assign_ipv4_addresses(
+                wireguard_users.values()
+                if len(assigned_v4_users) == 0 else assigned_v4_users.values(),
+                existing_ipam_users,
+                ep['ip_cidr'],
+                {ep['ip_cidr'][1], ep['ip_cidr'].broadcast_address},
+                ep['id'],
+            )
+            if 'ipv6_cidr' not in ep:
+                assigned_users = assigned_v4_users
+        if 'ipv6_cidr' in ep:
+            assigned_v6_users = _assign_ipv6_addresses(
+                wireguard_users.values()
+                if len(assigned_v6_users) == 0 else assigned_v6_users.values(),
+                existing_ipam_users,
+                ep['ipv6_cidr'],
+                {ep['ipv6_cidr'][1]},
+                ep['id'],
+            )
+            if 'ip_cidr' not in ep:
+                assigned_users = assigned_v6_users
+
+    if len(assigned_v4_users) > 0 and len(assigned_v6_users) > 0:
         assigned_users = _merge_user_ipaddress(
             assigned_v4_users,
             assigned_v6_users
@@ -360,7 +424,7 @@ def _merge_user_ipaddress(users_a: typing.Iterable[WireGuardUser],
                           ) -> typing.Iterable[WireGuardUser]:
     for user in users_a:
         users_a[user] = users_a[user]._replace(
-            address_v6=users_b[user].address_v6)
+            addresses_v6=users_b[user].addresses_v6)
     return users_a
 
 
@@ -418,11 +482,22 @@ def _dump_IPAM_config(
     assigned_users: typing.Mapping[str, WireGuardUser]
 ) -> None:
     with WG_IPAM_CONFIG_PATH.open("w") as fout:
+        users = [user.todict() for user in assigned_users.values()]
+
+        # Cast endpoint id to string, because toml doesn't like integer keys
+        for user in users:
+            if 'ips' in user:
+                user['ips'] = {str(endpoint): addr
+                               for endpoint, addr in user['ips'].items()}
+            if 'ipsv6' in user:
+                user['ipsv6'] = {str(endpoint): addr
+                                 for endpoint, addr in user['ipsv6'].items()}
+
         toml.dump({
             "wg_users": [
-                user.todict()
-                for user in sorted(assigned_users.values(),
-                                   key=lambda x: x.name)
+                user
+                for user in sorted(users,
+                                   key=lambda x: x['ident'])
             ]
         }, fout)
 
@@ -467,14 +542,16 @@ def generate_wireguard_config(
     # Validate (all) wireguard users, require unique names
     _require_unique_names(wireguard_users.values())
 
+    # Handle legacy wireguard options
+    _handle_legacy_options(wireguard_config)
+
     # Extract the IPv4 and IPv6 subnet for wireguard from the config
-    subnetv4, subnetv6 = _get_subnets_from_config(wireguard_config)
+    endpoints = _get_endpoints_from_config(wireguard_config)
 
     # Assign IP addresses to the wireguard peers
     assigned_wireguard_users = _assign_ip_addresses_to_wg_users(
-        subnetv4,
-        subnetv6,
         wireguard_users,
+        endpoints,
     )
 
     # Dump the wireguard IPAM config

@@ -1,7 +1,11 @@
 {{ _auto_generated_preamble }}
 
 filter k8s_worker {
-    if net = {{ wg_ip_cidr }} then accept;
+    {% for ep in wg_endpoints %}
+    {% if ep.enabled %}
+    if net = {{ ep.ip_cidr }} then accept;
+    {% endif %}
+    {% endfor %}
     if scope = SCOPE_ORGANIZATION then accept;
     else reject;
 }

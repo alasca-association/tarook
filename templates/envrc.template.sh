@@ -50,6 +50,9 @@ export SSH_COMPANY_USERS=false
 wg_conf_name='wg0'
 export wg_conf_name
 
+# Specifies which wireguard endpoint to use as client
+export wg_endpoint=0
+
 # Terraform: Use Terraform (default: True)
 export TF_USAGE=true
 

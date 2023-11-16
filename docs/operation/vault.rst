@@ -160,7 +160,7 @@ To run the LCM with a custom token, set the ``VAULT_TOKEN`` environment
 variable. To run the LCM with a custom approle, set the
 ``VAULT_AUTH_PATH``, ``VAULT_AUTH_METHOD=approle``, ``VAULT_ROLE_ID``
 and ``VAULT_SECRET_ID`` environment variables (see also
-:ref:`Vault tooling variables <envirnomental-variables.vault-tooling-variables>`).
+:ref:`Vault tooling variables <environmental-variables.vault-tooling-variables>`).
 
 .. note::
    Currently, only ``approle`` is supported as an auth method
@@ -182,7 +182,7 @@ The following scripts are provided in order to manage a Vault instance
 for yaook/k8s.
 
 Please see
-:ref:`Vault tooling variables <envirnomental-variables.vault-tooling-variables>`
+:ref:`Vault tooling variables <environmental-variables.vault-tooling-variables>`
 for additional environment variables accepted by these tools.
 
 -  ``tools/vault/init.sh``: Create policies and initialize the shared
@@ -237,7 +237,7 @@ Migrating an existing cluster to an existing Vault
 --------------------------------------------------
 
 Before starting the migration, you must ensure that
-:ref:`your environment <envirnomental-variables.vault-tooling-variables>`
+:ref:`your environment <environmental-variables.vault-tooling-variables>`
 has been setup properly **and** you initialized policies and approles in
 the corresponding vault instance via ``tools/vault/init.sh`` (see
 above).

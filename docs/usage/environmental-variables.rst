@@ -20,10 +20,10 @@ for the first time.
 .. hint::
 
    This repository contains
-   :ref:`a template file <envirnomental-variables.template>`
+   :ref:`a template file <environmental-variables.template>`
    which you can use. However, you **must** adjust some of its values.
 
-.. _envirnomental-variables.minimal-required-changes:
+.. _environmental-variables.minimal-required-changes:
 
 Minimal Required Changes
 ------------------------
@@ -33,7 +33,7 @@ minimally (sic!) adjust the following ones:
 
 -  If you’re deploying on top of OpenStack:
 
-   -  :ref:`OpenStack Credentials <envirnomental-variables.openstack-credentials>`
+   -  :ref:`OpenStack Credentials <environmental-variables.openstack-credentials>`
    -  SSH Configuration
 
       -  ``TF_VAR_keypair`` (user specific)
@@ -69,7 +69,7 @@ Environment Variable            Default     Description
                                             override the auto-detection.
 =============================   ========    =============
 
-.. _envirnomental-variables.openstack-credentials:
+.. _environmental-variables.openstack-credentials:
 
 OpenStack credentials
 ---------------------
@@ -228,7 +228,7 @@ Environment Variable        Default                 Description
                                                     that repository.
 =========================== ======================= =======================
 
-.. _envirnomental-variables.ssh-configuration:
+.. _environmental-variables.ssh-configuration:
 
 SSH Configuration
 -----------------
@@ -241,7 +241,7 @@ Environment Variable        Default                                     Descript
 ``SSH_COMPANY_USERS``       ``false``                                   If set to true, ``init.sh`` will clone the repository ``MANAGED_CH_ROLE_USER_GIT``. The inventory updater will then configure your inventory such that the ``ch-role-users`` role is executed in stage2 and stage3.
 =========================== =========================================== ====================
 
-.. _envirnomental-variables.behavior-altering-variables:
+.. _environmental-variables.behavior-altering-variables:
 
 Behavior-altering variables
 ---------------------------
@@ -250,7 +250,7 @@ The variables in this section should not be set during normal operation.
 They disable safety checks or give consent to potentially dangerous
 operations.
 
-.. _envirnomental-variables.enabling-the-customization-layer:
+.. _environmental-variables.enabling-the-customization-layer:
 
 =========================================== =========== ===================
 Environment Variable                        Default     Description
@@ -285,7 +285,7 @@ Environment Variable                        Default     Description
    ``init.sh``:ref:`-script <actions-references.initsh>`
    after enabling the Customization layer.
 
-.. _envirnomental-variables.vault-tooling-variables:
+.. _environmental-variables.vault-tooling-variables:
 
 Vault tooling variables
 -----------------------
@@ -336,7 +336,7 @@ Vault tooling variables
 
 
 
-.. _envirnomental-variables.template:
+.. _environmental-variables.template:
 
 Template
 --------

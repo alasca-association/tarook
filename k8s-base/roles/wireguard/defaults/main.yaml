@@ -1,6 +1,3 @@
 ---
-# Stored inside the passwordstore, must not contain a whitespace
-wg_gw_priv_path: wg_gw_key
-
-wg_local_pub_path: "{{ etc_dir }}/wg_gw_pub.key"
+wg_local_pub_path: "{{ etc_dir }}/wireguard/pub/"
 ...

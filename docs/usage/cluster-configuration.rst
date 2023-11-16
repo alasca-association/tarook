@@ -330,7 +330,7 @@ for (meta-)worker nodes.
 .. note::
 
    Applying changes requires to enable
-   :ref:`disruptive actions <envirnomental-variables.behavior-altering-variables>`.
+   :ref:`disruptive actions <environmental-variables.behavior-altering-variables>`.
 
 .. raw:: html
 
@@ -672,7 +672,7 @@ This section refers to the configuration of the ``ch-role-users`` git
 submodule which is an internally used repository of Cloud&Heat. The
 usage of it is disabled by default but can be enabled (and configured)
 in the following section or via an
-:ref:`environment variable <envirnomental-variables.ssh-configuration>`.
+:ref:`environment variable <environmental-variables.ssh-configuration>`.
 
 .. raw:: html
 

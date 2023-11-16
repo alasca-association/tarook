@@ -942,6 +942,14 @@ scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 # should not be rolled out as wireguard peers.
 #rollout_company_users = false
 
+# This block defines a WireGuard endpoint/server
+# To allow rolling key rotations, multiple endpoints can be added.
+# Please make sure that each endpoint has a different id, port and subnet
+[[wireguard.endpoints]]
+id = 0
+enabled = true
+port = 7777 # •ᴗ•
+
 # IP address range to use for WireGuard clients. Must be set to a CIDR and must
 # not conflict with the terraform.subnet_cidr.
 # Should be chosen uniquely for all clusters of a customer at the very least
@@ -954,40 +962,12 @@ ip_gw   = "172.30.153.65/26"
 #ipv6_cidr = "fd01::/120"
 #ipv6_gw = "fd01::1/120"
 
-port = 7777 # •ᴗ•
-
 # To add WireGuard keys, create blocks like the following
 # You can add as many of them as you want. Inventory updater will auto-allocate IP
 # addresses from the configured ip_cidr.
 #[[wireguard.peers]]
 #pub_key = "test1"
 #ident = "testkunde1"
-
-## Wireguard-based site-to-site tunnel
-# If enabled, configure site to site tunnel
-#s2s_enabled = false
-
-# Subnet of the wireguard "transfer net" between the two endpoints
-#s2s_transfer_subnet = "172.30.18.2/31"
-
-# IP which is assigned to our VRRP master in transfer network
-#s2s_ip = "172.30.18.2"
-
-# IP which is assigned to our VRRP master in transfer network
-#s2s_peer_ip = "172.30.18.3"
-
-# Port on which wireguard listens
-#s2s_port = "16000"
-
-# Public wireguard key of the peer
-#s2s_peer_pub_key = "7CuC/cSw1US+nilx0ihoA1qb2DsQI0QV2RBuLE8cnhk="
-
-# Endpoint under which the peer can be reached
-#s2s_peer_public_endpoint = "<public-IP-of-your-peer>:16000"
-
-# BGP AS IDs for both parties (should differ, unless iBGP is wanted)
-#s2s_bgp_as = "65010"
-#s2s_peer_bgp_as = "65009"
 
 # ANCHOR_END: wireguard_config
 
