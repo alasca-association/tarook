@@ -167,7 +167,7 @@
     - etcd-backup-service-monitor
 
   - name: Create a pod monitor for fluxcd
-    when: (fluxcd_enabled | default (False)) | bool
+    when: fluxcd_enabled
     kubernetes.core.k8s:
       state: present
       apply: true

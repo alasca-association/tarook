@@ -6,7 +6,7 @@
       apiVersion: v1
       kind: Namespace
       metadata:
-        name: "{{ k8s_fluxcd_namespace }}"
+        name: "{{ fluxcd_namespace }}"
         labels:
           app.kubernetes.io/instance: flux-system
           app.kubernetes.io/part-of: flux
@@ -24,7 +24,7 @@
 - name: Apply the fluxcd crds
   kubernetes.core.k8s:
     state: present
-    template: "crds_{{ k8s_fluxcd_version }}.yaml"
+    template: "crds_{{ fluxcd_version }}.yaml"
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
@@ -34,7 +34,7 @@
 - name: Apply the fluxcd workload
   kubernetes.core.k8s:
     state: present
-    template: "workload_{{ k8s_fluxcd_version }}.yaml"
+    template: "workload_{{ fluxcd_version }}.yaml"
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
