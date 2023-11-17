@@ -384,9 +384,10 @@ use_helm = true
 
 #nodeplugin_toleration = true
 
-# Storage class name. SHOULD be compliant with one storage class you
-# have configured in the kubernetes.local_storage section (or you should
-# know what your are doing).
+# Storage class name to be used by the ceph mons. SHOULD be compliant with one
+# storage class you have configured in the kubernetes.local_storage section (or
+# you should know what your are doing). Note that this is not the storage class
+# name that rook will provide.
 #mon_volume_storage_class = "local-storage"
 
 # Enables rook to use the host network.
