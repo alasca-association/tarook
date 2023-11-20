@@ -95,8 +95,8 @@ The vGPU Manager software can be downloaded in the
 
    # vGPU Support
    [nvidia.vgpu]
-   driver_blob_url =   # vGPU manager storage location
-   manager_filename =  # vGPU manager
+   driver_blob_url = "foo"   # vGPU manager storage location
+   manager_filename = "bar"  # vGPU manager
 
 After Yaook/k8s has been rolled out, the folder for the chosen
 configuration still has to be found. The following steps have to be done
