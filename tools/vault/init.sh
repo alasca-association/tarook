@@ -27,7 +27,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     capabilities = ["create", "update", "read"]
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issue/system-masters_admin" {
+path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/system-masters_admin" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -47,7 +47,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issue/system-masters_controllers" {
+path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/system-masters_controllers" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -145,7 +145,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     capabilities = ["read"]
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issue/system-nodes_node" {
+path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/system-nodes_node" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {

@@ -36,7 +36,7 @@
       vault_secret_id: "{{ vault_node_secret_id }}"
       kubeconfig_title: kubelet
       kubeconfig_destination: /etc/kubernetes/kubelet.conf
-      kubeconfig_issuer: system-nodes_node
+      kubeconfig_role: system-nodes_node
       kubeconfig_user: "system:node:{{ inventory_hostname }}"
       kubeconfig_external: true
       kubeconfig_keypair_path: /var/lib/kubelet/pki/kubelet-client-current.pem

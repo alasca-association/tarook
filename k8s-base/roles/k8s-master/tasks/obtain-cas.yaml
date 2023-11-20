@@ -74,7 +74,7 @@
 
   - name: Fetch CA certificates
     ansible.builtin.set_fact:
-      k8s_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-pki'}) }}"
+      k8s_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-pki', 'k8s_issuer': 'next' if (ca_rotation | default(false)) else 'default'}) }}"
       k8s_front_proxy_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-front-proxy-pki'}) }}"
 
   - name: Check if k8s CA exists
