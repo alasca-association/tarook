@@ -6,4 +6,6 @@ dependencies:
 - bird
 - nftables
 - keepalived
+- vault-config
+- vault-approle
 ...

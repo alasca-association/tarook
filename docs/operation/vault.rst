@@ -175,6 +175,8 @@ and ``VAULT_SECRET_ID`` environment variables (see also
    with those, manually log into Vault using the CLI and export the
    resulting token via the ``VAULT_TOKEN`` environment variable.
 
+.. _vault.managing-clusters-in-vault:
+
 Managing Clusters in Vault
 --------------------------
 

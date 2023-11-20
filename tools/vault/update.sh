@@ -29,5 +29,9 @@ init_k8s_front_proxy_pki_roles "$k8s_front_proxy_pki_path" "$pki_ttl"
 init_k8s_calico_pki_roles "$calico_pki_path" "$pki_ttl"
 
 echo "-----------------------------------------------"
-echo "Trying to importing etcd backup credentials ..."
+echo "Trying to import etcd backup credentials ..."
 import_etcd_backup_config
+
+echo "-----------------------------------------------"
+echo "Trying to import IPSec EAP PSK ..."
+import_ipsec_eap_psk
