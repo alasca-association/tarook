@@ -77,44 +77,20 @@
       k8s_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-pki', 'k8s_issuer': 'next' if (ca_rotation | default(false)) else 'default'}) }}"
       k8s_front_proxy_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-front-proxy-pki'}) }}"
 
-  - name: Check if k8s CA exists
-    become: true
-    stat:
-      path: /etc/kubernetes/pki/ca.crt
-    register: k8s_ca_stat_result
-
-  - name: Get information on k8s ca certificate in vault
-    when: k8s_ca_stat_result.stat.exists
-    community.crypto.x509_certificate_info:
-      content: "{{ k8s_ca_cert }}"
-    register: k8s_ca_cert_info_vault
-
-  - name: Get information on current k8s ca certificate
-    become: true
-    when: k8s_ca_stat_result.stat.exists
-    community.crypto.x509_certificate_info:
-      path: /etc/kubernetes/pki/ca.crt
-    register: k8s_ca_cert_info_current
-
-  - name: Check if k8s ca certificate has changed
-    when: k8s_ca_stat_result.stat.exists
-    set_fact:
-      k8s_ca_key_changed: "{{ k8s_ca_cert_info_vault.public_key != k8s_ca_cert_info_current.public_key }}"
-
-  - name: Fail if ca certificate has changed
-    ansible.builtin.fail:
-      msg: "CA certificate has changed. Perform CA rotation first"
-    when: k8s_ca_stat_result.stat.exists and k8s_ca_key_changed and not (ca_rotation | default(false))
+  - name: Fetch previous CA certificates
+    when: (ca_rotation | default(false))
+    ansible.builtin.set_fact:
+      k8s_prev_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-pki', 'k8s_issuer': 'default'}) }}"
+      # k8s_front_proxy_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-front-proxy-pki'}) }}"
 
   - name: Write k8s CA file
     become: true
-    when: not (ca_rotation | default(false))
     ansible.builtin.copy:
       dest: /etc/kubernetes/pki/ca.crt
       owner: root
       group: root
       mode: ugo=r
-      content: "{{ k8s_ca_cert }}"
+      content: "{{ k8s_ca_cert if not (ca_rotation | default(false)) else ([k8s_prev_ca_cert, k8s_ca_cert] | join('')) }}"
 
   - name: Write k8s front proxy CA file
     become: true

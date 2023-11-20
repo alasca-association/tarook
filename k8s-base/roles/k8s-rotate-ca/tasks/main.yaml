@@ -1,90 +1,78 @@
 ---
-# TODO: check for disruption
+# This implements https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/
 
-- name: Write k8s CA file
-  become: true
-  ansible.builtin.copy:
-    dest: /etc/kubernetes/pki/ca-new.crt
-    owner: root
-    group: root
-    mode: ugo=r
-    content: "{{ k8s_ca_cert }}"
-  register: copy_k8s_ca
+# TODO: check for disruption ?
 
-# - name: Write k8s front proxy CA file
-#   become: true
-#   ansible.builtin.copy:
-#     dest: /etc/kubernetes/pki/front-proxy-ca-new.crt
-#     owner: root
-#     group: root
-#     mode: ugo=r
-#     src: "{{ k8s_front_proxy_ca_cert_path }}"
+- name: Obtain CAs
+  ansible.builtin.include_role:
+    name: k8s-master
+    tasks_from: obtain-cas.yaml
+  vars:
+    ca_rotation: true
 
-# - name: Write etcd CA file
-#   become: true
-#   ansible.builtin.copy:
-#     src: "{{ etcd_ca_cert_path }}"
-#     dest: /etc/kubernetes/pki/etcd/ca-new.crt
-#     owner: root
-#     group: root
-#     mode: ugo=r
-
-- name: Bundle new and old CAs
+- name: Workaround for bug in controller-manager # https://github.com/kubernetes/kubeadm/issues/1350
   become: true
   block:
-  - ansible.builtin.shell:
-      cmd: cat /etc/kubernetes/pki/ca.crt /etc/kubernetes/pki/ca-new.crt > /etc/kubernetes/pki/ca-bundle.crt
-    when: copy_k8s_ca.changed
-  # - ansible.builtin.shell:
-  #     cmd: cat /etc/kubernetes/pki/front-proxy-ca.crt /etc/kubernetes/pki/front-proxy-ca-new.crt > /etc/kubernetes/pki/front-proxy-ca-bundle.crt
-  # - ansible.builtin.shell:
-  #     cmd: cat /etc/kubernetes/pki/etcd/ca.crt /etc/kubernetes/pki/etcd/ca-new.crt > /etc/kubernetes/pki/etcd/ca-bundle.crt
+  - name: Write k8s CA file
+    ansible.builtin.copy:
+      dest: /etc/kubernetes/pki/ca-new.crt
+      owner: root
+      group: root
+      mode: ugo=r
+      content: "{{ k8s_ca_cert }}"
 
-- name: Point kube-controller-manager to new CA
-  become: true
-  # workaround for https://github.com/kubernetes/kubeadm/issues/1350
-  ansible.builtin.replace:
-    path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-    regexp: '^(\s*-\s*--root-ca-file=).*'
-    replace: '\1/etc/kubernetes/pki/ca-bundle.crt'
-  register: kcm_replace
+  - name: Point kube-controller-manager to new CA
+    ansible.builtin.replace:
+      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+      regexp: '^(\s*-\s*--client-ca-file=).*'
+      replace: '\1/etc/kubernetes/pki/ca-new.crt' # TODO: or use the old one here?
+
+- name: trigger restart kube-controller-manager
+  command: /bin/true
   notify: Restart kube-controller-manager
 
 - name: Flush handlers
   meta: flush_handlers
 
+- name: wait for restart to be done
+  # TODO
+  ansible.builtin.pause:
+    seconds: 5
+
 - name: Restart all managed pods
-  when: kcm_replace.changed
+  when: cm_replace.changed
   include_tasks: restart-all.yaml
   vars:
     resource_type: "{{ item }}"
   loop: ["deployment", "daemonset", "statefulset"]
 
-# TODO: wait for restart to be done
+- name: wait for restart to be done
+  # TODO
+  ansible.builtin.pause:
+    seconds: 5
 
-- name: Point kube-apiserver to new CA
-  become: true
-  block:
-  - ansible.builtin.replace:
-      path: /etc/kubernetes/manifests/kube-apiserver.yaml
-      regexp: '^(\s*-\s*--client-ca-file=).*'
-      replace: '\1/etc/kubernetes/pki/ca-bundle.crt'
-  - ansible.builtin.replace:
-    # TODO: Why don't we use this
-      path: /etc/kubernetes/manifests/kube-apiserver.yaml
-      regexp: '^(\s*-\s*--kubelet-certificate-authority=).*'
-      replace: '\1/etc/kubernetes/pki/ca-bundle.crt'
+- name: trigger restart apiserver
+  command: /bin/true
   notify: Restart kube-apiserver
 
 - name: Flush handlers
   meta: flush_handlers
 
-- name: Point kube-scheduler to new CA
-  become: true
-  ansible.builtin.replace:
-  # TODO: Why don't we use this
-    path: /etc/kubernetes/manifests/kube-scheduler.yaml
-    regexp: '^(\s*-\s*--client-ca-file=).*'
-    replace: '\1/etc/kubernetes/pki/ca-bundle.crt'
+- name: wait for restart to be done
+  # TODO
+  ansible.builtin.pause:
+    seconds: 5
+
+- name: trigger restart kube-scheduler
+  command: /bin/true
   notify: Restart kube-scheduler
+
+- name: Obtain kubeconfigs
+  ansible.builtin.include_role:
+    name: k8s-master
+    tasks_from: obtain-kubeconfigs.yaml
+  vars:
+    force_renewal: true
+    k8s_issuer: next
+    extra_ca: default
 ...
