@@ -67,6 +67,18 @@ flake8:
   tags:
     - docker
 
+poetry-lock:
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  before_script:
+    - poetry install --sync
+    - git config --global user.email "$GITLAB_USER_EMAIL"
+    - git config --global user.name "$GITLAB_USER_NAME"
+  script:
+    - bash ./ci/lint/poetry-lock.sh
+  stage: lint
+  tags:
+    - docker
+
 pre-commit-hooks:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
   before_script:
