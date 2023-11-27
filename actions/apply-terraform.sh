@@ -86,3 +86,11 @@ elif [ $rc != $RC_NO_DISRUPTION ] && [ $rc != $RC_DISRUPTION ]; then
     exit 4
 fi
 run terraform -chdir="$terraform_module" apply "$terraform_plan"
+
+if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ]; then
+    echo
+    notef 'Pulling latest Terraform state from Gitlab for disaster recovery purposes.'
+    # don't use the "run" function here as it would print the token
+    curl -s -o "$terraform_state_dir/disaster-recovery.tfstate.bak" \
+        --header "Private-Token: $TF_HTTP_PASSWORD" "$backend_address"
+fi

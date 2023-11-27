@@ -1,0 +1,1 @@
+Additionally pull a local copy of the Terraform state for disaster recovery purposes if Gitlab is configured as backend.
