@@ -6,7 +6,6 @@
 flush ruleset
 
 define wan = {{ ansible_default_ipv4.interface }}
-define wg = wg0
 define haproxy_stats_port = {{ haproxy_stats_port }}
 define haproxy_prom_metrics_port = 9101
 define keepalived_prom_metrics_port = 9650
@@ -60,6 +59,17 @@ table inet filter {
             {% for ep in wg_endpoints %}
             {% if ep.enabled %}
             {{ ep.ip_cidr }},
+            {% endif %}
+            {% endfor %}
+        }
+    }
+
+    set wg_iifnames {
+        type ifname;
+        elements = {
+            {% for ep in wg_endpoints %}
+            {% if ep.enabled %}
+            wg{{ ep.id }},
             {% endif %}
             {% endfor %}
         }
@@ -120,7 +130,7 @@ table inet filter {
 
         jump base_checks
 
-        iifname $wg oifname $wan ip daddr {{ priv_ip_cidr }} ct state new counter accept;
+        iifname @wg_iifnames oifname $wan ip daddr {{ priv_ip_cidr }} ct state new counter accept;
 
         iifname $wan oifname $wan ip saddr {{ priv_ip_cidr }} ct state new counter accept;
 

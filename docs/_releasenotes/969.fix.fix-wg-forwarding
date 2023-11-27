@@ -1,0 +1,1 @@
+Fix forwarding nftable rules for multiple Wireguard endpoints.
