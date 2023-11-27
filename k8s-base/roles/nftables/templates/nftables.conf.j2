@@ -47,7 +47,7 @@ table inet filter {
         elements = {
             {% for ep in wg_endpoints %}
             {% if ep.enabled %}
-                {{ ep.port }},
+            {{ ep.port }},
             {% endif %}
             {% endfor %}
         }
@@ -59,7 +59,7 @@ table inet filter {
             {{ priv_ip_cidr }},
             {% for ep in wg_endpoints %}
             {% if ep.enabled %}
-                {{ ep.ip_cidr }},
+            {{ ep.ip_cidr }},
             {% endif %}
             {% endfor %}
         }
