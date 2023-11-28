@@ -17,6 +17,12 @@
     # - vars/auto_generated_preamble.yaml
     - vars/etc.yaml
     - vars/retries.yaml
+  pre_tasks:
+  - name: Fail if disruption is not allowed
+    run_once: true
+    when: not _allow_disruption
+    fail:
+      msg: "Disruption is not allowed."
   roles:
     - role: k8s-rotate-ca
       tags: k8s-rotate-ca

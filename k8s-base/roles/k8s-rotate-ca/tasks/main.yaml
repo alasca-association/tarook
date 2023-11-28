@@ -1,8 +1,6 @@
 ---
 # This implements https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/
 
-# TODO: check for disruption ?
-
 - name: Obtain CAs
   ansible.builtin.include_role:
     name: k8s-master
