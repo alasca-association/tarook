@@ -17,6 +17,9 @@
     # - vars/auto_generated_preamble.yaml
     - vars/etc.yaml
     - vars/retries.yaml
+  handlers:
+    - name: Import k8s-master handlers
+      import_tasks: roles/k8s-master/handlers/main.yaml
   pre_tasks:
   - name: Fail if disruption is not allowed
     run_once: true
