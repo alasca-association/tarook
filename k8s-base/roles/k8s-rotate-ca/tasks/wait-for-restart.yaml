@@ -1,0 +1,38 @@
+---
+- name: Wait for Pod to restart
+  delegate_to: localhost
+  block:
+  - name: Set retry count
+    ansible.builtin.set_fact:
+      retry_count: "{{ 0 if retry_count is undefined else (retry_count | int) + 1 }}"
+
+  - name: Wait for restart of {{ pod_resource_name }}
+    kubernetes.core.k8s_info:
+      kind: Pod
+      namespace: "kube-system"
+      name: "{{ pod_resource_name }}"
+    register: pod_resource_info
+
+  - name: Fail if Pod {{ pod_resource_name }} did not restart in the past 3 minutes
+    when: (now(utc=true) - (pod_resource_info.resources[0].status.containerStatuses[0].state.running.startedAt | to_datetime('%Y-%m-%dT%H:%M:%SZ'))).total_seconds() > 180
+    fail:
+      msg: "Pod {{ pod_resource_name }} not restarted, yet"
+
+  - name: Fail if Pod {{ pod_resource_name }} is not running, yet
+    when: pod_resource_info.resources[0].status.phase != 'Running'
+    fail:
+      msg: "Pod {{ pod_resource_name }} not restarted, yet"
+
+  rescue:
+  - name: Fail if Pod did not restart in expected time
+    ansible.builtin.fail:
+      msg: "The Pod {{ pod_resource_name }} did not restart ({{ retry_count }} retries)"
+    when: (retry_count | int) == 60
+
+  - name: Pause for 10 seconds
+    ansible.builtin.pause:
+      seconds: 10
+
+  # Recheck if retry_count limit has not been reached, yet
+  - ansible.builtin.include_tasks: wait-for-restart.yaml
+...

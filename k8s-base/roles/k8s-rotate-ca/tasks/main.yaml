@@ -26,19 +26,20 @@
       regexp: '^(\s*-\s*--client-ca-file=).*'
       replace: '\1/etc/kubernetes/pki/ca-new.crt' # TODO: or use the old one here?
 
-- name: trigger restart kube-controller-manager
-  command: /bin/true
-  notify: Restart kube-controller-manager
+- name: Trigger restart kube-controller-manager
+  block:
+  - name: Trigger restart kube-controller-manager
+    command: /bin/true
+    notify: Restart kube-controller-manager
 
-- name: Flush handlers
-  meta: flush_handlers
+  - name: Flush handlers
+    meta: flush_handlers
 
-- name: wait for restart to be done
-  # TODO
-  ansible.builtin.pause:
-    seconds: 5
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "kube-controller-manager-{{ inventory_hostname }}"
 
-- name: Restart everything
+- name: Restart (almost) everything (╯°□°)╯︵ ┻━┻
   delegate_to: localhost
   run_once: true
   block:
@@ -62,21 +63,31 @@
       - --namespace
       - "{{ item[0].metadata.name }}"
 
-- name: trigger restart apiserver
-  command: /bin/true
-  notify: Restart kube-apiserver
+- name: Trigger restart kube-apiserver
+  block:
+  - name: Trigger restart kube-apiserver
+    command: /bin/true
+    notify: Restart kube-apiserver
 
-- name: Flush handlers
-  meta: flush_handlers
+  - name: Flush handlers
+    meta: flush_handlers
 
-- name: wait for restart to be done
-  # TODO
-  ansible.builtin.pause:
-    seconds: 5
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "kube-apiserver-{{ inventory_hostname }}"
 
-- name: trigger restart kube-scheduler
-  command: /bin/true
-  notify: Restart kube-scheduler
+- name: Trigger restart kube-scheduler
+  block:
+  - name: trigger restart kube-scheduler
+    command: /bin/true
+    notify: Restart kube-scheduler
+
+  - name: Flush handlers
+    meta: flush_handlers
+
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "kube-scheduler-{{ inventory_hostname }}"
 
 - name: Obtain kubeconfigs
   ansible.builtin.include_role:
