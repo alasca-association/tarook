@@ -8,7 +8,8 @@
   vars:
     ca_rotation: true
 
-- name: Workaround for bug in controller-manager # https://github.com/kubernetes/kubeadm/issues/1350
+  # https://github.com/kubernetes/kubeadm/issues/1350
+- name: Workaround for bug in controller-manager
   become: true
   block:
   - name: Write k8s CA file
