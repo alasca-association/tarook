@@ -39,17 +39,29 @@
   ansible.builtin.pause:
     seconds: 5
 
-- name: Restart all managed pods
-  when: cm_replace.changed
-  include_tasks: restart-all.yaml
-  vars:
-    resource_type: "{{ item }}"
-  loop: ["deployment", "daemonset", "statefulset"]
+- name: Restart everything
+  delegate_to: localhost
+  run_once: true
+  block:
+  - name: Gather all namespaces
+    kubernetes.core.k8s_info:
+      kind: Namespace
+    register: gather_namespaces
 
-- name: wait for restart to be done
-  # TODO
-  ansible.builtin.pause:
-    seconds: 5
+  - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻  # noqa no-changed-when
+    with_nested:
+    - "{{ gather_namespaces.resources }}"
+    - ["daemonset", "deployment", "statefulset"]
+    loop_control:
+      label: "Restart every {{ item[1] }} in namespace {{ item[0].metadata.name }}"
+    command:
+      argv:
+      - kubectl
+      - rollout
+      - restart
+      - "{{ item[1] }}"
+      - --namespace
+      - "{{ item[0].metadata.name }}"
 
 - name: trigger restart apiserver
   command: /bin/true
