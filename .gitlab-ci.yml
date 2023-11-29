@@ -16,17 +16,21 @@ workflow:
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
     - if: $CI_MERGE_REQUEST_EVENT_TYPE
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 stages:
 - lint
 - hotfix-prepare
 - cluster-tests
+- diagnostic-tools
 - release
 
 include:
   - local: ci/hotfix-prepare.yaml
   - local: ci/cluster-tests.yaml
+  - local: ci/diagnostic-tools.yaml
   - local: ci/release.yaml
+
 
 # always lint on merge trains
 .default_lint_rules:

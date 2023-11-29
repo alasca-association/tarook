@@ -1,0 +1,64 @@
+# this file should be included into '.gitlab-ci.yml'
+
+.test_with_sonobuoy:
+  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
+  services: !reference [.prepare_spawn_test_cleanup_k8s_cluster, services]
+  before_script:
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
+  script:
+  # Spawn and test cluster
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
+  - kubectl taint node ci-worker-gpu-0 k8s.yaook.cloud/gpu-node=true:NoSchedule-
+  - kubectl taint node ci-worker-storage-0 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
+  - kubectl taint node ci-worker-storage-1 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
+  - kubectl taint node ci-worker-storage-2 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
+   # Run sonobuoy in conformance mode and wait until tests are finished
+  - sonobuoy run --mode=certified-conformance --wait
+  # Save artifacts
+  - mkdir -p diagnostics/sonobuoy/
+  - sonobuoy retrieve diagnostics/sonobuoy/
+  - tar xzf diagnostics/sonobuoy/*.tar.gz -C diagnostics/sonobuoy/
+  # check whether sonobuoy failed
+  - outfile=$(sonobuoy retrieve)
+  - |
+    if [[ $(sonobuoy results $outfile | grep "Status: failed" | wc -l) -gt 0 ]]; then
+      echo "Sonobuoy failed. Please have a look at the jobs artifacts for details." 1>&2
+      exit 1
+    fi
+  after_script:
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, after_script]
+  artifacts:
+    when: always
+    paths:
+      - ci/diagnostics/sonobuoy/
+  tags: !reference [.prepare_spawn_test_cleanup_k8s_cluster, tags]
+
+# Spawn a cluster and run sonobuoy end-to-end tests in conformance mode
+sonobuoy-tests:
+  environment:
+    name: spawn-cluster
+  rules:
+    # test is scheduled
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+      when: always
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      when: on_success
+    - when: manual
+      allow_failure: true
+  extends: .test_with_sonobuoy
+  stage: diagnostic-tools
+  retry: 1    # because this test lasts hours and could block the CI for a significant amount of time
+  variables:
+    KUBECONFIG: inventory/.etc/admin.conf
+    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
+    # so we need to reference the default vars here (only one level of nesting is allowed)
+    WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
+    PASS_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, PASS_COMPANY_USERS]
+    SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
+    K8S_CUSTOM_STAGE_USAGE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, K8S_CUSTOM_STAGE_USAGE]
+    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
+    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+    ci_vault_config_hcl: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_vault_config_hcl]
+    ci_cert_vaultchain_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultchain_crt]
+    ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
+    ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
