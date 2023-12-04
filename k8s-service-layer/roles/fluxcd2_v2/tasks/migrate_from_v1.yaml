@@ -141,4 +141,10 @@
     - ["networking.k8s.io/v1", "NetworkPolicy", "allow-egress"]
     - ["networking.k8s.io/v1", "NetworkPolicy", "allow-scraping"]
     - ["networking.k8s.io/v1", "NetworkPolicy", "allow-webhooks"]
+    - ["apps/v1", "Deployment", "helm-controller"]
+    - ["apps/v1", "Deployment", "image-automation-controller"]
+    - ["apps/v1", "Deployment", "image-reflector-controller"]
+    - ["apps/v1", "Deployment", "kustomize-controller"]
+    - ["apps/v1", "Deployment", "notification-controller"]
+    - ["apps/v1", "Deployment", "source-controller"]
 ...

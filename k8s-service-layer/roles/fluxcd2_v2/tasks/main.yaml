@@ -17,7 +17,7 @@
     include_tasks: migrate_from_v1.yaml
     when:
     - flux_ns_info.resources | length > 0
-    - flux_helm_info.status.hooks | length == 0
+    - ("status" not in flux_helm_info) or (flux_helm_info.status.hooks | length == 0)
 
 - name: Create namespace for fluxcd
   kubernetes.core.k8s:
