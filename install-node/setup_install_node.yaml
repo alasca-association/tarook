@@ -6,8 +6,6 @@
   become: true
   gather_facts: true
   roles:
-  - role: apt-cacher-ng
-    tags: apt-cacher-ng
   - role: container-mirror
     tags: container-mirror
   - role: http-mirror
