@@ -6,7 +6,7 @@
   vars:
     ca_rotation: "{{ append_next_issuer | bool | ternary(True, False) }}"
 
-  # https://github.com/kubernetes/kubeadm/issues/1350
+# https://github.com/kubernetes/kubeadm/issues/1350
 - name: Workaround for bug in controller-manager
   become: true
   block:
