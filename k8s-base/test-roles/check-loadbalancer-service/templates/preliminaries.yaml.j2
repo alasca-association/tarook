@@ -34,3 +34,12 @@ spec:
         ports:
         - containerPort: 8080
       serviceAccountName: test
+{% if testing_nodes is defined and testing_nodes | length > 0 %}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: "k8s.yaook.cloud/test-node"
+                operator: Exists
+{% endif %}

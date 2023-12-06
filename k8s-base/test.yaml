@@ -83,17 +83,36 @@
     - test-nvidia-device-plugin
     - check-nvidia-device-plugin
 
-# Ugly: assuming naming scheme here.
 - name: Annotate worker nodes
   hosts: localhost
   become: false
   gather_facts: false
   tags:
   - label
+  pre_tasks:
+  - name: Fail if insufficient testing nodes specified
+    when:
+    - testing_nodes is defined
+    - testing_nodes | length < 2
+    fail:
+      msg: |
+        Insufficient number of testing nodes specified.
+        Please specify at least two testing nodes in
+        your config.toml under "testing.nodes".
+    tags: always
+
   tasks:
-  - name: Annotate the worker nodes  # noqa no-changed-when
-    ansible.builtin.command: "kubectl label --overwrite nodes {{ item['worker'] }} name={{ item['name'] }}"
-    loop: "{{ test_worker_nodes }}"
+  - name: Label testing nodes
+    kubernetes.core.k8s:
+      state: patched
+      kind: Node
+      name: "{{ item }}"
+      definition:
+        metadata:
+          labels:
+            k8s.yaook.cloud/test-node: "true"
+    loop: "{{ testing_nodes }}"
+    when: testing_nodes is defined
     tags:
     - test-services
     - check-services
@@ -214,8 +233,9 @@
   tags: label
   tasks:
   - name: Remove annotation of worker nodes  # noqa no-changed-when
-    ansible.builtin.command: "kubectl label --overwrite nodes {{ item['worker'] }} name-"
-    loop: "{{ test_worker_nodes }}"
+    ansible.builtin.command: "kubectl label --overwrite nodes {{ item }} k8s.yaook.cloud/test-node-"
+    loop: "{{ testing_nodes }}"
+    when: testing_nodes is defined
     tags:
     - test-services
     - check-services
@@ -227,5 +247,4 @@
     - check-ceph-shared-filesystem
     - test-shared-fs
     - check-shared-fs
-    - test-cleanup
 ...

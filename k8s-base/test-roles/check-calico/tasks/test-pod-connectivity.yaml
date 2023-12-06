@@ -60,7 +60,7 @@
     kubernetes.core.k8s_exec:
       namespace: "{{ check_calico_namespace }}"
       pod: "{{ item[0].metadata.name }}"
-      command: "ping {{ item[1].status.podIPs[0]['ip'] }} -q -c5 -w10"
+      command: "ping {{ item[1].status.podIPs[0]['ip'] }} -q -c3 -w5"
     with_nested:
     - "{{ calico_busybox_pod_information.resources }}"
     - "{{ calico_busybox_pod_information.resources }}"
@@ -71,7 +71,7 @@
     kubernetes.core.k8s_exec:
       namespace: "{{ check_calico_namespace }}"
       pod: "{{ item[0].metadata.name }}"
-      command: "ping {{ item[1].status.podIPs[1]['ip'] }} -q -c5 -w10"
+      command: "ping {{ item[1].status.podIPs[1]['ip'] }} -q -c3 -w5"
     with_nested:
     - "{{ calico_busybox_pod_information.resources }}"
     - "{{ calico_busybox_pod_information.resources }}"

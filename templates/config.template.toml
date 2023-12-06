@@ -1072,12 +1072,12 @@ rollout = false # •ᴗ•
 
 # ANCHOR: testing_test_nodes_configuration
 # --- TESTING: TEST NODES ---
-[testing.test-nodes]
-# The following fields are commented out because they make assumptions on the existence
-# and naming scheme of nodes. Use them for inspiration :)
-#"managed-k8s-worker-1" = "worker0"
-#"managed-k8s-worker-3" = "worker1"
-#"managed-k8s-worker-5" = "worker2"
+# You can define specifc nodes for some
+# smoke tests. If you define these, you
+# must specify at least two nodes.
+[testing]
+# Example:
+#test-nodes = ["managed-k8s-worker-1", "managed-k8s-worker-3"]
 
 # ANCHOR_END: testing_test_nodes_configuration
 

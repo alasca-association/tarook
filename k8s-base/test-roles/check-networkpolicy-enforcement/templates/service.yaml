@@ -11,7 +11,11 @@ metadata:
   name: echo-deployment
   namespace: "{{ check_networkpolicy_namespace }}"
 spec:
+{% if testing_nodes is defined and testing_nodes | length > 0 %}
+  replicas: {{ testing_nodes | length -1 | int }}
+{% else %}
   replicas: 2
+{% endif %}
   selector:
     matchLabels:
       app: echo
@@ -21,6 +25,19 @@ spec:
         app: echo
     spec:
       affinity:
+{% if testing_nodes is defined and testing_nodes | length > 0 %}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: "k8s.yaook.cloud/test-node"
+                operator: Exists
+              - key: kubernetes.io/hostname
+                operator: NotIn
+                values:
+                - "{{ testing_nodes | last }}"
+{% else %}
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 1
@@ -30,6 +47,7 @@ spec:
                   operator: NotIn
                   values:
                   - "{{ inventory_hostname }}"
+{% endif %}
       securityContext:
         runAsNonRoot: true
         runAsUser: 24635

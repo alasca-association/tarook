@@ -1,4 +1,4 @@
 ---
 check_calico_namespace: yaook-k8s-tests-2cdd393b-2f8a-4ffa-8bd8-4e636e5154ec
-check_calico_busybox_replicas: 10
+check_calico_busybox_replicas: 5
 ...

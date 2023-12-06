@@ -1,0 +1,5 @@
+Improve smoke tests for dedicated testing nodes
+
+Smoke tests have been reworked a bit such that they are executing
+on defined testing nodes (if defined) only.
+**You must update your config if you defined testing nodes.**
