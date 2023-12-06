@@ -1,4 +1,6 @@
 ---
+# This implements https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/
+
 - name: Detect user
   hosts: k8s_nodes
   gather_facts: false
