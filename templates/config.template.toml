@@ -485,8 +485,8 @@ use_helm = true
 #mds_cpu_request = "{{ rook_mds_cpu_limit }}"
 
 # Rook-ceph operator limits
-#operator_memory_limit: "512Mi"
-#operator_memory_request: "{{ rook_operator_memory_limit }}"
+#operator_memory_limit = "512Mi"
+#operator_memory_request = "{{ rook_operator_memory_limit }}"
 #operator_cpu_limit = "1"
 #operator_cpu_request = "{{ rook_operator_cpu_limit }}"
 
