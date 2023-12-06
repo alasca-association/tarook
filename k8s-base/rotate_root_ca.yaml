@@ -5,7 +5,7 @@
   # we need *all* hosts.
   any_errors_fatal: true
   vars_files:
-    - ../vars/etc.yaml
+    - vars/etc.yaml
   roles:
     - detect_user
 
