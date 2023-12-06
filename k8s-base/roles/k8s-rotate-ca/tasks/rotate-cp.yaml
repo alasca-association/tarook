@@ -4,7 +4,7 @@
     name: k8s-master
     tasks_from: obtain-cas.yaml
   vars:
-    ca_rotation: true
+    ca_rotation: "{{ append_next_issuer | bool | ternary(True, False) }}"
 
   # https://github.com/kubernetes/kubeadm/issues/1350
 - name: Workaround for bug in controller-manager
