@@ -105,6 +105,42 @@
 
 - name: Flush handlers
   meta: flush_handlers
+
+- name: Update calico certificates (legacy)
+  when: not image_versions.calico_use_tigera_operator | bool
+  block:
+  - name: Update calico preliminaries
+    ansible.builtin.include_role:
+      name: calico-control-plane
+      tasks_from: setup_preliminaries.yaml
+    vars:
+      force_renewal: true
+      k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+      extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
+  - name: Update calico Typha certificates
+    ansible.builtin.include_role:
+      name: calico-control-plane
+      tasks_from: setup_typha.yaml
+    vars:
+      force_renewal: true
+      k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+      extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
+  - name: Update calico/node certificates
+    ansible.builtin.include_role:
+      name: calico-control-plane
+      tasks_from: setup_calico_node.yaml
+    vars:
+      force_renewal: true
+      k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+      extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
+  - name: Update calico kubeconfig
+    ansible.builtin.include_role:
+      name: calico-worker
+    vars:
+      force_renewal: true
+      k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+      extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
+
 - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻
   delegate_to: localhost
   run_once: true
