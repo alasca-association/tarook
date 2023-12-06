@@ -2,12 +2,41 @@ Prometheus
 ==========
 
 yaook/k8s uses the kube-prometheus-stack helm chart with an additional
-abstraction layer. To figure out the version, you could use
-``helm ls -n monitoring``. Take a look at the ``values.yaml`` files of
-the individual helm charts to see what you can (or cannot) potentially
-modified. Note that not all values might be exposed in the
-``config.toml``. The data path is
-``config.toml -> inventory/prometheus.yaml -> monitoring_v2 -> templates/prometheus_stack.yaml.j2``.
+abstraction layer.
+To figure out the used version, you could use:
+
+.. code:: console
+
+    $ helm ls -n monitoring
+
+Take a look at the ``values.yaml`` files of
+the individual helm charts to see what you can (or can`t) potentially
+modify.
+
+You can adjust the ``prometheus_stack_version`` in the ``config.toml``
+
+.. code:: toml
+
+   ...
+   [monitoring]
+   ...
+   prometheus_stack_version = 48.8.8
+   ...
+
+If the variable isn`t set, the default will be used, which can be found via the
+following call as ``monitoring_prometheus_stack_version``.
+
+.. code:: console
+
+    $ cat managed-k8s/k8s-service-layer/roles/monitoring_v2/defaults/main.yaml
+
+The upgrade routine can be triggered by running the service-stage to update the
+cluster:
+
+.. code:: console
+
+    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="-t mk8s-sl/monitoring --diff" bash managed-k8s/actions/apply-stage4.sh
+
 If a field that you need isn’t listed in ``prometheus_stack.yaml`` or
 statically configured, please
 `open an issue <https://gitlab.com/yaook/k8s/-/issues>`__
@@ -15,11 +44,6 @@ or, even preferable,
 `submit a merge request :) <https://gitlab.com/yaook/k8s/-/merge_requests>`__.
 yaook/k8s’ developer guide can be found
 `here <https://yaook.gitlab.io/meta/01-developing.html#workflow>`__.
-yaook/k8s also allows the upgrade of this kube-prometheus-stack. The
-upgrade routine can be triggered by changing the value of
-``monitoring_prometheus_stack_version`` in
-``monitoring_v2 -> defaults/main.yaml``. Currently it supports upgrade
-from version 33.x to 39.x.
 
 Grafana
 -------
