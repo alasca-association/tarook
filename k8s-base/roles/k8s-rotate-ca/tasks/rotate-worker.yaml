@@ -1,0 +1,28 @@
+---
+- name: Obtain kubeconfigs
+  ansible.builtin.include_role:
+    name: k8s-worker
+    tasks_from: obtain-kubeconfigs.yaml
+  vars:
+    force_renewal: true
+    k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+    extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
+
+- name: Force restart kubelet
+  become: true
+  systemd_service:
+    state: restarted
+    name: kubelet
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Update calico kubeconfig
+  when: not image_versions.calico_use_tigera_operator | bool
+  ansible.builtin.include_role:
+    name: calico-worker
+  vars:
+    force_renewal: true
+    k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+    extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
+...

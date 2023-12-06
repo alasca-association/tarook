@@ -2,4 +2,8 @@
 - name: Rotate CA for Control Plane
   include_tasks: rotate-cp.yaml
   when: "'masters' in group_names"
+
+- name: Rotate CA for Worker
+  include_tasks: rotate-worker.yaml
+  when: "'workers' in group_names"
 ...

@@ -21,12 +21,19 @@
   handlers:
     - name: Import k8s-master handlers
       import_tasks: roles/k8s-master/handlers/main.yaml
-  pre_tasks:
-  - name: Fail if disruption is not allowed
-    run_once: true
-    when: not _allow_disruption
-    fail:
-      msg: "Disruption is not allowed."
+  roles:
+    - role: k8s-rotate-ca
+      tags: k8s-rotate-ca
+
+- name: Update kubeconfigs worker
+  hosts: workers
+  gather_facts: true
+  vars_files:
+    - vars/disruption.yaml
+    - vars/retries.yaml
+  handlers:
+    - name: Import k8s-master handlers
+      import_tasks: roles/k8s-master/handlers/main.yaml
   roles:
     - role: k8s-rotate-ca
       tags: k8s-rotate-ca
