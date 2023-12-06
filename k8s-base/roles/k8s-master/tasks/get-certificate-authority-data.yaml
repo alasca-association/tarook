@@ -1,0 +1,36 @@
+---
+- name: "Get certificate-authority-date: Fetch CA"
+  delegate_to: localhost
+  community.hashi_vault.vault_read:
+    path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/k8s-pki/issuer/{{ k8s_issuer | default('default') }}"
+    # TODO
+    # token_validate: false
+    # auth_method: approle
+    # role_id: "{{ vault_role_id }}"
+    # secret_id: "{{ vault_secret_id }}"
+    # mount_point: "{{ vault_nodes_approle }}"
+  register: get_ca_cert
+
+- name: "Get certificate-authority-date: Fetch additional CA"
+  when: extra_ca | default('') | length > 0
+  delegate_to: localhost
+  community.hashi_vault.vault_read:
+    path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/k8s-pki/issuer/{{ extra_ca }}"
+    # TODO
+    # token_validate: false
+    # auth_method: approle
+    # role_id: "{{ vault_role_id }}"
+    # secret_id: "{{ vault_secret_id }}"
+    # mount_point: "{{ vault_nodes_approle }}"
+  register: extra_ca_cert
+
+- name: "Get certificate-authority-date: Generate certificate-authority-data"
+  when: not extra_ca | default('') | length > 0
+  ansible.builtin.set_fact:
+    kubeconfig_certificate_authority_data: "{{ get_ca_cert.data.data.ca_chain[-1] | b64encode }}"
+
+- name: "Get certificate-authority-date: Generate certificate-authority-data with additional CA"
+  when: extra_ca | default('') | length > 0
+  ansible.builtin.set_fact:
+    kubeconfig_certificate_authority_data: "{{ ''.join((extra_ca_cert.data.data.ca_chain[-1], get_ca_cert.data.data.ca_chain[-1])) | b64encode }}"
+...
