@@ -18,6 +18,7 @@
 
 - name: Apply Typha resources
   become: true
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
@@ -70,6 +71,7 @@
 
 - name: Restart Typha Pods on certificate_renewal  # noqa no-handler
   become: true
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   when: get_cert is changed

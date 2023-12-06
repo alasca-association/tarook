@@ -18,6 +18,7 @@
 
 - name: Apply calico/node resources
   become: true
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
@@ -59,6 +60,7 @@
 
 - name: Restart calico/node Pods on certificate renewal  # noqa no-handler
   become: true
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   when: get_cert is changed
