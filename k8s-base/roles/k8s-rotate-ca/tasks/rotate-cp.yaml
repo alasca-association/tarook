@@ -26,7 +26,7 @@
 
 - name: Trigger restart kube-controller-manager
   block:
-  - name: Trigger restart kube-controller-manager
+  - name: Trigger restart kube-controller-manager  # noqa no-changed-when
     command: /bin/true
     notify: Restart kube-controller-manager
 
