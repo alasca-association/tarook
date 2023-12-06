@@ -2,6 +2,9 @@
 # curl https://docs.projectcalico.org/manifests/calico.yaml -O
 # Make sure to only apply the CustomResourceDefinitions
 ---
+- name: Get calico versions folder
+  include_tasks: get_calico_versions_folder.yaml
+
 - name: Create Custom Calico Resource Definitions
   become: true
   run_once: true

@@ -1,4 +1,7 @@
 ---
+- name: Get calico versions folder
+  include_tasks: get_calico_versions_folder.yaml
+
 - name: Update calico-node certificate
   ansible.builtin.include_tasks: get_cert_in_k8s.yaml
   vars:
