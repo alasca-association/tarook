@@ -14,6 +14,19 @@
     force_renewal: true
     k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
 
+- name: Trigger restart etcd
+  block:
+  - name: Trigger restart etcd  # noqa no-changed-when
+    command: /bin/true
+    notify: Restart etcd
+
+  - name: Flush handlers
+    meta: flush_handlers
+
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "etcd-{{ inventory_hostname }}"
+
 # https://github.com/kubernetes/kubeadm/issues/1350
 - name: Workaround for bug in controller-manager
   become: true
