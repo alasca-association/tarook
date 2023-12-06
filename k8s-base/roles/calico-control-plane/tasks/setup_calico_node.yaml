@@ -5,7 +5,7 @@
     vault_role_id: "{{ vault_node_role_id }}"
     vault_secret_id: "{{ vault_node_secret_id }}"
     get_cert_k8s_title: calico-node
-    get_cert_k8s_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/calico-pki/issue/node"
+    get_cert_k8s_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/calico-pki/issuer/{{ k8s_issuer | default('default') }}/issue/node"
     get_cert_k8s_vault_data:
       common_name: calico-node
       ttl: 8784h

@@ -19,7 +19,7 @@
       get_cert_title: etcd server certificate
       get_cert_destination_crt: /etc/kubernetes/pki/etcd/server.crt
       get_cert_destination_key: /etc/kubernetes/pki/etcd/server.key
-      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/etcd-pki/issue/server"
+      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/etcd-pki/issuer/{{ k8s_issuer | default('default') }}/issue/server"
       get_cert_owner: root
       get_cert_vault_data:
         common_name: "{{ inventory_hostname }}"
@@ -38,7 +38,7 @@
       get_cert_title: etcd peer certificate
       get_cert_destination_crt: /etc/kubernetes/pki/etcd/peer.crt
       get_cert_destination_key: /etc/kubernetes/pki/etcd/peer.key
-      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/etcd-pki/issue/peer"
+      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/etcd-pki/issuer/{{ k8s_issuer | default('default') }}/issue/peer"
       get_cert_owner: root
       get_cert_vault_data:
         common_name: "{{ inventory_hostname }}"
@@ -57,7 +57,7 @@
       get_cert_title: etcd healthcheck certificate
       get_cert_destination_crt: /etc/kubernetes/pki/etcd/healthcheck-client.crt
       get_cert_destination_key: /etc/kubernetes/pki/etcd/healthcheck-client.key
-      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/etcd-pki/issue/healthcheck"
+      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/etcd-pki/issuer/{{ k8s_issuer | default('default') }}/issue/healthcheck"
       get_cert_owner: root
       get_cert_vault_data:
         common_name: "{{ inventory_hostname }}"
@@ -75,7 +75,7 @@
       get_cert_title: apiserver etcd client certificate
       get_cert_destination_crt: /etc/kubernetes/pki/apiserver-etcd-client.crt
       get_cert_destination_key: /etc/kubernetes/pki/apiserver-etcd-client.key
-      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/etcd-pki/issue/kube-apiserver"
+      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/etcd-pki/issuer/{{ k8s_issuer | default('default') }}/issue/kube-apiserver"
       get_cert_owner: root
       get_cert_vault_data:
         common_name: "{{ inventory_hostname }}"
@@ -92,7 +92,7 @@
       get_cert_title: apiserver frontend certificate
       get_cert_destination_crt: /etc/kubernetes/pki/apiserver.crt
       get_cert_destination_key: /etc/kubernetes/pki/apiserver.key
-      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/k8s-pki/issue/apiserver"
+      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/k8s-pki/issuer/{{ k8s_issuer | default('default') }}/issue/apiserver"
       get_cert_owner: root
       get_cert_vault_data:
         common_name: "kube-apiserver"
@@ -111,7 +111,7 @@
       get_cert_title: apiserver kubelet client certificate
       get_cert_destination_crt: /etc/kubernetes/pki/apiserver-kubelet-client.crt
       get_cert_destination_key: /etc/kubernetes/pki/apiserver-kubelet-client.key
-      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/k8s-pki/issue/system-masters_apiserver"
+      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/k8s-pki/issuer/{{ k8s_issuer | default('default') }}/issue/system-masters_apiserver"
       get_cert_owner: root
       get_cert_vault_data:
         common_name: "apiserver:{{ inventory_hostname }}.node.{{ vault_cluster_name }}"
@@ -128,7 +128,7 @@
       get_cert_title: apiserver front proxy client certificate
       get_cert_destination_crt: /etc/kubernetes/pki/front-proxy-client.crt
       get_cert_destination_key: /etc/kubernetes/pki/front-proxy-client.key
-      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/k8s-front-proxy-pki/issue/apiserver"
+      get_cert_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/k8s-front-proxy-pki/issuer/{{ k8s_issuer | default('default') }}/issue/apiserver"
       get_cert_owner: root
       get_cert_vault_data:
         common_name: "front-proxy-client"
