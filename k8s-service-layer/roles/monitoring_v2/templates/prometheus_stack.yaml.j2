@@ -64,6 +64,13 @@ grafana:
     existingSecret: {{ monitoring_grafana_admin_secret_name }}
     userKey: admin-user
     passwordKey: admin-password
+  resources:
+    limits:
+      cpu: "{{ monitoring_grafana_cpu_limit }}"
+      memory: "{{ monitoring_grafana_memory_limit }}"
+    requests:
+      cpu: "{{ monitoring_grafana_cpu_limit }}"
+      memory: "{{ monitoring_grafana_memory_request }}"
 {% if monitoring_scheduling_key %}
   tolerations:
     - key: "{{ monitoring_scheduling_key }}"
