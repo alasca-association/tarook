@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+data:
+  kubeconfig: |
+    apiVersion: v1
+    clusters:
+    - cluster:
+        certificate-authority-data: {{ kubeconfig_certificate_authority_data }}
+        server: {{ kubeconfig_api_server_url | to_json }}
+      name: ""
+    kind: Config
+    contexts: null
+    current-context: ""
+    preferences: {}
+    users: null
+kind: ConfigMap
+metadata:
+  name: cluster-info
+  namespace: kube-public
+...

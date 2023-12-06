@@ -165,29 +165,23 @@
       - --namespace
       - "{{ item[0].metadata.name }}"
 
-- name: Trigger restart kube-apiserver
+- name: Patch 'kube-public/cluster-info' ConfigMap
+  delegate_to: localhost
+  run_once: true
+  become: false
   block:
-  - name: Trigger restart kube-apiserver
-    command: /bin/true
-    notify: Restart kube-apiserver
-
-  - name: Flush handlers
-    meta: flush_handlers
-
-  - include_tasks: wait-for-restart.yaml
+  - name: Get certificate authority data
+    ansible.builtin.include_role:
+      name: k8s-master
+      tasks_from: get-certificate-authority-data.yaml
     vars:
-      pod_resource_name: "kube-apiserver-{{ inventory_hostname }}"
+      k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+      extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
 
-- name: Trigger restart kube-scheduler
-  block:
-  - name: trigger restart kube-scheduler
-    command: /bin/true
-    notify: Restart kube-scheduler
-
-  - name: Flush handlers
-    meta: flush_handlers
-
-  - include_tasks: wait-for-restart.yaml
+  - name: Patch 'kube-public/cluster-info' ConfigMap
     vars:
-      pod_resource_name: "kube-scheduler-{{ inventory_hostname }}"
+      kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
+    kubernetes.core.k8s:
+      state: present
+      definition: "{{ lookup('template', 'cluster-info-cm.yaml.j2') | from_yaml }}"
 ...
