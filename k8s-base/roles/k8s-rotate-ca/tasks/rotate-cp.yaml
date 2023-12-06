@@ -58,6 +58,35 @@
     vars:
       pod_resource_name: "kube-controller-manager-{{ inventory_hostname }}"
 
+- name: Trigger restart kube-apiserver
+  block:
+  - name: Trigger restart kube-apiserver  # noqa no-changed-when
+    command: /bin/true
+    notify: Restart kube-apiserver
+
+  - name: Flush handlers
+    meta: flush_handlers
+
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "kube-apiserver-{{ inventory_hostname }}"
+
+- name: Trigger restart kube-scheduler
+  block:
+  - name: trigger restart kube-scheduler  # noqa no-changed-when
+    command: /bin/true
+    notify: Restart kube-scheduler
+
+  - name: Flush handlers
+    meta: flush_handlers
+
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "kube-scheduler-{{ inventory_hostname }}"
+
+- name: Pause for 30s (let it settle)
+  pause:
+    seconds: 30
 - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻
   delegate_to: localhost
   run_once: true
