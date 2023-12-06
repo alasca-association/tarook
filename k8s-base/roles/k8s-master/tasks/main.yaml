@@ -122,12 +122,6 @@
       value: 1
       state: present
 
-  - name: Copy kubeconfig to localhost
-    ansible.builtin.fetch:
-      src: /etc/kubernetes/admin.conf
-      dest: "{{ etc_dir }}/"
-      flat: true
-
 - name: Join the K8s control plane
   when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed"
   become: true
