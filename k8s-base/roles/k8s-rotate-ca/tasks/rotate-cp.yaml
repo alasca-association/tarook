@@ -1,0 +1,100 @@
+---
+# This implements https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/
+
+- name: Obtain CAs
+  ansible.builtin.include_role:
+    name: k8s-master
+    tasks_from: obtain-cas.yaml
+  vars:
+    ca_rotation: true
+
+  # https://github.com/kubernetes/kubeadm/issues/1350
+- name: Workaround for bug in controller-manager
+  become: true
+  block:
+  - name: Write k8s CA file
+    ansible.builtin.copy:
+      dest: /etc/kubernetes/pki/ca-new.crt
+      owner: root
+      group: root
+      mode: ugo=r
+      content: "{{ k8s_ca_cert }}"
+
+  - name: Point kube-controller-manager to new CA
+    ansible.builtin.replace:
+      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+      regexp: '^(\s*-\s*--client-ca-file=).*'
+      replace: '\1/etc/kubernetes/pki/ca-new.crt' # TODO: or use the old one here?
+
+- name: Trigger restart kube-controller-manager
+  block:
+  - name: Trigger restart kube-controller-manager
+    command: /bin/true
+    notify: Restart kube-controller-manager
+
+  - name: Flush handlers
+    meta: flush_handlers
+
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "kube-controller-manager-{{ inventory_hostname }}"
+
+- name: Restart (almost) everything (╯°□°)╯︵ ┻━┻
+  delegate_to: localhost
+  run_once: true
+  block:
+  - name: Gather all namespaces
+    kubernetes.core.k8s_info:
+      kind: Namespace
+    register: gather_namespaces
+
+  - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻  # noqa no-changed-when
+    with_nested:
+    - "{{ gather_namespaces.resources }}"
+    - ["daemonset", "deployment", "statefulset"]
+    loop_control:
+      label: "Restart every {{ item[1] }} in namespace {{ item[0].metadata.name }}"
+    command:
+      argv:
+      - kubectl
+      - rollout
+      - restart
+      - "{{ item[1] }}"
+      - --namespace
+      - "{{ item[0].metadata.name }}"
+
+- name: Trigger restart kube-apiserver
+  block:
+  - name: Trigger restart kube-apiserver
+    command: /bin/true
+    notify: Restart kube-apiserver
+
+  - name: Flush handlers
+    meta: flush_handlers
+
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "kube-apiserver-{{ inventory_hostname }}"
+
+- name: Trigger restart kube-scheduler
+  block:
+  - name: trigger restart kube-scheduler
+    command: /bin/true
+    notify: Restart kube-scheduler
+
+  - name: Flush handlers
+    meta: flush_handlers
+
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "kube-scheduler-{{ inventory_hostname }}"
+
+- name: Obtain kubeconfigs
+  ansible.builtin.include_role:
+    name: k8s-master
+    tasks_from: obtain-kubeconfigs.yaml
+  vars:
+    force_renewal: true
+    k8s_issuer: next
+    extra_ca: default
+...
