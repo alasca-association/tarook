@@ -14,7 +14,6 @@
   gather_facts: true
   vars_files:
     - vars/disruption.yaml
-    # - vars/auto_generated_preamble.yaml
     - vars/etc.yaml
     - vars/retries.yaml
   handlers:
