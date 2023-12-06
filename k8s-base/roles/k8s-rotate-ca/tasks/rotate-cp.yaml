@@ -87,6 +87,24 @@
 - name: Pause for 30s (let it settle)
   pause:
     seconds: 30
+
+- name: Obtain kubeconfigs
+  ansible.builtin.include_role:
+    name: k8s-master
+    tasks_from: obtain-kubeconfigs.yaml
+  vars:
+    force_renewal: true
+    k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+    extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
+
+- name: Force restart kubelet
+  become: true
+  systemd_service:
+    state: restarted
+    name: kubelet
+
+- name: Flush handlers
+  meta: flush_handlers
 - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻
   delegate_to: localhost
   run_once: true
@@ -136,13 +154,4 @@
   - include_tasks: wait-for-restart.yaml
     vars:
       pod_resource_name: "kube-scheduler-{{ inventory_hostname }}"
-
-- name: Obtain kubeconfigs
-  ansible.builtin.include_role:
-    name: k8s-master
-    tasks_from: obtain-kubeconfigs.yaml
-  vars:
-    force_renewal: true
-    k8s_issuer: next
-    extra_ca: default
 ...
