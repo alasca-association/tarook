@@ -6,6 +6,14 @@
   vars:
     ca_rotation: "{{ append_next_issuer | bool | ternary(True, False) }}"
 
+- name: Obtain certificates
+  ansible.builtin.include_role:
+    name: k8s-master
+    tasks_from: obtain-certs.yaml
+  vars:
+    force_renewal: true
+    k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+
 # https://github.com/kubernetes/kubeadm/issues/1350
 - name: Workaround for bug in controller-manager
   become: true
