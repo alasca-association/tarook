@@ -23,8 +23,8 @@
           name: cluster-ca-certs
           namespace: kube-system
         data:
-          front-proxy-ca.crt: "{{ k8s_front_proxy_ca_cert if not (ca_rotation | default(false)) else ([k8s_prev_front_proxy_ca_cert, k8s_front_proxy_ca_cert] | join('')) }}"
-          kubernetes-ca.crt: "{{ k8s_ca_cert if not (ca_rotation | default(false)) else ([k8s_prev_ca_cert, k8s_ca_cert] | join('')) }}"
+          front-proxy-ca.crt: "{{ k8s_front_proxy_ca_cert if not (extra_ca | default('') | length > 0) else ([k8s_prev_front_proxy_ca_cert, k8s_front_proxy_ca_cert] | join('')) }}"
+          kubernetes-ca.crt: "{{ k8s_ca_cert if not (extra_ca | default('') | length > 0) else ([k8s_prev_ca_cert, k8s_ca_cert] | join('')) }}"
     register: k8s_apply
     # Retry this task on failures
     until: k8s_apply is not failed

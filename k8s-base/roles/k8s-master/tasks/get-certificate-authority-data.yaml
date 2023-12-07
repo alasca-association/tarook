@@ -1,47 +1,12 @@
 ---
-- name: "Get certificate-authority-date: Fetch CA"
-  delegate_to: localhost
-  community.hashi_vault.vault_read:
-    path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/k8s-pki/issuer/{{ k8s_issuer | default('default') }}"
-    # TODO
-    # token_validate: false
-    # auth_method: approle
-    # role_id: "{{ vault_role_id }}"
-    # secret_id: "{{ vault_secret_id }}"
-    # mount_point: "{{ vault_nodes_approle }}"
-  register: get_ca_cert
-
-- name: "Get certificate-authority-date: Fetch additional CA"
-  when: extra_ca | default('') | length > 0
-  delegate_to: localhost
-  community.hashi_vault.vault_read:
-    path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/k8s-pki/issuer/{{ extra_ca }}"
-    # TODO
-    # token_validate: false
-    # auth_method: approle
-    # role_id: "{{ vault_role_id }}"
-    # secret_id: "{{ vault_secret_id }}"
-    # mount_point: "{{ vault_nodes_approle }}"
-  register: extra_ca_cert
-
-- name: "Get certificate-authority-date: Generate certificate-authority-data"
-  when: not extra_ca | default('') | length > 0
-  ansible.builtin.set_fact:
-    kubeconfig_certificate_authority_data: "{{ get_ca_cert.data.data.ca_chain[-1] | b64encode }}"
-
-- name: "Get certificate-authority-date: Generate certificate-authority-data with additional CA"
-  when: extra_ca | default('') | length > 0
-  ansible.builtin.set_fact:
-    kubeconfig_certificate_authority_data: "{{ ''.join((extra_ca_cert.data.data.ca_chain[-1], get_ca_cert.data.data.ca_chain[-1])) | b64encode }}"
-
 - name: Fetch CA certificates
   ansible.builtin.set_fact:
-    k8s_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-pki', 'k8s_issuer': 'next' if (ca_rotation | default(false)) else 'default'}) }}"
-    k8s_front_proxy_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-front-proxy-pki'}) }}"
-    etcd_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'etcd-pki', 'k8s_issuer': 'next' if (ca_rotation | default(false)) else 'default'}) }}"
+    k8s_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-pki', 'k8s_issuer': 'next' if (extra_ca | default('') | length > 0) else 'default'}) }}"
+    k8s_front_proxy_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-front-proxy-pki', 'k8s_issuer': 'next' if (extra_ca | default('') | length > 0) else 'default'}) }}"
+    etcd_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'etcd-pki', 'k8s_issuer': 'next' if (extra_ca | default('') | length > 0) else 'default'}) }}"
 
 - name: Fetch previous CA certificates
-  when: (ca_rotation | default(false))
+  when: extra_ca | default('') | length > 0
   ansible.builtin.set_fact:
     k8s_prev_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-pki', 'k8s_issuer': 'default'}) }}"
     k8s_prev_front_proxy_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-front-proxy-pki', 'k8s_issuer': 'default'}) }}"

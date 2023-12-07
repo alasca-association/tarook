@@ -80,7 +80,7 @@
       owner: root
       group: root
       mode: ugo=r
-      content: "{{ k8s_ca_cert if not (ca_rotation | default(false)) else ([k8s_prev_ca_cert, k8s_ca_cert] | join('')) }}"
+      content: "{{ k8s_ca_cert if not (extra_ca | default('') | length > 0) else ([k8s_prev_ca_cert, k8s_ca_cert] | join('')) }}"
 
   - name: Write k8s front proxy CA file
     become: true
@@ -89,7 +89,7 @@
       owner: root
       group: root
       mode: ugo=r
-      content: "{{ k8s_front_proxy_ca_cert if not (ca_rotation | default(false)) else ([k8s_prev_front_proxy_ca_cert, k8s_front_proxy_ca_cert] | join('')) }}"
+      content: "{{ k8s_front_proxy_ca_cert if not (extra_ca | default('') | length > 0) else ([k8s_prev_front_proxy_ca_cert, k8s_front_proxy_ca_cert] | join('')) }}"
 
   - name: Write etcd CA file
     become: true
@@ -100,5 +100,5 @@
       owner: root
       group: root
       mode: ugo=r
-      content: "{{ etcd_ca_cert if not (ca_rotation | default(false)) else ([etcd_prev_ca_cert, etcd_ca_cert] | join('')) }}"
+      content: "{{ etcd_ca_cert if not (extra_ca | default('') | length > 0) else ([etcd_prev_ca_cert, etcd_ca_cert] | join('')) }}"
 ...

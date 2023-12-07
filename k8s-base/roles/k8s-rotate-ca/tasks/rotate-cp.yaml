@@ -4,7 +4,7 @@
     name: k8s-master
     tasks_from: obtain-cas.yaml
   vars:
-    ca_rotation: "{{ append_next_issuer | bool | ternary(True, False) }}"
+    extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
 
 - name: Obtain certificates
   ansible.builtin.include_role:
@@ -175,7 +175,6 @@
       name: k8s-master
       tasks_from: get-certificate-authority-data.yaml
     vars:
-      k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
       extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
 
   - name: Patch 'kube-public/cluster-info' ConfigMap
@@ -190,5 +189,5 @@
     name: k8s-master
     tasks_from: provide-ca-as-cm.yaml
   vars:
-    ca_rotation: "{{ append_next_issuer | bool | ternary(True, False) }}"
+    extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
 ...
