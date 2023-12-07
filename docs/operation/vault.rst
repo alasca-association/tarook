@@ -1,6 +1,13 @@
 Use of HashiCorp Vault in yaook/k8s
 ===================================
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Vault - Cluster CA Rotation
+   :hidden:
+
+   Vault - Root Certificate Authority Rotation <vault-ca-rotation>
+
 As of Summer 2023, yaook/k8s exclusively supports
 `HashiCorp Vault <https://vaultproject.io>`__ as backend for storing secrets.
 Previously, passwordstore was used. Vault supports many different kinds
