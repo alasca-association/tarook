@@ -165,6 +165,10 @@
       - --namespace
       - "{{ item[0].metadata.name }}"
 
+- name: Pause for 60s (let it settle)
+  pause:
+    seconds: 60
+
 - name: Patch 'kube-public/cluster-info' ConfigMap
   delegate_to: localhost
   run_once: true
