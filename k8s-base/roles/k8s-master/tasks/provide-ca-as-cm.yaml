@@ -1,0 +1,33 @@
+---
+- name: Provide CA certificates as ConfigMap
+  run_once: true
+  block:
+  - name: Get certificate authority data
+    include_tasks: get-certificate-authority-data.yaml
+
+  - name: Provide CA certificates as ConfigMap
+    become: true
+    environment:
+      ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+      ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    kubernetes.core.k8s:
+      apply: true
+      validate:
+        fail_on_error: true
+        strict: true
+      definition:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: cluster-ca-certs
+          namespace: kube-system
+        data:
+          front-proxy-ca.crt: "{{ k8s_front_proxy_ca_cert if not (ca_rotation | default(false)) else ([k8s_prev_front_proxy_ca_cert, k8s_front_proxy_ca_cert] | join('')) }}"
+          kubernetes-ca.crt: "{{ k8s_ca_cert if not (ca_rotation | default(false)) else ([k8s_prev_ca_cert, k8s_ca_cert] | join('')) }}"
+    register: k8s_apply
+    # Retry this task on failures
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+...

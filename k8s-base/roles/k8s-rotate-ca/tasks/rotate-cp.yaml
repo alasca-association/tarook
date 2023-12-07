@@ -184,4 +184,11 @@
     kubernetes.core.k8s:
       state: present
       definition: "{{ lookup('template', 'cluster-info-cm.yaml.j2') | from_yaml }}"
+
+- name: Provide CA certificates as ConfigMap
+  include_role:
+    name: k8s-master
+    tasks_from: provide-ca-as-cm.yaml
+  vars:
+    ca_rotation: "{{ append_next_issuer | bool | ternary(True, False) }}"
 ...

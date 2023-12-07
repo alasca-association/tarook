@@ -150,4 +150,7 @@
     ansible.builtin.file:
       path: /tmp/kubeadm-join-config.yaml
       state: absent
+
+- name: Provide CA certificates as ConfigMap
+  include_tasks: provide-ca-as-cm.yaml
 ...

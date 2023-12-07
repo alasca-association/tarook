@@ -72,16 +72,8 @@
       group: root
       mode: ugo=r
 
-  - name: Fetch CA certificates
-    ansible.builtin.set_fact:
-      k8s_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-pki', 'k8s_issuer': 'next' if (ca_rotation | default(false)) else 'default'}) }}"
-      k8s_front_proxy_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-front-proxy-pki'}) }}"
-
-  - name: Fetch previous CA certificates
-    when: (ca_rotation | default(false))
-    ansible.builtin.set_fact:
-      k8s_prev_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-pki', 'k8s_issuer': 'default'}) }}"
-      k8s_prev_front_proxy_ca_cert: "{{ lookup('template', 'ca.crt.j2', template_vars={'ca_pki_name': 'k8s-front-proxy-pki', 'k8s_issuer': 'default'}) }}"
+  - name: Get certificate authority data
+    include_tasks: get-certificate-authority-data.yaml
 
   - name: Write k8s CA file
     become: true
@@ -105,36 +97,10 @@
     become: true
     vars:
       ca_pki_name: etcd-pki
-    ansible.builtin.template:
-      src: ca.crt.j2
+    ansible.builtin.copy:
       dest: /etc/kubernetes/pki/etcd/ca.crt
       owner: root
       group: root
       mode: ugo=r
-
-  - name: Provide CA certificates as ConfigMap
-    become: true
-    run_once: true
-    environment:
-      ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
-      ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
-      KUBECONFIG: /etc/kubernetes/admin.conf
-    kubernetes.core.k8s:
-      apply: true
-      validate:
-        fail_on_error: true
-        strict: true
-      definition:
-        apiVersion: v1
-        kind: ConfigMap
-        metadata:
-          name: cluster-ca-certs
-          namespace: kube-system
-        data:
-          front-proxy-ca.crt: "{{ k8s_front_proxy_ca_cert if not (ca_rotation | default(false)) else ([k8s_prev_front_proxy_ca_cert, k8s_front_proxy_ca_cert] | join('')) }}"
-          kubernetes-ca.crt: "{{ k8s_ca_cert if not (ca_rotation | default(false)) else ([k8s_prev_ca_cert, k8s_ca_cert] | join('')) }}"
-    register: k8s_apply
-    # Retry this task on failures
-    until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+      content: "{{ etcd_ca_cert if not (ca_rotation | default(false)) else ([etcd_prev_ca_cert, etcd_ca_cert] | join('')) }}"
+...
