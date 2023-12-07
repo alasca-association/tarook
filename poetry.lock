@@ -1706,23 +1706,22 @@ stevedore = ">=2.0.1"
 
 [[package]]
 name = "python-openstackclient"
-version = "6.3.0"
+version = "6.4.0"
 description = "OpenStack Command-line Client"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "python-openstackclient-6.3.0.tar.gz", hash = "sha256:9ba0bdf8d03087e585b40a8dcc429cebbdd5fdec24c1d60a102bf9f331320df1"},
-    {file = "python_openstackclient-6.3.0-py3-none-any.whl", hash = "sha256:ce432ac2b7308eca6d70e66b8738a96bd743077cc89bb830936f23e9177a220e"},
+    {file = "python-openstackclient-6.4.0.tar.gz", hash = "sha256:0c6ab40168ea51fed68819aa251f8253de9a61dacc96dd1b64739f189fc2183f"},
+    {file = "python_openstackclient-6.4.0-py3-none-any.whl", hash = "sha256:9f5c53391c8f771521fe80fbb6b860d109a3d700239a7c7083f72b143b06164a"},
 ]
 
 [package.dependencies]
 cliff = ">=3.5.0"
 cryptography = ">=2.7"
 iso8601 = ">=0.1.11"
-openstacksdk = ">=1.4.0"
+openstacksdk = ">=2.0.0"
 osc-lib = ">=2.3.0"
 "oslo.i18n" = ">=3.15.3"
-"oslo.utils" = ">=3.33.0"
 pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 python-cinderclient = ">=3.3.0"
 python-keystoneclient = ">=3.22.0"
