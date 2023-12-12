@@ -56,4 +56,5 @@ ansible-galaxy install -r "$ansible_directory/requirements.yaml"
 
 ansible_playbook -i "$ansible_inventoryfile_03" \
   -e "append_next_issuer=${next_issuer:-false}" \
+  -e "complete_rotation=${complete_rotation:-false}" \
   rotate_root_ca.yaml "$@"

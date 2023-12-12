@@ -11,8 +11,7 @@
     name: k8s-master
     tasks_from: obtain-certs.yaml
   vars:
-    force_renewal: true
-    k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+    force_renewal: "{{ complete_rotation | bool | ternary(True, False) }}"
 
 - name: Trigger restart etcd
   block:
@@ -114,24 +113,21 @@
       name: calico-control-plane
       tasks_from: setup_preliminaries.yaml
     vars:
-      force_renewal: true
-      k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+      force_renewal: "{{ complete_rotation | bool | ternary(True, False) }}"
       extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
   - name: Update calico Typha certificates
     ansible.builtin.include_role:
       name: calico-control-plane
       tasks_from: setup_typha.yaml
     vars:
-      force_renewal: true
-      k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+      force_renewal: "{{ complete_rotation | bool | ternary(True, False) }}"
       extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
   - name: Update calico/node certificates
     ansible.builtin.include_role:
       name: calico-control-plane
       tasks_from: setup_calico_node.yaml
     vars:
-      force_renewal: true
-      k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+      force_renewal: "{{ complete_rotation | bool | ternary(True, False) }}"
       extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
   - name: Update calico kubeconfig
     ansible.builtin.include_role:
