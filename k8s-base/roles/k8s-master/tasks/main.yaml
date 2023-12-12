@@ -132,7 +132,6 @@
   - name: Get certificate information
     community.crypto.x509_certificate_info:
       path: "/etc/kubernetes/pki/ca.crt"
-    register: ca_cert
 
   - name: Create kubeadm-join-config.yaml
     ansible.builtin.template:
