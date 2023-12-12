@@ -6,25 +6,24 @@ action="${2:-prepare}"
 # . "$(dirname "$0")/lib.sh"
 . managed-k8s/tools/vault/lib.sh
 
+# maximum time for certificates to live: 1 calendar year (leap year compatible)
+pki_ttl=8784h
 # 5yrs
 pki_root_ttl=43830h
 
 case "$action" in
     "prepare")
-    vault write -format=json "$k8s_pki_path/root/generate/internal" \
-        common_name="Kubernetes Cluster Root CA $year" \
-        ou="$ou" \
-        organization="$organization" \
-        country="$country" \
-        ttl="$pki_root_ttl" \
-        key_type=ed25519 \
-        issuer_name=next
-    vault patch "yaook/devcluster/k8s-pki/issuer/prev" issuer_name= >/dev/null || true
+    generate_ca_issuer "$pki_root_ttl" "next"
+    init_k8s_cluster_pki_roles "$k8s_pki_path" "$pki_ttl"
+    init_k8s_etcd_pki_roles "$etcd_pki_path" "$pki_ttl"
+    init_k8s_front_proxy_pki_roles "$k8s_front_proxy_pki_path" "$pki_ttl"
+    init_k8s_calico_pki_roles "$calico_pki_path" "$pki_ttl"
     ;;
     "apply")
     vault patch "yaook/devcluster/k8s-pki/issuer/default" issuer_name=prev >/dev/null
     vault write yaook/devcluster/k8s-pki/root/replace default=next >/dev/null
     vault patch "yaook/devcluster/k8s-pki/issuer/next" issuer_name= >/dev/null
+    # ToDo: Invalidate/delete previous issuer
     ;;
     *)
     echo "Usage $0 <clustername> [prepare|apply]"

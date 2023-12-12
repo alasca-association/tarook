@@ -241,8 +241,84 @@ function init_k8s_calico_pki_roles() {
         key_type=rsa
 }
 
+function generate_ca_issuer() {
+    local pki_root_ttl="$1"
+    local issuer_name="${2:-}"
+
+    if [ -n "$issuer_name" ]; then
+        vault write "$k8s_pki_path/root/generate/internal" \
+        common_name="Kubernetes Cluster Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519 \
+        issuer_name="$issuer_name"
+
+        vault write "$etcd_pki_path/root/generate/internal" \
+        common_name="Kubernetes etcd Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519 \
+        issuer_name="$issuer_name"
+
+        vault write "$k8s_front_proxy_pki_path/root/generate/internal" \
+        common_name="Kubernetes Front Proxy Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519 \
+        issuer_name="$issuer_name"
+
+        vault write "$calico_pki_path/root/generate/internal" \
+        common_name="Kubernetes calico Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519 \
+        issuer_name="$issuer_name"
+    else
+        vault write "$k8s_pki_path/root/generate/internal" \
+        common_name="Kubernetes Cluster Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519
+
+        vault write "$etcd_pki_path/root/generate/internal" \
+        common_name="Kubernetes etcd Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519
+
+        vault write "$k8s_front_proxy_pki_path/root/generate/internal" \
+        common_name="Kubernetes Front Proxy Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519
+
+        vault write "$calico_pki_path/root/generate/internal" \
+        common_name="Kubernetes calico Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519
+    fi
+}
+
 function mkcsrs() {
     local ttl="$1"
+    local issuer_name="${2:-default}"
 
     vault write -field=csr "$k8s_pki_path/intermediate/generate/internal" \
         common_name="Kubernetes Cluster Intermediate CA $year" \
