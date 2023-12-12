@@ -353,6 +353,14 @@ function mkcsrs() {
         key_type=ed25519 > k8s-calico.csr
 }
 
+function rotate_pki_issuer() {
+    local pki_path="$1"
+
+    vault patch "$pki_path/issuer/default" issuer_name="previous-$(date --iso-8601=date -u)"
+    vault write "$pki_path/root/replace" default=next
+    vault patch "$pki_path/issuer/next" issuer_name=""
+}
+
 function import_etcd_backup_config() {
     etcdbackup_config_path=config/etcd_backup_s3_config.yaml
     if etcdbackup_config="$(python3 -c 'import json, yaml, sys; json.dump(yaml.load(sys.stdin, Loader=yaml.SafeLoader), sys.stdout)' < $etcdbackup_config_path)"; then

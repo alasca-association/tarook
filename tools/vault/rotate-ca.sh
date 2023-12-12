@@ -20,9 +20,10 @@ case "$action" in
     init_k8s_calico_pki_roles "$calico_pki_path" "$pki_ttl"
     ;;
     "apply")
-    vault patch "yaook/devcluster/k8s-pki/issuer/default" issuer_name=prev >/dev/null
-    vault write yaook/devcluster/k8s-pki/root/replace default=next >/dev/null
-    vault patch "yaook/devcluster/k8s-pki/issuer/next" issuer_name= >/dev/null
+    rotate_pki_issuer "$k8s_pki_path"
+    rotate_pki_issuer "$etcd_pki_path"
+    rotate_pki_issuer "$k8s_front_proxy_pki_path"
+    rotate_pki_issuer "$calico_pki_path"
     # ToDo: Invalidate/delete previous issuer
     ;;
     *)
