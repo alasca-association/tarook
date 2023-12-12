@@ -4,8 +4,6 @@
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
-  vars:
-    kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ hostvars[available_frontend]['k8s_apiserver_frontend_port'] }}"
   block:
   # This is based on the k8s best practices
   # https://kubernetes.io/docs/setup/best-practices/certificates/
