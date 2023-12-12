@@ -1,4 +1,11 @@
 ---
+- name: Obtain CAs
+  ansible.builtin.include_role:
+    name: k8s-worker
+    tasks_from: obtain-cas.yaml
+  vars:
+    extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
+
 - name: Obtain kubeconfigs
   ansible.builtin.include_role:
     name: k8s-worker

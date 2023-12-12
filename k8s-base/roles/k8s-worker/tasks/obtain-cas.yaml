@@ -1,0 +1,28 @@
+---
+- name: Obtain CAs
+  environment:
+    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+  block:
+  - name: Write k8s CA file
+    become: true
+    vars:
+      ca_pki_name: k8s-pki
+    ansible.builtin.template:
+      src: ca.crt.j2
+      dest: /etc/kubernetes/pki/ca.crt
+      owner: root
+      group: root
+      mode: ugo=r
+
+  - name: Write k8s front proxy CA file
+    become: true
+    vars:
+      ca_pki_name: k8s-front-proxy-pki
+    ansible.builtin.template:
+      src: ca.crt.j2
+      dest: /etc/kubernetes/pki/front-proxy-ca.crt
+      owner: root
+      group: root
+      mode: ugo=r
+...
