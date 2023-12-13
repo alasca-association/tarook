@@ -330,12 +330,12 @@ function import_etcd_backup_config() {
 }
 
 function import_ipsec_eap_psk() {
-    if [ -f inventory/.etc/passwordstore/ipsec_eap_psk.gpg ]; then
+    if [ -f etc/passwordstore/ipsec_eap_psk.gpg ]; then
         if ! vault kv get "$cluster_path"/kv/ipsec-eap-psk > /dev/null; then
-            vault kv put "$cluster_path/kv/ipsec-eap-psk" "ipsec_eap_psk=$(PASSWORD_STORE_DIR=inventory/.etc/passwordstore pass show ipsec_eap_psk)"
+            vault kv put "$cluster_path/kv/ipsec-eap-psk" "ipsec_eap_psk=$(PASSWORD_STORE_DIR=etc/passwordstore pass show ipsec_eap_psk)"
             echo "Successfully imported IPSec PSK into vault."
             echo "Removing IPSec PSK from passwordstore."
-            rm inventory/.etc/passwordstore/ipsec_eap_psk.gpg
+            rm etc/passwordstore/ipsec_eap_psk.gpg
         else
             echo "An IPSec PSK already has been stored in vault."
             echo "Please manually remove the existing data from vault,"
