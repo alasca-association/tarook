@@ -9,4 +9,8 @@ k8s_ingress_replica_count: 1
 k8s_ingress_enable_ssl_passthrough: "true"
 k8s_ingress_helm_repo_url: "https://kubernetes.github.io/ingress-nginx"
 k8s_ingress_allow_snippet_annotations: false
+k8s_ingress_memory_limit: "128Mi"
+k8s_ingress_memory_request: "128Mi"
+k8s_ingress_cpu_limit: "500m"
+k8s_ingress_cpu_request: "100m"
 ...
