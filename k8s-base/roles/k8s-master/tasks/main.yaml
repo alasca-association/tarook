@@ -15,14 +15,10 @@
   ignore_errors: true
   register: local_kube_apiserver_status
 
-- name: Register the available frontend
-  ansible.builtin.set_fact:
-    available_frontend: "{{ groups['frontend'] | first }}"
-
 - name: Check reachability of load-balanced kube-apiserver
   when: local_kube_apiserver_status is failed
   vars:
-    host: "{{ networking_fixed_ip }}:{{ hostvars[available_frontend]['k8s_apiserver_frontend_port'] }}"
+    host: "{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
   ansible.builtin.uri:
     url: "https://{{ host }}"
     status_code: 403
