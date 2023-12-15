@@ -1,0 +1,32 @@
+# Note, this playbook is useless standalone.
+# It is used when rotating the CA certificates
+# and triggered by the respective action script.
+---
+- name: Rotate CA (service layer)
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
+  pre_tasks:
+  - name: include env vars
+    when: ksl_vars_directory is defined
+    ansible.builtin.include_vars:
+      dir: "{{ ksl_vars_directory }}"
+    tags:
+    - always
+  tasks:
+  - name: Copy CA to monitoring namespace
+    include_role:
+      name: monitoring_v2
+      tasks_from: copy-ca-as-cm.yaml
+  - name: Rollout restart prometheus-adapter
+    command:
+      argv:
+      - kubectl
+      - rollout
+      - restart
+      - deployment
+      - prometheus-adapter
+      - --namespace
+      - "{{ monitoring_namespace | default('monitoring') }}"
+...

@@ -58,3 +58,8 @@ ansible_playbook -i "$ansible_inventoryfile_03" \
   -e "append_next_issuer=${next_issuer:-false}" \
   -e "complete_rotation=${complete_rotation:-false}" \
   rotate_root_ca.yaml "$@"
+
+cd "$ansible_k8s_sl_playbook"
+ansible_playbook -i "inventory/default.yaml" \
+  -e "ksl_vars_directory=$ansible_k8s_sl_vars_base" \
+  rotate_root_ca.yaml
