@@ -318,7 +318,6 @@ function generate_ca_issuer() {
 
 function mkcsrs() {
     local ttl="$1"
-    local issuer_name="${2:-default}"
 
     vault write -field=csr "$k8s_pki_path/intermediate/generate/internal" \
         common_name="Kubernetes Cluster Intermediate CA $year" \
@@ -351,6 +350,26 @@ function mkcsrs() {
         country="$country" \
         ttl="$ttl" \
         key_type=ed25519 > k8s-calico.csr
+}
+
+function import_cert {
+    local chainfile="$1"
+    local pkipath="$2"
+    local issuer_name="$3"
+
+    response="$(vault write -format=json "$pkipath/intermediate/set-signed" certificate="@$chainfile")"
+    issuer="$(jq -r '.data.imported_issuers[0]' <<<"$response")"
+    # If this is a no-op update to an existing issuer, the ID is not included
+    # in the response. Hence, we can't init it, but we probably also don't have
+    # to (because it has been imported before).
+    if [ "$issuer" != 'null' ]; then
+        vault write "$pkipath/issuer/$issuer" leaf_not_after_behavior=truncate
+        # Path issuer name for e.g. root CA rotations
+        if [ -n "${issuer_name:-}" ]; then
+            echo "patching"
+            vault patch "$pkipath/issuer/$issuer" issuer_name="$issuer_name"
+        fi
+    fi
 }
 
 function rotate_pki_issuer() {

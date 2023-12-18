@@ -19,7 +19,7 @@
     include_role:
       name: monitoring_v2
       tasks_from: copy-ca-as-cm.yaml
-  - name: Rollout restart prometheus-adapter
+  - name: Rollout restart prometheus-adapter  # noqa no-changed-when
     command:
       argv:
       - kubectl

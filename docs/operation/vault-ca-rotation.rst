@@ -3,7 +3,7 @@ Root Certificate Authority Rotation
 
 The following document describes how to rotate
 the certificate authority certificates in use and renewing
-certificates for all components.
+certificates for all components with a new root CA.
 
 This procedure is **not** necessary if you don't
 want to exchange your root CA but just renew certificates.
@@ -88,17 +88,43 @@ Phase 1
 
 2. Add a new issuer which will be called ``next`` to all PKIs
 
-   .. code:: bash
+   .. tabs::
 
-     $ ./managed-k8s/tools/vault/rotate-ca.sh <clustername> prepare
+      .. tab:: Without intermediates
 
-     # Verify
-     $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
-     $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
-     $ vault list -detailed yaook/<clustername>/calico-pki/issuers
-     $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
+        .. code:: bash
 
-3. If you've created your cluster before 2024, you must update your vault policies
+          $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh <clustername> prepare
+
+          # Verify
+          $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
+          $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
+          $ vault list -detailed yaook/<clustername>/calico-pki/issuers
+          $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
+
+      .. tab:: With intermediates
+
+        1. Generate CSRs
+
+          .. code:: bash
+
+            $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh <clustername> prepare
+
+        2. Sign the generated CSRs
+
+        3. Import the signed certificates as new issuer "next"
+
+          .. code:: bash
+
+            $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh <clustername> load-signed-intermediates
+
+            # Verify
+            $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
+            $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
+            $ vault list -detailed yaook/<clustername>/calico-pki/issuers
+            $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
+
+3. If you've created your cluster before 2024, you must additionally update your vault policies
 
   .. note::
 
@@ -114,7 +140,7 @@ Phase 1
 
    .. code:: bash
 
-     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-root-ca.sh -n
+     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-ca.sh -n
 
 5. Verify workload is able to come back up
 
@@ -136,28 +162,50 @@ After you spread the kubeconfigs, do the following:
 1. Rotate the issuer and set the new one has default,
    mark the old issuer as outdated.
 
-   .. code::
+   .. tabs::
 
-     $ ./managed-k8s/tools/vault/rotate-ca.sh <clustername> apply
+      .. tab:: Without intermediates
 
-     $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
-     Keys                                    is_default    issuer_name
-     ----                                    ----------    -----------
-     06a9511a-ffd2-2ce3-bd01-2cb2180a5e51    false         prev
-     3e836f42-047f-b078-3795-0386aaff30c0    true          n/a
-     $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
-     [...]
-     $ vault list -detailed yaook/<clustername>/calico-pki/issuers
-     [...]
-     $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
-     [...]
+        .. code::
+
+          $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh <clustername> apply
+
+          $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
+          Keys                                    is_default    issuer_name
+          ----                                    ----------    -----------
+          06a9511a-ffd2-2ce3-bd01-2cb2180a5e51    false         prev
+          3e836f42-047f-b078-3795-0386aaff30c0    true          n/a
+          $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
+          [...]
+          $ vault list -detailed yaook/<clustername>/calico-pki/issuers
+          [...]
+          $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
+          [...]
+
+      .. tab:: With intermediates
+
+        .. code::
+
+          $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh <clustername> apply
+
+          $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
+          Keys                                    is_default    issuer_name
+          ----                                    ----------    -----------
+          06a9511a-ffd2-2ce3-bd01-2cb2180a5e51    false         prev
+          3e836f42-047f-b078-3795-0386aaff30c0    true          n/a
+          $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
+          [...]
+          $ vault list -detailed yaook/<clustername>/calico-pki/issuers
+          [...]
+          $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
+          [...]
 
 2. Complete the rotation by removing the old CA from accepted bundles
    and renewing certificates for all components
 
   .. code:: bash
 
-    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-root-ca.sh -c
+    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-ca.sh -c
 
 3. Verify workload is able to come back up
 
