@@ -29,8 +29,9 @@
 # https://github.com/kubernetes/kubeadm/issues/1350
 - name: Workaround for bug in controller-manager
   become: true
+  when: append_next_issuer | bool
   block:
-  - name: Write k8s CA file
+  - name: Write new k8s CA file
     ansible.builtin.copy:
       dest: /etc/kubernetes/pki/ca-new.crt
       owner: root
@@ -38,11 +39,27 @@
       mode: ugo=r
       content: "{{ k8s_ca_cert }}"
 
-  - name: Point kube-controller-manager to new CA
+  - name: Point kube-controller-manager to separate CA file
     ansible.builtin.replace:
       path: /etc/kubernetes/manifests/kube-controller-manager.yaml
       regexp: '^(\s*-\s*--client-ca-file=).*'
-      replace: '\1/etc/kubernetes/pki/ca-new.crt' # TODO: or use the old one here?
+      replace: '\1/etc/kubernetes/pki/ca-new.crt'
+
+# https://github.com/kubernetes/kubeadm/issues/1350
+- name: Remove workaround for bug in controller-manager
+  become: true
+  when: not append_next_issuer | bool
+  block:
+  - name: Drop new k8s CA file
+    ansible.builtin.file:
+      path: /etc/kubernetes/pki/ca-new.crt
+      state: absent
+
+  - name: Point kube-controller-manager to default CA file
+    ansible.builtin.replace:
+      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+      regexp: '^(\s*-\s*--client-ca-file=).*'
+      replace: '\1/etc/kubernetes/pki/ca.crt'
 
 - name: Trigger restart kube-controller-manager
   block:
