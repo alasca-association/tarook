@@ -149,6 +149,10 @@ use_grafana                         = true
 grafana_persistent_storage_class    = "rook-ceph-cephfs"
 thanos_objectstorage_container_name = "ci-monitoring-thanos-data"
 scheduling_key                      = "{{ scheduling_key_prefix }}/monitoring"
+grafana_memory_limit = "768Mi"
+grafana_memory_request = "768Mi"
+grafana_cpu_limit = "600m"
+grafana_cpu_request = "200m"
 
 internet_probe = true
 [[k8s-service-layer.prometheus.internet_probe_targets]]

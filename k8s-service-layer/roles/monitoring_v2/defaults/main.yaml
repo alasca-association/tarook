@@ -43,4 +43,9 @@ monitoring_allow_external_rules: false
 monitoring_thanos_objectstorage_container_name: "{{ cluster_name }}-monitoring-thanos-data"
 monitoring_thanos_objectstorage_config_file: ""
 monitoring_thanos_objectstorage_config_path: "{{ ksl_vars_directory }}/../../config/"
+
+monitoring_grafana_memory_limit: "512Mi"
+monitoring_grafana_memory_request: "256Mi"
+monitoring_grafana_cpu_limit: "500m"
+monitoring_grafana_cpu_request: "100m"
 ...
