@@ -1,4 +1,11 @@
 ---
+- name: Update the Kubernetes community-owned repository
+  vars:
+    k8s_version: "{{ next_k8s_version }}"
+  include_role:
+    name: kubeadm
+    tasks_from: configure-package-repo.yaml
+
 - name: Upgrade kubelet on apt systems
   when: ansible_pkg_mgr == 'apt'
   become: true
@@ -9,8 +16,8 @@
   - name: Upgrade kubelet
     ansible.builtin.apt:
       name:
-      - "kubelet={{ next_k8s_version }}-00"
-      - "kubectl={{ next_k8s_version }}-00"
+      - "kubelet={{ next_k8s_version }}-*"
+      - "kubectl={{ next_k8s_version }}-*"
     register: task_result
     until: task_result is not failed
     retries: "{{ network_error_retries }}"
@@ -18,41 +25,6 @@
 
   - name: Re-hold kubelet  # noqa no-changed-when
     ansible.builtin.command: apt-mark hold kubelet kubectl
-
-- name: Upgrade kubelet on dnf systems
-  when: ansible_pkg_mgr == 'dnf'
-  become: true
-  block:
-  - name: Remove versionlock on kubelet  # noqa no-changed-when
-    ansible.builtin.command:
-    args:
-      argv:
-      - dnf
-      - versionlock
-      - delete
-      - kubelet
-      - kubectl
-
-  - name: Upgrade kubelet
-    ansible.builtin.dnf:
-      name:
-      - "kubelet-{{ next_k8s_version }}-00"
-      - "kubectl-{{ next_k8s_version }}-00"
-      state: present
-    register: task_result
-    until: task_result is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
-
-  - name: Add versionlock on kubelet  # noqa no-changed-when
-    ansible.builtin.command:
-    args:
-      argv:
-      - dnf
-      - versionlock
-      - add
-      - kubelet
-      - kubectl
 
 - name: Configure and restart kubelet
   ansible.builtin.include_role:

@@ -38,85 +38,21 @@
     - NO_PROXY
     - no_proxy
 
-- name: Add Google's K8s repository (apt)
-  become: true
-  when: ansible_pkg_mgr == 'apt'
-  block:
-    - name: Ensure keyrings directory exists
-      # ftr: this is present by default on Debian...
-      ansible.builtin.file:
-        state: directory
-        path: /etc/apt/keyrings
-        owner: root
-        group: root
-        mode: u=rwx,go=rx
-
-    - name: Deploy Google's K8s repository key
-      ansible.builtin.copy:
-        src: apt-key.gpg
-        dest: /etc/apt/keyrings/kubeadm.gpg
-        owner: root
-        group: root
-        mode: u=rw,go=r
-
-    - name: Add Google's K8s repository to sources.list
-      ansible.builtin.copy:
-        dest: /etc/apt/sources.list.d/kubernetes.list
-        content: |
-          {{ _auto_generated_preamble }}
-          {% if apt_proxy_url is defined %}
-          deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] http://apt.kubernetes.io/ kubernetes-xenial main
-          {% else %}
-          deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
-          {% endif %}
-        owner: root
-        group: root
-        mode: 0640
-
-    - name: Install kubelet, kubeadm and kubectl
-      # Note: check available version with `apt-cache policy <package name>`
-      ansible.builtin.apt:
-        update_cache: true
-      register: task_result
-      until: task_result is not failed
-      retries: "{{ network_error_retries }}"
-      delay: "{{ network_error_delay }}"
-
-- name: Add Google's K8s repository (yum/dnf)
-  become: true
-  ansible.builtin.template:
-    src: kubernetes.repo
-    dest: /etc/yum.repos.d/kubernetes.repo
-    owner: root
-    group: root
-    mode: 0640
-  when: ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum'
+- name: Include package repository configuration
+  include_tasks:
+    file: configure-package-repo.yaml
 
 - name: Install kubelet, kubeadm and kubectl
-
   block:
-    - name: Prepare list of packages to install (apt)
-      ansible.builtin.set_fact:
-        packages:
-          - "kubelet={{ k8s_version }}-00"
-          - "kubeadm={{ k8s_version }}-00"
-          - "kubectl={{ k8s_version }}-00"
-      when: ansible_pkg_mgr == 'apt'
-
-    - name: Prepare list of packages to install (yum/dnf)
-      ansible.builtin.set_fact:
-        packages:
-          - "kubelet-{{ k8s_version }}-00"
-          - "kubeadm-{{ k8s_version }}-00"
-          - "kubectl-{{ k8s_version }}-00"
-      when: ansible_pkg_mgr == 'dnf' or ansible_pkg_mgr == 'yum'
-
     - name: Install kubelet, kubeadm and kubectl
       # Note: check available version with `apt-cache policy <package name>`
       become: true
       ansible.builtin.package:
         state: present
-        name: "{{ packages }}"
+        name:
+          - "kubelet={{ k8s_version }}-*"
+          - "kubeadm={{ k8s_version }}-*"
+          - "kubectl={{ k8s_version }}-*"
       register: task_result
       until: task_result is not failed
       retries: "{{ network_error_retries }}"
@@ -126,31 +62,6 @@
     - name: Prevent the k8s packages for being updated (apt)  # noqa no-changed-when
       become: true
       ansible.builtin.command: apt-mark hold kubelet kubeadm kubectl
-      when: ansible_pkg_mgr == 'apt'
-
-    - name: Prevent the k8s packages for being updated (dnf)
-      become: true
-      when: ansible_pkg_mgr == 'dnf'
-      block:
-        - name: Install dnf versionlock  # noqa package-latest
-          ansible.builtin.dnf:
-            name:
-              - 'dnf-command(versionlock)'
-            state: latest
-          register: task_result
-          until: task_result is not failed
-          retries: "{{ network_error_retries }}"
-          delay: "{{ network_error_delay }}"
-
-        - name: Add a version lock  # noqa no-changed-when
-          ansible.builtin.command:
-          args:
-            argv:
-              - dnf
-              - versionlock
-              - kubelet
-              - kubeadm
-              - kubectl
 
 # kubelet should be restarted immediately
 - name: Force restart of kubelet at this point
