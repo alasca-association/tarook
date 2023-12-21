@@ -71,7 +71,7 @@ version       = "0.7.0"
 agent_port    = 15203
 
 [kubernetes]
-version = "1.26.8"
+version = "1.26.12"
 is_gpu_cluster = true
 virtualize_gpu = false
 
