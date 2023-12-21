@@ -24,6 +24,7 @@
       file:
         path: /etc/apt/sources.list.d/kubernetes.list
         state: absent
+      register: drop_google_repo
 
     - name: Add Kubernetes community-owned repository to sources.list
       ansible.builtin.copy:
