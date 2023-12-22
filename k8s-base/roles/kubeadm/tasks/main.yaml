@@ -44,6 +44,11 @@
 
 - name: Install kubelet, kubeadm and kubectl
   block:
+    - name: Remove hold of packages if migration needed  # noqa no-changed-when no-handler
+      when: drop_google_repo.changed | default(False)
+      become: true
+      ansible.builtin.command: apt-mark unhold kubelet kubeadm kubectl
+
     - name: Install kubelet, kubeadm and kubectl
       # Note: check available version with `apt-cache policy <package name>`
       become: true
