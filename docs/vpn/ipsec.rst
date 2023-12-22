@@ -265,37 +265,3 @@ This can be done with the following command:
 
    # Please substitute CLUSTERNAME & YOUR_IPSEC_EAP_PSK
    vault kv put yaook/CLUSTERNAME/kv/ipsec-eap-psk ipsec_eap_psk=YOUR_IPSEC_EAP_PSK
-
-Migrate an existing PSK from Passwordstore to Vault
----------------------------------------------------
-
-As we want to get rid of the legacy passwordstore solution
-to manage credentials and instead moved to using Hashicorp Vault
-as secret backend,
-one must migrate an existing IPSec EAP PSK to vault.
-
-To migrate an existing IPSec EAP PSK from the passwordstore
-to vault run the following:
-
-.. note::
-
-   A root token is needed!
-   The ``orchestrator`` role does not have enough privileges.
-
-Ensure you updated your vault policies by executing:
-
-.. code:: shell
-
-   ./managed-k8s/tools/vault/init.sh
-
-Then execute:
-
-.. code:: shell
-
-   # Please substitute CLUSTERNAME
-   ./managed-k8s/tools/vault/update.sh CLUSTERNAME
-
-.. hint::
-
-   Further information about these scripts can be found
-   :ref:`here <vault.managing-clusters-in-vault>`.

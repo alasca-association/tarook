@@ -679,36 +679,6 @@ More details about the IPsec setup can be found
 
 |
 
-.. _cluster-configuration.passwordstore-configuration:
-
-Passwordstore Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-You **MUST** add yourself to the passwordstore users.
-
-You can do so either by adding yourself to
-``passwordstore.additional_users`` in the config file below or by using
-and configuring a git submodule. This submodule would then refer to
-another repository, holding the GPG IDs of everybody that should have
-access to the cluster by default. This is the recommended approach for
-companies and organizations.
-
-.. raw:: html
-
-   <details>
-   <summary>config.toml: Passwordstore Configuration</summary>
-
-.. literalinclude:: /templates/config.template.toml
-   :language: toml
-   :start-after: # ANCHOR: passwordstore_configuration
-   :end-before: # ANCHOR_END: passwordstore_configuration
-
-.. raw:: html
-
-   </details>
-
-|
-
 Cloud&Heat: ch-role-users Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

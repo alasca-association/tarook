@@ -100,20 +100,6 @@ Troubleshooting
 -  Further information is available `in the upstream documentation on
    Ansible connections <https://docs.ansible.com/ansible/latest/user_guide/connection_details.html>`__.
 
-“The wg_gw_key does not seem to be in the passwordstore”
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Error message:**
-
-   ``passwordstore: passname wg_gw_key not found and missing``,
-
-   ``Command ''[''pass'', ''show'', ''wg_gw_key'']'' returned non-zero exit status 2.`` or
-
-   ``NO MORE HOSTS LEFT``
-
--  Did you step away from your desk and missed the prompt to enter the
-   passphrase for your gpg key?
-
 “My private wireguard key cannot be found”
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
