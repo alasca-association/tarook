@@ -17,16 +17,20 @@ workflow:
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_HOTFIX_BRANCH_PREFIX'
     - if: $CI_MERGE_REQUEST_EVENT_TYPE
 
-# always lint
-.default_lint_rules:
-  rules:
-    - when: on_success
-
 stages:
 - lint
-- spawn-cluster
-- cluster-upgrades
+- cluster-tests
 - release
+
+# include:
+#   - local: ci/cluster-tests.yaml
+#   - local: ci/release.yaml
+
+# always lint on merge trains
+.default_lint_rules:
+  rules:
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
+      when: on_success
 
 tflint:
   image:
@@ -39,6 +43,10 @@ tflint:
     - docker
   rules:
     - !reference [.default_lint_rules, rules]
+    - changes:
+      - 'terraform/**/*'
+      when: on_success
+    - when: never
 
 shellcheck:
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/koalaman/shellcheck-alpine:v0.9.0"
@@ -49,6 +57,10 @@ shellcheck:
     - docker
   rules:
     - !reference [.default_lint_rules, rules]
+    - changes:
+      - '**/*.sh'
+      when: on_success
+    - when: never
 
 yamllint:
   stage: lint
@@ -59,6 +71,10 @@ yamllint:
     - yamllint .
   rules:
     - !reference [.default_lint_rules, rules]
+    - changes:
+      - '**/*.{yaml,yml}'
+      when: on_success
+    - when: never
 
 detect-vault-image:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
@@ -69,6 +85,7 @@ detect-vault-image:
     - docker
   rules:
     - !reference [.default_lint_rules, rules]
+    - when: on_success
 
 ansible-lint:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
@@ -82,6 +99,7 @@ ansible-lint:
     - docker
   rules:
     - !reference [.default_lint_rules, rules]
+    - when: on_success
 
 flake8:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
@@ -94,6 +112,10 @@ flake8:
     - docker
   rules:
     - !reference [.default_lint_rules, rules]
+    - changes:
+      - '**/*.py'
+      when: on_success
+    - when: never
 
 poetry-lock:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
@@ -108,6 +130,11 @@ poetry-lock:
     - docker
   rules:
     - !reference [.default_lint_rules, rules]
+    - changes:
+      - pyproject.toml
+      - poetry.lock
+      when: on_success
+    - when: never
 
 pre-commit-hooks:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
@@ -123,6 +150,7 @@ pre-commit-hooks:
     - docker
   rules:
     - !reference [.default_lint_rules, rules]
+    - when: on_success
 
 build-docs-check:
   stage: lint
@@ -140,7 +168,12 @@ build-docs-check:
   rules:
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
       when: never
-    - when: on_success
+    - !reference [.default_lint_rules, rules]
+    - changes:
+      - 'docs/[!_]*/**/*'
+      - 'docs/[!_]*'  # the above does not include files directly in docs/
+      when: on_success
+    - when: never
   tags:
     - docker
 
@@ -188,6 +221,13 @@ release-note-file-check:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $YAOOK_K8S_DEFAULT_BRANCH
       when: on_success
     - when: never
+
+.test-rules-changes: &test-rules-changes
+      changes:
+      # match files/directories in the root which are not "docs"
+      - '{[^d]*,d,d[^o]*,do,do[^c]*,doc,doc[^s]*,docs?*}'
+      # match changes in subdirs other than "docs"
+      - '{[^d]*,d,d[^o]*,do,do[^c]*,doc,doc[^s]*,docs?*}/**/*'
 
 .prepare_spawn_test_cleanup_k8s_cluster:
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
@@ -464,13 +504,20 @@ containerd-k8s-upgrade:
   environment:
     name: spawn-cluster
   rules:
+    # run on merge.merge_train only if files outside docs have changed
     - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
+      <<: *test-rules-changes
+      needs: ["containerd"]
       when: on_success
+    # run always on release-prepare
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      needs: ["containerd"]
       when: on_success
-    - when: never
+    # otherwise create manual job
+    - when: manual
+      allow_failure: true
   extends: .test_upgrade_path_k8s_cluster
-  stage: cluster-upgrades
+  stage: cluster-tests
   retry: 2
   variables:
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
@@ -485,29 +532,28 @@ containerd-k8s-upgrade:
     ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
     ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
 
-# Manually spawn a cluster and test the k8s upgrade path (w/ calico)
-containerd-k8s-upgrade-manual:
-  rules:
-    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
-      when: never
-    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
-      when: never
-    - when: manual
-  extends: containerd-k8s-upgrade
-  allow_failure: true
-  retry: 0
-
 # Spawn a cluster with calico as CNI, containerd as CRI and
 # rook enabled (MR only)
 containerd:
   environment:
     name: spawn-cluster
   rules:
+    # create manual job on merge.detached and merge.merged_result
     - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: never
-    - when: on_success
+      when: manual
+      allow_failure: true
+    # always run on release-prepare
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      when: on_success
+    # otherwise run only if files outside docs have changed
+    - if:
+      <<: *test-rules-changes
+      when: on_success
+    # when there are no changes, create manual job
+    - when: manual
+      allow_failure: true
   extends: .prepare_spawn_test_cleanup_k8s_cluster
-  stage: spawn-cluster
+  stage: cluster-tests
   script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   retry: 2
@@ -519,17 +565,6 @@ containerd:
     SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
     ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
-
-# Manually spawn a cluster with calico as CNI, containerd as CRI and
-# rook enabled (MR only)
-containerd-manual:
-  rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: manual
-    - when: never
-  allow_failure: true
-  extends: containerd
-  retry: 0
 
 pages:
   stage: release
