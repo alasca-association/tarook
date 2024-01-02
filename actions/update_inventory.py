@@ -318,7 +318,7 @@ def main():
                 if var not in os.environ:
                     raise ValueError(f"gitlab_backend is true, but {var} unset")
 
-            for var in ('gitlab_base_url', 'gitlab_project_id'):
+            for var in ('gitlab_base_url', 'gitlab_project_id', 'gitlab_state_name'):
                 if var not in tf_config:
                     raise ValueError(f"gitlab_backend is true, but {var} unset")
 

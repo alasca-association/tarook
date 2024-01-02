@@ -61,11 +61,24 @@ function disruption_allowed() {
     [ "${MANAGED_K8S_RELEASE_THE_KRAKEN:-}" = 'true' ]
 }
 
+function extremination_allowed() {
+    [ "${MANAGED_K8S_NUKE_FROM_ORBIT:-}" = 'true' ]
+}
+
 function require_disruption() {
     if ! disruption_allowed; then
         # shellcheck disable=SC2016
         errorf '$MANAGED_K8S_RELEASE_THE_KRAKEN is set to %q' "${MANAGED_K8S_RELEASE_THE_KRAKEN:-}" >&2
         errorf 'aborting since disruptive operations are not allowed' >&2
+        exit 3
+    fi
+}
+
+function require_extremination() {
+    if ! extremination_allowed; then
+        # shellcheck disable=SC2016
+        errorf '$MANAGED_K8S_NUKE_FROM_ORBIT is set to %q' "${MANAGED_K8S_NUKE_FROM_ORBIT:-}" >&2
+        errorf 'aborting since extremination operations are not allowed' >&2
         exit 3
     fi
 }
@@ -145,4 +158,11 @@ function ansible_playbook() {
 
     # shellcheck disable=SC2086
     (export ANSIBLE_CONFIG="$ansible_directory/ansible.cfg" && run ansible-playbook $ansible_flags "$@")
+}
+
+function load_gitlab_vars() {
+    gitlab_base_url="$(jq -r .gitlab_base_url   "$terraform_state_dir/config.tfvars.json")"
+    gitlab_project_id="$(jq -r .gitlab_project_id "$terraform_state_dir/config.tfvars.json")"
+    gitlab_state_name="$(jq -r .gitlab_state_name "$terraform_state_dir/config.tfvars.json")"
+    backend_address="$gitlab_base_url/api/v4/projects/$gitlab_project_id/terraform/state/$gitlab_state_name"
 }

@@ -72,11 +72,11 @@ remove the suffix of the worker from the list. After removing, i.e.,
 For an auto-generated complete list of variables, please refer to
 :doc:`Terraform docs </usage/terraform-docs>`.
 
-To activate automatic migration of Terraform backup files to Gitlab,
+To activate automatic backend of Terraform statefiles to Gitlab,
 adapt the Terraform section of your ``config.toml``:
 set `gitlab_backend` to True,
-set the URL of the Gitlab project, and
-optionally change the name of the Gitlab state object.
+set the URL of the Gitlab project and
+the name of the Gitlab state object.
 
 .. code:: toml
 
@@ -93,6 +93,24 @@ at least Maintainer role and
 read/write access to the API.
 Please see GitLab documentation for creating a
 `personal access token <https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html>`__.
+
+To successful migrate from the "local" to "http" Terraform backend method,
+ensure that `gitlab_backend` is set to `true`
+and all other required variables are set correctly.
+Incorrect data entry may result in an HTTP error respond,
+such as a HTTP/401 error for incorrect credentials.
+Assuming correct credentials in the case of an HTTP/404 error,
+Terraform is executed and the state is migrated to Gitlab.
+
+To migrate from the "http" to "local" Terraform backend method,
+set `gitlab_backend=false`,
+`MANAGED_K8S_NUKE_FROM_ORBIT=true`,
+and assume
+that all variables above are properly set
+and the Terraform state exists on GitLab.
+Once the migration is successful,
+unset the variables above
+to continue using the "local" backend method.
 
 .. code:: toml
 

@@ -1,0 +1,3 @@
+Fix the behaviour of the Terraform backend
+when multiple users are maintaining the same cluster,
+especially when migrating the backend from local to http.

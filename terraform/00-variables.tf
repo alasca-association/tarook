@@ -232,21 +232,21 @@ variable "gitlab_backend" {
 # tflint-ignore: terraform_unused_declarations
 variable "gitlab_base_url" {
   type = string
-  default = "https://gitlab.com"
+  default = ""
   description = "Base URL of GitLab for Terraform HTTP backend if 'gitlab_backend=true'."
 }
 
 # tflint-ignore: terraform_unused_declarations
 variable "gitlab_project_id" {
   type = string
-  default = null
+  default = ""
   description = "If 'gitlab_backend=true', the Terraform state will be stored in the GitLab repo with this ID."
 }
 
 # tflint-ignore: terraform_unused_declarations
 variable "gitlab_state_name" {
   type = string
-  default = "tf-state"
+  default = ""
   description = "If 'gitlab_backend=true', the terraform state file will have this name."
 }
 
