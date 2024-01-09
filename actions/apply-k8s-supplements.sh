@@ -10,8 +10,7 @@ python3 "$actions_dir/update_inventory.py"
 
 require_vault_token
 
-# Install ansible galaxy requirements
-ansible-galaxy install -r "$ansible_directory/requirements.yaml"
+install_prerequisites
 
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"

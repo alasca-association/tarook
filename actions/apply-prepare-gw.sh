@@ -10,8 +10,7 @@ python3 "$actions_dir/update_inventory.py"
 
 require_vault_token
 
-# Install ansible galaxy requirements
-ansible-galaxy install -r "$ansible_directory/requirements.yaml"
+install_prerequisites
 
 if [ "${TF_USAGE:-true}" == 'false' ]; then
   errorf "It seems like you're not running on top of OpenStack,"

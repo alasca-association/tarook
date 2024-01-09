@@ -25,8 +25,7 @@ done
 
 shift $(( OPTIND - 1 ))
 
-# Install ansible galaxy requirements
-ansible-galaxy install -r "$ansible_directory/requirements.yaml"
+install_prerequisites
 
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"

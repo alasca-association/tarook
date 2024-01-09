@@ -185,3 +185,8 @@ function check_return_code () {
         exit 1
     fi
 }
+
+function install_prerequisites() {
+    # Install ansible galaxy requirements
+    ansible-galaxy install -r "$ansible_directory/requirements.yaml"
+}
