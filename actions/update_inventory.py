@@ -20,7 +20,7 @@ CONFIG_PATH = pathlib.Path(CONFIG_BASE_PATH / "config.toml")
 CONFIG_TEMPLATE_PATH = pathlib.Path(
     "managed-k8s/templates/config.template.toml")
 # Base path to the Ansible inventory
-ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory")
+ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory/yaook-k8s/group_vars")
 # List of top level sections which we do accept in the main config
 ALLOWED_TOP_LEVEL_SECTIONS = (
     "load-balancing",
@@ -38,35 +38,6 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "miscellaneous",
     "nvidia",
 )
-# Mapping stages to their common names
-ANSIBLE_STAGES = {
-    "install-node": "00_install_node",
-    "yaook-k8s": "yaook-k8s",
-    "custom": "k8s-custom",
-}
-# The k8s managed services layer is special because it requires only
-# a subset of variables of services / sections. This Map defines which
-# variable keys have to be exported for the k8s managed services layer
-K8S_MANAGED_SERVICES_VAR_MAP = {
-    "ch-k8s-lbaas": [
-        "enabled",
-        "agent_port"
-    ],
-    "node-scheduling": [
-        "scheduling_key_prefix"
-    ],
-    "k8s-service-layer": {
-        "rook": [
-            "enabled"
-        ],
-        "prometheus": [
-            # We probably wanna split up the monitoring variables
-            # in the near future
-        ],
-        "fluxcd": [
-        ]
-    },
-}
 # This maps defines the prefix that is assigned to each
 # variable of a section
 SECTION_VARIABLE_PREFIX_MAP = {
@@ -334,31 +305,28 @@ def main():
                 raise ValueError("Provided gitlab_base_url is misformed.")
 
         terraform_helper.deploy_terraform_config(tf_config)
+
         # Pass the cluster name to inventory
-        for stage in ["yaook-k8s"]:
-            tf_ansible_inventory_path = (
-                ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES[stage] /
-                "group_vars" / "all" / "cluster.yaml"
-            )
-            dump_to_ansible_inventory(
-                {'cluster_name': tf_config.get("cluster_name", "managed-k8s")},
-                tf_ansible_inventory_path,
-                ""
-            )
+        tf_ansible_inventory_path = (
+            ANSIBLE_INVENTORY_BASEPATH / "all" / "cluster.yaml"
+        )
+        dump_to_ansible_inventory(
+            {'cluster_name': tf_config.get("cluster_name", "managed-k8s")},
+            tf_ansible_inventory_path,
+            ""
+        )
 
     # ---
     # VAULT
     # ---
     print_process_state("Vault Backend")
-    for stage in ["yaook-k8s"]:
-        vault_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES[stage] /
-            "group_vars" / "all" / "vault-backend.yaml"
-        )
-        dump_to_ansible_inventory(
-            config["vault"],
-            vault_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("vault_backend", "")
+    vault_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "vault-backend.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["vault"],
+        vault_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("vault_backend", "")
         )
 
     # ---
@@ -368,8 +336,7 @@ def main():
     if (os.getenv('WG_USAGE', 'true') == 'true'):
         print_process_state("Wireguard")
         wg_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["yaook-k8s"] /
-            "group_vars" / "gateways" / "wireguard.yaml"
+            ANSIBLE_INVENTORY_BASEPATH / "gateways" / "wireguard.yaml"
         )
         dump_to_ansible_inventory(
             wireguard_helper.generate_wireguard_config(
@@ -383,8 +350,7 @@ def main():
     # ---
     print_process_state("IPSec")
     ipsec_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["yaook-k8s"] /
-        "group_vars" / "gateways" / "ipsec.yaml"
+        ANSIBLE_INVENTORY_BASEPATH / "gateways" / "ipsec.yaml"
     )
     dump_to_ansible_inventory(
         config.get("ipsec"),
@@ -396,122 +362,113 @@ def main():
     # KUBERNETES
     # ---
     print_process_state("Kubernetes")
-    for stage in ["yaook-k8s"]:
-        kubernetes_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage /
-            "group_vars" / "all" / "kubernetes.yaml"
-        )
-        dump_to_ansible_inventory(
-            config.get("kubernetes"),
-            kubernetes_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("kubernetes", "")
-        )
+    kubernetes_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "kubernetes.yaml"
+    )
+    dump_to_ansible_inventory(
+        config.get("kubernetes"),
+        kubernetes_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("kubernetes", "")
+    )
 
     # ---
-    # KUBERNETES SERVICE LAYER
+    # ROOK
     # ---
-    # KUBERNETES SERVICE LAYER: ROOK
     print_process_state("ROOK")
-    for stage in ["yaook-k8s"]:
-        kubernetes_service_storage_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage /
-            "group_vars" / "all" / "rook.yaml"
-        )
-        dump_to_ansible_inventory(
-            config["k8s-service-layer"].get("rook"),
-            kubernetes_service_storage_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("rook", "")
-        )
+    kubernetes_service_storage_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "rook.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("rook"),
+        kubernetes_service_storage_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("rook", "")
+    )
 
-    # KUBERNETES SERVICE LAYER: PROMETHEUS
+    # ---
+    # PROMETHEUS
+    # ---
     print_process_state("PROMETHEUS")
-    for stage in ["yaook-k8s"]:
-        kubernetes_service_monitoring_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage /
-            "group_vars" / "all" / "prometheus.yaml"
-        )
-        dump_to_ansible_inventory(
-            config["k8s-service-layer"].get("prometheus"),
-            kubernetes_service_monitoring_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("prometheus", ""),
-            ["common_labels"]
-        )
+    kubernetes_service_monitoring_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "prometheus.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("prometheus"),
+        kubernetes_service_monitoring_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("prometheus", ""),
+        ["common_labels"]
+    )
 
     # ---
-    # KUBERNETES SERVICE LAYER
+    # CERT MANAGER
     # ---
-    # KUBERNETES SERVICE LAYER: CERT MANAGER
     print_process_state("CERT MANAGER")
-    for stage in ["yaook-k8s"]:
-        kubernetes_service_cm_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage /
-            "group_vars" / "all" / "cert-manager.yaml"
-        )
-        dump_to_ansible_inventory(
-            config["k8s-service-layer"].get("cert-manager"),
-            kubernetes_service_cm_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("cert-manager", "")
-        )
+    kubernetes_service_cm_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "cert-manager.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("cert-manager"),
+        kubernetes_service_cm_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("cert-manager", "")
+    )
 
-    # KUBERNETES SERVICE LAYER: INGRESS
+    # ---
+    # INGRESS
+    # ---
     print_process_state("INGRESS")
-    for stage in ["yaook-k8s"]:
-        kubernetes_service_ingress_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage /
-            "group_vars" / "all" / "ingress.yaml"
-        )
-        dump_to_ansible_inventory(
-            config["k8s-service-layer"].get("ingress"),
-            kubernetes_service_ingress_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("ingress", "")
-        )
+    kubernetes_service_ingress_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "ingress.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("ingress"),
+        kubernetes_service_ingress_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("ingress", "")
+    )
 
-    # KUBERNETES SERVICE LAYER: VAULT
+    # ---
+    # VAULT
+    # ---
     print_process_state("VAULT SERVICE")
-    for stage in ["yaook-k8s"]:
-        kubernetes_service_vault_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage /
-            "group_vars" / "all" / "vault-svc.yaml"
-        )
-        dump_to_ansible_inventory(
-            config["k8s-service-layer"].get("vault"),
-            kubernetes_service_vault_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("vault", "")
-        )
-
-    # KUBERNETES SERVICE LAYER: ETCD-BACKUP
-    print_process_state("KSL - ETCD-BACKUP")
-    for stage in ["yaook-k8s"]:
-        kubernetes_service_storage_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage /
-            "group_vars" / "all" / "etcd-backup.yaml"
-        )
-        dump_to_ansible_inventory(
-            config["k8s-service-layer"].get("etcd-backup"),
-            kubernetes_service_storage_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("etcd-backup", "")
-        )
-
-    # KUBERNETES SERVICE LAYER: FLUXCD
-    print_process_state("KSL - FLUXCD")
-    for stage in ["yaook-k8s"]:
-        kubernetes_service_storage_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage /
-            "group_vars" / "all" / "fluxcd.yaml"
-        )
-        dump_to_ansible_inventory(
-            config["k8s-service-layer"].get("fluxcd"),
-            kubernetes_service_storage_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("fluxcd", "")
-        )
+    kubernetes_service_vault_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "vault-svc.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("vault"),
+        kubernetes_service_vault_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("vault", "")
+    )
 
     # ---
-    # C&H KUBERNETES LBaaS
+    # ETCD-BACKUP
     # ---
-    print_process_state("CH-k8s-LBaaS")
+    print_process_state("ETCD-BACKUP")
+    kubernetes_service_storage_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "etcd-backup.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("etcd-backup"),
+        kubernetes_service_storage_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("etcd-backup", "")
+    )
+
+    # ---
+    # FLUXCD
+    # ---
+    print_process_state("FLUXCD")
+    kubernetes_service_storage_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "fluxcd.yaml"
+    )
+    dump_to_ansible_inventory(
+        config["k8s-service-layer"].get("fluxcd"),
+        kubernetes_service_storage_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("fluxcd", "")
+    )
+
+    # ---
+    # ch-k8s-lbaas
+    # ---
+    print_process_state("CH-K8s-LBaaS")
     ch_k8s_lbaas_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["yaook-k8s"] /
-        "group_vars" / "all" / "ch-k8s-lbaas.yaml"
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "ch-k8s-lbaas.yaml"
     )
     dump_to_ansible_inventory(
         config.get("ch-k8s-lbaas"),
@@ -522,44 +479,32 @@ def main():
     # ---
     # MISCELLANEOUS
     # ---
-    # Including both stage2 and stage3 because at least `journald_storage` is
-    # used in both.
     print_process_state("Miscellaneous")
-
-    misc_stages = [ANSIBLE_STAGES["yaook-k8s"]]
-    if os.getenv('K8S_INSTALL_NODE_USAGE', 'false') == 'true':
-        misc_stages.append(ANSIBLE_STAGES["install-node"])
-
-    for stage in misc_stages:
-        misc_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage /
-            "group_vars" / "all" / "miscellaneous.yaml"
-        )
-
-        # the toml package is unable to parse the 'container_mirrors' list
-        # properly and passes a class to the yaml.safe_dump function, which
-        # fails. That is why we need to unpack the whole list with it's
-        # embedded dict and rebuild it.
-        new_misc_dict = {}
-        for key, value in config.get("miscellaneous").items():
-            if isinstance(value, list) and key == 'container_mirrors':
-                new_misc_dict[key] = [dict(val.items()) for val in value]
-            else:
-                new_misc_dict[key] = value
-
-        dump_to_ansible_inventory(
-            new_misc_dict,
-            misc_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("miscellaneous", "")
-        )
+    misc_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "miscellaneous.yaml"
+    )
+    # the toml package is unable to parse the 'container_mirrors' list
+    # properly and passes a class to the yaml.safe_dump function, which
+    # fails. That is why we need to unpack the whole list with it's
+    # embedded dict and rebuild it.
+    new_misc_dict = {}
+    for key, value in config.get("miscellaneous").items():
+        if isinstance(value, list) and key == 'container_mirrors':
+            new_misc_dict[key] = [dict(val.items()) for val in value]
+        else:
+            new_misc_dict[key] = value
+    dump_to_ansible_inventory(
+        new_misc_dict,
+        misc_ansible_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("miscellaneous", "")
+    )
 
     # ---
     # NVIDIA VGPU
     # ---
     print_process_state("NVIDIA - vGPU")
     nvidia_vgpu_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["yaook-k8s"] /
-            "group_vars" / "all" / "nvidia.yaml"
+            ANSIBLE_INVENTORY_BASEPATH / "all" / "nvidia.yaml"
     )
     dump_to_ansible_inventory(
         config.get("nvidia"),
@@ -573,8 +518,7 @@ def main():
     # Process labels and taints for each node
     print_process_state("Node Scheduling")
     node_scheduling_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["yaook-k8s"] /
-        "group_vars" / "all" / "node-scheduling.yaml"
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "node-scheduling.yaml"
     )
     node_scheduling_config = {
         # We use pop here to only apply the prefix to labels + taints
@@ -592,8 +536,7 @@ def main():
     # ---
     print_process_state("Testing")
     test_node_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["yaook-k8s"] /
-        "group_vars" / "all" / "test-nodes.yaml"
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "test-nodes.yaml"
     )
     dump_to_ansible_inventory(
         config.get("testing", dict()),
@@ -611,16 +554,14 @@ def main():
             "WARNING: ignoring deprecated host-based priority override for "
             "host {}".format(host)
         )
-    for stage in ["yaook-k8s"]:
-        load_balancing_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage /
-            "group_vars" / "all" / "load-balancing"
-        )
-        dump_to_ansible_inventory(
-            config.get("load-balancing", dict()),
-            load_balancing_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("load-balancing", "")
-        )
+    load_balancing_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "load-balancing"
+    )
+    dump_to_ansible_inventory(
+        config.get("load-balancing", dict()),
+        load_balancing_inventory_path,
+        SECTION_VARIABLE_PREFIX_MAP.get("load-balancing", "")
+    )
 
     # ---
     # CUSTOM
@@ -628,71 +569,14 @@ def main():
     # only if custom stage is used
     if (os.getenv('K8S_CUSTOM_STAGE_USAGE', 'true') == 'true'):
         print_process_state("CUSTOM")
-        stage = ANSIBLE_STAGES["custom"]
         custom_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage /
-            "group_vars" / "all" / "custom.yaml"
+            ANSIBLE_INVENTORY_BASEPATH / "all" / "custom.yaml"
         )
         dump_to_ansible_inventory(
             config.get("custom", dict()),
             custom_ansible_inventory_path,
             ""  # don't append prefix, we don't use vars from other sections
         )
-
-    # ---
-    # KUBERNETES MANAGED SERVICES
-    # ---
-    # This layer is special as it requires only a subset of variables
-    # from the previous layers. We are storing these variables into one file.
-    print_process_state("Kubernetes: Managed Services")
-    k8s_ms_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / ANSIBLE_STAGES["yaook-k8s"] /
-        "group_vars" / "all" / "kms.yaml"
-    )
-    kms_config = dict()
-    # I should probably describe what is happening here...
-    for section, section_data in K8S_MANAGED_SERVICES_VAR_MAP.items():
-        # (rook, monitoring) are part of "k8s-service-layer"
-        if section == "k8s-service-layer" \
-                and isinstance(section_data, dict):
-            for service, service_data in section_data.items():
-                if not isinstance(service_data, list):
-                    raise ValueError("Expected a list of variable keys")
-                for var_name in service_data:
-                    if config.get(
-                        section, {}).get(
-                            service, {}).get(
-                                var_name, ""):
-                        if SECTION_VARIABLE_PREFIX_MAP.get(service, ""):
-                            concrete_variable_key = \
-                                SECTION_VARIABLE_PREFIX_MAP.get(service, "") \
-                                + '_' + var_name
-                        else:
-                            concrete_variable_key = var_name
-                        kms_config[concrete_variable_key] = \
-                            config.get(section).get(service).get(var_name)
-                    else:
-                        continue
-        elif not isinstance(section_data, list):
-            raise ValueError("Expected a list of variable keys")
-        else:
-            for var_name in section_data:
-                if config.get(section, {}).get(var_name, ""):
-                    if SECTION_VARIABLE_PREFIX_MAP.get(section, ""):
-                        concrete_variable_key = \
-                            SECTION_VARIABLE_PREFIX_MAP.get(section, "") \
-                            + '_' + var_name
-                    else:
-                        concrete_variable_key = var_name
-                    kms_config[concrete_variable_key] = \
-                        config.get(section).get(var_name)
-                else:
-                    continue
-    dump_to_ansible_inventory(
-        kms_config,
-        k8s_ms_ansible_inventory_path,
-        ""  # no prefix, we already applied them
-    )
 
     print(
         "---\n"
