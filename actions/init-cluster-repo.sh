@@ -94,7 +94,12 @@ if [ "${K8S_CUSTOM_STAGE_USAGE:-true}" == 'true' ]; then
     mkdir -p "$ansible_k8s_custom_playbook/roles"
 
     if [ ! -f "$ansible_k8s_custom_playbook/main.yaml" ]; then
-        echo "# Add your roles and tasks here:" > "$ansible_k8s_custom_playbook/main.yaml"
+        playbook_text="# Add your roles and tasks here:\n"
+        playbook_text+="- hosts: orchestrator\n"
+        playbook_text+="  gather_facts: false\n"
+        playbook_text+="  tasks:\n"
+        playbook_text+="  - ansible.builtin.meta: noop"
+        echo -e "$playbook_text" > "$ansible_k8s_custom_playbook/main.yaml"
     fi
 
     mkdir -p "$ansible_k8s_custom_playbook/vars"
