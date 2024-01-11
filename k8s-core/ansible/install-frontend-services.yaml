@@ -12,7 +12,6 @@
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
   - vars/retries.yaml
-  - vars/vrrp-common.yaml
   roles:
   - role: keepalived
     tags:

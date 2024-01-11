@@ -555,7 +555,7 @@ def main():
             "host {}".format(host)
         )
     load_balancing_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "all" / "load-balancing"
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "load-balancing.yaml"
     )
     dump_to_ansible_inventory(
         config.get("load-balancing", dict()),

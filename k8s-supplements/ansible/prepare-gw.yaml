@@ -30,7 +30,6 @@
   - vars/etc.yaml
   - vars/retries.yaml
   - vars/vault-config.yaml
-  - vars/vrrp-common.yaml
   roles:
   - role: bird
     tags: bird
