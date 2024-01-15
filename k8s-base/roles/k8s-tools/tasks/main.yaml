@@ -18,7 +18,7 @@
     name:
     - openshift
     - kubernetes
-    - kubernetes-validate
+    - "kubernetes-validate~={{ k8s_version_minor }}.0"
     state: latest
   register: task_result
   until: task_result is not failed
