@@ -14,6 +14,15 @@ controller:
   priorityClassName: "system-cluster-critical"
   replicaCount: "{{ k8s_ingress_replica_count }}"
   allowSnippetAnnotations: {{ k8s_ingress_allow_snippet_annotations | bool }}
+  image:
+    allowPrivilegeEscalation: false
+  resources:
+    limits:
+      cpu: "{{ k8s_ingress_cpu_limit }}"
+      memory: "{{ k8s_ingress_memory_limit }}"
+    requests:
+      cpu: "{{ k8s_ingress_cpu_request }}"
+      memory: "{{ k8s_ingress_memory_request }}"
 {% if k8s_monitoring_enabled %}
   metrics:
     enabled: true
