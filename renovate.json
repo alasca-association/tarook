@@ -19,7 +19,7 @@
     "enabled": true
   },
   "postUpgradeTasks": {
-    "commands": ["touch docs/_releasenotes/?.chore.$(pwgen 16 1)"],
+    "commands": ["bash ci/create_chore_release_note.sh"],
     "executionMode": "branch"
   }
 }
