@@ -6,7 +6,7 @@ set -euo pipefail
 # This script is triggered as "postUpgradeTasks"
 # by the renovate bot.
 
-RANDOM_STRING="cahiechooPaew7Yi"
+RANDOM_STRING="$(pwgen 16 1)"
 RELEASENOTE_PATH="docs/_releasenotes"
 
 while [ -f "$RELEASENOTE_PATH/+.chore.$RANDOM_STRING" ]; do
@@ -14,4 +14,4 @@ while [ -f "$RELEASENOTE_PATH/+.chore.$RANDOM_STRING" ]; do
   echo "$RANDOM_STRING"
 done
 
-touch "$RELEASENOTE_PATH/+.chore.$(pwgen 16 1)"
+touch "$RELEASENOTE_PATH/+.chore.$RANDOM_STRING"
