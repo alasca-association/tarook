@@ -233,6 +233,11 @@ for additional environment variables accepted by these tools.
    with the cluster from Vault. EXCEPTIONALLY DANGEROUS, so it always
    requires manual confirmation.
 
+Using LDAP credentials to replace admin.conf
+--------------------------------------------
+
+TODO
+
 .. _vault.migrating-an-existing-cluster-to-vault:
 
 Migrating an existing cluster to an existing Vault
