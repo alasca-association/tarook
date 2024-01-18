@@ -94,7 +94,7 @@ ansible-lint:
     - poetry install --with ci --sync
   script:
     - "ansible-galaxy install -r ansible/requirements.yaml"
-    - "ANSIBLE_ROLES_PATH=./k8s-base/roles:./k8s-managed-services/roles/:./k8s-service-layer/roles:./k8s-base/test-roles/:./k8s-service-layer/test-roles/:./k8s-managed-services/test-roles ansible-lint -c ci/lint/ansible-lint-conf --offline --exclude .gitlab-ci.yml --exclude .pre-commit-config.yaml"
+    - "ANSIBLE_ROLES_PATH=./k8s-base/roles:./k8s-managed-services/roles/:./k8s-service-layer/roles:./k8s-base/test-roles/:./k8s-service-layer/test-roles/:./k8s-managed-services/test-roles ansible-lint -c ci/lint/ansible-lint-conf --offline"
   tags:
     - docker
   rules:
@@ -135,6 +135,7 @@ poetry-lock:
       - poetry.lock
       when: on_success
     - when: never
+    # - when: on_success
 
 pre-commit-hooks:
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
