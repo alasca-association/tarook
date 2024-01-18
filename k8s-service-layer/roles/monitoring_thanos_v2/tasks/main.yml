@@ -1,31 +1,8 @@
 ---
-- name: Sanity checks (OpenStack)
-  # If no config file is passed, then we infer the access information to the bucket via the sourced
-  # OpenStack variables. If there is a config file given, then this role will *not* validate the credentials.
-  # NOTE: In yaook/k8s, one cannot enable thanos if one is not in an OpenStack environment which exposes an
-  # object storage via swift yet. That's a bug (https://gitlab.com/yaook/k8s/-/issues/356).
+- name: Are OpenStack credentials available?
   when: (monitoring_thanos_objectstorage_config_file | length) == 0
-  block:
-  - name: Fail if OpenStack application credentials are used
-    when: lookup('env', "OS_AUTH_TYPE") == "v3applicationcredential"
-    fail:
-      msg: >
-        thanos does not support OpenStack application credentials for authenticating against
-        a SWIFT endpoint yet. This task was added so you don't have to wonder and search through
-        the logs if thanos (and prometheus as a consequence) don't come up properly. For more
-        information take a look here (https://gitlab.com/yaook/k8s/-/issues/436#note_873556688).
-
-        That leaves you with two options:
-
-        1. Fall back to OpenStack `v3password` based authentication if you need thanos.
-        2. Disable thanos (`use_thanos = false` in config.toml) if you don't need thanos.
-
-        If things have changed in the meanwhile, please file an issue to the LCM and get rid
-        of this error message :)
-
-  - name: Are OpenStack credentials available?
-    include_role:
-      name: check-openstack-credentials
+  include_role:
+    name: check-openstack-credentials
 
 - name: Create namespace
   kubernetes.core.k8s:
