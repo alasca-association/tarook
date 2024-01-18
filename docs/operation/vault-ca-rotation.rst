@@ -152,7 +152,8 @@ Phase 1
 
      $ ./managed-k8s/actions/test.sh
 
-8. Distribute the renewed kubeconfig(s)
+8. Distribute the renewed kubeconfig(s) to the clients that need them (e.g. customers).
+   The kubeconfig in the cluster repo is updated automatically (you have to commit if, of course!).
 
 Phase 2
 ^^^^^^^
