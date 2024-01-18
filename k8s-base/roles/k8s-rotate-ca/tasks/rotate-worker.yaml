@@ -4,7 +4,7 @@
     name: k8s-worker
     tasks_from: obtain-cas.yaml
   vars:
-    extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
+    extra_ca: "{{ append_next_issuer | bool }}"
 
 - name: Obtain kubeconfigs
   ansible.builtin.include_role:
@@ -13,7 +13,7 @@
   vars:
     force_renewal: true
     k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
-    extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
+    extra_ca: "{{ append_next_issuer | bool }}"
 
 - name: Force restart kubelet
   become: true
@@ -31,5 +31,5 @@
   vars:
     force_renewal: true
     k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
-    extra_ca: "{{ append_next_issuer | bool | ternary('default', '') }}"
+    extra_ca: "{{ append_next_issuer | bool }}"
 ...

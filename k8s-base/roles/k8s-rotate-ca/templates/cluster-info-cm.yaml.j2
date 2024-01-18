@@ -5,7 +5,7 @@ data:
     apiVersion: v1
     clusters:
     - cluster:
-        certificate-authority-data: {{ (k8s_ca_cert | b64encode | to_json) if not (extra_ca | default('') | length > 0) else (([k8s_prev_ca_cert, k8s_ca_cert] | join('')) | b64encode | to_json) }}
+        certificate-authority-data: {{ (k8s_ca_cert | b64encode | to_json) if not extra_ca else (([k8s_prev_ca_cert, k8s_ca_cert] | join('')) | b64encode | to_json) }}
         server: {{ kubeconfig_api_server_url | to_json }}
       name: ""
     kind: Config
