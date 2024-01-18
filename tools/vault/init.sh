@@ -254,15 +254,6 @@ path "$nodes_approle_path/role/+/secret-id/destroy" {
     capabilities = ["create", "update"]
 }
 
-path "$common_path_prefix/+/k8s-pki/issue/system-nodes_admin" {
-    capabilities = ["create", "update"]
-    required_parameters = ["common_name", "ttl"]
-    allowed_parameters = {
-        "ttl" = [],
-        "common_name" = []
-    }
-}
-
 path "$common_path_prefix/+/kv/data/ipmi/*" {
     capabilities = ["read"]
 }
