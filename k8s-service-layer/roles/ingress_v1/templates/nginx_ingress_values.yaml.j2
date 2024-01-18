@@ -18,8 +18,12 @@ controller:
     allowPrivilegeEscalation: false
   resources:
     limits:
+{% if k8s_ingress_cpu_limit is defined and k8s_ingress_cpu_limit | length > 0 %}
       cpu: "{{ k8s_ingress_cpu_limit }}"
+{% endif %}
+{% if k8s_ingress_memory_limit is defined and k8s_ingress_memory_limit | length > 0 %}
       memory: "{{ k8s_ingress_memory_limit }}"
+{% endif %}
     requests:
       cpu: "{{ k8s_ingress_cpu_request }}"
       memory: "{{ k8s_ingress_memory_request }}"
