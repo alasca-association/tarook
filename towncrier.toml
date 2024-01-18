@@ -7,6 +7,11 @@ issue_format = "`!{issue} <https://gitlab.com/yaook/k8s/-/merge_requests/{issue}
 underlines = ["-", "~", "^"]
 
 [[tool.towncrier.type]]
+directory = "BREAKING"
+name = "Breaking changes"
+showcontent = true
+
+[[tool.towncrier.type]]
 directory = "feature"
 name = "New Features"
 showcontent = true
