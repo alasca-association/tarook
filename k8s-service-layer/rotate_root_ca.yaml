@@ -19,6 +19,8 @@
     include_role:
       name: monitoring_v2
       tasks_from: copy-ca-as-cm.yaml
+    when: k8s_monitoring_enabled | bool
+
   - name: Rollout restart prometheus-adapter  # noqa no-changed-when
     command:
       argv:
@@ -29,4 +31,5 @@
       - prometheus-adapter
       - --namespace
       - "{{ monitoring_namespace | default('monitoring') }}"
+    when: k8s_monitoring_enabled | bool
 ...
