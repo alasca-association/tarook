@@ -46,6 +46,28 @@
     tags:
     - thanos
 
+- name: Create storage bucket secret for thanos sidecar
+  kubernetes.core.k8s:
+    apply: true
+    definition:
+      apiVersion: v1
+      type: Opaque
+      kind: Secret
+      metadata:
+        name: thanos-sidecar-bucket-credentials-config
+        namespace: "{{ monitoring_namespace }}"
+      data:
+        thanos.yaml: "{{ thanos_object_storage_config | b64encode }}"
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+  when: monitoring_use_thanos
+
 - name: Create thanos secret
   kubernetes.core.k8s:
     apply: true
