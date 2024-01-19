@@ -6,12 +6,11 @@ set -euo pipefail
 # This script is triggered as "postUpgradeTasks"
 # by the renovate bot.
 
-RANDOM_STRING="$(pwgen 16 1)"
+DATE_STRING="$(date --iso-8601=seconds -u)"
 RELEASENOTE_PATH="docs/_releasenotes"
 
-while [ -f "$RELEASENOTE_PATH/+.chore.$RANDOM_STRING" ]; do
-  RANDOM_STRING="$(pwgen 16 1)"
-  echo "$RANDOM_STRING"
+while [ -f "$RELEASENOTE_PATH/+.chore.$DATE_STRING" ]; do
+  DATE_STRING="$(date --iso-8601=seconds -u)"
 done
 
-touch "$RELEASENOTE_PATH/+.chore.$RANDOM_STRING"
+touch "$RELEASENOTE_PATH/+.chore.$DATE_STRING"
