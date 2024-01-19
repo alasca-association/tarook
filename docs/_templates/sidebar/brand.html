@@ -1,0 +1,5 @@
+{% extends "!sidebar/brand.html" %}
+{% block brand_content %}
+  {{ super() }}
+  <p style="font-size:14px;color:var(--color-foreground-muted);text-align:center;">{{ current_version.name }}</p>
+{% endblock brand_content %}

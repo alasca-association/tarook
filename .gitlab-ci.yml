@@ -153,30 +153,30 @@ pre-commit-hooks:
     - !reference [.default_lint_rules, rules]
     - when: on_success
 
-build-docs-check:
-  stage: lint
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
-  before_script:
-    - poetry install --with docs --sync
-  script:
-    - sphinx-build -W docs _build/html
-    - mv _build/html public
-  artifacts:
-    expose_as: "Rendered Docs"
-    expire_in: "7 days"
-    paths:
-      - public/
-  rules:
-    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
-      when: never
-    - !reference [.default_lint_rules, rules]
-    - changes:
-      - 'docs/[!_]*/**/*'
-      - 'docs/[!_]*'  # the above does not include files directly in docs/
-      when: on_success
-    - when: never
-  tags:
-    - docker
+# build-docs-check:  # change as current_version is not defined without sphinx-multiversion
+#   stage: lint
+#   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+#   before_script:
+#     - poetry install --with docs --sync
+#   script:
+#     - sphinx-build -W docs _build/html
+#     - mv _build/html public
+#   artifacts:
+#     expose_as: "Rendered Docs"
+#     expire_in: "7 days"
+#     paths:
+#       - public/
+#   rules:
+#     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
+#       when: never
+#     - !reference [.default_lint_rules, rules]
+#     - changes:
+#       - 'docs/[!_]*/**/*'
+#       - 'docs/[!_]*'  # the above does not include files directly in docs/
+#       when: on_success
+#     - when: never
+#   tags:
+#     - docker
 
 release-note-file-check:
   stage: lint
@@ -222,3 +222,25 @@ release-note-file-check:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $YAOOK_K8S_DEFAULT_BRANCH
       when: on_success
     - when: never
+
+pages-test:  # change to pages when ready
+  stage: release
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  before_script:
+    - poetry install --with docs --sync
+  script:
+    - git fetch && git remote prune origin
+    # - sphinx-build -W docs _build/html
+    - sphinx-multiversion docs _build/html
+    - mv _build/html public
+  artifacts:
+    paths:
+      - public/
+  rules:
+    # run only for MRs on devel
+    # - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train" &&
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+      when: on_success
+    - when: never
+  tags:
+    - docker

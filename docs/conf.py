@@ -18,6 +18,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.todo',
+    'sphinx_multiversion',
     'sphinx_tabs.tabs'
 ]
 
@@ -31,9 +32,22 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '_releasenotes/*', 'READ
 html_theme = 'furo'
 # html_static_path = ['_static']
 
+# -- Furo --------------------------------------------------------------------
+html_theme_options = {
+    "sidebar_hide_name": True,
+}
+html_logo = "img/yaook-husky-small.png"
+
 # -- Todo --------------------------------------------------------------------
 # display todos
 todo_include_todos = True
 
 # -- Autosection -------------------------------------------------------------
 # autosectionlabel_prefix_document = True
+
+# -- Multiversion ------------------------------------------------------------
+smv_branch_whitelist = r'^.*(devel|chore).*$'  # change to release-branches
+# smv_tag_whitelist = None
+smv_remote_whitelist = r'^origin$'
+smv_released_pattern = r'^((?!devel).)*$'
+smv_latest_version = 'chore/versioned-docs'  # make dynamic - somehow

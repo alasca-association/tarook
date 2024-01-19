@@ -1,4 +1,4 @@
-pages:
+pages:  # remove job here
   stage: release
   image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
   before_script:

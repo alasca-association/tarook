@@ -43,6 +43,7 @@ sphinx-rtd-theme = "^2.0.0"
 sphinx-tabs = "^3.4.1"
 furo = "^2023.5.20"
 towncrier = "^23.6.0"
+sphinx-multiversion = "^0.2.4"
 
 [build-system]
 requires = ["poetry-core"]
