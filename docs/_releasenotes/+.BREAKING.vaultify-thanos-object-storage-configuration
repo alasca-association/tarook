@@ -1,0 +1,14 @@
+The Thanos object storage configuration must be moved to vault
+if it is not automatically managed.
+Please check the documentation on how to create a configuration
+and move it to vault.
+
+**You must update your vault policies if you use Thanos with a
+custom object storage configuration**
+
+.. code:: shell
+
+    ./managed-k8s/tools/vault/update.sh $CLUSTER_NAME
+
+Execute the above to update your vault policies.
+A root token must be sourced.

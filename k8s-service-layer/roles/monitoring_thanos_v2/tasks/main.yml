@@ -1,8 +1,31 @@
 ---
-- name: Are OpenStack credentials available?
-  when: (monitoring_thanos_objectstorage_config_file | length) == 0
-  include_role:
-    name: check-openstack-credentials
+- name: Determine Thanos object storage configuration
+  block:
+  - name: Read S3 config from Vault
+    when: not monitoring_manage_thanos_bucket | bool
+    environment:
+      ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+      ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+    vars:
+      vault_auth_mount_point: "{{ lookup('env', 'VAULT_AUTH_PATH') }}"
+      vault_auth_method: "{{ lookup('env', 'VAULT_AUTH_METHOD') or (lookup('env', 'VAULT_TOKEN') | ternary('token', 'approle')) }}"
+      vault_token: "{{ lookup('env', 'VAULT_TOKEN') }}"
+      vault_role_id: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
+      vault_secret_id: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
+      thanos_config_vault_mount_point: "yaook/{{ vault_cluster_name }}/kv"
+    ansible.builtin.set_fact:
+      thanos_object_storage_config: "{{ lookup('community.hashi_vault.vault_kv2_get', 'thanos-config', engine_mount_point=thanos_config_vault_mount_point, mount_point=vault_auth_mount_point, auth_method=vault_auth_method, token=vault_token, role_id=vault_role_id, secret_id=vault_secret_id).data.data }}"
+
+  - name: Use cluster OpenStack project for Thanos object storage configuration
+    when: monitoring_manage_thanos_bucket | bool
+    block:
+    - name: Are OpenStack credentials available?
+      include_role:
+        name: check-openstack-credentials
+
+    - name: Set Thanos object storage configuration for this clusters OpenStack project
+      ansible.builtin.set_fact:
+        thanos_object_storage_config: "{{ lookup('template', 'thanos-objectstorage.yaml.j2') }}"
 
 - name: Create namespace
   kubernetes.core.k8s:
@@ -79,7 +102,7 @@
         name: "{{ monitoring_thanos_config_secret_name }}"
         namespace: "{{ monitoring_namespace }}"
       data:
-        objstore.yml: "{{ lookup('template', 'thanos-objectstorage.yaml.j2') | b64encode }}"
+        objstore.yml: "{{ thanos_object_storage_config | b64encode }}"
     validate:
       fail_on_error: true
       strict: true

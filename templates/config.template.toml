@@ -630,21 +630,6 @@ use_helm = true
 # default object store container name is set to the following.
 #thanos_objectstorage_container_name = "managed-k8s-monitoring-thanos-data"
 
-# The following two variables are needed if you want thanos to use an object storage
-# backend which is not managed by the LCM.
-# Configuration file name which contains the credentials to access the (external) object storage
-# as backend for thanos. You can find valid configuration formats here [0]
-# NOTE: The configuration file is read relative to `thanos_objectstorage_config_path`.
-# NOTE: This variable takes precedence over `manage_thanos_bucket`. If it's set, then thanos will always use the credentials from this file.
-#       See the discussions in [1] for more details.
-# [0] https://thanos.io/tip/thanos/storage.md/#supported-clients
-# [1] https://gitlab.com/yaook/k8s/-/merge_requests/635
-#thanos_objectstorage_config_file=""
-
-# Path in which the LCM will look for your config file. Defaults to "./config/"
-# NOTE: you probably don't have to override this variable.
-#thanos_objectstorage_config_path = "{{ ksl_vars_directory }}/../../config/"
-
 # Scrape external targets via blackbox exporter
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
 #internet_probe = false

@@ -285,4 +285,8 @@ path "$common_path_prefix/+/kv/data/wireguard-key" {
 path "$common_path_prefix/+/kv/data/wireguard/*" {
     capabilities = ["create", "update", "read"]
 }
+
+path "$common_path_prefix/+/kv/data/thanos-config" {
+    capabilities = ["read"]
+}
 EOF
