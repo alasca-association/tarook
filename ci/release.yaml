@@ -1,0 +1,101 @@
+pages:
+  stage: release
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  before_script:
+    - poetry install --with docs --sync
+  script:
+    - sphinx-build -W docs _build/html
+    - mv _build/html public
+  artifacts:
+    paths:
+      - public/
+  rules:
+    # run only on release-branches
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
+      when: on_success
+    - when: never
+  tags:
+    - docker
+
+tag-release:
+  stage: release
+  tags:
+    - docker
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  ## if you change the project wide setting back to GIT_STRATEGY=fetch keep in mind this jobs needs
+  ## to be run with GIT_STRATEGY=clone
+  # variables:
+  #   GIT_STRATEGY: clone
+  script:
+    - YAOOK_K8S_BUILD_VERSION=$(cat ./version)
+    - |
+      if echo "$CI_COMMIT_BRANCH" | grep -F "${YAOOK_K8S_RELEASE_PREPARE_BRANCH_PREFIX}"; then
+        if echo "${YAOOK_K8S_BUILD_VERSION: -2}" | grep -qE '.0'; then
+          # tag with -rc.<buildnr>
+          echo "This is a major or minor release, I will tag that as a release candidate.";
+          YAOOK_K8S_BUILD_VERSION="${YAOOK_K8S_BUILD_VERSION}-rc"
+          git fetch --all --tags
+          last_tag=$(git tag -l --sort=-version:refname "*${YAOOK_K8S_BUILD_VERSION}*" | head -n1)
+          rc_value=${last_tag##*.}; rc_value=${rc_value:-"-1"}
+          rc_value=$((rc_value + 1))
+          YAOOK_K8S_BUILD_VERSION=$YAOOK_K8S_BUILD_VERSION.$rc_value
+        fi
+      fi
+      echo "version: ${YAOOK_K8S_BUILD_VERSION}"
+    - git config --global user.name "${GITLAB_USER_NAME}"
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+    - git remote set-url origin https://gitlab-ci-token:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
+    # tag with v$Major.$Minor.$Patch (note the "v"!)
+    # - git tag -a "v${YAOOK_K8S_BUILD_VERSION}" -m "Version v${YAOOK_K8S_BUILD_VERSION}"
+    # - git push origin "v${YAOOK_K8S_BUILD_VERSION}"
+  rules:
+    # run only on release and YAOOK_K8S_RELEASE_PREPARE_BRANCH-branches
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX || $CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      when: on_success
+    - when: never
+
+merge-to-release-branch:
+  stage: release
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  ## if you change the project wide setting back to GIT_STRATEGY=fetch keep in mind this jobs needs
+  ## to be run with GIT_STRATEGY=clone
+  # variables:
+  #   GIT_STRATEGY: clone
+  before_script:
+    - git config --global user.name "${GITLAB_USER_NAME}"
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+    - git remote set-url origin https://gitlab-ci-token:"${PUSH_TOKEN}"@"${CI_SERVER_HOST}"/"${CI_PROJECT_PATH}".git
+    - git checkout -b "${CI_COMMIT_BRANCH}"
+  script:
+    - YAOOK_K8S_BUILD_VERSION=$(cat ./version)
+    - cat ./version
+    - |
+      BRANCH_NAME="${YAOOK_K8S_RELEASE_BRANCH_PREFIX}${YAOOK_K8S_BUILD_VERSION%.*}"
+      if echo "${YAOOK_K8S_BUILD_VERSION: -2}" | grep -qE '.0'; then
+        echo "This is a major or minor release, I will create a new release-branch ${BRANCH_NAME}."
+        git checkout -b "${BRANCH_NAME}" origin/"${CI_COMMIT_BRANCH}"
+        git push --set-upstream origin "${BRANCH_NAME}"
+      else
+        echo "This is a fix release, I will merge it in the last release-branch ${BRANCH_NAME}"
+        git fetch origin ${BRANCH_NAME}
+        git checkout "${BRANCH_NAME}"
+        git merge origin/"${CI_COMMIT_BRANCH}"
+        git push
+      fi
+    - git checkout "${CI_COMMIT_BRANCH}"
+    - echo "new release ${YAOOK_K8S_BUILD_VERSION}" > docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"  # place a releasenote (for MR to devel)
+    - git add docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"
+    - git commit -m "Trigger MR to devel for "${CI_COMMIT_BRANCH}" of ${YAOOK_K8S_BUILD_VERSION}" --allow-empty
+    - |
+      git push -o ci.skip --set-upstream origin "${CI_COMMIT_BRANCH}" \
+        -o merge_request.create -o merge_request.target="${YAOOK_K8S_DEFAULT_BRANCH}" -o merge_request.label="Release" \
+        -o merge_request.title="Version bump for ${CI_COMMIT_BRANCH}" -o merge_request.remove_source_branch
+  needs: ["tag-release"]
+  rules:
+    # run only on YAOOK_K8S_RELEASE_PREPARE_BRANCH-branches
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      when: delayed
+      # it's not possible to use a variable here (https://docs.gitlab.com/ee/ci/variables/where_variables_can_be_used.html)
+      # but we can manually start the job earlier, if wanted
+      start_in: 1 week
+    - when: never

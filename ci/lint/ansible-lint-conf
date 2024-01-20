@@ -11,3 +11,8 @@ skip_list:
   - var-naming[no-role-prefix]
   - fqcn-builtins
   - yaml[document-end]
+
+exclude_paths:
+  - .gitlab-ci.yml
+  - .pre-commit-config.yaml
+  - ci/*.yaml
