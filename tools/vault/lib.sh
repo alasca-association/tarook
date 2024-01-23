@@ -110,6 +110,19 @@ function init_k8s_cluster_pki_roles() {
         allow_ip_sans=false \
         key_type=rsa
     vault delete "$k8s_pki_path/roles/system-nodes_admin"
+    vault write "$k8s_pki_path/roles/any-master" \
+        max_ttl="$pki_ttl" \
+        ttl="72h" \
+        allow_localhost=false \
+        enforce_hostnames=false \
+        client_flag=true \
+        server_flag=false \
+        organization=system:masters \
+        allow_any_name=true \
+        allow_bare_domains=true \
+        allow_subdomains=false \
+        allow_ip_sans=false \
+        key=rsa
     vault write "$k8s_pki_path/roles/calico-cni" \
         max_ttl="$pki_ttl" \
         ttl="$pki_ttl" \

@@ -232,6 +232,18 @@ path "$nodes_approle_path/role/+" {
     }
 }
 
+path "$common_path_prefix/+/k8s-pki/issue/any-master" {
+    capabilities = ["create", "update"]
+    required_parameters = ["common_name", "ttl"]
+    allowed_parameters = {
+        "ttl" = [],
+        # common name is not restricted; the orchestrator role is able to
+        # create approles which in turn have policies which allow the creation
+        # of an admin credential -> this is only a shortcut, not a gap.
+        "common_name" = []
+    }
+}
+
 path "$nodes_approle_path/role/+" {
     capabilities = ["delete"]
 }

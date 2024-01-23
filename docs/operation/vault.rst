@@ -233,10 +233,30 @@ for additional environment variables accepted by these tools.
    with the cluster from Vault. EXCEPTIONALLY DANGEROUS, so it always
    requires manual confirmation.
 
-Using LDAP credentials to replace admin.conf
---------------------------------------------
+Using Vault to replace a long-lived admin.conf
+----------------------------------------------
 
-TODO
+As Vault is able to issue certificates with the Kubernetes cluster CA, it is
+possible to indirectly use Vault as identity provider for Kubernetes. An
+example script is provided in ``tools/vault/k8s-login.sh`` and it can be used
+like this:
+
+.. code-block:: console
+
+   $ umask 0077
+   $ managed-k8s/tools/vault/k8s-login.sh CLUSTERNAME K8S_SERVER_ADDR > admin.conf
+   $ export KUBECONFIG="$(pwd)/admin.conf"
+
+`CLUSTERNAME` must be the name of the Kubernetes cluster inside Vault (the same
+as in the config.toml, ``[vault]``, ``cluster_name`` field) and
+`K8S_SERVER_ADDR` must be the URL to the Kubernetes API (as that is,
+unfortunately, part of the same configuration file as the credentials). The
+generated ``admin.conf`` is a Kubernetes configuration file containing a
+complete client configuration, including the private key.
+
+You are welcome to use `k8s-login.sh` as an inspiration for your own tools.
+Likely, you can make thing more specific to your environment and thus simpler
+to use.
 
 .. _vault.migrating-an-existing-cluster-to-vault:
 
