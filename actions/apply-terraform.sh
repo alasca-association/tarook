@@ -135,7 +135,6 @@ and ensure, that the Terraform state exists on GitLab.
         if tf_state_present_on_gitlab; then
             rm -f "$OVERRIDE_FILE"
             notef "Terraform statefile on GitLab found. Migration from http to local."
-            require_extremination    # check whether $MANAGED_K8S_NUKE_FROM_ORBIT=true
             if tf_init_local_migrate; then
                 # delete tf_statefile from GitLab
                 GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" --request DELETE "$backend_address")

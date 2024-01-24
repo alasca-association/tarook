@@ -61,24 +61,11 @@ function disruption_allowed() {
     [ "${MANAGED_K8S_RELEASE_THE_KRAKEN:-}" = 'true' ]
 }
 
-function extremination_allowed() {
-    [ "${MANAGED_K8S_NUKE_FROM_ORBIT:-}" = 'true' ]
-}
-
 function require_disruption() {
     if ! disruption_allowed; then
         # shellcheck disable=SC2016
         errorf '$MANAGED_K8S_RELEASE_THE_KRAKEN is set to %q' "${MANAGED_K8S_RELEASE_THE_KRAKEN:-}" >&2
         errorf 'aborting since disruptive operations are not allowed' >&2
-        exit 3
-    fi
-}
-
-function require_extremination() {
-    if ! extremination_allowed; then
-        # shellcheck disable=SC2016
-        errorf '$MANAGED_K8S_NUKE_FROM_ORBIT is set to %q' "${MANAGED_K8S_NUKE_FROM_ORBIT:-}" >&2
-        errorf 'aborting since extremination operations are not allowed' >&2
         exit 3
     fi
 }
