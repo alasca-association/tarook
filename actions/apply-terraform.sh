@@ -19,7 +19,7 @@ export TF_DATA_DIR="$terraform_state_dir/.terraform"
 
 OVERRIDE_FILE="$terraform_module/backend_override.tf"
 
-tf_init_http () {
+function tf_init_http () {
     run terraform -chdir="$terraform_module" init \
                   -upgrade \
                   -backend-config="address=$backend_address" \
@@ -30,7 +30,7 @@ tf_init_http () {
                   -backend-config="retry_wait_min=5"
 }
 
-tf_init_http_migrate () {
+function tf_init_http_migrate () {
     run terraform -chdir="$terraform_module" init \
                   -migrate-state \
                   -force-copy \
@@ -43,12 +43,12 @@ tf_init_http_migrate () {
                   -backend-config="retry_wait_min=5"
 }
 
-tf_init_local () {
+function tf_init_local () {
     run terraform -chdir="$terraform_module" init \
                   -upgrade
 }
 
-tf_init_local_migrate () {
+function tf_init_local_migrate () {
     run terraform -chdir="$terraform_module" init \
                   -migrate-state \
                   -force-copy \
@@ -58,14 +58,14 @@ tf_init_local_migrate () {
 
 all_gitlab_vars=("gitlab_base_url" "gitlab_project_id" "gitlab_state_name" "TF_HTTP_PASSWORD")
 
-all_gitlab_vars_are_set() {
+function all_gitlab_vars_are_set() {
     for var in "${all_gitlab_vars[@]}"; do
         [[ -z "${!var}" || "${!var}" == "null" ]] && return 1
     done
     return 0
 }
 
-all_gitlab_vars_are_unset() {
+function all_gitlab_vars_are_unset() {
     for var in "${all_gitlab_vars[@]}"; do
         [[ -n "${!var}" && "${!var}" != "null" ]] && return 1
     done
