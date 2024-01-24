@@ -72,22 +72,9 @@ all_gitlab_vars_are_unset() {
     return 0
 }
 
-# true: HTTP/200 response; false: HTTP/404; exit: HTTP/*
-tf_state_present_on_gitlab () {
+function tf_state_present_on_gitlab () {
     GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" "$backend_address")
-    if [ "$GITLAB_RESPONSE" == "200" ]; then
-        return 0
-    elif [ "$GITLAB_RESPONSE" == "404" ]; then
-        return 1
-    elif [ "$GITLAB_RESPONSE" == "401" ]; then
-        echo
-        notef "HTTP 401. The provided GitLab credentials seem to be invalid."
-        exit 2
-    else
-        echo
-        notef "Unexpected HTTP response: $GITLAB_RESPONSE"
-        exit 1
-    fi
+    check_return_code "$GITLAB_RESPONSE"
 }
 
 load_gitlab_vars

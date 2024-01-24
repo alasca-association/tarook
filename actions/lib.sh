@@ -166,3 +166,21 @@ function load_gitlab_vars() {
     gitlab_state_name="$(jq -r .gitlab_state_name "$terraform_state_dir/config.tfvars.json")"
     backend_address="$gitlab_base_url/api/v4/projects/$gitlab_project_id/terraform/state/$gitlab_state_name"
 }
+
+# true: HTTP/200 response; false: HTTP/404; exit: HTTP/*
+function check_return_code () {
+    local gitlab_response="$1"
+    if [ "$gitlab_response" == "200" ]; then
+        return 0
+    elif [ "$gitlab_response" == "404" ]; then
+        return 1
+    elif [ "$gitlab_response" == "401" ]; then
+        echo
+        notef "HTTP 401. The provided GitLab credentials seem to be invalid."
+        exit 2
+    else
+        echo
+        notef "Unexpected HTTP response: $gitlab_response"
+        exit 1
+    fi
+}
