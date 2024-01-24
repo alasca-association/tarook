@@ -1,0 +1,32 @@
+---
+- name: Restart everything
+  hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻
+    delegate_to: localhost
+    run_once: true
+    block:
+    - name: Gather all namespaces
+      kubernetes.core.k8s_info:
+        kind: Namespace
+      register: gather_namespaces
+
+    - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻  # noqa no-changed-when
+      with_nested:
+      - "{{ gather_namespaces.resources }}"
+      - ["daemonset", "deployment", "statefulset"]
+      loop_control:
+        label: "Restart every {{ item[1] }} in namespace {{ item[0].metadata.name }}"
+      command:
+        argv:
+        - kubectl
+        - rollout
+        - restart
+        - "{{ item[1] }}"
+        - --namespace
+        - "{{ item[0].metadata.name }}"
+  - name: Pause, let things settle for 3m
+    pause:
+      minutes: 3
+...
