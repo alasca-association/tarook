@@ -81,8 +81,7 @@ load_gitlab_vars
 
 if all_gitlab_vars_are_set; then
     if tf_state_present_on_gitlab && [ -f "$terraform_state_dir/terraform.tfstate" ]; then
-        echo
-        notef "Several Terraform statefiles were found: locally and on GitLab."
+        errorf "Several Terraform statefiles were found: locally and on GitLab."
         exit 1
     fi
 fi
@@ -90,8 +89,7 @@ fi
 # gitlab_backend=true
 if [ "$(jq -r .gitlab_backend "$terraform_state_dir/config.tfvars.json")" = true ]; then
     if ! all_gitlab_vars_are_set; then
-        echo
-        notef "'gitlab_backend=true' but GitLab variables are not (completely) provided."
+        errorf "'gitlab_backend=true' but GitLab variables are not (completely) provided."
         exit 2
     fi
 
@@ -119,14 +117,13 @@ if [ "$(jq -r .gitlab_backend "$terraform_state_dir/config.tfvars.json")" = true
 # gitlab_backend=false
 else
     if ! all_gitlab_vars_are_set && ! all_gitlab_vars_are_unset; then
-        echo
-        notef "'gitlab_backend=false' but some GitLab variables are provided.
-(1) If you want to migrate the Terraform backend method from 'http' to 'local',
-you should provide all the GitLab variables
-and ensure, that the Terraform state exists on GitLab.
-(2) If not, make sure that *all* GitLab variables are unset:"
+        errorf "'gitlab_backend=false' but some GitLab variables are provided."
+        errorf "(1) If you want to migrate the Terraform backend method from 'http' to 'local',"
+        errorf "you should provide all the GitLab variables"
+        errorf "(2) If you want to init a cluster with local backend,"
+        errorf "make sure that all the following GitLab variables are unset:"
         for var in "${all_gitlab_vars[@]}"; do
-            echo "- $var"
+            errorf "- $var"
         done
         exit 2
     fi
@@ -140,16 +137,16 @@ and ensure, that the Terraform state exists on GitLab.
                 GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" --request DELETE "$backend_address")
                 check_return_code "$GITLAB_RESPONSE"
             else
-                notef "Terraform init was not successful. The Terraform state on GitLab was not deleted."
+                warningf "Terraform init was not successful. The Terraform state on GitLab was not deleted."
             fi
         else
-            echo
-            notef "'gitlab_backend=false', all GitLab variables are provided,
-but the Terrafrom state file could not be found on GitLab in order to migrate from 'http' to 'local'.
-(1) If you want to migrate, make sure the Terraform state file exists on GitLab.
-(2) If not, make sure that *all* GitLab variables are unset:"
+            errorf "'gitlab_backend=false', all GitLab variables are provided,"
+            errorf "but the Terrafrom state file could not be found on GitLab in order to migrate from 'http' to 'local'."
+            errorf "(1) If you want to migrate, make sure the Terraform state file exists on GitLab."
+            errorf "(2) If you want to init a cluster with local backend,"
+            errorf "make sure that all the following GitLab variables are unset:"
             for var in "${all_gitlab_vars[@]}"; do
-                echo "- $var"
+                errorf "- $var"
             done
             exit 2
         fi
@@ -194,7 +191,6 @@ fi
 run terraform -chdir="$terraform_module" apply "$terraform_plan"
 
 if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ]; then
-    echo
     notef 'Pulling latest Terraform state from Gitlab for disaster recovery purposes.'
     # don't use the "run" function here as it would print the token
     curl -s -o "$terraform_state_dir/disaster-recovery.tfstate.bak" \
