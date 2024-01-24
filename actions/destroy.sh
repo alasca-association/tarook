@@ -57,18 +57,6 @@ run terraform -chdir="$terraform_module" init
 # The following task will fail if a) thanos wrote data into a container and b) `MANAGED_K8S_NUKE_FROM_ORBIT` is not set
 run terraform -chdir="$terraform_module" destroy --var-file="$terraform_state_dir/config.tfvars.json" --auto-approve || true
 
-# Remove the tf_statefile from gitlab
-if extremination_allowed && [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ] && [ -f "$terraform_state_dir/config.tfvars.json" ] ; then
-    load_gitlab_vars
-    curl --header "Private-Token: $TF_HTTP_PASSWORD" --request DELETE "$backend_address"
-fi
-
-# Purge the remaining terraform directory. Its existence is a condition for additional disruption checks.
-rm -f "$terraform_state_dir/config.tfvars.json"
-rm -f "$terraform_state_dir/terraform.tfstate"
-rm -f "$terraform_state_dir/terraform.tfstate.backup"
-rm -f "$terraform_module/backend_override.tf"
-
 IFS=$'\n' read -r -d '' -a volume_ids < <( openstack volume list --project "$OS_PROJECT_ID" -f value -c ID && printf '\0' )
 if [ "${#volume_ids[@]}" != 0 ]; then
     run openstack volume delete "${volume_ids[@]}"
@@ -85,3 +73,14 @@ fi
 # Otherwise the playbook would load the same keys.
 rm -f inventory/.etc/wg_gw_priv.key
 rm -f inventory/.etc/wg_gw_pub.key
+
+# Remove the tf_statefile from gitlab
+if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ] ; then
+    load_gitlab_vars
+    GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" --request DELETE "$backend_address")
+    check_return_code "$GITLAB_RESPONSE"
+    rm -f "$terraform_module/backend_override.tf"
+fi
+
+# Purge the remaining terraform directory. Its existence is a condition for additional disruption checks.
+rm -f "$terraform_state_dir/config.tfvars.json"
