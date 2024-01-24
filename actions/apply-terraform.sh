@@ -138,7 +138,8 @@ and ensure, that the Terraform state exists on GitLab.
             require_extremination    # check whether $MANAGED_K8S_NUKE_FROM_ORBIT=true
             if tf_init_local_migrate; then
                 # delete tf_statefile from GitLab
-                curl --header "Private-Token: $TF_HTTP_PASSWORD" --request DELETE "$backend_address"
+                GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" --request DELETE "$backend_address")
+                check_return_code "$GITLAB_RESPONSE"
             else
                 notef "Terraform init was not successful. The Terraform state on GitLab was not deleted."
             fi
