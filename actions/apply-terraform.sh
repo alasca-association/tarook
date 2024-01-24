@@ -56,7 +56,7 @@ function tf_init_local_migrate () {
     return $?
 }
 
-all_gitlab_vars=("gitlab_base_url" "gitlab_project_id" "gitlab_state_name" "TF_HTTP_PASSWORD")
+all_gitlab_vars=("gitlab_base_url" "gitlab_project_id" "gitlab_state_name")
 
 function all_gitlab_vars_are_set() {
     for var in "${all_gitlab_vars[@]}"; do
@@ -73,6 +73,16 @@ function all_gitlab_vars_are_unset() {
 }
 
 function tf_state_present_on_gitlab () {
+    if [ -z "${TF_HTTP_PASSWORD:-}" ]; then
+        errorf "We want to check if there is a Gitlab state present,"
+        errorf "but no TF_HTTP_PASSWORD provided!"
+        errorf "If you're using local backend"
+        errorf "make sure that all the following GitLab variables are unset:"
+        for var in "${all_gitlab_vars[@]}"; do
+            errorf "- $var"
+        done
+        exit 2
+    fi
     GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" "$backend_address")
     check_return_code "$GITLAB_RESPONSE"
 }
