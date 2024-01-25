@@ -6,3 +6,5 @@ Note that you **must** update the vault policies once. See ``docs/vpn/wireguard.
 
     # execute with root vault token sourced
     bash managed-k8s/tools/vault/init.sh
+
+-

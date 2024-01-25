@@ -36,7 +36,7 @@ the management of our release notes. Therefore developers must adhere to some
 conventions.
 
 For every MR you need to place a file called
-``<merge-request-ID>.<type>[.BREAKING][.<whatever-you-want>]`` into ``/docs/_releasenotes``.
+``<merge-request-ID>.<type>[.<whatever-you-want>]`` into ``/docs/_releasenotes``.
 The content of the file is the actual release note and is in reStructuredText format.
 
 The ``merge-request-ID`` will automatically be added/corrected for you.
@@ -64,6 +64,9 @@ your branch. Don't forget to ``git pull --rebase=true`` afterwards, if you make 
    ============================= ===================================
    type                          description
    ============================= ===================================
+   ``BREAKING``                  anything which requires manual intervention
+                                 of users or changes the behavior of end
+                                 resources or workload
    ``feature``                   new feature introduced
    ``change``                    old functionality changed/updated
    ``fix``                       any bugfixes
@@ -84,9 +87,6 @@ your branch. Don't forget to ``git pull --rebase=true`` afterwards, if you make 
                                  in the releasenotes-file)
    ============================= ===================================
 
-**Breaking changes**
-
-   have to be indicated using ``BREAKING`` like seen above
 
 **Nothing to report in the releasenotes**
 
@@ -107,8 +107,8 @@ So the following file-names would be valid examples:
    12.docs.rst
    +.misc.jkdfskjhsfd2
    something.chore.rst
-   99.feature.BREAKING.rst
-   100.fix.BREAKING.idestroyedeverything.rst
+   99.BREAKING.rst
+   100.BREAKING.idestroyedeverything.rst
    käsekuchen.fix.istlecker
 
 The content in the file can be formated using rst-syntax. Headlines are not allowed.
