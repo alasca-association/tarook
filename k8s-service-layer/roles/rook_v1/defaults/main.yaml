@@ -48,6 +48,8 @@ rook_csi_plugins: true
 
 rook_toolbox: true
 
+rook_dashboard: false
+
 rook_ceph_fs: false
 rook_ceph_fs_name: "ceph-fs"
 rook_ceph_fs_replicated: 1
