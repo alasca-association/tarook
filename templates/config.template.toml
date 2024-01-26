@@ -43,8 +43,7 @@ dualstack_support = false # "•ᴗ•"
 # The unique ID of your GitLab project.
 #gitlab_project_id = "01234567"
 
-# The name of the Gitlab state object in which to store the Terraform state.
-# Optional, defaults to "tf-state"
+# The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'
 #gitlab_state_name = "tf-state"
 
 # ANCHOR_END: terraform_config

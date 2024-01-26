@@ -18,21 +18,19 @@ cd "$terraform_state_dir"
 export TF_DATA_DIR="$terraform_state_dir/.terraform"
 
 OVERRIDE_FILE="$terraform_module/backend_override.tf"
-if [ "$(jq -r .gitlab_backend "$terraform_state_dir/config.tfvars.json")" = true ]; then
-    # Here we create a override file which overrides the `local` terraform backend to http(gitlab) backend
-    if [ ! -f "$OVERRIDE_FILE" ]; then
-		cat > "$OVERRIDE_FILE" <<-EOF
-		terraform {
-			backend "http" {}
-		}
-		EOF
-    fi
-    # setting vars for terraform backend config for gitlab-managed terraform backend
-    gitlab_base_url="$(jq -r .gitlab_base_url   "$terraform_state_dir/config.tfvars.json")"
-    gitlab_project_id="$(jq -r .gitlab_project_id "$terraform_state_dir/config.tfvars.json")"
-    gitlab_state_name="$(jq -r .gitlab_state_name "$terraform_state_dir/config.tfvars.json")"
-    backend_address="$gitlab_base_url/api/v4/projects/$gitlab_project_id/terraform/state/$gitlab_state_name"
 
+function tf_init_http () {
+    run terraform -chdir="$terraform_module" init \
+                  -upgrade \
+                  -backend-config="address=$backend_address" \
+                  -backend-config="lock_address=$backend_address/lock" \
+                  -backend-config="unlock_address=$backend_address/lock" \
+                  -backend-config="lock_method=POST" \
+                  -backend-config="unlock_method=DELETE" \
+                  -backend-config="retry_wait_min=5"
+}
+
+function tf_init_http_migrate () {
     run terraform -chdir="$terraform_module" init \
                   -migrate-state \
                   -force-copy \
@@ -43,14 +41,129 @@ if [ "$(jq -r .gitlab_backend "$terraform_state_dir/config.tfvars.json")" = true
                   -backend-config="lock_method=POST" \
                   -backend-config="unlock_method=DELETE" \
                   -backend-config="retry_wait_min=5"
-else
-    if [ -f "$OVERRIDE_FILE" ]; then
-        rm "$OVERRIDE_FILE"
-    fi
+}
+
+function tf_init_local () {
+    run terraform -chdir="$terraform_module" init \
+                  -upgrade
+}
+
+function tf_init_local_migrate () {
     run terraform -chdir="$terraform_module" init \
                   -migrate-state \
                   -force-copy \
                   -upgrade
+    return $?
+}
+
+all_gitlab_vars=("gitlab_base_url" "gitlab_project_id" "gitlab_state_name")
+
+function all_gitlab_vars_are_set() {
+    for var in "${all_gitlab_vars[@]}"; do
+        [[ -z "${!var}" || "${!var}" == "null" ]] && return 1
+    done
+    return 0
+}
+
+function all_gitlab_vars_are_unset() {
+    for var in "${all_gitlab_vars[@]}"; do
+        [[ -n "${!var}" && "${!var}" != "null" ]] && return 1
+    done
+    return 0
+}
+
+function tf_state_present_on_gitlab () {
+    if [ -z "${TF_HTTP_PASSWORD:-}" ]; then
+        errorf "We want to check if there is a Gitlab state present,"
+        errorf "but no TF_HTTP_PASSWORD provided!"
+        errorf "If you're using local backend"
+        errorf "make sure that all the following GitLab variables are unset:"
+        for var in "${all_gitlab_vars[@]}"; do
+            errorf "- $var"
+        done
+        exit 2
+    fi
+    GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" "$backend_address")
+    check_return_code "$GITLAB_RESPONSE"
+}
+
+load_gitlab_vars
+
+if all_gitlab_vars_are_set; then
+    if tf_state_present_on_gitlab && [ -f "$terraform_state_dir/terraform.tfstate" ]; then
+        errorf "Several Terraform statefiles were found: locally and on GitLab."
+        exit 1
+    fi
+fi
+
+# gitlab_backend=true
+if [ "$(jq -r .gitlab_backend "$terraform_state_dir/config.tfvars.json")" = true ]; then
+    if ! all_gitlab_vars_are_set; then
+        errorf "'gitlab_backend=true' but GitLab variables are not (completely) provided."
+        exit 2
+    fi
+
+    # Here we create an override_file which overrides the `local` terraform backend to http(gitlab) backend
+    if [ ! -f "$OVERRIDE_FILE" ]; then
+		cat > "$OVERRIDE_FILE" <<-EOF
+		terraform {
+			backend "http" {}
+		}
+		EOF
+    fi
+
+    if tf_state_present_on_gitlab; then
+        tf_init_http
+    else
+        if  [ -f "$terraform_state_dir/terraform.tfstate" ]; then
+            tf_init_http_migrate
+            # Delete terraform statefiles locally if they exist (-f)
+            rm -f "$terraform_state_dir/terraform.tfstate" "$terraform_state_dir/terraform.tfstate.backup"
+        else
+            tf_init_http    # first init
+        fi
+    fi
+
+# gitlab_backend=false
+else
+    if ! all_gitlab_vars_are_set && ! all_gitlab_vars_are_unset; then
+        errorf "'gitlab_backend=false' but some GitLab variables are provided."
+        errorf "(1) If you want to migrate the Terraform backend method from 'http' to 'local',"
+        errorf "you should provide all the GitLab variables"
+        errorf "(2) If you want to init a cluster with local backend,"
+        errorf "make sure that all the following GitLab variables are unset:"
+        for var in "${all_gitlab_vars[@]}"; do
+            errorf "- $var"
+        done
+        exit 2
+    fi
+
+    if all_gitlab_vars_are_set; then
+        if tf_state_present_on_gitlab; then
+            rm -f "$OVERRIDE_FILE"
+            notef "Terraform statefile on GitLab found. Migration from http to local."
+            if tf_init_local_migrate; then
+                # delete tf_statefile from GitLab
+                GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" --request DELETE "$backend_address")
+                check_return_code "$GITLAB_RESPONSE"
+            else
+                warningf "Terraform init was not successful. The Terraform state on GitLab was not deleted."
+            fi
+        else
+            errorf "'gitlab_backend=false', all GitLab variables are provided,"
+            errorf "but the Terrafrom state file could not be found on GitLab in order to migrate from 'http' to 'local'."
+            errorf "(1) If you want to migrate, make sure the Terraform state file exists on GitLab."
+            errorf "(2) If you want to init a cluster with local backend,"
+            errorf "make sure that all the following GitLab variables are unset:"
+            for var in "${all_gitlab_vars[@]}"; do
+                errorf "- $var"
+            done
+            exit 2
+        fi
+    else
+        rm -f "$OVERRIDE_FILE"
+        tf_init_local
+    fi
 fi
 
 # Prepare possible migration steps
@@ -88,7 +201,6 @@ fi
 run terraform -chdir="$terraform_module" apply "$terraform_plan"
 
 if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ]; then
-    echo
     notef 'Pulling latest Terraform state from Gitlab for disaster recovery purposes.'
     # don't use the "run" function here as it would print the token
     curl -s -o "$terraform_state_dir/disaster-recovery.tfstate.bak" \
