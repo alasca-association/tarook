@@ -1,5 +1,0 @@
-Add support for ch-k8s-lbaas version 0.7.0. Excerpt from the upstream release notes:
-
-   * Improve scoping of actions within OpenStack. Previously, if the credentials allowed listing of ports or floating IPs outside the current project, those would also be affected. This is generally only the case with OpenStack admin credentials which you aren't supposed to use anyway.
-
-It is strongly recommended that you upgrade your cluster to use 0.7.0 as soon as possible. To do so, change the version value in the ``ch-k8s-lbaas`` section of your ``config.toml`` to ``"0.7.0"``.

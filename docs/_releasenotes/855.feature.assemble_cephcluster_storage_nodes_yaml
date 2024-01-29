@@ -1,3 +1,0 @@
-Add tool to assemble snippets for CephCluster manifest
-
-Writing the part for the CephCluster manifest describing which disks to be used for Ceph OSDs and metadata devices for every single storage node is error-prone. Once a erroneous manifest has been applied it can be very time-consuming to correct the errors as OSDs have to be un-deployed and wiped before re-applying the correct manifest.

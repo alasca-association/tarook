@@ -1,1 +1,0 @@
-Add optional configuration options for soft and hard disk pressure eviction to the ``config.toml``.
