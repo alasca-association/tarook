@@ -1,1 +1,0 @@
-The syntax of the rook cheph ``operator_memory_limit`` and _request was fixed in ``config.toml``.

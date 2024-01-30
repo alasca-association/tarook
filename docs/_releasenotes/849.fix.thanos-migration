@@ -1,1 +1,0 @@
-Fix Thanos v1 cleanup tasks during migration to prevent accidental double deletion of resources

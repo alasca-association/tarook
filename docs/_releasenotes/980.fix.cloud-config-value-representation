@@ -1,1 +1,0 @@
-It is ensured that the values passed to the cloud-config secret are proper strings.

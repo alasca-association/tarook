@@ -1,1 +1,0 @@
-Fixed the check for monitoring common labels in the rook-ceph cluster chart values template.

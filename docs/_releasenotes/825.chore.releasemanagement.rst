@@ -1,2 +1,0 @@
-We start using our release pipeline. That includes automatic versioning
-and release note generation.
