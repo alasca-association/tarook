@@ -46,8 +46,8 @@ tag-release:
     - git config --global user.email "${GITLAB_USER_EMAIL}"
     - git remote set-url origin https://gitlab-ci-token:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
     # tag with v$Major.$Minor.$Patch (note the "v"!)
-    # - git tag -a "v${YAOOK_K8S_BUILD_VERSION}" -m "Version v${YAOOK_K8S_BUILD_VERSION}"
-    # - git push origin "v${YAOOK_K8S_BUILD_VERSION}"
+    - git tag -a "v${YAOOK_K8S_BUILD_VERSION}" -m "Version v${YAOOK_K8S_BUILD_VERSION}"
+    - git push origin "v${YAOOK_K8S_BUILD_VERSION}"
   rules:
     # run only on release and YAOOK_K8S_RELEASE_PREPARE_BRANCH-branches
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX || $CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
