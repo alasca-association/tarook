@@ -41,7 +41,7 @@ optional = true
 sphinx = "^7.0.0"
 sphinx-rtd-theme = "^2.0.0"
 sphinx-tabs = "^3.4.1"
-furo = "^2023.5.20"
+furo = "^2024.0.0"
 towncrier = "^23.6.0"
 
 [build-system]
