@@ -46,13 +46,26 @@ tag-release:
     - git config --global user.email "${GITLAB_USER_EMAIL}"
     - git remote set-url origin https://gitlab-ci-token:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
     # tag with v$Major.$Minor.$Patch (note the "v"!)
-    - git tag -a "v${YAOOK_K8S_BUILD_VERSION}" -m "Version v${YAOOK_K8S_BUILD_VERSION}"
+    - git tag -a "v${YAOOK_K8S_BUILD_VERSION}" -m "Release v${YAOOK_K8S_BUILD_VERSION}"
     - git push origin "v${YAOOK_K8S_BUILD_VERSION}"
   rules:
     # run only on release and YAOOK_K8S_RELEASE_PREPARE_BRANCH-branches
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX || $CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
       when: on_success
     - when: never
+
+create-gitlab-release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - echo "running release_job for $(cat ./version)"
+  release:                                         # See https://docs.gitlab.com/ee/ci/yaml/#release for available properties
+    tag_name: "v$(cat ./version)"
+    description: "Please have a look at the [Releasenotes](https://${CI_SERVER_HOST}/${CI_PROJECT_PATH}/-/blob/v$(cat ./version)/CHANGELOG.rst) for current changes."
+  needs: ["tag-release"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
+      when: on_success
 
 merge-to-release-branch:
   stage: release
