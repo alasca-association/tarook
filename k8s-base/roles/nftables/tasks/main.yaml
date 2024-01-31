@@ -19,7 +19,7 @@
 
 - name: Retrieve private subnet
   ansible.builtin.set_fact:
-    priv_ip_cidr: "{{ ip | ipaddr('network/prefix') }}"
+    priv_ip_cidr: "{{ ip | ansible.utils.ipaddr('network/prefix') }}"
   vars:
     ip: "{{ ansible_default_ipv4.address }}/{{ ansible_default_ipv4.netmask }}"
 

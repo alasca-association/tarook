@@ -22,7 +22,7 @@ kind: BGPPeer
 metadata:
   name: "lb-cp-gateway"
 spec:
-  peerIP: {{ networking_fixed_ip | ipaddr | to_json }}
+  peerIP: {{ networking_fixed_ip | ansible.utils.ipaddr | to_json }}
   asNumber: {{ k8s_network_bgp_gateway_as | to_json }}
   keepOriginalNextHop: true
 
@@ -33,7 +33,7 @@ kind: BGPPeer
 metadata:
   name: "lb-cp-gateway-v6"
 spec:
-  peerIP: {{ networking_fixed_ip_v6 | ipaddr | to_json }}
+  peerIP: {{ networking_fixed_ip_v6 | ansible.utils.ipaddr | to_json }}
   asNumber: {{ k8s_network_bgp_gateway_as | to_json }}
   keepOriginalNextHop: true
 {% endif %}

@@ -84,6 +84,11 @@ Install System Requirements
 
          </details>
 
+      We do also strongly suggest to install the
+      `helm diff <https://github.com/databus23/helm-diff>`
+      plugin for better results with the Ansible
+      `kubernetes.core.helm module <https://docs.ansible.com/ansible/latest/collections/kubernetes/core/helm_module.html>`.
+
    .. tab:: Install requirements using Nix
 
       `Nix <https://nixos.org>`__ is a declarative package manager

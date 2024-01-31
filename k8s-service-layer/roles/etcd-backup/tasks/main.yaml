@@ -35,12 +35,12 @@
 
 - name: Manage the backup bucket
   environment:
-    EC2_ACCESS_KEY: "{{ etcd_backup_config.access_key }}"
-    EC2_SECRET_KEY: "{{ etcd_backup_config.secret_key }}"
-    EC2_URL: "{{ etcd_backup_config.endpoint_url }}"
+    AWS_ACCESS_KEY: "{{ etcd_backup_config.access_key }}"
+    AWS_SECRET_KEY: "{{ etcd_backup_config.secret_key }}"
+    AWS_URL: "{{ etcd_backup_config.endpoint_url }}"
   block:
     - name: Check if bucket exists
-      community.aws.s3_bucket_info:
+      amazon.aws.s3_bucket_info:
         name: "{{ etcd_backup_bucket_name }}"
       register: bucket_info
 
@@ -55,8 +55,6 @@
         delete_public_access: true
         # That's the default. Added the flag to make it explicit that no S3 server-side encryption takes place
         encryption: none
-        # Needed when in ceph compat mode
-        s3_url: "{{ etcd_backup_config.endpoint_url }}"
 
     - name: "Configure a lifecycle rule on the bucket to expire (delete) items after {{ etcd_backup_days_of_retention }}"
       community.aws.s3_lifecycle:

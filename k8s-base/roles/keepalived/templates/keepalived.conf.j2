@@ -58,7 +58,7 @@ vrrp_instance VIP_1_V6 {
         {% for hostname in groups['frontend'] %}
         {% set peer = hostvars[hostname] %}
         {% if not peer.local_ipv6_address == local_ipv6_address %}
-        {{ peer.local_ipv6_address | ipaddr }}
+        {{ peer.local_ipv6_address | ansible.utils.ipaddr }}
         {% endif %}
         {% endfor %}
     }
