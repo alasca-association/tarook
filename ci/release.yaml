@@ -83,9 +83,9 @@ merge-to-release-branch:
         git push
       fi
     - git checkout "${CI_COMMIT_BRANCH}"
-    - echo "new release ${YAOOK_K8S_BUILD_VERSION}" > docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"  # place a releasenote (for MR to devel)
+    - echo "new release v${YAOOK_K8S_BUILD_VERSION}" > docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"  # place a releasenote (for MR to devel)
     - git add docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"
-    - git commit -m "Trigger MR to devel for "${CI_COMMIT_BRANCH}" of ${YAOOK_K8S_BUILD_VERSION}" --allow-empty
+    - git commit -m "Trigger MR to devel for "${CI_COMMIT_BRANCH}"" --allow-empty
     - |
       git push -o ci.skip --set-upstream origin "${CI_COMMIT_BRANCH}" \
         -o merge_request.create -o merge_request.target="${YAOOK_K8S_DEFAULT_BRANCH}" -o merge_request.label="Release" \
