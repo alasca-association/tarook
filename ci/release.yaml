@@ -4,18 +4,26 @@ pages:
   before_script:
     - poetry install --with docs --sync
   script:
-    - sphinx-build -W docs _build/html
+    - git fetch && git remote prune origin
+    - sphinx-multiversion -W docs _build/html
+    - echo "<meta http-equiv=\"Refresh\" content=\"0; url='https://yaook.gitlab.io/k8s/devel/'\" />" > _build/html/index.html
     - mv _build/html public
   artifacts:
     paths:
       - public/
   rules:
-    # run only on release-branches
+    # run only on devel when changes were made and on release-branches
+    - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+      changes:
+      - 'docs/[!_]*/**/*'
+      - 'docs/[!_]*'  # the above does not include files directly in docs/
+      when: on_success
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
       when: on_success
     - when: never
   tags:
     - docker
+  dependencies: []  # to not fetch any artifacts from previous jobs
 
 tag-release:
   stage: release

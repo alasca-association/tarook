@@ -1,0 +1,19 @@
+{% block body %}
+{% if versions %}
+<hr class="light">
+<div class="dropup">
+  <button class="dropbtn">VERSIONS</button>
+  <div class="dropup-content">
+    <b>In development</b>
+    {%- for item in versions.in_development %}
+      <a style="font-size:14px;" href="{{ item.url }}">{{ item.name }}</a>
+    {%- endfor %}
+    <b>Releases</b>
+    {%- for item in versions.releases %}
+      <a style="font-size:14px;" href="{{ item.url }}">{{ item.name }}</a>
+    {%- endfor %}
+  </div>
+</div>
+<hr style="border:none">
+{% endif %}
+{% endblock %}
