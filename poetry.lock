@@ -2383,6 +2383,20 @@ sphinx = ">=4.0"
 docs = ["furo", "ipython", "myst-parser", "sphinx-copybutton", "sphinx-inline-tabs"]
 
 [[package]]
+name = "sphinx-multiversion"
+version = "0.2.4"
+description = "Add support for multiple versions to sphinx"
+optional = false
+python-versions = "*"
+files = [
+    {file = "sphinx-multiversion-0.2.4.tar.gz", hash = "sha256:5cd1ca9ecb5eed63cb8d6ce5e9c438ca13af4fa98e7eb6f376be541dd4990bcb"},
+    {file = "sphinx_multiversion-0.2.4-py3-none-any.whl", hash = "sha256:dec29f2a5890ad68157a790112edc0eb63140e70f9df0a363743c6258fbeb478"},
+]
+
+[package.dependencies]
+sphinx = ">=2.1"
+
+[[package]]
 name = "sphinx-rtd-theme"
 version = "2.0.0"
 description = "Read the Docs theme for Sphinx"
@@ -2813,4 +2827,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "15f374045b7dbc878625f32346a9865d66db4e7765df010b24d5c5bc1e7b6d68"
+content-hash = "ff7e190ceaeeeb0c67781a0d6cd64ae0ba60225fca7b5687999103b00cc0964e"
