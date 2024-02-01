@@ -7,7 +7,7 @@ collections:
   # community.hashi_vault should be part of ansible upstream by now.
   - name: 'community.hashi_vault'
   - name: community.aws
-    version: 5.2.0
+    version: 5.5.1
   - name: amazon.aws
     version: 5.2.0
   - name: kubernetes.core
