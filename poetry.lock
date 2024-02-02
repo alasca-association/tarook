@@ -1719,13 +1719,13 @@ stevedore = ">=2.0.1"
 
 [[package]]
 name = "python-openstackclient"
-version = "6.4.0"
+version = "6.5.0"
 description = "OpenStack Command-line Client"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "python-openstackclient-6.4.0.tar.gz", hash = "sha256:0c6ab40168ea51fed68819aa251f8253de9a61dacc96dd1b64739f189fc2183f"},
-    {file = "python_openstackclient-6.4.0-py3-none-any.whl", hash = "sha256:9f5c53391c8f771521fe80fbb6b860d109a3d700239a7c7083f72b143b06164a"},
+    {file = "python-openstackclient-6.5.0.tar.gz", hash = "sha256:12fc19347f6b19bfe2c36f11c7a1841f415a2ee7f18b959413c2121997b84951"},
+    {file = "python_openstackclient-6.5.0-py3-none-any.whl", hash = "sha256:3ccc7a5a80086675af64e4a1e075baf0169f4a9c3a6eefddfe4043a4974e9804"},
 ]
 
 [package.dependencies]
