@@ -69,6 +69,7 @@
   include_tasks: obtain-certs.yaml
 
 - name: Delete secret data which is now in Vault
+  become: true
   ansible.builtin.file:
     state: absent
     path: /etc/kubernetes/pki/{{ item }}
