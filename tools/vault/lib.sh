@@ -377,7 +377,7 @@ function rotate_pki_issuer() {
 
     vault patch "$pki_path/issuer/default" issuer_name="previous-$(date --iso-8601=date -u)"
     vault write "$pki_path/root/replace" default=next
-    vault patch "$pki_path/issuer/next" issuer_name=""
+    vault patch "$pki_path/issuer/next" issuer_name="current"
 }
 
 function import_etcd_backup_config() {
