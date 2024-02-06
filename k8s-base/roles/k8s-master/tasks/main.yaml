@@ -78,6 +78,22 @@
   - front-proxy-ca.key
   - etcd/ca.key
 
+- name: Ensure kube-controller-manager client cert flags are unset
+  become: true
+  when: local_kube_apiserver_status is not failed
+  block:
+  - name: Ensure cluster-signing-cert-file is unset
+    ansible.builtin.replace:
+      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+      regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
+      replace: '\1'
+
+  - name: Ensure --cluster-signing-key-file is unset
+    ansible.builtin.replace:
+      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+      regexp: '^(\s*-\s*--cluster-signing-key-file=).*'
+      replace: '\1'
+
 - name: Ensure that /var/lib/etcd exists
   become: true
   ansible.builtin.file:
