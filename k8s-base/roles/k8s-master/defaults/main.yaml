@@ -1,3 +1,4 @@
 ---
 terminated_pod_gc_threshold: 10
+extra_ca: false
 ...

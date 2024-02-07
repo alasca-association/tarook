@@ -1,0 +1,40 @@
+---
+# This implements https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/
+
+- name: Detect user
+  hosts: k8s_nodes
+  gather_facts: false
+  # we need *all* hosts.
+  any_errors_fatal: true
+  vars_files:
+    - vars/etc.yaml
+  roles:
+    - detect_user
+
+- name: Rotate CA
+  hosts: masters
+  gather_facts: true
+  vars_files:
+    - vars/disruption.yaml
+    - vars/etc.yaml
+    - vars/retries.yaml
+  handlers:
+    - name: Import k8s-master handlers
+      import_tasks: roles/k8s-master/handlers/main.yaml
+  roles:
+    - role: k8s-rotate-ca
+      tags: k8s-rotate-ca
+
+- name: Update kubeconfigs worker
+  hosts: workers
+  gather_facts: true
+  vars_files:
+    - vars/disruption.yaml
+    - vars/retries.yaml
+  handlers:
+    - name: Import k8s-master handlers
+      import_tasks: roles/k8s-master/handlers/main.yaml
+  roles:
+    - role: k8s-rotate-ca
+      tags: k8s-rotate-ca
+...

@@ -1,0 +1,210 @@
+---
+- name: Obtain CAs
+  ansible.builtin.include_role:
+    name: k8s-master
+    tasks_from: obtain-cas.yaml
+  vars:
+    extra_ca: "{{ append_next_issuer | bool }}"
+
+- name: Obtain certificates
+  ansible.builtin.include_role:
+    name: k8s-master
+    tasks_from: obtain-certs.yaml
+  vars:
+    force_renewal: "{{ complete_rotation | bool | ternary(True, False) }}"
+
+- name: Trigger restart etcd
+  block:
+  - name: Trigger restart etcd  # noqa no-changed-when
+    command: /bin/true
+    notify: Restart etcd
+
+  - name: Flush handlers
+    meta: flush_handlers
+
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "etcd-{{ inventory_hostname }}"
+
+# https://github.com/kubernetes/kubeadm/issues/1350
+- name: Workaround for bug in controller-manager
+  become: true
+  when: append_next_issuer | bool
+  block:
+  - name: Write new k8s CA file
+    ansible.builtin.copy:
+      dest: /etc/kubernetes/pki/ca-new.crt
+      owner: root
+      group: root
+      mode: ugo=r
+      content: "{{ k8s_ca_cert }}"
+
+  - name: Point kube-controller-manager to separate CA file
+    ansible.builtin.replace:
+      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+      regexp: '^(\s*-\s*--client-ca-file=).*'
+      replace: '\1/etc/kubernetes/pki/ca-new.crt'
+
+# https://github.com/kubernetes/kubeadm/issues/1350
+- name: Remove workaround for bug in controller-manager
+  become: true
+  when: not append_next_issuer | bool
+  block:
+  - name: Drop new k8s CA file
+    ansible.builtin.file:
+      path: /etc/kubernetes/pki/ca-new.crt
+      state: absent
+
+  - name: Point kube-controller-manager to default CA file
+    ansible.builtin.replace:
+      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+      regexp: '^(\s*-\s*--client-ca-file=).*'
+      replace: '\1/etc/kubernetes/pki/ca.crt'
+
+- name: Trigger restart kube-controller-manager
+  block:
+  - name: Trigger restart kube-controller-manager  # noqa no-changed-when
+    command: /bin/true
+    notify: Restart kube-controller-manager
+
+  - name: Flush handlers
+    meta: flush_handlers
+
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "kube-controller-manager-{{ inventory_hostname }}"
+
+- name: Trigger restart kube-apiserver
+  block:
+  - name: Trigger restart kube-apiserver  # noqa no-changed-when
+    command: /bin/true
+    notify: Restart kube-apiserver
+
+  - name: Flush handlers
+    meta: flush_handlers
+
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "kube-apiserver-{{ inventory_hostname }}"
+
+- name: Trigger restart kube-scheduler
+  block:
+  - name: trigger restart kube-scheduler  # noqa no-changed-when
+    command: /bin/true
+    notify: Restart kube-scheduler
+
+  - name: Flush handlers
+    meta: flush_handlers
+
+  - include_tasks: wait-for-restart.yaml
+    vars:
+      pod_resource_name: "kube-scheduler-{{ inventory_hostname }}"
+
+- name: Pause for 30s (let it settle)
+  pause:
+    seconds: 30
+
+- name: Obtain kubeconfigs
+  ansible.builtin.include_role:
+    name: k8s-master
+    tasks_from: obtain-kubeconfigs.yaml
+  vars:
+    force_renewal: true
+    k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+    extra_ca: "{{ append_next_issuer | bool }}"
+
+- name: Force restart kubelet
+  become: true
+  systemd_service:
+    state: restarted
+    name: kubelet
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Update calico certificates (legacy)
+  when: not image_versions.calico_use_tigera_operator | bool
+  block:
+  - name: Update calico preliminaries
+    ansible.builtin.include_role:
+      name: calico-control-plane
+      tasks_from: setup_preliminaries.yaml
+    vars:
+      force_renewal: "{{ complete_rotation | bool | ternary(True, False) }}"
+      extra_ca: "{{ append_next_issuer | bool }}"
+  - name: Update calico Typha certificates
+    ansible.builtin.include_role:
+      name: calico-control-plane
+      tasks_from: setup_typha.yaml
+    vars:
+      force_renewal: "{{ complete_rotation | bool | ternary(True, False) }}"
+      extra_ca: "{{ append_next_issuer | bool }}"
+  - name: Update calico/node certificates
+    ansible.builtin.include_role:
+      name: calico-control-plane
+      tasks_from: setup_calico_node.yaml
+    vars:
+      force_renewal: "{{ complete_rotation | bool | ternary(True, False) }}"
+      extra_ca: "{{ append_next_issuer | bool }}"
+  - name: Update calico kubeconfig
+    ansible.builtin.include_role:
+      name: calico-worker
+    vars:
+      force_renewal: true
+      k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
+      extra_ca: "{{ append_next_issuer | bool }}"
+
+- name: Restart (almost) everything (╯°□°)╯︵ ┻━┻
+  delegate_to: localhost
+  run_once: true
+  block:
+  - name: Gather all namespaces
+    kubernetes.core.k8s_info:
+      kind: Namespace
+    register: gather_namespaces
+
+  - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻  # noqa no-changed-when
+    with_nested:
+    - "{{ gather_namespaces.resources }}"
+    - ["daemonset", "deployment", "statefulset"]
+    loop_control:
+      label: "Restart every {{ item[1] }} in namespace {{ item[0].metadata.name }}"
+    command:
+      argv:
+      - kubectl
+      - rollout
+      - restart
+      - "{{ item[1] }}"
+      - --namespace
+      - "{{ item[0].metadata.name }}"
+
+- name: Pause for 60s (let it settle)
+  pause:
+    seconds: 60
+
+- name: Patch 'kube-public/cluster-info' ConfigMap
+  delegate_to: localhost
+  run_once: true
+  become: false
+  block:
+  - name: Get certificate authority data
+    ansible.builtin.include_role:
+      name: k8s-master
+      tasks_from: get-certificate-authority-data.yaml
+    vars:
+      extra_ca: "{{ append_next_issuer | bool }}"
+
+  - name: Patch 'kube-public/cluster-info' ConfigMap
+    vars:
+      kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
+    kubernetes.core.k8s:
+      state: present
+      definition: "{{ lookup('template', 'cluster-info-cm.yaml.j2') | from_yaml }}"
+
+- name: Provide CA certificates as ConfigMap
+  include_role:
+    name: k8s-master
+    tasks_from: provide-ca-as-cm.yaml
+  vars:
+    extra_ca: "{{ append_next_issuer | bool }}"
+...

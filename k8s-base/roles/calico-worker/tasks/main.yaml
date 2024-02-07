@@ -22,7 +22,7 @@
     vault_secret_id: "{{ vault_node_secret_id }}"
     kubeconfig_title: calico
     kubeconfig_destination: /etc/cni/net.d/calico-kubeconfig
-    kubeconfig_issuer: calico-cni
+    kubeconfig_role: calico-cni
     kubeconfig_user: calico-cni
     kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
 ...

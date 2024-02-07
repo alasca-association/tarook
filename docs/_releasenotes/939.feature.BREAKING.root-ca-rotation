@@ -1,0 +1,6 @@
+Add functionality to rotate certificate authorities of a cluster
+
+This is i.e. needed if the old one is shortly to expire.
+As paths of vault policies have been updated for this feature,
+one **must** update them. Please refer to our documentation about the
+Vault setup.

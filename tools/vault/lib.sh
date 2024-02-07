@@ -241,6 +241,81 @@ function init_k8s_calico_pki_roles() {
         key_type=rsa
 }
 
+function generate_ca_issuer() {
+    local pki_root_ttl="$1"
+    local issuer_name="${2:-}"
+
+    if [ -n "$issuer_name" ]; then
+        vault write "$k8s_pki_path/root/generate/internal" \
+        common_name="Kubernetes Cluster Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519 \
+        issuer_name="$issuer_name"
+
+        vault write "$etcd_pki_path/root/generate/internal" \
+        common_name="Kubernetes etcd Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519 \
+        issuer_name="$issuer_name"
+
+        vault write "$k8s_front_proxy_pki_path/root/generate/internal" \
+        common_name="Kubernetes Front Proxy Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519 \
+        issuer_name="$issuer_name"
+
+        vault write "$calico_pki_path/root/generate/internal" \
+        common_name="Kubernetes calico Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519 \
+        issuer_name="$issuer_name"
+    else
+        vault write "$k8s_pki_path/root/generate/internal" \
+        common_name="Kubernetes Cluster Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519
+
+        vault write "$etcd_pki_path/root/generate/internal" \
+        common_name="Kubernetes etcd Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519
+
+        vault write "$k8s_front_proxy_pki_path/root/generate/internal" \
+        common_name="Kubernetes Front Proxy Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519
+
+        vault write "$calico_pki_path/root/generate/internal" \
+        common_name="Kubernetes calico Root CA $year" \
+        ou="$ou" \
+        organization="$organization" \
+        country="$country" \
+        ttl="$pki_root_ttl" \
+        key_type=ed25519
+    fi
+}
+
 function mkcsrs() {
     local ttl="$1"
 
@@ -275,6 +350,34 @@ function mkcsrs() {
         country="$country" \
         ttl="$ttl" \
         key_type=ed25519 > k8s-calico.csr
+}
+
+function import_cert {
+    local chainfile="$1"
+    local pkipath="$2"
+    local issuer_name="$3"
+
+    response="$(vault write -format=json "$pkipath/intermediate/set-signed" certificate="@$chainfile")"
+    issuer="$(jq -r '.data.imported_issuers[0]' <<<"$response")"
+    # If this is a no-op update to an existing issuer, the ID is not included
+    # in the response. Hence, we can't init it, but we probably also don't have
+    # to (because it has been imported before).
+    if [ "$issuer" != 'null' ]; then
+        vault write "$pkipath/issuer/$issuer" leaf_not_after_behavior=truncate
+        # Path issuer name for e.g. root CA rotations
+        if [ -n "${issuer_name:-}" ]; then
+            echo "patching"
+            vault patch "$pkipath/issuer/$issuer" issuer_name="$issuer_name"
+        fi
+    fi
+}
+
+function rotate_pki_issuer() {
+    local pki_path="$1"
+
+    vault patch "$pki_path/issuer/default" issuer_name="previous-$(date --iso-8601=date -u)"
+    vault write "$pki_path/root/replace" default=next
+    vault patch "$pki_path/issuer/next" issuer_name="current"
 }
 
 function import_etcd_backup_config() {

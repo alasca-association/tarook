@@ -1,11 +1,14 @@
 ---
+- name: Get calico versions folder
+  include_tasks: get_calico_versions_folder.yaml
+
 - name: Update calico-node certificate
   ansible.builtin.include_tasks: get_cert_in_k8s.yaml
   vars:
     vault_role_id: "{{ vault_node_role_id }}"
     vault_secret_id: "{{ vault_node_secret_id }}"
     get_cert_k8s_title: calico-node
-    get_cert_k8s_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/calico-pki/issue/node"
+    get_cert_k8s_vault_path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/calico-pki/issuer/{{ k8s_issuer | default('default') }}/issue/node"
     get_cert_k8s_vault_data:
       common_name: calico-node
       ttl: 8784h
@@ -15,6 +18,7 @@
 
 - name: Apply calico/node resources
   become: true
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   block:
@@ -56,6 +60,7 @@
 
 - name: Restart calico/node Pods on certificate renewal  # noqa no-handler
   become: true
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   when: get_cert is changed

@@ -1,8 +1,8 @@
------BEGIN CERTIFICATE-----{{ lookup(
+{{ lookup(
     'community.hashi_vault.vault_read',
-    '%s/%s/%s/cert/ca_chain' | format(vault_path_prefix, vault_cluster_name, ca_pki_name),
+    '%s/%s/%s/issuer/%s/json' | format(vault_path_prefix, vault_cluster_name, ca_pki_name, (k8s_issuer | default('default')) ),
     auth_method='approle',
     role_id=vault_node_role_id,
     secret_id=vault_node_secret_id,
     mount_point=vault_nodes_approle
-).data.ca_chain.split('-----BEGIN CERTIFICATE-----')[-1] }}
+).data.ca_chain[-1] }}

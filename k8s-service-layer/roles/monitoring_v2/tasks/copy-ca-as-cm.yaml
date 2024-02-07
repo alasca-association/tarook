@@ -1,0 +1,18 @@
+---
+- name: Copy CA file from kube-system namespace
+  kubernetes.core.k8s:
+    apply: true
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: front-proxy-ca
+        namespace: "{{ monitoring_namespace }}"
+      data:
+        front-proxy-ca.crt: "{{ lookup('kubernetes.core.k8s', api_version='v1', kind='ConfigMap', namespace='kube-system', resource_name='cluster-ca-certs').data['front-proxy-ca.crt'] }}"
+  register: k8s_apply
+  # Retry this task on failures
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+...

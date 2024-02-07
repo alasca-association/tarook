@@ -22,87 +22,39 @@
   - /etc/kubernetes/pki/etcd
   - /var/lib/kubelet/pki
 
-- name: Obtain kubelet kubeconfig
-  environment:
-    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
-    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
-  block:
-  - name: Obtain kubelet kubeconfig
-    ansible.builtin.include_role:
-      name: k8s-master
-      tasks_from: mkkubeconfig
-    vars:
-      vault_role_id: "{{ vault_node_role_id }}"
-      vault_secret_id: "{{ vault_node_secret_id }}"
-      kubeconfig_title: kubelet
-      kubeconfig_destination: /etc/kubernetes/kubelet.conf
-      kubeconfig_issuer: system-nodes_node
-      kubeconfig_user: "system:node:{{ inventory_hostname }}"
-      kubeconfig_external: true
-      kubeconfig_keypair_path: /var/lib/kubelet/pki/kubelet-client-current.pem
-      kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
-      kubeconfig_notify: Restart only this kubelet
+- name: Obtain CAs
+  include_tasks: obtain-cas.yaml
 
-- name: Gather necessary cluster join information
+- name: Obtain kubeconfigs
+  include_tasks: obtain-kubeconfigs.yaml
+
+- name: Join the k8s cluster steps
   when: install_status == 'k8s_not_installed'
-  environment:
-    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
-    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+  become: true
   block:
-  - name: Write k8s CA file
-    become: true
-    vars:
-      ca_pki_name: k8s-pki
+  - name: Create kubeadm-join-config.yaml
     ansible.builtin.template:
-      src: ca.crt.j2
-      dest: /etc/kubernetes/pki/ca.crt
+      src: kubeadm-join-config.yaml.j2
+      dest: /tmp/kubeadm-join-config.yaml
       owner: root
       group: root
-      mode: ugo=r
+      mode: 0640
 
-  - name: Write k8s front proxy CA file
-    become: true
+  - name: Join the k8s cluster as another worker  # noqa no-changed-when
+    # XXX: ansible command module does not support setting the umask
+    ansible.builtin.shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml"
+
+  - name: Remove kubeadm-join-config.yaml
+    ansible.builtin.file:
+      path: /tmp/kubeadm-join-config.yaml
+      state: absent
+
+  # Workaround because it is currently not possible
+  # to pass a kubelet config file for kubeadm join
+  # https://stackoverflow.com/questions/60378117/limit-the-number-of-pods-per-node
+  - name: Configure kubelet
+    ansible.builtin.include_role:
+      name: kubelet-configuration
     vars:
-      ca_pki_name: k8s-front-proxy-pki
-    ansible.builtin.template:
-      src: ca.crt.j2
-      dest: /etc/kubernetes/pki/front-proxy-ca.crt
-      owner: root
-      group: root
-      mode: ugo=r
-
-  - name: Get certificate information
-    become: true
-    community.crypto.x509_certificate_info:
-      path: "/etc/kubernetes/pki/ca.crt"
-    register: ca_cert
-
-  - name: Join the k8s cluster steps
-    become: true
-    block:
-    - name: Create kubeadm-join-config.yaml
-      ansible.builtin.template:
-        src: kubeadm-join-config.yaml.j2
-        dest: /tmp/kubeadm-join-config.yaml
-        owner: root
-        group: root
-        mode: 0640
-
-    - name: Join the k8s cluster as another worker  # noqa no-changed-when
-      # XXX: ansible command module does not support setting the umask
-      ansible.builtin.shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml"
-
-    - name: Remove kubeadm-join-config.yaml
-      ansible.builtin.file:
-        path: /tmp/kubeadm-join-config.yaml
-        state: absent
-
-    # Workaround because it is currently not possible
-    # to pass a kubelet config file for kubeadm join
-    # https://stackoverflow.com/questions/60378117/limit-the-number-of-pods-per-node
-    - name: Configure kubelet
-      ansible.builtin.include_role:
-        name: kubelet-configuration
-      vars:
-        _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
+      _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
 ...
