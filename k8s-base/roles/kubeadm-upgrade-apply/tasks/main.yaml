@@ -58,6 +58,7 @@
           - "apply"
           - "--yes"
           - "v{{ next_k8s_version }}"
+          - "--certificate-renewal=false"
           - "--patches"
           - "/etc/kubernetes/kubeadm-patches"
       # Let’s also play this safe here -- the `upgrade apply` command can take a

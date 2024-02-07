@@ -1,0 +1,1 @@
+Disable automatic certification renewal by kubeadm as we manage certificates via vault
