@@ -1,5 +1,0 @@
-Add support for generating Kubernetes configuration from Vault
-
-This allows "logging into Kubernetes" using your Vault credentials. For more
-information, see the updated vault documentation (docs/operation/vault.rst,
-"Using Vault to replace a long-lived admin.conf").
