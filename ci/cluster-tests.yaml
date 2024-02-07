@@ -286,18 +286,14 @@ containerd:
   environment:
     name: spawn-cluster
   rules:
-    # create manual job on merge.detached and merge.merged_result
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
-      when: manual
-      allow_failure: true
-    # always run on release-prepare
-    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
-      when: on_success
-    # otherwise run only if files outside docs have changed
-    - if:
+    # run on merge.merge_train only if files outside docs have changed
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
       <<: *test-rules-changes
       when: on_success
-    # when there are no changes, create manual job
+    # run always on release-prepare
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      when: on_success
+    # otherwise create manual job
     - when: manual
       allow_failure: true
   extends: .prepare_spawn_test_cleanup_k8s_cluster

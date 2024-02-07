@@ -98,6 +98,13 @@ def main():
                 conn.network.delete_network(network['id'])
             )
 
+        print("---\nDelete Volume Snapshots\n---")
+        for volume_snapshot in conn.list_volume_snapshots():
+            print(f"Delete volume snapshot {volume_snapshot['id']}")
+            process_deletion_outcome(
+                conn.block_storage.delete_snapshot(volume_snapshot['id'])
+            )
+
         print("---\nDelete Volumes\n---")
         for volume in conn.list_volumes():
             print(f"Delete volume {volume['id']}")
