@@ -523,8 +523,8 @@ use_helm = true
 # Configure persistent storage for Prometheus
 # By default an empty-dir is used.
 # https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
-#monitoring_prometheus_persistent_storage_class = ""
-#monitoring_prometheus_persistent_storage_resource_request = "50Gi"
+#prometheus_persistent_storage_class = ""
+#prometheus_persistent_storage_resource_request = "50Gi"
 
 # Enable grafana
 #use_grafana = true
