@@ -19,6 +19,47 @@ earlier changes.
 
 .. towncrier release notes start
 
+v2.0.0 (2024-02-07)
+-------------------
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+- Add functionality to rotate certificate authorities of a cluster
+
+  This is i.e. needed if the old one is shortly to expire.
+  As paths of vault policies have been updated for this feature,
+  one **must** update them. Please refer to our documentation about the
+  Vault setup. (`!939.feature <https://gitlab.com/yaook/k8s/-/merge_requests/939.feature>`_)
+
+
+New Features
+~~~~~~~~~~~~
+
+- Add support for generating Kubernetes configuration from Vault
+
+  This allows "logging into Kubernetes" using your Vault credentials. For more
+  information, see the updated vault documentation (docs/operation/vault.rst,
+  "Using Vault to replace a long-lived admin.conf"). (`!1016 <https://gitlab.com/yaook/k8s/-/merge_requests/1016>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- Disable automatic certification renewal by kubeadm as we manage certificates via vault
+- Fixed variable templates for Prometheus persistent storage configuration
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- Further improvement to the automated release process. (`!1033 <https://gitlab.com/yaook/k8s/-/merge_requests/1033>`_)
+- Automatically delete volume snapshots in the CI
+- Bump required Python version to >=3.10
+- CI: Don't run the containerd job everytime on devel
+- Enable renovate bot for Ansible galaxy requirements
+
+
 v1.0.0 (2024-01-29)
 -------------------
 
