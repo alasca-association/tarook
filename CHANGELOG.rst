@@ -19,8 +19,8 @@ earlier changes.
 
 .. towncrier release notes start
 
-1.0.0 (2024-01-29)
-------------------
+v1.0.0 (2024-01-29)
+-------------------
 
 Breaking changes
 ~~~~~~~~~~~~~~~~

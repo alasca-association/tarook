@@ -1,0 +1,65 @@
+
+/* Dropup Button */
+.dropbtn {
+ background-color: #3498DB;
+ color: white;
+ padding: 16px;
+ font-size: 16px;
+ border: none;
+}
+
+/* The container <div> - needed to position the dropup content */
+.dropup {
+ position: relative;
+ display: inline-block;
+ text-align: center;
+}
+
+/* Dropup content (Hidden by Default) */
+.dropup-content {
+ display: none;
+ position: absolute;
+ bottom: 50px;
+ background-color: var(--color-background-hover);
+ color: var(--color-foreground-secondary);
+ min-width: 160px;
+ box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+ z-index: 1;
+ text-align: left;
+ padding: 12px 12px;
+ line-height: 30px;
+
+ left: 50% !important;
+ right: auto !important;
+ transform: translate(-50%, 0) !important;
+}
+
+/* Links inside the dropup */
+.dropup-content a {
+ color: var(--color-foreground-secondary);
+ padding: 8px;
+ text-decoration: none;
+ display: block;
+}
+
+/* Change color of dropup links on hover */
+.dropup-content a:hover {
+ background-color: var(--color-background-secondary);
+}
+
+/* Show the dropup menu on hover */
+.dropup:hover .dropup-content {
+ display: block;
+}
+
+/* Change the background color of the dropup button when the dropup content is shown */
+.dropup:hover .dropbtn {
+ background-color: #2980B9;
+}
+
+hr.light {
+ border-top: none;
+ border: 1px solid var(--color-background-border);
+ border-bottom: none;
+ width: 100%;
+}

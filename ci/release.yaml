@@ -4,18 +4,26 @@ pages:
   before_script:
     - poetry install --with docs --sync
   script:
-    - sphinx-build -W docs _build/html
+    - git fetch && git remote prune origin
+    - sphinx-multiversion -W docs _build/html
+    - echo "<meta http-equiv=\"Refresh\" content=\"0; url='https://yaook.gitlab.io/k8s/devel/'\" />" > _build/html/index.html
     - mv _build/html public
   artifacts:
     paths:
       - public/
   rules:
-    # run only on release-branches
+    # run only on devel when changes were made and on release-branches
+    - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+      changes:
+      - 'docs/[!_]*/**/*'
+      - 'docs/[!_]*'  # the above does not include files directly in docs/
+      when: on_success
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
       when: on_success
     - when: never
   tags:
     - docker
+  dependencies: []  # to not fetch any artifacts from previous jobs
 
 tag-release:
   stage: release
@@ -46,13 +54,26 @@ tag-release:
     - git config --global user.email "${GITLAB_USER_EMAIL}"
     - git remote set-url origin https://gitlab-ci-token:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
     # tag with v$Major.$Minor.$Patch (note the "v"!)
-    # - git tag -a "v${YAOOK_K8S_BUILD_VERSION}" -m "Version v${YAOOK_K8S_BUILD_VERSION}"
-    # - git push origin "v${YAOOK_K8S_BUILD_VERSION}"
+    - git tag -a "v${YAOOK_K8S_BUILD_VERSION}" -m "Release v${YAOOK_K8S_BUILD_VERSION}"
+    - git push origin "v${YAOOK_K8S_BUILD_VERSION}"
   rules:
     # run only on release and YAOOK_K8S_RELEASE_PREPARE_BRANCH-branches
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX || $CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
       when: on_success
     - when: never
+
+create-gitlab-release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - echo "running release_job for $(cat ./version)"
+  release:                                         # See https://docs.gitlab.com/ee/ci/yaml/#release for available properties
+    tag_name: "v$(cat ./version)"
+    description: "Please have a look at the [Releasenotes](https://${CI_SERVER_HOST}/${CI_PROJECT_PATH}/-/blob/v$(cat ./version)/CHANGELOG.rst) for current changes."
+  needs: ["tag-release"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
+      when: on_success
 
 merge-to-release-branch:
   stage: release
@@ -83,9 +104,9 @@ merge-to-release-branch:
         git push
       fi
     - git checkout "${CI_COMMIT_BRANCH}"
-    - echo "new release ${YAOOK_K8S_BUILD_VERSION}" > docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"  # place a releasenote (for MR to devel)
+    - echo "new release v${YAOOK_K8S_BUILD_VERSION}" > docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"  # place a releasenote (for MR to devel)
     - git add docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"
-    - git commit -m "Trigger MR to devel for "${CI_COMMIT_BRANCH}" of ${YAOOK_K8S_BUILD_VERSION}" --allow-empty
+    - git commit -m "Trigger MR to devel for "${CI_COMMIT_BRANCH}"" --allow-empty
     - |
       git push -o ci.skip --set-upstream origin "${CI_COMMIT_BRANCH}" \
         -o merge_request.create -o merge_request.target="${YAOOK_K8S_DEFAULT_BRANCH}" -o merge_request.label="Release" \
