@@ -7,22 +7,24 @@ variables:
   REGEX_RELEASE_BRANCH_PREFIX: /^release\/v\S+$/
   REGEX_RELEASE_PREPARE_BRANCH_PREFIX: /^release-prepare\/v\S+$/
   REGEX_RELEASE_HOTFIX_BRANCH_PREFIX: /^hotfix\/\S+$/
+  REGEX_RELEASE_HOTFIX_BASE_BRANCH_PREFIX: /^hotfix\/base\S+$/
 
-# Pipelines run on devel branch, release-(prepare)-branches, hotfix-branches and merge requests
+# Pipelines run on devel branch, release-(prepare)-branches and merge requests
 workflow:
   rules:
     - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
-    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_HOTFIX_BRANCH_PREFIX'
     - if: $CI_MERGE_REQUEST_EVENT_TYPE
 
 stages:
 - lint
+- hotfix-prepare
 - cluster-tests
 - release
 
 include:
+  - local: ci/hotfix-prepare.yaml
   - local: ci/cluster-tests.yaml
   - local: ci/release.yaml
 
@@ -198,14 +200,14 @@ release-note-file-check:
     - git config --global user.name "${GITLAB_USER_NAME}"
     - git config --global user.email "${GITLAB_USER_EMAIL}"
   script:
-    - python3 ci/lint/check-releasenote-file.py "${CI_PROJECT_DIR}" "${TARGET_BRANCH}" "${CONFIG_FILE}" "${CI_MERGE_REQUEST_IID}" "${FORK}"
-    - towncrier build --version x.x.x --draft
+    - python3 ci/lint/check-releasenote-file.py "${CI_PROJECT_DIR}" "${TARGET_BRANCH}" "${CONFIG_FILE}" "${CI_MERGE_REQUEST_IID}" "${COMMIT_FILES}" "${FORK}"
+    - towncrier build --version x.x.x --config "${CONFIG_FILE}" --draft
     - |
       if [ "${FORK}" = "False" ]; then
         git fetch origin "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
         git checkout "${SOURCE_BRANCH}"
         git status
-        CHANGES=$(git diff "${SOURCE_BRANCH}" --name-only -- ${COMMIT_FILES} | wc -l)
+        CHANGES=$(git diff "${SOURCE_BRANCH}" --name-only -- "${COMMIT_FILES}" | wc -l)
         if [ "${CHANGES}" -gt 0 ]; then
           echo "committing"
           git add ${COMMIT_FILES}
@@ -217,7 +219,17 @@ release-note-file-check:
     - docker
   retry: 1
   rules:
-    # run only for MRs on devel
-    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+    # don't run when CHANGELOG.rst has been edited
+    - if:
+      changes:
+      - CHANGELOG.rst
+      when: never
+    # run only for MRs on devel and from hotfixing-branches
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ $REGEX_RELEASE_HOTFIX_BRANCH_PREFIX'
+      variables:
+        COMMIT_FILES: docs/_releasenotes/hotfix
+        CONFIG_FILE: ci/towncrier.toml
+      when: on_success
+    - if:  $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $YAOOK_K8S_DEFAULT_BRANCH
       when: on_success
     - when: never

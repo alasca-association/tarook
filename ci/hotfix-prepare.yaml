@@ -1,0 +1,48 @@
+add-hotfix-information:
+  stage: hotfix-prepare
+  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  variables:
+    SOURCE_BRANCH: origin/${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
+    TARGET_BRANCH: origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
+    RELEASENOTE_PATH: docs/_releasenotes/hotfix
+    TOWNCRIER_CONFIG: towncrier-hotfix.toml
+  before_script:
+    - poetry install --with docs --sync
+    - git fetch origin "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
+    - git config --global user.name "${GITLAB_USER_NAME}"
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+  script:
+    # add version number (fix-release)
+    - IFS=. read -ra CURRENT_VERSION < ./version
+    - VERSION=$(printf '%s.%s.%s' "${CURRENT_VERSION[0]}" "${CURRENT_VERSION[1]}" "$((CURRENT_VERSION[2]+1))")
+    - echo "${VERSION}" > ./version
+    # create towncrier-config
+    - sed -e "s|directory.*releasenote.*|directory = \"${RELEASENOTE_PATH}\"|g" towncrier.toml > "${TOWNCRIER_CONFIG}"
+    # create changelog
+    - towncrier build --version "v${VERSION}" --config "${TOWNCRIER_CONFIG}" --yes
+    - rm "${TOWNCRIER_CONFIG}"
+    # push changes
+    - |
+      git fetch origin "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+      git checkout "${SOURCE_BRANCH}"
+      git status
+      CHANGES=$(git diff "${SOURCE_BRANCH}" --name-only -- version docs/_releasenotes CHANGELOG.rst | wc -l)
+      if [ "${CHANGES}" -gt 0 ]; then
+        echo "committing"
+        git add version docs/_releasenotes CHANGELOG.rst
+        git commit -m "Update version number and changelog for hotfix-release"
+        git push -o ci.skip "https://gitlab-ci-token:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}" HEAD:"${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+      fi
+  rules:
+    # don't run on hotfix/base/..
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ $REGEX_RELEASE_HOTFIX_BASE_BRANCH_PREFIX'
+      when: never
+    # run on merge_train for hotfix-branches but only if version wasn't changed
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ $REGEX_RELEASE_HOTFIX_BRANCH_PREFIX'
+      changes:
+      - version
+      when: never
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ $REGEX_RELEASE_HOTFIX_BRANCH_PREFIX'
+      when: on_success
+  tags:
+    - docker

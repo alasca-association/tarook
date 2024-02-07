@@ -320,6 +320,8 @@ Use jsonencode in templates when writing YAML
    the ``some_subnet_id`` in quotes and also take care of any necessary
    escaping.
 
+.. _coding-guide.releases:
+
 If you are responsible for the creation of releases
 ---------------------------------------------------
 
@@ -338,3 +340,55 @@ If you are responsible for the creation of releases
 - Don't change anything on the ``release-prepare/v$Major.$Minor.$Patch`` branch, after it was merged to the corresponding
    ``release/v$Major.$Minor``-branch. If you see an error or something which needs to be fixed,
    do it before the ``merge-to-release-branch``-job has started or on ``devel`` for the next release.
+
+.. _coding-guide.hotfixes:
+
+How to create hotfixes
+----------------------
+
+The general and mandatory outline is described in :ref:`our policy <releases-and-versioning-policy.hotfix-process>`.
+As an aid we give an example for a full hotfix process here.
+
+1. Create a branch of the merge-base of the latest release ``release/v$Major.$Minor`` and ``devel`` into ``hotfix/base/$name`` and create the fix.
+2. Create a branch of ``devel`` named ``hotfix/devel/$name`` and merge ``hotfix/base/$name`` into it.
+   We will update the version-number in ``version`` accordingly and create the changelog using towncrier.
+   Create and merge a MR to devel. Please make sure the version number is correct (it's a fix for the latest release) before merging.
+
+For all releases needing the hotfix, do:
+
+3. Create a branch of the corresponding ``release/v$Major.$Minor``-branch named ``hotfix/v$Major.$Minor/$name``
+   and cherry pick ``hotfix/base/$name`` into it.
+   We will update the version-number in ``version`` accordingly and create the changelog using towncrier.
+   Create and merge a MR to ``release/v$Major.$Minor``.
+   Please make sure the version number is correct (it's a fix for the corresponding release) before merging.
+
+.. note::
+
+   If a hotfix is only relevant for an older version, then create a MR from a branch ``hotfix/v$Major.$Minor/$name``
+   against the corresponding ``release/v$Major.$Minor``-branch directly and skip the other steps.
+
+.. figure:: /img/hotfix.svg
+   :scale: 100%
+   :alt: hotfixing-strategy
+   :align: center
+
+Special case: There is an open ``release-prepare``-branch around
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As described in :ref:`our policy <releases-and-versioning-policy.hotfix-process>`, we have to look at the pipeline.
+If we can stop the pipeline, do:
+
+1. Create the ``hotfix/base/$name``-branch as merge-base of the ``release-prepare/v$Major.$Minor.$Patch`` and ``devel`` branch and create the fix.
+2. Merge the branch into the ``release-prepare/v$Major.$Minor.$Patch``-branch and start the pipeline for the branch again (should happen automatically).
+3. For all older versions needing the hotfix proceed like described above.
+   (Have in mind that the ``release-prepare/v$Major.$Minor.$Patch``-branch could also be a fix-release and merge to the last ``release/v$Major.$Minor``-branch)
+
+.. important::
+
+    Don't create a ``hotfix/devel/$name`` branch merging back to devel as the hotfix will be merged
+    via the ``release-prepare/v$Major.$Minor.$Patch``-branch!
+
+.. figure:: /img/hotfix-prepare.svg
+    :scale: 100%
+    :alt: hotfixing-strategy-for-open-release-prepare-branch
+    :align: center
