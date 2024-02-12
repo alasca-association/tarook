@@ -98,6 +98,8 @@ Practical implementation
 
 The following describes the practical implementation of these concepts.
 
+.. _release-and-versioning-policy.yaook-k8s-implementation:
+
 Yaook/k8s implementation
 ************************
 
