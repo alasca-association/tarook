@@ -37,6 +37,7 @@ html_theme_options = {
     "sidebar_hide_name": True,
 }
 html_logo = "img/yaook-husky-small.png"
+html_favicon = 'img/yaook-husky-small.png'
 html_css_files = [
     'dropup.css',
 ]
