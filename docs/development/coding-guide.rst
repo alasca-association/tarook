@@ -87,6 +87,12 @@ your branch. Don't forget to ``git pull --rebase=true`` afterwards, if you make 
                                  in the releasenotes-file)
    ============================= ===================================
 
+.. note::
+
+   For **breaking changes** please provide detailed information on what needs to be done
+   as an operator.
+   Either in the releasenote itself or linking inside the note to some other source
+   (e.g. parts in our docs, ..)
 
 **Nothing to report in the releasenotes**
 
