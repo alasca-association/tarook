@@ -319,3 +319,22 @@ Use jsonencode in templates when writing YAML
    or ``00:01``), unexpected effects can occur. ``jsonencode()`` will wrap
    the ``some_subnet_id`` in quotes and also take care of any necessary
    escaping.
+
+If you are responsible for the creation of releases
+---------------------------------------------------
+
+**How to trigger a release:**
+
+1. Go to `rdm <https://gitlab.com/yaook/rdm>`__ and start a pipeline setting ``YAOOK_K8S_CI_RELEASE`` to ``true``.
+2. After a few minutes there should be a new ``release-prepare/v$Major.$Minor.$Patch``-branch.
+3. The pipeline is triggered like described in :ref:`the policy <release-and-versioning-policy.yaook-k8s-implementation>`
+4. Make sure the pipeline did pass sucessfully and especially the changelog is rendered correctly, otherwise correct it directly on
+   the branch, this will start a new pipeline.
+5. If you for whatever reason don't need the predefined timeperiod before the release candidate will become a release,
+   manually start the delayed ``merge-to-release-branch``-job.
+
+**What not to do**
+
+- Don't change anything on the ``release-prepare/v$Major.$Minor.$Patch`` branch, after it was merged to the corresponding
+   ``release/v$Major.$Minor``-branch. If you see an error or something which needs to be fixed,
+   do it before the ``merge-to-release-branch``-job has started or on ``devel`` for the next release.
