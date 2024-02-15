@@ -1,6 +1,7 @@
 ---
 - name: Initialize Snapshots
   become: true
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   vars:
