@@ -261,14 +261,8 @@
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
   script:
     # Spawn and test cluster
-  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.24.17\"}}"'
-  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
-    # Upgrade cluster to k8s v1.25
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.25.16
-    # Update k8s version
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.25.16\"}}"'
-  - AFLAGS="-t mk8s-ms/monitoring" ./managed-k8s/actions/apply-stage5.sh
-    # Retest the cluster
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
     # Upgrade cluster to k8s v1.26
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.26.12
     # Update k8s version
