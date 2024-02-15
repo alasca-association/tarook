@@ -29,6 +29,8 @@ source_up || true
 #source_up_if_exists
 
 source_env ./managed-k8s/.envrc.lib.sh || true
+use flake_if_nix ./managed-k8s
+layout poetry ./managed-k8s
 
 # For more details on existing environment variables and their effects,
 # please see docs/admin/cluster-repo.md in the managed-k8s lcm
@@ -83,9 +85,6 @@ export KUBECONFIG
 # 'cluster_repository/k8s-custom' folder and executed after
 # after initialization through the included main.yaml
 export K8S_CUSTOM_STAGE_USAGE=false
-
-use flake_if_nix ./managed-k8s
-layout poetry ./managed-k8s
 
 source_env "$PWD/.envrc.local" || true
 # For up-to-date direnv versions one can also use:
