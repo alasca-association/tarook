@@ -50,7 +50,7 @@ cephClusterSpec:
         enabled: true
 {% endif %}
   dashboard:
-    enabled: false
+    enabled: {{ rook_dashboard | bool }}
     ssl: true
 {% if rook_version[1:] is version('1.9', '>=') and k8s_monitoring_enabled %}
     createPrometheusRules: true

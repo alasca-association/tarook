@@ -127,6 +127,8 @@ csi_plugins              = true
 
 use_host_networking = true
 
+dashboard = true
+
 mds_memory_limit   = "4Gi"
 mds_memory_request = "{{ rook_mds_memory_limit }}"
 mds_cpu_limit      = "1"

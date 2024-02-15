@@ -70,7 +70,7 @@ spec:
 {% endif %}
   # enable the ceph dashboard for viewing cluster status
   dashboard:
-    enabled: false
+    enabled: {{ rook_dashboard | bool }}
     # serve the dashboard under a subpath (useful when you are accessing the dashboard via a reverse proxy)
     # urlPrefix: /ceph-dashboard
     # serve the dashboard at the given port.
