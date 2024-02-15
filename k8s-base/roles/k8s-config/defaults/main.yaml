@@ -91,7 +91,7 @@ image_version_map:
     calico_version: "{{ k8s_network_calico_custom_version | default('3.26.1') }}"
     calico_use_tigera_operator: true # enforce
     # https://kubernetes-csi.github.io/docs/snapshot-controller.html
-    volume_snapshot_controller: "v6.2.1"
+    volume_snapshot_controller: "v6.3.3"
 
 image_versions: "{{ image_version_map[k8s_version_minor] }}"
 ...
