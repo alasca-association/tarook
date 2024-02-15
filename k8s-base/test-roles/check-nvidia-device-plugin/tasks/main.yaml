@@ -44,7 +44,7 @@
       strict: true
     wait: true
     wait_sleep: 5
-    wait_timeout: 600
+    wait_timeout: 60
     wait_condition:
       type: "Initialized"
       status: "True"
@@ -56,6 +56,7 @@
   until: k8s_apply_cuda_pod is not failed
   retries: "{{ k8s_error_retries }}"
   delay: "{{ k8s_error_delay }}"
+  ignore_errors: true
 
 - name: Clean-up
   tags:
