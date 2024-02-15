@@ -33,13 +33,19 @@ tag-release:
   #   GIT_STRATEGY: clone
   script:
     - YAOOK_K8S_BUILD_VERSION=$(cat ./version)
+    # check whether version-tag (w/o "-rc" - so an actual release) already exists and also stop on release-prepare
+    - git fetch --all --tags
+    - |
+      if git tag | grep -qx "v${VERSION}"; then
+        echo "There already exists a tag for version v${VERSION}. Please make sure everything is correct."
+        exit 1
+      fi
     - |
       if echo "$CI_COMMIT_BRANCH" | grep -F "${YAOOK_K8S_RELEASE_PREPARE_BRANCH_PREFIX}"; then
         if echo "${YAOOK_K8S_BUILD_VERSION: -2}" | grep -qE '.0'; then
           # tag with -rc.<buildnr>
           echo "This is a major or minor release, I will tag that as a release candidate.";
           YAOOK_K8S_BUILD_VERSION="${YAOOK_K8S_BUILD_VERSION}-rc"
-          git fetch --all --tags
           last_tag=$(git tag -l --sort=-version:refname "*${YAOOK_K8S_BUILD_VERSION}*" | head -n1)
           rc_value=${last_tag##*.}; rc_value=${rc_value:-"-1"}
           rc_value=$((rc_value + 1))
