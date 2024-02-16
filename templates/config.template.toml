@@ -140,8 +140,8 @@ agent_port    = 15203
 # --- KUBERNETES: BASIC CLUSTER CONFIGURATION ---
 # ansible prefix: "k8s_"
 [kubernetes]
-# Kubernetes version. Currently, we support from 1.25.* to 1.26.*.
-version = "1.26.12" # •ᴗ•
+# Kubernetes version. Currently, we support from 1.25.* to 1.27.*.
+version = "1.27.10" # •ᴗ•
 
 # Set this variable if this cluster contains worker with GPU access
 # and you want to make use of these inside of the cluster,

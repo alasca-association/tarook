@@ -1,12 +1,14 @@
 ---
 - name: Initialize Snapshots
   become: true
+  run_once: true
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
   vars:
     files_folder: "{{ image_versions.volume_snapshot_controller + '/' }}"
   block:
-  - name: Create Custom Snapshot Resource Definitions
+  - name: Create Custom Snapshot Resource Definitions (< v6.3.3)
+    when: image_versions.volume_snapshot_controller is version('v6.3.3', '<')
     kubernetes.core.k8s:
       definition: "{{ lookup('file', files_folder + 'crds/snapshot.storage.k8s.io.yaml') }}"
       apply: true
@@ -14,6 +16,25 @@
       validate:
         fail_on_error: true
         strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+
+  - name: Create Custom Snapshot Resource Definitions (>= v6.3.3)
+    when: image_versions.volume_snapshot_controller is version('v6.3.3', '>=')
+    kubernetes.core.k8s:
+      definition: "{{ lookup('file', files_folder + 'crds/' + item) }}"
+      apply: true
+      state: present
+      validate:
+        fail_on_error: true
+        strict: true
+    loop:
+    - "snapshot.storage.k8s.io_volumesnapshots.yaml"
+    - "snapshot.storage.k8s.io_volumesnapshotcontents.yaml"
+    - "snapshot.storage.k8s.io_volumesnapshotclasses.yaml"
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
