@@ -71,6 +71,7 @@ your branch. Don't forget to ``git pull --rebase=true`` afterwards, if you make 
    ``change``                    old functionality changed/updated
    ``fix``                       any bugfixes
    ``removal``                   soon-to-be-removed and removed features
+                                 (note our :doc:`policy on deprecation </concepts/deprecation-policy>`)
    ``docs``                      any changes in the documentation
    ``security``                  security patches
    ``chore``                     updating grunt tasks etc, no production

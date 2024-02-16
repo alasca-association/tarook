@@ -19,6 +19,7 @@ Welcome to Yaook k8s' documentation!
    concepts/cluster-repository
    concepts/abstraction-layers
    concepts/release-and-versioning-policy
+   concepts/deprecation-policy
 
 .. toctree::
    :maxdepth: 3
