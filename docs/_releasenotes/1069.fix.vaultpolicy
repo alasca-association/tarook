@@ -1,2 +1,0 @@
-* Allow using clusters before and after the introduction of the Root CA
-  rotation feature to use the same Vault instance.
