@@ -19,6 +19,54 @@ earlier changes.
 
 .. towncrier release notes start
 
+v2.1.0 (2024-02-20)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+
+- Add support for Kubernetes v1.27 (`!1065 <https://gitlab.com/yaook/k8s/-/merge_requests/1065>`_)
+- Allow to enable Ceph dashboard
+
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- Disarm GPU tests until #610 is properly addressed
+
+
+Bugfixes
+~~~~~~~~
+
+- Allow using clusters before and after the introduction of the Root CA
+  rotation feature to use the same Vault instance. (`!1069 <https://gitlab.com/yaook/k8s/-/merge_requests/1069>`_)
+- Fix loading order in envrc template
+- envrc.lib.sh: Run poetry install with --no-root
+
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Add information on how to pack a release.
+- Update information about how to write releasenotes
+
+
+Deprecations and Removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Drop support for Kubernetes v1.24 (`!1040 <https://gitlab.com/yaook/k8s/-/merge_requests/1040>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- Update flake dependencies and allow unfree license for Terraform (`!929 <https://gitlab.com/yaook/k8s/-/merge_requests/929>`_)
+
+
+Misc
+~~~~
+
+
 v2.0.0 (2024-02-07)
 -------------------
 
