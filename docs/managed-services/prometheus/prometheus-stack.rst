@@ -183,6 +183,55 @@ If you want to postpone this, you must set the following in your ``config/config
    use_helm_thanos = false
    ...
 
+Object Storage Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can either choose the automated
+Thanos object storage management (default) in which case
+the LCM takes care to create a bucket inside
+your OpenStack project or you can configure
+a custom bucket.
+
+Automated bucket management
+"""""""""""""""""""""""""""
+
+.. warning::
+
+   The automated bucket management can only be used when your cluster
+   is created on top of OpenStack and a valid OpenStack RC file is sourced.
+
+This method is enabled by default.
+This will let Terraform create an object storage container
+inside your OpenStack project and automatically configures
+Thanos to use that container as primary storage.
+
+
+Custom bucket management
+""""""""""""""""""""""""
+
+The custom bucket management can be enabled by setting
+``k8s-service-layer.prometheus.manage_thanos_bucket``
+to ``false``
+in your ``config/config.toml``.
+
+You must supply a valid configuration for a
+`supported Thanos client <https://thanos.io/tip/thanos/storage.md/#supported-clients>`__.
+
+This configuration must be stored in your cluster key-value secrets engine
+under ``kv/data/thanos-config``.
+Inserting a Thanos client config into vault can be automated by storing the
+configuration at ``config/thanos.yaml`` (or specifying another location
+in your ``config/config.toml`` under
+``k8s-service-layer.prometheus.thanos_objectstorage_config_file``)
+and then triggering the vault update script:
+
+.. code:: shell
+
+   ./managed-k8s/tools/vault/update.sh $CLUSTER_NAME
+
+Alternatively, you can also manually insert your configuration into vault.
+
+
 Prometheus Adapter (metrics server)
 -----------------------------------
 

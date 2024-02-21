@@ -23,3 +23,11 @@ echo "NOTE: CSRs have been written to k8s-{cluster,etcd,front-proxy,calico}.csr.
 echo "-----------------------------------------------"
 echo "Trying to importing etcd backup credentials ..."
 import_etcd_backup_config
+
+echo "-----------------------------------------------"
+echo "Trying to import IPSec EAP PSK ..."
+import_ipsec_eap_psk
+
+echo "-----------------------------------------------"
+echo "Trying to import Thanos S3 config ..."
+import_thanos_config

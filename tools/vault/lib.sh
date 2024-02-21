@@ -416,3 +416,41 @@ function import_ipsec_eap_psk() {
         echo "Ignoring, as those are optional." >&2
     fi
 }
+
+function import_thanos_config() {
+    thanos_enabled="$(python3 -c 'import toml, sys; print(str(toml.load(sys.stdin).get("k8s-service-layer").get("prometheus").get("use_thanos", False)).lower())' < config/config.toml)"
+    manage_thanos_bucket="$(python3 -c 'import toml, sys; print(str(toml.load(sys.stdin).get("k8s-service-layer").get("prometheus").get("manage_thanos_bucket", True)).lower())' < config/config.toml)"
+    thanos_config_file="$(python3 -c 'import toml, sys; print(toml.load(sys.stdin).get("k8s-service-layer").get("prometheus").get("thanos_objectstorage_config_file"))' < config/config.toml)"
+
+    if ! "$thanos_enabled"; then
+        echo "Thanos is disabled."
+        return;
+    fi
+    if "$manage_thanos_bucket"; then
+        echo "Thanos object storage is configured to be automatically managed"
+        return;
+    fi
+    if [ "${thanos_config_file}" == 'None' ]; then
+        echo "No Thanos object storage configuration file configured." >&2
+        echo "Failing because automated mangement is disabled." >&2
+        echo "Please check that you configured 'k8s-service-layer.prometheus.thanos_objectstorage_config_file' correctly" >&2
+        exit 1
+    fi
+    if ! thanos_config="$(python3 -c 'import json, yaml, sys; json.dump(yaml.load(sys.stdin, Loader=yaml.SafeLoader), sys.stdout)' < config/"$thanos_config_file")"; then
+        echo "Failed to find Thanos object storage configuration at config/$thanos_config_file" >&2
+        echo "Failing because automated mangement is disabled." >&2
+        echo "Please check that you configured 'k8s-service-layer.prometheus.thanos_objectstorage_config_file' correctly" >&2
+        echo "And config/$thanos_config_file is a valid thanos client configuration" >&2
+        exit 1
+    fi
+    if vault kv get "$cluster_path"/kv/thanos-config > /dev/null; then
+        echo "A Thanos object storage configuration already has been stored in vault." >&2
+        echo "Please manually remove the existing data from vault," >&2
+        echo "if you want to import a new configuration file." >&2
+        exit 1
+    fi
+    vault kv put "$cluster_path/kv/thanos-config" - <<<"$thanos_config"
+    echo "Successfully imported Thanos object storage configuration into vault."
+    echo "Removing Thanos object storage configuration file: config/$thanos_config_file"
+    rm "config/$thanos_config_file"
+}

@@ -147,28 +147,6 @@
   when: (gpu_nodes.resources | length) > 0
   ansible.builtin.include_tasks: nvidia_dcgm_exporter.yaml
 
-- name: Create storage bucket secret for thanos sidecar
-  kubernetes.core.k8s:
-    apply: true
-    definition:
-      apiVersion: v1
-      type: Opaque
-      kind: Secret
-      metadata:
-        name: thanos-sidecar-bucket-credentials-config
-        namespace: "{{ monitoring_namespace }}"
-      data:
-        thanos.yaml: "{{ lookup('template', 'thanos-sidecar-bucket-credentials.yaml.j2') | b64encode }}"
-    validate:
-      fail_on_error: true
-      strict: true
-  # Retry this task on failures
-  register: k8s_apply
-  until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
-  when: monitoring_use_thanos
-
 - name: Install thanos with jsonnet
   ansible.builtin.include_role:
     name: monitoring_thanos_v1

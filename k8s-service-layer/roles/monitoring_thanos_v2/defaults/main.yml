@@ -9,7 +9,7 @@ monitoring_thanos_chart_version: "12.13.3"
 monitoring_thanos_release_name: "thanos"
 
 monitoring_thanos_config_secret_name: "thanos-bucket-config"
-monitoring_thanos_objectstorage_config_file: ""
+monitoring_manage_thanos_bucket: true
 
 monitoring_thanos_objectstorage_container_name: "{{ cluster_name }}-monitoring-thanos-data"
 

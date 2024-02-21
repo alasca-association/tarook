@@ -1,6 +1,3 @@
-{% if (monitoring_thanos_objectstorage_config_file | default("")) | length > 0 %}
-{{ lookup('file',  monitoring_thanos_objectstorage_config_path + "/" + monitoring_thanos_objectstorage_config_file) }}
-{% else %}
 type: SWIFT
 config:
   auth_url: {{ lookup('env', 'OS_AUTH_URL') | to_json }}
@@ -11,4 +8,3 @@ config:
   password: {{ lookup('env', 'OS_PASSWORD') | to_json }}
   region_name: {{ lookup('env', 'OS_REGION_NAME') | to_json }}
   container_name: "{{ monitoring_thanos_objectstorage_container_name }}"
-{% endif %}
