@@ -1,6 +1,10 @@
 DualStack-Support on Kubernetes with Calico
 ===========================================
 
+.. warning::
+   Dual-Stack support is currently non-functional.
+   It is planned to re-add it in the near future.
+
 .. note::
 
    It is currently not possible to create an IPv6-only cluster
