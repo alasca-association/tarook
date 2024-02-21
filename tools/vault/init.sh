@@ -125,24 +125,6 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
         "common_name" = [],
     }
 }
-
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/calico-pki/issuer/+/issue/node" {
-    capabilities = ["create", "update"]
-    required_parameters = ["common_name", "ttl"]
-    allowed_parameters = {
-        "ttl" = [],
-        "common_name" = [],
-    }
-}
-
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/calico-pki/issuer/+/issue/typha" {
-    capabilities = ["create", "update"]
-    required_parameters = ["common_name", "ttl"]
-    allowed_parameters = {
-        "ttl" = [],
-        "common_name" = [],
-    }
-}
 EOF
 
 define k8s_control_plane_policies_deprecated_since_v2_0_0 <<EOF
@@ -261,9 +243,30 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
 }
 EOF
 
+define k8s_control_plane_policies_deprecated_since_2024_02 <<EOF
+path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/calico-pki/issuer/+/issue/node" {
+    capabilities = ["create", "update"]
+    required_parameters = ["common_name", "ttl"]
+    allowed_parameters = {
+        "ttl" = [],
+        "common_name" = [],
+    }
+}
+
+path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/calico-pki/issuer/+/issue/typha" {
+    capabilities = ["create", "update"]
+    required_parameters = ["common_name", "ttl"]
+    allowed_parameters = {
+        "ttl" = [],
+        "common_name" = [],
+    }
+}
+EOF
+
 write_policy k8s-control-plane <<EOF
 ${k8s_control_plane_policies_current:?}
 ${k8s_control_plane_policies_deprecated_since_v2_0_0:?}
+${k8s_control_plane_policies_deprecated_since_2024_02:?}
 EOF
 
 define k8s_node_policies_current <<EOF
@@ -281,24 +284,11 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/calico-cni" {
-    capabilities = ["create", "update"]
-    required_parameters = ["common_name", "ttl"]
-    allowed_parameters = {
-        "ttl" = [],
-        "common_name" = [],
-    }
-}
-
 path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/cert/ca_chain" {
     capabilities = ["read"]
 }
 
 path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/etcd-pki/cert/ca_chain" {
-    capabilities = ["read"]
-}
-
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/calico-pki/cert/ca_chain" {
     capabilities = ["read"]
 }
 EOF
@@ -326,9 +316,25 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
 
 EOF
 
+define k8s_control_plane_policies_deprecated_since_2024_02 <<EOF
+path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/calico-cni" {
+    capabilities = ["create", "update"]
+    required_parameters = ["common_name", "ttl"]
+    allowed_parameters = {
+        "ttl" = [],
+        "common_name" = [],
+    }
+}
+
+path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/calico-pki/cert/ca_chain" {
+    capabilities = ["read"]
+}
+EOF
+
 write_policy k8s-node <<EOF
 ${k8s_node_policies_current:?}
 ${k8s_node_policies_deprecated_since_v2_0_0:?}
+${k8s_control_plane_policies_deprecated_since_2024_02:?}
 EOF
 
 define gateway_policies_current <<EOF

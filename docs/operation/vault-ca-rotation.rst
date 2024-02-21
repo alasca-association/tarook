@@ -14,10 +14,9 @@ Further information can be found
 General Procedure description
 -----------------------------
 
-There are four Vault PKI engines configured for each cluster:
+There are three Vault PKI engines configured for each cluster:
 - k8s-pki
 - etcd-pki
-- calico-pki
 - k8s-front-proxy-pki
 
 We must rotate the certificate authorities for each of them.
@@ -81,8 +80,6 @@ Phase 1
     06a9511a-ffd2-2ce3-bd01-2cb2180a5e51    true          n/a
     $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
     [...]
-    $ vault list -detailed yaook/<clustername>/calico-pki/issuers
-    [...]
     $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
     [...]
 
@@ -99,7 +96,6 @@ Phase 1
           # Verify
           $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
           $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
-          $ vault list -detailed yaook/<clustername>/calico-pki/issuers
           $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
 
       .. tab:: With intermediates
@@ -121,7 +117,6 @@ Phase 1
             # Verify
             $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
             $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
-            $ vault list -detailed yaook/<clustername>/calico-pki/issuers
             $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
 
 3. If you've created your cluster before 2024, you must additionally update your vault policies
@@ -178,8 +173,6 @@ After you spread the kubeconfigs, do the following:
           3e836f42-047f-b078-3795-0386aaff30c0    true          n/a
           $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
           [...]
-          $ vault list -detailed yaook/<clustername>/calico-pki/issuers
-          [...]
           $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
           [...]
 
@@ -195,8 +188,6 @@ After you spread the kubeconfigs, do the following:
           06a9511a-ffd2-2ce3-bd01-2cb2180a5e51    false         prev
           3e836f42-047f-b078-3795-0386aaff30c0    true          n/a
           $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
-          [...]
-          $ vault list -detailed yaook/<clustername>/calico-pki/issuers
           [...]
           $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
           [...]

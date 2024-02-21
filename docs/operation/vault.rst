@@ -85,8 +85,6 @@ The following six secrets engines are used:
    identity of the Kubernetes API server for API extensions
 -  ``yaook/$cluster_name/etcd-pki``, a CA to issue identities within the
    etcd cluster (e.g. cluster peers, clients)
--  ``yaook/$cluster_name/calico-pki``, a CA to issue identities within
-   calico (typha and nodes)
 -  ``yaook/$cluster_name/ssh-ca``, an SSH certificate authority to allow
    verifying node SSH keys without prior knowledge
 
