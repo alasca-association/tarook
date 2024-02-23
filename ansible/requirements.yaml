@@ -3,9 +3,6 @@ collections:
   - name: 'devsec.hardening'
     source: https://galaxy.ansible.com
     version: 7.5.0
-  # If you read this, please check whether you can remove it without ansible-lint failing.
-  # community.hashi_vault should be part of ansible upstream by now.
-  - name: 'community.hashi_vault'
   - name: community.aws
     version: 5.2.0
   - name: amazon.aws
