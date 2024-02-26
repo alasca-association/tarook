@@ -616,7 +616,14 @@ Procedure
 
    .. tab:: Case 2: Migrating a cluster which is not upgraded to use Vault yet to use itself as Vault
 
-      1. Configure access to the Vault:
+      1. Obtain the CA of the Vault from Kubernetes using:
+
+         .. code:: console
+
+            $ kubectl -n k8s-svc-vault get secret vault-cert-internal -o json | jq -r '.data["ca.crt"]' | base64 -d > vault-ca.crt
+
+
+      2. Configure access to the Vault:
 
          .. code:: shell
 
@@ -624,9 +631,34 @@ Procedure
             export VAULT_CACERT="$(pwd)/vault-ca.crt"
             export VAULT_TOKEN=$(cat inventory/.etc/vault_root_token)
 
-      2. Run ``managed-k8s/tools/vault/init.sh``
+         Verify connectivity using: ``vault status``.
 
-      3. Run ``managed-k8s/tools/vault/import.sh`` with the appropriate
+         You should see something like:
+
+         ::
+
+            Key                     Value
+            ---                     -----
+            Seal Type               shamir
+            Initialized             true
+            Sealed                  false
+            Total Shares            1
+            Threshold               1
+            Version                 1.12.1
+            Build Date              2022-10-27T12:32:05Z
+            Storage Type            raft
+            Cluster Name            vault-cluster-4a491f8a
+            Cluster ID              40dfd4ea-76ac-b2d0-bb9a-5a35c0a9bc9d
+            HA Enabled              true
+            HA Cluster              https://vault-0.vault-internal:8201
+            HA Mode                 active
+            Active Since            2023-03-01T18:42:41.824499649Z
+            Raft Committed Index    44
+            Raft Applied Index      44
+
+      3. Run ``managed-k8s/tools/vault/init.sh``
+
+      4. Run ``managed-k8s/tools/vault/import.sh`` with the appropriate
          parameters.
 
-      4. Done.
+      5. Done.
