@@ -11,11 +11,11 @@ import re
 from mergedeep import merge
 
 from helpers import terraform_helper
-from helpers import pass_helper
 from helpers import wireguard_helper
 
+CONFIG_BASE_PATH = pathlib.Path("config")
 # Path to the main configuration
-CONFIG_PATH = pathlib.Path("config/config.toml")
+CONFIG_PATH = pathlib.Path(CONFIG_BASE_PATH / "config.toml")
 # Path to the configuration template
 CONFIG_TEMPLATE_PATH = pathlib.Path(
     "managed-k8s/templates/config.template.toml")
@@ -29,7 +29,6 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "node-scheduling",
     "k8s-service-layer",
     "testing",
-    "passwordstore",
     "terraform",
     "wireguard",
     "ipsec",
@@ -77,7 +76,6 @@ K8S_MANAGED_SERVICES_VAR_MAP = {
 SECTION_VARIABLE_PREFIX_MAP = {
     "ch-k8s-lbaas": "ch_k8s_lbaas",
     "kubernetes": "k8s",
-    "passwordstore": "passwordstore",
     "wireguard": "wg",
     "ipsec": "ipsec",
     "cah-users": "cah_users",
@@ -159,6 +157,21 @@ def cleanup_ansible_inventory(
         except OSError as exc:
             if exc.errno != errno.ENOTEMPTY:
                 raise
+
+
+def cleanup_obsolete_config(
+    config_path: pathlib.Path = CONFIG_BASE_PATH
+):
+    deprecated_files = [
+        "pass_users.toml"
+    ]
+
+    for deprecated_file in deprecated_files:
+        full_path = pathlib.PurePath(config_path / deprecated_file)
+        try:
+            os.remove(full_path)
+        except FileNotFoundError:
+            pass
 
 
 def flatten_config(
@@ -285,6 +298,8 @@ def main():
         # "\N{broom} "
         "Cleaning up the inventory...")
     cleanup_ansible_inventory()
+    print("Cleaning up deprecated config files...")
+    cleanup_obsolete_config()
 
     # START PROCESSING THE TOP SECTIONS
     # ---
@@ -368,21 +383,6 @@ def main():
                 config.get("wireguard")),
             wg_ansible_inventory_path,
             SECTION_VARIABLE_PREFIX_MAP.get("wireguard", "")
-        )
-
-    # ---
-    # PASSWORD STORE
-    # ---
-    print_process_state("Password store")
-    for stage in [ANSIBLE_STAGES["stage2"], ANSIBLE_STAGES["stage3"]]:
-        pass_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / stage / "group_vars" / "all" /
-            "passwordstore-users.yaml"
-        )
-        dump_to_ansible_inventory(
-            pass_helper.generate_passwordstore_config(config["passwordstore"]),
-            pass_ansible_inventory_path,
-            SECTION_VARIABLE_PREFIX_MAP.get("passwordstore", "")
         )
 
     # ---

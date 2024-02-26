@@ -24,7 +24,6 @@ Install System Requirements
       - jq
       - moreutils (for ``sponge``)
       - wireguard
-      - pass
       - uuid-runtime
       - openssl
 
@@ -32,7 +31,7 @@ Install System Requirements
 
       .. code:: console
 
-         sudo apt install python3-poetry jq moreutils wireguard pass uuid-runtime kubectl openssl
+         sudo apt install python3-poetry jq moreutils wireguard uuid-runtime kubectl openssl
 
       Additionally, `kubectl <https://kubernetes.io/docs/tasks/tools/install-kubectl-linux>`__
       is needed.
@@ -224,7 +223,7 @@ Initialize Vault for a Development Setup
 
 As of Summer 2023, yaook/k8s exclusively supports `HashiCorp Vault <https://vaultproject.io>`__
 as backend for storing secrets.
-Previously, passwordstore was used.
+Previously, `pass <https://www.passwordstore.org/>`__ was used.
 For details on the use of Vault in yaook/k8s, please see the
 :doc:`Use of HashiCorp Vault in yaook/k8s </operation/vault>` section.
 

@@ -13,9 +13,6 @@ submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/yaook/k8s.git}"
 submodule_wg_user_name="wg_user"
 submodule_wg_user_git="${MANAGED_K8S_WG_USER_GIT:-git@gitlab.cloudandheat.com:lcm/wg_user}"
 
-submodule_passwordstore_users_repo_name="passwordstore_users"
-submodule_passwordstore_users_git="${MANAGED_K8S_PASSWORDSTORE_USER_GIT:-git@gitlab.cloudandheat.com:lcm/mk8s-passwordstore-users}"
-
 submodule_ch_role_users_repo_name="ch-role-users"
 submodule_ch_role_user_git="${MANAGED_CH_ROLE_USER_GIT:-git@gitlab.cloudandheat.com:operations/ansible-roles/ch-role-users.git}"
 
@@ -52,25 +49,6 @@ if [ "${WG_COMPANY_USERS:-true}" == "true" ]; then
         fi
     else
         run git clone "$submodule_wg_user_git" "$submodule_base/$submodule_wg_user_name"
-    fi
-fi
-
-# Add the Cloud&Heat mk8s pass users repository as submodule
-if [ "${PASS_COMPANY_USERS:-true}" == "true" ]; then
-    if [ "$(git rev-parse --is-inside-work-tree)" == "true" ]; then
-        if [ -d "$submodule_passwordstore_users_repo_name" ]; then
-            run git mv "$submodule_passwordstore_users_repo_name" "$submodule_base/$submodule_passwordstore_users_repo_name"
-        else
-            if [ ! -d "$submodule_base/$submodule_passwordstore_users_repo_name" ]; then
-                run git submodule add "$submodule_passwordstore_users_git" "$submodule_base/$submodule_passwordstore_users_repo_name"
-            else
-                pushd "$cluster_repository/$submodule_base/$submodule_passwordstore_users_repo_name" > /dev/null
-                run git remote set-url origin "$submodule_passwordstore_users_git"
-                popd > /dev/null
-            fi
-        fi
-    else
-        run git clone "$submodule_passwordstore_users_git" "$submodule_base/$submodule_passwordstore_users_repo_name"
     fi
 fi
 

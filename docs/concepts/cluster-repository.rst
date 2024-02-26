@@ -95,7 +95,7 @@ Detailed explanation:
    privilege to be able to enable and integrate company specific
    submodules directly in the source code.
 
-   If you're managing your ``pass``, wireguard or SSH users via git
+   If you're managing your wireguard peers or SSH users via git
    repositories, these should be added here.
 
 Cluster-User Interaction

@@ -27,11 +27,6 @@ If you are having problems, please visit our :doc:`FAQ </getting_started/faq>`.
       but the minimum
       changes that need to be made to the configuration file are:
 
-      -  You need to add your gpg key to the :ref:`additional passwordstore
-         users <cluster-configuration.passwordstore-configuration>`.
-
-         -  Please also ensure that your gpg keyring is up-to-date.
-
       -  You need to add your (public) wireguard key to the
          :ref:`wireguard peer configuration <cluster-configuration.wireguard-configuration>`.
       -  If your cluster runs on top of OpenStack, you can enable the

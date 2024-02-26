@@ -214,13 +214,6 @@ ci-worker-storage-0= ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 ci-worker-storage-1 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 ci-worker-storage-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
 
-[passwordstore]
-rollout_company_users = false # False because we don't have the keys
-
-[[passwordstore.additional_users]]
-ident  = "mk8s-ci@gitlab"
-gpg_id = "mk8s-ci@gitlab"
-
 [ipsec]
 enabled      = true
 test_enabled = true

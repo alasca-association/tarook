@@ -36,9 +36,6 @@ layout poetry ./managed-k8s
 # please see docs/admin/cluster-repo.md in the managed-k8s lcm
 # repository.
 
-# Passwordstore: Encrypt for C&H company members
-export PASS_COMPANY_USERS=false
-
 # Wireguard: Use wireguard on gateways (default: True)
 export WG_USAGE=true
 
