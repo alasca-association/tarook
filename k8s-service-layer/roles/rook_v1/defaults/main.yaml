@@ -82,7 +82,7 @@ rook_ceph_version_map:
   "v1.6.7":
     ceph: "v16.2.5"
   "v1.7.11":
-    ceph: "v16.2.6"
+    ceph: "v16.2.12"
 
 rook_ceph_version: "{{ rook_ceph_version_map[rook_version]['ceph'] }}"
 
