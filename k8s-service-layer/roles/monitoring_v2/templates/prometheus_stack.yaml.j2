@@ -39,19 +39,8 @@ alertmanager:
         targetLabel: nodename
         replacement: $1
         action: replace
-{% if monitoring_scheduling_key %}
-  tolerations:
-    - key: "{{ monitoring_scheduling_key }}"
-      operator: Exists
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-            - key: "{{ monitoring_scheduling_key }}"
-              operator: Exists
-{% endif %}
+  affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}
+  tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
 
 ##
 grafana:
@@ -71,29 +60,11 @@ grafana:
     requests:
       cpu: "{{ monitoring_grafana_cpu_limit }}"
       memory: "{{ monitoring_grafana_memory_request }}"
-{% if monitoring_scheduling_key %}
-  tolerations:
-    - key: "{{ monitoring_scheduling_key }}"
-      operator: Exists
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: "{{ monitoring_scheduling_key }}"
-                operator: Exists
-{% endif %}
-{% if monitoring_grafana_persistent_storage_class %}
-    podAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-          - key: "app.kubernetes.io/name"
-            operator: In
-            values:
-            - "grafana"
-        topologyKey: "kubernetes.io/hostname"
+  tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
+{% if monitoring_grafana_persistent_storage_class | length > 0 %}
+  affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json', template_vars=dict(pod_affinity_key="app.kubernetes.io/name", pod_affinity_operator="In", pod_affinity_values=["grafana"])) | to_json }}
+{% else %}
+  affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}
 {% endif %}
   datasources:
     datasources.yaml:
@@ -370,19 +341,8 @@ prometheusOperator:
         targetLabel: nodename
         replacement: $1
         action: replace
-{% if monitoring_scheduling_key %}
-  tolerations:
-    - key: "{{ monitoring_scheduling_key }}"
-      operator: Exists
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: "{{ monitoring_scheduling_key }}"
-                operator: Exists
-{% endif %}
+  affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}
+  tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
 
 ##
 prometheus:
@@ -439,19 +399,8 @@ prometheus:
       limits:
         cpu: "{{ monitoring_prometheus_cpu_limit }}"
         memory: "{{ monitoring_prometheus_memory_limit }}"
-{% if monitoring_scheduling_key %}
-    tolerations:
-    - key: "{{ monitoring_scheduling_key }}"
-      operator: Exists
-      effect: NoSchedule
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: "{{ monitoring_scheduling_key }}"
-                  operator: Exists
-{% endif %}
+  affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}
+  tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
 {% if monitoring_allow_external_rules %}
     ruleSelectorNilUsesHelmValues: false
     ruleSelector: {}

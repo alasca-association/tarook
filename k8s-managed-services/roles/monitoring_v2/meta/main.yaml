@@ -4,4 +4,5 @@ galaxy_info:
   author: Yaook Authors
 dependencies:
   - k8s-config
+  - common_defaults_v1
 ...

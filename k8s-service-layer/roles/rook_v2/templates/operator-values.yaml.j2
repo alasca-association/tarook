@@ -13,36 +13,19 @@ nodeSelector:
   {{ rook_scheduling_key | to_json }}: "true"
 {% endif %}
 
-tolerations:
-{% if rook_scheduling_key %}
- - key: {{ rook_scheduling_key | to_json }}
-   operator: Exists
-{% endif %}
+tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
 
 monitoring:
   enabled: {{ k8s_monitoring_enabled | bool }}
 
 discover:
   priorityClassName: system-cluster-critical
-{% if rook_scheduling_key %}
-  tolerations:
-    - effect: NoSchedule
-      key: {{ rook_scheduling_key | to_json }}
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: {{ rook_scheduling_key | to_json }}
-          operator: Exists
-{% endif %}
+  tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
+  nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
 
 agent:
   priorityClassName: system-cluster-critical
-{% if rook_scheduling_key %}
-  tolerations:
-    - effect: NoSchedule
-      key: {{ rook_scheduling_key | to_json }}
-{% endif %}
+  tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
 
 pspEnable: false
 
@@ -54,13 +37,8 @@ csi:
   enableRBDSnapshotter: "{{ rook_csi_plugins }}"
   #rbdFSGroupPolicy: "ReadWriteOnceWithFSType"
   #cephFSFSGroupPolicy: "ReadWriteOnceWithFSType"
-{% if rook_scheduling_key %}
-  provisionerTolerations:
-    - effect: NoSchedule
-      key: {{ rook_scheduling_key | to_json }}
-      operator: Exists
-  provisionerNodeAffinity: {{ rook_scheduling_key | to_json }} #TODO not to json
-{% endif %}
+  provisionerTolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
+  provisionerNodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
 
   pluginTolerations:
 {% if rook_nodeplugin_toleration == True %}
