@@ -48,6 +48,8 @@
     repo_state: "{{ fluxcd_install | ternary('present', 'absent') }}"
 
 - name: Install fluxcdv2
+  vars:
+    scheduling_key: "{{ fluxcd_scheduling_key }}"
   kubernetes.core.helm:
     chart_ref: fluxcd-community/flux2
     release_namespace: "{{ fluxcd_namespace }}"

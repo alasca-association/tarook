@@ -1,5 +1,4 @@
-[
-{% if scheduling_key %}
+[{% if scheduling_key %}
   {
     "key": {{ scheduling_key | to_json }},
     "operator": "Exists",
@@ -10,5 +9,4 @@
     "operator": "Exists",
     "effect": "NoExecute"
   }
-{% endif %}
-]
+{% endif %}]

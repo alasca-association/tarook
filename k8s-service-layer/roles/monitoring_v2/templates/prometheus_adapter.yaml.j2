@@ -46,20 +46,8 @@ rules:
       containerLabel: container
     window: 3m
 
-{% if monitoring_scheduling_key %}
-tolerations:
-  - key: "{{ monitoring_scheduling_key }}"
-    operator: Exists
-    effect: NoSchedule
-
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: "{{ monitoring_scheduling_key }}"
-              operator: Exists
-{% endif %}
+tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
+affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}
 
 extraArguments:
 - "--requestheader-client-ca-file=/mnt/certs/front-proxy-ca.crt"

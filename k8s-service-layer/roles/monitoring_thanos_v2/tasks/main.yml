@@ -107,6 +107,8 @@
   - thanos
 
 - name: "{{ monitoring_use_thanos | ternary('I', 'Uni') }}nstall Thanos helm chart"
+  vars:
+    scheduling_key: "{{ monitoring_scheduling_key }}"
   kubernetes.core.helm:
     chart_ref: "{{ monitoring_thanos_chart_ref }}"
     chart_version: "{{ monitoring_thanos_chart_version }}"

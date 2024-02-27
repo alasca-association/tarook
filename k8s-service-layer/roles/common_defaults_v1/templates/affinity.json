@@ -1,5 +1,4 @@
-{
-{% if scheduling_key %}
+{ {% if scheduling_key %}
   "nodeAffinity": {
     "requiredDuringSchedulingIgnoredDuringExecution": {
       "nodeSelectorTerms": [
@@ -13,6 +12,23 @@
         }
       ]
     }
-  }
-{% endif %}
+  },{% endif %}
+  {% if pod_affinity_key is defined | default(False) %}
+  "podAffinity": {
+    "requiredDuringSchedulingIgnoredDuringExecution": [
+      {
+        "labelSelector":
+          {
+            "matchExpressions": [
+              {
+                "key": {{ pod_affinity_key | to_json }},
+                "operator": {{ pod_affinity_operator | default('Exists') | to_json }},
+                "values": {{ pod_affinity_values | default([]) | to_json }}
+              }
+            ]
+          },
+        "topologyKey": "kubernetes.io/hostname"
+      }
+    ]
+  }{% endif %}
 }
