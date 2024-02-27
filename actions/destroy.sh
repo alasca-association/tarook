@@ -11,9 +11,15 @@ if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraf
     exit 5
 fi
 
+load_gitlab_vars
+
 IFS=$'\n'
 if [ "${MANAGED_K8S_NUKE_FROM_ORBIT:-}" = 'true' ]; then
-    container_id="$(jq -r '((.resources | map(select(.name == "thanos_data" and .type == "openstack_objectstorage_container_v1")) | first).instances | first).attributes.id' "$terraform_state_dir/terraform.tfstate")"
+    if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ] ; then
+        container_id="$(curl -s --header "Private-Token: $TF_HTTP_PASSWORD" "$backend_address" | jq -r '((.resources | map(select(.name == "thanos_data" and .type == "openstack_objectstorage_container_v1")) | first).instances | first).attributes.id')"
+    else
+        container_id="$(jq -r '((.resources | map(select(.name == "thanos_data" and .type == "openstack_objectstorage_container_v1")) | first).instances | first).attributes.id' "$terraform_state_dir/terraform.tfstate")"
+    fi
     if [ "x$container_id" != 'xnull' ]; then
         printf 'Deleting object storage container contents of %q ...' "$container_id"
         while IFS=$'\n' read -r -d '' -a objects < <( openstack object list "$container_id" -f value && printf '\0' ); do
@@ -76,7 +82,6 @@ rm -f inventory/.etc/wg_gw_pub.key
 
 # Remove the tf_statefile from gitlab
 if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ] ; then
-    load_gitlab_vars
     GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" --request DELETE "$backend_address")
     check_return_code "$GITLAB_RESPONSE"
     rm -f "$terraform_module/backend_override.tf"
