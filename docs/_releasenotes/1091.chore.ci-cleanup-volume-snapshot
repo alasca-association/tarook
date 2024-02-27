@@ -1,0 +1,1 @@
+Prevent CI jobs from failing if there are volume snapshots left
