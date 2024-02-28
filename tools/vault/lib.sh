@@ -16,7 +16,6 @@ if [ -n "${cluster:-}" ]; then
     ssh_ca_path="$cluster_path/ssh-ca"
     k8s_pki_path="$cluster_path/k8s-pki"
     k8s_front_proxy_pki_path="$cluster_path/k8s-front-proxy-pki"
-    calico_pki_path="$cluster_path/calico-pki"
     etcd_pki_path="$cluster_path/etcd-pki"
 fi
 
@@ -35,11 +34,9 @@ function init_cluster_secrets_engines() {
     ( vault secrets enable -path="$ssh_ca_path" ssh && vault write "$ssh_ca_path/config/ca" generate_signing_key=true ) || $allow_existing
     vault secrets enable -path="$k8s_pki_path" pki || $allow_existing
     vault secrets enable -path="$k8s_front_proxy_pki_path" pki || $allow_existing
-    vault secrets enable -path="$calico_pki_path" pki || $allow_existing
     vault secrets enable -path="$etcd_pki_path" pki || $allow_existing
     vault secrets tune -max-lease-ttl="$pki_root_ttl" "$k8s_pki_path"
     vault secrets tune -max-lease-ttl="$pki_root_ttl" "$k8s_front_proxy_pki_path"
-    vault secrets tune -max-lease-ttl="$pki_root_ttl" "$calico_pki_path"
     vault secrets tune -max-lease-ttl="$pki_root_ttl" "$etcd_pki_path"
 }
 
@@ -123,18 +120,6 @@ function init_k8s_cluster_pki_roles() {
         allow_subdomains=false \
         allow_ip_sans=false \
         key=rsa
-    vault write "$k8s_pki_path/roles/calico-cni" \
-        max_ttl="$pki_ttl" \
-        ttl="$pki_ttl" \
-        allow_localhost=false \
-        enforce_hostnames=false \
-        client_flag=true \
-        server_flag=false \
-        allowed_domains="calico-cni" \
-        allow_bare_domains=true \
-        allow_subdomains=false \
-        allow_ip_sans=false \
-        key_type=rsa
 }
 
 function init_k8s_etcd_pki_roles() {
@@ -211,36 +196,6 @@ function init_k8s_front_proxy_pki_roles() {
         key_type=rsa
 }
 
-function init_k8s_calico_pki_roles() {
-    local calico_pki_path="$1"
-    local pki_ttl="$2"
-
-    vault write "$calico_pki_path/roles/node" \
-        max_ttl="$pki_ttl" \
-        ttl="$pki_ttl" \
-        allow_localhost=false \
-        enforce_hostnames=false \
-        client_flag=true \
-        server_flag=true \
-        allowed_domains="calico-node" \
-        allow_bare_domains=true \
-        allow_subdomains=false \
-        allow_ip_sans=false \
-        key_type=rsa
-    vault write "$calico_pki_path/roles/typha" \
-        max_ttl="$pki_ttl" \
-        ttl="$pki_ttl" \
-        allow_localhost=false \
-        enforce_hostnames=false \
-        client_flag=true \
-        server_flag=true \
-        allowed_domains="calico-typha" \
-        allow_bare_domains=true \
-        allow_subdomains=false \
-        allow_ip_sans=false \
-        key_type=rsa
-}
-
 function generate_ca_issuer() {
     local pki_root_ttl="$1"
     local issuer_name="${2:-}"
@@ -272,15 +227,6 @@ function generate_ca_issuer() {
         ttl="$pki_root_ttl" \
         key_type=ed25519 \
         issuer_name="$issuer_name"
-
-        vault write "$calico_pki_path/root/generate/internal" \
-        common_name="Kubernetes calico Root CA $year" \
-        ou="$ou" \
-        organization="$organization" \
-        country="$country" \
-        ttl="$pki_root_ttl" \
-        key_type=ed25519 \
-        issuer_name="$issuer_name"
     else
         vault write "$k8s_pki_path/root/generate/internal" \
         common_name="Kubernetes Cluster Root CA $year" \
@@ -300,14 +246,6 @@ function generate_ca_issuer() {
 
         vault write "$k8s_front_proxy_pki_path/root/generate/internal" \
         common_name="Kubernetes Front Proxy Root CA $year" \
-        ou="$ou" \
-        organization="$organization" \
-        country="$country" \
-        ttl="$pki_root_ttl" \
-        key_type=ed25519
-
-        vault write "$calico_pki_path/root/generate/internal" \
-        common_name="Kubernetes calico Root CA $year" \
         ou="$ou" \
         organization="$organization" \
         country="$country" \
@@ -342,14 +280,6 @@ function mkcsrs() {
         country="$country" \
         ttl="$ttl" \
         key_type=ed25519 > k8s-front-proxy.csr
-
-    vault write -field=csr "$calico_pki_path/intermediate/generate/internal" \
-        common_name="Kubernetes calico Intermediate CA $year" \
-        ou="$ou" \
-        organization="$organization" \
-        country="$country" \
-        ttl="$ttl" \
-        key_type=ed25519 > k8s-calico.csr
 }
 
 function import_cert {
@@ -453,4 +383,14 @@ function import_thanos_config() {
     echo "Successfully imported Thanos object storage configuration into vault."
     echo "Removing Thanos object storage configuration file: config/$thanos_config_file"
     rm "config/$thanos_config_file"
+}
+
+function check_for_obsolescences() {
+    if [ "$(vault pki health-check -non-interactive -format=json "$cluster_path"/calico-pki/ 2> /dev/null | jq -r '.ca_validity_period[] | .status')" == 'ok' ]; then
+        echo "--- WARNING ---"
+        echo "The calico pki engine is present"
+        echo "although it is obsolete since MR !1084."
+        echo "It is recommended to disable it:"
+        echo "$ vault secrets disable $cluster_path/calico-pki/"
+    fi
 }

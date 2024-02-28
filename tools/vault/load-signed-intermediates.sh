@@ -6,5 +6,4 @@ cluster="$1"
 
 import_cert k8s-cluster.fullchain.pem "$k8s_pki_path"
 import_cert k8s-front-proxy.fullchain.pem "$k8s_front_proxy_pki_path"
-import_cert k8s-calico.fullchain.pem "$calico_pki_path"
 import_cert k8s-etcd.fullchain.pem "$etcd_pki_path"

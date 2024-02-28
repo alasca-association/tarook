@@ -158,36 +158,6 @@
   - role: k8s-master
     tags: k8s-master
 
-- name: Install calico supporting services
-  hosts: masters
-  gather_facts: false
-  vars_files:
-  - vars/disruption.yaml
-  - vars/auto_generated_preamble.yaml
-  - vars/etc.yaml
-  - vars/retries.yaml
-  roles:
-  - role: calico-control-plane
-    tags:
-    - calico
-    - calico-control-plane
-  - role: calico-worker
-    tags:
-    - calico
-    - calico-control-plane
-    - calico-worker
-  post_tasks:
-  # This is required for the k8s node to come up after the installation
-  # of calico – but only when using containerd, go figure!
-  - name: Restart containerd
-    when:
-    - install_status == 'k8s_not_installed'
-    become: true
-    ansible.builtin.systemd:
-      name: containerd
-      state: restarted
-      enabled: true
-
 - name: Spawn and configure the k8s worker nodes
   hosts: workers
   gather_facts: true
@@ -201,25 +171,6 @@
     tags: k8s-worker
   - role: kubelet-configuration
     tags: kubelet-configuration
-  - role: calico-worker
-    tags:
-    - calico
-    - calico-worker
-  - role: calico-cleanup
-    tags:
-    - calico
-    - calico-cleanup
-  post_tasks:
-  # This is required for the k8s node to come up after the installation
-  # of calico – but only when using containerd, go figure!
-  - name: Restart containerd
-    when:
-    - install_status == 'k8s_not_installed'
-    become: true
-    ansible.builtin.systemd:
-      name: containerd
-      state: restarted
-      enabled: true
 
 - name: Install volume snapshot controller
   hosts: masters

@@ -369,7 +369,7 @@ via:
 
    By default, the Tigera operator is deployed with Kubernetes
    v1.25. Therefore, during the upgrade from Kubernetes v1.24 to v1.25, the
-   :ref:`migration to the Tigera operator <calico.migrate-to-operator-based-installation>`
+   migration to the Tigera operator
    will be triggered automatically by default!
 
 Add support for Helm-based installation of rook-ceph `(!676) <https://gitlab.com/yaook/k8s/-/merge_requests/676>`__

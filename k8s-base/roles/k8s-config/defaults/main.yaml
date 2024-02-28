@@ -19,8 +19,6 @@ supported_k8s_versions:
 # Minor version of k8s and Calico, e.g., '1.18.9' becomes '1.18'.
 k8s_version_minor: '{{ k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") }}'
 
-calico_version_minor: '{{ image_version_map[k8s_version_minor].calico_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") }}'
-
 # Default image tags for 'our' services, separated by minor k8s release.
 # To overwrite any of the tags you probably will have to copy the whole dict
 # to your `config.toml` and make the necessary adjustments. Monitoring is
@@ -45,7 +43,6 @@ image_version_map:
       # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.10.0
       csi_livenessprobe: "v2.10.0"
     calico_version: "{{ k8s_network_calico_custom_version | default('3.26.1') }}"
-    calico_use_tigera_operator: true # enforce
     # https://kubernetes-csi.github.io/docs/snapshot-controller.html
     volume_snapshot_controller: "v6.2.1"
 
@@ -67,7 +64,6 @@ image_version_map:
       # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.12.0
       csi_livenessprobe: "v2.12.0"
     calico_version: "{{ k8s_network_calico_custom_version | default('3.26.1') }}"
-    calico_use_tigera_operator: true # enforce
     # https://kubernetes-csi.github.io/docs/snapshot-controller.html
     volume_snapshot_controller: "v6.3.3"
 

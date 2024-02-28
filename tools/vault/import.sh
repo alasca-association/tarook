@@ -103,7 +103,6 @@ function upgrade_ca() {
 
 upgrade_ca "$inventory_etc/ca.crt" "$inventory_etc/ca.key"
 upgrade_ca "$inventory_etc/front-proxy-ca.crt" "$inventory_etc/front-proxy-ca.key"
-upgrade_ca "$inventory_etc/calico/typhaca.crt" "$inventory_etc/calico/typhaca.key"
 upgrade_ca "$inventory_etc/etcd/ca.crt" "$inventory_etc/etcd/ca.key"
 
 pki_ttl=8784h
@@ -115,7 +114,6 @@ if [ "$import_roots" -eq 1 ]; then
 
     cat "$inventory_etc/ca.crt" "$inventory_etc/ca.key" | vault write "$k8s_pki_path/config/ca" pem_bundle=-
     cat "$inventory_etc/front-proxy-ca.crt" "$inventory_etc/front-proxy-ca.key" | vault write "$k8s_front_proxy_pki_path/config/ca" pem_bundle=-
-    cat "$inventory_etc/calico/typhaca.crt" "$inventory_etc/calico/typhaca.key" | vault write "$calico_pki_path/config/ca" pem_bundle=-
     cat "$inventory_etc/etcd/ca.crt" "$inventory_etc/etcd/ca.key" | vault write "$etcd_pki_path/config/ca" pem_bundle=-
 else
     echo "NOT importing CA bundles because invoked with with-intermediates"
@@ -124,7 +122,7 @@ else
 
     mkcsrs "$pki_ca_ttl"
 
-    echo "NOTE: CSRs have been written to k8s-{cluster,etcd,front-proxy,calico}.csr."
+    echo "NOTE: CSRs have been written to k8s-{cluster,etcd,front-proxy}.csr."
 fi
 
 echo "Importing other secrets ..."
@@ -139,7 +137,6 @@ echo "Initializing PKI engines ..."
 init_k8s_cluster_pki_roles "$k8s_pki_path" "$pki_ttl"
 init_k8s_etcd_pki_roles "$etcd_pki_path" "$pki_ttl"
 init_k8s_front_proxy_pki_roles "$k8s_front_proxy_pki_path" "$pki_ttl"
-init_k8s_calico_pki_roles "$calico_pki_path" "$pki_ttl"
 
 echo "-----------------------------------------------"
 echo "Trying to importing etcd backup credentials ..."

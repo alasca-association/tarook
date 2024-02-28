@@ -17,20 +17,17 @@ case "$action" in
     init_k8s_cluster_pki_roles "$k8s_pki_path" "$pki_ttl"
     init_k8s_etcd_pki_roles "$etcd_pki_path" "$pki_ttl"
     init_k8s_front_proxy_pki_roles "$k8s_front_proxy_pki_path" "$pki_ttl"
-    init_k8s_calico_pki_roles "$calico_pki_path" "$pki_ttl"
-    echo "NOTE: CSRs have been written to k8s-{cluster,etcd,front-proxy,calico}.csr."
+    echo "NOTE: CSRs have been written to k8s-{cluster,etcd,front-proxy}.csr."
     ;;
     "load-signed-intermediates")
     import_cert k8s-cluster.fullchain.pem "$k8s_pki_path" "next"
     import_cert k8s-front-proxy.fullchain.pem "$k8s_front_proxy_pki_path" "next"
-    import_cert k8s-calico.fullchain.pem "$calico_pki_path" "next"
     import_cert k8s-etcd.fullchain.pem "$etcd_pki_path" "next"
     ;;
     "apply")
     rotate_pki_issuer "$k8s_pki_path"
     rotate_pki_issuer "$etcd_pki_path"
     rotate_pki_issuer "$k8s_front_proxy_pki_path"
-    rotate_pki_issuer "$calico_pki_path"
     # ToDo: Invalidate/delete previous issuer
     ;;
     *)

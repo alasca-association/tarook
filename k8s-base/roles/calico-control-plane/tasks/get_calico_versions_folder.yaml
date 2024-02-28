@@ -1,5 +1,0 @@
----
-- name: Define template folder based on chosen Calico version
-  ansible.builtin.set_fact:
-    calico_versions_folder: "{{ image_versions.calico_version is version('3.21.3', '<') | ternary('3.19', calico_version_minor) }}"
-...

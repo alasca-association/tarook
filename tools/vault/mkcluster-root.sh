@@ -16,7 +16,6 @@ generate_ca_issuer "$pki_root_ttl"
 init_k8s_cluster_pki_roles "$k8s_pki_path" "$pki_ttl"
 init_k8s_etcd_pki_roles "$etcd_pki_path" "$pki_ttl"
 init_k8s_front_proxy_pki_roles "$k8s_front_proxy_pki_path" "$pki_ttl"
-init_k8s_calico_pki_roles "$calico_pki_path" "$pki_ttl"
 
 echo "-----------------------------------------------"
 echo "Trying to import etcd backup credentials ..."
@@ -29,3 +28,7 @@ import_ipsec_eap_psk
 echo "-----------------------------------------------"
 echo "Trying to import Thanos S3 config ..."
 import_thanos_config
+
+echo "-----------------------------------------------"
+echo "Checking for obsolescences"
+check_for_obsolescences

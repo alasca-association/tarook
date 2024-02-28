@@ -1,19 +1,4 @@
 ---
-- name: Skip play if Tigera operator is not configured
-  ansible.builtin.meta: end_play
-  when:
-    - not image_versions.calico_use_tigera_operator | bool
-    # - not next_k8s_version is defined and next_k8s_version is version('1.25.0', '>=') and next_k8s_version is version('1.26.0', '<')
-
-- name: Fail if configured calico version is too old
-  when: image_versions.calico_version is version ('3.24', '<')
-  ansible.builtin.fail:
-    msg: |
-      The configured calico version is too old to be deployed
-      with the Tigera operator helm chart.
-      See https://yaook.gitlab.io/k8s/operation/calico.html
-      for more information.
-
 - name: Check if tigera-operator already exists
   delegate_to: localhost
   run_once: true
@@ -29,9 +14,6 @@
     - name: Set fact if tigera-operator Deployment exists
       ansible.builtin.set_fact:
         tigera_operator_exists: "{{ tigera_operator_deployment.resources | length >= 1 | bool }}"
-
-- name: Check for migration tasks
-  ansible.builtin.include_tasks: migrate.yaml
 
 - name: Deploy tigera-operator
   delegate_to: localhost
