@@ -3,6 +3,7 @@
 import os
 import openstack
 import typing
+import time
 
 
 def create_os_connection():
@@ -99,11 +100,13 @@ def main():
             )
 
         print("---\nDelete Volume Snapshots\n---")
-        for volume_snapshot in conn.list_volume_snapshots():
-            print(f"Delete volume snapshot {volume_snapshot['id']}")
-            process_deletion_outcome(
-                conn.block_storage.delete_snapshot(volume_snapshot['id'])
-            )
+        while len(conn.list_volume_snapshots()) > 0:
+            for volume_snapshot in conn.list_volume_snapshots():
+                print(f"Delete volume snapshot {volume_snapshot['id']}")
+                process_deletion_outcome(
+                    conn.block_storage.delete_snapshot(volume_snapshot['id'])
+                )
+            time.sleep(3)
 
         print("---\nDelete Volumes\n---")
         for volume in conn.list_volumes():
