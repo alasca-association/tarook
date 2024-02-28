@@ -119,25 +119,25 @@ cephClusterSpec:
   resources:
     mgr:
       limits:
-        cpu: "{{ rook_mgr_cpu_limit }}"
-        memory: "{{ rook_mgr_memory_limit }}"
+        cpu: {{ rook_mgr_cpu_limit | to_json }}
+        memory: {{ rook_mgr_memory_limit | to_json }}
       requests:
-        cpu: "{{ rook_mgr_cpu_request }}"
-        memory: "{{ rook_mgr_memory_request }}"
+        cpu: {{ rook_mgr_cpu_request | to_json }}
+        memory: {{ rook_mgr_memory_request | to_json }}
     mon:
       limits:
-        cpu: "{{ rook_mon_cpu_limit }}"
-        memory: "{{ rook_mon_memory_limit }}"
+        cpu: {{ rook_mon_cpu_limit | to_json }}
+        memory: {{ rook_mon_memory_limit | to_json }}
       requests:
-        cpu: "{{ rook_mon_cpu_request }}"
-        memory: "{{ rook_mon_memory_request }}"
+        cpu: {{ rook_mon_cpu_request | to_json }}
+        memory: {{ rook_mon_memory_request | to_json }}
     osd:
       limits:
-        cpu: "{{ rook_osd_cpu_limit }}"
-        memory: "{{ rook_osd_memory_limit }}"
+        cpu: {{ rook_osd_cpu_limit | to_json }}
+        memory: {{ rook_osd_memory_limit | to_json }}
       requests:
-        cpu: "{{ rook_osd_cpu_request }}"
-        memory: "{{ rook_osd_memory_request }}"
+        cpu: {{ rook_osd_cpu_request | to_json }}
+        memory: {{ rook_osd_memory_request | to_json }}
     prepareosd:
     mgr-sidecar:
     crashcollector:
@@ -224,11 +224,11 @@ cephClusterSpec:
 {% endif %}
       resources:
         limits:
-          cpu: "{{ rook_osd_cpu_limit }}"
-          memory: "{{ rook_osd_memory_limit }}"
+          cpu: {{ rook_osd_cpu_limit | to_json }}
+          memory: {{ rook_osd_memory_limit | to_json }}
         requests:
-          cpu: "{{ rook_osd_cpu_request }}"
-          memory: "{{ rook_osd_memory_request }}"
+          cpu: {{ rook_osd_cpu_request | to_json }}
+          memory: {{ rook_osd_memory_request | to_json }}
       volumeClaimTemplates:
       - metadata:
           creationTimestamp: null
@@ -377,11 +377,11 @@ cephFileSystems:
         labels:
         resources:
           limits:
-            cpu: "{{ rook_mds_cpu_limit }}"
-            memory: "{{ rook_mds_memory_limit }}"
+            cpu: {{ rook_mds_cpu_limit | to_json }}
+            memory: {{ rook_mds_memory_limit | to_json }}
           requests:
-            cpu: "{{ rook_mds_cpu_request }}"
-            memory: "{{ rook_mds_memory_request }}"
+            cpu: {{ rook_mds_cpu_request | to_json }}
+            memory: {{ rook_mds_memory_request | to_json }}
       mirroring:
         enabled: false
     storageClass:

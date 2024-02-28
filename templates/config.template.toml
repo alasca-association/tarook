@@ -454,7 +454,7 @@ use_helm = true
 # Memory limit for mon Pods
 #mon_memory_limit = "1Gi"
 #mon_memory_request = "{{ rook_mon_memory_limit }}"
-#mon_cpu_limit = "500m"
+#mon_cpu_limit = null
 #mon_cpu_request = "100m"
 
 # Resource limits for OSD pods
@@ -462,25 +462,25 @@ use_helm = true
 # Guaranteed QoS class.
 #osd_memory_limit = "2Gi"
 #osd_memory_request = "{{ rook_osd_memory_limit }}"
-#osd_cpu_limit = "500m"
+#osd_cpu_limit = null
 #osd_cpu_request = "{{ rook_osd_cpu_limit }}"
 
 # Memory limit for mgr Pods
 #mgr_memory_limit = "512Mi"
 #mgr_memory_request = "{{ rook_mgr_memory_limit }}"
-#mgr_cpu_limit = "500m"
+#mgr_cpu_limit = null
 #mgr_cpu_request = "100m"
 
 # Memory limit for MDS / CephFS Pods
 #mds_memory_limit = "4Gi"
 #mds_memory_request = "{{ rook_mds_memory_limit }}"
-#mds_cpu_limit = "1"
+#mds_cpu_limit = null
 #mds_cpu_request = "{{ rook_mds_cpu_limit }}"
 
 # Rook-ceph operator limits
 #operator_memory_limit = "512Mi"
 #operator_memory_request = "{{ rook_operator_memory_limit }}"
-#operator_cpu_limit = "1"
+#operator_cpu_limit = null
 #operator_cpu_request = "{{ rook_operator_cpu_limit }}"
 
 #[[k8s-service-layer.rook.pools]]

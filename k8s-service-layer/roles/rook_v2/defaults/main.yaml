@@ -8,13 +8,13 @@ rook_mon_volume_size: 10Gi
 rook_mon_allow_multiple_per_node: false
 rook_mon_memory_limit: "1Gi"
 rook_mon_memory_request: "{{ rook_mon_memory_limit }}"
-rook_mon_cpu_limit: "500m"
+rook_mon_cpu_limit: null
 rook_mon_cpu_request: "100m"
 rook_nmgrs: 2
 rook_mgr_use_pg_autoscaler: true
 rook_mgr_memory_limit: "512Mi"
 rook_mgr_memory_request: "{{ rook_mgr_memory_limit }}"
-rook_mgr_cpu_limit: "500m"
+rook_mgr_cpu_limit: null
 rook_mgr_cpu_request: "100m"
 rook_nosds: 3
 rook_osd_volume_size: 90Gi
@@ -23,16 +23,16 @@ rook_osd_anti_affinity: true
 rook_osd_autodestroy_safe: true
 rook_osd_memory_limit: "2Gi"
 rook_osd_memory_request: "{{ rook_osd_memory_limit }}"
-rook_osd_cpu_limit: "500m"
+rook_osd_cpu_limit: null
 rook_osd_cpu_request: "{{ rook_osd_cpu_limit }}"
 rook_encrypt_osds: false
 rook_mds_memory_limit: "4Gi"
 rook_mds_memory_request: "{{ rook_mds_memory_limit }}"
-rook_mds_cpu_limit: "1"
+rook_mds_cpu_limit: null
 rook_mds_cpu_request: "{{ rook_mds_cpu_limit }}"
 rook_operator_memory_limit: "512Mi"
 rook_operator_memory_request: "{{ rook_operator_memory_limit }}"
-rook_operator_cpu_limit: "1"
+rook_operator_cpu_limit: null
 rook_operator_cpu_request: "{{ rook_operator_cpu_limit }}"
 rook_csi_plugins: true
 rook_toolbox: true
