@@ -218,6 +218,6 @@ release-note-file-check:
   retry: 1
   rules:
     # run only for MRs on devel
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $YAOOK_K8S_DEFAULT_BRANCH
       when: on_success
     - when: never
