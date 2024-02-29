@@ -12,7 +12,7 @@ sourceController:
   priorityClassName: system-cluster-critical
 prometheus:
   podMonitor:
-    create: {{ monitoring_install | bool }}
+    create: {{ k8s_monitoring_enabled | bool }}
     additionalLabels:
       app.kubernetes.io/component: monitoring
       release: prometheus-stack  # That's the default podmonitor selector of our prometheus
