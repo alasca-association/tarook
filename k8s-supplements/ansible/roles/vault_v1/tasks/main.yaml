@@ -23,11 +23,11 @@
   when: yaook_vault_ingress | default(False)
   ansible.builtin.import_tasks: external_pki.yaml
 
-- name: "{{ k8s_ingress_install | ternary('Add', 'Remove') }} Hashicorp vault Repo"
+- name: "{{ yaook_vault_enabled | ternary('Add', 'Remove') }} Hashicorp vault Repo"
   kubernetes.core.helm_repository:
     name: hashicorp
     repo_url: "{{ yaook_vault_helm_repo_url }}"
-    repo_state: "{{ k8s_ingress_install | ternary('present', 'absent') }}"
+    repo_state: "{{ yaook_vault_enabled | ternary('present', 'absent') }}"
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
