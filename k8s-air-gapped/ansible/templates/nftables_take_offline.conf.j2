@@ -1,5 +1,0 @@
-table inet filter {
-    chain forward {
-	iifname $wan ip saddr { {{ mk8s_offline_ips | join(", ") }} } reject with icmp type host-unreachable;
-    }
-}
