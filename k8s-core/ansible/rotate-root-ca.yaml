@@ -1,23 +1,18 @@
 ---
 # This implements https://kubernetes.io/docs/tasks/tls/manual-rotation-of-ca-certificates/
 
-- name: Detect user
-  hosts: k8s_nodes
-  gather_facts: false
-  # we need *all* hosts.
-  any_errors_fatal: true
-  vars_files:
-    - vars/etc.yaml
-  roles:
-    - detect_user
+- name: Initialize node connection
+  import_playbook: "connect-to-nodes.yaml"
+  vars:
+    target_hosts: k8s_nodes
 
 - name: Rotate CA
   hosts: masters
   gather_facts: true
   vars_files:
     - vars/disruption.yaml
-    - vars/etc.yaml
     - vars/retries.yaml
+    - vars/vault-config.yaml
   handlers:
     - name: Import k8s-master handlers
       import_tasks: roles/k8s-master/handlers/main.yaml
@@ -31,6 +26,7 @@
   vars_files:
     - vars/disruption.yaml
     - vars/retries.yaml
+    - vars/vault-config.yaml
   handlers:
     - name: Import k8s-master handlers
       import_tasks: roles/k8s-master/handlers/main.yaml
