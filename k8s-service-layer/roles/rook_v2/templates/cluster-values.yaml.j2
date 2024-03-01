@@ -1,17 +1,7 @@
 toolbox:
   enabled: true
-{% if rook_scheduling_key %}
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: {{ rook_scheduling_key | to_json }}
-            operator: Exists
-  tolerations:
-  - key: {{ rook_scheduling_key | to_json }}
-    operator: Exists
-{% endif %}
+  affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}
+  tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
 
 monitoring:
   enabled: {{ k8s_monitoring_enabled | bool }}
@@ -70,41 +60,18 @@ cephClusterSpec:
       iteration: 1
     allowUninstallWithVolumes: false
   placement:
-{% if rook_scheduling_key %}
     all:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: {{ rook_scheduling_key | to_json }}
-              operator: Exists
-      tolerations:
-      - key: {{ rook_scheduling_key | to_json }}
-        operator: Exists
-{% endif %}
+      nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
+      tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
 {% if rook_mon_scheduling_key %}
     mon:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: {{ rook_mon_scheduling_key | to_json }}
-              operator: Exists
-      tolerations:
-      - key: {{ rook_mon_scheduling_key | to_json }}
-        operator: Exists
+      nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
+      tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json', template_vars=dict(scheduling_key="{{ rook_mon_scheduling_key }}")) | to_json }}
 {% endif %}
 {% if rook_mgr_scheduling_key %}
     mgr:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: {{ rook_mgr_scheduling_key | to_json }}
-              operator: Exists
-      tolerations:
-      - key: {{ rook_mgr_scheduling_key | to_json }}
-        operator: Exists
+      nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
+      tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json', template_vars=dict(scheduling_key="{{ rook_mgr_scheduling_key }}")) | to_json }}
 {% endif %}
   annotations:
   labels:
@@ -180,7 +147,6 @@ cephClusterSpec:
     - name: cinder
       count: {{ rook_nosds }}
       portable: true
-{% if rook_osd_anti_affinity or rook_scheduling_key %}
       placement:
 {% if rook_osd_anti_affinity %}
         podAntiAffinity:
@@ -210,18 +176,8 @@ cephClusterSpec:
               - rook-ceph-osd
               - rook-ceph-osd-prepare
 {% endif %}
-{% if rook_scheduling_key %}
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: {{ rook_scheduling_key | to_json }}
-                operator: Exists
-        tolerations:
-        - key: {{ rook_scheduling_key | to_json }}
-          operator: Exists
-{% endif %}
-{% endif %}
+        nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
+        tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
       resources:
         limits:
           cpu: {{ rook_osd_cpu_limit | to_json }}
@@ -341,17 +297,8 @@ cephFileSystems:
         activeCount: 1
         activeStandby: true
         placement:
-{% if rook_scheduling_key %}
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-              - matchExpressions:
-                - key: {{ rook_scheduling_key | to_json }}
-                  operator: Exists
-          tolerations:
-          - key: {{ rook_scheduling_key | to_json }}
-            operator: Exists
-{% endif %}
+          nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
+          tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
           podAntiAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
               - labelSelector:

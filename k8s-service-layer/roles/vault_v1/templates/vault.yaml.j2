@@ -11,8 +11,8 @@ server:
   # 1. The cluster depends on an external vault, in which case it typically will not have a vault_v1 vault installed.
   # 2. The cluster provides a vault for other vaults; in that case, it does not have an external vault for itself to rely on, so it self-hosts its vault, i.e. it is in fact system-cluster-critical.
   priorityClassName: "system-cluster-critical"
-  affinity: "{{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}"
-  tolerations: "{{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}"
+  affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}
+  tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
   # We would like to use a different certificate (letsencrypt) which is valid in public in addition to the
   # one which is derived from our custom CA. vault should terminate TLS, not the ingress controller. To cope
   # with the situation we add an additional API endpoint (8250) solely for this purpose. Unfortunately we cannot

@@ -15,19 +15,8 @@ compactor:
     limits:
       memory: {{ monitoring_thanos_compact_memory_limit | quote }}
       cpu: {{ monitoring_thanos_compact_cpu_limit | quote }}
-{% if monitoring_scheduling_key %}
-  tolerations:
-    - key: "{{ monitoring_scheduling_key }}"
-      operator: Exists
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: "{{ monitoring_scheduling_key }}"
-                operator: Exists
-{% endif %}
+  tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
+  affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}
 
 storegateway:
   enabled: true
@@ -38,19 +27,8 @@ storegateway:
     limits:
       memory: {{ monitoring_thanos_store_memory_limit | quote }}
       cpu: {{ monitoring_thanos_store_cpu_limit | quote }}
-{% if monitoring_scheduling_key %}
-  tolerations:
-    - key: "{{ monitoring_scheduling_key }}"
-      operator: Exists
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: "{{ monitoring_scheduling_key }}"
-                operator: Exists
-{% endif %}
+  tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
+  affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}
 
 query:
   enabled: true
@@ -67,20 +45,8 @@ query:
     enabled: true
     sidecarsService: "prometheus-operated"
     sidecarsNamespace: "{{ monitoring_namespace }}"
-{% if monitoring_scheduling_key %}
-  tolerations:
-    - key: "{{ monitoring_scheduling_key }}"
-      operator: Exists
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: "{{ monitoring_scheduling_key }}"
-                operator: Exists
-{% endif %}
-
+  affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}
+  tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
 queryFrontend:
   enabled: false
 

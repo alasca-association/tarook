@@ -10,6 +10,8 @@
   delay: "{{ network_error_delay }}"
 
 - name: "{{ (gpu_nodes.resources | length > 0) | ternary('I', 'Uni') }}nstall NVIDIA DCGM exporter"
+  vars:
+    scheduling_key: "k8s.yaook.cloud/gpu-node"
   kubernetes.core.helm:
     chart_ref: dcgm-exporter
     chart_repo_url: "{{ monitoring_nvidia_dcgm_exporter_helm_repo_url }}"

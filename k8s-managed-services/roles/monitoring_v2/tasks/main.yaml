@@ -1,5 +1,7 @@
 ---
 - name: "{{ monitoring_internet_probe | ternary('I', 'Uni') }}nstall blackbox-exporter"
+  vars:
+    scheduling_key: "{{ monitoring_scheduling_key }}"
   kubernetes.core.helm:
     chart_ref: prometheus-community/prometheus-blackbox-exporter
     chart_version: "{{ monitoring_blackbox_version }}"
