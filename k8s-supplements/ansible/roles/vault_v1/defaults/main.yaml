@@ -16,9 +16,6 @@ yaook_vault_scheduling_key: null
 yaook_vault_storage_class: csi-sc-cinderplugin
 yaook_vault_storage_size: 8Gi
 yaook_vault_ingress: false
-yaook_vault_repo_dir: "{{ (ansible_inventory_sources[0] | dirname) }}/../../.."
-yaook_vault_etc_dir: "{{ yaook_vault_repo_dir }}/etc"
-yaook_vault_config_dir: "{{ yaook_vault_repo_dir }}/config/"
 yaook_vault_enable_backups: true
 yaook_vault_s3_config_file: "vault_backup_s3_config.yaml"
 yaook_vault_backup_approle_path: "yaook/vault_v1/approle/"

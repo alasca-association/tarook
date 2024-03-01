@@ -91,14 +91,14 @@
     delegate_to: localhost
     ansible.builtin.copy:
       content: "{{ (vault_init.stdout | from_json).unseal_keys_b64 }}"
-      dest: "{{ yaook_vault_etc_dir }}/vault_unseal.key"
+      dest: "{{ etc_dir }}/vault_unseal.key"
       mode: u=rw,og-rwx
 
   - name: 'SENSITIVE: Write ROOT TOKEN into cluster repo (./etc/vault_root_token)'
     delegate_to: localhost
     ansible.builtin.copy:
       content: "{{ (vault_init.stdout | from_json).root_token }}"
-      dest: "{{ yaook_vault_etc_dir }}/vault_root_token"
+      dest: "{{ etc_dir }}/vault_root_token"
       mode: u=rw,og-rwx
 
 - name: Load unseal key(s) and a root token

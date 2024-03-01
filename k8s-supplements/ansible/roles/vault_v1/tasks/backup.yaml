@@ -71,7 +71,7 @@
 
 - name: Load the S3 endpoint credentials
   ansible.builtin.include_vars:
-    file: "{{ yaook_vault_config_dir }}/{{ yaook_vault_s3_config_file }}"
+    file: "{{ config_dir }}/{{ yaook_vault_s3_config_file }}"
     name: yaook_vault_backup_s3
 
 - name: Deploy the vault-backup
