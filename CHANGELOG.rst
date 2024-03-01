@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v1.0.1 (2024-03-01)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- Fix kubernetes-validate installation for K8s updates (`!1094 <https://gitlab.com/yaook/k8s/-/merge_requests/1094>`_)
+
+
 1.0.0 (2024-01-29)
 ------------------
 
