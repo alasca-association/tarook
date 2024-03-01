@@ -21,4 +21,5 @@ export ANSIBLE_ROLES_PATH
 
 cd "$ansible_k8s_custom_playbook"
 ansible_playbook -i "$ansible_inventory_host_file" \
+  -e "ansible_k8s_core_dir=$ansible_k8s_core_dir" \
   main.yaml "$@"
