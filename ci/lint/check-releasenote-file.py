@@ -55,6 +55,7 @@ if __name__ == "__main__":
     MR_IID = sys.argv[4]
     note_directory = sys.argv[5]
     fork = sys.argv[6]
+    hotfix = sys.argv[7]
 
     repository = git.Repo(repo_adr)
 
@@ -71,6 +72,11 @@ if __name__ == "__main__":
             if (fork == "True"):
                 raise RuntimeError("Provided MR-ID in releasenotes doesn't \
                                     match the actual MR-ID.")
+            if (hotfix == "True" and number.isdigit()):
+                print("Provided MR-ID in releasenotes doesn't \
+                        match the actual MR-ID, but we asume you know \
+                        what you are doing.")
+                sys.exit(13)
             fname = os.path.basename(file).split('.')
             dirname = os.path.dirname(file)
             fname[0] = MR_IID
