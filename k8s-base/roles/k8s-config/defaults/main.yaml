@@ -19,6 +19,7 @@ supported_k8s_versions:
 
 # Minor version of k8s and Calico, e.g., '1.18.9' becomes '1.18'.
 k8s_version_minor: '{{ k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") }}'
+next_k8s_version_minor: '{{ next_k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") if next_k8s_version is defined }}'
 
 calico_version_minor: '{{ image_version_map[k8s_version_minor].calico_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") }}'
 
