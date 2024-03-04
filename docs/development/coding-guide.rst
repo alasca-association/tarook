@@ -350,17 +350,49 @@ The general and mandatory outline is described in :ref:`our policy <releases-and
 As an aid we give an example for a full hotfix process here.
 
 1. Create a branch of the merge-base of the latest release ``release/v$Major.$Minor`` and ``devel`` into ``hotfix/base/$name`` and create the fix.
+
+   .. code:: console
+
+      $ sha=$(git merge-base devel release/v$Major.$Minor)
+      $ git checkout -b hotfix/base/$name $sha
+
 2. Create a branch of ``devel`` named ``hotfix/devel/$name`` and merge ``hotfix/base/$name`` into it.
-   We will update the version-number in ``version`` accordingly and create the changelog using towncrier.
-   Create and merge a MR to devel. Please make sure the version number is correct (it's a fix for the latest release) before merging.
+
+   .. code:: console
+
+      $ git checkout -b hotfix/devel/$name devel
+      $ git merge hotfix/base/$name
+
+   - Place your relasenote inside ``docs/_releasenotes/hotfix``.
+   - Create a MR to ``devel``. We will update the version number in ``version`` accordingly and create the changelog using towncrier.
+
+      .. code:: console
+
+         $ git push --set-upstream origin hotfix/v$Major.$Minor/$name \
+           -o merge_request.create \
+           -o merge_request.target=release/v$Major.$Minor \
+           -o merge_request.title="Hotfix: $name" \
+           -o merge_request.label="hotfix"
+
+   - Please make sure the version number is correct (it's a fix for the latest release) and the changelog looks sane before merging.
+   - Merge the MR.
 
 For all releases needing the hotfix, do:
 
 3. Create a branch of the corresponding ``release/v$Major.$Minor``-branch named ``hotfix/v$Major.$Minor/$name``
    and cherry pick ``hotfix/base/$name`` into it.
-   We will update the version-number in ``version`` accordingly and create the changelog using towncrier.
-   Create and merge a MR to ``release/v$Major.$Minor``.
-   Please make sure the version number is correct (it's a fix for the corresponding release) before merging.
+
+   .. code:: console
+
+      $ git checkout -b hotfix/v$Major.$Minor/$name release/v$Major.$Minor
+      $ git cherry-pick $COMMIT_SHA_OF_HOTFIX
+
+   - Place your relasenote inside ``docs/_releasenotes/hotfix``.
+   - Create a MR to ``release/v$Major.$Minor``. We will update the version-number in ``version`` accordingly and create the changelog using towncrier.
+   - Please make sure the version number is correct (it's a fix for the latest release) and the changelog looks sane before merging.
+   - Merge the MR.
+
+In the end check that the release is tagged and a gitlab-release created. If not, do it manually.
 
 .. note::
 
@@ -385,7 +417,7 @@ If we can stop the pipeline, do:
 
 .. important::
 
-    Don't create a ``hotfix/devel/$name`` branch merging back to devel as the hotfix will be merged
+    Don't create a ``hotfix/devel/$name`` branch merging back to ``devel`` as the hotfix will be merged
     via the ``release-prepare/v$Major.$Minor.$Patch``-branch!
 
 .. figure:: /img/hotfix-prepare.svg
