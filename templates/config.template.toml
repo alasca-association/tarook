@@ -547,11 +547,9 @@ use_helm = true
 # [0] https://gitlab.com/yaook/k8s/-/merge_requests/635
 #manage_thanos_bucket = true
 
-# Thanos uses local storage to keep a copy of the metadata from the object store
-# for faster access. The size and storage class for that volume can be
-# configured:
-#thanos_metadata_volume_size="10Gi"
-#thanos_metadata_volume_storage_class="rook-ceph-data"
+# Set custom Bitnami/Thanos chart version
+#thanos_chart_version: "13.3.0"
+
 
 # By default, the monitoring will capture all namespaces. If this is not
 # desired, the following switch can be turned off. In that case, only the
