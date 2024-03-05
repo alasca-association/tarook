@@ -1,6 +1,8 @@
 ---
 global:
-  storageClass: {{ monitoring_thanos_metadata_volume_storage_class | quote }}
+{% if monitoring_thanos_storage_class != None %}
+  storageClass: {{ monitoring_thanos_storage_class | to_json }}
+{% endif %}
 
 existingObjstoreSecret: {{ monitoring_thanos_config_secret_name | quote }}
 compactor:
@@ -17,6 +19,11 @@ compactor:
       cpu: {{ monitoring_thanos_compact_cpu_limit | quote }}
   tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
   affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}
+  persistence:
+    enabled: {{ monitoring_thanos_storage_class != None }}
+{% if monitoring_thanos_compactor_size != None %}
+    size: {{ monitoring_thanos_compactor_size | to_json }}
+{% endif %}
 
 storegateway:
   enabled: true
@@ -29,11 +36,19 @@ storegateway:
       cpu: {{ monitoring_thanos_store_cpu_limit | quote }}
   tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
   affinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json') | to_json }}
+  persistence:
+    enabled: {{ monitoring_thanos_storage_class != None }}
+{% if monitoring_thanos_storegateway_size != None %}
+    size: {{ monitoring_thanos_storegateway_size | to_json }}
+{% endif %}
 
 query:
   enabled: true
   persistence:
-    size: {{ monitoring_thanos_metadata_volume_size }}
+    enabled: {{ monitoring_thanos_storage_class != None }}
+{% if monitoring_thanos_query_size != None %}
+    size: {{ monitoring_thanos_query_size | to_json }}
+{% endif %}
   resources:
     requests:
       memory: {{ monitoring_thanos_query_memory_request | quote }}
