@@ -70,6 +70,14 @@ function require_disruption() {
     fi
 }
 
+function require_vault_token() {
+    if [ -z ${VAULT_TOKEN+x} ]; then
+        # shellcheck disable=SC2016
+        errorf '$VAULT_TOKEN is not set but required during this stage'
+        exit 1
+    fi
+}
+
 function ccode() {
     if ! color_enabled; then
         return
