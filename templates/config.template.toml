@@ -160,6 +160,9 @@ virtualize_gpu = false
 [kubernetes.apiserver]
 frontend_port = 8888 # •ᴗ•
 
+# Configure memory resources for the api-kubeserver
+# memory_limit = ""
+
 [kubernetes.controller_manager]
 #large_cluster_size_threshold = 50
 

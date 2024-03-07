@@ -1,0 +1,21 @@
+[
+	{
+		"op" : "add" ,
+		"path" : "/spec/containers/0/command/-" ,
+		"value" : "--service-account-issuer=kubernetes.default.svc"
+	},
+{% if k8s_apiserver_memory_limit is defined %}
+	{
+		"op":"add",
+		"path":"/spec/containers/0/resources/limits",
+		"value":{
+			"memory":"{{ k8s_apiserver_memory_limit }}"
+		}
+	},
+{% else %}
+	{
+		"op":"remove",
+		"path":"/spec/containers/0/resources"
+	}
+{% endif %}
+]
