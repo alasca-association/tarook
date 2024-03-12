@@ -1,0 +1,51 @@
+build_image:
+  tags:
+    - docker
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.21.2"
+  stage: build-image
+  rules:
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes:
+    - flake.nix
+    - flake.lock
+    - ci/build-image.yaml
+    - ci/container-image/*
+    when: always
+  - when: never
+  before_script:
+    - |
+      cat > /etc/nix/nix.conf <<EOF
+      build-users-group = nixbld
+      sandbox = false
+      extra-experimental-features = nix-command flakes
+      substituters = https://cache.nixos.org/ https://yaook.cachix.org
+      trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
+      EOF
+  script:
+  - export IMAGE_TAG="${CI_COMMIT_SHA:0:8}"
+  - export IMAGE_REF="${YAOOK_K8S_CI_IMAGE_NAME}:${IMAGE_TAG}"
+  - nix run nixpkgs#skopeo -- login -u gitlab-ci-token -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
+  - nix run ".#streamCiImage" | nix run nixpkgs#gzip -- --fast | nix run nixpkgs#skopeo -- --insecure-policy copy docker-archive:/dev/stdin "docker://${IMAGE_REF}"
+  - echo "YAOOK_K8S_CI_IMAGE_TAG=$IMAGE_TAG" > image.env
+
+  artifacts:
+    reports:
+      dotenv: image.env
+
+deploy_image:
+  tags:
+    - docker
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/quay.io/skopeo/stable:latest"
+  stage: release
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
+      when: on_success
+  script:
+  - skopeo login -u gitlab-ci-token -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
+  - skopeo --insecure-policy copy "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}" "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${CI_COMMIT_REF_NAME}"
+  - |
+    if [ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]; then
+      skopeo --insecure-policy copy "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}" "docker://${YAOOK_K8S_CI_IMAGE_NAME}:latest";
+    fi

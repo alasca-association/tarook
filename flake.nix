@@ -15,8 +15,33 @@
       perSystem = {
         pkgs,
         system,
+        inputs',
         ...
-      }: {
+      }: let
+        dependencies = with pkgs; {
+          yk8s = [
+            jq
+            kubectl
+            kubernetes-helm
+            moreutils
+            openssl
+            openstackclient
+            poetry
+            terraform
+            vault
+            wireguard-tools
+          ];
+          ci = with pkgs; [
+            git
+          ];
+          interactive = with pkgs; [
+            bashInteractive
+            dnsutils
+            iputils
+            k9s
+          ];
+        };
+      in {
         _module.args.pkgs = import nixpkgs {
           inherit system;
           config.allowUnfreePredicate = pkg:
@@ -26,22 +51,15 @@
             ];
         };
         devShells.default = pkgs.mkShell {
-          nativeBuildInputs = [pkgs.bashInteractive];
-          buildInputs = [
-            pkgs.openstackclient
-            pkgs.k9s
-            pkgs.kubernetes-helm
-            pkgs.kubectl
-            pkgs.jq
-            pkgs.moreutils
-            pkgs.terraform
-            pkgs.vault
-            pkgs.openssl
-            pkgs.wireguard-tools
-            pkgs.poetry
-          ];
+          nativeBuildInputs = dependencies.interactive;
+          buildInputs = dependencies.yk8s;
         };
-
+        packages = let
+          container-image = import ./ci/container-image {inherit pkgs dependencies;};
+        in {
+          ciImage = pkgs.dockerTools.buildLayeredImage container-image;
+          streamCiImage = pkgs.writeShellScriptBin "stream-ci" (pkgs.dockerTools.streamLayeredImage container-image);
+        };
         formatter = pkgs.alejandra;
       };
     };
