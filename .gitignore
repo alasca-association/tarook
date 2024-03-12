@@ -11,3 +11,4 @@ cloud-configs/
 *.key
 terraform/02-moved-instances.tf
 _build
+result
