@@ -9,6 +9,9 @@ variables:
   REGEX_RELEASE_HOTFIX_BRANCH_PREFIX: /^hotfix\/\S+$/
   REGEX_RELEASE_HOTFIX_BASE_BRANCH_PREFIX: /^hotfix\/base\S+$/
 
+  YAOOK_K8S_CI_IMAGE_NAME: ${CI_REGISTRY_IMAGE}/ci
+  YAOOK_K8S_CI_IMAGE_TAG: devel
+
 # Pipelines run on devel branch, release-(prepare)-branches and merge requests
 workflow:
   rules:
@@ -19,6 +22,7 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
 stages:
+- build-image
 - lint
 - hotfix-prepare
 - cluster-tests
@@ -26,6 +30,7 @@ stages:
 - release
 
 include:
+  - local: ci/build-image.yaml
   - local: ci/hotfix-prepare.yaml
   - local: ci/cluster-tests.yaml
   - local: ci/diagnostic-tools.yaml
@@ -83,7 +88,7 @@ yamllint:
     - when: never
 
 detect-vault-image:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   stage: lint
   script:
     - bash ./actions/detect-vault-image.sh
@@ -94,10 +99,12 @@ detect-vault-image:
     - when: on_success
 
 ansible-lint:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   stage: lint
   before_script:
     - poetry install --with ci --sync
+    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null)
+    - export PATH="$VIRTUAL_ENV/bin:$PATH"
   script:
     - "ansible-galaxy install -r ansible/requirements.yaml"
     - "ANSIBLE_ROLES_PATH=./k8s-core/ansible/roles:./k8s-supplements/ansible/roles:./k8s-supplements/ansible/test-roles ansible-lint -c ci/lint/ansible-lint-conf --offline"
@@ -108,9 +115,11 @@ ansible-lint:
     - when: on_success
 
 flake8:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   before_script:
     - poetry install --with ci --sync
+    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null)
+    - export PATH="$VIRTUAL_ENV/bin:$PATH"
   script:
     - 'python3 -m flake8'
   stage: lint
@@ -124,7 +133,7 @@ flake8:
     - when: never
 
 poetry-lock:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   before_script:
     - poetry install --sync
     - git config --global user.email "$GITLAB_USER_EMAIL"
@@ -144,9 +153,11 @@ poetry-lock:
     # - when: on_success
 
 pre-commit-hooks:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   before_script:
     - poetry install --sync
+    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null)
+    - export PATH="$VIRTUAL_ENV/bin:$PATH"
   script:
     - 'SKIP=shellcheck,yamllint,flake8,check-flake pre-commit run --all-files || true'
     - git --no-pager diff
@@ -161,9 +172,11 @@ pre-commit-hooks:
 
 build-docs-check:
   stage: lint
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   before_script:
     - poetry install --with docs --sync
+    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null)
+    - export PATH="$VIRTUAL_ENV/bin:$PATH"
   script:
     - sphinx-build -W docs _build/html
     - mv _build/html public
@@ -185,7 +198,7 @@ build-docs-check:
 
 release-note-file-check:
   stage: lint
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   variables:
     CONFIG_FILE: towncrier.toml
     HOTFIX: "False"
@@ -195,6 +208,8 @@ release-note-file-check:
     COMMIT_FILES: docs/_releasenotes
   before_script:
     - poetry install --with ci --with docs --sync
+    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null)
+    - export PATH="$VIRTUAL_ENV/bin:$PATH"
     - git fetch origin "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
     - |
       if [ "${CI_MERGE_REQUEST_PROJECT_URL}" = "${CI_MERGE_REQUEST_SOURCE_PROJECT_URL}" ]; then

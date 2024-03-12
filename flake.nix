@@ -1,6 +1,12 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-  inputs.flake-parts.url = "github:hercules-ci/flake-parts";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    nix2container = {
+      url = "github:nlewo/nix2container";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
 
   outputs = inputs @ {
     self,
@@ -15,8 +21,38 @@
       perSystem = {
         pkgs,
         system,
+        inputs',
         ...
-      }: {
+      }: let
+        nix2containerPkgs = inputs'.nix2container.packages;
+        yk8sDeps = with pkgs; [
+          coreutils
+          gcc # so poetry can build netifaces
+          gnugrep
+          jq
+          jsonnet
+          jsonnet-bundler
+          kubectl
+          kubernetes-helm
+          moreutils
+          openssl
+          openstackclient
+          poetry
+          terraform
+          util-linux # for uuidgen
+          vault
+          wireguard-tools
+        ];
+        ciDeps = with pkgs; [
+          git
+        ];
+        interactiveDeps = with pkgs; [
+          bashInteractive
+          dnsutils
+          iputils
+          k9s
+        ];
+      in {
         _module.args.pkgs = import nixpkgs {
           inherit system;
           config.allowUnfreePredicate = pkg:
@@ -26,25 +62,27 @@
             ];
         };
         devShells.default = pkgs.mkShell {
-          nativeBuildInputs = [pkgs.bashInteractive];
-          buildInputs = [
-            pkgs.openstackclient
-            pkgs.k9s
-            pkgs.kubernetes-helm
-            pkgs.kubectl
-            pkgs.jq
-            pkgs.moreutils
-            pkgs.jsonnet
-            pkgs.jsonnet-bundler
-            pkgs.terraform
-            pkgs.vault
-            pkgs.openssl
-            pkgs.wireguard-tools
-            pkgs.poetry
-          ];
+          nativeBuildInputs = interactiveDeps;
+          buildInputs = yk8sDeps;
         };
-
+        packages = {
+          skopeo = nix2containerPkgs.skopeo-nix2container;
+          ciImage = nix2containerPkgs.nix2container.buildImage (import ./ci/container-image {inherit pkgs yk8sDeps interactiveDeps ciDeps;});
+        };
         formatter = pkgs.alejandra;
+      };
+      flake = {
+        lib = {
+          mkCiImage = {
+            pkgs,
+            yk8sDeps,
+            interactiveDeps,
+            ciDeps,
+            tag,
+          }: {
+            inherit tag;
+          };
+        };
       };
     };
 }
