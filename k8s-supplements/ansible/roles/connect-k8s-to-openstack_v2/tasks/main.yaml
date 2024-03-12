@@ -1,0 +1,120 @@
+---
+- name: Migrate K8s resource for the openstack v1 deployment if needed
+  block:
+  - name: Check if a resource already exists
+    kubernetes.core.k8s_info:
+      kind: DaemonSet
+      name: csi-cinder-nodeplugin
+      namespace: kube-system
+    register: os_ns_info
+
+  - name: Trigger migration
+    include_tasks: migrate-from-openstack-v1.yaml
+    when:
+    - os_ns_info.resources | length > 0
+    - os_ns_info.resources[0].metadata.labels is not defined
+
+- name: Create cloud-config secret
+  kubernetes.core.k8s:
+    apply: true
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: Opaque
+      data:
+        cloud.conf: "{{ lookup('template', 'os_cloud_config.ini') | b64encode }}"
+      metadata:
+        name: cloud-config
+        namespace: kube-system
+    validate:
+      fail_on_error: true
+      strict: true
+  notify:
+  - restart CCM
+  - restart csi-cinder-controllerplugin
+  - restart csi-cinder-nodeplugin
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+
+- name: Start the OpenStack Cloud Controller manager
+  vars:
+    template_folder: "{{ ('k8s-v' + k8s_version_minor + '/') }}"
+  block:
+  - name: Add cloud-provider-openstack Repo
+    kubernetes.core.helm_repository:
+      name: cloud-provider-openstack
+      repo_url: "{{ openstack_helm_repo_url }}"
+      repo_state: "present"
+
+  - name: Deploy Cloud-Controller-Manager chart
+    kubernetes.core.helm:
+      chart_ref: cloud-provider-openstack/openstack-cloud-controller-manager
+      chart_version: "{{ image_versions.openstack.cloud_controller_manager_chart }}"
+      release_namespace: kube-system
+      release_name: openstack-cloud-controller-manager
+      release_state: present
+      values: "{{ lookup('template', 'openstack-cloud-controller-manager-values.yaml.j2') | from_yaml }}"
+      wait: true
+      update_repo_cache: true
+    notify:
+    - restart CCM
+    - restart csi-cinder-controllerplugin
+    - restart openstack-cinder-csi-nodeplugin
+
+  - name: Deploy Cinder CSI driver plugin chart
+    kubernetes.core.helm:
+      chart_ref: cloud-provider-openstack/openstack-cinder-csi
+      chart_version: "{{ image_versions.openstack.cinder_csi_plugin_chart }}"
+      release_namespace: kube-system
+      release_name: cinder-csi
+      release_state: present
+      values: "{{ lookup('template', 'csi-cinder-plugin-values.yaml.j2') | from_yaml }}"
+      wait: false
+      update_repo_cache: true
+
+  - name: Create cinder storage class (hdd)
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      definition: "{{ lookup('file', 'cinder/cinder_storage_class.yaml') }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+
+  - name: Create cinder storage class (nvme)
+    when: openstack_cinder_nvme
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      definition: "{{ lookup('file', 'cinder/cinder_nvme_storage_class.yaml') }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+
+  - name: Create volume snapshot class (hdd)
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      definition: "{{ lookup('file', 'cinder/volume_snapshot_storage_class.yaml') }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+...

@@ -7,7 +7,16 @@
   - vars/auto_generated_preamble.yaml
   - vars/retries.yaml
   roles:
-  - role: connect-k8s-to-openstack
-    tags: connect-k8s-to-openstack
-    when: on_openstack | default(False) | bool
+  # manifest based installation
+  - role: connect-k8s-to-openstack_v1
+    tags:
+    - connect-k8s-to-openstack_v1
+    - connect-k8s-to-openstack
+    when: (on_openstack | default(False) | bool) and not image_versions.openstack.connect_use_helm
+  # helm based installation
+  - role: connect-k8s-to-openstack_v2
+    tags:
+    - connect-k8s-to-openstack_v2
+    - connect-k8s-to-openstack
+    when: (on_openstack | default(False) | bool) and image_versions.openstack.connect_use_helm
 ...

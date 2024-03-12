@@ -12,6 +12,7 @@ ch-k8s-lbaas
 fluxcd
 nginx-ingress-controller
 rook-storage
+on_openstack
 vault
 ```
 

@@ -1,0 +1,76 @@
+---
+- name: Migrate namespaced objects
+  block:
+  - name: Add annotations and label for Helm to namespaced resources
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: "{{ item.0 }}"
+        kind: "{{ item.1 }}"
+        metadata:
+          name: "{{ item.2 }}"
+          namespace: kube-system
+          annotations:
+            "meta.helm.sh/release-namespace": "kube-system"
+            "meta.helm.sh/release-name": "{{ item.3 }}"
+          labels:
+            "app.kubernetes.io/managed-by": "Helm"
+    loop:
+    - ["v1", "ServiceAccount", "cloud-controller-manager", "openstack-cloud-controller-manager"]
+    - ["v1", "ServiceAccount", "csi-cinder-controller-sa", "cinder-csi"]
+    - ["v1", "ServiceAccount", "csi-cinder-node-sa", "cinder-csi"]
+    - ["v1", "Deployment", "csi-cinder-controllerplugin", "cinder-csi"]
+
+- name: Migrate ClusterRoles
+  block:
+  - name: Add annotations and labels for Helm to cluster wide resources
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: "{{ item.0 }}"
+        kind: "{{ item.1 }}"
+        metadata:
+          name: "{{ item.2 }}"
+          annotations:
+            "meta.helm.sh/release-namespace": "kube-system"
+            "meta.helm.sh/release-name": "{{ item.3 }}"
+          labels:
+            "app.kubernetes.io/managed-by": "Helm"
+    loop:
+    - ["rbac.authorization.k8s.io/v1", "ClusterRole", "system:cloud-controller-manager", "openstack-cloud-controller-manager"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRole", "csi-attacher-role", "cinder-csi"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRole", "csi-provisioner-role", "cinder-csi"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRole", "csi-snapshotter-role", "cinder-csi"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRole", "csi-resizer-role", "cinder-csi"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRole", "csi-nodeplugin-role", "cinder-csi"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRoleBinding", "system:cloud-controller-manager", "openstack-cloud-controller-manager"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRoleBinding", "csi-attacher-binding", "cinder-csi"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRoleBinding", "csi-provisioner-binding", "cinder-csi"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRoleBinding", "csi-snapshotter-binding", "cinder-csi"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRoleBinding", "csi-resizer-binding", "cinder-csi"]
+    - ["rbac.authorization.k8s.io/v1", "ClusterRoleBinding", "csi-nodeplugin-binding", "cinder-csi"]
+    - ["v1", "CSIDriver", "cinder.csi.openstack.org", "cinder-csi"]
+
+# delete the daemonsets as the names changed
+- name: Delete daemonsets
+  kubernetes.core.k8s:
+    state: absent
+    definition:
+      apiVersion: "{{ item.0 }}"
+      kind: "{{ item.1 }}"
+      metadata:
+        name: "{{ item.2 }}"
+        namespace: "kube-system"
+  loop:
+  - ["v1", "DaemonSet", "openstack-cloud-controller-manager"]
+  - ["v1", "DaemonSet", "csi-cinder-nodeplugin"]
+
+# delete the deployment as the name changed
+- name: Delete csi-cinder-controllerplugin deployment
+  kubernetes.core.k8s:
+    state: absent
+    definition:
+      apiVersion: "apps/v1"
+      kind: "Deployment"
+      metadata:
+        name: "csi-cinder-controllerplugin"
+        namespace: "kube-system"
+...

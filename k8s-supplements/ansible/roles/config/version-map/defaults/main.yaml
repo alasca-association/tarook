@@ -26,6 +26,12 @@ image_version_map:
       csi_snapshotter: "v7.0.1"
       # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.12.0
       csi_livenessprobe: "v2.12.0"
+
+      connect_use_helm: "{{ openstack_connect_use_helm | default(False) }}"
+      # https://artifacthub.io/packages/helm/cloud-provider-openstack/openstack-cloud-controller-manager/2.29.0
+      cloud_controller_manager_chart: "2.29.1"
+      # https://artifacthub.io/packages/helm/cloud-provider-openstack/openstack-cinder-csi/2.29.0
+      cinder_csi_plugin_chart: "2.29.0"
     calico_version: "{{ k8s_network_calico_custom_version | default('3.26.1') }}"
     # https://kubernetes-csi.github.io/docs/snapshot-controller.html
     volume_snapshot_controller: "v6.3.3"
@@ -47,6 +53,12 @@ image_version_map:
       csi_snapshotter: "v7.0.2"
       # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.12.0
       csi_livenessprobe: "v2.12.0"
+
+      connect_use_helm: "{{ openstack_connect_use_helm | default(False) }}"
+      # https://artifacthub.io/packages/helm/cloud-provider-openstack/openstack-cloud-controller-manager/2.29.0
+      cloud_controller_manager_chart: "2.29.1"
+      # https://artifacthub.io/packages/helm/cloud-provider-openstack/openstack-cinder-csi/2.29.0
+      cinder_csi_plugin_chart: "2.29.0"
     calico_version: "{{ k8s_network_calico_custom_version | default('3.27.3') }}"
     # https://kubernetes-csi.github.io/docs/snapshot-controller.html
     volume_snapshot_controller: "v7.0.2"
