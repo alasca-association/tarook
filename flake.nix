@@ -14,6 +14,7 @@
         config.allowUnfreePredicate = pkg:
           builtins.elem (nixpkgs.outputs.lib.getName pkg) [
             "terraform"
+            "vault"
           ];
       };
     in {
