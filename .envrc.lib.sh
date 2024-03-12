@@ -19,7 +19,7 @@ layout_poetry() {
 
   if [[ -z $VIRTUAL_ENV || ! -d $VIRTUAL_ENV ]]; then
       log_status "No virtual environment exists. Executing \`poetry install\` to create one."
-      poetry -C "$poetry_dir" install --no-root
+      poetry -C "$cache_dir" install --no-root
       VIRTUAL_ENV=$(poetry -C "$cache_dir" env info --path)
       mkdir -p "$(dirname "$poetry_hash_file")"
       echo "$poetry_hash" > "$poetry_hash_file"
@@ -27,7 +27,7 @@ layout_poetry() {
 
   if [ "$(cat "$poetry_hash_file")" != "$poetry_hash" ]; then
       echo "poetry.lock changed. Updating virtual env..."
-      poetry -C "$poetry_dir" install --no-root --sync
+      poetry -C "$cache_dir" install --no-root --sync
       mkdir -p "$(dirname "$poetry_hash_file")"
       echo "$poetry_hash" > "$poetry_hash_file"
   fi
