@@ -20,6 +20,10 @@ compactor:
 
 storegateway:
   enabled: true
+{% if monitoring_thanos_store_in_memory_max_size != 0 %}
+  extraFlags:
+  - "--index-cache-size={{ monitoring_thanos_store_in_memory_max_size }}"
+{% endif %}
   resources:
     requests:
       memory: {{ monitoring_thanos_store_memory_request | quote }}
