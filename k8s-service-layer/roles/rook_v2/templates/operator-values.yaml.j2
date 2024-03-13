@@ -21,7 +21,7 @@ monitoring:
 discover:
   priorityClassName: system-cluster-critical
   tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
-  nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
+  nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | default(dict()) | to_json }}
 
 agent:
   priorityClassName: system-cluster-critical
@@ -38,7 +38,7 @@ csi:
   #rbdFSGroupPolicy: "ReadWriteOnceWithFSType"
   #cephFSFSGroupPolicy: "ReadWriteOnceWithFSType"
   provisionerTolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
-  provisionerNodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
+  provisionerNodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | default(dict()) | to_json }}
 
   pluginTolerations:
 {% if rook_nodeplugin_toleration == True %}
