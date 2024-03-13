@@ -213,7 +213,7 @@ yaml_data = {
             'nodes': [{
                 'name': os.uname()[1],
                 'config': {
-                    'encryptedDevice': True
+                    'encryptedDevice': "true"
                 },
                 'devices': []
             }]
@@ -234,7 +234,7 @@ for osd_group in osds:
             yaml_osd['config']['metadataDevice'] = metadata_devices_flat[osd_nr %
                                                                          mdd_count]
 
-        yaml_osd['config']['encryptedDevice'] = True
+        yaml_osd['config']['encryptedDevice'] = "true"
         osd_nr = osd_nr + 1
         yaml_data['spec']['storage']['nodes'][0]['devices'].append(yaml_osd)
 
