@@ -83,6 +83,10 @@ export KUBECONFIG
 # after initialization through the included main.yaml
 export K8S_CUSTOM_STAGE_USAGE=false
 
+# Optional: Set this variable to false to init new clusters with the newest commit
+# on the default (devel) branch instead of the latest release.
+# export MANAGED_K8S_LATEST_RELEASE=false
+
 source_env "$PWD/.envrc.local" || true
 # For up-to-date direnv versions one can also use:
 # https://direnv.net/man/direnv-stdlib.1.html#codesourceenvifexists-ltfilenamegtcode

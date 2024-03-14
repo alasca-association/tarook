@@ -157,6 +157,12 @@ Environment Variable                    Default                                 
                                                                                                                 bootstrap the LCM (``yaook/k8s``)
                                                                                                                 repository. Can be used to override
                                                                                                                 the repository to use another mirror.
+``MANAGED_K8S_LATEST_RELEASE``          ``true``                                                                If set to ``true``, ``init.sh`` will checkout the
+                                                                                                                release version that is written in the ``version`` file
+                                                                                                                on the default branch of ``MANAGED_K8S_GIT``.
+
+                                                                                                                If set to ``false``, the default branch of
+                                                                                                                ``MANAGED_K8S_GIT`` is used (usually ``devel``).
 ``MANAGED_K8S_WG_USER_GIT``             ``gitlab.cloudandheat.com:lcm/wg_user``                                 Git URL to a repository with wireguard
                                                                                                                 keys to provision. Can be enabled by
                                                                                                                 setting ``WG_COMPANY_USERS`` (see below).

@@ -17,17 +17,27 @@ submodule_ch_role_users_repo_name="ch-role-users"
 submodule_ch_role_user_git="${MANAGED_CH_ROLE_USER_GIT:-git@gitlab.cloudandheat.com:operations/ansible-roles/ch-role-users.git}"
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
-	if [ ! -d "$submodule_managed_k8s_name" ]; then
-		run git submodule add "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
-	else
-		pushd "$cluster_repository/$submodule_managed_k8s_name" > /dev/null
-		run git remote set-url origin "$submodule_managed_k8s_url"
-		popd > /dev/null
-	fi
+    if [ ! -d "$submodule_managed_k8s_name" ]; then
+        if [ "${MANAGED_K8S_LATEST_RELEASE:-true}"  == "true" ]; then
+            # Checkout latest release
+            version_major_minor=$(grep -Po '^[0-9]+\.[0-9]+' "$actions_dir/../version")
+
+            echo ''
+            notef "Adding $submodule_managed_k8s_name submodule on release v$version_major_minor..."
+
+            run git submodule add -b "release/v$version_major_minor" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
+        else
+            run git submodule add "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
+        fi
+    else
+        pushd "$cluster_repository/$submodule_managed_k8s_name" > /dev/null
+        run git remote set-url origin "$submodule_managed_k8s_url"
+        popd > /dev/null
+    fi
 else
-	echo ''
-	notef "Skipping $submodule_managed_k8s_name submodule.."
-	echo ''
+    echo ''
+    notef "Skipping $submodule_managed_k8s_name submodule.."
+    echo ''
 fi
 
 # Create submodule directory

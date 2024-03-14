@@ -58,6 +58,7 @@ sonobuoy-tests:
     K8S_CUSTOM_STAGE_USAGE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, K8S_CUSTOM_STAGE_USAGE]
     ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+    MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]
     ci_vault_config_hcl: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_vault_config_hcl]
     ci_cert_vaultchain_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultchain_crt]
     ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
