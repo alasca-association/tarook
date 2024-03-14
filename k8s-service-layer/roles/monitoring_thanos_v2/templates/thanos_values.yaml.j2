@@ -53,6 +53,7 @@ query:
   tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
   extraFlags:
   - "--query.auto-downsampling"
+  - "--query.timeout=1m"
 
 queryFrontend:
   enabled: false
