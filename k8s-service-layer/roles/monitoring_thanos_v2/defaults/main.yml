@@ -31,6 +31,8 @@ monitoring_thanos_store_memory_request: "256Mi"
 monitoring_thanos_store_cpu_limit: "1"
 monitoring_thanos_store_cpu_request: "100m"
 
+monitoring_thanos_store_in_memory_max_size: 0
+
 monitoring_thanos_compact_memory_limit: "200Mi"
 monitoring_thanos_compact_memory_request: "75Mi"
 monitoring_thanos_compact_cpu_limit: "250m"

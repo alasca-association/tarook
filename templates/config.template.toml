@@ -630,6 +630,12 @@ use_helm = true
 #thanos_store_cpu_limit = "500m"
 #thanos_store_cpu_request = "100m"
 
+# https://thanos.io/tip/components/store.md/#in-memory-index-cache
+# Note: Unit must be specified as decimal! (MB,GB)
+# This value should be chosen in a sane matter based on
+# thanos_store_memory_request and thanos_store_memory_limit
+#thanos_store_in_memory_max_size = 0
+
 # WARNING: If you have set terraform.cluster_name, you must set this
 # variable to "${terraform.cluster_name}-monitoring-thanos-data".
 # The default terraform.cluster_name is "managed-k8s" which is why the
