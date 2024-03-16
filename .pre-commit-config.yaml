@@ -40,4 +40,10 @@ repos:
         entry: ci/lint/check-flake.sh
         language: script
         stages: [commit, push, manual]
+      - id: nix-fmt
+        name: nix-fmt
+        files: "^flake.nix$"
+        entry: ci/lint/format-flake.sh
+        language: script
+        stages: [commit, push, manual]
 ...
