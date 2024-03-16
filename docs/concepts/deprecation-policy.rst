@@ -7,6 +7,12 @@ For the removal of features and k8s releases from yaook/k8s we will give an adva
 notice of at least 30 days. This notice is given using the
 `changelog <https://yaook.gitlab.io/k8s/devel/releasenotes.html>`__.
 
+Support for older releases of yk8s
+----------------------------------
+
+A release becomes EOL when there are three newer (major/minor) versions but earliest four weeks
+after it has been released. Until then a release will be supported with hotfixes.
+
 Change of vault policies
 ------------------------
 
