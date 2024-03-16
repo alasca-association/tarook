@@ -61,16 +61,16 @@ cephClusterSpec:
     allowUninstallWithVolumes: false
   placement:
     all:
-      nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
+      nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | default(dict()) | to_json }}
       tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
 {% if rook_mon_scheduling_key %}
     mon:
-      nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
+      nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | default(dict()) | to_json }}
       tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json', template_vars=dict(scheduling_key="{{ rook_mon_scheduling_key }}")) | to_json }}
 {% endif %}
 {% if rook_mgr_scheduling_key %}
     mgr:
-      nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
+      nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | default(dict()) | to_json }}
       tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json', template_vars=dict(scheduling_key="{{ rook_mgr_scheduling_key }}")) | to_json }}
 {% endif %}
   annotations:
@@ -176,7 +176,7 @@ cephClusterSpec:
               - rook-ceph-osd
               - rook-ceph-osd-prepare
 {% endif %}
-        nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
+        nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | default(dict()) | to_json }}
         tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
       resources:
         limits:
@@ -297,7 +297,7 @@ cephFileSystems:
         activeCount: 1
         activeStandby: true
         placement:
-          nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | to_json }}
+          nodeAffinity: {{ lookup('template', 'roles/common_defaults_v1/templates/affinity.json')['nodeAffinity'] | default(dict()) | to_json }}
           tolerations: {{ lookup('template', 'roles/common_defaults_v1/templates/tolerations.json') | to_json }}
           podAntiAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
