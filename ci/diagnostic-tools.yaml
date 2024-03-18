@@ -20,13 +20,13 @@ sonobuoy-tests:
   services: !reference [.prepare_spawn_test_cleanup_k8s_cluster, services]
   before_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
+  - rm config/config.toml
+  - mv config/sonobuoy-config.toml config/config.toml
   script:
+  - ls -a
+  - cat config/config.toml
   # Spawn and test cluster
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
-  - kubectl taint node ci-worker-gpu-0 k8s.yaook.cloud/gpu-node=true:NoSchedule-
-  - kubectl taint node ci-worker-storage-0 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
-  - kubectl taint node ci-worker-storage-1 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
-  - kubectl taint node ci-worker-storage-2 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
   # Run sonobuoy in conformance mode and wait until tests are finished
   - sonobuoy run --mode=certified-conformance --wait
   # Save artifacts
