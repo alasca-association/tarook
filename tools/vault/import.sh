@@ -129,7 +129,7 @@ fi
 
 echo "Importing other secrets ..."
 
-PASSWORD_STORE_DIR="$inventory_etc/passwordstore" pass show wg_gw_key | head -n1 | tr -d '\n' | vault kv put "$cluster_path/kv/wireguard-key" private_key=-
+PASSWORD_STORE_DIR="$inventory_etc/passwordstore" pass show wg_gw_key | head -n1 | tr -d '\n' | vault kv put "$cluster_path/kv/wireguard-key" private_key=- || true
 base64 < "$inventory_etc/sa.key" | vault kv put "$cluster_path/kv/k8s/service-account-key" private_key=-
 
 echo "Initializing PKI engines ..."
