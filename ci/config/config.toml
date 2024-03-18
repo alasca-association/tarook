@@ -197,6 +197,7 @@ enabled = true
 
 [testing]
 nodes = ["ci-worker-cpu-0", "ci-worker-cpu-1", "ci-worker-gpu-0"]
+force_reboot_nodes = true
 
 [node-scheduling]
 scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"

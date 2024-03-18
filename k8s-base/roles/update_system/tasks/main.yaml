@@ -144,7 +144,11 @@
 
 - name: Reboot block  # noqa no-handler
   become: true
-  when: upgrade_dnf is changed or upgrade_yum is changed or upgrade_apt is changed
+  when: >
+    upgrade_dnf is changed or
+    upgrade_yum is changed or
+    upgrade_apt is changed or
+    (testing_force_reboot_nodes | default(false))
   block:
 
     - name: Reboot the system (cloud-init run)  # noqa no-changed-when
