@@ -1,7 +1,22 @@
-# this file should be included into '.gitlab-ci.yml'
-
-.test_with_sonobuoy:
+# Spawn a cluster and run sonobuoy end-to-end tests in conformance mode
+sonobuoy-tests:
+  environment:
+    name: spawn-cluster
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
+  stage: diagnostic-tools
+  variables:
+    KUBECONFIG: etc/admin.conf
+    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
+    # so we need to reference the default vars here (only one level of nesting is allowed)
+    WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
+    K8S_CUSTOM_STAGE_USAGE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, K8S_CUSTOM_STAGE_USAGE]
+    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
+    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+    MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]
+    ci_vault_config_hcl: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_vault_config_hcl]
+    ci_cert_vaultchain_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultchain_crt]
+    ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
+    ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
   services: !reference [.prepare_spawn_test_cleanup_k8s_cluster, services]
   before_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
@@ -12,7 +27,7 @@
   - kubectl taint node ci-worker-storage-0 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
   - kubectl taint node ci-worker-storage-1 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
   - kubectl taint node ci-worker-storage-2 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
-   # Run sonobuoy in conformance mode and wait until tests are finished
+  # Run sonobuoy in conformance mode and wait until tests are finished
   - sonobuoy run --mode=certified-conformance --wait
   # Save artifacts
   - mkdir -p diagnostics/sonobuoy/
@@ -31,12 +46,7 @@
     when: always
     paths:
       - ci/diagnostics/sonobuoy/
-  tags: !reference [.prepare_spawn_test_cleanup_k8s_cluster, tags]
-
-# Spawn a cluster and run sonobuoy end-to-end tests in conformance mode
-sonobuoy-tests:
-  environment:
-    name: spawn-cluster
+  retry: 1    # because this test lasts hours and could block the CI for a significant amount of time
   rules:
     # test is scheduled
     - if: $CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
@@ -45,19 +55,4 @@ sonobuoy-tests:
       when: on_success
     - when: manual
       allow_failure: true
-  extends: .test_with_sonobuoy
-  stage: diagnostic-tools
-  retry: 1    # because this test lasts hours and could block the CI for a significant amount of time
-  variables:
-    KUBECONFIG: etc/admin.conf
-    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
-    # so we need to reference the default vars here (only one level of nesting is allowed)
-    WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
-    K8S_CUSTOM_STAGE_USAGE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, K8S_CUSTOM_STAGE_USAGE]
-    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
-    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
-    MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]
-    ci_vault_config_hcl: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_vault_config_hcl]
-    ci_cert_vaultchain_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultchain_crt]
-    ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
-    ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
+  tags: !reference [.prepare_spawn_test_cleanup_k8s_cluster, tags]
