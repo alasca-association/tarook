@@ -19,7 +19,9 @@ CONFIG_PATH = pathlib.Path(CONFIG_BASE_PATH / "config.toml")
 # Path to the configuration template
 CONFIG_TEMPLATE_PATH = pathlib.Path(
     "managed-k8s/templates/config.template.toml")
-# Base path to the Ansible inventory
+# Root of the Ansible inventory
+ANSIBLE_INVENTORY_ROOTPATH = pathlib.Path("inventory")
+# Base path to the Ansible inventory. Files will get written here.
 ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory/yaook-k8s/group_vars")
 # List of top level sections which we do accept in the main config
 ALLOWED_TOP_LEVEL_SECTIONS = (
@@ -75,7 +77,7 @@ def prune(
 
 
 def cleanup_ansible_inventory(
-    ansible_inventory_path: pathlib.Path = ANSIBLE_INVENTORY_BASEPATH
+    ansible_inventory_path: pathlib.Path = ANSIBLE_INVENTORY_ROOTPATH
 ):
     """
     Cleaning up the inventory. Excluding directories and files we need to keep
