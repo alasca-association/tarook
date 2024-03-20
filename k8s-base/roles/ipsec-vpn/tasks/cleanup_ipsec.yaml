@@ -35,7 +35,7 @@
   become: true
   when: ipsec_purge_installation | default(false)
   ansible.builtin.apt:
-    name: "{{ ipsec_packages }}"
+    name: "charon-systemd"
     state: absent
     purge: true
     autoremove: true
