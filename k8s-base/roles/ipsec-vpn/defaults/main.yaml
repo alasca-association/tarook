@@ -10,13 +10,6 @@ ipsec_virtual_subnet_pool: null
 ipsec_remote_addrs: false
 ipsec_remote_name: "peerid"
 ipsec_esp_proposals: "{{ ipsec_proposals }}"
-ipsec_packages:
-- strongswan
-- strongswan-swanctl
-- charon-systemd
-- strongswan-pki
-- libcharon-extra-plugins
-- libstrongswan-extra-plugins
 
 strongswan_service: '{{ (ansible_distribution_release in ["bullseye", "bookworm"]) | ternary("strongswan", "strongswan-swanctl") }}'
 

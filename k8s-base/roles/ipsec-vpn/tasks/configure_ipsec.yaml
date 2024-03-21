@@ -3,7 +3,7 @@
   become: true
   ansible.builtin.apt:
     update_cache: true
-    name: "{{ ipsec_packages }}"
+    name: "charon-systemd"
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
