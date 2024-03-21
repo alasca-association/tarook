@@ -138,18 +138,6 @@
     tags:
     - calico-service-monitor
 
-  - name: Create service monitor for etcd-backup
-    kubernetes.core.k8s:
-      state: present
-      apply: true
-      definition: "{{ lookup('template', 'etcd-backup.yaml.j2') }}"
-      validate:
-        fail_on_error: true
-        strict: true
-    when: etcd_backup_enabled | default(False) | bool
-    tags:
-    - etcd-backup-service-monitor
-
   - name: Create a pod monitor for fluxcd
     when: fluxcd_enabled
     kubernetes.core.k8s:

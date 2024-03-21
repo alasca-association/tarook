@@ -1,4 +1,33 @@
 ---
+# In an older version, yk8s shipped its own Service and ServiceMonitor for the metrics
+# of etcd-backup.
+# This task removes the now outdated service from existing clusters.
+# Can be removed in a future version.
+# See #639
+- name: Check if old etcd-backup metric service exists
+  kubernetes.core.k8s_info:
+    kind: Service
+    namespace: "kube-system"
+    name: "etcd-backup-monitoring"
+  register: old_etcd_backup_service_info
+
+- name: Remove deprecated etcd-backup monitoring resources
+  when: old_etcd_backup_service_info.resources | length > 0
+  block:
+    - name: Remove old etcd-backup metrics service
+      kubernetes.core.k8s:
+        state: absent
+        name: etcd-backup-monitoring
+        namespace: "kube-system"
+        kind: Service
+
+    - name: Remove old etcd-backup ServiceMonitor
+      kubernetes.core.k8s:
+        state: absent
+        name: etcd-backup
+        namespace: "kube-system"
+        kind: ServiceMonitor
+
 - name: Read S3 secrets from Vault
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
@@ -85,6 +114,7 @@
     release_state: present
     update_repo_cache: true
     values: "{{ lookup('template', 'etcd_backup.yaml.j2') | from_yaml }}"
+    force: "{{ old_etcd_backup_service_info.resources | length > 0 }}"
   register: task_result
   until: task_result is not failed
   retries: "{{ network_error_retries }}"
