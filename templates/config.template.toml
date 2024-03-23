@@ -1071,6 +1071,9 @@ rollout = false # •ᴗ•
 # Example:
 #test-nodes = ["managed-k8s-worker-1", "managed-k8s-worker-3"]
 
+# Enforce rebooting of nodes after every system update
+#force_reboot_nodes = false
+
 # ANCHOR_END: testing_test_nodes_configuration
 
 # ANCHOR: custom_configuration
