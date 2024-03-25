@@ -23,6 +23,7 @@ hvac = "^2.0.0"
 boto3 = "^1.26.155"
 pre-commit = "^3.3.3"
 yq = "^3.4.1"
+python-hcl2 = "^4.3.2"
 
 [tool.poetry.group.ci]
 optional = true

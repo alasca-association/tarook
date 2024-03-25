@@ -328,6 +328,52 @@ def main():
     # only if wireguard is desired
     if (os.getenv('WG_USAGE', 'true') == 'true'):
         print_process_state("Wireguard")
+        ip_networks = []
+        tf_ipv4_string = None
+        tf_ipv6_string = None
+
+        # Getting IPv4 cluster network
+        if (os.getenv('wg_user') == 'gitlab-ci-runner'):  # if in gitlab ci
+            tf_ipv4_string = os.getenv('TF_VAR_subnet_cidr')
+        elif 'subnet_cidr' in tf_config:
+            tf_ipv4_string = tf_config['subnet_cidr']
+        else:
+            tf_ipv4_string = (
+                terraform_helper.get_default_value_in_tf_vars('subnet_cidr')
+            )
+
+        if tf_ipv4_string:
+            ip_networks.append(tf_ipv4_string)
+        else:
+            raise ValueError("No `subnet_cidr` for ipv4 cluster network found")
+
+        # Getting IPv6 cluster network
+        if (
+            'dualstack_support' in tf_config and
+            tf_config['dualstack_support'] == 'true'
+        ):
+            if 'subnet_v6_cidr' in tf_config:
+                tf_ipv6_string = tf_config['subnet_v6_cidr']
+            else:
+                tf_ipv6_string = (
+                    terraform_helper.get_default_value_in_tf_vars('subnet_v6_cidr')
+                )
+
+            if tf_ipv6_string:
+                ip_networks.append(tf_ipv6_string)
+            else:
+                raise ValueError("No `subnet_v6_cidr` for ipv6 cluster network found")
+
+        # Proofing whether cluster networks are in conflict with wg networks
+        for ip_network in ip_networks:
+            if not wireguard_helper.is_ipnet_disjoint(
+                ip_network, config.get("wireguard")
+            ):
+                raise ValueError(
+                    f"The network `{tf_ipv4_string}` is in conflict "
+                    "with one of the wireguard networks."
+                )
+
         wg_ansible_inventory_path = (
             ANSIBLE_INVENTORY_BASEPATH / "gateways" / "wireguard.yaml"
         )
