@@ -42,7 +42,7 @@ rook_ceph_fs_replicated: 1
 rook_ceph_fs_preserve_pools_on_delete: false
 rook_pools:
   - name: data
-    create_storage_class: block
+    create_storage_class: true
     replicated: 1
 rook_nodeplugin_toleration: true
 rook_use_host_networking: false

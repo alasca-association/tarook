@@ -256,7 +256,7 @@ cephBlockPools:
           interval: 60s
       annotations:
     storageClass:
-      enabled: true
+      enabled: {{ item.create_storage_class | default(False) | bool }}
       name: {{ "%s-%s" | format(rook_cluster_name, item.name) | to_json }}
       isDefault: false
       reclaimPolicy: Delete
