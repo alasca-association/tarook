@@ -145,6 +145,20 @@ operator_cpu_request = "100m"
 scheduling_key = "{{ scheduling_key_prefix }}/storage"
 mgr_scheduling_key = "{{ scheduling_key_prefix }}/rook-mgr"
 
+[[k8s-service-layer.rook.pools]]
+name = "data"
+create_storage_class = true
+replicated = 1
+
+[[k8s-service-layer.rook.pools]]
+name = "test-create-storage-class-false"
+create_storage_class = false
+replicated = 1
+
+[[k8s-service-layer.rook.pools]]
+name = "test-create-storage-class-undefined"
+replicated = 1
+
 [k8s-service-layer.prometheus]
 use_thanos                          = true
 use_grafana                         = true
