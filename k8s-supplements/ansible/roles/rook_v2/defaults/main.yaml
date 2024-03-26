@@ -1,5 +1,4 @@
 ---
-rook_on_openstack: true
 rook_nmons: 3
 rook_namespace: "rook-ceph"
 rook_mon_volume: true

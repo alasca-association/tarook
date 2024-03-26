@@ -112,7 +112,7 @@ cephClusterSpec:
     cleanup:
   removeOSDsIfOutAndSafeToRemove: {{ rook_osd_autodestroy_safe }}
   storage: # cluster level storage configuration and selection
-{% if rook_on_openstack %}
+{% if on_openstack %}
     useAllNodes: false
     useAllDevices: false
 {% else %}
@@ -123,7 +123,7 @@ cephClusterSpec:
       encryptedDevice: "{{ rook_encrypt_osds }}" # the default value for this option is "false"
     onlyApplyOSDPlacement: false
 # Bare Metal custom configuration
-{% if not rook_on_openstack and not rook_use_all_available_nodes %}
+{% if not on_openstack and not rook_use_all_available_nodes %}
     nodes:
 {% for node in rook_nodes %}
     - name: {{ node.name | to_json }}
@@ -142,7 +142,7 @@ cephClusterSpec:
 {% endfor %}
 {% endif %}
 # OpenStack configuration
-{% if rook_on_openstack %}
+{% if on_openstack %}
     storageClassDeviceSets:
     - name: cinder
       count: {{ rook_nosds }}
