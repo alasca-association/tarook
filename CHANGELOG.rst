@@ -19,6 +19,131 @@ earlier changes.
 
 .. towncrier release notes start
 
+v3.0.0 (2024-03-27)
+-------------------
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+- Drop passwordstore functionality
+
+  We're dropping the already deprecated and legacy passwordstore functionality.
+  As the inventory updater checks for valid sections in the "config/config.toml" only,
+  the "[passwordstore]" section must be dropped in its entirety for existing clusters. (`!996 <https://gitlab.com/yaook/k8s/-/merge_requests/996>`_)
+- Adjust configuration for persistence of Thanos components
+
+  Persistence for Thanos components can be enabled/disabled by setting/unsetting
+  ``k8s-service-layer.prometheus.thanos_storage_class``. It is disabled by default.
+  You must adjust your configuration to re-enable it. Have a lookt at the configuration template.
+  Furthermore, volume size for each component can be configured separately. (`!1106 <https://gitlab.com/yaook/k8s/-/merge_requests/1106>`_)
+- Fix disabling storage class creation for rook/ceph pools
+
+  Previously, the ``create_storage_class`` attribute of a ceph pool was a string which has been
+  interpreted as boolean. This has been changed and that attribute must be a boolean now.
+
+  .. code:: toml
+
+    [[k8s-service-layer.rook.pools]]
+    name = "test-true"
+    create_storage_class = true
+    replicated = 3
+
+  This is restored behavior pre-rook_v2, where storage classes for ceph blockpools
+  didn't get created by default. (`!1130 <https://gitlab.com/yaook/k8s/-/merge_requests/1130>`_)
+- The Thanos object storage configuration must be moved to vault
+  if it is not automatically managed.
+  Please check the documentation on how to create a configuration
+  and move it to vault.
+
+  **You must update your vault policies if you use Thanos with a
+  custom object storage configuration**
+
+  .. code:: shell
+
+      ./managed-k8s/tools/vault/update.sh $CLUSTER_NAME
+
+  Execute the above to update your vault policies.
+  A root token must be sourced.
+
+
+New Features
+~~~~~~~~~~~~
+
+- Add Sonobuoy testing to CI (`!957 <https://gitlab.com/yaook/k8s/-/merge_requests/957>`_)
+- Add support to define memory limits for the kube-apiservers
+
+  The values set in the ``config.toml`` are only applied on K8s upgrades.
+  If no values are explicitly configured, no memory resource requests nor limits
+  will be set by default. (`!1027 <https://gitlab.com/yaook/k8s/-/merge_requests/1027>`_)
+- Thanos: Add option to configure in-memory index cache sizes (`!1116 <https://gitlab.com/yaook/k8s/-/merge_requests/1116>`_)
+
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- Poetry virtual envs are now deduplicated between cluster repos and can be switched much more quickly (`!931 <https://gitlab.com/yaook/k8s/-/merge_requests/931>`_)
+- Allow unsetting CPU limits for rook/ceph components (`!1089 <https://gitlab.com/yaook/k8s/-/merge_requests/1089>`_)
+- Add check whether VAULT_TOKEN is set for stages 2 and 3 (`!1108 <https://gitlab.com/yaook/k8s/-/merge_requests/1108>`_)
+- Enable auto-downsampling for Thanos query (`!1116 <https://gitlab.com/yaook/k8s/-/merge_requests/1116>`_)
+- Add option for testing clusters
+  to enforce the reboot of the nodes
+  after each system update
+  to simulate the cluster behaviour in a real world. (`!1121 <https://gitlab.com/yaook/k8s/-/merge_requests/1121>`_)
+- Add a new env var ``$MANAGED_K8S_LATEST_RELEASE`` for the ``init.sh`` script which is true by default and causes that the latest release is checked out instead of ``devel`` (`!1122 <https://gitlab.com/yaook/k8s/-/merge_requests/1122>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- Fix & generalize scheduling_key usage for managed K8s services (`!1088 <https://gitlab.com/yaook/k8s/-/merge_requests/1088>`_)
+- Fix vault import for non-OpenStack clusters (`!1090 <https://gitlab.com/yaook/k8s/-/merge_requests/1090>`_)
+- Don't create Flux PodMonitos if monitoring is disabled (`!1092 <https://gitlab.com/yaook/k8s/-/merge_requests/1092>`_)
+- Fix a bug which prevented nuking a cluster if Gitlab is used as Terraform backend (`!1093 <https://gitlab.com/yaook/k8s/-/merge_requests/1093>`_)
+- Fix tool ``tools/assemble_cephcluster_storage_nodes_yaml.py`` to produce
+  valid yaml.
+
+  The tool helps to generate a Helm value file for rook-ceph-cluster Helm
+  chart. The data type used for encryptedDevice in yaml path
+  cephClusterSpec.storage has been fixed. It was boolean before but need to
+  be string. (`!1118 <https://gitlab.com/yaook/k8s/-/merge_requests/1118>`_)
+-  (`!1120 <https://gitlab.com/yaook/k8s/-/merge_requests/1120>`_)
+- Ensure minimal IPSec package installation (`!1129 <https://gitlab.com/yaook/k8s/-/merge_requests/1129>`_)
+- Fix testing of rook ceph block storage classes
+  - Now all configured rook ceph block storage pools for which a storage class is
+  configured are checked rather than only `rook-ceph-data`. (`!1130 <https://gitlab.com/yaook/k8s/-/merge_requests/1130>`_)
+
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Include missing information in the "new Vault" case in the "Pivot vault" section of the Vault documentation (`!1086 <https://gitlab.com/yaook/k8s/-/merge_requests/1086>`_)
+
+
+Deprecations and Removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Drop support for Kubernetes v1.25 (`!1056 <https://gitlab.com/yaook/k8s/-/merge_requests/1056>`_)
+- Support for the manifest-based Calico installation has been dropped (`!1084 <https://gitlab.com/yaook/k8s/-/merge_requests/1084>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- Add hotfixing strategy (`!1063 <https://gitlab.com/yaook/k8s/-/merge_requests/1063>`_)
+- Add deprecation policy. (`!1076 <https://gitlab.com/yaook/k8s/-/merge_requests/1076>`_)
+- Prevent CI jobs from failing if there are volume snapshots left (`!1091 <https://gitlab.com/yaook/k8s/-/merge_requests/1091>`_)
+- Fix releasenote-file-check in ci (`!1096 <https://gitlab.com/yaook/k8s/-/merge_requests/1096>`_)
+- Refine hotfixing procedure (`!1101 <https://gitlab.com/yaook/k8s/-/merge_requests/1101>`_)
+- We define how long we'll support older releases. (`!1112 <https://gitlab.com/yaook/k8s/-/merge_requests/1112>`_)
+- Update flake dependencies (`!1117 <https://gitlab.com/yaook/k8s/-/merge_requests/1117>`_)
+
+
+Misc
+~~~~
+
+- `!1082 <https://gitlab.com/yaook/k8s/-/merge_requests/1082>`_, `!1123 <https://gitlab.com/yaook/k8s/-/merge_requests/1123>`_, `!1128 <https://gitlab.com/yaook/k8s/-/merge_requests/1128>`_
+
+
 v2.1.1 (2024-03-01)
 -------------------
 

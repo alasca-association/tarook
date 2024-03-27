@@ -1,7 +1,0 @@
-Fix tool ``tools/assemble_cephcluster_storage_nodes_yaml.py`` to produce
-valid yaml.
-
-The tool helps to generate a Helm value file for rook-ceph-cluster Helm
-chart. The data type used for encryptedDevice in yaml path
-cephClusterSpec.storage has been fixed. It was boolean before but need to
-be string.
