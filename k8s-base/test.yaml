@@ -186,6 +186,24 @@
     - always
   vars:
     gateway: "{{ groups['gateways'] | first }}"
+  tasks:
+  - name: Check configured rook ceph pools having a storage class
+    include_role:
+      name: check-block-storage
+    vars:
+      # Derive the corresponding Kubernetes storage class name
+      # as during their creation in
+      # https://gitlab.com/yaook/k8s/-/blob/235abe162e9e47e22c2071889d4345d930893eb5/k8s-service-layer/roles/rook_v2/templates/cluster-values.yaml.j2#L260
+      block_storage_class: "{{ '%s-%s' | format(rook_cluster_name, item.name) }}"
+    loop: >
+      {{ rook_pools
+         | selectattr('create_storage_class', 'defined')
+         | selectattr('create_storage_class', 'equalto', true)
+      }}
+    when: "k8s_storage_rook_enabled | bool"
+    tags:
+    - test-block-storage-ceph
+    - check-block-storage-ceph
   roles:
   - role: check-block-storage
     vars:
@@ -195,13 +213,6 @@
     tags:
     - test-block-storage-cinder
     - check-block-storage-cinder
-  - role: check-block-storage
-    vars:
-      block_storage_class: rook-ceph-data
-    when: "k8s_storage_rook_enabled | bool"
-    tags:
-    - test-block-storage-ceph
-    - check-block-storage-ceph
   - role: check-shared-fs
     vars:
       fs_storage_class: rook-ceph-cephfs
