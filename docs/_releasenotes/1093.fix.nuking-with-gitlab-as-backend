@@ -1,1 +1,0 @@
-Fix a bug which prevented nuking a cluster if Gitlab is used as Terraform backend

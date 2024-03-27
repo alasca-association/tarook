@@ -1,1 +1,0 @@
-Add a new env var ``$MANAGED_K8S_LATEST_RELEASE`` for the ``init.sh`` script which is true by default and causes that the latest release is checked out instead of ``devel``

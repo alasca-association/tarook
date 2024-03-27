@@ -1,3 +1,0 @@
-Fix testing of rook ceph block storage classes
-- Now all configured rook ceph block storage pools for which a storage class is
-configured are checked rather than only `rook-ceph-data`.

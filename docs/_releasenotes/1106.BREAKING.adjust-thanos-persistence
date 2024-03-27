@@ -1,6 +1,0 @@
-Adjust configuration for persistence of Thanos components
-
-Persistence for Thanos components can be enabled/disabled by setting/unsetting
-``k8s-service-layer.prometheus.thanos_storage_class``. It is disabled by default.
-You must adjust your configuration to re-enable it. Have a lookt at the configuration template.
-Furthermore, volume size for each component can be configured separately.

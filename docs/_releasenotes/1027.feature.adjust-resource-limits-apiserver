@@ -1,5 +1,0 @@
-Add support to define memory limits for the kube-apiservers
-
-The values set in the ``config.toml`` are only applied on K8s upgrades.
-If no values are explicitly configured, no memory resource requests nor limits
-will be set by default.

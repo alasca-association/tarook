@@ -1,4 +1,0 @@
-Add option for testing clusters
-to enforce the reboot of the nodes
-after each system update
-to simulate the cluster behaviour in a real world.
