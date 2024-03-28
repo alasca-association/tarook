@@ -14,7 +14,7 @@ worker_flavors = [
   "L", # storage-1
   "L", # cpu-1
   "XL", # storage-2
-  "SCS-4C:8:50s-GNt:1-mk8sPrivate" # gpu-0
+  "CH-8C:32:100s-GN:1xTeslaT4" # gpu-0
 ]
 worker_names = [
   "storage-0",
