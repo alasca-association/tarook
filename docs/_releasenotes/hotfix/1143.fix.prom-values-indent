@@ -1,6 +1,0 @@
-Fix Prometheus stack deployment
-
-If ``scheduling_key`` and ``allow_external_rules`` where set,
-rendering the values file for the Prometheus-stack failed due to wrong indentation.
-Also the ``scheduling_key`` did not take effect even without
-``allow_external_rules`` configured due to the wrong indentation.
