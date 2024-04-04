@@ -2,7 +2,7 @@ DualStack-Support on Kubernetes with Calico
 ===========================================
 
 .. warning::
-   Dual-Stack support is currently non-functional.
+   DualStack support is currently non-functional.
    It is planned to re-add it in the near future.
 
 .. note::
@@ -83,11 +83,10 @@ A Kubernetes cluster with DualStack support requires IPv4 and IPv6
 connectivity between the cluster nodes. As we are deploying on top of
 OpenStack, we need to adjust Terraform to fulfill the prerequisites.
 
-For Pods to be able to connect to the outside world over IPv6, there
-must be IPv6 connectivity from the cluster nodes to the outside world.
-However, f1a does not support IPv6. Because we need IPv6 connectivity of
-the cluster nodes, we need to enable DualStack-Support for the
-underlying OpenStack nodes via Terraform.
+In order for pods to be reachable from the outside world over IPv6
+the cluster nodes must provide this IPv6 connectivity.
+This is enabled with the dual stack support option
+and rolled out on the underlying OpenStack nodes via Terraform.
 
 `Enabling a DualStack network <https://docs.openstack.org/neutron/latest/admin/config-ipv6.html>`__
 in OpenStack requires:
@@ -155,11 +154,8 @@ HAProxy such that it can be used to connect to the control plane.
 IPv6 load-balanced services
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This is mainly because f1a does not support IPv6 and it is unclear how
-we want to handle/design the IPv6 stack and handle the load-balancing in
-Yaook. Please also refer to
-`Issue #268 <https://gitlab.cloudandheat.com/lcm/managed-k8s/-/issues/269>`__
-for more information.
+Currently we do not support IPv6 Single Stack load-balanced services
+because it is unclear how exactly we want to design the IPv6 setup.
 
 Adjust the Calico CNI for DualStack-Support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
