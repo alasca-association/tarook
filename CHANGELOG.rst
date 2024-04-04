@@ -19,6 +19,20 @@ earlier changes.
 
 .. towncrier release notes start
 
+v3.0.1 (2024-04-03)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- Fix Prometheus stack deployment
+
+  If ``scheduling_key`` and ``allow_external_rules`` where set,
+  rendering the values file for the Prometheus-stack failed due to wrong indentation.
+  Also the ``scheduling_key`` did not take effect even without
+  ``allow_external_rules`` configured due to the wrong indentation. (`!1142 <https://gitlab.com/yaook/k8s/-/merge_requests/1142>`_)
+
+
 v3.0.0 (2024-03-27)
 -------------------
 
