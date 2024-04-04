@@ -817,10 +817,6 @@ enabled = false # •ᴗ•
 # ansible prefix: "yaook_vault_"
 [k8s-service-layer.vault]
 # Enable HashiCorp Vault management.
-# WARNING: This is *NOT* production ready at the time of writing. The following
-# shortcomings exist:
-# - There are no backups.
-# - There are no replicas.
 # NOTE: On the first run, the unseal keys and the root token will be printed IN
 # PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
 # LOCATION to use the Vault instance in the future!
