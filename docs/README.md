@@ -11,7 +11,7 @@ See [index.rst](index.rst).
 Install sphinx by executing
 
 ```
-pip3 install sphinx sphinx-rtd-theme sphinx-tabs furo
+poetry install --with docs --sync
 ```
 
 To build the documentation use
