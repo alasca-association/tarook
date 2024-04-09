@@ -19,6 +19,20 @@ earlier changes.
 
 .. towncrier release notes start
 
+v3.0.2 (2024-04-09)
+-------------------
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Add some details about Thanos configuration (`!1146 <https://gitlab.com/yaook/k8s/-/merge_requests/1146>`_)
+
+Misc
+~~~~
+
+- `!1144 <https://gitlab.com/yaook/k8s/-/merge_requests/1144>`_, `!1145 <https://gitlab.com/yaook/k8s/-/merge_requests/1145>`_
+
+
 v3.0.1 (2024-04-03)
 -------------------
 
