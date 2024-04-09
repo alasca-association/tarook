@@ -25,7 +25,7 @@
         ...
       }: let
         nix2containerPkgs = inputs'.nix2container.packages;
-        yk8sDependencies = with pkgs; [
+        yk8sDeps = with pkgs; [
           openstackclient
           k9s
           kubernetes-helm
@@ -40,19 +40,10 @@
           wireguard-tools
           poetry
         ];
-        interactiveDependencies = with pkgs; [
+        interactiveDeps = with pkgs; [
           bashInteractive
           coreutils
         ];
-        ciFiles = pkgs.stdenv.mkDerivation {
-          name = "ci-files";
-          src = ./ci/container-image;
-          postInstall = ''
-            mkdir -p $out/root/.ssh
-            cp known_hosts $out/root/.ssh/known_hosts
-            cp openrc_f1a.sh $out/root/openrc.sh
-          '';
-        };
       in {
         _module.args.pkgs = import nixpkgs {
           inherit system;
@@ -63,36 +54,11 @@
             ];
         };
         devShells.default = pkgs.mkShell {
-          nativeBuildInputs = interactiveDependencies;
-          buildInputs = yk8sDependencies;
+          nativeBuildInputs = interactiveDeps;
+          buildInputs = yk8sDeps;
         };
         packages.ciImage =
-          nix2containerPkgs.nix2container.buildImage
-          {
-            name = "localhost/yk8s-ci-image";
-            tag = "latest";
-            copyToRoot = pkgs.buildEnv {
-              name = "image-root";
-              paths =
-                yk8sDependencies
-                ++ interactiveDependencies
-                ++ (with pkgs; [
-                  dockerTools.usrBinEnv
-                  dockerTools.caCertificates
-                  ciFiles
-                ]);
-            };
-            config = {
-              Cmd = [
-                "${pkgs.bashInteractive}/bin/bash"
-              ];
-              Env = [
-                "wg_private_key_file=/root/wg.key"
-                "wg_user=gitlab-ci-runner"
-                "TF_VAR_keypair=gitlab-ci-runner"
-              ];
-            };
-          };
+          nix2containerPkgs.nix2container.buildImage (import ./ci/container-image {inherit pkgs yk8sDeps interactiveDeps;});
         formatter = pkgs.alejandra;
       };
     };
