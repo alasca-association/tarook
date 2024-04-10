@@ -42,6 +42,9 @@ tag-release:
       fi
     - |
       if echo "$CI_COMMIT_BRANCH" | grep -F "${YAOOK_K8S_RELEASE_PREPARE_BRANCH_PREFIX}"; then
+        echo "Currently we don't use the functionality of tagging a release-candidate on the ${YAOOK_K8S_RELEASE_PREPARE_BRANCH_PREFIX}-branch."
+        echo "If you want to do so again, remove these lines in the tag-release-job."
+        exit 0
         if echo "${YAOOK_K8S_BUILD_VERSION: -2}" | grep -qE '.0'; then
           # tag with -rc.<buildnr>
           echo "This is a major or minor release, I will tag that as a release candidate.";
