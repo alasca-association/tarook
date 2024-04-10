@@ -1,0 +1,10 @@
+---
+- name: Remove the snap service
+  become: true
+  ansible.builtin.apt:
+    state: absent
+    purge: true
+    name:
+      - snapd
+  when: ansible_pkg_mgr == 'apt'
+...

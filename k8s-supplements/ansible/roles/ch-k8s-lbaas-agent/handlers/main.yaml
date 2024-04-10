@@ -1,0 +1,19 @@
+---
+- name: restart ch-k8s-lbaas-agent  # noqa no-changed-when
+  become: true
+  ansible.builtin.service:
+    name: ch-k8s-lbaas-agent
+    state: restarted
+
+- name: reload nftables
+  become: true
+  ansible.builtin.service:
+    name: nftables
+    state: reloaded
+
+- name: restart bird
+  become: true
+  ansible.builtin.service:
+    name: bird
+    state: restarted
+...

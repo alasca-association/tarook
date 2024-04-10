@@ -1,0 +1,68 @@
+---
+# This is required to be able to do initial updates on a Debian N image just
+# after Debian N+1 has been released. Otherwise, the next apt: call would fail
+# because the release info has changed from stable -> oldstable:
+#
+#     E: Repository 'http://deb.debian.org/debian buster InRelease' changed
+#     its 'Suite' value from 'stable' to 'oldstable'
+#     E: Repository 'http://deb.debian.org/debian buster-updates InRelease'
+#     changed its 'Suite' value from 'stable-updates' to 'oldstable-updates'
+#
+- name: Update apt cache  # noqa command-instead-of-module no-changed-when
+  when: ansible_pkg_mgr == 'apt'
+  become: true
+  ansible.builtin.command:
+    argv:
+      - apt-get
+      - update
+      - --allow-releaseinfo-change
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
+
+- name: Upgrade the whole system (apt)  # noqa package-latest
+  become: true
+  ansible.builtin.apt:
+    upgrade: dist
+    autoremove: true
+  # We’ve been seeing timeouts during this operation. By nudging ssh using
+  # SIGWINCH, ansible is allowed to continue.
+  #
+  # I suspect that there is some timeout involved which kills off the SSH
+  # connection and SIGWINCH lets it revive or something. Either way, the
+  # internet™ suggests to give async a shot, so we do that:
+  #
+  # See-Also:
+  # - The comment which suggested using async:
+  #   https://github.com/ansible/ansible/issues/62807#issuecomment-537741591
+  # - More docs on async operations:
+  #   https://docs.ansible.com/ansible/latest/user_guide/playbooks_async.html
+  async: 1800
+  poll: 5
+  register: upgrade_apt
+  until: upgrade_apt is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
+  when:
+    - ansible_pkg_mgr == 'apt'
+    - _allow_disruption or k8s_install_status == 'not_initialized' or frontend_install_status == 'not_initialized'
+
+- name: Reboot block  # noqa no-handler
+  become: true
+  when: (upgrade_apt is changed) or (testing_force_reboot_nodes | default(false))
+  block:
+
+    - name: Reboot the system (cloud-init run)  # noqa no-changed-when
+      ansible.builtin.command:
+        argv:
+          - reboot
+          - now
+      when: ansible_connection == 'local'
+
+    # We do not need a "when" here. ansible is killed approximately immediately
+    # anyway by the above command if it is executed; If the above command is
+    # not executed, we want to execute this one.
+    - name: Reboot the system
+      ansible.builtin.reboot:
+...

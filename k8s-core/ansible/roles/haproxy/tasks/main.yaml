@@ -1,0 +1,60 @@
+---
+- name: Install HAProxy
+  become: true
+  ansible.builtin.package:
+    state: present
+    name:
+      - haproxy
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
+
+- name: Create directory for HAProxy configurations
+  become: true
+  ansible.builtin.file:
+    state: directory
+    path: /etc/haproxy/conf.d/
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Create HAProxy configuration
+  become: true
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/conf.d/00_haproxy.cfg
+    validate: haproxy -f %s -c
+    mode: 0600
+    owner: root
+    group: root
+  notify: Restart the haproxy service
+
+- name: Configure HAProxy to use the directory as config source
+  become: true
+  ansible.builtin.template:
+    src: config.cfg.j2
+    dest: "{{ haproxy_service_config_map[ansible_os_family] }}"
+    owner: root
+    group: root
+    mode: 0640
+  notify: Restart the haproxy service
+
+- name: Create HAProxy config for the k8s API server
+  become: true
+  ansible.builtin.template:
+    src: k8s-apiserver.cfg.j2
+    dest: /etc/haproxy/conf.d/20_k8s-apiserver.cfg
+    validate: haproxy -f %s -c
+    mode: 0600
+    owner: root
+    group: root
+  notify: Restart the haproxy service
+
+- name: Ensure the haproxy service is enabled and started
+  become: true
+  ansible.builtin.systemd:
+    enabled: true
+    state: started
+    name: haproxy
+...

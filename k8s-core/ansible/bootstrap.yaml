@@ -1,0 +1,78 @@
+---
+- name: Initialize node connection
+  import_playbook: "connect-to-nodes.yaml"
+
+- name: Prepare node
+  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  gather_facts: true # we need facts and at this point in time we can get them
+  vars_files:
+  - vars/auto_generated_preamble.yaml
+  - vars/disruption.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  pre_tasks:
+  - name: Update apt repositories cache
+    become: true
+    apt:
+      update_cache: true
+    tags: always
+  roles:
+  - role: bootstrap/journald
+    tags:
+    - journald
+    - bootstrap
+  - role: bootstrap/configure-automatic-system-updates
+    tags:
+    - configure-automatic-system-updates
+    - bootstrap
+  - role: bootstrap/disable-swap
+    tags:
+    - disable-swap
+    - bootstrap
+  - role: bootstrap/remove_snap
+    tags:
+    - remove_snap
+    - bootstrap
+  - role: bootstrap/ntp
+    tags:
+    - ntp
+    - bootstrap
+  - role: bootstrap/net-forwarding
+    tags:
+    - net-forwarding
+    - bootstrap
+
+- name: Configure Proxy support
+  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  vars_files:
+  - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
+  roles:
+  - role: proxy-support
+    when: cluster_behind_proxy | default(false)
+    tags: proxy-support
+
+- name: Update apt cache
+  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  vars_files:
+  - vars/retries.yaml
+  tasks:
+  - name: Update apt cache
+    become: true
+    ansible.builtin.apt:
+      update_cache: true
+    register: update_apt
+    until: update_apt is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
+
+- name: Harden SSH
+  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  become: true
+  vars_files:
+  - vars/ssh-hardening.yaml
+  roles:
+  # https://github.com/dev-sec/ansible-collection-hardening/
+  - role: devsec.hardening.ssh_hardening
+    tags: harden-ssh
+...

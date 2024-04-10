@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 actions_dir="$(dirname "$0")"
+
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
@@ -38,11 +39,11 @@ if ! echo "$target_version" | grep -Pq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
     exit 2
 fi
 minor_version="$(echo "$target_version" | cut -d'.' -f1-2)"
-playbook="k8s-upgrades/k8s_upgrade_to_${minor_version}.yaml"
+playbook="k8s-upgrade-to-${minor_version}.yaml"
 
-if [ ! -e "${ansible_k8s_base_playbook}/${playbook}" ]; then
+if [ ! -e "${ansible_k8s_supplements_dir}/${playbook}" ]; then
     errorf 'cannot find an upgrade playbook for target minor version %q' "$minor_version"
-    hintf 'I looked for %q' "${ansible_k8s_base_playbook}/${playbook}"
+    hintf 'I looked for %q' "${ansible_k8s_supplements_dir}/${playbook}"
     exit 2
 fi
 
@@ -52,13 +53,12 @@ require_disruption
 
 "$actions_dir/wg-up.sh"
 
-export KUBECONFIG="$cluster_repository/inventory/.etc/admin.conf"
-cd "$ansible_k8s_base_playbook"
-# include k8s-base roles
-ANSIBLE_ROLES_PATH="$ansible_k8s_base_playbook/roles:$ansible_k8s_sl_playbook/roles:$ansible_k8s_ms_playbook/roles" \
-    ansible_playbook -i "$ansible_inventoryfile_03" "$playbook" \
+pushd "$ansible_k8s_supplements_dir"
+ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles" \
+    ansible_playbook -i "$ansible_inventory_host_file" "$playbook" \
     -e "next_k8s_version=$target_version" \
     -e "next_minor_k8s_version=$minor_version" \
     -e '{"do_upgrade": true}' \
     -e "k8s_skip_upgrade_checks=${k8s_skip_upgrade_checks:-false}" \
-    -e "ksl_vars_directory=$ansible_k8s_sl_vars_base"
+    -e "ansible_k8s_core_dir=$ansible_k8s_core_dir"
+popd

@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  license: Apache-2.0
+  author: Yaook Authors
+dependencies:
+- config/k8s-config
+- ch-k8s-lbaas-common
+- bird
+...

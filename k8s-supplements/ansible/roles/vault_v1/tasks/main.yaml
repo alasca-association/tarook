@@ -1,0 +1,146 @@
+---
+- name: Ensure namespace exists
+  kubernetes.core.k8s:
+    apply: true
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ yaook_vault_namespace }}"
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+
+- name: Create the internal PKI
+  ansible.builtin.import_tasks: internal_pki.yaml
+
+- name: Create the external PKI
+  when: yaook_vault_ingress | default(False)
+  ansible.builtin.import_tasks: external_pki.yaml
+
+- name: "{{ yaook_vault_enabled | ternary('Add', 'Remove') }} Hashicorp vault Repo"
+  kubernetes.core.helm_repository:
+    name: hashicorp
+    repo_url: "{{ yaook_vault_helm_repo_url }}"
+    repo_state: "{{ yaook_vault_enabled | ternary('present', 'absent') }}"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
+
+- name: Deploy Vault
+  vars:
+    scheduling_key: "{{ yaook_vault_scheduling_key }}"
+  kubernetes.core.helm:
+    chart_ref: hashicorp/vault
+    chart_version: "{{ yaook_vault_chart_version }}"
+    release_namespace: "{{ yaook_vault_namespace }}"
+    release_name: vault
+    release_state: present
+    update_repo_cache: true
+    values: "{{ lookup('template', 'vault.yaml.j2') | from_yaml }}"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
+
+- name: Find vault pods
+  kubernetes.core.k8s_info:
+    api_version: v1
+    namespace: "{{ yaook_vault_namespace }}"
+    kind: Pod
+    label_selectors: app.kubernetes.io/instance=vault,app.kubernetes.io/name=vault,component=server
+  register: vault_pods
+  failed_when: "(vault_pods.resources | length) == 0"
+  retries: 10
+  delay: 5
+
+- name: Obtain vault status
+  kubernetes.core.k8s_exec:
+    namespace: "{{ yaook_vault_namespace }}"
+    pod: "{{ vault_pods.resources[0].metadata.name }}"
+    container: vault
+    command: vault status -format=json
+  # not found or other fatal signals
+  until: '(vault_status.rc | default(255)) < 128 and vault_status.stdout != ""'
+  failed_when: '(vault_status.rc | default(255)) >= 128 or vault_status.stdout == ""'
+  register: vault_status
+  retries: 10
+  delay: 5
+
+# Vault commands are usually idempotent
+- name: Initialize Vault in first pod if not initialized
+  when: 'not (vault_status.stdout | from_json).initialized'
+  block:
+  - name: Initialize Vault
+    kubernetes.core.k8s_exec:
+      namespace: "{{ yaook_vault_namespace }}"
+      pod: "{{ vault_pods.resources[0].metadata.name }}"
+      container: vault
+      command: 'vault operator init -key-shares={{ yaook_vault_init_key_shares | quote }} -key-threshold={{ yaook_vault_init_key_threshold | quote }} -format=json'
+    failed_when: 'vault_init.rc != 0'
+    register: vault_init
+
+  # TODO: I'm caching those to facilitate development. We want to rotate these keys and token immediately after the cluster was spawned.
+  - name: 'SENSITIVE: Write UNSEAL KEYS into cluster repo (./etc/vault_unseal.key)'
+    delegate_to: localhost
+    ansible.builtin.copy:
+      content: "{{ (vault_init.stdout | from_json).unseal_keys_b64 }}"
+      dest: "{{ etc_dir }}/vault_unseal.key"
+      mode: u=rw,og-rwx
+
+  - name: 'SENSITIVE: Write ROOT TOKEN into cluster repo (./etc/vault_root_token)'
+    delegate_to: localhost
+    ansible.builtin.copy:
+      content: "{{ (vault_init.stdout | from_json).root_token }}"
+      dest: "{{ etc_dir }}/vault_root_token"
+      mode: u=rw,og-rwx
+
+- name: Load unseal key(s) and a root token
+  ansible.builtin.import_tasks: credentials.yaml
+
+# We have to unseal at least one vault before the raft cluster can be established
+- name: Unseal the initial Vault pod
+  loop:
+  - "{{ vault_pods.resources[0] }}"
+  loop_control:
+    label: "{{ pod.metadata.name }}"
+    loop_var: pod
+  ansible.builtin.include_tasks: unseal.yaml
+
+- name: Wait until all vault instances have joined the cluster
+  kubernetes.core.k8s_exec:
+    namespace: "{{ yaook_vault_namespace }}"
+    pod: "{{ item.metadata.name }}"
+    container: vault
+    command: vault status -format=json
+  register: vault_status
+  failed_when: vault_status.rc == 1
+  until: (vault_status.stdout | from_json).initialized
+  retries: 10
+  delay: 5
+  loop: "{{ vault_pods.resources }}"
+
+# TODO: The unseal command sometimes fails with a timeout (triggered by vault) and yet is the vault unsealed eventually.
+# Potentially VAULT_MAX_RETRIES can help
+- name: Unseal all residual pods
+  loop: "{{ vault_pods.resources }}"
+  loop_control:
+    label: "{{ pod.metadata.name }}"
+    loop_var: pod
+  # Note: We're using the loop + `include_tasks` dance to emulate looping over a block
+  ansible.builtin.include_tasks: unseal.yaml
+
+- name: Add monitoring
+  ansible.builtin.import_tasks: monitoring.yaml
+  when: k8s_monitoring_enabled | bool
+
+- name: Add backups
+  when: yaook_vault_enable_backups
+  ansible.builtin.include_tasks: backup.yaml
+...

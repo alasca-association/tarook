@@ -1,5 +1,0 @@
----
-install_node_mirror_domain_name: "install-node"
-install_node_https_mirror_port: 14443
-install_node_httpd_image: "nginx:1.23"
-install_node_mirror_path: /var/lib/mirror/

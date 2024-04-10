@@ -1,0 +1,301 @@
+---
+- name: Onboard node
+  when: node_onboarded is not defined
+  block:
+  - name: Read our token roles
+    delegate_to: localhost
+    environment:
+      ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+      ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+    community.hashi_vault.vault_read:
+      path: auth/token/lookup-self
+      mount_point: "{{ vault_caller_auth_mount_point }}"
+      auth_method: "{{ vault_caller_auth_method }}"
+      token: "{{ vault_caller_token }}"
+      role_id: "{{ vault_caller_role_id }}"
+      secret_id: "{{ vault_caller_secret_id }}"
+      token_validate: false
+    register: token_info
+
+  - name: Test approle
+    ansible.builtin.set_fact:
+      has_vault_orchestrator_role: "{{ (vault_policy_prefix + '/orchestrator') in token_info.data.data.policies or 'root' in token_info.data.data.policies }}"
+
+  - name: Report orchestrator role
+    ansible.builtin.debug:
+      msg: "I do {{ has_vault_orchestrator_role | ternary('', 'NOT ') }}have the orchestrator role!"
+
+  - name: Set vault node name
+    ansible.builtin.set_fact:
+      vault_node_name: "{{ inventory_hostname }}.node.{{ vault_cluster_name }}"
+
+  - name: Prepare login data directory
+    become: true
+    ansible.builtin.file:
+      state: directory
+      path: /etc/vault
+      owner: root
+      group: root
+      mode: u=rwx,go-rwx
+
+  - name: Write cluster name
+    become: true
+    ansible.builtin.copy:
+      dest: /etc/vault/cluster-name
+      owner: root
+      group: root
+      mode: ugo=r
+      content: "{{ vault_cluster_name }}"
+
+  - name: Write node name
+    become: true
+    ansible.builtin.copy:
+      dest: /etc/vault/node-name
+      owner: root
+      group: root
+      mode: ugo=r
+      content: "{{ vault_node_name }}"
+
+  - name: Onboard node to vault
+    when: has_vault_orchestrator_role
+    environment:
+      ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+      ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+    block:
+    - name: Configure policies
+      block:
+      - name: Add base policy
+        ansible.builtin.set_fact:
+          vault_node_policies: "{{ vault_policy_prefix }}/node"
+
+      - name: Add gateway policy
+        ansible.builtin.set_fact:
+          vault_node_policies: "{{ vault_policy_prefix }}/gateway,{{ vault_node_policies }}"
+        when: "'frontend' in group_names"
+
+      - name: Add k8s node policy
+        ansible.builtin.set_fact:
+          vault_node_policies: "{{ vault_policy_prefix }}/k8s-node,{{ vault_node_policies }}"
+        when: "'k8s_nodes' in group_names"
+
+      - name: Add k8s control-plane policy
+        ansible.builtin.set_fact:
+          vault_node_policies: "{{ vault_policy_prefix }}/k8s-control-plane,{{ vault_node_policies }}"
+        when: "'masters' in group_names"
+
+      - name: Discovered policies
+        ansible.builtin.debug:
+          msg: "{{ vault_node_policies }}"
+
+    - name: Configure approle
+      delegate_to: localhost
+      community.hashi_vault.vault_write:
+        path: "auth/{{ vault_nodes_approle }}/role/{{ vault_node_name }}"
+        mount_point: "{{ vault_caller_auth_mount_point }}"
+        auth_method: "{{ vault_caller_auth_method }}"
+        token: "{{ vault_caller_token }}"
+        role_id: "{{ vault_caller_role_id }}"
+        secret_id: "{{ vault_caller_secret_id }}"
+        token_validate: false
+        data:
+          token_ttl: 10m
+          token_max_ttl: 1h
+          token_policies: "{{ vault_node_policies }}"
+          token_no_default_policy: "false"
+          token_type: service
+
+    - name: Configure SSH CA role
+      delegate_to: localhost
+      community.hashi_vault.vault_write:
+        path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/ssh-ca/roles/{{ vault_node_name }}"
+        mount_point: "{{ vault_caller_auth_mount_point }}"
+        auth_method: "{{ vault_caller_auth_method }}"
+        token: "{{ vault_caller_token }}"
+        role_id: "{{ vault_caller_role_id }}"
+        secret_id: "{{ vault_caller_secret_id }}"
+        token_validate: false
+        data:
+          key_type: ca
+          allow_host_certificates: "true"
+          allow_bare_domains: "true"
+          allowed_domains: "{{ vault_node_name }},{{ inventory_hostname }}"
+          ttl: "720h"
+          algorithm_signer: "rsa-sha2-512"
+
+    - name: Discover role ID
+      delegate_to: localhost
+      community.hashi_vault.vault_read:
+        path: "auth/{{ vault_nodes_approle }}/role/{{ vault_node_name }}/role-id"
+        mount_point: "{{ vault_caller_auth_mount_point }}"
+        auth_method: "{{ vault_caller_auth_method }}"
+        token: "{{ vault_caller_token }}"
+        role_id: "{{ vault_caller_role_id }}"
+        secret_id: "{{ vault_caller_secret_id }}"
+        token_validate: false
+      register: approle_role_id
+
+    - name: Read current secret ID  # noqa no-changed-when
+      become: true
+      ansible.builtin.command:
+      args:
+        argv:
+        - cat
+        - /etc/vault/secret-id
+      register: approle_secret_id_file
+      ignore_errors: true
+
+    - name: Regenerate secret ID
+      delegate_to: localhost
+      community.hashi_vault.vault_write:
+        path: "auth/{{ vault_nodes_approle }}/role/{{ vault_node_name }}/secret-id"
+        mount_point: "{{ vault_caller_auth_mount_point }}"
+        auth_method: "{{ vault_caller_auth_method }}"
+        token: "{{ vault_caller_token }}"
+        role_id: "{{ vault_caller_role_id }}"
+        secret_id: "{{ vault_caller_secret_id }}"
+        token_validate: false
+        # we unwrap immediately in this workflow; however, wrapping is required,
+        # as per the policy, to enforce correct flows in especially the bare
+        # metal installation case.
+        wrap_ttl: 60s
+        data:
+          metadata: '{{ {"yaook_deployment": vault_cluster_name, "yaook_hostname": inventory_hostname, "yaook_primary_ipv4": local_ipv4_address | default("127.0.0.1"), "yaook_primary_ipv6": local_ipv6_address | default("::1")} | to_json }}'
+      register: approle_secret_id_wrapped
+
+    - name: Unwrap secret ID
+      delegate_to: localhost
+      community.hashi_vault.vault_write:
+        path: "sys/wrapping/unwrap"
+        token: "{{ approle_secret_id_wrapped.data.wrap_info.token }}"
+        token_validate: false
+      register: approle_secret_id
+
+    - name: Set vault credentials as facts
+      ansible.builtin.set_fact:
+        vault_role_id: "{{ approle_role_id.data.data.role_id }}"
+        vault_secret_id: "{{ approle_secret_id.data.data.secret_id }}"
+
+    - name: Read token information from approle
+      delegate_to: localhost
+      environment:
+        ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+        ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+        ANSIBLE_HASHI_VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
+      community.hashi_vault.vault_read:
+        path: auth/token/lookup-self
+        token_validate: false
+        auth_method: approle
+        token: "invalid"
+        role_id: "{{ vault_role_id }}"
+        secret_id: "{{ vault_secret_id }}"
+        mount_point: "{{ vault_nodes_approle }}"
+      register: token_info
+
+    - name: Check token information
+      ansible.builtin.debug:
+        msg: "{{ token_info }}"
+      failed_when: "token_info.data.data.policies | difference(vault_node_policies.split(',')) != ['default']"
+
+    - name: Write vault role-id
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/vault/role-id
+        owner: root
+        group: root
+        mode: ugo=r
+        content: "{{ approle_role_id.data.data.role_id }}"
+
+    - name: Write vault secret-id
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/vault/secret-id
+        owner: root
+        group: root
+        mode: u=r
+        content: "{{ approle_secret_id.data.data.secret_id }}"
+
+    - name: Revoke old secret ID
+      delegate_to: localhost
+      when: approle_secret_id_file is not failed
+      community.hashi_vault.vault_write:
+        path: "auth/{{ vault_nodes_approle }}/role/{{ vault_node_name }}/secret-id/destroy"
+        mount_point: "{{ vault_caller_auth_mount_point }}"
+        auth_method: "{{ vault_caller_auth_method }}"
+        token: "{{ vault_caller_token }}"
+        role_id: "{{ vault_caller_role_id }}"
+        secret_id: "{{ vault_caller_secret_id }}"
+        token_validate: false
+        data:
+          secret_id: "{{ approle_secret_id_file.stdout }}"
+      register: approle_role_id
+
+  - name: Write role-id from env if not written
+    become: true
+    when: "not has_vault_orchestrator_role and vault_caller_role_id and vault_caller_secret_id"
+    ansible.builtin.copy:
+      dest: /etc/vault/role-id
+      owner: root
+      group: root
+      mode: ugo=r
+      content: "{{ vault_caller_role_id }}"
+
+  - name: Write secret-id from env if not written
+    become: true
+    when: "not has_vault_orchestrator_role and vault_caller_role_id and vault_caller_secret_id"
+    ansible.builtin.copy:
+      dest: /etc/vault/secret-id
+      owner: root
+      group: root
+      mode: ugo=r
+      content: "{{ vault_caller_secret_id }}"
+
+  - name: Read role id
+    become: true
+    ansible.builtin.command:
+    args:
+      argv:
+      - cat
+      - /etc/vault/role-id
+    register: cat_role_id
+    changed_when: false
+
+  - name: Read secret id
+    become: true
+    ansible.builtin.command:
+    args:
+      argv:
+      - cat
+      - /etc/vault/secret-id
+    register: cat_secret_id
+    changed_when: false
+
+  - name: Read token information from on-node approle info
+    delegate_to: localhost
+    environment:
+      ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+      ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+    community.hashi_vault.vault_read:
+      path: auth/token/lookup-self
+      token_validate: false
+      auth_method: approle
+      role_id: "{{ cat_role_id.stdout }}"
+      secret_id: "{{ cat_secret_id.stdout }}"
+      mount_point: "{{ vault_nodes_approle }}"
+    register: token_info
+    failed_when: false
+
+  - name: Fail if no vault credentials are available for this node
+    ansible.builtin.fail:
+      msg: |
+        The Vault token with which ansible runs does not have the orchestrator
+        role (otherwise, we would've just generated valid credentials) and there
+        are no valid approle credentials predeployed on the node.
+
+        Token info: {{ token_info }}
+    when: token_info is failed or not (token_info.data.data.policies | default([]))
+
+  - name: Set fact that we're onboarded
+    set_fact:
+      node_onboarded: true
+      cacheable: true
+...

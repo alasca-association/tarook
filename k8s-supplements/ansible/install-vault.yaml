@@ -1,0 +1,15 @@
+---
+- name: Install Hashicorp Vault
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
+  - vars/etc.yaml
+  - vars/monitoring.yaml
+  roles:
+  - role: vault_v1
+    when: yaook_vault_enabled | bool
+    tags:
+    - vault_v1
+    - vault
+...

@@ -1,0 +1,19 @@
+---
+- name: Configure journald
+  when: _allow_disruption or k8s_install_status == 'not_initialized' or frontend_install_status == 'not_initialized'
+  block:
+  - name: Create configuration for journald
+    become: true
+    ansible.builtin.template:
+      src: journald.conf.j2
+      dest: /etc/systemd/journald.conf
+      mode: 0640
+
+  - name: Restart journald
+    become: true
+    ansible.builtin.systemd:
+      enabled: true
+      state: restarted
+      daemon_reload: true
+      name: systemd-journald
+...

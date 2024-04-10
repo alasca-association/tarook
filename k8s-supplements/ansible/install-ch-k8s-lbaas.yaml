@@ -1,0 +1,33 @@
+---
+- name: Connect to Kubernetes nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
+  vars:
+    target_hosts: masters:frontend
+
+- name: Install ch-k8s-lbaas
+  hosts: masters
+  become: true
+  gather_facts: false
+  vars_files:
+  - vars/disruption.yaml
+  - vars/retries.yaml
+  roles:
+  - role: ch-k8s-lbaas-controller
+    when: ch_k8s_lbaas_enabled
+    tags:
+    - ch-k8s-lbaas
+    - ch-k8s-lbaas-controller
+
+- name: Install ch-k8s-lbaas
+  hosts: frontend
+  vars_files:
+  - vars/auto_generated_preamble.yaml
+  - vars/disruption.yaml
+  - vars/retries.yaml
+  roles:
+  - role: ch-k8s-lbaas-agent
+    when: ch_k8s_lbaas_enabled
+    tags:
+    - ch-k8s-lbaas
+    - ch-k8s-lbaas-agent
+...

@@ -1,0 +1,16 @@
+---
+# This role triggers all "verify-*.sh" action scripts
+- name: Find all "verify-*.sh" scripts
+  ansible.builtin.find:
+    paths: "{{ playbook_dir }}/../../actions"
+    patterns: "verify-*.sh"
+  register: script_list
+
+- name: Trigger all "verify-*.sh" scripts  # noqa no-changed-when
+  ansible.builtin.command: "{{ item.path }}"
+  args:
+    chdir: "{{ playbook_dir }}/../../../"
+  loop: "{{ script_list.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+...

@@ -1,0 +1,24 @@
+---
+- name: Initialize node connection
+  import_playbook: "connect-to-nodes.yaml"
+  vars:
+    target_hosts: frontend
+
+- name: Install & configure frontend services
+  hosts: frontend
+  gather_facts: true
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  roles:
+  - role: keepalived
+    tags:
+    - keepalived
+    - frontend
+  - role: haproxy
+    tags:
+    - haproxy
+    - frontend
+...

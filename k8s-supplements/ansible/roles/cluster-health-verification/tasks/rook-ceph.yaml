@@ -1,0 +1,5 @@
+---
+- name: Include Rook/Ceph cluster health verification
+  ansible.builtin.include_role:
+    name: common/rook-health-verification
+...

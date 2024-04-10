@@ -21,10 +21,8 @@ FAQ - Frequently Asked Questions
 -  ``<username>``
 
    -  This should be the default user of the image you are deploying.
-   -  By default this is ``debian`` for the gateway nodes and ``ubuntu``
+   -  By default this should be ``debian`` for the gateway nodes and ``ubuntu``
       for the master and worker nodes.
-
-      -  This setting can be changed in ``./terraform/00-variables.tf``.
 
 -  ``<ip address>``
 
@@ -80,8 +78,8 @@ by triggering the :ref:`destroy.sh <actions-references.destroysh>` script.
 Troubleshooting
 ---------------
 
-“The ``apply.sh`` script cannot connect to the host nodes”
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+“The ``apply-all.sh`` script cannot connect to the host nodes”
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Error message:** ``failed to detect a valid login!``
 

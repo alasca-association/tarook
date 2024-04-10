@@ -1,0 +1,81 @@
+---
+- name: Initial sanity checks
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+  - vars/etc.yaml
+  roles:
+  - role: vault-migrated
+    tags: always
+
+- name: Connect to, prepare & bootstrap Kubernetes nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/bootstrap.yaml"
+  vars:
+    target_hosts: k8s_nodes
+
+- name: Update frontend nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/update-frontend-nodes.yaml"
+
+- name: Update Kubernetes nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/update-kubernetes-nodes.yaml"
+
+- name: Spawn Kubernetes
+  import_playbook: "{{ ansible_k8s_core_dir }}/install-k8s.yaml"
+
+- name: Install volume snapshot controller
+  import_playbook: install-volume-snapshot-controller.yaml
+
+- name: Connect to OpenStack
+  import_playbook: connect-k8s-to-openstack.yaml
+
+- name: Install Calico
+  import_playbook: install-calico.yaml
+
+- name: Install ch-k8s-lbaas
+  import_playbook: install-ch-k8s-lbaas.yaml
+
+- name: Install local storage
+  import_playbook: install-local-storage.yaml
+
+- name: Install monitoring stack
+  import_playbook: install-monitoring.yaml
+
+- name: Install cert-manager
+  import_playbook: install-cert-manager.yaml
+
+- name: Install Rook/Ceph
+  import_playbook: install-rook-ceph.yaml
+
+- name: Install Ingress controller
+  import_playbook: install-ingress.yaml
+
+- name: Install etcd-backup
+  import_playbook: install-etcd-backup.yaml
+
+- name: Install Hashicorp Vault
+  import_playbook: install-vault.yaml
+
+- name: Install Flux
+  import_playbook: install-flux.yaml
+
+- name: Configure tailored ServiceMonitors for monitoring
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
+  - vars/monitoring.yaml
+  tasks:
+  - name: Configure tailored ServiceMonitors for monitoring
+    when: k8s_monitoring_enabled | bool
+    include_role:
+      name: monitoring_v2
+      tasks_from: install_monitors.yaml
+    tags:
+    - monitoring_v2
+    - monitoring
+
+# ---
+# TODO: Should be factored out
+- name: Configure global monitoring
+  import_playbook: configure-global-monitoring.yaml
+...

@@ -498,6 +498,10 @@ size for each component like in the following.
    thanos_query_size = "ZGi"
    # [...]
 
+|
+
+.. _cluster-configuration.nginx-ingress-configuration:
+
 NGINX Ingress Controller Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -524,6 +528,8 @@ soon :)
    </details>
 
 |
+
+.. _cluster-configuration.cert-manager-configuration:
 
 Cert-Manager Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -737,31 +743,6 @@ More details about the IPsec setup can be found
    :language: toml
    :start-after: # ANCHOR: ipsec_configuration
    :end-before: # ANCHOR_END: ipsec_configuration
-
-.. raw:: html
-
-   </details>
-
-|
-
-Cloud&Heat: ch-role-users Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This section refers to the configuration of the ``ch-role-users`` git
-submodule which is an internally used repository of Cloud&Heat. The
-usage of it is disabled by default but can be enabled (and configured)
-in the following section or via an
-:ref:`environment variable <environmental-variables.ssh-configuration>`.
-
-.. raw:: html
-
-   <details>
-   <summary>config.toml: ch-role-users Configuration</summary>
-
-.. literalinclude:: /templates/config.template.toml
-   :language: toml
-   :start-after: # ANCHOR: ch-role-users_configuration
-   :end-before: # ANCHOR_END: ch-role-users_configuration
 
 .. raw:: html
 

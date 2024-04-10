@@ -1,0 +1,28 @@
+# Note, this playbook is useless standalone.
+# It is used when rotating the CA certificates
+# and triggered by the respective action script.
+---
+- name: Rotate CA (supplements)
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
+  tasks:
+  - name: Copy CA to monitoring namespace
+    include_role:
+      name: monitoring_v2
+      tasks_from: copy-ca-as-cm.yaml
+    when: k8s_monitoring_enabled | bool
+
+  - name: Rollout restart prometheus-adapter  # noqa no-changed-when
+    command:
+      argv:
+      - kubectl
+      - rollout
+      - restart
+      - deployment
+      - prometheus-adapter
+      - --namespace
+      - "{{ monitoring_namespace | default('monitoring') }}"
+    when: k8s_monitoring_enabled | bool
+...

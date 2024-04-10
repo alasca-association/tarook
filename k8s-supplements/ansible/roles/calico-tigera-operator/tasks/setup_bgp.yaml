@@ -1,0 +1,52 @@
+---
+- name: Create calico BGP configuration and apply peering
+  become: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+    DATASTORE_TYPE: kubernetes
+  block:
+  - name: Wait for Calico API servers to be up and running
+    kubernetes.core.k8s_info:
+      api_version: operator.tigera.io/v1
+      kind: APIServer
+      name: default
+    # Retry this task on failures
+    register: calico_apiserver
+    until: "calico_apiserver.resources and (calico_apiserver.resources[0].status | default(False)) and (calico_apiserver.resources[0].status.state | default('') in ['Ready', 'Failed'])"
+    retries: 120
+    delay: "{{ k8s_error_delay }}"
+
+  - name: BGP - Apply default calico BGP configuration
+    kubernetes.core.k8s:
+      apply: true
+      definition: "{{ lookup('template', 'bgp.yaml.j2') | from_yaml_all }}"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+
+  - name: BGP - Label CP nodes as route reflectors
+    kubernetes.core.k8s:
+      state: patched
+      kind: Node
+      name: "{{ item }}"
+      definition:
+        metadata:
+          annotations:
+            projectcalico.org/RouteReflectorClusterID: "{{ k8s_network_calico_bgp_router_id }}"
+          labels:
+            route-reflector: "true"
+      validate:
+        fail_on_error: true
+        strict: true
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+    loop: "{{ groups['masters'] }}"
+...

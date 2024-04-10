@@ -1,0 +1,30 @@
+---
+- name: Ensure that pip is installed
+  become: true
+  ansible.builtin.package:
+    state: present
+    name:
+    - python3-pip
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
+  tags:
+  - k8s-tools
+
+- name: Ensure that kubernetes libraries are installed  # noqa package-latest
+  become: true
+  ansible.builtin.pip:
+    name:
+    - openshift
+    - kubernetes
+    - "kubernetes-validate~={{ next_k8s_version is defined | ternary(next_k8s_version_minor, k8s_version_minor) }}.0"
+    state: latest
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
+  when: ansible_facts.env.VIRTUAL_ENV is not defined
+  tags:
+  - k8s-tools
+...

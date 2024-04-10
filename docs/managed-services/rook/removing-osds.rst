@@ -1,6 +1,11 @@
 Reducing the number of OSDs
 ===========================
 
+.. warning::
+
+   This document has been created quite some time ago
+   and information may be misleading or outdated.
+
 If the load on the meta machines is too high because of the number of
 OSDs, the number of OSDs can be reduced losslessly. This requires a few
 steps and great care, but it is possible.
@@ -20,6 +25,12 @@ Prerequisites
 
 Remove an OSD without data loss
 -------------------------------
+
+The replacement and removal of OSDs is documented in the
+`official Rook documentation <https://rook.io/docs/rook/v1.11/Storage-Configuration/Advanced/ceph-osd-mgmt/>`__.
+
+Manual approach
+~~~~~~~~~~~~~~~
 
 The following procedure was tested and verified in a test cluster with 6
 OSDs. To check that no data loss occurs, a volume was created with 8 GiB

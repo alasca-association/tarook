@@ -14,7 +14,7 @@ Basic setup
 :ref:`config.toml <cluster-configuration.wireguard-configuration>`.
 
 4. The Wireguard configuration on the frontend nodes is updated when executing
-:ref:`stage 2 <actions-references.apply-stage2sh>`.
+:ref:`apply-prepare-gw.sh <actions-references.apply-prepare-gwsh>`.
 
 Establishing and closing a Wireguard connection
 -----------------------------------------------
@@ -60,7 +60,7 @@ With that in mind, the Wireguard server key can be rotated by doing the followin
    ip_cidr = "172.30.153.128/26"
    ip_gw   = "172.30.153.129/26"
 
-2. Execute :ref:`stage 2 <actions-references.apply-stage2sh>`.
+2. Execute :ref:`apply-prepare-gw.sh <actions-references.apply-prepare-gwsh>`.
 
 3. Change the default endpoint id to the newly created endpoint in ``.envrc``
    (``wg_endpoint``).
@@ -75,7 +75,7 @@ With that in mind, the Wireguard server key can be rotated by doing the followin
 6. Wait until deadline is reached.
 
 7. Set ``enabled = false`` on the old Wireguard endpoint and run
-   :ref:`stage 2 <actions-references.apply-stage2sh>`. The old endpoint is now disabled.
+   :ref:`apply-prepare-gw.sh <actions-references.apply-prepare-gwsh>`. The old endpoint is now disabled.
 
 8. Remove old config files at ``inventory/.etc/wireguard/wg0/``, the old private key
    (``wireguard/wg0-key`` in the vault) and the old endpoint section in ``config.toml``.

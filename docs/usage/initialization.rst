@@ -194,7 +194,7 @@ serve as your :doc:`cluster repository </concepts/cluster-repository>`:
 
    .. code:: console
 
-      $ $somewhere_else/k8s/actions/init.sh
+      $ $somewhere_else/k8s/actions/init-cluster-repo.sh
 
    This ``init.sh`` script will:
 

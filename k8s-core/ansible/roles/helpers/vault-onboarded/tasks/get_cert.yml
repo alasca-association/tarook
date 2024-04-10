@@ -1,0 +1,87 @@
+---
+# This pluggable task fetches a cert from vault if and only if:
+# - the destination filesystem path does not have the cert/key, or
+# - the certificate at that location has been created more than 30d in the past
+#
+# we could fetch certificates always, but that puts some strain on vault
+# (because it needs to store information about all issued certificates until
+# they are expired or revoked), so we don't.
+
+- name: Refresh certificate
+  environment:
+    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+  block:
+  - name: "{{ get_cert_title }}: Check certificate existence"
+    become: true
+    ansible.builtin.stat:
+      path: "{{ get_cert_destination_crt }}"
+    register: cert_existence
+
+  - name: "{{ get_cert_title }}: Check key existence"
+    become: true
+    ansible.builtin.stat:
+      path: "{{ get_cert_destination_key }}"
+    register: key_existence
+
+  - name: "{{ get_cert_title }}: Check expiry"
+    become: true
+    when: cert_existence.stat.exists
+    community.crypto.x509_certificate_info:
+      path: "{{ get_cert_destination_crt }}"
+      valid_at:
+        point_1: "-4w"
+        point_2: "+16w"
+    register: cert_info
+
+  - name: "{{ get_cert_title }}: Dump cert information"
+    ansible.builtin.debug:
+      msg: |
+        Certificate {% if cert_existence.stat.exists %}exists,
+        {% if cert_info.valid_at.point_1 %} is older than 4w{% else %}is not older than 4w{% endif %}
+        {% if cert_info.valid_at.point_2 %} and is valid 16w from now{% else %} and expires in less than 16w{% endif %}.
+        {% else %}does not exist.{% endif %}
+
+  - name: "{{ get_cert_title }}: Fail if cert exists but not the key Key, or vice versa"
+    ansible.builtin.fail:
+      msg: Cert exists but key does not or vice versa
+    when: cert_existence.stat.exists != key_existence.stat.exists
+
+  - name: "{{ get_cert_title }}: Fetch if absent or expiring"
+    when: |
+      not cert_existence.stat.exists or
+      cert_info.valid_at.point_1 or
+      not cert_info.valid_at.point_2
+    delegate_to: localhost
+    community.hashi_vault.vault_write:
+      path: "{{ get_cert_vault_path }}"
+      data: "{{ get_cert_vault_data }}"
+      token_validate: false
+      auth_method: approle
+      role_id: "{{ vault_role_id }}"
+      secret_id: "{{ vault_secret_id }}"
+      mount_point: "{{ vault_nodes_approle }}"
+    register: get_cert
+
+  - name: "{{ get_cert_title }}: Write certificate"  # noqa no-handler
+    become: true
+    when: get_cert is changed
+    ansible.builtin.copy:
+      dest: "{{ get_cert_destination_crt }}"
+      owner: "{{ get_cert_owner }}"
+      group: "{{ get_cert_group | default(get_cert_owner) }}"
+      mode: u=rw,go=r
+      content: "{{ get_cert.data.data.certificate }}{{ '\n' }}{{ get_cert.data.data.ca_chain | join('\n') }}{{ '\n' }}"
+    notify: "{{ get_cert_notify | default('noop') }}"
+
+  - name: "{{ get_cert_title }}: Write private key"  # noqa no-handler
+    become: true
+    when: get_cert is changed
+    ansible.builtin.copy:
+      dest: "{{ get_cert_destination_key }}"
+      owner: "{{ get_cert_owner }}"
+      group: "{{ get_cert_group | default(get_cert_owner) }}"
+      mode: u=r
+      content: "{{ get_cert.data.data.private_key }}{{ '\n' }}"
+    notify: "{{ get_cert_notify | default('noop') }}"
+...

@@ -166,8 +166,6 @@ Environment Variable                    Default                                 
 ``MANAGED_K8S_WG_USER_GIT``             ``gitlab.cloudandheat.com:lcm/wg_user``                                 Git URL to a repository with wireguard
                                                                                                                 keys to provision. Can be enabled by
                                                                                                                 setting ``WG_COMPANY_USERS`` (see below).
-``MANAGED_CH_ROLE_USER_GIT``            ``gitlab.cloudandheat.com:operations/ansible-roles/ch-role-users.git``  RL to the ch-role-users role submodule.
-                                                                                                                Can be enabled by setting ``SSH_COMPANY_USERS``
                                                                                                                 (see below).
 ``TERRAFORM_MODULE_PATH``               ``../terraform``                                                        Path to the Terraform root module to
                                                                                                                 change the working directory for the
@@ -237,8 +235,7 @@ SSH Configuration
 Environment Variable        Default                                     Description
 =========================== =========================================== ====================
 ``TF_VAR_keypair``          ``"firstnamelastname-hostname-gendate"``    Defines the keypair name (in OpenStack) which will be used during the creation of new instances. Does not affect instances which have already been created. You **MUST** adjust this variable if you want to deploy on top of OpenStack. This variable is used by the ``apply-terraform.sh``:ref:`-script<actions-references.apply-terraformsh>`.
-``MANAGED_K8S_SSH_USER``                                                The SSH user to use to log into the machines. This variable *SHOULD* be set. By default, the Ansible automation is written such that it’ll auto-detect one of the default SSH users (``centos``, ``debian``, ``ubuntu``) to connect to the machines. This only works if the machines were created with a keypair of which you hold the private key (see ``TF_VAR_keypair``). If the LCM is configured to roll out all relevant users from the `ch-users-databag <https://gitlab.cloudandheat.com/configs/ch-users-databag/>`__ via `ch-role-users <https://gitlab.cloudandheat.com/operations/ansible-roles/ch-role-users>`__ (see ``SSH_COMPANY_USERS``), you'll need to ensure that this the correct user is used when trying to bring up the SSH connection.
-``SSH_COMPANY_USERS``       ``false``                                   If set to true, ``init.sh`` will clone the repository ``MANAGED_CH_ROLE_USER_GIT``. The inventory updater will then configure your inventory such that the ``ch-role-users`` role is executed in stage2 and stage3.
+``MANAGED_K8S_SSH_USER``                                                The SSH user to use to log into the machines. This variable *SHOULD* be set. By default, the Ansible automation is written such that it’ll auto-detect one of the default SSH users (``centos``, ``debian``, ``ubuntu``) to connect to the machines. This only works if the machines were created with a keypair of which you hold the private key (see ``TF_VAR_keypair``).
 =========================== =========================================== ====================
 
 .. _environmental-variables.behavior-altering-variables:
@@ -260,7 +257,7 @@ Environment Variable                        Default     Description
 ``MANAGED_K8S_IGNORE_WIREGUARD_ROUTE``                  By default, ``wg-up.sh`` will check if an explicit route for the cluster network exists on your machine. If such a route exists and does not belong to the wireguard interface set via ``wg_conf_name``, the script will abort with an error.  The reason for that is that it is unlikely that you’ll be able to connect to the cluster this way and that weird stuff is bound to happen. If you know what you’re doing (I certainly don’t), you can set to any non-empty value to override this check.
 ``TF_USAGE``                                ``true``    Allows to disable execution of the terraform stage by setting it to false. This is also taken into account by the inventory helper. Intended use case are bare-metal or otherwise pre-provisioned setups.
 ``AFLAGS``                                              This allows to pass additional flags to Ansible. The variable is interpolated into the ansible call without further quoting, so it can be used to do all kinds of fun stuff. A primary use is to force diff output or only execute some tags: ``AFLAGS="--diff -t some-tag"``.
-``K8S_CUSTOM_STAGE_USAGE``                  ``false``   If set to true, ``init.sh`` will create a base skeleton for the :ref:`customization layer<abstraction-layers.customization>` in your cluster repository. Also the ``apply.sh``:ref:`-script<actions-references.applysh>` will now include the appliance of this stage.
+``K8S_CUSTOM_STAGE_USAGE``                  ``true``    If set to true, ``init-cluster-repo.sh`` will create a base skeleton for the :ref:`customization layer<abstraction-layers.customization>` in your cluster repository. Also the ``apply-all.sh``:ref:`-script<actions-references.apply-allsh>` will now include the appliance of this stage.
 =========================================== =========== ===================
 
 .. note::
@@ -282,7 +279,7 @@ Environment Variable                        Default     Description
 
    If you have already initialized you cluster repository,
    you’ll need to rerun the
-   ``init.sh``:ref:`-script <actions-references.initsh>`
+   ``init.sh``:ref:`-script <actions-references.init-cluster-reposh>`
    after enabling the Customization layer.
 
 .. _environmental-variables.vault-tooling-variables:

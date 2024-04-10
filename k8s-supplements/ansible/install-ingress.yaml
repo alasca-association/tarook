@@ -1,0 +1,14 @@
+---
+- name: Install Ingress Controller
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
+  - vars/monitoring.yaml
+  roles:
+  - role: ingress_v1
+    when: k8s_ingress_enabled | bool
+    tags:
+    - ingress_v1
+    - ingress
+...

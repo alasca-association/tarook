@@ -9,8 +9,6 @@
   image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
   variables:
     WG_COMPANY_USERS: "false"
-    PASS_COMPANY_USERS: "false"
-    SSH_COMPANY_USERS: "false"
     K8S_CUSTOM_STAGE_USAGE: "true"
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
@@ -210,8 +208,9 @@
     - export MANAGED_K8S_GIT="$(realpath .)"
     - cd ci
     - git init
-    - ../actions/init.sh
-    - ../actions/init.sh # A second run to check idempotency
+    - ../actions/init-cluster-repo.sh
+    - ../actions/init-cluster-repo.sh # A second run to check idempotency
+    - cp res/custom-play.yaml k8s-custom/main.yaml
       # Note that this is basically a dummy keypair that is not used to protect any significant data
     - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
       # Ensure that the project is clean
@@ -237,12 +236,9 @@
     - cp custom-play.yaml k8s-custom/main.yaml
     - ./managed-k8s/actions/apply-terraform.sh
     - ./reachability-or-recreate.sh
-    - ./managed-k8s/actions/apply-stage2.sh
-    - ./managed-k8s/actions/apply-stage3.sh
-    - ./managed-k8s/actions/apply-stage4.sh
-    - ./managed-k8s/actions/apply-stage5.sh
-    - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/system_update_nodes.sh
-    - ./managed-k8s/actions/apply-custom.sh
+    - ./managed-k8s/actions/apply-all.sh
+    - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-frontend-nodes.sh
+    - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-kubernetes-nodes.sh
     - ./managed-k8s/actions/test.sh
   after_script:
     - cd ci/
@@ -300,8 +296,6 @@ containerd:
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
     # so we need to reference the default vars here (only one level of nesting is allowed)
     WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
-    PASS_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, PASS_COMPANY_USERS]
-    SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
     K8S_CUSTOM_STAGE_USAGE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, K8S_CUSTOM_STAGE_USAGE]
     ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
@@ -331,8 +325,6 @@ containerd-k8s-upgrade:
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
     # so we need to reference the default vars here (only one level of nesting is allowed)
     WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
-    PASS_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, PASS_COMPANY_USERS]
-    SSH_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, SSH_COMPANY_USERS]
     K8S_CUSTOM_STAGE_USAGE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, K8S_CUSTOM_STAGE_USAGE]
     ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]

@@ -444,7 +444,7 @@ Procedure
    shares and an arbitrary threshold, in compliance with your security
    requirements.
 
-3. Deploy the Vault by (re-)running Stage 4.
+3. Deploy the Vault by (re-)running `k8s-supplements`.
 
 4. Verify that you can reach the Vault instance by running
    ``curl -k https://$nodeip:32048``, where you substitute ``$nodeip``
@@ -606,9 +606,8 @@ Procedure
 
           Congrats! You now have the data inside the k8s cluster.
 
-      12. To test that yaook/k8s can talk to the Vault appropriately, you can
-          now run any stage3 with ``AFLAGS="-t vault-onboarded"`` to see if it
-          can talk to Vault.
+      12. To test that yaook/k8s is able to talk to the Vault instance,
+          you can now run any `k8s-core` with ``AFLAGS="-t vault-onboarded"``.
 
       13. Done!
 

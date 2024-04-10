@@ -28,19 +28,27 @@ will most certainly have more files than these.
    ├── config/
    │   ├── config.toml               # Cluster configuration
    │   └── wireguard_ipam.toml       # WireGuard IPAM
-   ├── inventory/
-   │   └── .etc/                     # Credentials / Secrets
-   ├── k8s-custom/                   # (if enabled)
-   |   ├── roles/
-   |   └── main.yaml
+   ├── etc/                          # Cluster-specific files
+   ├── inventory/                    # Ansible inventory
+   │   └── yaook-k8s/                # Variables passed to Ansible
+   │   └── hosts                     # Ansible hosts file
+   ├── k8s-custom/                   # Custom Stage
+   │   ├── roles/                    # Place to dump in personal Ansible roles
+   │   └── main.yaml                 # Customization playbook
    ├── managed-k8s/                  # Submodule with the LCM code
-   └── terraform/
-       ├── .terraform/
-       │   └── plugins/
-       │       └── linux_amd64/
-       │           └── lock.json     # Terraform plugin version lock
-       ├── terraform.tfstate         # Terraform state
-       └── terraform.tfstate.backup  # Terraform state backup
+   ├── submodules/                   # Place for additional git submodules
+   ├── terraform/                    # Place for Terraform specific files
+   │   ├── .terraform/
+   │   │   └── plugins/
+   │   │       └── linux_amd64/
+   │   │           └── lock.json     # Terraform plugin version lock
+   │   ├── terraform.tfstate         # Terraform state
+   │   └── terraform.tfstate.backup  # Terraform state backup
+   ├── vault/                        # Local vault data
+   ├── .envrc                        # direnv (environment variables) configuration
+   ├── .gitattributes
+   ├── .gitignore
+   └── .gitattributes
 
 Detailed explanation:
 
@@ -54,8 +62,9 @@ Detailed explanation:
    template.
 
 -  ``config/wirguard_ipam.toml`` contains the
-   :doc:`Wireguard </vpn/wireguard>` IP address management. This
-   file is managed by the
+   :doc:`Wireguard </vpn/wireguard>` IP address management.
+   This file is only of interest if you want to protect your cluster with gateway nodes.
+   This file is managed by the
    :ref:`update_inventory.py <actions-references.update_inventorypy>` script.
    This script will automatically assign IP addresses to your
    :ref:`configured peers <cluster-configuration.wireguard-configuration>`.
@@ -65,8 +74,9 @@ Detailed explanation:
    variables are managed by the
    :ref:`update_inventory.py <actions-references.update_inventorypy>` script.
 
-   -  ``inventory/.etc/`` holds credentials and cluster-specific files
-      generated during creation of the cluster.
+-  ``etc/`` holds credentials and cluster-specific files
+   generated during creation of the cluster.
+   Though nearly all credentials are managed by an instance of Hashicorp Vault.
 
 -  ``k8s-custom/`` is an optional directory representing the
    :doc:`custom layer </concepts/abstraction-layers>`. It is the basic

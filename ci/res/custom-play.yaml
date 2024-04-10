@@ -1,0 +1,10 @@
+# Custom playbook for the CI
+# to test the custom stage
+---
+- name: Verify custom stage
+  hosts: orchestrator
+  tasks:
+  - name: Verify custom stage
+    debug:
+      msg: "It works!"
+...

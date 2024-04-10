@@ -42,9 +42,6 @@ export WG_USAGE=true
 # Wireguard: Role out C&H company members
 export WG_COMPANY_USERS=false
 
-# Auto-configure C&H company members as users on the nodes
-export SSH_COMPANY_USERS=false
-
 # Wireguard: Interface and config file name
 wg_conf_name='wg0'
 export wg_conf_name
@@ -75,13 +72,13 @@ export USE_VAULT_IN_DOCKER=false
 #source "$(pwd)/managed-k8s/actions/vault_env.sh"
 
 # Optional: Useful to be able to interact with the cluster via kubectl.
-KUBECONFIG="$(pwd)/inventory/.etc/admin.conf"
+KUBECONFIG="$(pwd)/etc/admin.conf"
 export KUBECONFIG
 
 # Optional: Use custom roles that can be dropped into the
 # 'cluster_repository/k8s-custom' folder and executed after
 # after initialization through the included main.yaml
-export K8S_CUSTOM_STAGE_USAGE=false
+export K8S_CUSTOM_STAGE_USAGE=true
 
 # Optional: Set this variable to false to init new clusters with the newest commit
 # on the default (devel) branch instead of the latest release.

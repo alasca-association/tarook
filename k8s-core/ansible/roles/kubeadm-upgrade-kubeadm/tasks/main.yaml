@@ -1,0 +1,30 @@
+---
+- name: Update the Kubernetes community-owned repository
+  vars:
+    k8s_version: "{{ next_k8s_version }}"
+  include_role:
+    name: k8s-packages
+    tasks_from: configure-package-repo.yaml
+
+- name: Upgrade kubeadm on apt systems
+  when: ansible_pkg_mgr == 'apt'
+  become: true
+  block:
+  - name: Remove the hold of kubeadm  # noqa no-changed-when
+    ansible.builtin.command: apt-mark unhold kubeadm
+
+  - name: Upgrade kubeadm
+    ansible.builtin.apt:
+      name:
+      - "kubeadm={{ next_k8s_version }}-*"
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
+
+  - name: Re-hold kubeadm  # noqa no-changed-when
+    ansible.builtin.command: apt-mark hold kubeadm
+
+  - name: Check kubeadm's version  # noqa no-changed-when
+    ansible.builtin.command: kubeadm version
+...

@@ -1,17 +1,42 @@
+******************
 Abstraction Layers
-==================
+******************
 
-.. todo::
+.. _abstraction-layers.k8s-core:
 
-   This document needs more details!
-
-
-.. figure:: /img/layer-hierarchy.svg
-   :scale: 100%
-   :alt: Layer Hierarchy Overview Visualization
-   :align: center
+Software
+========
 
 |
+
+.. figure:: ../img/layer-hierarchy.svg
+  :alt: TODO
+  :align: center
+
+  High-level abstraction of software modules which make up the LCM.
+
+|
+
+The yaook/k8s life-cycle-management tooling can be abstracted into two main modules:
+k8s-core and k8s-supplements.
+
+k8s-core
+--------
+
+The so-called k8s-core consists of Ansible playbooks
+which automate and allow the bootstrapping, preparation, configuration and customization
+of nodes to fulfill the requirements for a high-available Kubernetes cluster as well
+as the initialization and maintenance of a "vanilla" `kubeadm`-based Kubernetes cluster.
+
+.. _abstraction-layers.k8s-supplements:
+
+k8s-supplements
+---------------
+
+The so-called k8s-supplements consists of Ansible playbooks
+which complement the very rudimentary Kubernetes cluster initialized by the k8s-core
+and adds necessary as well as optional but useful surroundings for a
+fully functional productive Kubernetes environment.
 
 .. _abstraction-layers.customization:
 
@@ -19,76 +44,69 @@ Customization
 -------------
 
 In order to allow users to use a kind of extensions or additional plays,
-a drop-in directory is created if enabled so which can be used to
+a drop-in directory is created if enabled which can be used to
 include custom tasks to the cluster-repository. These plays are
 automatically executed and are on the top of the abstraction layer as
 they rely on a working yk8s cluster.
 
-The customization layer can be enabled via
+The customization layer is enabled by default
+but can be disabled via
 :ref:`an environment variable <environmental-variables.enabling-the-customization-layer>`.
 
-KMS - Kubernetes Managed Services
----------------------------------
+Architecture
+============
 
-The KMS layer sets up and manages Kubernetes resources and services
-which are specifically and only necessary for the deployment of an
-(automatically) managed yk8s-Cluster on top of OpenStack.
+|
 
-KSL - Kubernetes Service Layer
-------------------------------
+.. figure:: ../img/high-level-architecture.svg
+  :alt: TODO
+  :align: center
 
-The KSL is the intermediate “service layer”, which introduces APIs and
-k8s features which are not part of a chocolate k8s cluster but which may
-still be useful/commonly used. This includes cert manager, ingress,
-ceph/rook as well as a basic prometheus-based monitoring stack.
+  High-level architectural abstraction of a yaook/k8s cluster.
 
-.. _abstraction-layers.k8s-base:
+|
 
-k8s-base
---------
+Harbour Infrastructure Layer / Undercloud
+-----------------------------------------
 
-This layer prepares, initializes, configures and maintains the
-kubeadm-based chocolate Kubernetes cluster. On this layer, the provided
-Kubernetes cluster will contain only necessary services. As this layer
-includes the management of the Kubernetes cluster, it is also the place
-for general actions against and with it, like e.g. upgrading to a newer
-Kubernetes version, adding nodes, or tearing it down. Note that this
-layer does not only interact with the control plane and (meta-)worker
-nodes, but also does some configuration to the frontend nodes.
+What we internally call harbor infrastructure layer is
+generally better known as undercloud and
+describes the system on which the Kubernetes is deployed.
+A yaook/k8s-cluster can be built upon an already existing
+OpenStack deployment or directly on bare metal.
 
-Trampoline
-----------
-
-This layer prepares and manages the basic frontend node setup. This
-includes SSH access, load-balancing, high availability, VPN and firewall
-setup and management. Kubernetes-cluster-specific configuration of these
-services happens in the :ref:`k8s-base <abstraction-layers.k8s-base>` layer.
-
-Harbour Infrastructure Layer
-----------------------------
-
-A yk8s-cluster can be built upon an (existing) OpenStack deployment or
-on Bare Metal.
+In general, network configuration aside,
+the yaook/k8s-LCM requires layer 3 access
+to a bunch of nodes ideally freshly set up.
 
 yk8s on OpenStack
 ~~~~~~~~~~~~~~~~~
 
+If the Kubernetes cluster runs on top of OpenStack,
+it has to be connected to the OpenStack layer.
 On each control plane node, an OpenStack cloud controller manager (CCM)
 is running that acts as an interface between the cluster and OpenStack.
-``kubelet`` is started with ``--cloud-provider=external``. Block storage
-can be dynamically provisioned by OS cinder via the Cinder Container
-Storage Interface (CSI) plugin.
+``kubelet`` is started with ``--cloud-provider=external``.
+Block storage can be dynamically provisioned by OpenStack Cinder via the
+Cinder Container Storage Interface (CSI) plugin.
 
 yk8s on Bare Metal
 ~~~~~~~~~~~~~~~~~~
 
-.. todo::
-
-   Merge information from
-   `incubator/installation-guide!5 <https://gitlab.com/yaook/incubator/installation-guide/-/merge_requests/5/>`__
+The Kubernetes cluster can also run directly on bare metal nodes.
+We differentiate two different scenarios,
+the bare metal nodes are self-managed
+or by the `yaook/metal-controller <https://gitlab.com/yaook/metal-controller>`_
+is used to provision the nodes and the Kubernetes running on them.
 
 Self-managed Bare Metal
 ^^^^^^^^^^^^^^^^^^^^^^^
 
+The yaook/k8s LCM assumes that you have L3-connectivity to a bunch of nodes.
+It does not really matter if these are bare metal nodes or VMs on a cloud.
+
 Automated Bare Metal
 ^^^^^^^^^^^^^^^^^^^^
+
+For further information, please refer to the
+`yaook/metal-controller <https://gitlab.com/yaook/metal-controller>`_

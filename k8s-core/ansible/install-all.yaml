@@ -1,0 +1,15 @@
+---
+- name: Prepare Kubernetes nodes
+  import_playbook: "bootstrap.yaml"
+  vars:
+    target_hosts: k8s_nodes
+
+- name: Update frontend nodes
+  import_playbook: "update-frontend-nodes.yaml"
+
+- name: Update Kubernetes nodes
+  import_playbook: "update-kubernetes-nodes.yaml"
+
+- name: Spawn Kubernetes
+  import_playbook: "install-k8s.yaml"
+...

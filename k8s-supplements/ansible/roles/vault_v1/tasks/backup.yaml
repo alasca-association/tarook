@@ -1,0 +1,100 @@
+---
+- name: Declare a policy which allows to save raft snapshots
+  vars:
+    vault_expression: |
+      vault policy write sys/policies/acl/yaook/backup-creator - << EOF
+      path "sys/storage/raft/snapshot" {
+        capabilities = ["read"]
+      }
+      EOF
+  # include_ is preferable to import_ here because otherwise this task's name is not shown
+  ansible.builtin.include_tasks: vault_command.yaml
+
+- name: Ensure authentication via app roles is enabled
+  block:
+    - name: Gather authentication endpoints
+      vars:
+        vault_expression: vault auth list -format=json
+      ansible.builtin.include_tasks: vault_command.yaml
+    - name: Store auth endpoints
+      ansible.builtin.set_fact:
+        auth_endpoints: "{{ vault_out.stdout | from_json }}"
+    - name: Enable the app roles endpoint
+      vars:
+        vault_expression: "vault auth enable -path={{ yaook_vault_backup_approle_path | quote }} approle"
+      when: not yaook_vault_backup_approle_path in auth_endpoints
+      ansible.builtin.include_tasks: vault_command.yaml
+
+- name: Create an AppRole for the backup-creator
+  vars:
+    vault_expression: |
+      vault write auth/{{ yaook_vault_backup_approle_path | quote }}/role/yaook-backup-creator token_policies="sys/policies/acl/yaook/backup-creator" token_ttl=1h
+  ansible.builtin.include_tasks: vault_command.yaml
+
+- name: Fetch the role_id
+  block:
+    - name: Fetch the role_id
+      vars:
+        vault_expression: "vault read -format=json auth/{{ yaook_vault_backup_approle_path | quote }}/role/yaook-backup-creator/role-id"
+      ansible.builtin.include_tasks: vault_command.yaml
+    - name: Save the role_id
+      ansible.builtin.set_fact:
+        yaook_vault_backup_approle_role_id: "{{ (vault_out.stdout | from_json).data.role_id }}"
+
+# We don't keep books of secrets and we don't evaluate whether they're still valid.
+# Therefore we nuke all of them and start with a fresh one.
+- name: Generate a fresh secret_id
+  block:
+    - name: List existing secret ids
+      vars:
+        # `vault list` returns with code `2` if it doesn't find any secret id accessors.
+        # Because of the way our `vault_command` task is designed, we need to work around by appending `|| true`
+        vault_expression: "vault list -format=json auth/{{ yaook_vault_backup_approle_path }}/role/yaook-backup-creator/secret-id || true"
+      ansible.builtin.include_tasks: vault_command.yaml
+    # The command above either returns a list of secret ids (`["0xdeadbeef",…]`) or an empty dict (`{}').
+    # `loop` cannot iterate over a dictionary (which makes sense).
+    # Unfortunately, we cannot protect ourselves against the `{}` case, because `loop` is evaluated before `when`.
+    # The `ternary` acts as a workaround to translate the empty dict into an empty list.
+    - name: Delete existing secret ids
+      loop: "{{ (vault_out.stdout | from_json) | ternary((vault_out.stdout | from_json), []) }}"
+      vars:
+        vault_expression: |
+          vault write auth/{{ yaook_vault_backup_approle_path | quote }}/role/yaook-backup-creator/secret-id-accessor/destroy secret_id_accessor={{ item | quote }}
+      ansible.builtin.include_tasks: vault_command.yaml
+    - name: Generate a secret_id
+      vars:
+        vault_expression: "vault write -f -format=json auth/{{ yaook_vault_backup_approle_path | quote }}/role/yaook-backup-creator/secret-id"
+      ansible.builtin.include_tasks: vault_command.yaml
+    - name: Save the secret_id
+      ansible.builtin.set_fact:
+        yaook_vault_backup_approle_secret_id: "{{ (vault_out.stdout | from_json).data.secret_id }}"
+
+- name: Load the S3 endpoint credentials
+  ansible.builtin.include_vars:
+    file: "{{ config_dir }}/{{ yaook_vault_s3_config_file }}"
+    name: yaook_vault_backup_s3
+
+- name: Deploy the vault-backup
+  kubernetes.core.k8s:
+    apply: true
+    definition: "{{ lookup('template', 'backup.yaml.j2') }}"
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+
+# As we rotated the secret id, let's rollout the backup tooling and not bother with "has it really changed?"
+- name: Rollout the deployment
+  ansible.builtin.command: "kubectl rollout restart deployment -n {{ yaook_vault_namespace }} vault-backup"
+  changed_when: true
+
+# Notes:
+#  - tokens and secret ids cannot be listed, but their accessors can
+#  - tokens can be revoked
+#  - token issued by approles can be identified via their metadata
+#  - secret_ids can be revoked via their accessor
+...

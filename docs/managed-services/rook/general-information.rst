@@ -6,6 +6,14 @@ Rook - General information
    needs updates (differentiate between on OpenStack and on Bare
    Metal)
 
+For the usage of RWX (ReadWriteMany) volumes,
+a distributed storage system is needed.
+Ceph is a distributed storage system which allows
+to supply normal block devices (ReadWriteOnce volumes or real disks)
+in differing formats via network.
+In particular, it can supply them as ReadWriteMany volumes
+via CephFS.
+
 -  We configure the cluster to use Cinder CSI volumes as backing
    storage. The volumes are already replicated on our OpenStack’s Ceph
    level, so we set the pool size to 1 (= one replica only) in the Rook
@@ -15,10 +23,6 @@ Rook - General information
    The numbering does *not always* correspond to the OSD number using
    that volume! This is important when debugging OSD issues and when
    removing OSDs and their storage especially.
-
--  Adding volumes can cause the worker instance to crash with a kernel
-   panic due to a known kernel bug with a race condition when detaching
-   the Cinder volume from the instance.
 
 -  To access ceph tools, run:
 
@@ -32,7 +36,7 @@ Rook - General information
    clean up the corresponding ConfigMap object, otherwise the operator
    will hang.
 
--  The ceph mons use the ``local-storage`` StorageClass which is a fancy
+-  The ceph mons may use the ``local-storage`` StorageClass which is a fancy
    version of ``hostPath`` and has the advantage of “binding” a pod to a
    node. ``local-storage`` works through a controller that presents
    disks (or bind-mounts of directories, as in our case) as PVs to K8s.

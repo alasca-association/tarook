@@ -1,0 +1,23 @@
+installCRDs: true
+global:
+  priorityClassName: system-cluster-critical
+affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json') | to_json }}
+tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
+cainjector:
+  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json') | to_json }}
+  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
+webhook:
+  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json') | to_json }}
+  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
+{% if k8s_monitoring_enabled %}
+prometheus:
+  enabled: true
+  servicemonitor:
+    enabled: true
+{% if monitoring_common_labels %}
+    labels:
+{% for label_key, label_value in monitoring_common_labels.items() %}
+      {{ label_key | to_json }}: {{ label_value | to_json }}
+{% endfor %}
+{% endif %}
+{% endif %}

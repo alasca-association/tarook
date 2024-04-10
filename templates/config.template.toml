@@ -265,9 +265,7 @@ enabled = false # •ᴗ•
 # --- KUBERNETES: GLOBAL MONITORING CONFIGURATION ---
 # ansible prefix: "k8s_global_monitoring"
 [kubernetes.global_monitoring]
-# This section contains global monitoring related
-# information which needs to be known to stage3
-# and higher layers.
+# This section contains global monitoring related information
 
 # Enable/Disable global monitoring
 enabled       = false                      # •ᴗ•
@@ -532,11 +530,6 @@ use_helm = true
 #grafana_persistent_storage_class=""
 
 # Enable use of Thanos
-# Important: Currently Thanos will not work with OpenStack application credentials [0]. If you use OpenStack
-# application credentials then you have to set `use_thanos = false`. f you don't listen to me, then the
-# LCM will kindly throw an error message into your face in stage 4 and abort :).
-#
-# [0] https://gitlab.com/yaook/k8s/-/issues/436#note_873556688
 #use_thanos = false
 
 # Use the bitnami helm chart to deploy thanos. If use_helm_thanos is false the deployment will be done with the help
@@ -773,7 +766,7 @@ enabled = false # •ᴗ•
 # --- KUBERNETES SERVICE LAYER : ETCD-BACKUP ---
 # ansible prefix: "etcd_backup_"
 [k8s-service-layer.etcd-backup]
-#enabled = false
+enabled = false
 
 # Configure value for the cron job schedule for etcd backups. If not set it will be
 # set to default value of  21 */12 * * *
@@ -820,7 +813,7 @@ enabled = false # •ᴗ•
 # NOTE: On the first run, the unseal keys and the root token will be printed IN
 # PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
 # LOCATION to use the Vault instance in the future!
-#enabled = false # •ᴗ•
+enabled = false
 
 # Create a publically reachable ingress resource for the API endpoint of vault.
 #ingress = false
@@ -993,7 +986,7 @@ ip_gw   = "172.30.153.65/26"
 # --- IPSEC ---
 # ansible prefix: "ipsec_"
 [ipsec]
-# enabled = false
+enabled = false
 
 # Flag to enable the test suite.
 # Must make sure a remote endpoint, with ipsec enabled, is running and open for connections.
@@ -1029,34 +1022,6 @@ ip_gw   = "172.30.153.65/26"
 #eap_psk =
 
 # ANCHOR_END: ipsec_configuration
-
-# ANCHOR: ch-role-users_configuration
-# --- C&H USERS ---
-# ansible prefix: "cah_users_"
-[cah-users]
-rollout = false # •ᴗ•
-
-# Include and exclude C&H users from rollout
-# C&H users refers to items in the ch-users-databag repository
-# For additional information refer the ch-role-users repository
-# The users have to be provided as List<String>
-# Possible Configurations:
-# - roll_out_users_from
-#   - include specific user group
-#   - Default: ["opsi", "it-operations", "head"]
-# - exclude_users_from
-#   - exclude specific user group
-#   - Default: ["students", "service"]
-# - include_users
-#   - include specific user(s)
-#   - Default: []
-# - exclude_users
-#   - exclude specific user(s)
-#   - Default: ["deployer"]
-# Example Usage:
-# include_users = ["<user>", "<user>"]
-
-# ANCHOR_END: ch-role-users_configuration
 
 # ANCHOR: testing_test_nodes_configuration
 # --- TESTING: TEST NODES ---

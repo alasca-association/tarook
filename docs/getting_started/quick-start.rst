@@ -1,7 +1,7 @@
 Quick Start Guide
 =================
 
-If you want to create a yk8s cluster on OpenStack, follow the following
+If you want to create a yaook/k8s cluster on OpenStack, follow the following
 steps. A bare-metal yk8s cluster requires further preparations.
 
 Commands are assumed to be executed at the top level of the :doc:`/concepts/cluster-repository`,
@@ -17,11 +17,13 @@ If you are having problems, please visit our :doc:`FAQ </getting_started/faq>`.
 
 4. Configure cluster in ``./config/config.toml``.
 
-   -  If you plan on deploying OpenStack using yaook/operator on top of
-      your yk8s cluster, please refer to the
+   .. note::
+      If you plan on deploying OpenStack using `yaook/operator <https://gitlab.com/yaook/operator>`_
+      on top of your yaook/k8s cluster, please refer to the
       `cluster requirements of yaook/operator <https://docs.yaook.cloud/requirements/k8s-cluster.html>`__
-      to see which features are recommended or required to be present in
-      your kubernetes cluster.
+      to see which features are recommended and required to be present in
+      your Kubernetes cluster.
+
    -  There are
       :doc:`many configuration options available </usage/cluster-configuration>`,
       but the minimum
@@ -29,19 +31,22 @@ If you are having problems, please visit our :doc:`FAQ </getting_started/faq>`.
 
       -  You need to add your (public) wireguard key to the
          :ref:`wireguard peer configuration <cluster-configuration.wireguard-configuration>`.
-      -  If your cluster runs on top of OpenStack, you can enable the
-         ``ch-k8s-lbaas`` :ref:`loadbalancing <cluster-configuration.configuring-load-balancing>`.
-         If you do, you also need to create the
+
+      -  As your cluster runs on top of OpenStack, you can enable the
+         ``ch-k8s-lbaas`` :ref:`loadbalancing <cluster-configuration.configuring-load-balancing>`
+         to allow the creation of Kubernetes services of type
+         `LoadBalancer <https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer>`_.
+         If you want to do so, you also need to create the
          ``ch-k8s-lbaas.shared_secret`` secret.
 
 5. :ref:`Initialize the Vault secret store. <initialization.initialize-vault-for-a-development-setup>`
-6. Deploy cluster by executing the :ref:`apply.sh <actions-references.applysh>` script.
+6. Deploy cluster by executing the :ref:`apply-all.sh <actions-references.apply-allsh>` script.
 
    .. code:: console
 
-      $ ./managed-k8s/actions/apply.sh
+      $ ./managed-k8s/actions/apply-all.sh
 
-7. Get yourself a hot beverage and joyfully watch as your yk8s cluster
+7. Get yourself a hot beverage and joyfully watch as your yaook/k8s cluster
    gets created and tested.
 
 

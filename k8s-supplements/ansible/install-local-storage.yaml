@@ -1,0 +1,23 @@
+---
+- name: Connect to Kubernetes nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
+  vars:
+    target_hosts: k8s_nodes
+
+- name: Configure the local-storage controllers
+  hosts: k8s_nodes
+  vars_files:
+  - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
+  roles:
+  - role: k8s-local-storage-controller
+    tags:
+    - k8s-local-storage-controller
+    - local-storage
+    when: k8s_local_storage_static_enabled
+  - role: k8s-local-path-provisioner
+    tags:
+    - k8s-local-path-provisioner
+    - local-storage
+    when: k8s_local_storage_dynamic_enabled
+...

@@ -1,0 +1,23 @@
+---
+- name: restart CCM  # noqa no-changed-when
+  ansible.builtin.command:
+  args:
+    argv:
+    - "kubectl"
+    - "-n"
+    - "kube-system"
+    - "rollout"
+    - "restart"
+    - "daemonset.apps/openstack-cloud-controller-manager"
+
+- name: restart octavia-ingress-controller  # noqa no-changed-when
+  ansible.builtin.command:
+  args:
+    argv:
+    - "kubectl"
+    - "-n"
+    - "kube-system"
+    - "rollout"
+    - "restart"
+    - "statefulset.apps/octavia-ingress-controller"
+...

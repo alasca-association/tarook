@@ -1,0 +1,120 @@
+# Update k8s-rook from 1.6.* to 1.7.*
+# https://rook.io/docs/rook/v1.7/ceph-upgrade.html#rook-operator-upgrade-process
+
+---
+# Verify that the Ceph cluster is healthy
+- name: Include cluster health verification
+  ansible.builtin.include_tasks: cluster_health_verification.yaml
+- name: Check that mon volume storage class exists
+  kubernetes.core.k8s_info:
+    kind: StorageClass
+    name: "{{ rook_mon_volume_storage_class }}"
+  when: "rook_mon_volume"
+  register: mon_storage_class
+  failed_when: "not mon_storage_class.resources"
+- name: Check that osd volume storage class exists
+  kubernetes.core.k8s_info:
+    kind: StorageClass
+    name: "{{ rook_osd_storage_class }}"
+  register: osd_storage_class
+  failed_when: "not osd_storage_class.resources"
+  when: on_openstack
+- name: Add annotations and labels for Helm to adopt existing resources
+  block:
+    - name: Add annotations and labels for Helm to cluster resources
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: "{{ item.0 }}"
+          kind: "{{ item.1 }}"
+          metadata:
+            namespace: "{{ rook_namespace }}"
+            name: "{{ item.2 }}"
+            annotations:
+              "meta.helm.sh/release-namespace": "{{ rook_namespace }}"
+              "meta.helm.sh/release-name": "{{ rook_helm_release_name_cluster }}"
+            labels:
+              "app.kubernetes.io/managed-by": "Helm"
+      loop:
+        - ["ceph.rook.io/v1", "CephCluster", "{{ rook_cluster_name }}"]
+        - ["apps/v1", "Deployment", "rook-ceph-tools"]
+    - name: Add annotations and labels for Helm to CephFS StorageClass
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: "storage.k8s.io/v1"
+          kind: "StorageClass"
+          metadata:
+            namespace: "{{ rook_namespace }}"
+            name: "rook-ceph-cephfs"
+            annotations:
+              "meta.helm.sh/release-namespace": "{{ rook_namespace }}"
+              "meta.helm.sh/release-name": "{{ rook_helm_release_name_cluster }}"
+            labels:
+              "app.kubernetes.io/managed-by": "Helm"
+      when: rook_ceph_fs
+    - name: Add annotations and labels for Helm to CephFS
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: "ceph.rook.io/v1"
+          kind: "CephFilesystem"
+          metadata:
+            namespace: "{{ rook_namespace }}"
+            name: "ceph-fs"
+            annotations:
+              "meta.helm.sh/release-namespace": "{{ rook_namespace }}"
+              "meta.helm.sh/release-name": "{{ rook_helm_release_name_cluster }}"
+            labels:
+              "app.kubernetes.io/managed-by": "Helm"
+      when: rook_ceph_fs
+    - name: Add annotations and labels for Helm to pool resources
+      ansible.builtin.include_tasks: upgrade_from_v1_cluster_pools.yaml
+      loop: "{{ rook_pools }}"
+      loop_control:
+        loop_var: blockpool
+
+- name: Apply cluster chart
+  ansible.builtin.include_tasks: apply_cluster.yaml
+
+# This seemingly redundant step is necessary because Helm sometimes does not correctly adopt all resources if not executed with "--force". However, we do not want to force, because that could cause deletion and re-creation of resources. After this step, Helm recognizes all resources as its children and will henceforth care for them
+- name: Generate cluster manifests
+  kubernetes.core.helm_template:
+    chart_ref: rook-ceph-cluster
+    chart_repo_url: https://charts.rook.io/release/
+    chart_version: "{{ rook_version }}"
+    release_namespace: "{{ rook_namespace }}"
+    release_name: "{{ rook_helm_release_name_cluster }}"
+    values: "{{ lookup('template', 'cluster-values.yaml.j2') | from_yaml }}"
+    include_crds: true
+  register: cluster_manifests
+- name: Apply cluster manifests
+  kubernetes.core.k8s:
+    definition: "{{ cluster_manifests.stdout }}"
+    apply: true
+    namespace: "{{ rook_namespace }}"
+  register: cluster_status
+
+- name: Wait for ceph to become ready
+  ansible.builtin.include_tasks: wait_for_ceph_upgrade.yaml
+  when: cluster_status.changed
+  tags:
+    - skip_ansible_lint
+- name: Wait for cluster to become ready
+  kubernetes.core.k8s_info:
+    kind: CephCluster
+    namespace: "{{ rook_namespace }}"
+    name: "{{ rook_cluster_name }}"
+  register: cluster_info
+  until: |
+    (cluster_info.resources | default(False) and (
+      cluster_info.resources[0].status | default(False)
+    ) and (
+      cluster_info.resources[0].status.ceph | default(False)
+    ) and
+      (cluster_info.resources[0].status.ceph.health == 'HEALTH_OK' or
+        cluster_info.resources[0].status.ceph.health == 'HEALTH_WARN') and
+      cluster_info.resources[0].status.state == 'Created')
+  delay: 10
+  retries: 120
+
+- name: Include cluster health verification
+  ansible.builtin.include_tasks: cluster_health_verification.yaml
+...

@@ -12,8 +12,4 @@ Prometheus-based Monitoring
 
 This LCM uses the
 `helm-based monitoring stack <https://github.com/prometheus-community/helm-charts>`__
-provided by the Prometheus community.
-
-.. todo::
-
-   needs details
+provided by the Prometheus community as basis for the monitoring stack.

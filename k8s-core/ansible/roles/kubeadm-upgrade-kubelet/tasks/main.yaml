@@ -1,0 +1,34 @@
+---
+- name: Update the Kubernetes community-owned repository
+  vars:
+    k8s_version: "{{ next_k8s_version }}"
+  include_role:
+    name: k8s-packages
+    tasks_from: configure-package-repo.yaml
+
+- name: Upgrade kubelet on apt systems
+  when: ansible_pkg_mgr == 'apt'
+  become: true
+  block:
+  - name: Remove the hold of kubelet  # noqa no-changed-when
+    ansible.builtin.command: apt-mark unhold kubelet kubectl
+
+  - name: Upgrade kubelet
+    ansible.builtin.apt:
+      name:
+      - "kubelet={{ next_k8s_version }}-*"
+      - "kubectl={{ next_k8s_version }}-*"
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
+
+  - name: Re-hold kubelet  # noqa no-changed-when
+    ansible.builtin.command: apt-mark hold kubelet kubectl
+
+- name: Configure and restart kubelet
+  ansible.builtin.include_role:
+    name: kubelet-configuration
+  vars:
+    _require_kubelet_restart: true
+...

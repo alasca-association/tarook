@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  license: Apache-2.0
+  author: Yaook Authors
+dependencies:
+- check-openstack-credentials
+- config/version-map
+- volume-snapshots
+...

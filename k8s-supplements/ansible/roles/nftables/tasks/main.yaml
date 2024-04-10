@@ -1,0 +1,62 @@
+---
+- name: Install nftables package
+  become: true
+  ansible.builtin.package:
+    state: present
+    name:
+      - nftables
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ network_error_retries }}"
+  delay: "{{ network_error_delay }}"
+
+- name: Remove iptables package
+  become: true
+  ansible.builtin.package:
+    state: absent
+    name:
+      - iptables
+
+- name: Retrieve private subnet
+  ansible.builtin.set_fact:
+    priv_ip_cidr: "{{ ip | ipaddr('network/prefix') }}"
+  vars:
+    ip: "{{ ansible_default_ipv4.address }}/{{ ansible_default_ipv4.netmask }}"
+
+- name: Create drop-in directory for other rules
+  become: true
+  ansible.builtin.file:
+    state: directory
+    path: /etc/nft.d
+    owner: root
+    group: root
+    mode: "u=rwx,g=rx,o-rwx"
+
+- name: Configure nftables firewall
+  become: true
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/nftables.conf.j2"
+    dest: /etc/nftables.conf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Create nftables config for k8s API server
+  become: true
+  when: on_openstack | bool
+  ansible.builtin.template:
+    src: k8s-apiserver.conf.j2
+    dest: /etc/nft.d/k8s_apiserver.conf
+    owner: root
+    group: root
+    mode: 0600
+  notify: reload nftables
+
+- name: Start&enable nftables systemd service
+  become: true
+  ansible.builtin.systemd:
+    name: nftables
+    state: started
+    enabled: true
+    masked: false
+...
