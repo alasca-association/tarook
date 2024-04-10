@@ -142,9 +142,14 @@ Please make sure the version number is correct (it's a fix for the corresponding
 
 If you have to update the latest release, make sure you also update ``version`` and the changelog on ``devel`` accordingly
 as those should always be in sync with the latest release.
-Either by also introducing the fix to ``devel`` via a ``hotfix/devel/$name`` branch or by just commiting the needed updates.
+Either by also introducing the fix to ``devel`` via the ``hotfix/$latest-release/$name`` branch or by just commiting the needed updates.
 
 This process ensures that each hotfix has run through the normal validation pipeline and we can consider it stable.
+
+.. important::
+
+    Make sure the changes on devel and the latest release are identical (esp. the MR-IID in the changelog) as this
+    otherwise could lead to conflicts on the next patch-release.
 
 .. _releases-and-versioning-policy.hotfix-process.manual-intervention-for-older-releases:
 

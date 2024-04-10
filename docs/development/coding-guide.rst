@@ -357,30 +357,9 @@ As an aid we give an example for a full hotfix process here.
       $ sha=$(git merge-base devel release/v$Major.$Minor)
       $ git checkout -b hotfix/base/$name $sha
 
-2. Create a branch of ``devel`` named ``hotfix/devel/$name`` and merge ``hotfix/base/$name`` into it.
-
-   .. code:: console
-
-      $ git checkout -b hotfix/devel/$name devel
-      $ git merge hotfix/base/$name
-
-   - Place your relasenote inside ``docs/_releasenotes/hotfix``.
-   - Create a MR to ``devel``. We will update the version number in ``version`` accordingly and create the changelog using towncrier.
-
-      .. code:: console
-
-         $ git push --set-upstream origin hotfix/v$Major.$Minor/$name \
-           -o merge_request.create \
-           -o merge_request.target=release/v$Major.$Minor \
-           -o merge_request.title="Hotfix: $name" \
-           -o merge_request.label="hotfix"
-
-   - Please make sure the version number is correct (it's a fix for the latest release) and the changelog looks sane before merging.
-   - Merge the MR.
-
 For all releases needing the hotfix, do:
 
-3. Create a branch of the corresponding ``release/v$Major.$Minor``-branch named ``hotfix/v$Major.$Minor/$name``
+2. Create a branch of the corresponding ``release/v$Major.$Minor``-branch named ``hotfix/v$Major.$Minor/$name``
    and cherry pick ``hotfix/base/$name`` into it.
 
    .. code:: console
@@ -390,6 +369,12 @@ For all releases needing the hotfix, do:
 
    - Place your relasenote inside ``docs/_releasenotes/hotfix``.
    - Create a MR to ``release/v$Major.$Minor``. We will update the version-number in ``version`` accordingly and create the changelog using towncrier.
+   - Please make sure the version number is correct (it's a fix for the latest release) and the changelog looks sane before merging.
+   - Merge the MR.
+
+3. If you updated the latest release, also update ``devel`` by:
+
+   - Create a MR from the ``hotfix/$latest-release``-branch to devel as well.
    - Please make sure the version number is correct (it's a fix for the latest release) and the changelog looks sane before merging.
    - Merge the MR.
 
