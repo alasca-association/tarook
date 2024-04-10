@@ -50,6 +50,9 @@ tag-release:
           rc_value=${last_tag##*.}; rc_value=${rc_value:-"-1"}
           rc_value=$((rc_value + 1))
           YAOOK_K8S_BUILD_VERSION=$YAOOK_K8S_BUILD_VERSION.$rc_value
+        else
+          echo "This is a patch-release on a ${YAOOK_K8S_RELEASE_PREPARE_BRANCH_PREFIX}-branch. I won't tag that with `-rc`"
+          exit 0
         fi
       fi
       echo "version: ${YAOOK_K8S_BUILD_VERSION}"
