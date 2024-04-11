@@ -16,7 +16,7 @@
 in {
   # name = "localhost/yk8s-ci-image";
   name = "registry.gitlab.com/yaook/k8s/ci-image-nix-test";
-  tag = "latest";
+  tag = "build";
   copyToRoot = pkgs.buildEnv {
     name = "image-root";
     paths =

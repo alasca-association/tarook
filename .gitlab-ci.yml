@@ -19,6 +19,7 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
 stages:
+- build-image
 - lint
 - hotfix-prepare
 - cluster-tests
@@ -26,6 +27,7 @@ stages:
 - release
 
 include:
+  - local: ci/build-image.yaml
   - local: ci/hotfix-prepare.yaml
   - local: ci/cluster-tests.yaml
   - local: ci/diagnostic-tools.yaml
