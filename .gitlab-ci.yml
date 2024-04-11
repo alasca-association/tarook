@@ -98,9 +98,9 @@ ansible-lint:
   stage: lint
   before_script:
     - poetry install --with ci --sync
-  script:
-    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null ; true)
+    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null)
     - export PATH="$VIRTUAL_ENV/bin:$PATH"
+  script:
     - "ansible-galaxy install -r ansible/requirements.yaml"
     - "ANSIBLE_ROLES_PATH=./k8s-core/ansible/roles:./k8s-supplements/ansible/roles:./k8s-supplements/ansible/test-roles ansible-lint -c ci/lint/ansible-lint-conf --offline"
   tags:
@@ -113,6 +113,8 @@ flake8:
   image: "registry.gitlab.com/yaook/k8s/ci-image-nix-test"
   before_script:
     - poetry install --with ci --sync
+    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null)
+    - export PATH="$VIRTUAL_ENV/bin:$PATH"
   script:
     - 'python3 -m flake8'
   stage: lint
@@ -149,6 +151,8 @@ pre-commit-hooks:
   image: "registry.gitlab.com/yaook/k8s/ci-image-nix-test"
   before_script:
     - poetry install --sync
+    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null)
+    - export PATH="$VIRTUAL_ENV/bin:$PATH"
   script:
     - 'SKIP=shellcheck,yamllint,flake8,check-flake pre-commit run --all-files || true'
     - git --no-pager diff
@@ -166,6 +170,8 @@ build-docs-check:
   image: "registry.gitlab.com/yaook/k8s/ci-image-nix-test"
   before_script:
     - poetry install --with docs --sync
+    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null)
+    - export PATH="$VIRTUAL_ENV/bin:$PATH"
   script:
     - sphinx-build -W docs _build/html
     - mv _build/html public
@@ -197,6 +203,8 @@ release-note-file-check:
     COMMIT_FILES: docs/_releasenotes
   before_script:
     - poetry install --with ci --with docs --sync
+    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null)
+    - export PATH="$VIRTUAL_ENV/bin:$PATH"
     - git fetch origin "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
     - |
       if [ "${CI_MERGE_REQUEST_PROJECT_URL}" = "${CI_MERGE_REQUEST_SOURCE_PROJECT_URL}" ]; then
