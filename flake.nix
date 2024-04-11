@@ -41,6 +41,9 @@
           poetry
           gcc # to poetry can build netifaces
         ];
+        ciDeps = with pkgs; [
+          git
+        ];
         interactiveDeps = with pkgs; [
           bashInteractive
           coreutils
@@ -61,7 +64,7 @@
           buildInputs = yk8sDeps;
         };
         packages.ciImage =
-          nix2containerPkgs.nix2container.buildImage (import ./ci/container-image {inherit pkgs yk8sDeps interactiveDeps;});
+          nix2containerPkgs.nix2container.buildImage (import ./ci/container-image {inherit pkgs yk8sDeps interactiveDeps ciDeps;});
         formatter = pkgs.alejandra;
       };
     };

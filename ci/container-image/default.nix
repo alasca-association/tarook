@@ -1,6 +1,7 @@
 {
   yk8sDeps,
   interactiveDeps,
+  ciDeps,
   pkgs,
 }: let
   ciFiles = pkgs.stdenv.mkDerivation {
@@ -21,6 +22,7 @@ in {
     paths =
       yk8sDeps
       ++ interactiveDeps
+      ++ ciDeps
       ++ (with pkgs; [
         dockerTools.usrBinEnv
         dockerTools.caCertificates
