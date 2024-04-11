@@ -49,7 +49,7 @@ fi
 
 hintf 'Executing upgrade to version %s (patch level %s)' "$minor_version" "$target_version"
 
-require_disruption
+require_ansible_disruption
 
 "$actions_dir/wg-up.sh"
 

@@ -4,7 +4,8 @@ actions_dir="$(realpath "$(dirname "$0")")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
-require_disruption
+require_harbour_disruption
+require_ansible_disruption
 
 if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraform_version')" "$terraform_min_version")" -lt 0 ]; then
     errorf 'Please upgrade Terraform to at least v'"$terraform_min_version"

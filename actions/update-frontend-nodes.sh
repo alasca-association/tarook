@@ -8,7 +8,7 @@ python3 "$actions_dir/update_inventory.py"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
-require_disruption
+require_ansible_disruption
 
 while getopts s flag
 do

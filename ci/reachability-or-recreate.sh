@@ -45,7 +45,7 @@ if ! check_reachable; then
     echo 'But don'"'"'t worry! This is a known issue, and I'"'"'m going to'
     echo 'work around it for you.'
 
-    MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
+    MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_DISRUPT_THE_HARBOUR=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
 
     echo 'So now that I destroyed EVERYTHING, I'"'"'m going to give OpenStack'
     echo 'a bit of time to come to terms with things. Ten minutes, to be exact.'

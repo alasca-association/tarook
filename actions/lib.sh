@@ -63,15 +63,28 @@ function color_enabled() {
     [ "$use_color" = 'true' ]
 }
 
-function disruption_allowed() {
+function ansible_disruption_allowed() {
     [ "${MANAGED_K8S_RELEASE_THE_KRAKEN:-}" = 'true' ]
 }
 
-function require_disruption() {
-    if ! disruption_allowed; then
+function harbour_disruption_allowed() {
+    [ "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" = 'true' ]
+}
+
+function require_ansible_disruption() {
+    if ! ansible_disruption_allowed; then
         # shellcheck disable=SC2016
         errorf '$MANAGED_K8S_RELEASE_THE_KRAKEN is set to %q' "${MANAGED_K8S_RELEASE_THE_KRAKEN:-}" >&2
-        errorf 'aborting since disruptive operations are not allowed' >&2
+        errorf 'aborting since disruptive operations with Ansible are not allowed' >&2
+        exit 3
+    fi
+}
+
+function require_harbour_disruption() {
+    if ! harbour_disruption_allowed; then
+        # shellcheck disable=SC2016
+        errorf '$MANAGED_K8S_DISRUPT_THE_HARBOUR is set to %q' "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" >&2
+        errorf 'aborting since disruptive operations on the harbour infra are not allowed' >&2
         exit 3
     fi
 }
@@ -150,7 +163,7 @@ function validate_wireguard() {
 function ansible_playbook() {
     ansible_flags="${AFLAGS:---diff -f42}"
 
-    if disruption_allowed; then
+    if ansible_disruption_allowed; then
         warningf 'allowing ansible to perform disruptive actions' >&2
         # shellcheck disable=SC2016
         warningf 'approval was given by setting $MANAGED_K8S_RELEASE_THE_KRAKEN' >&2

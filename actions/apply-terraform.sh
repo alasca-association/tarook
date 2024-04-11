@@ -185,15 +185,15 @@ set -e
 RC_DISRUPTION=47
 RC_NO_DISRUPTION=0
 if [ $rc == $RC_DISRUPTION ]; then
-    if ! disruption_allowed; then
+    if ! harbour_disruption_allowed; then
         # shellcheck disable=SC2016
-        errorf 'terraform would delete or recreate a resource, but $MANAGED_K8S_RELEASE_THE_KRAKEN is not set' >&2
+        errorf 'terraform would delete or recreate a resource, but MANAGED_K8S_DISRUPT_THE_HARBOUR=true is not set' >&2
         errorf 'aborting due to destructive change without approval.' >&2
         exit 3
     fi
     warningf 'terraform will perform destructive actions' >&2
     # shellcheck disable=SC2016
-    warningf 'approval was given by setting $MANAGED_K8S_RELEASE_THE_KRAKEN' >&2
+    warningf 'approval was given by setting $MANAGED_K8S_DISRUPT_THE_HARBOUR' >&2
 elif [ $rc != $RC_NO_DISRUPTION ] && [ $rc != $RC_DISRUPTION ]; then
     errorf 'error during execution of check_plan.py. Aborting' >&2
     exit 4
