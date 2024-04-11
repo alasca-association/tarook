@@ -11,6 +11,8 @@ add-hotfix-information:
     - git fetch origin "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
     - git config --global user.name "${GITLAB_USER_NAME}"
     - git config --global user.email "${GITLAB_USER_EMAIL}"
+    - git fetch origin "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+    - git checkout "${SOURCE_BRANCH}"
   script:
     # add version number (fix-release)
     - IFS=. read -ra CURRENT_VERSION < ./version
@@ -23,8 +25,6 @@ add-hotfix-information:
     - rm "${TOWNCRIER_CONFIG}"
     # push changes
     - |
-      git fetch origin "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
-      git checkout "${SOURCE_BRANCH}"
       git status
       CHANGES=$(git diff "${SOURCE_BRANCH}" --name-only -- version docs/_releasenotes CHANGELOG.rst | wc -l)
       if [ "${CHANGES}" -gt 0 ]; then
@@ -37,7 +37,7 @@ add-hotfix-information:
     # don't run on hotfix/base/..
     - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ $REGEX_RELEASE_HOTFIX_BASE_BRANCH_PREFIX'
       when: never
-    # run on merge_train for hotfix-branches but only if version wasn't changed
+    # run on MR for hotfix-branches but only if version wasn't changed
     - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ $REGEX_RELEASE_HOTFIX_BRANCH_PREFIX'
       changes:
       - version
