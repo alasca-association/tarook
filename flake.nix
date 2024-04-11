@@ -39,6 +39,7 @@
           openssl
           wireguard-tools
           poetry
+          gcc # to poetry can build netifaces
         ];
         interactiveDeps = with pkgs; [
           bashInteractive
