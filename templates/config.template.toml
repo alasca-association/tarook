@@ -537,10 +537,8 @@ use_helm = true
 # use_helm_thanos = false
 
 # Let terraform create an object storage container / bucket for you if `true`.
-# If set to `false` one must provide a value for `thanos_objectstorage_config_file` to configure an external backend.
-# NOTE: If `thanos_objectstorage_config_file` is set, then it (`thanos_objectstorage_config_file`) will take precedence, i.e.,
-#       thanos will use the external config although terraform creates the bucket. This has historic reasons [0].
-# [0] https://gitlab.com/yaook/k8s/-/merge_requests/635
+# If set to `false` one must provide a valid configuration via Vault
+# See: https://yaook.gitlab.io/k8s/release/v3.0/managed-services/prometheus/prometheus-stack.html#custom-bucket-management
 #manage_thanos_bucket = true
 
 # Set custom Bitnami/Thanos chart version

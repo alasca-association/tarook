@@ -218,6 +218,10 @@ variable "dns_nameservers_v4" {
 
 variable "monitoring_manage_thanos_bucket" {
   type = bool
+  /* Although the default here is "false",
+     it is actually "true" and only applied
+     if Thanos is enabled so that no bucket gets created
+     if not needed. That logic is set in the "update_inventory.py"-script */
   default = false
   description = "Create an object storage container for thanos."
 }
