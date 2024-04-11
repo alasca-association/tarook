@@ -48,11 +48,6 @@ storegateway:
 
 query:
   enabled: true
-  persistence:
-    enabled: {{ monitoring_thanos_storage_class != None }}
-{% if monitoring_thanos_query_size != None %}
-    size: {{ monitoring_thanos_query_size | to_json }}
-{% endif %}
   resources:
     requests:
       memory: {{ monitoring_thanos_query_memory_request | quote }}
