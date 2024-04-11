@@ -37,4 +37,5 @@ in {
       "TF_VAR_keypair=gitlab-ci-runner"
     ];
   };
+  maxLayers = 100;
 }
