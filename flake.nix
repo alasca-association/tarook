@@ -44,6 +44,8 @@
         interactiveDeps = with pkgs; [
           bashInteractive
           coreutils
+          dnsutils
+          iputils
         ];
       in {
         _module.args.pkgs = import nixpkgs {
