@@ -57,8 +57,15 @@ build_image_mr:
     when: always
   - when: never
   before_script:
-    - nix-env -i docker
-    - echo "extra-experimental-features = nix-command flakes" >> /etc/nix/nix.conf
+    - nix-env --install docker
+    - docker --version
+    - cat > /etc/nix/nix.conf <<EOF
+      build-users-group = nixbld
+      sandbox = false
+      extra-experimental-features = nix-command flakes
+      substituters = https://cache.nixos.org/ https://yaook.cachix.org
+      trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
+      EOF
   script:
   - 'nix run ".#ciImage.copyToDockerDaemon"'
   - 'export IMAGE_BASE_NAME="${CI_REGISTRY_IMAGE}/ci-image-nix-test"'
