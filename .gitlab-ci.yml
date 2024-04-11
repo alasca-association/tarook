@@ -94,7 +94,7 @@ detect-vault-image:
     - when: on_success
 
 ansible-lint:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "registry.gitlab.com/yaook/k8s/ci-image-nix-test"
   stage: lint
   before_script:
     - poetry install --with ci --sync
@@ -108,7 +108,7 @@ ansible-lint:
     - when: on_success
 
 flake8:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "registry.gitlab.com/yaook/k8s/ci-image-nix-test"
   before_script:
     - poetry install --with ci --sync
   script:
@@ -124,7 +124,7 @@ flake8:
     - when: never
 
 poetry-lock:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "registry.gitlab.com/yaook/k8s/ci-image-nix-test"
   before_script:
     - poetry install --sync
     - git config --global user.email "$GITLAB_USER_EMAIL"
@@ -144,7 +144,7 @@ poetry-lock:
     # - when: on_success
 
 pre-commit-hooks:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "registry.gitlab.com/yaook/k8s/ci-image-nix-test"
   before_script:
     - poetry install --sync
   script:
@@ -161,7 +161,7 @@ pre-commit-hooks:
 
 build-docs-check:
   stage: lint
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "registry.gitlab.com/yaook/k8s/ci-image-nix-test"
   before_script:
     - poetry install --with docs --sync
   script:
@@ -185,7 +185,7 @@ build-docs-check:
 
 release-note-file-check:
   stage: lint
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "registry.gitlab.com/yaook/k8s/ci-image-nix-test"
   variables:
     CONFIG_FILE: towncrier.toml
     HOTFIX: "False"

@@ -13,7 +13,8 @@
     '';
   };
 in {
-  name = "localhost/yk8s-ci-image";
+  # name = "localhost/yk8s-ci-image";
+  name = "registry.gitlab.com/yaook/k8s/ci-image-nix-test";
   tag = "latest";
   copyToRoot = pkgs.buildEnv {
     name = "image-root";
