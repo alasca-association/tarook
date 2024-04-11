@@ -99,6 +99,7 @@ ansible-lint:
   before_script:
     - poetry install --with ci --sync
   script:
+    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null ; true)
     - "ansible-galaxy install -r ansible/requirements.yaml"
     - "ANSIBLE_ROLES_PATH=./k8s-core/ansible/roles:./k8s-supplements/ansible/roles:./k8s-supplements/ansible/test-roles ansible-lint -c ci/lint/ansible-lint-conf --offline"
   tags:
