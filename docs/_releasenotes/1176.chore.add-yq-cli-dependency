@@ -1,0 +1,2 @@
+Added [yq](https://github.com/mikefarah/yq) as a dependency.
+This allows shell scripts to read the config with `tomlq` (see !1176).
