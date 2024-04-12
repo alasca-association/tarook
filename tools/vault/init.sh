@@ -3,6 +3,13 @@ set -euo pipefail
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 
+arg_num=0
+if [ "$#" -ne "$arg_num" ]; then
+    echo "ERROR: Expecting $arg_num argument(s), but $# were given" >&2
+    echo >&2
+    exit 2
+fi
+
 if [ -z "${nodes_approle_accessor:-}" ]; then
     echo "approle auth at $nodes_approle_name not initialized yet, creating"
     vault auth enable -path="$nodes_approle_name" approle

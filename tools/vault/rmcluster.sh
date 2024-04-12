@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cluster="$1"
+# shellcheck source=tools/vault/lib.sh
+. "$(dirname "$0")/lib.sh"
+
+arg_num=0
+if [ "$#" -ne "$arg_num" ]; then
+    echo "ERROR: Expecting $arg_num argument(s), but $# were given" >&2
+    echo >&2
+    exit 2
+fi
+
+cluster="$(get_clustername)"
+check_clustername "$cluster"
+# reload the lib to update the vars after initializing the clustername
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 

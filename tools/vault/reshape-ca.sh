@@ -1,6 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
+arg_num=3
+if [ "$#" -ne "$arg_num" ]; then
+    echo "ERROR: Expecting $arg_num argument(s), but $# were given" >&2
+    echo >&2
+    exit 2
+fi
+
 cafile="$1"
 cakey="$2"
 workdir="$(mktemp -d --tmpdir reshape-ca.XXXXXXXXXXXX)"

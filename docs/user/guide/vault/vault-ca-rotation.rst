@@ -91,7 +91,7 @@ Phase 1
 
         .. code:: bash
 
-          $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh <clustername> prepare
+          $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh prepare
 
           # Verify
           $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
@@ -104,7 +104,7 @@ Phase 1
 
           .. code:: bash
 
-            $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh <clustername> prepare
+            $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh prepare
 
         2. Sign the generated CSRs
 
@@ -112,7 +112,7 @@ Phase 1
 
           .. code:: bash
 
-            $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh <clustername> load-signed-intermediates
+            $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh load-signed-intermediates
 
             # Verify
             $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
@@ -164,7 +164,7 @@ After you spread the kubeconfigs, do the following:
 
         .. code::
 
-          $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh <clustername> apply
+          $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh apply
 
           $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
           Keys                                    is_default    issuer_name
@@ -180,7 +180,7 @@ After you spread the kubeconfigs, do the following:
 
         .. code::
 
-          $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh <clustername> apply
+          $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh apply
 
           $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
           Keys                                    is_default    issuer_name

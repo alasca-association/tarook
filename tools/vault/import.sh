@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# shellcheck source=tools/vault/lib.sh
+. "$(dirname "$0")/lib.sh"
 
 function usage() {
-    echo "usage: $0 CLUSTERNAME [no-intermediates|with-intermediates]" >&2
+    echo "usage: $0 [no-intermediates|with-intermediates]" >&2
     echo >&2
     echo "Arguments:" >&2
-    echo "    CLUSTERNAME" >&2
-    echo "        The name of the cluster, inside Vault, to use." >&2
-    echo >&2
     echo "    no-intermediates" >&2
     echo "        Import the existing root CA keys into Vault directly as if" >&2
     echo "        using mkcluster-root.sh" >&2
@@ -17,13 +16,35 @@ function usage() {
     echo "        mkcluster-intermediate.sh" >&2
 }
 
-if [ "$#" -ne 2 ]; then
-    usage
+arg_num=1
+if [ "$#" -ne "$arg_num" ]; then
+    echo "ERROR: Expecting $arg_num argument(s), but $# were given" >&2
+    echo >&2
     exit 2
 fi
 
-cluster="$1"
-mode="$2"
+cluster="$(get_clustername)"
+check_clustername "$cluster"
+mode="$1"
+
+import_roots=1
+case "$mode" in
+    no-intermediates)
+        # 5yrs
+        pki_ca_ttl=43830h
+        ;;
+    with-intermediates)
+        import_roots=0
+        # 1.5yrs
+        pki_ca_ttl=13176h
+        ;;
+    *)
+        usage
+        exit 2
+        ;;
+esac
+
+# reload the lib to update the vars after initializing the clustername
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 scriptdir="$(dirname "$0")"
@@ -60,22 +81,6 @@ if vault kv get "$cluster_path/kv/k8s/service-account-key" >/dev/null 2>/dev/nul
     exit 2
 fi
 
-import_roots=1
-case "$mode" in
-    no-intermediates)
-        # 5yrs
-        pki_ca_ttl=43830h
-        ;;
-    with-intermediates)
-        import_roots=0
-        # 1.5yrs
-        pki_ca_ttl=13176h
-        ;;
-    *)
-        usage
-        exit 2
-        ;;
-esac
 
 echo "NOTE: This script is only intended to be used for non-IaaS clusters."
 echo "Use with C&H IaaS clusters is **not compliant** with policies."
