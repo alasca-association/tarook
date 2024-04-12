@@ -59,7 +59,8 @@ build_image_mr:
   before_script:
     - nix-env --install docker
     - docker --version
-    - cat > /etc/nix/nix.conf <<EOF
+    - |
+      cat > /etc/nix/nix.conf <<EOF
       build-users-group = nixbld
       sandbox = false
       extra-experimental-features = nix-command flakes
