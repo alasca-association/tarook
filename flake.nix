@@ -39,7 +39,7 @@
           openssl
           wireguard-tools
           poetry
-          gcc # to poetry can build netifaces
+          gcc # so poetry can build netifaces
         ];
         ciDeps = with pkgs; [
           git
