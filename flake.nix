@@ -26,29 +26,29 @@
       }: let
         nix2containerPkgs = inputs'.nix2container.packages;
         yk8sDeps = with pkgs; [
-          openstackclient
-          k9s
-          kubernetes-helm
-          kubectl
+          coreutils
+          gcc # so poetry can build netifaces
           jq
-          moreutils
           jsonnet
           jsonnet-bundler
+          kubectl
+          kubernetes-helm
+          moreutils
+          openssl
+          openstackclient
+          poetry
           terraform
           vault
-          openssl
           wireguard-tools
-          poetry
-          gcc # so poetry can build netifaces
         ];
         ciDeps = with pkgs; [
           git
         ];
         interactiveDeps = with pkgs; [
           bashInteractive
-          coreutils
           dnsutils
           iputils
+          k9s
         ];
       in {
         _module.args.pkgs = import nixpkgs {
