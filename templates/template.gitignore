@@ -1,6 +1,7 @@
 *.key
 /inventory/yaook-k8s/*
 !/inventory/yaook-k8s/hosts
+etc/admin.conf
 etc/ssh_known_hosts
 etc/kubeadm_token
 /wg*.conf
