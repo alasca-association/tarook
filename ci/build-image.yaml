@@ -47,9 +47,9 @@ build_image_mr:
   tags:
     - docker
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.21.2"
-  services:
-    - name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:26.0.0-dind"
-      alias: docker
+  # services:
+  #   - name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:26.0.0-dind"
+  #     alias: docker
   stage: build-image
   rules:
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -57,8 +57,6 @@ build_image_mr:
     when: always
   - when: never
   before_script:
-    - nix-env --install docker
-    - docker --version
     - |
       cat > /etc/nix/nix.conf <<EOF
       build-users-group = nixbld
@@ -68,14 +66,10 @@ build_image_mr:
       trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
       EOF
   script:
-  # - 'nix run ".#ciImage.copyToDockerDaemon"'
-  # - 'export IMAGE_BASE_NAME="${CI_REGISTRY_IMAGE}/ci-image-nix-test"'
-  # - 'export IMAGE_REF_BUILD=${IMAGE_BASE_NAME}:build'
-  # - 'export IMAGE_TAG=${CI_COMMIT_REF_NAME}'
-  # - 'export IMAGE_REF_PUSH=${IMAGE_BASE_NAME}:${IMAGE_TAG}"'
-  # - 'docker tag ${IMAGE_REF_BUILD} ${IMAGE_REF_PUSH}'
-  - 'docker login -u gitlab-ci-token -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"'
+  - 'nix run .#skopeo -- login -u gitlab-ci-token -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"'
   - 'nix run ".#ciImage.copyToRegistry"'
-  # - 'docker push "${IMAGE_REF_PUSH}"'
-  # - 'docker image rm "${IMAGE_REF_BUILD}"'
-  # - 'docker image rm "${IMAGE_REF_PUSH}"'
+  - 'export IMAGE_BASE_NAME="${CI_REGISTRY_IMAGE}/ci-image-nix-test"'
+  - 'export IMAGE_REF_BUILD=${IMAGE_BASE_NAME}:build'
+  - 'export IMAGE_TAG=${CI_COMMIT_REF_NAME}'
+  - 'export IMAGE_REF_PUSH=${IMAGE_BASE_NAME}:${IMAGE_TAG}"'
+  - 'skopeo --insecure-policy copy "docker://${IMAGE_REF_BUILD}" "docker://${IMAGE_REF_PUSH}"'
