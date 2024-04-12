@@ -557,7 +557,6 @@ use_helm = true
 # If left undefined, the helm chart defaults will be used
 #thanos_storegateway_size = null
 #thanos_compactor_size = null
-#thanos_query_size = null
 
 # By default, the monitoring will capture all namespaces. If this is not
 # desired, the following switch can be turned off. In that case, only the
