@@ -282,15 +282,6 @@ def main():
         prom_config = config["k8s-service-layer"].get("prometheus")
         use_thanos = prom_config.get("use_thanos", False)
         manage_thanos_bucket = prom_config.get("manage_thanos_bucket", True)
-        conf_file = prom_config.get("thanos_objectstorage_config_file", False)
-        if use_thanos and not (manage_thanos_bucket or conf_file):
-            raise ValueError(
-                "You enabled thanos (`use_thanos=true`) and you told terraform to not"
-                "create a bucket for you (`manage_thanos_bucket=false`)\n"
-                "but you didn't provide a config file to an external bucket"
-                "(`thanos_objectstorage_config_file=''`) either.\n"
-                "Where is thanos supposed to write its metrics to? ;-(\n"
-            )
         tf_config["monitoring_manage_thanos_bucket"] = use_thanos and \
             manage_thanos_bucket
 
