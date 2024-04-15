@@ -5,11 +5,6 @@
     - ci/build-image.yaml
     - ci/container-image/*
 
-variables:
-  DOCKER_TLS_CERTDIR: ""
-  DOCKER_DRIVER: overlay2
-  DOCKER_HOST: tcp://docker:2375
-
 # build_image_main_or_tagged:
 #   tags:
 #     - docker
@@ -47,9 +42,6 @@ build_image_mr:
   tags:
     - docker
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.21.2"
-  # services:
-  #   - name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:26.0.0-dind"
-  #     alias: docker
   stage: build-image
   rules:
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
