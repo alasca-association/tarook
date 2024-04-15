@@ -1,5 +1,0 @@
-Dropping the ``on_openstack`` variable from the ``[k8s-service-layer.rook]`` section
-
-Previously, this was a workaround to tell rook if we're running on top of OpenStack or not.
-With the new repository layout that's not needed anymore as the ``on_openstack`` variable is specified
-in the hosts file (``inventory/yaook-k8s/hosts``) and available when invoking the rook roles.

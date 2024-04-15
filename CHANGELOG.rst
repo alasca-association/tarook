@@ -19,6 +19,69 @@ earlier changes.
 
 .. towncrier release notes start
 
+v4.0.0 (2024-04-15)
+-------------------
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+- The first and main serve of the core-split has been merged and the code base has been tossed around.
+  One MUST take actions to migrate a pre-core-split cluster.
+
+  .. code::
+
+      $ bash managed-k8s/actions/migrate-cluster-repo.sh
+
+  This BREAKS the air-gapped and cluster-behind-proxy functionality.
+
+  Please refer to the respective documentation: ``docs/operation/actions-references.rst`` (`!823 <https://gitlab.com/yaook/k8s/-/merge_requests/823>`_)
+
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- The custom stage is enabled by default now. (`!823 <https://gitlab.com/yaook/k8s/-/merge_requests/823>`_)
+- Change etcd-backup to use the new Service and ServiceMonitor manifests supplied by the Helm chart.
+
+  The old manifests that were included in the yk8s repo in the past will be overwritten
+  (``etcd-backup`` ServiceMonitor) and removed (``etcd-backup-monitoring`` Service) in
+  existing installations. (`!1131 <https://gitlab.com/yaook/k8s/-/merge_requests/1131>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- Fix patch-release tagging (`!1169 <https://gitlab.com/yaook/k8s/-/merge_requests/1169>`_)
+- Change of the proposed hotfix procedure (`!1171 <https://gitlab.com/yaook/k8s/-/merge_requests/1171>`_)
+-  (`!1172 <https://gitlab.com/yaook/k8s/-/merge_requests/1172>`_)
+
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Streamline Thanos bucket management configuration (`!1173 <https://gitlab.com/yaook/k8s/-/merge_requests/1173>`_)
+
+
+Deprecations and Removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Dropping the ``on_openstack`` variable from the ``[k8s-service-layer.rook]`` section
+
+  Previously, this was a workaround to tell rook if we're running on top of OpenStack or not.
+  With the new repository layout that's not needed anymore as the ``on_openstack`` variable is specified
+  in the hosts file (``inventory/yaook-k8s/hosts``) and available when invoking the rook roles. (`!823 <https://gitlab.com/yaook/k8s/-/merge_requests/823>`_)
+- Remove configuration option for Thanos query persistence
+
+  As that's not possible to set via the used helm chart and
+  the variable is useless. (`!1174 <https://gitlab.com/yaook/k8s/-/merge_requests/1174>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- Disable "-rc"-tagging (`!1170 <https://gitlab.com/yaook/k8s/-/merge_requests/1170>`_)
+
+
 v3.0.2 (2024-04-09)
 -------------------
 

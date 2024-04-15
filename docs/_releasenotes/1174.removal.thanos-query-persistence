@@ -1,4 +1,0 @@
-Remove configuration option for Thanos query persistence
-
-As that's not possible to set via the used helm chart and
-the variable is useless.
