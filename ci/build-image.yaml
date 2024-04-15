@@ -1,43 +1,3 @@
-.build-image-rules-changes: &build-image-rules-changes
-    changes:
-    - flake.nix
-    - flake.lock
-    - ci/build-image.yaml
-    - ci/container-image/*
-
-# build_image_main_or_tagged:
-#   tags:
-#     - docker
-#   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:26.0.0"
-#   services:
-#     - name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:26.0.0-dind"
-#       alias: docker
-#   stage: build-image
-#   rules:
-#   - if: '$CI_COMMIT_REF_NAME =~ /^(main|devel|v[0-9]+\.[0-9.]+)$/'
-#     <<: *build-image-rules-changes
-#     when: always
-#   - when: never
-#   before_script:
-#     - mkdir $HOME/.docker
-#     - docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
-#   script:
-#     # Cut out the "v" of version strings
-#   - 'if $(echo "${CI_COMMIT_REF_NAME}" | grep -Eq "^(v[0-9]+\.[0-9.]+)"); then export IMAGE_TAG="${CI_COMMIT_REF_NAME#v}"; else export IMAGE_TAG="$CI_COMMIT_REF_NAME"; fi'
-#   - nix run .#ciImage.copyToDockerDaemon
-#   - 'export IMAGE_REF_BASE="${CI_REGISTRY_IMAGE}/base:${IMAGE_TAG}"'
-#   - 'export IMAGE_REF_F1A="${CI_REGISTRY_IMAGE}/f1a:${IMAGE_TAG}"'
-#   # - 'export IMAGE_REF_F1B="${CI_REGISTRY_IMAGE}/f1b:${IMAGE_TAG}"'
-#   - 'docker build -t "${IMAGE_REF_BASE}" -f Dockerfile.base .'
-#   - 'docker build -t "${IMAGE_REF_F1A}" -f Dockerfile.openrc --build-arg openrc=openrc_f1a.sh --build-arg image="${IMAGE_REF_BASE}" .'
-#   # - 'docker build -t "${IMAGE_REF_F1B}" -f Dockerfile.openrc --build-arg openrc=openrc_f1b.sh --build-arg image="${IMAGE_REF_BASE}" .'
-#   - 'docker push "${IMAGE_REF_BASE}"'
-#   - 'docker push "${IMAGE_REF_F1A}"'
-#   # - 'docker push "${IMAGE_REF_F1B}"'
-#   - 'docker image rm "${IMAGE_REF_BASE}"'
-#   - 'docker image rm "${IMAGE_REF_F1A}"'
-#   # - 'docker image rm "${IMAGE_REF_F1B}"'
-
 build_image_mr:
   tags:
     - docker
@@ -45,7 +5,11 @@ build_image_mr:
   stage: build-image
   rules:
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    <<: *build-image-rules-changes
+    changes:
+    - flake.nix
+    - flake.lock
+    - ci/build-image.yaml
+    - ci/container-image/*
     when: always
   - when: never
   before_script:
