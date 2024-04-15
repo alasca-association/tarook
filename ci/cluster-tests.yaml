@@ -6,7 +6,7 @@
       - '{[^d]*,d,d[^o]*,do,do[^c]*,doc,doc[^s]*,docs?*}/**/*'
 
 .prepare_spawn_test_cleanup_k8s_cluster:
-  image: "registry.gitlab.com/yaook/k8s/ci-image-nix-test:${YAOOK_K8S_CI_IMAGE_TAG}"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   variables:
     WG_COMPANY_USERS: "false"
     K8S_CUSTOM_STAGE_USAGE: "true"
@@ -252,7 +252,7 @@
     - wireguard-ready
 
 .test_upgrade_path_k8s_cluster:
-  image: "registry.gitlab.com/yaook/k8s/ci-image-nix-test:${YAOOK_K8S_CI_IMAGE_TAG}"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   services: !reference [.prepare_spawn_test_cleanup_k8s_cluster, services]
   before_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]

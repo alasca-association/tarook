@@ -9,6 +9,7 @@ variables:
   REGEX_RELEASE_HOTFIX_BRANCH_PREFIX: /^hotfix\/\S+$/
   REGEX_RELEASE_HOTFIX_BASE_BRANCH_PREFIX: /^hotfix\/base\S+$/
 
+  YAOOK_K8S_CI_IMAGE_NAME: ${CI_REGISTRY_IMAGE}/ci-image-nix-test
   YAOOK_K8S_CI_IMAGE_TAG: devel
 
 # Pipelines run on devel branch, release-(prepare)-branches and merge requests
