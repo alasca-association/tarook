@@ -63,9 +63,15 @@
           nativeBuildInputs = interactiveDeps;
           buildInputs = yk8sDeps;
         };
-        packages = {
+        packages = let
+          ciImages = import ./ci/container-image {
+            inherit pkgs yk8sDeps interactiveDeps ciDeps;
+            inherit (nix2containerPkgs) nix2container;
+          };
+        in {
           skopeo = nix2containerPkgs.skopeo-nix2container;
-          ciImage = nix2containerPkgs.nix2container.buildImage (import ./ci/container-image {inherit pkgs yk8sDeps interactiveDeps ciDeps;});
+          ciBase = ciImages.base;
+          ciF1a = ciImages.f1a;
         };
         formatter = pkgs.alejandra;
       };
