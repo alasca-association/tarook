@@ -68,7 +68,7 @@ build_image_mr:
   script:
   - nix run .#skopeo -- login -u gitlab-ci-token -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
   - nix run ".#ciImage.copyToRegistry"
-  - export IMAGE_BASE_NAME="${CI_REGISTRY_IMAGE}/ci-image-nix-test:${YAOOK_K8S_CI_IMAGE_TAG}"
+  - export IMAGE_BASE_NAME="${CI_REGISTRY_IMAGE}/ci-image-nix-test"
   - export IMAGE_REF_BUILD="${IMAGE_BASE_NAME}:build"
   - export IMAGE_TAG="${CI_COMMIT_SHA:0:8}"
   - export IMAGE_REF_PUSH="${IMAGE_BASE_NAME}:${IMAGE_TAG}"
