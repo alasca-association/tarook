@@ -1,4 +1,4 @@
-build_image_mr:
+build_image:
   tags:
     - docker
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.21.2"
@@ -37,7 +37,7 @@ build_image_mr:
 deploy_image:
   tags:
     - docker
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ay.io/skopeo/stable:latest"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/quay.io/skopeo/stable:latest"
   stage: release
   rules:
   - if: $CI_COMMIT_TAG
