@@ -1,9 +1,10 @@
 .build-image-rules-changes: &build-image-rules-changes
     changes:
-    - flake.nix
-    - flake.lock
-    - ci/build-image.yaml
-    - ci/container-image/*
+    - asjdflasdfkiasjdfnaxsdk
+    # - flake.nix
+    # - flake.lock
+    # - ci/build-image.yaml
+    # - ci/container-image/*
 
 variables:
   DOCKER_TLS_CERTDIR: ""
