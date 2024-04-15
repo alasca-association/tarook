@@ -28,6 +28,7 @@
         yk8sDeps = with pkgs; [
           coreutils
           gcc # so poetry can build netifaces
+          gnugrep
           jq
           jsonnet
           jsonnet-bundler
