@@ -66,7 +66,10 @@
         };
         packages = {
           skopeo = nix2containerPkgs.skopeo-nix2container;
-          ciImage = nix2containerPkgs.nix2container.buildImage (import ./ci/container-image {inherit pkgs yk8sDeps interactiveDeps ciDeps;});
+          ciImage = import ./ci/container-image {
+            inherit pkgs yk8sDeps interactiveDeps ciDeps;
+            inherit (nix2containerPkgs) nix2container;
+          };
         };
         formatter = pkgs.alejandra;
       };
