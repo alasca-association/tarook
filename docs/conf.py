@@ -36,8 +36,8 @@ html_static_path = ['_static']
 html_theme_options = {
     "sidebar_hide_name": True,
 }
-html_logo = "img/yaook-husky-small.png"
-html_favicon = 'img/Husky_blue.svg'
+html_logo = "_static/yaook-husky-small.png"
+html_favicon = '_static/Husky_blue.svg'
 html_css_files = [
     'dropup.css',
 ]
