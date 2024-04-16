@@ -40,6 +40,7 @@
             wireguard-tools
           ];
           ci = [
+            direnv
             git
             gnupg
             netcat

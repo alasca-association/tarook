@@ -213,9 +213,10 @@
     - cp res/custom-play.yaml k8s-custom/main.yaml
       # Note that this is basically a dummy keypair that is not used to protect any significant data
     - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
+    - direnv allow
+    - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
       # Ensure that the project is clean
     - python3 clean-up-os-project.py
-    - poetry install --with ci --sync
 
   script:
     - export VAULT_ADDR=https://yaook-vault:8200
@@ -243,6 +244,7 @@
     - ./managed-k8s/actions/test.sh
   after_script:
     - cd ci/
+    - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
     - ./after_script_cleanup.sh
     # artifacts are overridden by later stages, so we need to re-export the variable here
     # for context see https://gitlab.com/yaook/k8s/-/merge_requests/1175#note_1959887865
