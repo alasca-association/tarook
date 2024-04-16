@@ -72,16 +72,29 @@
         formatter = pkgs.alejandra;
       };
       flake = {
-        lib = {
-          mkCiImage = {
-            pkgs,
-            yk8sDeps,
-            interactiveDeps,
-            ciDeps,
-            tag,
-          }: {
-            inherit tag;
-          };
+        nixosModules.yk8s-orchestrator = {
+          lib,
+          pkgs,
+          ...
+        }: {
+          environment.systemPackages = with pkgs; [
+            zellij
+            rsync
+            vim
+            git
+            jq
+            yq
+            jless
+            difftastic
+            ripgrep
+            helix
+            yazi
+          ];
+          nix.extraOptions = ''
+            experimental-features = nix-command flakes
+          '';
+          services.openssh.enable = true;
+          programs.direnv.enable = true;
         };
       };
     };
