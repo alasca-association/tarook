@@ -10,7 +10,7 @@ build_image:
     - flake.lock
     - ci/build-image.yaml
     - ci/container-image/*
-    when: always
+    when: never
   - when: never
   before_script:
     - |
