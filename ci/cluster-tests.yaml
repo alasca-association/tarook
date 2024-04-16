@@ -208,7 +208,7 @@
     - export MANAGED_K8S_GIT="$(realpath .)"
     - cd ci
     - git init
-    - git config protocol.file.allow always # file transfer for submodules has been disabled because of https://www.cve.org/CVERecord?id=CVE-2022-39253 but I guess we can trust our own repos
+    - git config --global protocol.file.allow always # file transfer for submodules has been disabled because of https://www.cve.org/CVERecord?id=CVE-2022-39253 but I guess we can trust our own repos
     - ../actions/init-cluster-repo.sh
     - ../actions/init-cluster-repo.sh # A second run to check idempotency
     - cp res/custom-play.yaml k8s-custom/main.yaml
