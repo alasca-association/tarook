@@ -20,25 +20,38 @@
       }: let
         dependencies = with pkgs; {
           yk8s = [
+            coreutils
+            gcc # so poetry can build netifaces
+            gnugrep
+            gnused
+            gzip
+            iproute2 # for wg-up
             jq
             kubectl
             kubernetes-helm
             moreutils
+            openssh
             openssl
             openstackclient
             poetry
             terraform
+            util-linux # for uuidgen
             vault
             wireguard-tools
           ];
-          ci = with pkgs; [
+          ci = [
             git
+            gnupg
+            netcat
+            sonobuoy
           ];
-          interactive = with pkgs; [
+          interactive = [
             bashInteractive
+            vim
             dnsutils
             iputils
             k9s
+            curl
           ];
         };
       in {
