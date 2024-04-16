@@ -34,7 +34,7 @@ Breaking changes
 
   This BREAKS the air-gapped and cluster-behind-proxy functionality.
 
-  Please refer to the respective documentation: ``docs/operation/actions-references.rst`` (`!823 <https://gitlab.com/yaook/k8s/-/merge_requests/823>`_)
+  Please refer to the :doc:`respective documentation </user/reference/actions-references>` (`!823 <https://gitlab.com/yaook/k8s/-/merge_requests/823>`_).
 
 
 Changed functionality
@@ -312,8 +312,8 @@ New Features
 - Add support for generating Kubernetes configuration from Vault
 
   This allows "logging into Kubernetes" using your Vault credentials. For more
-  information, see the updated vault documentation (docs/operation/vault.rst,
-  "Using Vault to replace a long-lived admin.conf"). (`!1016 <https://gitlab.com/yaook/k8s/-/merge_requests/1016>`_)
+  information, see the  :doc:`updated vault documentation </user/guide/vault/vault>`
+  (`!1016 <https://gitlab.com/yaook/k8s/-/merge_requests/1016>`_).
 
 
 Bugfixes
@@ -341,7 +341,7 @@ Breaking changes
 
 - Add option to configure multiple Wireguard endpoints
 
-  Note that you **must** update the vault policies once. See ``docs/vpn/wireguard.rst`` for further information.
+  Note that you **must** update the vault policies once. See :doc:`Wireguard documentation </user/explanation/vpn/wireguard>` for further information.
 
   .. code::
 
@@ -582,7 +582,7 @@ Add support for Kubernetes v1.25
 We added support for all patch versions of Kubernetes v1.25. One can
 either directly create a new cluster with a patch release of that
 version or upgrade an existing cluster to one
-:doc:`as usual </operation/upgrading-kubernetes>`
+:doc:`as usual </user/guide/kubernetes/upgrading-kubernetes>`
 via:
 
 .. code:: shell
@@ -622,7 +622,7 @@ testing a migration path. If you have GPU nodes in your cluster and
 support for these breaks by the reworked code, please create an issue or
 consider rebuilding the nodes with the new procedure.
 
-[1] `GPU Support Documentation <./docs/src/operation/gpu-and-vgpu.md#internal-usage>`__
+[1] :doc:`GPU Support Documentation</user/explanation/gpu-and-vgpu>`
 
 [2] https://gitlab.com/yaook/meta#subscribe-to-meetings
 
@@ -663,7 +663,7 @@ now switching to an
 method based on the Tigera operator.
 
 **Existing clusters must be migrated.** Please have a look at our
-:doc:`Calico documentation </operation/calico>` for further
+:doc:`Calico documentation </user/explanation/services/calico>` for further
 information.
 
 Support for Kubernetes v1.24
@@ -683,7 +683,7 @@ cluster to one as usual via:
    If you’re using docker as CRI, you **must** migrate to containerd in advance.
 
 Further information are given in the
-:doc:`Upgrading Kubernetes documentation </operation/upgrading-kubernetes>`.
+:doc:`Upgrading Kubernetes documentation </user/guide/kubernetes/upgrading-kubernetes>`.
 
 Implement automated docker to containerd migration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -793,7 +793,7 @@ new cluster with that version or upgrade an existing one as usual via:
    MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.23.11
 
 Further information are given in the
-:doc:`Upgrading Kubernetes documentation </operation/upgrading-kubernetes>`.
+:doc:`Upgrading Kubernetes documentation </user/guide/kubernetes/upgrading-kubernetes>`.
 
 config.toml: Introduce the mandatory option ``[miscellaneous]/container_runtime``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

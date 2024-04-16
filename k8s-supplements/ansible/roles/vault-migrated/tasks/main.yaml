@@ -35,8 +35,8 @@
       Detected sa.key or wg_gw_key.gpg in local storage, but there is no flag
       indicating successful migration to Vault!
 
-      Please see the documentation in docs/src/operation/vault.md or online at
-      https://yaook.gitlab.io/k8s/operation/vault.html for steps.
+      Please see the documentation in docs/user/guide/vault or online at
+      https://yaook.gitlab.io/k8s/user/guide/vault/vault.html for steps.
   when: (sa_stat.stat.exists or wg_stat.stat.exists) and not migration_stat.stat.exists
   tags:
   - vault-migrated

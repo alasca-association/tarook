@@ -490,7 +490,7 @@ use_helm = true
 #replicated = 1
 
 # Custom storage configuration is documented at
-# docs/src/managed-services/rook/custom-storage.md
+# docs/user/guide/custom-storage.rst
 #on_openstack = true
 #use_all_available_devices = true
 #use_all_available_nodes = true
