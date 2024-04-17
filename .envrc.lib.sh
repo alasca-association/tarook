@@ -1,10 +1,12 @@
 # shellcheck shell=bash
 layout_poetry() {
-  poetry_dir="${1:-${PWD}}"
+  poetry_dir="$(realpath "${1:-${PWD}}")"
+  mkdir -p "$PWD/.direnv"
   poetry_hash_file="$PWD/.direnv/poetry.lock.sha256"
   PYPROJECT_TOML="${PYPROJECT_TOML:-${poetry_dir}/pyproject.toml}"
   poetry_file="${poetry_dir}/poetry.lock"
   poetry_hash="$(sha256sum "$poetry_file" | cut -d' ' -f1)"
+  if [[ "${POETRY_ACTIVE:-""}" == "$poetry_hash" ]]; then echo "Poetry already active. Skipping..."; return; fi
   cache_dir="${XDG_CACHE_HOME:-${HOME}/.cache}/yaook-k8s/poetry/$poetry_hash"
 
   if [[ ! -f "$PYPROJECT_TOML" ]]; then
@@ -33,7 +35,7 @@ layout_poetry() {
   fi
 
   PATH_add "$VIRTUAL_ENV/bin"
-  export POETRY_ACTIVE=1
+  export POETRY_ACTIVE="$poetry_hash"
   export VIRTUAL_ENV
   watch_file "$PYPROJECT_TOML"
   watch_file "$poetry_dir/poetry.lock"
@@ -44,7 +46,8 @@ has_flake_support() {
 }
 
 use_flake_if_nix() {
-  flake_dir="${1:-${PWD}}"
+  flake_dir="$(realpath "${1:-${PWD}}")"
+  if [[ "${NIX_FLAKE_ACTIVE:-""}" == *"$flake_dir"* ]]; then echo "Flake alreay active. Skipping..."; return; fi
   if has nix; then
     if has_flake_support;
     then
@@ -52,6 +55,7 @@ use_flake_if_nix() {
         source_url "https://raw.githubusercontent.com/nix-community/nix-direnv/2.3.0/direnvrc" "sha256-Dmd+j63L84wuzgyjITIfSxSD57Tx7v51DMxVZOsiUD8="
       fi
       use flake "$flake_dir"
+      export NIX_FLAKE_ACTIVE="${NIX_FLAKE_ACTIVE}:${flake_dir}"
     else
       echo "Not loading flake. Nix is installed, but flakes are not enabled."
       echo "Add 'experimental-features = flakes nix-command' to either ~/.config/nix/nix.conf or /etc/nix/nix.conf"
