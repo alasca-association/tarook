@@ -1,7 +1,7 @@
 resource "local_file" "inventory_yaook-k8s" {
   content = templatefile("${path.module}/templates/inventory.tpl", {
-    masters       = openstack_compute_instance_v2.master,
-    master_ports  = openstack_networking_port_v2.master,
+    controllers      = openstack_compute_instance_v2.controller,
+    controller_ports = openstack_networking_port_v2.controller,
     gateways      = openstack_compute_instance_v2.gateway,
     gateway_ports = openstack_networking_port_v2.gateway,
     gateway_fips  = openstack_networking_floatingip_v2.gateway,

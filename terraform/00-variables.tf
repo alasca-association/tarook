@@ -162,7 +162,7 @@ variable "gateway_defaults" {
   }
 }
 
-variable "master_defaults" {
+variable "controller_defaults" {
   description = <<-EOT
     Default attributes for control plane nodes
 
@@ -184,8 +184,8 @@ variable "master_defaults" {
   }
 
   validation {
-     condition     = var.master_defaults.root_disk_size != 0
-     error_message = "Master 'root_disk_size' is zero"
+     condition     = var.controller_defaults.root_disk_size != 0
+     error_message = "Controller 'root_disk_size' is zero"
   }
 }
 
@@ -225,14 +225,14 @@ variable "nodes" {
     User defined list of control plane and worker nodes to be created with specified values
 
     The list must contain at least one control plane node.
-    'role' must be one of: "master", "worker".
+    'role' must be one of: "controller", "worker".
     'anti_affinity_group' must not be set when role!="worker"
     Leaving 'anti_affinity_group' empty means to not join any anti affinity group
   EOT
 
   type = map(
     object({
-      role                     = string            # one of: 'master', 'worker'
+      role                     = string            # one of: 'controller', 'worker'
       image                    = optional(string)
       flavor                   = optional(string)
       az                       = optional(string)
@@ -248,13 +248,13 @@ variable "nodes" {
     error_message = "At least one node with role=master must be given."
   }
   validation {  # Validate role
-    condition     = alltrue([for x in var.nodes: contains(["master", "worker"], x.role)])
-    error_message = "Invalid node role: Must be 'master' or 'worker'."
+    condition     = alltrue([for x in var.nodes: contains(["controller", "worker"], x.role)])
+    error_message = "Invalid node role: Must be 'controller' or 'worker'."
   }
-  # Validate worker node attributes are not used for master nodes
+  # Validate worker node attributes are not used for controller nodes
   validation {
-    condition     = alltrue([for x in var.nodes: x.anti_affinity_group == null if x.role == "master"])
-    error_message = "'anti_affinity_group' must not be set for master nodes"
+    condition     = alltrue([for x in var.nodes: x.anti_affinity_group == null if x.role == "controller"])
+    error_message = "'anti_affinity_group' must not be set for control plane nodes"
   }
 }
 

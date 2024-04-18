@@ -1,0 +1,6 @@
+The YAOOK/k8s Terraform module (along with the new config format)
+now uses the term 'controller(s)' instead of 'master(s)'
+to refer to control plane nodes.
+The change is transparent to both Terraform state and the LCM layers above.
+
+_

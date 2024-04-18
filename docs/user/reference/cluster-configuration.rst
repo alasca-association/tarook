@@ -42,7 +42,7 @@ need to adjust these values if you e.g. want to enable
 .. note::
 
    There is a variable ``nodes`` to configure
-   the k8s master and worker servers.
+   the k8s controller and worker servers.
    The ``role`` attribute must be used to distinguish both [1]_.
 
    The amount of gateway nodes can be controlled with the `gateway_count` variable.
@@ -108,15 +108,15 @@ The name of a Terraform node is composed from the following parts:
    [terraform.gateway_defaults]
    common_name = "gateway-"
 
-   [terraform.nodes.master-X]
-   role = "master"
+   [terraform.nodes.controller-X]
+   role = "controller"
 
    [terraform.nodes.worker-A]
    role = "worker"
 
    # yields the following node names:
    # - yk8s-gateway-0
-   # - yk8s-master-X
+   # - yk8s-controller-X
    # - yk8s-worker-A
 
 

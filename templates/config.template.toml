@@ -71,9 +71,9 @@ prevent_disruption = true
 #root_disk_size             = 10
 #root_disk_volume_type      = ""  # == default volume type in IaaS environment
 #
-# Change the default values for all master nodes
+# Change the default values for all controller nodes
 # Values can be selectively specified
-#[terraform.master_defaults]
+#[terraform.controller_defaults]
 #image                      = "Ubuntu 22.04 LTS x64"
 #flavor                     = "M"
 #root_disk_size             = 50
@@ -88,9 +88,9 @@ prevent_disruption = true
 #root_disk_volume_type      = ""  # == default volume type in IaaS environment
 ##anti_affinity_group             # == <unset>: don't join any group
 #
-# Master nodes to be created (at least one)
-#[terraform.nodes.<master-name>]
-#role = "master"
+# Controller nodes to be created (at least one)
+#[terraform.nodes.<controller-name>]
+#role = "controller"
 #image                    =
 #flavor                   =
 #az                       =

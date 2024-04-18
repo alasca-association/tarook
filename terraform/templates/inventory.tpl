@@ -20,8 +20,8 @@ ${instance.name} ansible_host=${gateway_fips[index].address} local_ipv4_address=
 %{ endfor }
 
 [masters]
-%{ for index, instance in masters ~}
-${instance.name} ansible_host=${master_ports[index].all_fixed_ips[0]} local_ipv4_address=${master_ports[index].all_fixed_ips[0]} %{if ipv6_enabled }${try("local_ipv6_address=${master_ports[index].all_fixed_ips[1]}", "")}%{ endif }
+%{ for index, instance in controllers ~}
+${instance.name} ansible_host=${controller_ports[index].all_fixed_ips[0]} local_ipv4_address=${controller_ports[index].all_fixed_ips[0]} %{if ipv6_enabled }${try("local_ipv6_address=${controller_ports[index].all_fixed_ips[1]}", "")}%{ endif }
 %{ endfor }
 
 [workers]
