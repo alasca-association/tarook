@@ -92,13 +92,13 @@ resource "openstack_blockstorage_volume_v3" "gateway-volume" {
 }
 
 resource "openstack_compute_instance_v2" "gateway" {
-  for_each = openstack_networking_port_v2.gateway
+  for_each = local.gateway_nodes
 
-  name              = each.value.name
+  name              = each.key
   flavor_id         = data.openstack_compute_flavor_v2.gateway.id
   image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.gateway.id : null
   key_pair          = var.keypair
-  availability_zone = local.gateway_nodes[each.key].az
+  availability_zone = each.value.az
   config_drive      = true
 
   dynamic block_device {
@@ -114,7 +114,7 @@ resource "openstack_compute_instance_v2" "gateway" {
   }
 
   network {
-    port = each.value.id
+    port = openstack_networking_port_v2.gateway[each.key].id
   }
   lifecycle {
     ignore_changes = [key_pair, image_id, config_drive]

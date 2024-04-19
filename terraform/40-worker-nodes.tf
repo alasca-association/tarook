@@ -75,10 +75,10 @@ resource "openstack_blockstorage_volume_v3" "worker-volume" {
 }
 
 resource "openstack_compute_instance_v2" "worker" {
-  for_each = openstack_networking_port_v2.worker
-  name     = each.value.name
+  for_each = local.worker_nodes
+  name     = each.key
 
-  availability_zone = local.worker_nodes[each.key].az
+  availability_zone = each.value.az
   flavor_id         = data.openstack_compute_flavor_v2.worker[each.key].id
   image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.worker[each.key].id : null
   key_pair          = var.keypair
@@ -87,9 +87,9 @@ resource "openstack_compute_instance_v2" "worker" {
   dynamic scheduler_hints {
     # Abusing 'for_each' as a conditional
     # It's not working as a loop. The outer `each.key` is "passed" into the inner `for_each`
-    for_each = local.worker_nodes[each.key].anti_affinity_group != null ? [each.key] : []
+    for_each = each.value.anti_affinity_group != null ? [each.key] : []
       content {
-        group = openstack_compute_servergroup_v2.server_group[local.worker_nodes[each.key].anti_affinity_group].id
+        group = openstack_compute_servergroup_v2.server_group[each.value.anti_affinity_group].id
       }
   }
 
