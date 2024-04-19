@@ -23,19 +23,16 @@ monitoring_scheduling_value: null
 
 monitoring_thanos_query_memory_limit: "786Mi"
 monitoring_thanos_query_memory_request: "128Mi"
-monitoring_thanos_query_cpu_limit: "1"
 monitoring_thanos_query_cpu_request: "100m"
 
 monitoring_thanos_store_memory_limit: "2Gi"
 monitoring_thanos_store_memory_request: "256Mi"
-monitoring_thanos_store_cpu_limit: "1"
 monitoring_thanos_store_cpu_request: "100m"
 
 monitoring_thanos_store_in_memory_max_size: 0
 
 monitoring_thanos_compact_memory_limit: "200Mi"
-monitoring_thanos_compact_memory_request: "75Mi"
-monitoring_thanos_compact_cpu_limit: "250m"
+monitoring_thanos_compact_memory_request: "200Mi"
 monitoring_thanos_compact_cpu_request: "100m"
 
 monitoring_thanos_retention_resolution_raw: "30d"
