@@ -9,7 +9,7 @@ compactor:
   enabled: true
   retentionResolutionRaw: {{ monitoring_thanos_retention_resolution_raw | quote }}
   retentionResolution5m: {{ monitoring_thanos_retention_resolution_5m | quote }}
-  retentionResolution1: {{ monitoring_thanos_retention_resolution_1h | quote }}
+  retentionResolution1h: {{ monitoring_thanos_retention_resolution_1h | quote }}
   resources:
     requests:
       memory: {{ monitoring_thanos_compact_memory_request | quote }}
