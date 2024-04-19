@@ -42,22 +42,8 @@ If you are having problems, please visit our :doc:`FAQ </user/guide/faq>`.
       - Check for
         :doc:`terraform variables</developer/reference/terraform-docs>`
         that can be set, you need to change some of them to fit to your
-        OpenStack cluster. e.g.:
-
-        - default_master_flavor
-        - gateway_flavor
-        - default_worker_flavor
-        - public_network
-        - keypair
-        - azs
-        - default_master_image_name
-        - default_master_root_disk_size = 20
-        - root_disk_volume_type
-        - create_root_disk_on_volume ??
-        - gateway_root_disk_volume_typ
-        - gateway_image_name
-        - default_worker_image_name
-        - default_worker_root_disk_size
+        OpenStack cluster, e.g.
+        the flavors, images, ... of the gateway, master and worker nodes.
 
 5. :ref:`Initialize the Vault secret store. <initialization.initialize-vault-for-a-development-setup>`
 6. Deploy cluster by executing the :ref:`apply-all.sh <actions-references.apply-allsh>` script.

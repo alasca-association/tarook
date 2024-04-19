@@ -1,0 +1,37 @@
+The format of the ``[terraform]`` config section changed significantly.
+
+Terraform nodes are now to be configured as blocks of values
+rather than across separate lists for each type of value.
+
+.. code:: diff
+
+     [terraform]
+
+   - masters = 2
+   - master_names = ["X", "Y"]
+   - master_flavors = ["M", "M"]
+   - master_images = ["Ubuntu 20.04 LTS x64", "Ubuntu 22.04 LTS x64"]
+   - master_azs = ["AZ1", "AZ3"]
+   + #....
+   +
+   + [terraform.masters.X]
+   + flavor   = "M"
+   + image    = "Ubuntu 20.04 LTS x64"
+   + az       = "AZ1"
+   + #....
+   +
+   + [terraform.workers.A]
+   + flavor   = "S"
+   + image    = "Debian 12 (bookworm)"
+   + az       = "AZ3"
+     #....
+
+.. attention:: Action required
+
+   You must convert your config into the new format.
+
+   .. code:: shell
+
+      ./managed-k8s/actions/migrate-to-release.sh
+
+_

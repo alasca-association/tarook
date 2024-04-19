@@ -7,12 +7,34 @@ actions_dir="$(dirname "$0")"
 
 check_venv
 
-if [ "$(jq -r .gitlab_backend "$terraform_state_dir/config.tfvars.json")" = true ]; then
-    load_gitlab_vars  # sets $backend_address
-fi
+require_harbour_disruption  # due to renaming of nodes in Openstack
 
 
 script_name="$(basename "$0")"
+
+
+# Perform pre-checks
+
+# Fail if config file is dirty
+#  so that unstaged changes are not overwritten potentially
+if ! git diff-files --quiet -- "${config_file}"; then
+    errorf "${config_file} is dirty. Refusing to continue.
+            Please retry after at least staging your changes."
+    exit 5
+fi
+
+
+# Ensure prerequisites
+
+# Initialize Terraform
+# NOTE: terraform_migrate and `terraform show` below
+#       expect Terraform to be initialized already
+if [ "$(jq -r .gitlab_backend "$terraform_state_dir/config.tfvars.json")" = true ]; then
+    load_gitlab_vars
+    tf_init_http
+else
+    tf_init_local
+fi
 
 
 # Perform Terraform migration steps
@@ -24,9 +46,6 @@ script_name="$(basename "$0")"
 notef "${script_name}: Migrating count to for_each in Terraform state ..."
 # shellcheck disable=SC2046
 run python3 "$actions_dir"/helpers/terraform_migrate.py \
-    $(test -z ${backend_address+x} || echo \
-        --tf-gitlab-backend "'$backend_address'" \
-    ) \
     --task count-to-for_each \
     -- "$terraform_module" \
 && if [ -f "$terraform_module/02-moved-instances.tf" ]; then
@@ -34,3 +53,17 @@ run python3 "$actions_dir"/helpers/terraform_migrate.py \
     # since the Terraform state was migrated permanently
     rm "$terraform_module/02-moved-instances.tf"
 fi
+
+
+# Perform config migration steps
+
+# conversion of the terraform config section
+notef "${script_name}: Converting the '[terraform]' config section into the new format ..."
+{
+    python3 "$actions_dir/helpers/config_migrate.py" - "$config_file" \
+        > "$config_file.yk8snew" \
+    && mv "$config_file.yk8snew" "${config_file}"
+} && {
+    notef "${script_name}: Converted. Please review and stage the diff below:"
+    git --no-pager diff -- "$config_file"
+}

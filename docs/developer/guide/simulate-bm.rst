@@ -35,12 +35,31 @@ Adjust the configuration to meet your needs:
 .. code:: toml
 
   [terraform]
-  masters = 3
-  workers = 5
-  worker_flavors = [ "L", "L", "XL", "XL", "XL"]
+
   subnet_cidr = "172.30.154.0/24"
   default_master_image_name = "Ubuntu 22.04 LTS x64"
   default_worker_image_name = "Ubuntu 22.04 LTS x64"
+
+  [terraform.masters.0]
+
+  [terraform.masters.1]
+
+  [terraform.masters.2]
+
+  [terraform.workers.0]
+  flavor = "L"
+
+  [terraform.workers.1]
+  flavor = "L"
+
+  [terraform.workers.2]
+  flavor = "XL"
+
+  [terraform.workers.3]
+  flavor = "XL"
+
+  [terraform.workers.4]
+  flavor = "XL"
 
 Creation of the harbour infrastructure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

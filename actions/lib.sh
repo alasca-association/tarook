@@ -7,7 +7,7 @@ config_file="$cluster_repository/config/config.toml"
 
 submodule_managed_k8s_name="managed-k8s"
 
-terraform_min_version="0.14.0"
+terraform_min_version="1.3.0"
 terraform_state_dir="$cluster_repository/terraform"
 terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"
 terraform_plan="$terraform_state_dir/plan.tfplan"
@@ -270,4 +270,20 @@ function check_venv() {
         errorf 'Set it to false and reload your environment.'
         exit 1
     fi
+}
+
+function tf_init_http () {
+    run terraform -chdir="$terraform_module" init \
+                  -upgrade \
+                  -backend-config="address=$backend_address" \
+                  -backend-config="lock_address=$backend_address/lock" \
+                  -backend-config="unlock_address=$backend_address/lock" \
+                  -backend-config="lock_method=POST" \
+                  -backend-config="unlock_method=DELETE" \
+                  -backend-config="retry_wait_min=5"
+}
+
+function tf_init_local () {
+    run terraform -chdir="$terraform_module" init \
+                  -upgrade
 }

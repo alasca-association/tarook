@@ -20,9 +20,6 @@ enabled = true
 prevent_disruption = true
 
 #subnet_cidr = "172.30.154.0/24"
-#masters = 3
-#workers = 3
-#worker_flavors = ["L", "M", "L"]
 
 # if set to true one must set proper values for the "azs" array according to the cloud in use
 #enable_az_management = false
@@ -60,6 +57,23 @@ prevent_disruption = true
 
 # The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'
 #gitlab_state_name = "tf-state"
+
+
+#[terraform.masters.0]
+#[terraform.masters.1]
+#[terraform.masters.2]
+#
+#[terraform.workers.0]
+#flavor = "M"
+#
+#[terraform.workers.1]
+#flavor = "M"
+#
+#[terraform.workers.2]
+#flavor = "M"
+#
+#[terraform.workers.3]
+#flavor = "M"
 
 # ANCHOR_END: terraform_config
 

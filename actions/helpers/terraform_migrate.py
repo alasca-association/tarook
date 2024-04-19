@@ -211,7 +211,7 @@ def get_args() -> argparse.Namespace:
         '--tasks', type=str, nargs='*',
         choices=list(TASKS.keys()),
         default=list(TASKS.keys()),
-        help="Specific task(s) to perform. Default is all tasks.)",
+        help="Specific task(s) to perform. Default is all tasks.",
     )
     parser.add_argument(
         '--tf-gitlab-backend', type=str,

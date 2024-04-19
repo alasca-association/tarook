@@ -73,7 +73,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| azs | If 'enable\_az\_management=true' defines which availability zones of your cloud to use to distribute the spawned server for better HA. Additionally the count of the array will define how many gateway server will be spawned. The naming of the elements doesn't matter if 'enable\_az\_management=false'. It is also used for unique naming of gateways. | `list(string)` | <pre>[<br>  "AZ1",<br>  "AZ2",<br>  "AZ3"<br>]</pre> | no |
+| azs | If 'enable\_az\_management=true' defines which availability zones of your cloud to use to distribute the spawned server for better HA. Additionally the count of the array will define how many gateway server will be spawned. The naming of the elements doesn't matter if 'enable\_az\_management=false'. It is also used for unique naming of gateways. | `set(string)` | <pre>[<br>  "AZ1",<br>  "AZ2",<br>  "AZ3"<br>]</pre> | no |
 | cluster\_name | n/a | `string` | `"managed-k8s"` | no |
 | create\_root\_disk\_on\_volume | n/a | `bool` | `false` | no |
 | default\_master\_flavor | n/a | `string` | `"M"` | no |
@@ -95,13 +95,7 @@ No modules.
 | ipv4\_enabled | If set to true, ipv4 will be used | `bool` | `true` | no |
 | ipv6\_enabled | If set to true, ipv6 will be used | `bool` | `false` | no |
 | keypair | n/a | `string` | n/a | yes |
-| master\_azs | n/a | `list(string)` | `[]` | no |
-| master\_flavors | n/a | `list(string)` | `[]` | no |
-| master\_images | n/a | `list(string)` | `[]` | no |
-| master\_names | It can be used to uniquely identify masters | `list(string)` | `[]` | no |
-| master\_root\_disk\_sizes | If 'create\_root\_disk\_on\_volume=true' and the master flavor does not specify a disk size, the root disk volume of this particular instance will have this size. | `list(number)` | `[]` | no |
-| master\_root\_disk\_volume\_types | If 'create\_root\_disk\_on\_volume=true', volume type for root disk of this particular control plane node. If left empty, the volume type specified in 'root\_disk\_volume\_type' will be used. | `list(string)` | `[]` | no |
-| masters | n/a | `number` | `3` | no |
+| masters | User defined list of control plane nodes to be created with specified values | <pre>map(<br>    object({<br>      image                    = optional(string)<br>      flavor                   = optional(string)<br>      az                       = optional(string) # default: auto-select<br>      root_disk_size           = optional(number)<br>      root_disk_volume_type    = optional(string)<br>    })<br>  )</pre> | <pre>{<br>  "0": {},<br>  "1": {},<br>  "2": {}<br>}</pre> | no |
 | monitoring\_manage\_thanos\_bucket | Create an object storage container for thanos. | `bool` | `false` | no |
 | network\_mtu | MTU for the network used for the cluster. | `number` | `1450` | no |
 | public\_network | n/a | `string` | `"shared-public-IPv4"` | no |
@@ -111,14 +105,7 @@ No modules.
 | thanos\_delete\_container | n/a | `bool` | `false` | no |
 | timeout\_time | n/a | `string` | `"30m"` | no |
 | worker\_anti\_affinity\_group\_name | n/a | `string` | `"cah-anti-affinity"` | no |
-| worker\_azs | n/a | `list(string)` | `[]` | no |
-| worker\_flavors | n/a | `list(string)` | `[]` | no |
-| worker\_images | n/a | `list(string)` | `[]` | no |
-| worker\_join\_anti\_affinity\_group | n/a | `list(bool)` | `[]` | no |
-| worker\_names | It can be used to uniquely identify workers | `list(string)` | `[]` | no |
-| worker\_root\_disk\_sizes | If 'create\_root\_disk\_on\_volume=true', size of the root disk of this particular worker node. If left empty, the root disk size specified in 'default\_worker\_root\_disk\_size' is used. | `list(number)` | `[]` | no |
-| worker\_root\_disk\_volume\_types | If 'create\_root\_disk\_on\_volume=true', volume types for the root disk of this particular worker node. If left empty, the volume type specified in 'root\_disk\_volume\_type' will be used. | `list(string)` | `[]` | no |
-| workers | n/a | `number` | `4` | no |
+| workers | User defined list of worker nodes to be created with specified values | <pre>map(<br>    object({<br>      image                    = optional(string)<br>      flavor                   = optional(string)<br>      az                       = optional(string) # default: auto-select<br>      root_disk_size           = optional(number)<br>      root_disk_volume_type    = optional(string)<br>      join_anti_affinity_group = optional(bool)<br>    })<br>  )</pre> | <pre>{<br>  "0": {},<br>  "1": {},<br>  "2": {},<br>  "3": {}<br>}</pre> | no |
 
 ## Outputs
 
