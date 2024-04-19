@@ -1,19 +1,20 @@
 locals {
-  masters = {
-    for idx in range(var.masters) :
-    "${var.cluster_name}-master-${try(var.master_names[idx], idx)}" => {
-      flavor         = try(var.master_flavors[idx], var.default_master_flavor),
-      image          = try(var.master_images[idx], var.default_master_image_name),
-      az             = var.enable_az_management ? try(var.master_azs[idx], var.azs[idx % length(var.azs)]) : null
-      root_disk_size = try(var.master_root_disk_sizes[idx], var.default_master_root_disk_size)
-      root_disk_volume_type = try(var.master_root_disk_volume_types[idx], var.root_disk_volume_type)
-      volume_name    = "${var.cluster_name}-master-volume-${try(var.master_names[idx], idx)}"
-    }
+  # NOTE: coalesce() is used to provide non-null default values from the templates
+  master_nodes = {
+    for name, values in var.masters :
+        "${var.cluster_name}-master-${name}" => {
+          image                    = coalesce(values.image, var.default_master_image_name)
+          flavor                   = coalesce(values.flavor, var.default_master_flavor)
+          az                       = var.enable_az_management ? coalesce(values.az, var.azs[index([for k, v in var.masters: k], name) % length(var.azs)]) : null
+          volume_name              = "${var.cluster_name}-master-volume-${name}"
+          root_disk_size           = coalesce(values.root_disk_size, var.default_master_root_disk_size)
+          root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.root_disk_volume_type
+        }
   }
 }
 
 resource "openstack_networking_port_v2" "master" {
-  for_each = local.masters
+  for_each = local.master_nodes
   name = each.key
 
   network_id = openstack_networking_network_v2.cluster_network.id
@@ -33,18 +34,18 @@ resource "openstack_networking_port_v2" "master" {
 }
 
 data "openstack_compute_flavor_v2" "master" {
-  for_each = local.masters
+  for_each = local.master_nodes
   name     = each.value.flavor
 }
 
 data "openstack_images_image_v2" "master" {
-  for_each = local.masters
+  for_each = local.master_nodes
   name     = each.value.image
 
 }
 
 resource "openstack_blockstorage_volume_v3" "master-volume" {
-  for_each = var.create_root_disk_on_volume == true ? local.masters : {}
+  for_each = var.create_root_disk_on_volume == true ? local.master_nodes : {}
 
   name        = each.value.volume_name
   size        = (data.openstack_compute_flavor_v2.master[each.key].disk > 0) ? data.openstack_compute_flavor_v2.master[each.key].disk : each.value.root_disk_size
@@ -73,8 +74,9 @@ resource "openstack_compute_instance_v2" "master" {
   key_pair          = var.keypair
 
   dynamic block_device {
-    # Using "for_each" for check the conditional "create_root_disk_on_volume". It's not working as a loop. "dummy" should make this just more visible.
-    for_each = var.create_root_disk_on_volume == true ? ["dummy"] : []
+    # Abusing 'for_each' as a conditional
+    # It's not working as a loop. The outer `each.key` is "passed" into the inner `for_each`
+    for_each = var.create_root_disk_on_volume == true ? [each.key] : []
       content {
         uuid                  = openstack_blockstorage_volume_v3.master-volume[each.key].id
         source_type           = "volume"

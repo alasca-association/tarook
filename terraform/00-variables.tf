@@ -66,58 +66,6 @@ variable "azs" {
   description = "If 'enable_az_management=true' defines which availability zones of your cloud to use to distribute the spawned server for better HA. Additionally the count of the array will define how many gateway server will be spawned. The naming of the elements doesn't matter if 'enable_az_management=false'. It is also used for unique naming of gateways."
 }
 
-variable "masters" {
-  type    = number
-  default = 3
-}
-
-variable "workers" {
-  type    = number
-  default = 4
-}
-
-variable "worker_flavors" {
-  type    = list(string)
-  default = []
-}
-
-variable "worker_images" {
-  type    = list(string)
-  default = []
-}
-
-variable "worker_azs" {
-  type    = list(string)
-  default = []
-}
-
-// It can be used to uniquely identify workers
-variable "worker_names" {
-  type    = list(string)
-  default = []
-}
-
-variable "master_flavors" {
-  type    = list(string)
-  default = []
-}
-
-variable "master_images" {
-  type    = list(string)
-  default = []
-}
-
-variable "master_azs" {
-  type    = list(string)
-  default = []
-}
-
-// It can be used to uniquely identify masters
-variable "master_names" {
-  type    = list(string)
-  default = []
-}
-
 variable "thanos_delete_container" {
   type    = bool
   default = false
@@ -146,38 +94,9 @@ variable "root_disk_volume_type" {
   description = "If 'create_root_disk_on_volume=true', the volume type to be used as default for all instances. If left empty, default of IaaS environment is used."
 }
 
-variable "worker_join_anti_affinity_group" {
-  type = list(bool)
-  default = []
-}
-
 variable "worker_anti_affinity_group_name" {
   type = string
   default = "cah-anti-affinity"
-}
-
-variable "master_root_disk_sizes" {
-  type = list(number)
-  default = []
-  description = "If 'create_root_disk_on_volume=true' and the master flavor does not specify a disk size, the root disk volume of this particular instance will have this size."
-}
-
-variable "master_root_disk_volume_types" {
-  type        = list(string)
-  default     = []
-  description = "If 'create_root_disk_on_volume=true', volume type for root disk of this particular control plane node. If left empty, the volume type specified in 'root_disk_volume_type' will be used."
-}
-
-variable "worker_root_disk_sizes" {
-  type = list(number)
-  default = []
-  description = "If 'create_root_disk_on_volume=true', size of the root disk of this particular worker node. If left empty, the root disk size specified in 'default_worker_root_disk_size' is used."
-}
-
-variable "worker_root_disk_volume_types" {
-  type        = list(string)
-  default     = []
-  description = "If 'create_root_disk_on_volume=true', volume types for the root disk of this particular worker node. If left empty, the volume type specified in 'root_disk_volume_type' will be used."
 }
 
 variable "gateway_root_disk_volume_size" {
@@ -252,6 +171,46 @@ variable "gitlab_state_name" {
   type = string
   default = ""
   description = "If 'gitlab_backend=true', the terraform state file will have this name."
+}
+
+variable "masters" {
+  description = "User defined list of control plane nodes to be created with specified values"
+
+  type = map(
+    object({
+      image                    = optional(string)
+      flavor                   = optional(string)
+      az                       = optional(string) # default: auto-select
+      root_disk_size           = optional(number)
+      root_disk_volume_type    = optional(string)
+    })
+  )
+  default = {  # default: create 3 master nodes
+    "0" = {}
+    "1" = {}
+    "2" = {}
+  }
+}
+
+variable "workers" {
+  description = "User defined list of worker nodes to be created with specified values"
+
+  type = map(
+    object({
+      image                    = optional(string)
+      flavor                   = optional(string)
+      az                       = optional(string) # default: auto-select
+      root_disk_size           = optional(number)
+      root_disk_volume_type    = optional(string)
+      join_anti_affinity_group = optional(bool)
+    })
+  )
+  default = {  # default: create 4 worker nodes
+    "0" = {}
+    "1" = {}
+    "2" = {}
+    "3" = {}
+  }
 }
 
 # ANCHOR_END: terraform_variables

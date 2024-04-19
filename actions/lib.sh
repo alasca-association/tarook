@@ -10,7 +10,7 @@ export KUBECONFIG="$cluster_repository/etc/admin.conf"
 
 submodule_managed_k8s_name="managed-k8s"
 
-terraform_min_version="0.14.0"
+terraform_min_version="1.3.0"
 terraform_state_dir="$cluster_repository/terraform"
 terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"
 terraform_plan="$terraform_state_dir/plan.tfplan"

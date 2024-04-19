@@ -39,28 +39,31 @@ need to adjust these values if you e.g. want to enable
 .. note::
 
    Right now there is a variable ``masters`` to configure the k8s
-   controller server count and ``workers`` for the k8s node count. However
+   controller servers and ``workers`` for the k8s worker servers. However
    there is no explicit variable for the gateway node count! This is
    implicitly defined by the number of elements in the ``azs`` array.
 
-Please not that with the introduction of ``for_each`` in our terraform
-module, you can delete individual nodes. Consider the following example:
+You can add and delete Terraform nodes simply
+by adding and removing their entries to/from the config.
+Consider the following example:
 
-.. code:: toml
+.. code:: diff
 
-   [terraform]
-   workers = 3
-   worker_names = ["0", "1", "2"]
+    [terraform]
 
-In order to delete any of the nodes, decrease the ``workers`` count and
-remove the suffix of the worker from the list. After removing, i.e.,
-“1”, your config would look like this:
+    [terraform.worker.0]
+    flavor = "M"
+    image = "Debian 12 (bookworm)"
+   -
+   -[terraform.worker.1]             # <-- gets deleted
+   -flavor = "M"
 
-.. code:: toml
-
-   [terraform]
-   workers = 2
-   worker_names = ["0", "2"]
+    [terraform.worker.2]
+    flavor = "L"
+   +
+   +[terraform.worker.mon1]          # <-- gets created
+   +flavor = "S"
+   +image = "Ubuntu 22.04 LTS x64"
 
 For an auto-generated complete list of variables, please refer to
 :doc:`Terraform docs </developer/reference/terraform-docs>`.
