@@ -64,10 +64,10 @@ resource "openstack_blockstorage_volume_v3" "master-volume" {
 }
 
 resource "openstack_compute_instance_v2" "master" {
-  for_each = openstack_networking_port_v2.master
-  name     = each.value.name
+  for_each = local.master_nodes
+  name     = each.key
 
-  availability_zone = local.masters[each.key].az
+  availability_zone = each.value.az
   config_drive      = true
   flavor_id         = data.openstack_compute_flavor_v2.master[each.key].id
   image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.master[each.key].id : null
@@ -87,7 +87,7 @@ resource "openstack_compute_instance_v2" "master" {
   }
 
   network {
-    port = each.value.id
+    port = openstack_networking_port_v2.master[each.key].id
   }
 
   lifecycle {

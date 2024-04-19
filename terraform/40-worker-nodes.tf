@@ -72,10 +72,10 @@ resource "openstack_blockstorage_volume_v3" "worker-volume" {
 }
 
 resource "openstack_compute_instance_v2" "worker" {
-  for_each = openstack_networking_port_v2.worker
-  name     = each.value.name
+  for_each = local.worker_nodes
+  name     = each.key
 
-  availability_zone = local.workers[each.key].az
+  availability_zone = each.value.az
   flavor_id         = data.openstack_compute_flavor_v2.worker[each.key].id
   image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.worker[each.key].id : null
   key_pair          = var.keypair
