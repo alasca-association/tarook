@@ -19,11 +19,15 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.todo',
     'sphinx_multiversion',
-    'sphinx_tabs.tabs'
+    'sphinx_tabs.tabs',
+    "sphinx_design",
+    'myst_parser'
 ]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '_releasenotes/*', 'README.md']
+
+myst_enable_extensions = ["colon_fence"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -36,8 +40,8 @@ html_static_path = ['_static']
 html_theme_options = {
     "sidebar_hide_name": True,
 }
-html_logo = "img/yaook-husky-small.png"
-html_favicon = 'img/Husky_blue.svg'
+html_logo = "_static/yaook-husky-small.png"
+html_favicon = '_static/Husky_blue.svg'
 html_css_files = [
     'dropup.css',
 ]
