@@ -15,10 +15,18 @@ if [ ! -d "$etc_directory" ]; then
     exit 1
   fi
 fi
+if [[ "$TF_USAGE" == "false" ]] && [[ -e inventory/02_trampoline/hosts ]]; then
+  run mv inventory/02_trampoline/hosts hosts.bak
+fi
 run rm -r "inventory"
 
 # Apply terraform (for variable output)
-run "./$actions_dir/apply-terraform.sh"
+if [[ "$TF_USAGE" == "true" ]]; then
+  run "./$actions_dir/apply-terraform.sh"
+elif [[ -e hosts.bak ]]; then
+  run mkdir -p inventory/yaook-k8s
+  run mv hosts.bak inventory/yaook-k8s/hosts
+fi
 
 # Run inventory updater
 run "./$actions_dir/update_inventory.py"
