@@ -228,7 +228,7 @@
     - vault operator unseal $(cat $CI_PROJECT_DIR/unseal.key)
     - vault login $(cat $CI_PROJECT_DIR/root.key)
     - bash ./managed-k8s/tools/vault/init.sh
-    - bash ./managed-k8s/tools/vault/mkcluster-root.sh k8s.ci.yaook.cloud
+    - bash ./managed-k8s/tools/vault/mkcluster-root.sh
     - export VAULT_TOKEN=$(cat $CI_PROJECT_DIR/root.key)
       # Insert IPSec PSK
     - vault kv put yaook/k8s.ci.yaook.cloud/kv/ipsec-eap-psk ipsec_eap_psk="$IPSEC_EAP_PSK"

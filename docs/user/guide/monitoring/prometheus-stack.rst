@@ -240,7 +240,7 @@ and then triggering the vault update script:
 
 .. code:: shell
 
-   ./managed-k8s/tools/vault/update.sh $CLUSTER_NAME
+   ./managed-k8s/tools/vault/update.sh
 
 Alternatively, you can also manually insert your configuration into vault.
 

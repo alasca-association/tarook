@@ -1,0 +1,3 @@
+Vault tools now read the cluster name from config.toml
+
+If your automation relies on any tool in `./tools/vault/`, you  need to adapt its signature. <clustername> has been removed as the first argument.

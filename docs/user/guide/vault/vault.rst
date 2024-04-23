@@ -16,19 +16,19 @@ for additional environment variables accepted by these tools.
    Vault entity (possibly a root token) to run and needs to be executed
    only once (and on policy updates).
 
--  ``tools/vault/mkcluster-root.sh CLUSTERNAME``: Prepare a new cluster
+-  ``tools/vault/mkcluster-root.sh``: Prepare a new cluster
    inside Vault, putting the root CA keys inside Vault. That means that
    control over vault implies permanent (until the Root CAs have been
    exchanged) control over the Kubernetes cluster.
 
--  ``tools/vault/import.sh CLUSTERNAME``: Prepare a new cluster inside
+-  ``tools/vault/import.sh``: Prepare a new cluster inside
    Vault by importing existing secrets from ``inventory/.etc``.
    Conceptually, this setup is identical to the setup provided by
    ``mkcluster-root.sh``. Please see
    :ref:`Migrating an existing cluster to Vault <vault.migrating-an-existing-cluster-to-vault>`
    for details.
 
--  ``tools/vault/mkcluster-intermediate.sh CLUSTERNAME``: Prepare a new
+-  ``tools/vault/mkcluster-intermediate.sh``: Prepare a new
    cluster inside Vault, with intermediate CAs only. This setup is not
    immediately usable, because the intermediate CAs first need to be
    signed with a root CA. Management of that root CA is out of scope for
@@ -36,7 +36,7 @@ for additional environment variables accepted by these tools.
    separate root CA infrastructure. The certificate sign requests are
    provided as ``*.csr`` files in the working directory.
 
--  ``tools/vault/load-signed-intermediates.sh CLUSTERNAME``: Load the
+-  ``tools/vault/load-signed-intermediates.sh``: Load the
    signed intermediate CA files into the cluster. This script should
    only be used with clusters which have been bootstrapped using
    ``mkcluster-intermediate.sh``, or equivalent. As input, this script
@@ -53,7 +53,7 @@ for additional environment variables accepted by these tools.
    cleaning up the old one. This is generally fine for dev setups, but
    it’s another reason not to run this against productive clusters.
 
--  ``tools/vault/rmcluster.sh CLUSTERNAME``: Deletes all data associated
+-  ``tools/vault/rmcluster.sh``: Deletes all data associated
    with the cluster from Vault. EXCEPTIONALLY DANGEROUS, so it always
    requires manual confirmation.
 
@@ -68,11 +68,9 @@ like this:
 .. code-block:: console
 
    $ umask 0077
-   $ managed-k8s/tools/vault/k8s-login.sh CLUSTERNAME K8S_SERVER_ADDR > admin.conf
+   $ managed-k8s/tools/vault/k8s-login.sh K8S_SERVER_ADDR > admin.conf
    $ export KUBECONFIG="$(pwd)/admin.conf"
 
-`CLUSTERNAME` must be the name of the Kubernetes cluster inside Vault (the same
-as in the config.toml, ``[vault]``, ``cluster_name`` field) and
 `K8S_SERVER_ADDR` must be the URL to the Kubernetes API (as that is,
 unfortunately, part of the same configuration file as the credentials). The
 generated ``admin.conf`` is a Kubernetes configuration file containing a
@@ -114,7 +112,7 @@ There are two choices to migrate your cluster to Vault:
 
       .. code:: console
 
-         $ managed-k8s/tools/vault/import.sh $clustername no-intermediates
+         $ managed-k8s/tools/vault/import.sh no-intermediates
 
       In addition, this mode takes care that the root CA files are actually
       usable as CAs (this is not ensured by the pre-vault LCM but somehow
@@ -135,7 +133,7 @@ There are two choices to migrate your cluster to Vault:
 
       .. code:: console
 
-         $ managed-k8s/tools/vault/import.sh $clustername with-intermediates
+         $ managed-k8s/tools/vault/import.sh with-intermediates
 
       This will print a message indicating that the CSRs have been written and
       to which files they have been written.
@@ -157,7 +155,7 @@ There are two choices to migrate your cluster to Vault:
 
       .. code:: console
 
-         $ managed-k8s/tools/vault/load-signed-intermediates.sh $clustername
+         $ managed-k8s/tools/vault/load-signed-intermediates.sh
 
       to load the signed intermediate CA certificates into Vault.
 

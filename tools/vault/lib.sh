@@ -22,6 +22,25 @@ fi
 # If we can't find the approle accessor, that's ok
 nodes_approle_accessor=$(vault read -field="$nodes_approle_name/" -format=json sys/auth | jq -r .accessor) || unset nodes_approle_accessor
 
+function get_clustername() {
+    python -c 'import toml; print (toml.load("config/config.toml").get("vault", {}).get("cluster_name", ""))'
+}
+
+function check_clustername() {
+    clustername="$1"
+    if [ -z "$clustername" ]; then
+        echo "ERROR: vault.cluster_name must be defined in config.toml"
+        exit 1
+    elif [ "$clustername" == "devcluster" ]; then
+        echo "WARNING: vault.cluster_name is still the default value 'devcluster'. You may want to change it in config.toml."
+        read -rp "Continue (y/n)" choice
+        if [ "$choice" != "y" ]; then
+            echo "Aborting."
+            exit 2
+        fi
+    fi
+}
+
 function init_cluster_secrets_engines() {
     local pki_root_ttl="$1"
     local allow_existing="${2:-true}"
