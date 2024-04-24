@@ -143,33 +143,31 @@ Create and Initialize Cluster Repository
 To deploy a yk8s cluster, you need to create a git repository which will
 serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
-1. Create an empty directory as your cluster repository:
+1. Create a fresh git repo as your cluster repository:
 
    .. code:: console
 
       $ git init my-cluster-repository
       $ cd my-cluster-repository
 
-2. Clone the ``yaook/k8s`` repository to a location **outside** of your
-   cluster repository:
+2. Add the life cycle management -- the ``yaook/k8s`` repository -- as a submodule
+   to your cluster repository:
 
    .. code:: console
 
-      $ pushd $somewhere_else
-      $ git clone https://gitlab.com/yaook/k8s.git
-      $ popd
+      $ git submodule add --branch release/vX.Y git@gitlab.com:yaook/k8s.git managed-k8s
 
 3. Setup your environment variables:
 
    1. User specific variables (if not already exists):
 
       1. Copy the template located at
-         ``$somewhere_else/k8s/templates/yaook-k8s-env.template.sh``
+         ``./managed-k8s/templates/yaook-k8s-env.template.sh``
          to ``~/.config/yaook-k8s/env``.
 
          .. code:: console
 
-            $ cp $somewhere_else/k8s/templates/yaook-k8s-env.template.sh ~/.config/yaook-k8s/env
+            $ cp ./managed-k8s/templates/yaook-k8s-env.template.sh ~/.config/yaook-k8s/env
 
       2. Make the **user specific**
          :ref:`minimal changes <environmental-variables.minimal-required-changes>`
@@ -178,12 +176,12 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
    2. Cluster specific variables:
 
       1. Copy the template located at
-         :ref:`$somewhere_else/k8s/templates/envrc.template.sh <environmental-variables.template>`
+         :ref:`./managed-k8s/templates/envrc.template.sh <environmental-variables.template>`
          to ``./.envrc``.
 
          .. code:: console
 
-            $ cp $somewhere_else/k8s/templates/envrc.template.sh ./.envrc
+            $ cp ./managed-k8s/templates/envrc.template.sh ./.envrc
 
       2. Make the **cluster specific**
          :ref:`minimal changes <environmental-variables.minimal-required-changes>`
@@ -194,7 +192,7 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
    .. code:: console
 
-      $ $somewhere_else/k8s/actions/init-cluster-repo.sh
+      $ ./managed-k8s/actions/init-cluster-repo.sh
 
    This ``init.sh`` script will:
 
