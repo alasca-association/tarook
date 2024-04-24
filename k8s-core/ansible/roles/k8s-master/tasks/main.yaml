@@ -74,25 +74,31 @@
     state: absent
     path: /etc/kubernetes/pki/{{ item }}
   loop:
-  - ca.key
   - front-proxy-ca.key
   - etcd/ca.key
 
-- name: Ensure kube-controller-manager client cert flags are unset
+- name: Ensure Kubernetes ca.key
+  become: true
+  ansible.builtin.file:
+    state: "{{ k8s_controller_manager_enable_signing_requests | ternary('file', 'absent') }}"
+    path: /etc/kubernetes/pki/ca.key
+    mode: 0400
+
+- name: Ensure kube-controller-manager client cert flags are (un)set
   become: true
   when: local_kube_apiserver_status is not failed
   block:
-  - name: Ensure cluster-signing-cert-file is unset
+  - name: Ensure cluster-signing-cert-file is (un)set
     ansible.builtin.replace:
       path: /etc/kubernetes/manifests/kube-controller-manager.yaml
       regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
-      replace: '\1'
+      replace: "{{ k8s_controller_manager_enable_signing_requests | ternary('\\1/etc/kubernetes/pki/ca.crt', '\\1') }}"
 
-  - name: Ensure --cluster-signing-key-file is unset
+  - name: Ensure --cluster-signing-key-file is (un)set
     ansible.builtin.replace:
       path: /etc/kubernetes/manifests/kube-controller-manager.yaml
       regexp: '^(\s*-\s*--cluster-signing-key-file=).*'
-      replace: '\1'
+      replace: "{{ k8s_controller_manager_enable_signing_requests | ternary('\\1/etc/kubernetes/pki/ca.key', '\\1') }}"
 
 - name: Ensure that /var/lib/etcd exists
   become: true

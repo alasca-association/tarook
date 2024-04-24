@@ -170,6 +170,10 @@ frontend_port = 8888 # •ᴗ•
 [kubernetes.controller_manager]
 #large_cluster_size_threshold = 50
 
+# Note: This currently means that the cluster CA key is copied to the control
+# plane nodes which decreases security compared to storing the CA only in the Vault
+#enable_signing_requests = false
+
 # ANCHOR_END: kubernetes_basic_cluster_configuration
 
 # ANCHOR: storage_base_configuration
