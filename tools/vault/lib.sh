@@ -1,9 +1,18 @@
 # shellcheck shell=bash disable=SC2154,SC2034
 set -euo pipefail
+
+cluster_repository="$(realpath ".")"
+config_file="$cluster_repository/config/config.toml"
+
 common_path_prefix="${YAOOK_K8S_VAULT_PATH_PREFIX:-yaook}"
 common_policy_prefix="${YAOOK_K8S_VAULT_POLICY_PREFIX:-yaook}"
 nodes_approle_name="${YAOOK_K8S_VAULT_NODES_APPROLE_NAME:-${common_path_prefix}/nodes}"
 nodes_approle_path="auth/$nodes_approle_name"
+k8s_controller_manager_enable_signing_requests="$(
+    tomlq '.kubernetes.controller_manager.enable_signing_requests
+           | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
+          "$config_file" 2>/dev/null
+)" || unset k8s_controller_manager_enable_signing_requests  # unset when unset, invalid or file missing
 
 if [ -n "${cluster:-}" ]; then
     cluster_path="$common_path_prefix/$cluster"
@@ -22,8 +31,43 @@ fi
 # If we can't find the approle accessor, that's ok
 nodes_approle_accessor=$(vault read -field="$nodes_approle_name/" -format=json sys/auth | jq -r .accessor) || unset nodes_approle_accessor
 
+function require_vault_token() {
+    if [ -z ${VAULT_TOKEN+x} ]; then
+        # shellcheck disable=SC2016
+        errorf '$VAULT_TOKEN is not set but required during this stage'
+        exit 1
+    fi
+}
+
+function vault_disruption_allowed() {
+    [ "${MANAGED_K8S_RELEASE_THE_KRAKEN:-}" = 'true' ]
+}
+
+function require_vault_disruption() {
+    if ! vault_disruption_allowed; then
+        # shellcheck disable=SC2016
+        errorf '$MANAGED_K8S_RELEASE_THE_KRAKEN is set to %q' "${MANAGED_K8S_RELEASE_THE_KRAKEN:-}" >&2
+        errorf 'aborting since disruptive operations with Vault are not allowed' >&2
+        exit 3
+    fi
+}
+
+function k8s_cluster_ca_backup_destruction {
+    [ "${k8s_controller_manager_enable_signing_requests:-false}" != "true" ] \
+        && (vault kv get -format=json -mount="$cluster_path/kv" k8s-pki/cluster-root-ca \
+            | jq '.data.data // error("unset")' &>/dev/null)
+}
+
+function require_k8s_cluster_ca_backup_destruction {
+    if k8s_cluster_ca_backup_destruction; then
+        require_vault_disruption
+        # the destruction is done by the orchestrator hence one must provide a vault token
+        require_vault_token
+    fi
+}
+
 function get_clustername() {
-    tomlq --raw-output '.vault.cluster_name // error("unset")' config/config.toml
+    tomlq --raw-output '.vault.cluster_name // error("unset")' "${config_file}"
 }
 
 function check_clustername() {
@@ -220,56 +264,101 @@ function generate_ca_issuer() {
     local issuer_name="${2:-}"
 
     if [ -n "$issuer_name" ]; then
-        vault write "$k8s_pki_path/root/generate/internal" \
-        common_name="Kubernetes Cluster Root CA $year" \
-        ou="$ou" \
-        organization="$organization" \
-        country="$country" \
-        ttl="$pki_root_ttl" \
-        key_type=ed25519 \
-        issuer_name="$issuer_name"
+        if [ "${k8s_controller_manager_enable_signing_requests:-false}" == "true" ]; then
+            vault write -format=json "$k8s_pki_path/root/generate/exported" \
+                common_name="Kubernetes Cluster Root CA $year" \
+                ou="$ou" \
+                organization="$organization" \
+                country="$country" \
+                ttl="$pki_root_ttl" \
+                key_type=ed25519 \
+                issuer_name="$issuer_name" \
+            | jq --raw-output .data.private_key \
+            | vault kv put -mount="$cluster_path/kv" k8s-pki/cluster-root-ca private_key=-
+            # ^ Backup the Kubernetes cluster CA key
+            # for rollout in the cluster to enable Kubernetes certificate signing
+        else
+            vault write -format=json "$k8s_pki_path/root/generate/internal" \
+                common_name="Kubernetes Cluster Root CA $year" \
+                ou="$ou" \
+                organization="$organization" \
+                country="$country" \
+                ttl="$pki_root_ttl" \
+                key_type=ed25519 \
+                issuer_name="$issuer_name"
+
+            # Destroy all versions of the Kubernetes cluster CA key backup
+            vault kv destroy -mount="$cluster_path/kv" \
+                -versions="0,$(
+                    vault kv metadata get -format=json -mount="$cluster_path/kv" k8s-pki/cluster-root-ca \
+                    | jq '.data.versions | keys_unsorted[] |  tonumber' | tr '\n' ','
+                )" \
+                k8s-pki/cluster-root-ca
+        fi
 
         vault write "$etcd_pki_path/root/generate/internal" \
-        common_name="Kubernetes etcd Root CA $year" \
-        ou="$ou" \
-        organization="$organization" \
-        country="$country" \
-        ttl="$pki_root_ttl" \
-        key_type=ed25519 \
-        issuer_name="$issuer_name"
+            common_name="Kubernetes etcd Root CA $year" \
+            ou="$ou" \
+            organization="$organization" \
+            country="$country" \
+            ttl="$pki_root_ttl" \
+            key_type=ed25519 \
+            issuer_name="$issuer_name"
 
         vault write "$k8s_front_proxy_pki_path/root/generate/internal" \
-        common_name="Kubernetes Front Proxy Root CA $year" \
-        ou="$ou" \
-        organization="$organization" \
-        country="$country" \
-        ttl="$pki_root_ttl" \
-        key_type=ed25519 \
-        issuer_name="$issuer_name"
+            common_name="Kubernetes Front Proxy Root CA $year" \
+            ou="$ou" \
+            organization="$organization" \
+            country="$country" \
+            ttl="$pki_root_ttl" \
+            key_type=ed25519 \
+            issuer_name="$issuer_name"
     else
-        vault write "$k8s_pki_path/root/generate/internal" \
-        common_name="Kubernetes Cluster Root CA $year" \
-        ou="$ou" \
-        organization="$organization" \
-        country="$country" \
-        ttl="$pki_root_ttl" \
-        key_type=ed25519
+        if [ "${k8s_controller_manager_enable_signing_requests:-false}" == "true" ]; then
+            vault write -format=json "$k8s_pki_path/root/generate/exported" \
+                common_name="Kubernetes Cluster Root CA $year" \
+                ou="$ou" \
+                organization="$organization" \
+                country="$country" \
+                ttl="$pki_root_ttl" \
+                key_type=ed25519 \
+            | jq --raw-output .data.private_key \
+            | vault kv put -mount="$cluster_path/kv" k8s-pki/cluster-root-ca private_key=-
+            # ^ Backup the Kubernetes cluster CA key
+            # for rollout in the cluster to enable Kubernetes certificate signing
+        else
+            vault write -format=json "$k8s_pki_path/root/generate/internal" \
+                common_name="Kubernetes Cluster Root CA $year" \
+                ou="$ou" \
+                organization="$organization" \
+                country="$country" \
+                ttl="$pki_root_ttl" \
+                key_type=ed25519
+
+            # Destroy all versions of the Kubernetes cluster CA key backup
+            vault kv destroy -mount="$cluster_path/kv" \
+                -versions="0,$(
+                    vault kv metadata get -format=json -mount="$cluster_path/kv" k8s-pki/cluster-root-ca \
+                    | jq '.data.versions | keys_unsorted[] |  tonumber' | tr '\n' ','
+                )" \
+                k8s-pki/cluster-root-ca
+        fi
 
         vault write "$etcd_pki_path/root/generate/internal" \
-        common_name="Kubernetes etcd Root CA $year" \
-        ou="$ou" \
-        organization="$organization" \
-        country="$country" \
-        ttl="$pki_root_ttl" \
-        key_type=ed25519
+            common_name="Kubernetes etcd Root CA $year" \
+            ou="$ou" \
+            organization="$organization" \
+            country="$country" \
+            ttl="$pki_root_ttl" \
+            key_type=ed25519
 
         vault write "$k8s_front_proxy_pki_path/root/generate/internal" \
-        common_name="Kubernetes Front Proxy Root CA $year" \
-        ou="$ou" \
-        organization="$organization" \
-        country="$country" \
-        ttl="$pki_root_ttl" \
-        key_type=ed25519
+            common_name="Kubernetes Front Proxy Root CA $year" \
+            ou="$ou" \
+            organization="$organization" \
+            country="$country" \
+            ttl="$pki_root_ttl" \
+            key_type=ed25519
     fi
 }
 
@@ -367,9 +456,9 @@ function import_ipsec_eap_psk() {
 }
 
 function import_thanos_config() {
-    thanos_enabled="$(tomlq '."k8s-service-layer".prometheus.use_thanos | if (.|type)=="boolean" then . else false end' config/config.toml)"
-    manage_thanos_bucket="$(tomlq '."k8s-service-layer".prometheus.manage_thanos_bucket | if (.|type)=="boolean" then . else true end' config/config.toml)"
-    thanos_config_file="$(tomlq '."k8s-service-layer".prometheus.thanos_objectstorage_config_file | if (.|type)=="string" then . else "" end' config/config.toml)"
+    thanos_enabled="$(tomlq '."k8s-service-layer".prometheus.use_thanos | if (.|type)=="boolean" then . else false end' "${config_file}")"
+    manage_thanos_bucket="$(tomlq '."k8s-service-layer".prometheus.manage_thanos_bucket | if (.|type)=="boolean" then . else true end' "${config_file}")"
+    thanos_config_file="$(tomlq '."k8s-service-layer".prometheus.thanos_objectstorage_config_file | if (.|type)=="string" then . else "" end' "${config_file}")"
 
     if ! "$thanos_enabled"; then
         echo "Thanos is disabled."

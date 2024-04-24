@@ -21,6 +21,10 @@ pki_ttl=8784h
 # 5yrs
 pki_root_ttl=43830h
 
+# Require permission when Kubernetes cluster CA backup is going to be destroyed
+# by generate_ca_issuer()
+require_k8s_cluster_ca_backup_destruction
+
 init_cluster_secrets_engines "$pki_root_ttl"
 
 generate_ca_issuer "$pki_root_ttl"

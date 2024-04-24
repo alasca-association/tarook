@@ -1,3 +1,8 @@
 The Kubernetes root CA key is not cleared from the control plane anymore
 when ``[kubernetes.controller_manager].enable_signing_requests=true`` is set in the config. (!1201)
 Due to the security implications this has to be explicitly enabled.
+
+Kubernetes root CA keys can now be backed-up in Vault's key value store
+in order to enable the LCM to restore Kubernetes' ability to respond to certificate signing requests.
+For newly generated Kubernetes cluster CA keys this is done automatically when
+``[kubernetes.controller_manager].enable_signing_requests=true`` is set.
