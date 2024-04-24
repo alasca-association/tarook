@@ -18,7 +18,9 @@ fi
 if [[ "$TF_USAGE" == "false" ]] && [[ -e inventory/02_trampoline/hosts ]]; then
   run mv inventory/02_trampoline/hosts hosts.bak
 fi
-run rm -r "inventory"
+if [ -d "inventory" ]; then
+  run rm -r "inventory"
+fi
 
 # Apply terraform (for variable output)
 if [[ "$TF_USAGE" == "true" ]]; then
