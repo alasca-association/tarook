@@ -39,6 +39,9 @@ html_static_path = ['_static']
 # -- Furo --------------------------------------------------------------------
 html_theme_options = {
     "sidebar_hide_name": True,
+    "source_repository": "https://gitlab.com/yaook/k8s",
+    "source_branch": "devel",
+    "source_directory": "docs/",
 }
 html_logo = "_static/yaook-husky-small.png"
 html_favicon = '_static/Husky_blue.svg'
