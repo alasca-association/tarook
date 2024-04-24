@@ -369,6 +369,15 @@ For all releases needing the hotfix, do:
 
    - Place your relasenote inside ``docs/_releasenotes/hotfix``.
    - Create a MR to ``release/v$Major.$Minor``. We will update the version-number in ``version`` accordingly and create the changelog using towncrier.
+
+   .. code:: console
+
+      $ git push --set-upstream origin hotfix/v$Major.$Minor/$name \
+         -o merge_request.create \
+         -o merge_request.target=release/v$Major.$Minor \
+         -o merge_request.title="Hotfix: $name" \
+         -o merge_request.label="hotfix"
+
    - Please make sure the version number is correct (it's a fix for the latest release) and the changelog looks sane before merging.
    - Merge the MR.
 
