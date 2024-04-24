@@ -1,15 +1,4 @@
 ---
-- name: Initial sanity checks
-  hosts: localhost
-  gather_facts: false
-  vars_files:
-  - vars/etc.yaml
-  roles:
-  - role: vault-migrated
-    tags:
-    - vault-migrated
-    - always
-
 - name: Connect to, prepare & bootstrap Gateway nodes
   import_playbook: "{{ ansible_k8s_core_dir }}/bootstrap.yaml"
   vars:
