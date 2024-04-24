@@ -50,7 +50,7 @@ version.
 
 .. code:: console
 
-   # Triggering a Kubernetes upgrade and skip health verification tasks
+   $ # Triggering a Kubernetes upgrade and skip health verification tasks
    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh -s 1.22.11
 
 Kubernetes Component Versioning

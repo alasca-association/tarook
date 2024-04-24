@@ -31,7 +31,7 @@ Install System Requirements
 
       .. code:: console
 
-         sudo apt install python3-poetry jq moreutils wireguard uuid-runtime kubectl openssl
+         $ sudo apt install python3-poetry jq moreutils wireguard uuid-runtime kubectl openssl
 
       Additionally, `kubectl <https://kubernetes.io/docs/tasks/tools/install-kubectl-linux>`__
       is needed.
@@ -50,10 +50,10 @@ Install System Requirements
 
       .. code:: console
 
-         # jsonnet (you may want to adjust the version)
+         $ # jsonnet (you may want to adjust the version)
          $ GO111MODULE="on" go get github.com/google/go-jsonnet/cmd/jsonnet@v0.16.0
 
-         # jsonnet-bundler (you may want to adjust the version)
+         $ # jsonnet-bundler (you may want to adjust the version)
          $ GO111MODULE="on" go get github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@v0.4.0
 
       .. raw:: html
@@ -126,13 +126,13 @@ WireGuard Key
 
 .. code:: console
 
-   # Create working directory for wireguard
+   $ # Create working directory for wireguard
    $ mkdir ~/.wireguard/
 
-   # Create wireguard key
+   $ # Create wireguard key
    $ (umask 0077 && wg genkey > ~/.wireguard/wg.key)
 
-   # Generate the public key
+   $ # Generate the public key
    $ wg pubkey < ~/.wireguard/wg.key
 
 .. _initialization.create-and-initialize-cluster-repository:
@@ -285,5 +285,5 @@ follows, before uploading the public part to OpenStack:
 
 .. code:: console
 
-   # Generating an ed25519 SSH key
+   $ # Generating an ed25519 SSH key
    $ ssh-keygen -t ed25519`

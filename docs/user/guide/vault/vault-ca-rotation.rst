@@ -61,7 +61,7 @@ Executing a CA rotation
 Please substitute your ``<clustername>`` in the following.
 To verify your configured clustername you can use the following:
 
-.. code:: bash
+.. code:: console
 
   $ cat config/config.toml | python3 -c 'import toml, sys; toml.dump(toml.load(sys.stdin).get("vault"), sys.stdout)'
   cluster_name = "devcluster"
@@ -71,9 +71,9 @@ Phase 1
 
 1. Start with single issuer which is currently the default
 
-   .. code:: bash
+   .. code:: console
 
-    # Verify currently configured issuers
+    $ # Verify currently configured issuers
     $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
     Keys                                    is_default    issuer_name
     ----                                    ----------    -----------
@@ -89,11 +89,11 @@ Phase 1
 
       .. tab:: Without intermediates
 
-        .. code:: bash
+        .. code:: console
 
           $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh prepare
 
-          # Verify
+          $ # Verify
           $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
           $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
           $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
@@ -102,7 +102,7 @@ Phase 1
 
         1. Generate CSRs
 
-          .. code:: bash
+          .. code:: console
 
             $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh prepare
 
@@ -110,30 +110,30 @@ Phase 1
 
         3. Import the signed certificates as new issuer "next"
 
-          .. code:: bash
+          .. code:: console
 
             $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh load-signed-intermediates
 
-            # Verify
+            $ # Verify
             $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
             $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
             $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
 
 3. If you've created your cluster before 2024, you must additionally update your vault policies
 
-  .. note::
+   .. note::
 
-    You must have sourced a root token to update vault policies.
+     You must have sourced a root token to update vault policies.
 
-  .. code:: bash
+   .. code:: console
 
-    $ ./managed-k8s/tools/vault/init.sh
+     $ ./managed-k8s/tools/vault/init.sh
 
 
 4. Run the rotation action to roll out both CAs in the cluster and create kubeconfigs
    issued by the "next" CA but trusting both CAs.
 
-   .. code:: bash
+   .. code:: console
 
      $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-ca.sh -n
 
@@ -143,7 +143,7 @@ Phase 1
 
 7. Run the smoke tests
 
-   .. code:: bash
+   .. code:: console
 
      $ ./managed-k8s/actions/test.sh
 
@@ -162,7 +162,7 @@ After you spread the kubeconfigs, do the following:
 
       .. tab:: Without intermediates
 
-        .. code::
+        .. code:: console
 
           $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh apply
 
@@ -178,7 +178,7 @@ After you spread the kubeconfigs, do the following:
 
       .. tab:: With intermediates
 
-        .. code::
+        .. code:: console
 
           $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh apply
 
@@ -195,9 +195,9 @@ After you spread the kubeconfigs, do the following:
 2. Complete the rotation by removing the old CA from accepted bundles
    and renewing certificates for all components
 
-  .. code:: bash
+   .. code:: console
 
-    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-ca.sh -c
+     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-ca.sh -c
 
 3. Verify workload is able to come back up
 
@@ -205,6 +205,6 @@ After you spread the kubeconfigs, do the following:
 
 5. Run the smoke tests
 
-   .. code:: bash
+   .. code:: console
 
      $ ./managed-k8s/actions/test.sh

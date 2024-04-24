@@ -21,7 +21,8 @@ extensions = [
     'sphinx_multiversion',
     'sphinx_tabs.tabs',
     "sphinx_design",
-    'myst_parser'
+    'myst_parser',
+    'sphinx_copybutton'
 ]
 
 templates_path = ['_templates']
@@ -31,7 +32,6 @@ myst_enable_extensions = ["colon_fence"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
 # html_theme = 'sphinx_rtd_theme'
 html_theme = 'furo'
 html_static_path = ['_static']
@@ -46,6 +46,10 @@ html_css_files = [
     'dropup.css',
 ]
 
+# -- copybutton --------------------------------------------------------------
+# don't copy console prompts
+copybutton_exclude = '.linenos, .gp'
+
 # -- Todo --------------------------------------------------------------------
 # display todos
 todo_include_todos = True
@@ -55,7 +59,7 @@ todo_include_todos = True
 
 # -- Multiversion ------------------------------------------------------------
 smv_branch_whitelist = r'(devel|release\/v\d+\.\d+)$'
-# None leads to warnings, so we use an impossible match
+# None leads to warnings, so we use an impossible match instead
 smv_tag_whitelist = r'matchnothing^'
 smv_remote_whitelist = r'^origin$'
 smv_released_pattern = r'^.*release\/v\d+\.\d+.*$'

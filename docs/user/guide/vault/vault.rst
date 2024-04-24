@@ -65,7 +65,7 @@ possible to indirectly use Vault as identity provider for Kubernetes. An
 example script is provided in ``tools/vault/k8s-login.sh`` and it can be used
 like this:
 
-.. code-block:: console
+.. code:: console
 
    $ umask 0077
    $ managed-k8s/tools/vault/k8s-login.sh K8S_SERVER_ADDR > admin.conf
@@ -294,11 +294,11 @@ Procedure
 
       3. Configure access to the *target Vault*:
 
-         .. code:: shell
+         .. code:: console
 
-            export VAULT_ADDR=https://$nodeip:32048
-            export VAULT_CACERT="$(pwd)/vault-ca.crt"
-            unset VAULT_TOKEN
+            $ export VAULT_ADDR=https://$nodeip:32048
+            $ export VAULT_CACERT="$(pwd)/vault-ca.crt"
+            $ unset VAULT_TOKEN
 
          Verify connectivity using: ``vault status``.
 
@@ -327,7 +327,7 @@ Procedure
 
          .. tip::
 
-            Verify that you’re talking to the *target Vault* by checking
+            Verify that you're talking to the *target Vault* by checking
             the *Active Since* timestamp.
 
       4. Obtain a root token for the *target Vault* instance. As you have
@@ -346,7 +346,7 @@ Procedure
 
       7.
          .. danger::
-            THIS WILL IRREVERSIBLY DELETE THE DATA IN THE *target
+            **THIS WILL IRREVERSIBLY DELETE THE DATA IN THE** *target
             Vault*. Double-check you are talking to the correct vault! Take a
             snapshot or whatever!
 
