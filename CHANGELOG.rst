@@ -19,6 +19,19 @@ earlier changes.
 
 .. towncrier release notes start
 
+v3.0.3 (2024-04-24)
+-------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- Change etcd-backup to use the new Service and ServiceMonitor manifests supplied by the Helm chart.
+
+  The old manifests that were included in the yk8s repo in the past will be overwritten
+  (``etcd-backup`` ServiceMonitor) and removed (``etcd-backup-monitoring`` Service) in
+  existing installations. (`!x <https://gitlab.com/yaook/k8s/-/merge_requests/x>`_)
+
+
 v3.0.2 (2024-04-09)
 -------------------
 
