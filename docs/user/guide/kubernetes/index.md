@@ -8,6 +8,7 @@ hidden: true
 
 upgrading-kubernetes
 increase-cluster-cidr
+restore-certificate-signing-ability
 ```
 
 ::::{grid} 2
@@ -17,6 +18,13 @@ increase-cluster-cidr
 :::
 :::{grid-item-card} Upgrading Kubernetes
 :link: /user/guide/kubernetes/upgrading-kubernetes
+:link-type: doc
+:::
+::::
+
+::::{grid} 2
+:::{grid-item-card} Restoring Kubernetes' certificate signing ability
+:link: /user/guide/kubernetes/restore-certificate-signing-ability
 :link-type: doc
 :::
 ::::

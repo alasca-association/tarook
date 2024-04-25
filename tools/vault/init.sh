@@ -31,6 +31,10 @@ function write_policy() {
 
 define k8s_control_plane_policies_current <<EOF
 
+path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/k8s-pki/cluster-root-ca" {
+    capabilities = ["read", "list"]
+}
+
 path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/k8s/join-key" {
     capabilities = ["create", "update"]
 }
