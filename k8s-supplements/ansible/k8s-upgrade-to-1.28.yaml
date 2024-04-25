@@ -8,7 +8,8 @@
   import_playbook: "{{ ansible_k8s_core_dir }}/upgrade-k8s.yaml"
 
 - name: Overwrite "k8s_version"
-  hosts: orchestrator
+  hosts: all
+  gather_facts: false
   tasks:
     - name: Overwrite k8s_version with next_k8s_version
       ansible.builtin.set_fact:
