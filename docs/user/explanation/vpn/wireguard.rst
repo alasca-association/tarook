@@ -102,7 +102,7 @@ Legacy Configuration
 
    .. code::
 
-      bash managed-k8s/tools/vault/init.sh
+      $ bash managed-k8s/tools/vault/init.sh
 
 With the switch from one fixed Wireguard endpoint to the option to have multiple
 Wireguard endpoints, the structure of the Wireguard config in ``config.toml`` has

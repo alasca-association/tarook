@@ -156,7 +156,7 @@ A silly example:
 
    .. code:: console
 
-      $ k exec -ti -n monitoring alertmanager-prometheus-stack-kube-prom-alertmanager-0 -- amtool --alertmanager.url=http://127.0.0.1:9093 config
+      $ kubectl exec -ti -n monitoring alertmanager-prometheus-stack-kube-prom-alertmanager-0 -- amtool --alertmanager.url=http://127.0.0.1:9093 config
 
 .. note::
 
@@ -238,9 +238,9 @@ in your ``config/config.toml`` under
 ``k8s-service-layer.prometheus.thanos_objectstorage_config_file``)
 and then triggering the vault update script:
 
-.. code:: shell
+.. code:: console
 
-   ./managed-k8s/tools/vault/update.sh
+   $ ./managed-k8s/tools/vault/update.sh
 
 Alternatively, you can also manually insert your configuration into vault.
 

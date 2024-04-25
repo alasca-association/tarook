@@ -236,7 +236,7 @@ is healthy. These verification checks can be skipped by passing ``-s``.
 
 .. code:: console
 
-   # Trigger system updates of nodes
+   $ # Trigger system updates of nodes
    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/update-frontend-nodes.sh [-s]
 
 .. _actions-references.update-kubernetes-nodessh:
@@ -256,7 +256,7 @@ is healthy. These verification checks can be skipped by passing ``-s``.
 
 .. code:: console
 
-   # Trigger system updates of nodes
+   $ # Trigger system updates of nodes
    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/update-kubernetes-nodes.sh [-s]
 
 .. _actions-references.upgradesh:

@@ -67,12 +67,12 @@ Upgrade to rook_v2 (Helm-based installation)
       As the upgrade is disruptive (at least for a short amount of time) >
       disruption needs to be enabled.
 
-   .. code:: shell
+   .. code:: console
 
-      # Trigger k8s-supplements
-      MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
-      # Trigger only k8s-rook
-      AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
+      $ # Trigger k8s-supplements
+      $ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
+      $ # Trigger only k8s-rook
+      $ AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
 
 
 Steps to perform an upgrade
@@ -88,15 +88,15 @@ Steps to perform an upgrade
    configuration file. To be sure, you can check the actual deployed
    version with the following commands:
 
-   .. code:: shell
+   .. code:: console
 
-      # Determine the actual rook-ceph-operator Pod name
-      POD_NAME=$(kubectl -n rook-ceph get pod \
-      -o custom-columns=name:.metadata.name --no-headers \
-      | grep rook-ceph-operator)
-      # Get the configured rook version
+      $ # Determine the actual rook-ceph-operator Pod name
+      $ POD_NAME=$(kubectl -n rook-ceph get pod \
+        -o custom-columns=name:.metadata.name --no-headers \
+        | grep rook-ceph-operator)
+      $ # Get the configured rook version
       $ kubectl -n rook-ceph get pod ${POD_NAME} \
-      -o jsonpath='{.spec.containers[0].image}'
+        -o jsonpath='{.spec.containers[0].image}'
 
 3. (Optional, but informative)
 
@@ -105,7 +105,7 @@ Steps to perform an upgrade
    .. code:: console
 
       $ kubectl -n rook-ceph get CephCluster rook-ceph \
-      -o jsonpath='{.spec.cephVersion.image}'
+        -o jsonpath='{.spec.cephVersion.image}'
 
 4. Depending on the currently deployed rook version, determine the
    *next* (supported) minor release.The managed-k8s cluster
@@ -135,12 +135,12 @@ Steps to perform an upgrade
       As the upgrade is disruptive (at least for a short amount of time) >
       disruption needs to be enabled.
 
-   .. code:: shell
+   .. code:: console
 
-      # Trigger k8s-supplements
-      MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
-      # Trigger only k8s-rook
-      AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
+      $ # Trigger k8s-supplements
+      $ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
+      $ # Trigger only k8s-rook
+      $ AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
 
 7. Get yourself your favorite (non-alcoholic) drink and watch with
    fascinating enthusiasm how your rook-based ceph cluster gets
@@ -167,10 +167,10 @@ Updating rook to a new patch version is fairly easy and fully automated
 by rook itself. You can simply patch the image version of the
 ``rook-ceph-operator``.
 
-.. code:: shell
+.. code:: console
 
-   # Example for the update of rook
-   # to a new (fictional) patch version of v1.7.*
+   $ # Example for the update of rook
+   $ # to a new (fictional) patch version of v1.7.*
    $ kubectl -n rook-ceph set image deploy/rook-ceph-operator rook-ceph-operator=rook/ceph:v1.7.42
 
 Updating rook to a new minor release usually requires additional steps.
@@ -186,10 +186,10 @@ the operator will perform the update without the need of further
 intervention Just ensure that the ceph version really is supported by
 the currently deployed rook version.
 
-.. code:: shell
+.. code:: console
 
-   # Example for the update of ceph to
-   # a new (fictional) release v17.2.42
+   $ # Example for the update of ceph to
+   $ # a new (fictional) release v17.2.42
    $ kubectl -n rook-ceph patch CephCluster rook-ceph --type=merge -p "{\"spec\": {\"cephVersion\": {\"image\": \"ceph/ceph:v17.2.42\"}}}"
 
 Adding/Implementing support for a new rook/ceph release to managed-k8s
