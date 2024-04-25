@@ -12,10 +12,8 @@ pages:
     paths:
       - public/
   rules:
-    # run only on devel and on release-branches
+    # run only on devel branch
     - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
-      when: on_success
-    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
       when: on_success
     - when: never
   tags:
