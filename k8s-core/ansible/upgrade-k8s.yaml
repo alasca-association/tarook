@@ -4,16 +4,6 @@
   vars:
     target_hosts: k8s_nodes
 
-- name: Run pre-flight checks on all nodes
-  hosts: k8s_nodes
-  gather_facts: true
-  vars_files:
-    - vars/retries.yaml
-  roles:
-    - kubernetes-upgrade-info
-  tags:
-    - kubernetes-upgrade-preflight-checks
-
 - name: Renew certificates (CP)
   hosts: masters
   gather_facts: true
