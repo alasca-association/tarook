@@ -35,7 +35,7 @@
 
 - name: Upgrade the first master node
   hosts: masters[0]
-  gather_facts: false
+  gather_facts: true
   any_errors_fatal: true
   vars_files:
     - vars/disruption.yaml
@@ -63,7 +63,7 @@
 
 - name: Upgrade the residual master nodes
   hosts: masters[1:]
-  gather_facts: false
+  gather_facts: true
   serial: 1
   any_errors_fatal: true
   vars_files:
@@ -91,7 +91,7 @@
 
 - name: Upgrade kubelet on master nodes
   hosts: masters
-  gather_facts: false
+  gather_facts: true
   any_errors_fatal: true
   tags:
     - kubelet-masters
@@ -108,7 +108,7 @@
 
 - name: Upgrade the worker nodes
   hosts: workers
-  gather_facts: false
+  gather_facts: true
   any_errors_fatal: true
   vars_files:
     - vars/disruption.yaml
