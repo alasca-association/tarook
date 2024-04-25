@@ -1,6 +1,6 @@
 ---
 - name: Install Nvidia Device Plugin
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   block:
   - name: "{{ k8s_nvidia_device_plugin_install | ternary('Create', 'Delete') }} namespace"

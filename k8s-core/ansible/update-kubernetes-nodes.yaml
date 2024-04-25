@@ -25,7 +25,7 @@
   tags: update-kubernetes-nodes
   roles:
   - role: cluster-health-verification
-    delegate_to: localhost
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     when:
     - not (k8s_skip_upgrade_checks | bool)
     - _allow_disruption

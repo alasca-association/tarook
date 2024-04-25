@@ -1,9 +1,6 @@
 ---
 - name: Uncordon the worker node
-  become: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  delegate_to: "{{ (groups['masters'] | sort)[0] }}"
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   retries: 5
   delay: 10
   when: _allow_disruption

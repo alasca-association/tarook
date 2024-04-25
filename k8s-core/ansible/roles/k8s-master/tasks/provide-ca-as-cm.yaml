@@ -6,11 +6,10 @@
     include_tasks: get-certificate-authority-data.yaml
 
   - name: Provide CA certificates as ConfigMap
-    become: true
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     environment:
       ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
       ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
-      KUBECONFIG: /etc/kubernetes/admin.conf
     kubernetes.core.k8s:
       apply: true
       validate:

@@ -1,10 +1,7 @@
 ---
 - name: Create a Test-Pod on each k8s-node and check that each Pod can ping each other Pod
-  delegate_to: "{{ groups['masters'] | first }}"
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
-  become: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: Create Namespace for calico Pod-to-Pod Connectivity-Check
     kubernetes.core.k8s:

@@ -1,6 +1,6 @@
 ---
 - name: Make sure 'etc_dir' exists
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   become: false
   run_once: true
   ansible.builtin.file:
@@ -11,7 +11,7 @@
 # TODO: do not use shell but proper ansible
 # TODO: ssh-keygen -F might be preferable in case the entry is hashed
 - name: Ensure host is in known_hosts file
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   become: false
   ansible.builtin.shell: |
     if ! grep -q '^{{ ansible_host }}' {{ ssh_known_hosts_file }}; then

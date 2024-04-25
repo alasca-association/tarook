@@ -1,10 +1,9 @@
 ---
 - name: Restart everything
-  hosts: localhost
+  hosts: orchestrator
   gather_facts: false
   tasks:
   - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻
-    delegate_to: localhost
     run_once: true
     block:
     - name: Gather all namespaces

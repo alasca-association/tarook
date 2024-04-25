@@ -1,8 +1,5 @@
 ---
 - name: execute test
-  become: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: create test namespace
     kubernetes.core.k8s:
@@ -58,8 +55,6 @@
     retries: 60
 
   - name: require service to be reachable from this machine and respond to HTTP
-    delegate_to: localhost
-    become: false
     ansible.builtin.uri:
       url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:{{ check_loadbalancer_service_port }}"
       status_code: 200

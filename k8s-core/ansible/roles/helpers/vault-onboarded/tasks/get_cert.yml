@@ -52,7 +52,7 @@
       not cert_existence.stat.exists or
       cert_info.valid_at.point_1 or
       not cert_info.valid_at.point_2
-    delegate_to: localhost
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     community.hashi_vault.vault_write:
       path: "{{ get_cert_vault_path }}"
       data: "{{ get_cert_vault_data }}"

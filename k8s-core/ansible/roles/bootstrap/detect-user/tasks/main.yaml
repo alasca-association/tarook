@@ -1,6 +1,6 @@
 ---
 - name: wait for ssh to become available
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   become: false
   ansible.builtin.wait_for:
     host: "{{ ansible_host | default(inventory_hostname) }}"
@@ -13,7 +13,7 @@
   - detect-user
 
 - name: test logins  # noqa risky-shell-pipe
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   become: false
   # this is "slightly" ugly, but should take into account many possible ways
   # to tweak how ansible does things

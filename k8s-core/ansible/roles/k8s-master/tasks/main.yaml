@@ -30,7 +30,7 @@
   ignore_errors: true
 
 - name: Make sure 'etc_dir' exists
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   become: false
   ansible.builtin.file:
     path: "{{ etc_dir }}"

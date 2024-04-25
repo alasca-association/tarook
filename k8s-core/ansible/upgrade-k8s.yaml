@@ -56,7 +56,7 @@
     - kubeadm-first-master
   roles:
     - role: cluster-health-verification
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       when: not (k8s_skip_upgrade_checks | bool) and not (k8s_upgrade_done | default(False))
     - role: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"
@@ -84,7 +84,7 @@
     - kubeadm-other-masters
   roles:
     - role: cluster-health-verification
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       when: not (k8s_skip_upgrade_checks | bool) and not (k8s_upgrade_done | default(False))
     - role: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"
@@ -129,7 +129,7 @@
   serial: 1
   roles:
     - role: cluster-health-verification
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       when: not (k8s_skip_upgrade_checks | bool) and not (k8s_upgrade_done | default(False))
     - role: kubeadm-drain-node
       when: "not (k8s_upgrade_done | default(False))"

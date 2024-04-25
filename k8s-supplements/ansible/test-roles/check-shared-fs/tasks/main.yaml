@@ -4,10 +4,6 @@
     msg: "This test is using the {{ fs_storage_class }} storageClass"
 
 - name: Run the test
-  become: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-
   block:
   - name: create namespace
     kubernetes.core.k8s:

@@ -88,14 +88,14 @@
 
   # TODO: I'm caching those to facilitate development. We want to rotate these keys and token immediately after the cluster was spawned.
   - name: 'SENSITIVE: Write UNSEAL KEYS into cluster repo (./etc/vault_unseal.key)'
-    delegate_to: localhost
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     ansible.builtin.copy:
       content: "{{ (vault_init.stdout | from_json).unseal_keys_b64 }}"
       dest: "{{ etc_dir }}/vault_unseal.key"
       mode: u=rw,og-rwx
 
   - name: 'SENSITIVE: Write ROOT TOKEN into cluster repo (./etc/vault_root_token)'
-    delegate_to: localhost
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     ansible.builtin.copy:
       content: "{{ (vault_init.stdout | from_json).root_token }}"
       dest: "{{ etc_dir }}/vault_root_token"

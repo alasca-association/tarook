@@ -1,7 +1,7 @@
 ---
 - name: Check OpenStack credentials
   when: ((on_openstack | default(False)) | bool) and ((check_openstack_credentials | default(True)) | bool)
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   become: false
   block:

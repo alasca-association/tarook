@@ -5,8 +5,7 @@
     target_hosts: masters:frontend
 
 - name: Install ch-k8s-lbaas
-  hosts: masters
-  become: true
+  hosts: orchestrator
   gather_facts: false
   vars_files:
   - vars/disruption.yaml

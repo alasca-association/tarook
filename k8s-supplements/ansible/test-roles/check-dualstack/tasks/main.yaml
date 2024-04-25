@@ -10,9 +10,7 @@
 # --> is checked in "check-loadbalancer-service"
 ---
 - name: Get k8s node information
-  delegate_to: "{{ groups['masters'] | first }}"
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   kubernetes.core.k8s_info:
     kind: Node
     name: "{{ inventory_hostname }}"

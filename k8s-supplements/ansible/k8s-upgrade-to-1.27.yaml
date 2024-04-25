@@ -32,10 +32,10 @@
 
 - name: Final upgrade note
   gather_facts: false
-  hosts: masters[0]
+  hosts: orchestrator
+  run_once: true
   tasks:
     - name: Final upgrade note
-      delegate_to: localhost
       ansible.builtin.debug:
         msg: >
           Congratulations!

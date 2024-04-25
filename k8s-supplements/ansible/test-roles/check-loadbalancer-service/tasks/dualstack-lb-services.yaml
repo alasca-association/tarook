@@ -26,8 +26,6 @@
     retries: 60
 
   - name: require service to be reachable from this machine and respond to HTTP
-    delegate_to: localhost
-    become: false
     ansible.builtin.uri:
       url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
       status_code: 200
@@ -78,7 +76,6 @@
     retries: 60
 
   - name: require service to be reachable from this machine and respond to HTTP
-    delegate_to: localhost
     become: false
     ansible.builtin.uri:
       url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
