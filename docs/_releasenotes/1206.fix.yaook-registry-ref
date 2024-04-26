@@ -1,0 +1,4 @@
+Some images got moved to the yaook registry, so we updated the image path.
+
+For registry.yaook.cloud/yaook/backup-shifter:1.0.166 a newer tag needs to be
+used, as the old one is not available at new registry.
