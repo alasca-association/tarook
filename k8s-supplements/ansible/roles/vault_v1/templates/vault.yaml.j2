@@ -69,7 +69,7 @@ server:
   extraContainers:
 {% if yaook_vault_ingress %}
   - name: service-reload-external
-    image: registry.gitlab.com/yaook/images/service-reload/service-reload:devel
+    image: registry.yaook.cloud/yaook/service-reload:devel
     volumeMounts:
     - name: userconfig-vault-cert-external
       mountPath: data
@@ -82,7 +82,7 @@ server:
     - /data/
 {% endif %}
   - name: service-reload-internal
-    image: registry.gitlab.com/yaook/images/service-reload/service-reload:devel
+    image: registry.yaook.cloud/yaook/service-reload:devel
     volumeMounts:
     - name: userconfig-vault-cert-internal
       mountPath: /data

@@ -57,7 +57,7 @@ spec:
           value: "https://vault-active.{{ yaook_vault_namespace }}.svc.cluster.local:8200"
         - name: VAULT_CAPATH
           value: /vault/ca.crt
-        image: registry.gitlab.com/yaook/images/backup-creator/backup-creator:devel
+        image: registry.yaook.cloud/yaook/backup-creator:devel
         imagePullPolicy: IfNotPresent
         name: backup-creator
         volumeMounts:
@@ -96,7 +96,7 @@ spec:
           value: path
         - name: YAOOK_BACKUP_SHIFTER_METRICS_PORT
           value: "19100"
-        image: registry.gitlab.com/yaook/images/backup-shifter/backup-shifter:1.0.108
+        image: registry.yaook.cloud/yaook/backup-shifter:1.0.166
         imagePullPolicy: IfNotPresent
         name: backup-shifter
         resources: {}
