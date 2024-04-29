@@ -12,6 +12,16 @@
   tags:
   - detect-user
 
+- name: Ensure etc_dir exists
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  ansible.builtin.file:
+    path: "{{ etc_dir }}"
+    state: directory
+    mode: '0755'
+  check_mode: false
+  tags:
+  - detect-user
+
 - name: test logins  # noqa risky-shell-pipe
   delegate_to: "{{ groups['orchestrator'] | first }}"
   become: false
