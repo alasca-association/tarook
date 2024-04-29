@@ -1,10 +1,11 @@
 # shellcheck shell=bash disable=SC2154,SC2034
 
-# Set kubeconfig
 cluster_repository="$(realpath ".")"
 code_repository="$(realpath "$actions_dir/../")"
 etc_directory="$(realpath "etc")"
+config_file="$cluster_repository/config/config.toml"
 
+# Set kubeconfig
 export KUBECONFIG="$cluster_repository/etc/admin.conf"
 
 submodule_managed_k8s_name="managed-k8s"
@@ -13,6 +14,12 @@ terraform_min_version="0.14.0"
 terraform_state_dir="$cluster_repository/terraform"
 terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"
 terraform_plan="$terraform_state_dir/plan.tfplan"
+terraform_disruption_setting="terraform.prevent_disruption"
+terraform_prevent_disruption="$(
+    tomlq ".$terraform_disruption_setting"'
+           | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
+          "$config_file" 2>/dev/null
+)" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
 ansible_directory="$code_repository/ansible"
 
 ansible_inventory_base="$cluster_repository/inventory/yaook-k8s/"
@@ -63,15 +70,38 @@ function color_enabled() {
     [ "$use_color" = 'true' ]
 }
 
-function disruption_allowed() {
+function ansible_disruption_allowed() {
     [ "${MANAGED_K8S_RELEASE_THE_KRAKEN:-}" = 'true' ]
 }
 
-function require_disruption() {
-    if ! disruption_allowed; then
+function harbour_disruption_allowed() {
+    [ "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" = 'true' ] \
+ && [ "${TF_USAGE:-true}+${terraform_prevent_disruption:-true}" != 'true+true' ]
+    # when Terraform is used also factor in its config
+}
+
+function require_ansible_disruption() {
+    if ! ansible_disruption_allowed; then
         # shellcheck disable=SC2016
         errorf '$MANAGED_K8S_RELEASE_THE_KRAKEN is set to %q' "${MANAGED_K8S_RELEASE_THE_KRAKEN:-}" >&2
-        errorf 'aborting since disruptive operations are not allowed' >&2
+        errorf 'aborting since disruptive operations with Ansible are not allowed' >&2
+        exit 3
+    fi
+}
+
+function require_harbour_disruption() {
+    if ! harbour_disruption_allowed; then
+        # shellcheck disable=SC2016
+        errorf '$MANAGED_K8S_DISRUPT_THE_HARBOUR is set to %q' "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" >&2
+        if [ "${TF_USAGE:-true}" == 'true' ]; then
+            if [ -z ${terraform_prevent_disruption+x} ]; then
+                errorf "and ${terraform_disruption_setting} in ${config_file}"' is unset or invalid' >&2
+            else
+                errorf "and ${terraform_disruption_setting} in ${config_file}"' is set to %q' \
+                       "${terraform_prevent_disruption}" >&2
+            fi
+        fi
+        errorf 'aborting since disruptive operations on the harbour infra are not allowed' >&2
         exit 3
     fi
 }
@@ -150,7 +180,7 @@ function validate_wireguard() {
 function ansible_playbook() {
     ansible_flags="${AFLAGS:---diff -f42}"
 
-    if disruption_allowed; then
+    if ansible_disruption_allowed; then
         warningf 'allowing ansible to perform disruptive actions' >&2
         # shellcheck disable=SC2016
         warningf 'approval was given by setting $MANAGED_K8S_RELEASE_THE_KRAKEN' >&2

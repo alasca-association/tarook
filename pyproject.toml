@@ -22,6 +22,7 @@ kubernetes-validate = "^1.26.0"
 hvac = "^2.0.0"
 boto3 = "^1.26.155"
 pre-commit = "^3.3.3"
+yq = "^3.4.1"
 
 [tool.poetry.group.ci]
 optional = true

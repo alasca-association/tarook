@@ -1,0 +1,15 @@
+Added the `MANAGED_K8S_DISRUPT_THE_HARBOUR` environment variable. (!1176)
+
+Disruption of harbour infrastructure is now excluded from `MANAGED_K8S_RELEASE_THE_KRAKEN`.
+To allow it nonetheless `MANAGED_K8S_DISRUPT_THE_HARBOUR` needs to be set instead.
+(See documentation on environment variables)
+
+`[terraform].prevent_disruption` has been added in the config
+to allow the environment variable to be overridden
+when Terraform is used (`TF_USAGE=true`).
+It is set to `true` by default.
+
+Ultimately this prevents unintended destruction of the harbour infrastructure
+and hence the whole yk8s deployment
+when `MANAGED_K8S_RELEASE_THE_KRAKEN` must be used,
+e.g. during Kubernetes upgrades.

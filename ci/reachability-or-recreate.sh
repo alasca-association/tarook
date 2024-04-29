@@ -45,7 +45,12 @@ if ! check_reachable; then
     echo 'But don'"'"'t worry! This is a known issue, and I'"'"'m going to'
     echo 'work around it for you.'
 
-    MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
+    _terraform_prevent_disruption="$(tomlq '.terraform.prevent_disruption' config/config.toml)"
+
+    tomlq --in-place --toml-output '.terraform.prevent_disruption = false' config/config.toml
+    MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_DISRUPT_THE_HARBOUR=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
+
+    tomlq --in-place --toml-output '.terraform.prevent_disruption = '"$_terraform_prevent_disruption" config/config.toml
 
     echo 'So now that I destroyed EVERYTHING, I'"'"'m going to give OpenStack'
     echo 'a bit of time to come to terms with things. Ten minutes, to be exact.'

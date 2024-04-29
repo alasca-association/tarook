@@ -73,7 +73,7 @@ by triggering the :ref:`destroy.sh <actions-references.destroysh>` script.
 .. code:: shell
 
    $ # Destroy the yk8s cluster and delete all OpenStack resources
-   $ MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
+   $ MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_DISRUPT_THE_HARBOUR=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
 
 Troubleshooting
 ---------------

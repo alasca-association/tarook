@@ -96,6 +96,20 @@ docs = ["mkdocs-ansible (>=0.2.0)", "pipdeptree (>=2.7.1)"]
 test = ["black", "coverage-enable-subprocess", "coverage[toml] (>=6.4.4)", "jmespath", "license-expression (>=30.3.0)", "mypy", "netaddr", "psutil", "pylint", "pytest (>=7.2.2)", "pytest-mock", "pytest-plus (>=0.6)", "pytest-xdist (>=2.1.0)", "ruamel-yaml-clib", "ruamel.yaml (>=0.17.31)", "types-jsonschema", "types-pyyaml"]
 
 [[package]]
+name = "argcomplete"
+version = "3.3.0"
+description = "Bash tab completion for argparse"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "argcomplete-3.3.0-py3-none-any.whl", hash = "sha256:c168c3723482c031df3c207d4ba8fa702717ccb9fc0bfe4117166c1f537b4a54"},
+    {file = "argcomplete-3.3.0.tar.gz", hash = "sha256:fd03ff4a5b9e6580569d34b273f741e85cd9e072f3feeeee3eba4891c70eda62"},
+]
+
+[package.extras]
+test = ["coverage", "mypy", "pexpect", "ruff", "wheel"]
+
+[[package]]
 name = "attrs"
 version = "23.2.0"
 description = "Classes Without Boilerplate"
@@ -2671,6 +2685,17 @@ files = [
 ]
 
 [[package]]
+name = "tomlkit"
+version = "0.12.4"
+description = "Style preserving TOML library"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "tomlkit-0.12.4-py3-none-any.whl", hash = "sha256:5cd82d48a3dd89dee1f9d64420aa20ae65cfbd00668d6f094d7578a78efbb77b"},
+    {file = "tomlkit-0.12.4.tar.gz", hash = "sha256:7ca1cfc12232806517a8515047ba66a19369e71edf2439d0f5824f91032b6cc3"},
+]
+
+[[package]]
 name = "towncrier"
 version = "23.11.0"
 description = "Building newsfiles for your project."
@@ -2884,6 +2909,17 @@ files = [
 ]
 
 [[package]]
+name = "xmltodict"
+version = "0.13.0"
+description = "Makes working with XML feel like you are working with JSON"
+optional = false
+python-versions = ">=3.4"
+files = [
+    {file = "xmltodict-0.13.0-py2.py3-none-any.whl", hash = "sha256:aa89e8fd76320154a40d19a0df04a4695fb9dc5ba977cbb68ab3e4eb225e7852"},
+    {file = "xmltodict-0.13.0.tar.gz", hash = "sha256:341595a488e3e01a85a9d8911d8912fd922ede5fecc4dce437eb4b6c8d037e56"},
+]
+
+[[package]]
 name = "yamllint"
 version = "1.35.1"
 description = "A linter for YAML files."
@@ -2901,7 +2937,27 @@ pyyaml = "*"
 [package.extras]
 dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 
+[[package]]
+name = "yq"
+version = "3.4.1"
+description = "Command-line YAML/XML processor - jq wrapper for YAML/XML documents"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "yq-3.4.1-py3-none-any.whl", hash = "sha256:0f2b716d2685631cb75dbb72579557c8655623f6bf2dd6f930bb1b55cd50ce0d"},
+    {file = "yq-3.4.1.tar.gz", hash = "sha256:b558dab6f15c03e24a1c448789500b20d6f307ee9ca4c9361387f3658163000d"},
+]
+
+[package.dependencies]
+argcomplete = ">=1.8.1"
+PyYAML = ">=5.3.1"
+tomlkit = ">=0.11.6"
+xmltodict = ">=0.11.0"
+
+[package.extras]
+tests = ["build", "coverage", "mypy", "ruff", "wheel"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "9d4f401976fbfc5d6e3782580a61183ebbbac49da6f24f2858c286b8e3ccfaf6"
+content-hash = "b12e7f7910a6943e84ce56c15bdb9fe9fbe2ad5ed7e347a8283f135efc091b69"

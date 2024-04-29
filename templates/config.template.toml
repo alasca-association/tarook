@@ -10,6 +10,10 @@
 # --- TERRAFORM ---
 # ansible prefix: /
 [terraform]
+# If true, prevent Terraform from performing disruptive action
+# defaults to true if unset
+prevent_disruption = true
+
 #subnet_cidr = "172.30.154.0/24"
 #masters = 3
 #workers = 3
