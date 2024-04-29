@@ -1,8 +1,5 @@
 ---
 - name: Deploy LBaaS controller
-  become: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
   block:
   - name: Configure LBaaS controller
     kubernetes.core.k8s:

@@ -1,9 +1,6 @@
 ---
 - name: Create calico BGP configuration and apply peering
-  become: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-    DATASTORE_TYPE: kubernetes
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   block:
   - name: Wait for Calico API servers to be up and running
     kubernetes.core.k8s_info:
@@ -12,7 +9,7 @@
       name: default
     # Retry this task on failures
     register: calico_apiserver
-    until: "calico_apiserver.resources and (calico_apiserver.resources[0].status | default(False)) and (calico_apiserver.resources[0].status.state | default('') in ['Ready', 'Failed'])"
+    until: "calico_apiserver.resources and (calico_apiserver.resources[0].status | default(False)) and (calico_apiserver.resources[0].status.state | default('') in ['Ready', 'Failed'] | default(False))"
     retries: 120
     delay: "{{ k8s_error_delay }}"
 

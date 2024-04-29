@@ -15,7 +15,7 @@
 
   - name: Generate private key if necessary
     when: service_account_key is not defined
-    delegate_to: localhost
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     community.crypto.openssl_privatekey:
       return_content: true
       type: "RSA"
@@ -24,14 +24,14 @@
     register: generated_service_account_key
 
   - name: Delete generated private key from disk
-    delegate_to: localhost
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     ansible.builtin.file:
       state: absent
       path: "{{ etc_dir }}/sa.key"
 
   - name: Store generated key in vault
     when: service_account_key is not defined
-    delegate_to: localhost
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     community.hashi_vault.vault_write:
       auth_method: approle
       mount_point: "{{ vault_nodes_approle }}"

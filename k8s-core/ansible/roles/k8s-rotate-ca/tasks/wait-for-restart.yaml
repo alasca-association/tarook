@@ -1,6 +1,6 @@
 ---
 - name: Wait for Pod to restart
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   block:
   - name: Set retry count
     ansible.builtin.set_fact:

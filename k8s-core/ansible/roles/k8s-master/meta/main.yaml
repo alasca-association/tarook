@@ -4,6 +4,5 @@ galaxy_info:
   author: Yaook Authors
 dependencies:
 - config/k8s-config
-- k8s-tools
 - helpers/vault-approle
 ...

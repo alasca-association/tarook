@@ -3,9 +3,7 @@
 
 - name: Detect and remove stale etcd members
   when: k8s_install_status == "initialized"
-  become: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   block:
     - name: Get etcd members
       kubernetes.core.k8s_exec:

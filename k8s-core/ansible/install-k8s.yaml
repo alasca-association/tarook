@@ -30,8 +30,6 @@
     tags: containerd
   - role: k8s-packages
     tags: k8s-packages
-  - role: k8s-tools
-    tags: k8s-tools
 
 - name: Configure sysctl on K8s workers
   hosts: workers

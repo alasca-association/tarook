@@ -1,12 +1,7 @@
 ---
 - name: Check that calico/node and typha Pods are running
-  delegate_to: "{{ groups['masters'] | first }}"
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
-  become: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-    DATASTORE_TYPE: kubernetes
-
   block:
   - name: Check running and readiness status of the tigera operator
     kubernetes.core.k8s_info:

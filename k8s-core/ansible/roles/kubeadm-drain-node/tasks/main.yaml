@@ -7,10 +7,7 @@
 ---
 - name: Drain this node
   changed_when: true
-  become: true
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  delegate_to: "{{ (groups['masters'] | sort)[0] }}"
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   when: _allow_disruption
   ansible.builtin.command:
   args:

@@ -22,10 +22,7 @@
       fstype: ext4
 
 - name: Configure k8s resources
-  delegate_to: "{{ groups['masters'] | first }}"
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  become: true
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   block:
   - name: Create storage class
@@ -72,7 +69,7 @@
 
 - name: Dump instantiated manifests
   become: false
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   when: "dump_k8s_manifests"
   vars:

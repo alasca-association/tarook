@@ -13,7 +13,7 @@
         ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
         ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
       become: false
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       run_once: true
       block:
         - name: Lookup key in vault  # noqa ignore-errors
@@ -65,7 +65,7 @@
 
     - name: Load shared keypair
       become: false
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       run_once: true
       environment:
         ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
@@ -105,7 +105,7 @@
       register: wg_conf
 
     - name: Make sure wireguard directory exists in etc directory
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       become: false
       ansible.builtin.file:
         path: "{{ etc_dir }}/wireguard/wg{{ endpoint.id }}"
@@ -113,7 +113,7 @@
         mode: 0755
 
     - name: Remove no longer needed Wireguard peer templates
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       run_once: true
       become: false
       vars:
@@ -137,7 +137,7 @@
 
     - name: "Create a wg{{ endpoint.id }}.conf template for each peer"
       become: false
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       run_once: true
       ansible.builtin.template:
         src: wg_client.conf.j2
@@ -150,7 +150,7 @@
       loop: "{{ wg_peers }}"
 
     - name: Notify user about auto-generated wg.conf
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       become: false
       run_once: true
       ansible.builtin.debug:
@@ -198,7 +198,7 @@
         state: absent
 
     - name: Delete wireguard directory in etc directory
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       become: false
       ansible.builtin.file:
         path: "{{ etc_dir }}/wireguard/wg{{ endpoint.id }}"
@@ -206,7 +206,7 @@
 
 # Drop me soon
 - name: Cleanup legacy Wireguard configs
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   become: false
   block:

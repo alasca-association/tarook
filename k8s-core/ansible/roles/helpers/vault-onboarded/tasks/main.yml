@@ -3,7 +3,7 @@
   when: node_onboarded is not defined
   block:
   - name: Read our token roles
-    delegate_to: localhost
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     environment:
       ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
       ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
@@ -88,7 +88,7 @@
           msg: "{{ vault_node_policies }}"
 
     - name: Configure approle
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       community.hashi_vault.vault_write:
         path: "auth/{{ vault_nodes_approle }}/role/{{ vault_node_name }}"
         mount_point: "{{ vault_caller_auth_mount_point }}"
@@ -105,7 +105,7 @@
           token_type: service
 
     - name: Configure SSH CA role
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       community.hashi_vault.vault_write:
         path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/ssh-ca/roles/{{ vault_node_name }}"
         mount_point: "{{ vault_caller_auth_mount_point }}"
@@ -123,7 +123,7 @@
           algorithm_signer: "rsa-sha2-512"
 
     - name: Discover role ID
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       community.hashi_vault.vault_read:
         path: "auth/{{ vault_nodes_approle }}/role/{{ vault_node_name }}/role-id"
         mount_point: "{{ vault_caller_auth_mount_point }}"
@@ -145,7 +145,7 @@
       ignore_errors: true
 
     - name: Regenerate secret ID
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       community.hashi_vault.vault_write:
         path: "auth/{{ vault_nodes_approle }}/role/{{ vault_node_name }}/secret-id"
         mount_point: "{{ vault_caller_auth_mount_point }}"
@@ -163,7 +163,7 @@
       register: approle_secret_id_wrapped
 
     - name: Unwrap secret ID
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       community.hashi_vault.vault_write:
         path: "sys/wrapping/unwrap"
         token: "{{ approle_secret_id_wrapped.data.wrap_info.token }}"
@@ -176,7 +176,7 @@
         vault_secret_id: "{{ approle_secret_id.data.data.secret_id }}"
 
     - name: Read token information from approle
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       environment:
         ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
         ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
@@ -215,7 +215,7 @@
         content: "{{ approle_secret_id.data.data.secret_id }}"
 
     - name: Revoke old secret ID
-      delegate_to: localhost
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       when: approle_secret_id_file is not failed
       community.hashi_vault.vault_write:
         path: "auth/{{ vault_nodes_approle }}/role/{{ vault_node_name }}/secret-id/destroy"
@@ -270,7 +270,7 @@
     changed_when: false
 
   - name: Read token information from on-node approle info
-    delegate_to: localhost
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     environment:
       ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
       ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"

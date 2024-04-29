@@ -1,6 +1,6 @@
 ---
 - name: Execute test on the k8s layer
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   block:
   - name: create test namespace
     kubernetes.core.k8s:
@@ -143,7 +143,7 @@
   loop: "{{ service_pod_ips }}"
 
 - name: unblock access from everywhere
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   kubernetes.core.k8s:
     definition: "{{ lookup('template', 'unblock-all.yaml') }}"
     state: present
@@ -167,7 +167,7 @@
   retries: 60
 
 - name: delete test namespace
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   kubernetes.core.k8s:
     api_version: v1
     name: "{{ check_networkpolicy_namespace }}"

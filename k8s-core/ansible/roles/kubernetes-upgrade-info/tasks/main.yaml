@@ -20,10 +20,7 @@
       k8s_installed_version: "{{ ansible_facts.packages['kubeadm'][0]['version'].split('-')[0] }}"
 
   - name: Obtain version as per k8s database
-    delegate_to: "{{ (groups['masters'] | sort)[0] }}"
-    become: true
-    environment:
-      KUBECONFIG: /etc/kubernetes/admin.conf
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     kubernetes.core.k8s_info:
       api_version: v1
       kind: Node

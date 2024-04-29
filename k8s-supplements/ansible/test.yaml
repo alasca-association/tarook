@@ -41,7 +41,7 @@
   gather_facts: false
   tasks:
   - name: Get node info
-    delegate_to: localhost
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     kubernetes.core.k8s_info:
       kind: node
       name: "{{ inventory_hostname }}"
@@ -89,7 +89,7 @@
     when: k8s_network_plugin == 'calico'
 
 - name: Validate IPSec
-  hosts: localhost
+  hosts: orchestrator
   gather_facts: false
   vars_files:
   - vars/retries.yaml
@@ -101,7 +101,7 @@
     when: ipsec_enabled and ipsec_test_enabled
 
 - name: Test Nvidia GPU Support
-  hosts: localhost
+  hosts: orchestrator
   vars_files:
   - vars/retries.yaml
   roles:
@@ -112,7 +112,7 @@
     - check-nvidia-device-plugin
 
 - name: Annotate worker nodes
-  hosts: localhost
+  hosts: orchestrator
   become: false
   gather_facts: false
   tags:
@@ -154,7 +154,7 @@
     - check-shared-fs
 
 - name: Check services
-  hosts: masters[0]
+  hosts: orchestrator
   become: false
   gather_facts: false
   vars_files:
@@ -193,7 +193,7 @@
 
 # Same line for argumentation: especially rook is known to take a bit more time to boot up
 - name: Check storage services
-  hosts: masters[0]
+  hosts: orchestrator
   become: false
   gather_facts: false
   vars_files:
@@ -252,7 +252,7 @@
     - check-local-storage-dynamic
 
 - name: Remove worker node annotation
-  hosts: localhost
+  hosts: orchestrator
   become: false
   gather_facts: false
   tags: label

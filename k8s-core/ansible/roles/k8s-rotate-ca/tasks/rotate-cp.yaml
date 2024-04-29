@@ -123,7 +123,7 @@
   meta: flush_handlers
 
 - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   block:
   - name: Gather all namespaces
@@ -151,7 +151,7 @@
     seconds: 60
 
 - name: Patch 'kube-public/cluster-info' ConfigMap
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   become: false
   block:

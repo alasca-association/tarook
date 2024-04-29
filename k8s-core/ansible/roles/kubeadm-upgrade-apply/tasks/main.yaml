@@ -5,9 +5,7 @@
   block:
     # When the service-account-issuer apiServer argument is not the correct HTTPS URL, patch the kubeadm config to fix that
     - name: Enable ServiceAccountIssuerDiscovery in kube-apiserver
-      become: true
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
+      delegate_to: "{{ groups['orchestrator'] | first }}"
       when:
         # Assume that the value is set correctly for upgrades to 1.26 and higher
         - next_k8s_version is defined

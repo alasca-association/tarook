@@ -1,6 +1,6 @@
 ---
 - name: Check if tigera-operator already exists
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   block:
     - name: Check if tigera-operator Deployment exists
@@ -16,7 +16,7 @@
         tigera_operator_exists: "{{ tigera_operator_deployment.resources | length >= 1 | bool }}"
 
 - name: Deploy tigera-operator
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   block:
     - name: Create Tigera operator namespace

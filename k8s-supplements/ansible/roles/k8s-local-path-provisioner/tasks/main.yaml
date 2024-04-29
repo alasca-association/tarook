@@ -19,10 +19,7 @@
     - "{{ k8s_local_storage_dynamic_data_directory }}"
 
 - name: Configure k8s resources
-  delegate_to: "{{ groups['masters'] | first }}"
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  become: true
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   block:
   - name: Create storage class

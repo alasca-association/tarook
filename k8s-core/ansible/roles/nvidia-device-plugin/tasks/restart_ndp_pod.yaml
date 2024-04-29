@@ -3,7 +3,7 @@
 # This is needed during Kubernetes upgrades as the GPU gets marked
 # as unhealthy on systemctl reloads + kubelet restarts.
 - name: Restart nvdp Pod
-  delegate_to: localhost
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   when: node_has_gpu
   block:
   - name: "Get nvidia-device-plugin Pod running on node {{ inventory_hostname }}"
