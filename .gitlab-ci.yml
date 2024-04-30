@@ -58,7 +58,7 @@ shellcheck:
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/koalaman/shellcheck-alpine:v0.10.0"
   stage: lint
   script:
-    - "find -iname '*.sh' '!' -ipath './jsonnet-sources/*/vendor/**' '!' -ipath './.git/**' -print0 | xargs -0 -- shellcheck -Calways"
+    - "find -iname '*.sh' '!' -ipath './.git/**' -print0 | xargs -0 -- shellcheck -Calways"
   tags:
     - docker
   rules:

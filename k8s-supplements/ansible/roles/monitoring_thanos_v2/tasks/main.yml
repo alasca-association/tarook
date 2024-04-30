@@ -47,28 +47,6 @@
   - monitoring
   - thanos
 
-- name: Cleanup K8s resource for the thanos v1 deployment
-  block:
-  - name: Check if Thanos v1 is deployed
-    kubernetes.core.k8s_info:
-      kind: Pod
-      api_version: v1
-      namespace: "{{ monitoring_namespace }}"
-      label_selectors:
-      - app.kubernetes.io/version=v0.26.0
-    register: k8s_get_thanos_v1
-    until: k8s_get_thanos_v1 is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
-    tags:
-    - thanos
-
-  - name: Include Thanos v1 cleanup tasks
-    ansible.builtin.include_tasks: cleanup-thanos-v1.yaml
-    when: k8s_get_thanos_v1.resources is defined and k8s_get_thanos_v1.resources | length != 0
-    tags:
-    - thanos
-
 - name: Create storage bucket secret for thanos sidecar
   kubernetes.core.k8s:
     apply: true
