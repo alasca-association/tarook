@@ -364,7 +364,6 @@ plugin = "calico" # •ᴗ•
 
 namespace    = "rook-ceph" # •ᴗ•
 cluster_name = "rook-ceph" # •ᴗ•
-use_helm = true
 
 # Configure a custom Ceph version.
 # If not defined, the one mapped to the rook version

@@ -10,7 +10,7 @@ Ansible role ``rook_v2`` (Helm-based installation)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The rook_v2 role should support any arbitrary helm chart version.
-We tested it both on bare metal and on OpenStack up to rook v1.11.
+We tested it both on bare metal and on OpenStack up to rook v1.13.
 
 .. warning::
 
@@ -51,29 +51,6 @@ cluster configuration via the variable ``version`` in the
 ``[k8s-service-layer.rook]`` section.
 If not explicitly defined, the latest version
 which has currently been tested is used.
-
-Upgrade to rook_v2 (Helm-based installation)
---------------------------------------------
-
-1. Make sure rook is at v1.7.11 as that’s the only overlap between both
-   roles. (See below for the upgrade procedure)
-
-2. Set ``use_helm=true`` in the ``[k8s-service-layer.rook]`` section
-
-3. Apply  the k8s-supplements or at least the ``rook_v1/2`` role.
-
-   .. note::
-
-      As the upgrade is disruptive (at least for a short amount of time) >
-      disruption needs to be enabled.
-
-   .. code:: console
-
-      $ # Trigger k8s-supplements
-      $ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
-      $ # Trigger only k8s-rook
-      $ AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
-
 
 Steps to perform an upgrade
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -128,7 +105,7 @@ Steps to perform an upgrade
       version = "v1.6.7"
       [...]
 
-6. Apply  the k8s-supplements or at least the ``rook_v1/2`` role.
+6. Apply the k8s-supplements or at least the ``rook_v2`` role.
 
    .. note::
 
@@ -139,8 +116,8 @@ Steps to perform an upgrade
 
       $ # Trigger k8s-supplements
       $ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
-      $ # Trigger only k8s-rook
-      $ AFLAGS='--diff --tags mk8s-sl/rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
+      $ # Trigger only rook
+      $ AFLAGS='--diff --tags rook' MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-supplements.sh
 
 7. Get yourself your favorite (non-alcoholic) drink and watch with
    fascinating enthusiasm how your rook-based ceph cluster gets
