@@ -94,10 +94,6 @@
     name: prometheus-community
     repo_url: "{{ monitoring_prometheus_helm_repo_url }}"
     repo_state: "{{ monitoring_install | ternary('present', 'absent') }}"
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
 
 # Install the prometheus stack
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall KSL monitoring stack"
@@ -112,10 +108,6 @@
     values: "{{ lookup('template', 'prometheus_stack.yaml.j2') | from_yaml }}"
     wait: false
     update_repo_cache: true
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
 
 # Install prometheus-adapter, a metrics-server implementation
 # It enables commands like `k top nodes`
@@ -131,10 +123,6 @@
     values: "{{ lookup('template', 'prometheus_adapter.yaml.j2') | from_yaml }}"
     wait: false
     update_repo_cache: true
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
 
 - name: Do we have any gpu nodes?
   kubernetes.core.k8s_info:
@@ -173,8 +161,4 @@
     values: "{{ lookup('template', 'blackbox_exporter.yaml.j2') | from_yaml }}"
     wait: true
     update_repo_cache: true
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
 ...

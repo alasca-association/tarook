@@ -120,11 +120,6 @@
     repo_url: "{{ monitoring_thanos_helm_repo_url }}"
     repo_state: "{{ monitoring_use_thanos | ternary('present', 'absent') }}"
     force_update: true
-  # Retry this task on failures
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
   tags:
   - thanos
 
@@ -140,11 +135,6 @@
     values: "{{ lookup('template', 'thanos_values.yaml.j2') | from_yaml }}"
     wait: true
     update_repo_cache: true
-  # Retry this task on failures
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
   tags:
   - thanos
 ...

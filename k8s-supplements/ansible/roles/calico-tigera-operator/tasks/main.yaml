@@ -51,10 +51,6 @@
         release_state: present
         update_repo_cache: true
         values: "{{ lookup('template', calico_values_file_path) | from_yaml }}"
-      register: task_result
-      until: task_result is not failed
-      retries: "{{ network_error_retries }}"
-      delay: "{{ network_error_delay }}"
 
     # Give the operator some time to create the CRDs
     - name: Pause for 20s

@@ -4,10 +4,6 @@
     name: dcgm-exporter
     repo_url: "{{ monitoring_nvidia_dcgm_exporter_helm_repo_url }}"
     repo_state: "{{ (gpu_nodes.resources | length > 0) | ternary('present', 'absent') }}"
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
 
 - name: "{{ (gpu_nodes.resources | length > 0) | ternary('I', 'Uni') }}nstall NVIDIA DCGM exporter"
   vars:
@@ -22,8 +18,4 @@
     values: "{{ lookup('template', 'nvidia_dcgm_exporter.yaml.j2') | from_yaml }}"
     wait: true
     update_repo_cache: true
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
 ...
