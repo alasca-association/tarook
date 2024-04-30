@@ -3,9 +3,11 @@
 import pathlib
 import json
 import sys
+from hcl2 import loads
 
 TFVARS_DIR = pathlib.Path("terraform")
 TFVARS_FILE = TFVARS_DIR / "config.tfvars.json"
+TF_DEFAULTS_FILE = pathlib.Path("managed-k8s/terraform/00-variables.tf")
 
 
 def get_current_config():
@@ -37,3 +39,14 @@ def deploy_terraform_config(terraform_config):
     TFVARS_DIR.mkdir(exist_ok=True)
     with open(TFVARS_FILE, "w") as fout:
         json.dump(terraform_config, fout, indent=2)
+
+
+def get_default_value_in_tf_vars(key, file_path=TF_DEFAULTS_FILE):
+    with open(file_path, 'r') as file:
+        content = file.read()
+    try:
+        for var in loads(content)['variable']:
+            if key in var:
+                return var[key]['default']
+    finally:
+        return None

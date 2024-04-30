@@ -563,3 +563,29 @@ def generate_wireguard_config(
     ], key=lambda p: p['ident'])
 
     return wireguard_config
+
+
+def is_ipnet_disjoint(
+    ipnet_string: str,
+    wireguard_config: typing.MutableMapping
+) -> bool:
+    try:
+        ipnet = ipaddress.ip_network(ipnet_string)
+    except ValueError:
+        raise ValueError("Invalid IP network string")
+
+    wg_nets = _get_endpoints_from_config(wireguard_config)
+
+    for wg_net in wg_nets:
+        if wg_net['enabled']:
+            # IPv4
+            if isinstance(ipnet, ipaddress.IPv4Network) and 'ip_cidr' in wg_net:
+                if (ipnet.subnet_of(wg_net['ip_cidr']) or
+                        wg_net['ip_cidr'].subnet_of(ipnet)):
+                    return False
+            # IPv6
+            elif isinstance(ipnet, ipaddress.IPv6Network) and 'ipv6_cidr' in wg_net:
+                if (ipnet.subnet_of(wg_net['ipv6_cidr']) or
+                        wg_net['ipv6_cidr'].subnet_of(ipnet)):
+                    return False
+    return True

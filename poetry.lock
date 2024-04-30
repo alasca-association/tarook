@@ -1006,6 +1006,23 @@ referencing = "*"
 typing-extensions = "*"
 
 [[package]]
+name = "lark"
+version = "1.1.9"
+description = "a modern parsing library"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "lark-1.1.9-py3-none-any.whl", hash = "sha256:a0dd3a87289f8ccbb325901e4222e723e7d745dbfc1803eaf5f3d2ace19cf2db"},
+    {file = "lark-1.1.9.tar.gz", hash = "sha256:15fa5236490824c2c4aba0e22d2d6d823575dcaf4cdd1848e34b6ad836240fba"},
+]
+
+[package.extras]
+atomic-cache = ["atomicwrites"]
+interegular = ["interegular (>=0.3.1,<0.4.0)"]
+nearley = ["js2py"]
+regex = ["regex"]
+
+[[package]]
 name = "loguru"
 version = "0.7.2"
 description = "Python logging made (stupidly) simple"
@@ -1732,6 +1749,20 @@ files = [
 
 [package.dependencies]
 six = ">=1.5"
+
+[[package]]
+name = "python-hcl2"
+version = "4.3.2"
+description = "A parser for HCL2"
+optional = false
+python-versions = ">=3.7.0"
+files = [
+    {file = "python-hcl2-4.3.2.tar.gz", hash = "sha256:7122661438be27ccd8b8f3db71969d8ef2cce3b3cf183e88f8172575e7405a65"},
+    {file = "python_hcl2-4.3.2-py3-none-any.whl", hash = "sha256:e958fe52ca0519e3500eb621caa16be6be9c27870cbcd1879d8c538fb85067ea"},
+]
+
+[package.dependencies]
+lark = ">=1,<2"
 
 [[package]]
 name = "python-keystoneclient"
@@ -2960,4 +2991,4 @@ tests = ["build", "coverage", "mypy", "ruff", "wheel"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "b12e7f7910a6943e84ce56c15bdb9fe9fbe2ad5ed7e347a8283f135efc091b69"
+content-hash = "b051de5b921b0b2dc37f049cbc369b52ab38e5c8d429b7ed07d73c77bce51df5"
