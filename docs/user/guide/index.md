@@ -13,7 +13,6 @@ vault/index
 faq
 initialization
 quick-start
-spawning-cluster
 updating-host-nodes
 ```
 

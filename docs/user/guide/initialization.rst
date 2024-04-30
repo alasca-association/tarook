@@ -196,7 +196,7 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
       $ $somewhere_else/k8s/actions/init-cluster-repo.sh
 
-   This ``init.sh`` script will:
+   This ``init-cluster-repo.sh`` script will:
 
    -  Add all necessary submodules.
    -  Copy a ``config.toml`` template to ``./config/config.toml`` if no
