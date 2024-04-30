@@ -1,0 +1,3 @@
+The Kubernetes root CA key is not cleared from the control plane anymore
+when `[kubernetes.controller_manager].enable_signing_requests=true` is set in the config. (!1201)
+Due to the security implications this has to be explicitly enabled.
