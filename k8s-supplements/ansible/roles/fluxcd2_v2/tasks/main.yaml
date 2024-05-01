@@ -58,8 +58,4 @@
     update_repo_cache: true
     values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
     chart_version: "{{ fluxcd_version }}"
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
 ...

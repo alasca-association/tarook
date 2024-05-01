@@ -5,10 +5,7 @@
     namespace: kube-system
     state: absent
     update_repo_cache: true
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
+
 # AppVersion determines the version of CRDs that are to be applied
 # There is no equivalent of `helm show chart` in any Ansible Helm modules
 # therefore we have to use command instead of helm module

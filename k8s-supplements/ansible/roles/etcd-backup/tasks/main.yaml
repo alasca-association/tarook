@@ -100,10 +100,6 @@
     name: yaook.cloud
     repo_url: "{{ etcd_backup_helm_repo_url }}"
     repo_state: "{{ etcd_backup_enabled | ternary('present', 'absent') }}"
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
 
 - name: Deploy yaook operator etcd backup chart
   kubernetes.core.helm:
@@ -115,8 +111,4 @@
     update_repo_cache: true
     values: "{{ lookup('template', 'etcd_backup.yaml.j2') | from_yaml }}"
     force: "{{ old_etcd_backup_service_info.resources | length > 0 }}"
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
 ...

@@ -44,10 +44,6 @@
     release_state: present
     update_repo_cache: true
     values: "{{ lookup('template', 'vault.yaml.j2') | from_yaml }}"
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
 
 - name: Find vault pods
   kubernetes.core.k8s_info:

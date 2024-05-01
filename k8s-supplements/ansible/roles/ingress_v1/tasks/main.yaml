@@ -33,8 +33,4 @@
     release_state: "{{ k8s_ingress_install | ternary('present', 'absent') }}"
     update_repo_cache: true
     values: "{{ lookup('template', 'nginx_ingress_values.yaml.j2') | from_yaml }}"
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
 ...
