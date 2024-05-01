@@ -84,7 +84,11 @@ fi
 
 mkdir -p config
 cp "$code_repository/templates/template.gitignore" .gitignore
-cp --no-clobber "$code_repository/templates/config.template.toml" config/config.toml
+if [ -f config/config.toml ]; then
+    warningf "config/config.toml already exists, refusing to overwrite"
+else
+    cp --no-clobber "$code_repository/templates/config.template.toml" config/config.toml
+fi
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 	run git add .gitignore config/config.toml
 fi

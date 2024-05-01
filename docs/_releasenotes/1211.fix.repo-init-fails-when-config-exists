@@ -1,0 +1,2 @@
+Cluster repo initialization with ./actions/init-cluster-repo.sh
+does not fail anymore when the config already exists.
