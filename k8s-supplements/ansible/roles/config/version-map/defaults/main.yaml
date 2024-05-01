@@ -51,5 +51,26 @@ image_version_map:
     # https://kubernetes-csi.github.io/docs/snapshot-controller.html
     volume_snapshot_controller: "v6.3.3"
 
+  "1.28":
+    openstack:
+      # https://github.com/kubernetes/cloud-provider-openstack/releases/tag/v1.29.0
+      cinder_csi_plugin: "v1.29.0"
+      openstack_cloud_controller_manager: "v1.29.0"
+      # https://github.com/kubernetes-csi/external-attacher/releases/tag/v4.5.1
+      csi_attacher: "v4.5.1"
+      # https://github.com/kubernetes-csi/node-driver-registrar/releases/tag/v2.10.1
+      csi_node_driver_registrar: "v2.10.1"
+      #https://github.com/kubernetes-csi/external-provisioner/releass/tag/v4.0.1
+      csi_provisioner: "v4.0.1"
+      # https://github.com/kubernetes-csi/external-resizer/releases/tag/v1.10.1
+      csi_resizer: "v1.10.1"
+      # https://github.com/kubernetes-csi/external-snapshotter/releases/tag/v7.0.2
+      csi_snapshotter: "v7.0.2"
+      # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.12.0
+      csi_livenessprobe: "v2.12.0"
+    calico_version: "{{ k8s_network_calico_custom_version | default('3.27.3') }}"
+    # https://kubernetes-csi.github.io/docs/snapshot-controller.html
+    volume_snapshot_controller: "v7.0.2"
+
 image_versions: "{{ image_version_map[k8s_version_minor] }}"
 ...
