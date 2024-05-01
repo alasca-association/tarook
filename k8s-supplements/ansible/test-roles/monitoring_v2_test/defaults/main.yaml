@@ -6,5 +6,4 @@ monitoring_prometheus_stack_release_name: "prometheus-stack"
 
 monitoring_use_grafana: true
 monitoring_use_thanos: false
-monitoring_use_helm_thanos: true
 ...

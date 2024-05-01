@@ -46,23 +46,6 @@ Install System Requirements
       .. raw:: html
 
          <details>
-         <summary>Install Jsonnet</summary>
-
-      .. code:: console
-
-         $ # jsonnet (you may want to adjust the version)
-         $ GO111MODULE="on" go get github.com/google/go-jsonnet/cmd/jsonnet@v0.16.0
-
-         $ # jsonnet-bundler (you may want to adjust the version)
-         $ GO111MODULE="on" go get github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@v0.4.0
-
-      .. raw:: html
-
-         </details>
-
-      .. raw:: html
-
-         <details>
          <summary>Install Terraform</summary>
 
       Follow `the upstream instructions on installing Terraform <https://www.terraform.io/downloads>`__.

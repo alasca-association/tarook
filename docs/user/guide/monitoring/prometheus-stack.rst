@@ -182,20 +182,6 @@ Please refer to its documentation for further details.
 Thanos can be enabled and configured in the
 :ref:`Prometheus configuration<cluster-configuration.prometheus-configuration>`.
 
-In previous times, Thanos has been deployed via JSONNET.
-You must migrate to the helm chart as soon as possible as the
-JSONNET-based installation method is deprecated and will be dropped very soon.
-The migration is automatically triggered on a subsequent rollout of ``monitoring_v2``.
-If you want to postpone this, you must set the following in your ``config/config.toml``:
-
-.. code:: toml
-
-   ...
-   [k8s-service-layer.prometheus]
-   ...
-   use_helm_thanos = false
-   ...
-
 Object Storage Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

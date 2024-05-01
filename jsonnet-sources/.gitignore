@@ -1,9 +1,0 @@
-vendor
-config.jsonnet
-manifests.files.json
-manifests.files
-manifests
-service-layer.jsonnet
-service-layer.files.json
-service-layer.files
-service-layer

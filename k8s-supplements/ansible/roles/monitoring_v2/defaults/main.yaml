@@ -22,7 +22,6 @@ monitoring_prometheus_adapter_release_name: "prometheus-adapter"
 
 monitoring_use_grafana: true
 monitoring_use_thanos: false
-monitoring_use_helm_thanos: true
 
 monitoring_grafana_admin_secret_name: "cah-grafana-admin"
 

@@ -151,15 +151,10 @@
   when: (gpu_nodes.resources | length) > 0
   ansible.builtin.include_tasks: nvidia_dcgm_exporter.yaml
 
-- name: Install thanos with jsonnet
-  ansible.builtin.include_role:
-    name: monitoring_thanos_v1
-  when: monitoring_use_thanos and not monitoring_use_helm_thanos
-
 - name: Install thanos with helm
   ansible.builtin.include_role:
     name: monitoring_thanos_v2
-  when: monitoring_use_thanos and monitoring_use_helm_thanos
+  when: monitoring_use_thanos
 
 - name: "{{ monitoring_internet_probe | ternary('I', 'Uni') }}nstall blackbox-exporter"
   vars:

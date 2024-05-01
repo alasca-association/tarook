@@ -536,10 +536,6 @@ use_helm = true
 # Enable use of Thanos
 #use_thanos = false
 
-# Use the bitnami helm chart to deploy thanos. If use_helm_thanos is false the deployment will be done with the help
-# of the deprecated jsonnet code.
-# use_helm_thanos = false
-
 # Let terraform create an object storage container / bucket for you if `true`.
 # If set to `false` one must provide a valid configuration via Vault
 # See: https://yaook.gitlab.io/k8s/release/v3.0/managed-services/prometheus/prometheus-stack.html#custom-bucket-management

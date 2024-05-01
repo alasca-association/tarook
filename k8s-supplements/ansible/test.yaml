@@ -10,7 +10,7 @@
   - role: monitoring_v2_test
     tags:
     - monitoring_v2_test
-    when: (k8s_monitoring_enabled | bool) and not (monitoring_use_jsonnet_setup | default(False))
+    when: k8s_monitoring_enabled | bool
 
 - name: Service Tests
   hosts: orchestrator
