@@ -220,3 +220,12 @@ function install_prerequisites() {
     # Install ansible galaxy requirements
     ansible-galaxy install -r "$ansible_directory/requirements.yaml"
 }
+
+function check_venv() {
+    if [ "${MINIMAL_ACCESS_VENV:-false}" == "true" ]; then
+        errorf 'MINIMAL_ACCESS_VENV is set to true.'
+        errorf 'With that, the venv is not sufficient for usage of the LCM.'
+        errorf 'Set it to false and reload your environment.'
+        exit 1
+    fi
+}

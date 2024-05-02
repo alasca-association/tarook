@@ -8,6 +8,11 @@
 # please see docs/admin/cluster-repo.md in the managed-k8s lcm
 # repository.
 
+# Optional: Setup a minimal venv for Kubernetes API access only
+# instead of a full blown user and development environment.
+# Note that this can instead be set in ".envrc.local" for specific clusters.
+#export MINIMAL_ACCESS_VENV=true
+
 # Wireguard: Absolute path to your private wireguard key.
 export wg_private_key_file="path/to/your/private/key"
 # Alternatively you can directly export your wireguard key

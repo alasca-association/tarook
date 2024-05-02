@@ -2,12 +2,19 @@
 layout_poetry() {
   poetry_dir="$(realpath "${1:-${PWD}}")"
   mkdir -p "$PWD/.direnv"
-  poetry_hash_file="$PWD/.direnv/poetry.lock.sha256"
   PYPROJECT_TOML="${PYPROJECT_TOML:-${poetry_dir}/pyproject.toml}"
   poetry_file="${poetry_dir}/poetry.lock"
   poetry_hash="$(sha256sum "$poetry_file" | cut -d' ' -f1)"
   if [[ "${POETRY_ACTIVE:-""}" == "$poetry_hash" ]]; then echo "Poetry already active. Skipping..."; return; fi
-  cache_dir="${XDG_CACHE_HOME:-${HOME}/.cache}/yaook-k8s/poetry/$poetry_hash"
+  poetry_extra_args=()
+  if [ "${MINIMAL_ACCESS_VENV:-false}" == "true" ]; then
+    cache_dir="${XDG_CACHE_HOME:-${HOME}/.cache}/yaook-k8s/poetry/minimal-access"
+    poetry_extra_args+=("--only" "minimal-access")
+    poetry_hash_file="/dev/null"
+  else
+    cache_dir="${XDG_CACHE_HOME:-${HOME}/.cache}/yaook-k8s/poetry/$poetry_hash"
+    poetry_hash_file="$PWD/.direnv/poetry.lock.sha256"
+  fi
 
   if [[ ! -f "$PYPROJECT_TOML" ]]; then
       log_status "No pyproject.toml found. Executing \`poetry init\` to create a \`$PYPROJECT_TOML\` first."
@@ -21,7 +28,7 @@ layout_poetry() {
 
   if [[ -z $VIRTUAL_ENV || ! -d $VIRTUAL_ENV ]]; then
       log_status "No virtual environment exists. Executing \`poetry install\` to create one."
-      poetry -C "$cache_dir" install --no-root
+      poetry -C "$cache_dir" install --no-root "${poetry_extra_args[@]}"
       VIRTUAL_ENV=$(poetry -C "$cache_dir" env info --path)
       mkdir -p "$(dirname "$poetry_hash_file")"
       echo "$poetry_hash" > "$poetry_hash_file"
@@ -29,7 +36,7 @@ layout_poetry() {
 
   if [ "$(cat "$poetry_hash_file")" != "$poetry_hash" ]; then
       echo "poetry.lock changed. Updating virtual env..."
-      poetry -C "$cache_dir" install --no-root --sync
+      poetry -C "$cache_dir" install --no-root --sync "${poetry_extra_args[@]}"
       mkdir -p "$(dirname "$poetry_hash_file")"
       echo "$poetry_hash" > "$poetry_hash_file"
   fi
