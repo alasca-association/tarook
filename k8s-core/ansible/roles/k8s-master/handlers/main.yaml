@@ -19,24 +19,40 @@
   # We must use shell here, because crictl cannot restart things by name.
   # We have to look up the ID of the Pod.
   ansible.builtin.shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^kube-apiserver$' --no-trunc -q)
+  register: container_restart
+  until: container_restart is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: Restart kube-scheduler  # noqa no-changed-when
   become: true
   # We must use shell here, because crictl cannot restart things by name.
   # We have to look up the ID of the Pod.
   ansible.builtin.shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^kube-scheduler$' --no-trunc -q)
+  register: container_restart
+  until: container_restart is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: Restart kube-controller-manager  # noqa no-changed-when
   become: true
   # We must use shell here, because crictl cannot restart things by name.
   # We have to look up the ID of the Pod.
   ansible.builtin.shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^kube-controller-manager$' --no-trunc -q)
+  register: container_restart
+  until: container_restart is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: Restart etcd  # noqa no-changed-when
   become: true
   # We must use shell here, because crictl cannot restart things by name.
   # We have to look up the ID of the Pod.
   ansible.builtin.shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^etcd$' --no-trunc -q)
+  register: container_restart
+  until: container_restart is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 - name: noop
   # this handler is used as default in mkkubeconfig, if the caller specified no handler to notify
