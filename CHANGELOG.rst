@@ -19,6 +19,88 @@ earlier changes.
 
 .. towncrier release notes start
 
+v5.0.0 (2024-05-02)
+-------------------
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+- Added the `MANAGED_K8S_DISRUPT_THE_HARBOUR` environment variable. (!1176)
+
+  Disruption of harbour infrastructure is now excluded from `MANAGED_K8S_RELEASE_THE_KRAKEN`.
+  To allow it nonetheless `MANAGED_K8S_DISRUPT_THE_HARBOUR` needs to be set instead.
+  (See documentation on environment variables)
+
+  `[terraform].prevent_disruption` has been added in the config
+  to allow the environment variable to be overridden
+  when Terraform is used (`TF_USAGE=true`).
+  It is set to `true` by default.
+
+  Ultimately this prevents unintended destruction of the harbour infrastructure
+  and hence the whole yk8s deployment
+  when `MANAGED_K8S_RELEASE_THE_KRAKEN` must be used,
+  e.g. during Kubernetes upgrades. (`!1176 <https://gitlab.com/yaook/k8s/-/merge_requests/1176>`_)
+- Vault tools now read the cluster name from config.toml
+
+  If your automation relies on any tool in `./tools/vault/`, you  need to adapt its signature. <clustername> has been removed as the first argument. (`!1179 <https://gitlab.com/yaook/k8s/-/merge_requests/1179>`_)
+
+
+New Features
+~~~~~~~~~~~~
+
+- Support for Kubernetes v1.28 has been added (`!1205 <https://gitlab.com/yaook/k8s/-/merge_requests/1205>`_)
+
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- Proof whether the WireGuard networks and the cluster network are disjoint (`!1049 <https://gitlab.com/yaook/k8s/-/merge_requests/1049>`_)
+- The LCM has been adjusted to talk to the K8s API via the orchestrator node only (`!1202 <https://gitlab.com/yaook/k8s/-/merge_requests/1202>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- Cluster repository migration has been fixed for bare metal clusters. (`!1183 <https://gitlab.com/yaook/k8s/-/merge_requests/1183>`_)
+- Core Split migration script doesn't fail anymore when inventory folder is missing (`!1196 <https://gitlab.com/yaook/k8s/-/merge_requests/1196>`_)
+-  (`!1203 <https://gitlab.com/yaook/k8s/-/merge_requests/1203>`_)
+- Some images got moved to the yaook registry, so we updated the image path.
+
+  For registry.yaook.cloud/yaook/backup-shifter:1.0.166 a newer tag needs to be
+  used, as the old one is not available at new registry. (`!1206 <https://gitlab.com/yaook/k8s/-/merge_requests/1206>`_)
+- Cluster repo initialization with ./actions/init-cluster-repo.sh
+  does not fail anymore when the config already exists. (`!1211 <https://gitlab.com/yaook/k8s/-/merge_requests/1211>`_)
+
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- The documentation has been reworked according to `Diátaxis <https://diataxis.fr/>`__. (`!1181 <https://gitlab.com/yaook/k8s/-/merge_requests/1181>`_)
+- Add user tutorial on how to create a cluster (`!1191 <https://gitlab.com/yaook/k8s/-/merge_requests/1191>`_)
+- Add copybutton for code (`!1193 <https://gitlab.com/yaook/k8s/-/merge_requests/1193>`_)
+
+
+Deprecations and Removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Support for the legacy installation procedure of Thanos with jsonnet has been dropped (`!1214 <https://gitlab.com/yaook/k8s/-/merge_requests/1214>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- Added [yq](https://github.com/mikefarah/yq) as a dependency.
+  This allows shell scripts to read the config with `tomlq` (see !1176). (`!1176 <https://gitlab.com/yaook/k8s/-/merge_requests/1176>`_)
+- Helm module execution is not retried anymore as that obfuscated failed rollouts (`!1215 <https://gitlab.com/yaook/k8s/-/merge_requests/1215>`_)
+-  (`!1218 <https://gitlab.com/yaook/k8s/-/merge_requests/1218>`_)
+
+
+Misc
+~~~~
+
+- `!1204 <https://gitlab.com/yaook/k8s/-/merge_requests/1204>`_
+
+
 v4.0.0 (2024-04-15)
 -------------------
 
