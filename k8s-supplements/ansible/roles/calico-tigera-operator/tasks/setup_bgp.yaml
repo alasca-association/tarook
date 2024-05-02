@@ -9,7 +9,7 @@
       name: default
     # Retry this task on failures
     register: calico_apiserver
-    until: "calico_apiserver.resources and (calico_apiserver.resources[0].status | default(False)) and (calico_apiserver.resources[0].status.state | default('') in ['Ready', 'Failed'] | default(False))"
+    until: "(calico_apiserver.resources | default(False)) and (calico_apiserver.resources[0].status | default(False)) and (calico_apiserver.resources[0].status.state | default('') in ['Ready', 'Failed'] | default(False))"
     retries: 120
     delay: "{{ k8s_error_delay }}"
 
