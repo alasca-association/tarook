@@ -25,24 +25,24 @@ v5.0.0 (2024-05-02)
 Breaking changes
 ~~~~~~~~~~~~~~~~
 
-- Added the `MANAGED_K8S_DISRUPT_THE_HARBOUR` environment variable. (!1176)
+- Added the ``MANAGED_K8S_DISRUPT_THE_HARBOUR`` environment variable.
 
-  Disruption of harbour infrastructure is now excluded from `MANAGED_K8S_RELEASE_THE_KRAKEN`.
-  To allow it nonetheless `MANAGED_K8S_DISRUPT_THE_HARBOUR` needs to be set instead.
+  Disruption of harbour infrastructure is now excluded from ``MANAGED_K8S_RELEASE_THE_KRAKEN``.
+  To allow it nonetheless ``MANAGED_K8S_DISRUPT_THE_HARBOUR`` needs to be set instead.
   (See documentation on environment variables)
 
-  `[terraform].prevent_disruption` has been added in the config
+  ``[terraform].prevent_disruption`` has been added in the config
   to allow the environment variable to be overridden
-  when Terraform is used (`TF_USAGE=true`).
-  It is set to `true` by default.
+  when Terraform is used (``TF_USAGE=true``).
+  It is set to ``true`` by default.
 
   Ultimately this prevents unintended destruction of the harbour infrastructure
   and hence the whole yk8s deployment
-  when `MANAGED_K8S_RELEASE_THE_KRAKEN` must be used,
+  when ``MANAGED_K8S_RELEASE_THE_KRAKEN`` must be used,
   e.g. during Kubernetes upgrades. (`!1176 <https://gitlab.com/yaook/k8s/-/merge_requests/1176>`_)
-- Vault tools now read the cluster name from config.toml
+- Vault tools now read the cluster name from ``config.toml``
 
-  If your automation relies on any tool in `./tools/vault/`, you  need to adapt its signature. <clustername> has been removed as the first argument. (`!1179 <https://gitlab.com/yaook/k8s/-/merge_requests/1179>`_)
+  If your automation relies on any tool in ``./tools/vault/``, you  need to adapt its signature. ``<clustername>`` has been removed as the first argument. (`!1179 <https://gitlab.com/yaook/k8s/-/merge_requests/1179>`_)
 
 
 New Features
@@ -66,9 +66,9 @@ Bugfixes
 -  (`!1203 <https://gitlab.com/yaook/k8s/-/merge_requests/1203>`_)
 - Some images got moved to the yaook registry, so we updated the image path.
 
-  For registry.yaook.cloud/yaook/backup-shifter:1.0.166 a newer tag needs to be
+  For ``registry.yaook.cloud/yaook/backup-shifter:1.0.166`` a newer tag needs to be
   used, as the old one is not available at new registry. (`!1206 <https://gitlab.com/yaook/k8s/-/merge_requests/1206>`_)
-- Cluster repo initialization with ./actions/init-cluster-repo.sh
+- Cluster repo initialization with ``./actions/init-cluster-repo.sh``
   does not fail anymore when the config already exists. (`!1211 <https://gitlab.com/yaook/k8s/-/merge_requests/1211>`_)
 
 
@@ -89,8 +89,8 @@ Deprecations and Removals
 Other Tasks
 ~~~~~~~~~~~
 
-- Added [yq](https://github.com/mikefarah/yq) as a dependency.
-  This allows shell scripts to read the config with `tomlq` (see !1176). (`!1176 <https://gitlab.com/yaook/k8s/-/merge_requests/1176>`_)
+- Added `yq <https://github.com/mikefarah/yq>`_ as a dependency.
+  This allows shell scripts to read the config with ``tomlq``. (`!1176 <https://gitlab.com/yaook/k8s/-/merge_requests/1176>`_)
 - Helm module execution is not retried anymore as that obfuscated failed rollouts (`!1215 <https://gitlab.com/yaook/k8s/-/merge_requests/1215>`_)
 -  (`!1218 <https://gitlab.com/yaook/k8s/-/merge_requests/1218>`_)
 
