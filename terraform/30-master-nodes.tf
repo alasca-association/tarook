@@ -1,15 +1,15 @@
 locals {
   # NOTE: coalesce() is used to provide non-null default values from the templates
   master_nodes = {
-    for name, values in var.masters :
-        "${var.cluster_name}-master-${name}" => {
+    for name, values in var.nodes :
+        "${local.nodes_prefix}${name}" => {
           image                    = coalesce(values.image, var.master_defaults.image)
           flavor                   = coalesce(values.flavor, var.master_defaults.flavor)
           az                       = values.az  # default: null
           volume_name              = "${var.cluster_name}-master-volume-${name}"
           root_disk_size           = coalesce(values.root_disk_size, var.master_defaults.root_disk_size)
           root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.master_defaults.root_disk_volume_type
-        }
+        } if values.role == "master"
   }
 }
 
