@@ -63,7 +63,7 @@ variable "default_worker_flavor" {
 variable "azs" {
   type    = set(string)
   default = ["AZ1", "AZ2", "AZ3"]
-  description = "If 'enable_az_management=true' defines which availability zones of your cloud to use to distribute the spawned server for better HA. Additionally the count of the array will define how many gateway server will be spawned. The naming of the elements doesn't matter if 'enable_az_management=false'. It is also used for unique naming of gateways."
+  description = "Defines the availability zones of your cloud to use for the creation of servers."
 }
 
 variable "thanos_delete_container" {
@@ -71,11 +71,11 @@ variable "thanos_delete_container" {
   default = false
 }
 
-// If set to false, the availability zone of instances will not be managed.
-// This is useful in CI environments if the Cloud Is Full.
-variable "enable_az_management" {
+// Setting this to false is useful in CI environments if the Cloud Is Full.
+variable "spread_gateways_across_azs" {
   type    = bool
   default = true
+  description = "If true, spawn a gateway node in each availability zone listed in 'azs'. Otherwise leave the distribution to the cloud controller."
 }
 
 variable "create_root_disk_on_volume" {
@@ -180,7 +180,7 @@ variable "masters" {
     object({
       image                    = optional(string)
       flavor                   = optional(string)
-      az                       = optional(string) # default: auto-select
+      az                       = optional(string)
       root_disk_size           = optional(number)
       root_disk_volume_type    = optional(string)
     })
@@ -199,7 +199,7 @@ variable "workers" {
     object({
       image                    = optional(string)
       flavor                   = optional(string)
-      az                       = optional(string) # default: auto-select
+      az                       = optional(string)
       root_disk_size           = optional(number)
       root_disk_volume_type    = optional(string)
       join_anti_affinity_group = optional(bool)

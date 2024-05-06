@@ -5,7 +5,7 @@ locals {
         "${var.cluster_name}-master-${name}" => {
           image                    = coalesce(values.image, var.default_master_image_name)
           flavor                   = coalesce(values.flavor, var.default_master_flavor)
-          az                       = var.enable_az_management ? coalesce(values.az, var.azs[index([for k, v in var.masters: k], name) % length(var.azs)]) : null
+          az                       = values.az  # default: null
           volume_name              = "${var.cluster_name}-master-volume-${name}"
           root_disk_size           = coalesce(values.root_disk_size, var.default_master_root_disk_size)
           root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.root_disk_volume_type

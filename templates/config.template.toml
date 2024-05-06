@@ -16,9 +16,6 @@ prevent_disruption = true
 
 #subnet_cidr = "172.30.154.0/24"
 
-# if set to true one must set proper values for the "azs" array according to the cloud in use
-#enable_az_management = false
-
 # Enable DualStack support
 # WARNING: DualStack support is not stable yet, see https://gitlab.com/yaook/k8s/-/issues/502
 dualstack_support = false # "•ᴗ•"
@@ -47,6 +44,9 @@ dualstack_support = false # "•ᴗ•"
 # The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'
 #gitlab_state_name = "tf-state"
 
+
+# if set to true it is ensured that gateway nodes are evenly spread across the specified availability zones
+#spread_gateways_across_azs = true
 
 #[terraform.masters.0]
 #[terraform.masters.1]

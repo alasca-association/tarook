@@ -5,7 +5,7 @@ locals {
         "${var.cluster_name}-worker-${name}" => {
           image                    = coalesce(values.image, var.default_worker_image)
           flavor                   = coalesce(values.flavor, var.default_worker_flavor)
-          az                       = var.enable_az_management ? coalesce(values.az, var.azs[index([for k, v in var.workers: k], name) % length(var.azs)]) : null
+          az                       = values.az  # default: null
           volume_name              = "${var.cluster_name}-worker-volume-${name}"
           root_disk_size           = coalesce(values.root_disk_size, var.defaults_worker_root_disk_size)
           root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.root_disk_volume_type

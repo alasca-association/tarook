@@ -4,7 +4,7 @@ locals {
       "${var.cluster_name}-gw-${lower(az)}" => {
         image                    = var.gateway_image_name
         flavor                   = var.gateway_flavor
-        az                       = var.enable_az_management ? az : null
+        az                       = var.spread_gateways_across_azs ? az : null
         fip_description          = "Floating IP for gateway in ${az}"
         volume_name              = "${var.cluster_name}-gw-volume-${lower(az)}"
         root_disk_size           = var.gateway_root_disk_size

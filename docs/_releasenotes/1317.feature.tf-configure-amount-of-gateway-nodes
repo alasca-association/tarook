@@ -1,0 +1,6 @@
+* Terraform: The amount of gateway nodes created is not dependant
+  on the amount of availability zones anymore
+  and can be set with ``[terraform].gateway_count``.
+  The setting's defaults yields the previous behavior
+  when ``[terraform].spread_gateway_across_azs`` is enabled
+  which it is by default.
