@@ -8,7 +8,8 @@
 
 haproxy_ports        = [30060]
 
-enable_az_management = false
+azs = ["AZ1", "AZ2", "AZ3"]
+spread_gateways_across_azs = false
 cluster_name         = "ci"
 
 ipv6_enabled = false
@@ -23,6 +24,7 @@ image  = "Ubuntu 20.04 LTS x64"
 
 [terraform.masters.1]
 image  = "Ubuntu 22.04 LTS x64"
+az     = "AZ1"  # just for testing this option
 
 [terraform.masters.2]
 
@@ -36,9 +38,11 @@ image  = "Ubuntu 22.04 LTS x64"
 
 [terraform.workers.storage-1]
 flavor = "L"
+az     = "AZ2"  # just for testing this option
 
 [terraform.workers.cpu-1]  # labeled for monitoring
 flavor = "L"
+az     = "AZ3"  # just for testing this option
 
 [terraform.workers.storage-2]
 flavor = "XL"

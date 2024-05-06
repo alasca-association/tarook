@@ -2,7 +2,9 @@
 
 import argparse
 from copy import deepcopy
+import json
 import logging
+from sys import stdin as sys_stdin
 
 import tomlkit as toml
 
@@ -28,6 +30,8 @@ def get_tf_var_defaults() -> dict:
     return {
         "masters": 3,
         "workers": 4,
+        "cluster_name": "managed-k8s",
+        "enable_az_management": True,
     }
 
 
@@ -146,12 +150,108 @@ def convert_config_into_new_format(config: dict) -> dict:
     return new_config
 
 
+def sync_node_azs_in_tf_and_config(new_config: dict, tf_state: dict) -> dict:
+    """Sync each node's availability zone in Terraform with the config
+
+    Determines the current availability zone of each master and worker node
+     from the Terraform state and sets it to that one in the configuration.
+
+    Args:
+        new_config: A parsed YAOOK/k8s configuration in the new format
+                    (as produced by ``convert_config_into_new_format()``)
+        tf_state: A YAOOK/k8s Terraform state in JSON format
+
+    Returns:
+        A copy of the given config with
+         ``[terraform.(masters|workers).<name>].az`` set
+    """
+
+    new_config = deepcopy(new_config)
+
+    # Skip if Terrafrom state is empty
+    try:
+        tf_state_resources = tf_state["values"]["root_module"]["resources"]
+    except KeyError:
+        logging.warning("Terraform state contains no resources")
+        return new_config
+
+    tf_var_defaults = get_tf_var_defaults()
+
+    # Retrieve the availability zone of each node from the Terraform state
+    node_azs = {
+        # node-name               : az-name
+        resource["values"]["name"]: resource["values"]["availability_zone"]
+        for resource in tf_state_resources
+        if (
+            resource["type"] == "openstack_compute_instance_v2"
+            and resource["name"] in ["master", "worker"]
+        )
+    }
+
+    cluster_name = config["terraform"].get(
+        "cluster_name", tf_var_defaults["cluster_name"]
+    )
+
+    # Set each node's availability zone to match the one in the Terraform state
+    for node_group, infix in [("masters", "master"), ("workers", "worker")]:
+        for name, node_attrs \
+                in new_config["terraform"].get(node_group, {}).items():
+            full_name = f"{cluster_name}-{infix}-{name}"  # taken from tf module
+            # NOTE: If the availability zone is null
+            #       it must not be set in the config
+            if (node_az := node_azs.get(full_name, None)) is not None:
+                node_attrs["az"] = node_az
+            else:
+                node_attrs.pop("az", None)
+
+    return new_config
+
+
+def migrate_to_explicit_az_config(config: dict, tf_state: dict) -> dict:
+    """Migrate a config to use explicit set availability zones
+
+    In the given config, ensures every node has an availability zone set
+     if it has one stored in the given Terraform state.
+    Replaces ``[terraform].enable_az_management``
+    with ``[terraform].spread_gateways_across_azs``.
+
+    Args:
+        config: A parsed YAOOK/k8s configuration
+        tf_state: A YAOOK/k8s Terraform state in JSON format
+
+    Returns:
+        A migrated copy of the given ``config``
+    """
+
+    new_config = deepcopy(config)
+
+    tf_var_defaults = get_tf_var_defaults()
+
+    # Configure each node's availability zones based on Terraform state
+    new_config = sync_node_azs_in_tf_and_config(new_config, tf_state)
+
+    # Replace `[terraform].enable_az_management`
+    # with `[terraform].spread_gateways_across_azs`
+    if "enable_az_management" in new_config["terraform"]:
+        new_config["terraform"]["spread_gateways_across_azs"] = \
+            new_config["terraform"].pop(
+                "enable_az_management", tf_var_defaults["enable_az_management"]
+            )
+
+    return new_config
+
+
 def get_args() -> argparse.Namespace:
     """Parse command line arguments and return them"""
 
     parser = argparse.ArgumentParser(
         description="Output an existing YAOOK/k8s config in the new format",
     )
+    parser.add_argument(
+        'tf_state_file', type=argparse.FileType('r'),
+        default=sys_stdin,
+        help="The path to a JSON Terraform state file."
+             " (If set to '-' the state is read from stdin)")
     parser.add_argument(
         'config_file', type=argparse.FileType('r'),
         help="The path to a YAOOK/k8s config file in the old format",
@@ -175,8 +275,20 @@ if __name__ == "__main__":
     finally:
         args.config_file.close()
 
+    # Get Terraform state
+    try:
+        tf_state = json.loads(args.tf_state_file.read())
+    except json.decoder.JSONDecodeError:
+        logging.error("Failed to parse the given JSON Terraform state file.")
+        exit(1)
+    finally:
+        args.tf_state_file.close()
+
     # Convert config to new format
     new_config = convert_config_into_new_format(config)
+
+    # Migrate config to explicit availability zone setting
+    new_config = migrate_to_explicit_az_config(new_config, tf_state)
 
     # Print new config
     print(

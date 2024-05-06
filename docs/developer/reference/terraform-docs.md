@@ -73,7 +73,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| azs | If 'enable\_az\_management=true' defines which availability zones of your cloud to use to distribute the spawned server for better HA. Additionally the count of the array will define how many gateway server will be spawned. The naming of the elements doesn't matter if 'enable\_az\_management=false'. It is also used for unique naming of gateways. | `set(string)` | <pre>[<br>  "AZ1",<br>  "AZ2",<br>  "AZ3"<br>]</pre> | no |
+| azs | Defines the availability zones of your cloud to use for the creation of servers. | `set(string)` | <pre>[<br>  "AZ1",<br>  "AZ2",<br>  "AZ3"<br>]</pre> | no |
 | cluster\_name | n/a | `string` | `"managed-k8s"` | no |
 | create\_root\_disk\_on\_volume | n/a | `bool` | `false` | no |
 | default\_master\_flavor | n/a | `string` | `"M"` | no |
@@ -83,7 +83,6 @@ No modules.
 | default\_worker\_image\_name | n/a | `string` | `"Ubuntu 22.04 LTS x64"` | no |
 | default\_worker\_root\_disk\_size | If 'create\_root\_disk\_on\_volume=true', the worker flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size. | `number` | `50` | no |
 | dns\_nameservers\_v4 | A list of IPv4 addresses which will be configured as DNS nameservers of the IPv4 subnet. | `list(string)` | `[]` | no |
-| enable\_az\_management | If set to false, the availability zone of instances will not be managed. This is useful in CI environments if the Cloud Is Full. | `bool` | `true` | no |
 | gateway\_flavor | n/a | `string` | `"XS"` | no |
 | gateway\_image\_name | n/a | `string` | `"Debian 12 (bookworm)"` | no |
 | gateway\_root\_disk\_volume\_size | If 'create\_root\_disk\_on\_volume=true' and the gateway flavor does not specify a disk size, the root disk volume will have this size. | `number` | `10` | no |
@@ -95,17 +94,18 @@ No modules.
 | ipv4\_enabled | If set to true, ipv4 will be used | `bool` | `true` | no |
 | ipv6\_enabled | If set to true, ipv6 will be used | `bool` | `false` | no |
 | keypair | n/a | `string` | n/a | yes |
-| masters | User defined list of control plane nodes to be created with specified values | <pre>map(<br>    object({<br>      image                    = optional(string)<br>      flavor                   = optional(string)<br>      az                       = optional(string) # default: auto-select<br>      root_disk_size           = optional(number)<br>      root_disk_volume_type    = optional(string)<br>    })<br>  )</pre> | <pre>{<br>  "0": {},<br>  "1": {},<br>  "2": {}<br>}</pre> | no |
+| masters | User defined list of control plane nodes to be created with specified values | <pre>map(<br>    object({<br>      image                    = optional(string)<br>      flavor                   = optional(string)<br>      az                       = optional(string)<br>      root_disk_size           = optional(number)<br>      root_disk_volume_type    = optional(string)<br>    })<br>  )</pre> | <pre>{<br>  "0": {},<br>  "1": {},<br>  "2": {}<br>}</pre> | no |
 | monitoring\_manage\_thanos\_bucket | Create an object storage container for thanos. | `bool` | `false` | no |
 | network\_mtu | MTU for the network used for the cluster. | `number` | `1450` | no |
 | public\_network | n/a | `string` | `"shared-public-IPv4"` | no |
 | root\_disk\_volume\_type | If 'create\_root\_disk\_on\_volume=true', the volume type to be used as default for all instances. If left empty, default of IaaS environment is used. | `string` | `""` | no |
+| spread\_gateways\_across\_azs | If true, spawn a gateway node in each availability zone listed in 'azs'. Otherwise leave the distribution to the cloud controller. | `bool` | `true` | no |
 | subnet\_cidr | n/a | `string` | `"172.30.154.0/24"` | no |
 | subnet\_v6\_cidr | n/a | `string` | `"fd00::/120"` | no |
 | thanos\_delete\_container | n/a | `bool` | `false` | no |
 | timeout\_time | n/a | `string` | `"30m"` | no |
 | worker\_anti\_affinity\_group\_name | n/a | `string` | `"cah-anti-affinity"` | no |
-| workers | User defined list of worker nodes to be created with specified values | <pre>map(<br>    object({<br>      image                    = optional(string)<br>      flavor                   = optional(string)<br>      az                       = optional(string) # default: auto-select<br>      root_disk_size           = optional(number)<br>      root_disk_volume_type    = optional(string)<br>      join_anti_affinity_group = optional(bool)<br>    })<br>  )</pre> | <pre>{<br>  "0": {},<br>  "1": {},<br>  "2": {},<br>  "3": {}<br>}</pre> | no |
+| workers | User defined list of worker nodes to be created with specified values | <pre>map(<br>    object({<br>      image                    = optional(string)<br>      flavor                   = optional(string)<br>      az                       = optional(string)<br>      root_disk_size           = optional(number)<br>      root_disk_volume_type    = optional(string)<br>      join_anti_affinity_group = optional(bool)<br>    })<br>  )</pre> | <pre>{<br>  "0": {},<br>  "1": {},<br>  "2": {},<br>  "3": {}<br>}</pre> | no |
 
 ## Outputs
 

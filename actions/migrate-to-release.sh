@@ -60,8 +60,9 @@ fi
 # conversion of the terraform config section
 notef "${script_name}: Converting the '[terraform]' config section into the new format ..."
 {
-    python3 "$actions_dir/helpers/config_migrate.py" - "$config_file" \
-        > "$config_file.yk8snew" \
+    terraform -chdir=managed-k8s/terraform/ show -json \
+        | python3 "$actions_dir/helpers/config_migrate.py" - "$config_file" \
+            > "$config_file.yk8snew" \
     && mv "$config_file.yk8snew" "${config_file}"
 } && {
     notef "${script_name}: Converted. Please review and stage the diff below:"

@@ -1,0 +1,26 @@
+YAOOK/k8s Terraform does not implicitly assign
+nodes to availability zones anymore
+if actually none was configured for a node.
+
+For all master and worker nodes,
+availability zones must now be configured explicitly;
+and ``[terraform].enable_az_management`` has been removed therefore.
+
+Not configuring availability zones,
+now leaves the choice to the cloud controller
+which may or may not select one.
+To achieve the same effect for gateway nodes,
+turn off ``[terraform].spread_gateways_across_azs``.
+
+.. attention:: Action required
+
+   To prevent Terraform from unneccessarily rebuilding master and worker nodes,
+   you must run the migration script.
+   This will determine each nodes' availability zone in the Terraform state
+   to set in the config for you.
+
+   .. code::
+
+       ./managed-k8s/actions/migrate-to-release.sh
+
+_
