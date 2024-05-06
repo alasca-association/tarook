@@ -19,38 +19,48 @@ subnet_v6_cidr    = "fd00::/120"
 #azs = ["nova"]
 #public_network = "floating-IPv4"
 
-[terraform.masters.0]
+[terraform.nodes.master-0]
+role   = "master"
 image  = "Ubuntu 20.04 LTS x64"
 
-[terraform.masters.1]
+[terraform.nodes.master-1]
+role   = "master"
 image  = "Ubuntu 22.04 LTS x64"
 az     = "AZ1"  # just for testing this option
 
-[terraform.masters.2]
+[terraform.nodes.master-2]
+role   = "master"
 
-[terraform.workers.storage-0]
+[terraform.nodes.worker-storage-0]
+role   = "worker"
 flavor = "XL"
 image  = "Ubuntu 20.04 LTS x64"
 
-[terraform.workers.cpu-0]  # labeled for monitoring
+[terraform.nodes.worker-cpu-0]
+role   = "worker"  # labeled for monitoring
 flavor = "L"
 image  = "Ubuntu 22.04 LTS x64"
 
-[terraform.workers.storage-1]
+[terraform.nodes.worker-storage-1]
+role   = "worker"
 flavor = "L"
 az     = "AZ2"  # just for testing this option
 
-[terraform.workers.cpu-1]  # labeled for monitoring
+[terraform.nodes.worker-cpu-1]
+role   = "worker"  # labeled for monitoring
 flavor = "L"
 az     = "AZ3"  # just for testing this option
 
-[terraform.workers.storage-2]
+[terraform.nodes.worker-storage-2]
+role   = "worker"
 flavor = "XL"
 
-[terraform.workers.gpu-0]
+[terraform.nodes.worker-gpu-0]
+role   = "worker"
 flavor = "CH-8C:32:100s-GN:1xTeslaT4"
 
-[terraform.workers.cpu-2]  # labeled for monitoring
+[terraform.nodes.worker-cpu-2]
+role   = "worker"  # labeled for monitoring
 flavor = "M"
 
 

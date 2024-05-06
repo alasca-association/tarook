@@ -37,6 +37,7 @@ Adjust the configuration to meet your needs:
   [terraform]
 
   subnet_cidr = "172.30.154.0/24"
+  cluster_name = "managed-k8s"
 
   [terraform.master_defaults]
   image  = "Ubuntu 22.04 LTS x64"
@@ -44,25 +45,33 @@ Adjust the configuration to meet your needs:
   [terraform.worker_defaults]
   image  = "Ubuntu 22.04 LTS x64"
 
-  [terraform.masters.0]
+  [terraform.nodes.master-0]
+  role   = "master"
 
-  [terraform.masters.1]
+  [terraform.nodes.master-1]
+  role   = "master"
 
-  [terraform.masters.2]
+  [terraform.nodes.master-2]
+  role   = "master"
 
-  [terraform.workers.0]
+  [terraform.nodes.worker-0]
+  role   = "worker"
   flavor = "L"
 
-  [terraform.workers.1]
+  [terraform.nodes.worker-1]
+  role   = "worker"
   flavor = "L"
 
-  [terraform.workers.2]
+  [terraform.nodes.worker-2]
+  role   = "worker"
   flavor = "XL"
 
-  [terraform.workers.3]
+  [terraform.nodes.worker-3]
+  role   = "worker"
   flavor = "XL"
 
-  [terraform.workers.4]
+  [terraform.nodes.worker-4]
+  role   = "worker"
   flavor = "XL"
 
 Creation of the harbour infrastructure

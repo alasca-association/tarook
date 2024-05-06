@@ -142,12 +142,14 @@ variable "gateway_defaults" {
   EOT
 
   type = object({              # --- template spec ---
+    common_name                = optional(string, "gw-")
     image                      = optional(string, "Debian 12 (bookworm)")
     flavor                     = optional(string, "XS")
     root_disk_size             = optional(number, 10)
     root_disk_volume_type      = optional(string, "")
   })
   default = {                  # --- default template ---
+    common_name                = "gw-"
     image                      = "Debian 12 (bookworm)"
     flavor                     = "XS"
     root_disk_size             = 10
@@ -159,7 +161,6 @@ variable "gateway_defaults" {
      error_message = "Gateway 'root_disk_size' is zero"
   }
 }
-
 
 variable "master_defaults" {
   description = <<-EOT
@@ -187,26 +188,6 @@ variable "master_defaults" {
      error_message = "Master 'root_disk_size' is zero"
   }
 }
-
-variable "masters" {
-  description = "User defined list of control plane nodes to be created with specified values"
-
-  type = map(
-    object({
-      image                    = optional(string)
-      flavor                   = optional(string)
-      az                       = optional(string)
-      root_disk_size           = optional(number)
-      root_disk_volume_type    = optional(string)
-    })
-  )
-  default = {  # default: create 3 master nodes
-    "0" = {}
-    "1" = {}
-    "2" = {}
-  }
-}
-
 
 variable "worker_defaults" {
   description = <<-EOT
@@ -238,15 +219,19 @@ variable "worker_defaults" {
   }
 }
 
-variable "workers" {
-  description = <<-EOT
-    User defined list of worker nodes to be created with specified values
 
+variable "nodes" {
+  description = <<-EOT
+    User defined list of control plane and worker nodes to be created with specified values
+
+    'role' must be one of: "master", "worker".
+    'anti_affinity_group' must not be set when role!="worker"
     Leaving 'anti_affinity_group' empty means to not join any anti affinity group
   EOT
 
   type = map(
     object({
+      role                     = string            # one of: 'master', 'worker'
       image                    = optional(string)
       flavor                   = optional(string)
       az                       = optional(string)
@@ -255,12 +240,29 @@ variable "workers" {
       anti_affinity_group      = optional(string)
     })
   )
-  default = {  # default: create 4 worker nodes
-    "0" = {}
-    "1" = {}
-    "2" = {}
-    "3" = {}
+  default = {  # default: create 3 master and 4 worker nodes
+    "master-0"                 = {role="master"}
+    "master-1"                 = {role="master"}
+    "master-2"                 = {role="master"}
+    "worker-0"                 = {role="worker"}
+    "worker-1"                 = {role="worker"}
+    "worker-2"                 = {role="worker"}
+    "worker-3"                 = {role="worker"}
   }
+
+  validation {  # Validate role
+    condition     = alltrue([for x in var.nodes: contains(["master", "worker"], x.role)])
+    error_message = "Invalid node role: Must be 'master' or 'worker'."
+  }
+  # Validate worker node attributes are not used for master nodes
+  validation {
+    condition     = alltrue([for x in var.nodes: x.anti_affinity_group == null if x.role == "master"])
+    error_message = "'anti_affinity_group' must not be set for master nodes"
+  }
+}
+
+locals {
+  nodes_prefix = (var.cluster_name == "" ? "" : "${var.cluster_name}-")
 }
 
 # ANCHOR_END: terraform_variables

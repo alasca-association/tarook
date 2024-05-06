@@ -3,6 +3,10 @@ The format of the ``[terraform]`` config section changed significantly.
 Terraform nodes are now to be configured as blocks of values
 rather than across separate lists for each type of value.
 
+Furthermore you now have control over the whole name of Terraform nodes,
+see :ref:`the documentation <cluster-configuration.configuring-terraform>`
+for further details.
+
 .. code:: diff
 
      [terraform]
@@ -14,13 +18,15 @@ rather than across separate lists for each type of value.
    - master_azs = ["AZ1", "AZ3"]
    + #....
    +
-   + [terraform.masters.X]
+   + [terraform.nodes.master-X]
+   + role     = "master"  # mandatory
    + flavor   = "M"
    + image    = "Ubuntu 20.04 LTS x64"
    + az       = "AZ1"
    + #....
    +
-   + [terraform.workers.A]
+   + [terraform.nodes.worker-A]
+   + role     = "worker"  # mandatory
    + flavor   = "S"
    + image    = "Debian 12 (bookworm)"
    + az       = "AZ3"

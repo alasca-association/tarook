@@ -262,12 +262,17 @@ of a yaook kubernetes cluster.
 
 .. code:: toml
 
-   [terraform.masters.0]
-   [terraform.masters.1]
+   [terraform.nodes.master-0]
+   role = "master"
+   [terraform.nodes.master-1]
+   role = "master"
 
-   [terraform.workers.0]
-   [terraform.workers.1]
-   [terraform.workers.2]
+   [terraform.nodes.worker-0]
+   role = "worker"
+   [terraform.nodes.worker-1]
+   role = "worker"
+   [terraform.nodes.worker-2]
+   role = "worker"
 
 Create a string of 16 random characters:
 

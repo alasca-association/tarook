@@ -65,6 +65,7 @@ prevent_disruption = true
 # Change the default values for all gateway nodes
 # Values can be selectively specified
 #[terraform.gateway_defaults]
+#common_name                = "gw-"  # NOTE: will be suffixed by an index
 #image                      = "Debian 12 (bookworm)"
 #flavor                     = "XS"
 #root_disk_size             = 10
@@ -88,15 +89,22 @@ prevent_disruption = true
 ##anti_affinity_group             # == <unset>: don't join any group
 #
 # Master nodes to be created
-#[terraform.masters.0]
-#[terraform.masters.1]
-#[terraform.masters.2]
+#[terraform.nodes.master-0]
+#role = "master"
+#[terraform.nodes.master-1]
+#role = "master"
+#[terraform.nodes.master-2]
+#role = "master"
 #
 # Worker nodes to be created
-#[terraform.workers.0]
-#[terraform.workers.1]
-#[terraform.workers.2]
-#[terraform.workers.3]
+#[terraform.nodes.worker-0]
+#role = "worker"
+#[terraform.nodes.worker-1]
+#role = "worker"
+#[terraform.nodes.worker-2]
+#role = "worker"
+#[terraform.nodes.worker-3]
+#role = "worker"
 #
 # One gateway node is created per availability zone (AZ1, AZ2, AZ3),
 # see [terraform].gateway_count

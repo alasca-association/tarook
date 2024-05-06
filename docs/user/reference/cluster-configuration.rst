@@ -27,6 +27,8 @@ variables into the ``inventory/``. The ``inventory/`` is automatically
 included. Following the concept of separation of concerns, variables are
 only available to stages/layers which need them.
 
+.. _cluster-configuration.configuring-terraform:
+
 Configuring Terraform
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -39,11 +41,16 @@ need to adjust these values if you e.g. want to enable
 
 .. note::
 
-   There is a variable ``masters`` to configure
-   the k8s master servers and ``workers`` for the k8s worker servers.
+   There is a variable ``nodes`` to configure
+   the k8s master and worker servers.
+   The ``role`` attribute must be used to distinguish both [1]_.
+
    The amount of gateway nodes can be controlled with the `gateway_count` variable.
    It defaults to the number of elements in the ``azs`` array when
    ``spread_gateways_across_azs=true`` and 3 otherwise.
+
+.. [1] Caveat: Changing the role of a Terraform node
+               will completely rebuild the node.
 
 You can add and delete Terraform nodes simply
 by adding and removing their entries to/from the config
@@ -57,22 +64,57 @@ Consider the following example:
    - gateway_count = 3
    + gateway_count = 2                # <-- one gateway gets deleted
 
-    [terraform.worker.0]
+    [terraform.nodes.worker-0]
+    role = "worker"
     flavor = "M"
     image = "Debian 12 (bookworm)"
    -
-   -[terraform.worker.1]             # <-- gets deleted
+   -[terraform.nodes.worker-1]       # <-- gets deleted
+   -role = "worker"
    -flavor = "M"
 
-    [terraform.worker.2]
+    [terraform.nodes.worker-2]
+    role = "worker"
     flavor = "L"
    +
-   +[terraform.worker.mon1]          # <-- gets created
+   +[terraform.nodes.mon1]           # <-- gets created
+   +role = "worker"
    +flavor = "S"
    +image = "Ubuntu 22.04 LTS x64"
 
 For an auto-generated complete list of variables, please refer to
 :doc:`Terraform docs </developer/reference/terraform-docs>`.
+
+The name of a Terraform node is composed from the following parts:
+
+- for master/worker nodes:
+  ``[terraform].cluster_name`` ``<the nodes' table name>``
+
+- for gateway nodes:
+  ``[terraform].cluster_name`` ``[terraform.gateway_defaults].common_name`` ``<numeric-index>``
+
+.. code:: toml
+
+   [terraform]
+
+   cluster_name = "yk8s"
+   gateway_count = 1
+   #....
+
+   [terraform.gateway_defaults]
+   common_name = "gateway-"
+
+   [terraform.nodes.master-X]
+   role = "master"
+
+   [terraform.nodes.worker-A]
+   role = "worker"
+
+   # yields the following node names:
+   # - yk8s-gateway-0
+   # - yk8s-master-X
+   # - yk8s-worker-A
+
 
 To activate automatic backend of Terraform statefiles to Gitlab,
 adapt the Terraform section of your ``config.toml``:

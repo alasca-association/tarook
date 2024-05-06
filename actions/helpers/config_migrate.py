@@ -23,6 +23,21 @@ def listget(list_: list, index: int, default):
         return default
 
 
+def is_enquoted(str_: str) -> bool:
+    """Check if a string is enquoted"""
+    if (str_.startswith("'") and str_.endswith("'")) \
+       or (str_.startswith('"') and str_.endswith('"')):
+        return True
+    else:
+        return False
+
+
+def unenquote(str_: str) -> str:
+    """Remove the quotes from an enquoted string"""
+    if is_enquoted(str_):
+        return str_[1:-1]
+
+
 def get_tf_var_defaults() -> dict:
     """Return the defaults of YAOOK/k8s Terraform variables"""
 
@@ -77,7 +92,6 @@ def convert_config_into_new_format(config: dict) -> dict:
         # Mapping of new config keys to old config keys
         tf_cfg_map = {
             "gateway_defaults": {
-                "_type": "defaults_group",
                 "attrs": {  # attributes
                     # new attribute           : old attribute
                     "image"                   : "gateway_image_name"             ,  # noqa: E203, E501
@@ -87,7 +101,6 @@ def convert_config_into_new_format(config: dict) -> dict:
                 },
             },
             "master_defaults": {
-                "_type": "defaults_group",
                 "attrs": {  # attributes
                     # new attribute           : old attribute
                     "image"                   : "default_master_image_name"      ,  # noqa: E203, E501
@@ -97,7 +110,6 @@ def convert_config_into_new_format(config: dict) -> dict:
                 },
             },
             "worker_defaults": {  # defaults group
-                "_type": "defaults_group",
                 "attrs": {  # attributes
                     # new attribute           : old attribute
                     "image"                   : "default_worker_image_name"      ,  # noqa: E203, E501
@@ -112,35 +124,43 @@ def convert_config_into_new_format(config: dict) -> dict:
                     #                  Remove `anti_affinity_group_name`.
                 },
             },
-            "masters": {
-                "_type": "node_group",
-                "count": "masters",       # node count
-                "name":  "master_names",  # primary attribute
-                "attrs": {                # attributes
-                    # new attribute           : old attributes list
-                    "image"                   : "master_images"                  ,  # noqa: E203, E501
-                    "flavor"                  : "master_flavors"                 ,  # noqa: E203, E501
-                    "az"                      : "master_azs"                     ,  # noqa: E203, E501
-                    "root_disk_size"          : "master_root_disk_sizes"         ,  # noqa: E203, E501
-                    "root_disk_volume_type"   : "master_root_disk_volume_types"  ,  # noqa: E203, E501
+            "nodes": {
+                "count": ["masters", "workers"],
+                # NOTE: __<counter> subkeys provide
+                #       an individual source for each counter in count
+                # NOTE: old attrs enquoted with '' mean the literal string in between
+                "name": {
+                    "__masters": "master_names",
+                    "__workers": "worker_names",
                 },
-            },
-            "workers": {
-                "_type": "node_group",
-                "count": "workers",       # node count
-                "name":  "worker_names",  # primary attribute
-                "attrs": {                # attributes
-                    # new attribute           : old attributes list
-                    "image"                   : "worker_images"                  ,  # noqa: E203, E501
-                    "flavor"                  : "worker_flavors"                 ,  # noqa: E203, E501
-                    "az"                      : "worker_azs"                     ,  # noqa: E203, E501
-                    "root_disk_size"          : "worker_root_disk_sizes"         ,  # noqa: E203, E501
-                    "root_disk_volume_type"   : "worker_root_disk_volume_types"  ,  # noqa: E203, E501
-                    "join_anti_affinity_group": "worker_join_anti_affinity_group",  # noqa: E203, E501
-                    # post-processing: Add `anti_affinity_group=
-                    #                   worker_defaults.anti_affinity_group_name`
-                    #                   if `join_anti_affinity_group=true`
-                    #                  Remove `join_anti_affinity_group`.
+                "name_prefix": {  # literal string to prefix name with
+                    "__masters": "master-",
+                    "__workers": "worker-",
+                },
+                "attrs": {
+                    "__masters": {
+                        "role": "'master'",
+                        # new attribute           : old attributes list
+                        "image"                   : "master_images"                  ,  # noqa: E203, E501
+                        "flavor"                  : "master_flavors"                 ,  # noqa: E203, E501
+                        "az"                      : "master_azs"                     ,  # noqa: E203, E501
+                        "root_disk_size"          : "master_root_disk_sizes"         ,  # noqa: E203, E501
+                        "root_disk_volume_type"   : "master_root_disk_volume_types"  ,  # noqa: E203, E501
+                    },
+                    "__workers": {
+                        "role": "'worker'",
+                        # new attribute           : old attributes list
+                        "image"                   : "worker_images"                  ,  # noqa: E203, E501
+                        "flavor"                  : "worker_flavors"                 ,  # noqa: E203, E501
+                        "az"                      : "worker_azs"                     ,  # noqa: E203, E501
+                        "root_disk_size"          : "worker_root_disk_sizes"         ,  # noqa: E203, E501
+                        "root_disk_volume_type"   : "worker_root_disk_volume_types"  ,  # noqa: E203, E501
+                        "join_anti_affinity_group": "worker_join_anti_affinity_group",  # noqa: E203, E501
+                        # post-processing: Add `anti_affinity_group=
+                        #                   worker_defaults.anti_affinity_group_name`
+                        #                   if `join_anti_affinity_group=true`
+                        #                  Remove `join_anti_affinity_group`.
+                    },
                 },
             },
         }
@@ -159,7 +179,11 @@ def convert_config_into_new_format(config: dict) -> dict:
                     instead; the ``anti_affinity_group_name`` attribute in the
                     worker defaults is removed.
             """
-            _workers = converted_cfg.get("workers", {})
+            _workers = {
+                node: attrs for node, attrs
+                in converted_cfg.get("nodes", {}).items()
+                if attrs["role"] == "worker"
+            }
             _worker_defaults = converted_cfg.get("worker_defaults", {})
 
             _anti_affinity_group_name = \
@@ -204,28 +228,42 @@ def convert_config_into_new_format(config: dict) -> dict:
         def convert_cfg_group(grp: dict) -> dict:
             """Convert a single config group as per mapping ``tf_cfg_map``"""
             if "count" in grp:
-                return {
-                    name: {  # item name
-                        # map old list-item-attribute to new attribute
-                        new_attr: old_cfg[old_attr][idx]
-                        # check all attributes
-                        for new_attr, old_attr in grp["attrs"].items()
-                        # only create new attribute if old one existed
-                        if idx < len(old_cfg.get(old_attr, []))
-                    }
-                    # iterate over all items as per count
-                    for idx, name in
-                    enumerate(  # create mapping of item index and name
-                        # get list of item names
-                        # default to item index for missing item names
-                        listget(old_cfg.get(grp["name"], []), i, str(i))
-                        for i in range(
-                            old_cfg.get(
-                                grp["count"], tf_var_defaults[grp["count"]]
+                _converted_cfg_group = {}
+
+                for counter in grp["count"]:
+                    _converted_cfg_group__counter = {
+                        f"{grp['name_prefix'][f'__{counter}']}{name}": {  # item name
+                            # map old list-item-attribute or literal string
+                            # to new attribute
+                            new_attr: (
+                                unenquote(old_attr) if is_enquoted(old_attr)
+                                else old_cfg[old_attr][idx]
+                            )
+                            # check all attributes
+                            for new_attr, old_attr
+                            in grp["attrs"][f"__{counter}"].items()
+                            # only create new attribute if old one existed
+                            if (
+                                is_enquoted(old_attr)
+                                or idx < len(old_cfg.get(old_attr, []))
+                            )
+                        }
+                        # iterate over all items as per count
+                        for idx, name in
+                        enumerate(  # create mapping of item index and name
+                            # get list of item names
+                            # default to item index for missing item names
+                            listget(
+                                old_cfg.get(grp["name"][f"__{counter}"], []),
+                                i, str(i)
+                            )
+                            for i in range(
+                                old_cfg.get(counter, tf_var_defaults[counter])
                             )
                         )
-                    )
-                }
+                    }
+                    _converted_cfg_group.update(_converted_cfg_group__counter)
+                return _converted_cfg_group
             else:
                 return {
                     # map old attribute to new attribute
@@ -256,12 +294,18 @@ def convert_config_into_new_format(config: dict) -> dict:
         post_process(converted_cfg)
 
         # Clear old config keys
-        for grp, keys in tf_cfg_map.items():
-            if "count" in keys:
-                new_cfg.pop(keys.get("count"), None)
-                new_cfg.pop(keys.get("name"), None)
-            for _, old_attr in keys["attrs"].items():
-                new_cfg.pop(old_attr, None)
+        for grp in tf_cfg_map.values():
+            if "count" in grp:
+                for counter in grp["count"]:
+                    new_cfg.pop(counter, None)
+                for name in grp["name"].values():
+                    new_cfg.pop(name, None)
+                for attrs in grp["attrs"].values():
+                    for old_attr in attrs.values():
+                        new_cfg.pop(old_attr, None)
+            else:
+                for old_attr in grp["attrs"].values():
+                    new_cfg.pop(old_attr, None)
 
         # Add new config keys
         new_cfg.update(converted_cfg)
@@ -318,16 +362,15 @@ def sync_node_azs_in_tf_and_config(new_config: dict, tf_state: dict) -> dict:
     )
 
     # Set each node's availability zone to match the one in the Terraform state
-    for node_group, infix in [("masters", "master"), ("workers", "worker")]:
-        for name, node_attrs \
-                in new_config["terraform"].get(node_group, {}).items():
-            full_name = f"{cluster_name}-{infix}-{name}"  # taken from tf module
-            # NOTE: If the availability zone is null
-            #       it must not be set in the config
-            if (node_az := node_azs.get(full_name, None)) is not None:
-                node_attrs["az"] = node_az
-            else:
-                node_attrs.pop("az", None)
+    for name, node_attrs \
+            in new_config["terraform"].get("nodes", {}).items():
+        full_name = f"{cluster_name}-{name}"  # taken from tf module
+        # NOTE: If the availability zone is null
+        #       it must not be set in the config
+        if (node_az := node_azs.get(full_name, None)) is not None:
+            node_attrs["az"] = node_az
+        else:
+            node_attrs.pop("az", None)
 
     return new_config
 

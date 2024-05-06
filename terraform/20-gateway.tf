@@ -1,11 +1,11 @@
 locals {
   gateway_nodes = {
     for idx in range(local.gateway_count) :
-      "${var.cluster_name}-gw-${idx}" => {
+      "${local.nodes_prefix}${var.gateway_defaults.common_name}${idx}" => {
         image                    = var.gateway_defaults.image
         flavor                   = var.gateway_defaults.flavor
         az                       = var.spread_gateways_across_azs ? tolist(var.azs)[idx % length(var.azs)] : null
-        volume_name              = "${var.cluster_name}-gw-${idx}-volume"
+        volume_name              = "${local.nodes_prefix}${var.gateway_defaults.common_name}${idx}-volume"
         root_disk_size           = var.gateway_defaults.root_disk_size
         root_disk_volume_type    = var.gateway_defaults.root_disk_volume_type
       }
