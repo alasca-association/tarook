@@ -10,11 +10,13 @@
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
+        ./module.nix
       ];
       systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
       perSystem = {
         pkgs,
         system,
+        config,
         ...
       }: {
         _module.args.pkgs = import nixpkgs {
@@ -41,6 +43,7 @@
             pkgs.poetry
           ];
         };
+        packages.inventory = (pkgs.formats.yaml {}).generate "inventory" config.yk8s;
 
         formatter = pkgs.alejandra;
       };
