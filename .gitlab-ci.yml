@@ -165,6 +165,7 @@ build-docs-check:
   before_script:
     - poetry install --with docs --sync
   script:
+    - towncrier build --version x.x.x --keep
     - sphinx-build -W docs _build/html
     - mv _build/html public
   artifacts:
@@ -176,8 +177,8 @@ build-docs-check:
     # run only on MR when changes were made
     - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
       changes:
-      - 'docs/[!_]*/**/*'
-      - 'docs/[!_]*'  # the above does not include files directly in docs/
+      - 'docs/**/*'
+      - 'docs/*'  # the above does not include files directly in docs/
       - 'CHANGELOG.rst'
       when: on_success
     - when: never
