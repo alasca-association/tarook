@@ -2,11 +2,13 @@
 set -euo pipefail
 actions_dir="$(realpath "$(dirname "$0")")"
 
-# Ensure that the latest config is deployed to the inventory
-python3 "$actions_dir/update_inventory.py"
-
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
+
+check_venv
+
+# Ensure that the latest config is deployed to the inventory
+python3 "$actions_dir/update_inventory.py"
 
 if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraform_version')" "$terraform_min_version")" -lt 0 ]; then
     errorf 'Please upgrade Terraform to at least v'"$terraform_min_version"

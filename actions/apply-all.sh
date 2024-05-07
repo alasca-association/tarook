@@ -5,6 +5,8 @@ actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
+check_venv
+
 # Invoke Terraform, if configured
 if [ "${TF_USAGE:-true}" == 'true' ]; then
   run "$actions_dir/apply-terraform.sh"

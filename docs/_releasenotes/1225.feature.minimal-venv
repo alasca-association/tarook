@@ -1,0 +1,2 @@
+An option to use a minimal virtual Python enviroment has been added.
+Take a look at :doc: `Minimal Access Venv </user/guide/minimal-access-venv>`.

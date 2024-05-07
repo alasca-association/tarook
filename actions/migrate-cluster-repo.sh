@@ -5,6 +5,8 @@ actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
+check_venv
+
 # Move etc directory
 if [ ! -d "$etc_directory" ]; then
   if [ -d "inventory/.etc" ]; then

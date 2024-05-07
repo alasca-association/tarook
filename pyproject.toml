@@ -17,7 +17,6 @@ loguru = "^0.7.0"
 PyYAML = "^6.0"
 packaging = "^23.1"
 jsonschema = "^4.17.3"
-toml = "^0.10.2"
 kubernetes-validate = "^1.26.0"
 hvac = "^2.0.0"
 boto3 = "^1.26.155"
@@ -49,6 +48,9 @@ sphinx-multiversion = "^0.2.4"
 myst-parser = "^3.0.0"
 sphinx-design = "^0.5.0"
 sphinx-copybutton = "^0.5.2"
+
+[tool.poetry.group.minimal-access.dependencies]
+toml = "^0.10.2"
 
 [build-system]
 requires = ["poetry-core"]

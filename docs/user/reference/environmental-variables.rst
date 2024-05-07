@@ -334,6 +334,19 @@ Vault tooling variables
 
 
 
+.. _environmental-variables.miscellaneous:
+
+Miscellaneous
+-------------
+
+Variables which do not really fit into another category.
+
+=========================================== =========== ===================
+Environment Variable                        Default     Description
+=========================================== =========== ===================
+MINIMAL_ACCESS_VENV                         ``false``   Boolean value which defaults to ``false``. If set to ``true``, a minimal virtual Python environment which contains barely enough to establish a connection to the cluster will be sourced when moving into the cluster repository.
+=========================================== =========== ===================
+
 .. _environmental-variables.template:
 
 Template

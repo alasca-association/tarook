@@ -4,6 +4,8 @@ actions_dir="$(realpath "$(dirname "$0")")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
+check_venv
+
 require_harbour_disruption
 require_ansible_disruption
 

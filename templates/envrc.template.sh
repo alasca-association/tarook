@@ -28,6 +28,11 @@ source_up || true
 # https://direnv.net/man/direnv-stdlib.1.html#codesourceupifexists-ltfilenamegtcode
 #source_up_if_exists
 
+source_env "$PWD/.envrc.local" || true
+# For up-to-date direnv versions one can also use:
+# https://direnv.net/man/direnv-stdlib.1.html#codesourceenvifexists-ltfilenamegtcode
+#source_env_if_exists "$PWD/.envrc.local"
+
 source_env ./managed-k8s/.envrc.lib.sh || true
 use flake_if_nix ./managed-k8s
 layout poetry ./managed-k8s
@@ -83,8 +88,3 @@ export K8S_CUSTOM_STAGE_USAGE=true
 # Optional: Set this variable to false to init new clusters with the newest commit
 # on the default (devel) branch instead of the latest release.
 # export MANAGED_K8S_LATEST_RELEASE=false
-
-source_env "$PWD/.envrc.local" || true
-# For up-to-date direnv versions one can also use:
-# https://direnv.net/man/direnv-stdlib.1.html#codesourceenvifexists-ltfilenamegtcode
-#source_env_if_exists "$PWD/.envrc.local"
