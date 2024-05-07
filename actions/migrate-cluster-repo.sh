@@ -16,7 +16,7 @@ if [ ! -d "$etc_directory" ]; then
   fi
 fi
 if [[ "$TF_USAGE" == "false" ]] && [[ -e inventory/02_trampoline/hosts ]]; then
-  run mv inventory/02_trampoline/hosts hosts.bak
+  run mv "$(realpath inventory/02_trampoline/hosts)" hosts.bak
 fi
 if [ -d "inventory" ]; then
   run rm -r "inventory"
