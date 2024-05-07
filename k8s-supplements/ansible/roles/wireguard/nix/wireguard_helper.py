@@ -8,10 +8,15 @@ import toml
 import itertools
 import random
 import copy
+import sys
 import os
+import json
+import yaml
 
-WG_COMPANY_USERS_PATH = pathlib.Path("submodules/wg_user")
-WG_IPAM_CONFIG_PATH = pathlib.Path("config/wireguard_ipam.toml")
+WG_IPAM_CONFIG_PATH = pathlib.Path(
+    os.getenv("WG_IPAM_CONFIG_PATH", "config/wireguard_ipam.toml")
+)
+WG_PREFIX = os.getenv("WG_PREFIX", "")
 
 
 class WireGuardUser(collections.namedtuple(
@@ -24,35 +29,38 @@ class WireGuardUser(collections.namedtuple(
         addressesv6_ips = {}
 
         if with_address:
-            try:
-                addresses_v4_dict = d['ips'] if 'ips' in d else {"0": d['ip']}
-            except KeyError:
-                pass
-            else:
-                for endpoint, ip in addresses_v4_dict.items():
-                    addressv4_interface = ipaddress.ip_interface(ip)
-                    addressesv4_ips[endpoint] = addressv4_interface.ip
+            addresses_v4_dict = {}
+            addresses_v6_dict = {}
+            
+            if 'ips' in d and d['ips'] != {}:
+                addresses_v4_dict = d['ips']
+            elif 'ip' in d and d['ip'] is not None:
+                addresses_v4_dict = {"0": d['ip']}
 
-                    if addressv4_interface.network.prefixlen != 32:
-                        raise ValueError(
-                            "incorrect prefix length in IP address config: {} "
-                            "(from: {!r}".format(addressv4_interface, d)
-                        )
+            for endpoint, ip in addresses_v4_dict.items():
+                addressv4_interface = ipaddress.ip_interface(ip)
+                addressesv4_ips[endpoint] = addressv4_interface.ip
 
-            try:
-                addresses_v6_dict = d['ipsv6'] if 'ipsv6' in d else {"0": d['ipv6']}
-            except KeyError:
-                pass
-            else:
-                for endpoint, ip in addresses_v6_dict.items():
-                    addressv6_interface = ipaddress.ip_interface(ip)
-                    addressesv6_ips[endpoint] = addressv6_interface.ip
+                if addressv4_interface.network.prefixlen != 32:
+                    raise ValueError(
+                        "incorrect prefix length in IP address config: {} "
+                        "(from: {!r}".format(addressv4_interface, d)
+                    )
 
-                    if addressv6_interface.network.prefixlen != 128:
-                        raise ValueError(
-                            "incorrect prefix lenght in IP address config: {} "
-                            "(from: {!r}".format(addressv6_interface, d)
-                        )
+            if 'ipsv6' in d and d['ipsv6'] != {}:
+                addresses_v6_dict = d['ipsv6']
+            elif 'ipv6' in d and d['ipv6'] is not None:
+                addresses_v6_dict = {0: d['ipv6']}
+
+            for endpoint, ip in addresses_v6_dict.items():
+                addressv6_interface = ipaddress.ip_interface(ip)
+                addressesv6_ips[endpoint] = addressv6_interface.ip
+
+                if addressv6_interface.network.prefixlen != 128:
+                    raise ValueError(
+                        "incorrect prefix lenght in IP address config: {} "
+                        "(from: {!r}".format(addressv6_interface, d)
+                    )
 
             if addressesv4_ips is None and addressesv6_ips is None \
                 and not address_optional: # NOQA
@@ -97,8 +105,7 @@ def _index_wg_users(
 
 
 def _merge_wg_users(
-        users_a: typing.Iterable[WireGuardUser],
-        users_b: typing.Iterable[WireGuardUser],
+        *iterables: typing.Iterable[WireGuardUser],
 ) -> typing.Mapping[str, WireGuardUser]:
     """
     Deep merge wireguard users.
@@ -106,7 +113,7 @@ def _merge_wg_users(
     :raise ValueError: If two users share the same public key.
     """
     result = {}
-    for user in itertools.chain(users_a, users_b):
+    for user in itertools.chain(*iterables):
         key = user.public_key
         if key in result:
             raise ValueError(
@@ -142,57 +149,12 @@ def _get_endpoints_from_config(
     endpoints = copy.deepcopy(wg_config["endpoints"])
 
     for ep in endpoints:
-        if 'ip_cidr' in ep:
+        if 'ip_cidr' in ep and ep['ip_cidr'] is not None:
             ep['ip_cidr'] = ipaddress.IPv4Network(ep['ip_cidr'])
-        if 'ipv6_cidr' in ep:
+        if 'ipv6_cidr' in ep and ep['ipv6_cidr'] is not None:
             ep['ipv6_cidr'] = ipaddress.IPv6Network(ep['ipv6_cidr'])
 
     return endpoints
-
-
-def _handle_legacy_options(
-    wg_config: typing.MutableMapping
-):
-    """
-    Transform legacy wireguard config options to endpoint with id 0
-    """
-
-    # If "old" wireguard endpoint config exists, use old config for endpoint 0
-    if 'port' in wg_config:
-        # Find endpoint with id 0
-        wg0 = next((ep for ep in wg_config["endpoints"] if ep['id'] == 0), None)
-
-        if wg0 is None:
-            raise ValueError("Old wireguard config parameters exists, "
-                             "but no endpoint with id 0 found.")
-
-        # Use "old" wireguard endpoint config for wg0
-        wg0["port"] = wg_config["port"]
-
-        if ('ip_gw' in wg_config and
-                ('ip_cidr' in wg_config or 'wg_ip_cidr' in wg_config)):
-            wg0["ip_gw"] = wg_config["ip_gw"]
-
-            if 'wg_ip_cidr' in wg_config:
-                wg0["ip_cidr"] = wg_config["wg_ip_cidr"]
-            elif 'ip_cidr' in wg_config:
-                wg0["ip_cidr"] = wg_config["ip_cidr"]
-
-        if ('ipv6_gw' in wg_config and
-                ('ipv6_cidr' in wg_config or 'wg_ipv6_cidr' in wg_config)):
-            wg0["ipv6_gw"] = wg_config["ipv6_gw"]
-
-            if 'wg_ipv6_cidr' in wg_config:
-                wg0["ipv6_cidr"] = wg_config["wg_ipv6_cidr"]
-            elif 'ipv6_cidr' in wg_config:
-                wg0["ipv6_cidr"] = wg_config["ipv6_cidr"]
-
-        wg_config.pop('port', None)
-        wg_config.pop('ip_gw', None)
-        wg_config.pop('wg_ip_cidr', None)
-        wg_config.pop('ip_cidr', None)
-        wg_config.pop('wg_ipv6_cidr', None)
-        wg_config.pop('ipv6_cidr', None)
 
 
 def _generate_ipaddress(
@@ -387,7 +349,7 @@ def _assign_ip_addresses_to_wg_users(
     assigned_v6_users = {}
 
     for ep in wireguard_endpoints:
-        if 'ip_cidr' in ep:
+        if 'ip_cidr' in ep and ep['ip_cidr'] is not None:
             assigned_v4_users = _assign_ipv4_addresses(
                 wireguard_users.values()
                 if len(assigned_v4_users) == 0 else assigned_v4_users.values(),
@@ -396,9 +358,9 @@ def _assign_ip_addresses_to_wg_users(
                 {ep['ip_cidr'][1], ep['ip_cidr'].broadcast_address},
                 ep['id'],
             )
-            if 'ipv6_cidr' not in ep:
+            if 'ipv6_cidr' not in ep or ep['ipv6_cidr'] is None:
                 assigned_users = assigned_v4_users
-        if 'ipv6_cidr' in ep:
+        if 'ipv6_cidr' in ep and ep['ipv6_cidr'] is not None:
             assigned_v6_users = _assign_ipv6_addresses(
                 wireguard_users.values()
                 if len(assigned_v6_users) == 0 else assigned_v6_users.values(),
@@ -407,7 +369,7 @@ def _assign_ip_addresses_to_wg_users(
                 {ep['ipv6_cidr'][1]},
                 ep['id'],
             )
-            if 'ip_cidr' not in ep:
+            if 'ip_cidr' not in ep or ep['ip_cidr'] is None:
                 assigned_users = assigned_v6_users
 
     if len(assigned_v4_users) > 0 and len(assigned_v6_users) > 0:
@@ -445,42 +407,10 @@ def _load_peers_from_ipam_config(
     ])
 
 
-def _load_wireguard_company_users(
-        source_dir: pathlib.Path = WG_COMPANY_USERS_PATH
-) -> typing.Mapping[str, WireGuardUser]:
-    """
-    Read all wireguard users from all ``*.toml`` files in `source_dir`.
-    Default path should be the path to the "wg-users" repository
-
-    Return the wireguard users as mapping which maps the public key to the
-    user object.
-    """
-    wg_company_users = {}
-
-    for filepath in source_dir.iterdir():
-        if not filepath.name.endswith(".toml"):
-            continue
-        with filepath.open("r") as f:
-            # we don’t want to carry any address information from the global
-            # repository into the clusters.
-            user = WireGuardUser.fromdict(toml.load(f), with_address=False)
-        if user.public_key in wg_company_users:
-            raise ValueError(
-                "duplicate public key in wg_user repository: {} in use by "
-                "{!r} and {!r}".format(
-                    user.public_key,
-                    user.name,
-                    wg_company_users[user.public_key].name,
-                )
-            )
-        wg_company_users[user.public_key] = user
-
-    return wg_company_users
-
-
 def _dump_IPAM_config(
     assigned_users: typing.Mapping[str, WireGuardUser]
 ) -> None:
+    WG_IPAM_CONFIG_PATH.parent.mkdir(exist_ok=True, parents=True)
     with WG_IPAM_CONFIG_PATH.open("w") as fout:
         users = [user.todict() for user in assigned_users.values()]
 
@@ -510,29 +440,10 @@ def generate_wireguard_config(
     """
 
     # Init the configured users as wireguard peers
-    wireguard_configured_users = [
+    wireguard_users = _merge_wg_users([
         WireGuardUser.fromdict(item, with_address=True, address_optional=True)
         for item in wireguard_config.pop("peers", [])
-    ]
-
-    # Check if C&H company members should be added as wireguard peers
-    wireguard_rollout_company_users = \
-        (os.getenv('WG_COMPANY_USERS', 'false') == 'true') \
-        or \
-        wireguard_config.get("rollout_company_users", False)
-
-    # Init the company members as wireguard peers if enabled
-    wireguard_company_users = {}
-    if wireguard_rollout_company_users:
-        wireguard_company_users = _load_wireguard_company_users()
-
-    # Merge the wireguard users (configured and company) while rejecting
-    # duplicates, since a company and a cluster-specific (additional) user
-    # should never share private keys
-    wireguard_users = _merge_wg_users(
-        wireguard_company_users.values(),
-        wireguard_configured_users
-    )
+    ])
 
     if not wireguard_users:
         raise ValueError(
@@ -540,9 +451,6 @@ def generate_wireguard_config(
 
     # Validate (all) wireguard users, require unique names
     _require_unique_names(wireguard_users.values())
-
-    # Handle legacy wireguard options
-    _handle_legacy_options(wireguard_config)
 
     # Cast endpoint id to string, because json, yaml and toml don't like integer keys
     for ep in wireguard_config["endpoints"]:
@@ -594,3 +502,14 @@ def is_ipnet_disjoint(
             else:
                 raise ValueError("{} is of unsupported IP network type".format(ipnet))
     return True
+
+def _add_prefix(config: typing.Dict, prefix: str) -> typing.Dict:
+    return {prefix + key: value for key, value in config.items()}
+
+if __name__ == "__main__":
+    src = pathlib.Path(sys.argv[1])
+    dst = pathlib.Path(sys.argv[2])
+    dst.parent.mkdir(exist_ok=True, parents=True)
+    with (src.open("r") as sp, dst.open("w") as dp):
+        config = generate_wireguard_config(json.load(sp))
+        yaml.dump(_add_prefix(config, WG_PREFIX), dp)

@@ -9,13 +9,13 @@
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [
-      ];
       systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
+      debug = true;
       perSystem = {
         pkgs,
         system,
         inputs',
+        config,
         ...
       }: let
         dependencies = with pkgs; {
@@ -74,8 +74,21 @@
         in {
           ciImage = pkgs.dockerTools.buildLayeredImage container-image;
           streamCiImage = pkgs.writeShellScriptBin "stream-ci" (pkgs.dockerTools.streamLayeredImage container-image);
+          migrate = pkgs.writeShellApplication {
+            name = "migrate-cluster-repo";
+            runtimeInputs = with pkgs; [];
+            text = ''
+              nix flake init -t ./managed-k8s#migration
+              git add flake.nix config/default.nix
+              nix run .#update-inventory
+            '';
+          };
         };
         formatter = pkgs.alejandra;
+      };
+      flake = {lib, ...}: {
+        flakeModules.yk8s = import ./nix/module;
+        lib = import ./nix/lib.nix {inherit lib;};
       };
     };
 }

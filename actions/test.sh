@@ -10,7 +10,7 @@ load_conf_vars
 check_venv
 
 # Ensure that the latest config is deployed to the inventory
-python3 "$actions_dir/update_inventory.py"
+nix run .#update-inventory
 
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"

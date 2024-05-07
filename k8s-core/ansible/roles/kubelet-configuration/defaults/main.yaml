@@ -1,6 +1,0 @@
----
-k8s_kubelet_evictionsoft_memory_period: '1m30s'
-
-k8s_kubelet_evictionhard_nodefs_available: '10%'
-k8s_kubelet_evictionhard_nodefs_inodesfree: '5%'
-...

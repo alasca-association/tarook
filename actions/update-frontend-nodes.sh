@@ -11,7 +11,7 @@ check_venv
 require_ansible_disruption
 
 # Ensure that the latest config is deployed to the inventory
-python3 "$actions_dir/update_inventory.py"
+nix run .#update-inventory
 
 while getopts s flag
 do

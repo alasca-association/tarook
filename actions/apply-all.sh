@@ -2,6 +2,9 @@
 set -euo pipefail
 actions_dir="$(dirname "$0")"
 
+# Ensure that the latest config is deployed to the inventory
+nix run .#update-inventory
+
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 load_conf_vars

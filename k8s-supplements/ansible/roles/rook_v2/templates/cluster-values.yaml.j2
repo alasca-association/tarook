@@ -77,7 +77,7 @@ cephClusterSpec:
   labels:
 # Workaround as we can't directly overwrite the created ServiceMonitors
 # persistently currently: https://github.com/rook/rook/issues/9618
-{% if k8s_monitoring_enabled | bool and monitoring_common_labels | default(False) %}
+{% if k8s_monitoring_enabled | bool and monitoring_common_labels %}
     all:
 {% for label_key, label_value in monitoring_common_labels.items() %}
       {{ label_key | to_json }}: {{ label_value | to_json }}
@@ -133,12 +133,12 @@ cephClusterSpec:
 {% for device_name, device_cfg in node.devices.items() %}
       - name: {{ device_name | to_json }}
         config:
-          {{ device_cfg.config | default({}) | to_nice_yaml | indent(10) }}
+          {{ device_cfg.config | to_nice_yaml | indent(10) }}
 {% endfor %}
 {% endif %}
 {% endif %}
       config:
-        {{ node.config | default({}) | to_nice_yaml | indent(8) }}
+        {{ node.config | to_nice_yaml | indent(8) }}
 {% endfor %}
 {% endif %}
 # OpenStack configuration
@@ -231,20 +231,20 @@ cephBlockPools:
 {% for item in rook_pools %}
   - name: "{{ item.name }}"
     spec:
-      failureDomain: "{{ item.failure_domain | default('host') }}"
-{% if item.erasure_coded | default(False) %}
+      failureDomain: "{{ item.failure_domain }}"
+{% if item.erasure_coded %}
       erasureCoded:
-        dataChunks: {{ item.erasure_coded.data_chunks | default(2) }}
-        codingChunks: {{ item.erasure_coded.coding_chunks | default(1) }}
+        dataChunks: {{ item.erasure_coded.data_chunks }}
+        codingChunks: {{ item.erasure_coded.coding_chunks }}
 {% else %}
       # For a pool based on raw copies, specify the number of copies. A size of 1 indicates no redundancy.
       replicated:
-        size: {{ item.replicated | default(1) }}
+        size: {{ item.replicated }}
         # Disallow setting pool with replica 1, this could lead to data loss without recovery.
         # Make sure you're *ABSOLUTELY CERTAIN* that is what you want
-        requireSafeReplicaSize: {{ ((item.replicated | default(1) | int) != 1) | to_json }}
+        requireSafeReplicaSize: {{ ((item.replicated | int) != 1) | to_json }}
 {% endif %}
-      deviceClass: {{ item.device_class | default("hdd") | to_json }}
+      deviceClass: {{ item.device_class | to_json }}
       parameters:
         compression_mode: none
       mirroring:
@@ -256,7 +256,7 @@ cephBlockPools:
           interval: 60s
       annotations:
     storageClass:
-      enabled: {{ item.create_storage_class | default(False) | bool }}
+      enabled: {{ item.create_storage_class | bool }}
       name: {{ "%s-%s" | format(rook_cluster_name, item.name) | to_json }}
       isDefault: false
       reclaimPolicy: Delete

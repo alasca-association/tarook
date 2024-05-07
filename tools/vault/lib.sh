@@ -2,16 +2,16 @@
 set -euo pipefail
 
 cluster_repository="$(realpath ".")"
-config_file="$cluster_repository/config/config.toml"
+group_vars_dir="${cluster_repository}/inventory/yaook-k8s/group_vars"
 
 common_path_prefix="${YAOOK_K8S_VAULT_PATH_PREFIX:-yaook}"
 common_policy_prefix="${YAOOK_K8S_VAULT_POLICY_PREFIX:-yaook}"
 nodes_approle_name="${YAOOK_K8S_VAULT_NODES_APPROLE_NAME:-${common_path_prefix}/nodes}"
 nodes_approle_path="auth/$nodes_approle_name"
 k8s_controller_manager_enable_signing_requests="$(
-    tomlq '.kubernetes.controller_manager.enable_signing_requests
+    yq '.k8s_controller_manager_enable_signing_requests
            | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
-          "$config_file" 2>/dev/null
+          "$group_vars_dir/all/kubernetes.yaml" 2>/dev/null
 )" || unset k8s_controller_manager_enable_signing_requests  # unset when unset, invalid or file missing
 
 if [ -n "${cluster:-}" ]; then
@@ -67,16 +67,16 @@ function require_k8s_cluster_ca_backup_destruction {
 }
 
 function get_clustername() {
-    tomlq --raw-output '.vault.cluster_name // error("unset")' "${config_file}"
+    yq --raw-output '.vault_cluster_name // error("unset")' "${group_vars_dir}/all/vault-backend.yaml"
 }
 
 function check_clustername() {
     clustername="$1"
     if [ -z "$clustername" ]; then
-        echo "ERROR: vault.cluster_name must be defined in config.toml" >&2
+        echo "ERROR: vault.cluster_name must be defined in the config" >&2
         exit 1
     elif [ "$clustername" == "devcluster" ]; then
-        echo "WARNING: vault.cluster_name is still the default value 'devcluster'. You may want to change it in config.toml." >&2
+        echo "WARNING: vault.cluster_name is still the default value 'devcluster'. You may want to change it." >&2
         read -rp "Continue (y/n)" choice
         if [ "$choice" != "y" ]; then
             echo "Aborting." >&2
@@ -481,9 +481,9 @@ function import_ipsec_eap_psk() {
 }
 
 function import_thanos_config() {
-    thanos_enabled="$(tomlq '."k8s-service-layer".prometheus.use_thanos | if (.|type)=="boolean" then . else false end' "${config_file}")"
-    manage_thanos_bucket="$(tomlq '."k8s-service-layer".prometheus.manage_thanos_bucket | if (.|type)=="boolean" then . else true end' "${config_file}")"
-    thanos_config_file="$(tomlq '."k8s-service-layer".prometheus.thanos_objectstorage_config_file | if (.|type)=="string" then . else "" end' "${config_file}")"
+    thanos_enabled="$(yq '."monitoring_use_thanos | if (.|type)=="boolean" then . else false end' "${group_vars_dir}/all/prometheus.yaml")"
+    manage_thanos_bucket="$(yq '."monitoring_manage_thanos_bucket | if (.|type)=="boolean" then . else true end' "${group_vars_dir}/all/prometheus.yaml")"
+    thanos_config_file="$(yq '."monitoring_thanos_objectstorage_config_file | if (.|type)=="string" then . else "" end' "${group_vars_dir}/all/prometheus.yaml")"
 
     if ! "$thanos_enabled"; then
         echo "Thanos is disabled."

@@ -63,8 +63,7 @@ To verify your configured clustername you can use the following:
 
 .. code:: console
 
-  $ tomlq --raw-output '.vault.cluster_name' config/config.toml
-  devcluster
+  yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml
 
 Phase 1
 ^^^^^^^

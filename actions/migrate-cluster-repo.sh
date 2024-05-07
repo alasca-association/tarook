@@ -34,7 +34,7 @@ elif [[ -e hosts.bak ]]; then
 fi
 
 # Run inventory updater
-run "./$actions_dir/update_inventory.py"
+nix run .#update-inventory
 
 # Migrate custom stage
 if [ -z "${K8S_CUSTOM_STAGE_USAGE:-}" ] || [ "${K8S_CUSTOM_STAGE_USAGE}" == 'false' ]; then

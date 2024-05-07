@@ -176,7 +176,7 @@
     - check-loadbalancer-service
     - test-dualstack
     - check-dualstack
-    when: (openstack_lbaas | default(False)) or ch_k8s_lbaas_enabled
+    when: openstack_lbaas or ch_k8s_lbaas_enabled
 
 - name: Test enforcement of NetworkPolicies
   hosts: k8s_nodes[-1]
@@ -223,14 +223,14 @@
     vars:
       block_storage_class: csi-sc-cinderplugin
       volume_snapshot_class: csi-cinder-snapclass
-    when: on_openstack | default(True)
+    when: on_openstack
     tags:
     - test-block-storage-cinder
     - check-block-storage-cinder
   - role: check-shared-fs
     vars:
       fs_storage_class: rook-ceph-cephfs
-    when: "(k8s_storage_rook_enabled | bool) and (rook_ceph_fs | default(False) | bool)"
+    when: "(k8s_storage_rook_enabled | bool) and (rook_ceph_fs | bool)"
     tags:
     - test-ceph-shared-filesystem
     - check-ceph-shared-filesystem
@@ -238,14 +238,14 @@
     - check-shared-fs
   - role: check-local-storage
     vars:
-      storageclass: "{{ k8s_local_storage_static_storageclass_name | default('local-storage') }}"
+      storageclass: "{{ k8s_local_storage_static_storageclass_name }}"
     when: k8s_local_storage_static_enabled
     tags:
     - test-local-storage-static
     - check-local-storage-static
   - role: check-local-storage
     vars:
-      storageclass: "{{ k8s_local_storage_dynamic_storageclass_name | default('local-storage') }}"
+      storageclass: "{{ k8s_local_storage_dynamic_storageclass_name }}"
     when: k8s_local_storage_dynamic_enabled
     tags:
     - test-local-storage-dynamic

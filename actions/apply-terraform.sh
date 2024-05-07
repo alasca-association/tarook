@@ -2,14 +2,28 @@
 set -euo pipefail
 actions_dir="$(realpath "$(dirname "$0")")"
 
+# Ensure that the latest config is deployed to the inventory
+nix run .#update-inventory
+
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 load_conf_vars
 
 check_venv
 
-# Ensure that the latest config is deployed to the inventory
-python3 "$actions_dir/update_inventory.py"
+# TODO add this check
+# if os.getenv("TF_USAGE", "true") == "true":
+#     if "gitlab_backend" in tf_config and tf_config["gitlab_backend"] is True:
+#         for var in ("TF_HTTP_USERNAME", "TF_HTTP_PASSWORD"):
+#             if var not in os.environ:
+#                 raise ValueError(f"gitlab_backend is true, but {var} unset")
+#         for var in ("gitlab_base_url", "gitlab_project_id", "gitlab_state_name"):
+#             if var not in tf_config:
+#                 raise ValueError(f"gitlab_backend is true, but {var} unset")
+#         if not re.match(r"https?:\/\/.*[^\/]$", tf_config["gitlab_base_url"]):
+#             raise ValueError("Provided gitlab_base_url is misformed.")
+
+
 
 if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraform_version')" "$terraform_min_version")" -lt 0 ]; then
     errorf 'Please upgrade Terraform to at least v'"$terraform_min_version"
@@ -192,7 +206,7 @@ if [ $rc == $RC_DISRUPTION ]; then
         # shellcheck disable=SC2016
         errorf 'terraform would delete or recreate a resource, but not all of the following is set' >&2
         errorf '  - MANAGED_K8S_DISRUPT_THE_HARBOUR=true' >&2
-        errorf "  - ${terraform_disruption_setting}=false in ${config_file}" >&2
+        errorf "  - ${terraform_disruption_setting}=false in the config" >&2
         errorf 'aborting due to destructive change without approval.' >&2
         exit 3
     fi

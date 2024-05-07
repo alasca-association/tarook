@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Ensure that the latest config is deployed to the inventory
+nix run .#update-inventory
+
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 

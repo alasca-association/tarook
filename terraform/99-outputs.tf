@@ -37,7 +37,7 @@ resource "local_file" "final_networking" {
   file_permission = 0640
 }
 
-# Please note that if gitlab_backend is set to true in config.toml
+# Please note that if gitlab_backend is set to true in the config
 # it will override this local backend configuration
 terraform {
   backend "local" {

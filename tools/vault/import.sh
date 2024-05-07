@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
+
+# Ensure that the latest config is deployed to the inventory
+nix run .#update-inventory
+
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 
@@ -51,7 +55,7 @@ scriptdir="$(dirname "$0")"
 
 inventory_etc=etc
 flag_file="$inventory_etc/migrated-to-vault"
-wg_usage="$(tomlq '.wireguard.enabled // true' config/config.toml)"
+wg_usage="$(yq '.enabled // true' inventory/yaook-k8s/group_vars/gateways/wireguard.yaml)"
 
 if [ ! -d 'etc' ]; then
     echo "$0: ./etc does not exist. are you running this from the right place?" >&2

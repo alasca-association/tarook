@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 actions_dir="$(realpath "$(dirname "$0")")/../../actions"
+
+# Ensure that the latest config is deployed to the inventory
+nix run .#update-inventory
+
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 
@@ -32,7 +36,7 @@ cluster="$(get_clustername)"
 check_clustername "$cluster"
 kubernetes_server="$1"
 username="vault:$(vault token lookup -format=json | jq -r .data.path)"
-kubernetes_version="$(tomlq --raw-output '.kubernetes.version // error("unset")' config/config.toml)"
+kubernetes_version="$(yq --raw-output '.k8s_version // error("unset")' inventory/yaook-k8s/group_vars/all/kubernetes.yaml)"
 
 if [ "${super_admin:-false}" == false ]; then
     credentials=$(vault write -format=json yaook/"$cluster"/k8s-pki/issue/any-cluster-admin common_name="$username" ttl=192h)  # 8 days

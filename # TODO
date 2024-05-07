@@ -1,0 +1,14 @@
+# TODO
+
+* migration script
+    - create flake + nix files (done)
+    - migrate to new layout (state, inventory, config)
+    - maybe add .yk8s/state-version?
+* mkInventoryFile cfg (done)
+* doc generation
+* test with all clusters 
+    - add removed options (done)
+    - compare diff to result of update-inventory
+* (adapt) init script
+* adapt to https://gitlab.com/yaook/k8s/-/merge_requests/1317
+* add maxdepth to flatten
