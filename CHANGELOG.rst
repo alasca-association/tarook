@@ -19,6 +19,23 @@ earlier changes.
 
 .. towncrier release notes start
 
+v5.1.0 (2024-05-07)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+
+- An option to use a minimal virtual Python environment has been added.
+  Take a look at :doc: `Minimal Access Venv </user/guide/minimal-access-venv>`. (`!1225 <https://gitlab.com/yaook/k8s/-/merge_requests/1225>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- Dummy build the changelog for the current releasenotes in the ci
+  ``build-docs-check``-job (`!1234 <https://gitlab.com/yaook/k8s/-/merge_requests/1234>`_)
+
+
 v5.0.0 (2024-05-02)
 -------------------
 
