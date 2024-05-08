@@ -25,7 +25,6 @@ ANSIBLE_INVENTORY_ROOTPATH = pathlib.Path("inventory")
 ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory/yaook-k8s/group_vars")
 # List of top level sections which we do accept in the main config
 ALLOWED_TOP_LEVEL_SECTIONS = (
-    "load-balancing",
     "ch-k8s-lbaas",
     "kubernetes",
     "node-scheduling",
@@ -552,26 +551,6 @@ def main():
         test_node_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("testing", ""),
     )
-
-    # ---
-    # LOAD-BALANCING
-    # ---
-    print_process_state("Load-Balancing")
-    # Process priorities
-    for host in config.get("load-balancing", {}).get("priorities", {}).keys():
-        print(
-            "WARNING: ignoring deprecated host-based priority override for "
-            "host {}".format(host)
-        )
-    load_balancing_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "all" / "load-balancing.yaml"
-    )
-    dump_to_ansible_inventory(
-        config.get("load-balancing", dict()),
-        load_balancing_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("load-balancing", ""),
-    )
-
     # ---
     # CUSTOM
     # ---

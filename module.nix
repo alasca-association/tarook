@@ -19,7 +19,10 @@ with lib; {
       }: let
         cfg = config.yk8s;
       in {
-        imports = [ ./nix/vault.nix ];
+        imports = [
+          ./nix/vault.nix
+          ./nix/load-balancing.nix
+        ];
         options.yk8s = {
           _ansible.inventory_base_path = mkOption {
             description = ''
