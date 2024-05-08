@@ -229,3 +229,33 @@ function check_venv() {
         exit 1
     fi
 }
+
+# Require two consecutive SIGINT signals for interruption
+function require_double_sigint() {
+    # shellcheck disable=SC2317
+    function sigint_handler() {
+        exit_code=$?  # preserve the original exit code
+
+        echo "SIGINT received. " >&2
+        _received_at=$(date +%s)
+
+        function _received_twice() {
+            # first reception
+            if [[ -z ${_last_received_at+x} ]] \
+            || [[ $((_received_at-_last_received_at)) -gt 5 ]]; then
+                _last_received_at=$_received_at
+                return 1
+
+            # second reception
+            else return 0; fi
+        }
+
+        if _received_twice; then
+            echo "Interrupted." >&2
+            exit "$exit_code"
+        else
+            echo "Repeat to interrupt." >&2
+        fi
+    }
+    trap sigint_handler SIGINT
+}

@@ -1,0 +1,3 @@
+Action scripts that usually run more than a few minutes now require two
+consecutive SIGINT signals sent to actually abort them thus preventing
+termination by accident.

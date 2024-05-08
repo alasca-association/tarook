@@ -27,6 +27,8 @@ done
 
 shift $(( OPTIND - 1 ))
 
+require_double_sigint
+
 install_prerequisites
 
 # Bring the wireguard interface up if configured so

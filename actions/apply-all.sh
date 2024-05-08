@@ -7,6 +7,8 @@ actions_dir="$(dirname "$0")"
 
 check_venv
 
+require_double_sigint
+
 # Invoke Terraform, if configured
 if [ "${TF_USAGE:-true}" == 'true' ]; then
   run "$actions_dir/apply-terraform.sh"

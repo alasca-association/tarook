@@ -89,6 +89,8 @@ function tf_state_present_on_gitlab () {
     check_return_code "$GITLAB_RESPONSE"
 }
 
+require_double_sigint
+
 load_gitlab_vars
 
 if all_gitlab_vars_are_set; then

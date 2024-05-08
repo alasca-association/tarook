@@ -48,6 +48,8 @@ require_ansible_disruption
 
 require_vault_token
 
+require_double_sigint
+
 install_prerequisites
 
 # Ensure that the latest config is deployed to the inventory

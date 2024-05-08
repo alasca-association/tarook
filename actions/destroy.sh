@@ -14,6 +14,8 @@ if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraf
     exit 5
 fi
 
+require_double_sigint
+
 load_gitlab_vars
 
 IFS=$'\n'
