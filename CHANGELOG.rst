@@ -26,7 +26,7 @@ New Features
 ~~~~~~~~~~~~
 
 - An option to use a minimal virtual Python environment has been added.
-  Take a look at :doc: `Minimal Access Venv </user/guide/minimal-access-venv>`. (`!1225 <https://gitlab.com/yaook/k8s/-/merge_requests/1225>`_)
+  Take a look at :doc:`Minimal Access Venv </user/guide/minimal-access-venv>`. (`!1225 <https://gitlab.com/yaook/k8s/-/merge_requests/1225>`_)
 
 
 Bugfixes
