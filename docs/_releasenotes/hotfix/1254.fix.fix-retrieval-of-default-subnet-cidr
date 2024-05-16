@@ -1,0 +1,2 @@
+The LCM is again able to retrieve the default subnet CIDR
+when ``[terraform].subnet_cidr`` is not set in the config.toml.

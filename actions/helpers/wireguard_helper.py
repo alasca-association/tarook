@@ -588,4 +588,6 @@ def is_ipnet_disjoint(
                 if (ipnet.subnet_of(wg_net['ipv6_cidr']) or
                         wg_net['ipv6_cidr'].subnet_of(ipnet)):
                     return False
+            else:
+                raise ValueError("{} is of unsupported IP network type".format(ipnet))
     return True
