@@ -19,6 +19,16 @@ earlier changes.
 
 .. towncrier release notes start
 
+v5.1.1 (2024-05-21)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- The LCM is again able to retrieve the default subnet CIDR
+  when ``[terraform].subnet_cidr`` is not set in the config.toml. (`!1249 <https://gitlab.com/yaook/k8s/-/merge_requests/1249>`_)
+
+
 v5.1.0 (2024-05-07)
 -------------------
 
