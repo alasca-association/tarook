@@ -53,6 +53,16 @@ Install System Requirements
       .. raw:: html
 
          </details>
+      .. raw:: html
+
+         <details>
+         <summary>Install Vault</summary>
+
+      Follow `the upstream instructions on installing Vault <https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-install>`__.
+
+      .. raw:: html
+
+         </details>
 
       .. raw:: html
 
