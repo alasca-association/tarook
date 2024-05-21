@@ -1,5 +1,7 @@
 ---
 - name: Obtain CAs
+  tags:
+  - renew-pki
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"

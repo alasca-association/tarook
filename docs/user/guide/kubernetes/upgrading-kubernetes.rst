@@ -74,3 +74,23 @@ The calico version is mapped to the Kubernetes version and calico is
 updated to the mapped version during Kubernetes upgrades. However, it is
 possible to manually update calico to another version. That procedure is
 describe in :doc:`calico </user/explanation/services/calico>`.
+
+PKI Renewal
+-----------
+
+Before triggering the actual Kubernetes upgrade,
+the certificates, kubeconfigs et al. are verified and renewed on all Kubernetes nodes if necessary.
+This step can be explicitly triggered or skipped via the ``renew-pki`` tag.
+This can save some time if an upgrade has to be aborted and restarted.
+
+Explicitly trigger PKI renewal:
+
+.. code:: console
+
+   $ AFLAGS="--diff -t renew-pki" MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/upgrade.sh 1.27.12
+
+Skip PKI renewal:
+
+.. code:: console
+
+   $ AFLAGS="--diff --skip-tags renew-pki" MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/upgrade.sh 1.27.12
