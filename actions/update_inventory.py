@@ -398,7 +398,7 @@ def main():
     # ---
     print_process_state("IPSec")
     ipsec_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "gateways" / "ipsec.yaml"
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "ipsec.yaml"
     )
     dump_to_ansible_inventory(
         config.get("ipsec"),

@@ -1,0 +1,39 @@
+The LCM now supports OVN-based OpenStack environments.
+That required to reintroduce OpenStack security groups
+and to enable port security on the gateway ports.
+
+If ch-k8s-lbaas is enabled, it must be updated to at least ``v0.8.0``.
+
+.. hint::
+
+  Note that it is recommended to not explicitly pin ch-k8s-lbaas to a specific version
+  in ``config/config.toml`` because then it is automatically updated once support
+  for a new version has been added.
+
+  .. code:: diff
+
+    [ch-k8s-lbaas]
+    enabled = true
+    -version = "0.9.0"
+
+There may be connectivity issues with load-balanced services
+managed by ch-k8s-lbaas starting with the
+completion of the Terraform stage until a rollout fully finished.
+This is because port security on the gateway ports has been reenabled,
+but the ch-k8s-lbaas agents are not aware about that yet.
+If ch-k8s-lbaas is enabled, it is highly recommended to update it in advance
+to the Terraform stage to reduce impact.
+
+The ``migrate-to-release.sh``-script takes care of all the necessary steps:
+
+.. code:: console
+
+  $ bash managed-k8s/actions/migrate-to-release.sh
+
+A full rollout is recommended but not mandatory:
+
+.. code:: console
+
+  $ bash managed-k8s/actions/apply-all.sh
+
+.
