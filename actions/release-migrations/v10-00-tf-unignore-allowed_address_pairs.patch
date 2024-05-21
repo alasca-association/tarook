@@ -1,0 +1,18 @@
+diff --git i/terraform/20-gateway.tf w/terraform/20-gateway.tf
+index 27e5a57a6..f0e5051e6 100644
+--- i/terraform/20-gateway.tf
++++ w/terraform/20-gateway.tf
+@@ -114,13 +114,6 @@ resource "openstack_networking_port_v2" "gateway" {
+ 
+   lifecycle {
+     ignore_changes = [
+-      # The allowed_address_pairs are subject to change and may get
+-      # (automatically) managed or extended by something else.
+-      # For example, the ch-k8s-lbaas controller manages them to
+-      # allow LBaaS traffic.
+-      # Terraform would reset these settings on each run if we would
+-      # not ignore changes
+-      allowed_address_pairs
+     ]
+   }
+ }

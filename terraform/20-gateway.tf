@@ -16,6 +16,7 @@ resource "openstack_networking_port_v2" "gw_vip_port" {
   name = "${var.cluster_name}-gateway-vip"
   admin_state_up = true
   network_id     = openstack_networking_network_v2.cluster_network.id
+  port_security_enabled = true
 
   dynamic "fixed_ip" {
     for_each = var.ipv4_enabled ? [1] : []
@@ -37,6 +38,13 @@ resource "openstack_networking_port_v2" "gw_vip_port" {
         subnet_id = openstack_networking_subnet_v2.cluster_v6_subnet[0].id
     }
   }
+
+  security_group_ids = [
+    # NOTE: Openstack OVN usage requires port security to be enabled.
+    #       Gateway nodes shall accept and forward any traffic hence we use
+    #       the barndoor security group for them. (see #659)
+    openstack_networking_secgroup_v2.barndoor.id,
+  ]
 }
 
 resource "openstack_networking_floatingip_v2" "gw_vip_fip" {
@@ -55,6 +63,7 @@ resource "openstack_networking_port_v2" "gateway" {
   name = each.key
 
   network_id = openstack_networking_network_v2.cluster_network.id
+  port_security_enabled = true
 
   dynamic "fixed_ip" {
     for_each = var.ipv4_enabled ? [1] : []
@@ -70,7 +79,50 @@ resource "openstack_networking_port_v2" "gateway" {
     }
   }
 
-  port_security_enabled = false
+  allowed_address_pairs {
+    ip_address = openstack_networking_floatingip_v2.gw_vip_fip.fixed_ip
+  }
+
+  dynamic "allowed_address_pairs" {
+    for_each = var.ipv4_enabled ? [1] : []
+    content {
+      ip_address = "0.0.0.0/0"
+    }
+  }
+
+  dynamic "allowed_address_pairs" {
+    for_each = var.ipv6_enabled ? [1] : []
+    content {
+      ip_address = "::/0"
+    }
+  }
+
+  dynamic "allowed_address_pairs" {
+    for_each = var.ipv6_enabled ? [1] : []
+    content {
+      ip_address = var.subnet_v6_cidr
+    }
+  }
+
+  depends_on = [
+    openstack_networking_floatingip_v2.gw_vip_fip
+  ]
+
+  security_group_ids = [
+    openstack_networking_secgroup_v2.barndoor.id,
+  ]
+
+  lifecycle {
+    ignore_changes = [
+      # The allowed_address_pairs are subject to change and may get
+      # (automatically) managed or extended by something else.
+      # For example, the ch-k8s-lbaas controller manages them to
+      # allow LBaaS traffic.
+      # Terraform would reset these settings on each run if we would
+      # not ignore changes
+      allowed_address_pairs
+    ]
+  }
 }
 
 resource "openstack_blockstorage_volume_v3" "gateway-volume" {
