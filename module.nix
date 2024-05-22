@@ -16,7 +16,7 @@
         system,
         ...
       }: let
-        inherit (builtins) substring map;
+        inherit (builtins) substring map hasAttr trace;
         inherit (pkgs.stdenv) mkDerivation;
         inherit (lib) types mkOption;
         inherit (lib.attrsets) filterAttrs mapAttrs' mapAttrsToList;
@@ -34,12 +34,19 @@
             name = "${sectionCfg._ansible_prefix}${name}";
             inherit value;
           }) (filterInternal sectionCfg);
-        mkVarFile = sectionCfg: (pkgs.formats.yaml {}).generate sectionCfg._inventory_path (mkVars sectionCfg);
+        mkVarFile = let
+          mkVars' = sectionCfg:
+            if hasAttr "mkVars" sectionCfg
+            then (trace "Using section specific handler" sectionCfg.mkVars sectionCfg)
+            else (trace "Using generic handler" mkVars sectionCfg);
+        in
+          sectionCfg: (pkgs.formats.yaml {}).generate sectionCfg._inventory_path (mkVars' sectionCfg);
         mkInventory = cfg:
           mkDerivation {
             name = "yaook-group-vars";
             src = ./.;
-            buildPhase = concatLines (mapAttrsToList (_: sectionCfg: ''
+            buildPhase = concatLines (mapAttrsToList (section: sectionCfg:
+              trace "Section in process: ${section}" ''
                 install -m 644 -D ${mkVarFile sectionCfg} $out/${sectionCfg._inventory_path}
               '')
             (filterInternal cfg));
