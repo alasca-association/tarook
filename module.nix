@@ -16,7 +16,7 @@
         system,
         ...
       }: let
-        inherit (builtins) substring;
+        inherit (builtins) substring map;
         inherit (pkgs.stdenv) mkDerivation;
         inherit (lib) types mkOption;
         inherit (lib.attrsets) filterAttrs mapAttrs' mapAttrsToList;
@@ -42,7 +42,8 @@
             buildPhase = concatLines (mapAttrsToList (_: sectionCfg: ''
                 install -m 644 -D ${mkVarFile sectionCfg} $out/${sectionCfg._inventory_path}
               '')
-              (filterInternal cfg));
+            (filterInternal cfg));
+            checkPhase = concatLines (map (w: "# ${w}") cfg._warnings);
           };
       in {
         imports = [

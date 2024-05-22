@@ -68,11 +68,10 @@ in {
     };
   };
   config = {
-    # TODO:
-    # for host in config.get("load-balancing", {}).get("priorities", {}).keys():
-    #     print(
-    #         "WARNING: ignoring deprecated host-based priority override for "
-    #         "host {}".format(host)
-    #     )
+    yk8s._warnings = let
+      priorityWarnings =
+        lib.concatLines (builtins.map (host: "WARNING: [load-balancer.priority] ignoring deprecated host-based priority override for host ${host}") cfg.priorities);
+    in
+      lib.optionals ((builtins.length cfg.priorities) != 0) (builtins.trace priorityWarnings [priorityWarnings]);
   };
 }
