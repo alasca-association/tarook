@@ -8,12 +8,12 @@ actions_dir="$(dirname "$0")"
 check_venv
 
 # Invoke Terraform, if configured
-if [ "${TF_USAGE:-true}" == 'true' ]; then
+if [ "${tf_usage:-true}" == 'true' ]; then
   run "$actions_dir/apply-terraform.sh"
 fi
 
 # Prepare Gateways, if configured
-if [ "${TF_USAGE:-true}" == 'true' ]; then
+if [ "${tf_usage:-true}" == 'true' ]; then
   run "$actions_dir/apply-prepare-gw.sh"
 fi
 

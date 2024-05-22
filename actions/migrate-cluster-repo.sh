@@ -17,7 +17,7 @@ if [ ! -d "$etc_directory" ]; then
     exit 1
   fi
 fi
-if [[ "$TF_USAGE" == "false" ]] && [[ -e inventory/02_trampoline/hosts ]]; then
+if [[ "$tf_usage" == "false" ]] && [[ -e inventory/02_trampoline/hosts ]]; then
   run mv "$(realpath inventory/02_trampoline/hosts)" hosts.bak
 fi
 if [ -d "inventory" ]; then
@@ -25,7 +25,7 @@ if [ -d "inventory" ]; then
 fi
 
 # Apply terraform (for variable output)
-if [[ "$TF_USAGE" == "true" ]]; then
+if [[ "$tf_usage" == "true" ]]; then
   run "./$actions_dir/apply-terraform.sh"
 elif [[ -e hosts.bak ]]; then
   run mkdir -p inventory/yaook-k8s

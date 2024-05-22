@@ -51,6 +51,7 @@ scriptdir="$(dirname "$0")"
 
 inventory_etc=etc
 flag_file="$inventory_etc/migrated-to-vault"
+wg_usage="$(tomlq '.wireguard.enabled // true' config/config.toml)"
 
 if [ ! -d 'etc' ]; then
     echo "$0: ./etc does not exist. are you running this from the right place?" >&2
@@ -63,8 +64,8 @@ if [ -e "$flag_file" ]; then
     exit 2
 fi
 
-if [ ! -e 'etc/passwordstore/wg_gw_key.gpg' ] && [ "${WG_USAGE:-true}" == 'true' ]; then
-    echo "$0: couldn't find wg_gw_key.gpg despite \$WG_USAGE being set to true" >&2
+if [ ! -e 'etc/passwordstore/wg_gw_key.gpg' ] && [ "${wg_usage:-true}" == 'true' ]; then
+    echo "$0: couldn't find wg_gw_key.gpg despite wireguard.enabled being set to true" >&2
     echo "$0: refusing to continue, this does not look like an up-to-date, spawned cluster" >&2
     exit 2
 fi
@@ -132,7 +133,7 @@ fi
 
 echo "Importing other secrets ..."
 
-if [ "${WG_USAGE:-true}" == 'true' ]; then
+if [ "${wg_usage:-true}" == 'true' ]; then
 PASSWORD_STORE_DIR="$inventory_etc/passwordstore" pass show wg_gw_key | head -n1 | tr -d '\n' | vault kv put "$cluster_path/kv/wireguard-key" private_key=-
 base64 < "$inventory_etc/sa.key" | vault kv put "$cluster_path/kv/k8s/service-account-key" private_key=-
 fi
