@@ -6,6 +6,40 @@
   cfg = config.yk8s."load-balancing";
   inherit (lib) mkOption mkEnableOption types;
   inherit (config.yk8s._lib) mkInternalOption;
+
+  explicitPorts = types.submodule {
+    options = {
+      external = mkOption {
+        description = ''
+          The port that is available externally
+        '';
+        type = types.port;
+      };
+      nodeport = mkOption {
+        description = ''
+          The local port to which the external port is going to be mapped
+        '';
+        type = types.port;
+      };
+      layer = mkOption {
+        description = ''
+          The `layer` attribute can either be `tcp` (L4) or `http` (L7). For `http`, `option forwardfor`
+          is added implicitly to the backend servers in the haproxy configuration.
+        '';
+        type = types.strMatching "tcp|http";
+        default = "tcp";
+      };
+      use_proxy_protocol = mkOption {
+        description = ''
+          If `use_proxy_protocol` is set to `true`, HAProxy will use the proxy protocol to convey information
+          about the connection initiator to the backend. NOTE: the backend has to accept the proxy
+          protocol, otherwise your traffic will be discarded.
+        '';
+        type = types.bool;
+        default = false;
+      };
+    };
+  };
 in {
   options.yk8s."load-balancing" = {
     lb_ports = mkOption {
@@ -15,18 +49,13 @@ in {
         has been superseded by ch-k8s-lbaas. For legacy reasons and because it's useful under
         certain circumstances it is kept inside the repository.
         The NodePorts are either literally exposed by HAProxy or can be mapped to other ports.
-        The `layer` attribute can either be `tcp` (L4) or `http` (L7). For `http`, `option forwardfor`
-        is added implicitly to the backend servers in the haproxy configuration.
-        If `use_proxy_protocol` is set to `true`, HAProxy will use the proxy protocol to convey information
-        about the connection initiator to the backend. NOTE: the backend has to accept the proxy
-        protocol, otherwise your traffic will be discarded.
       '';
       example = ''
         Short form: [30060];
         Explicit form: [{external=80,nodeport=30080, layer=tcp, use_proxy_protocol=true}]
       '';
       default = [];
-      type = types.listOf types.int; # TODO: support for explicit form
+      type = with types; listOf (either port explicitPorts);
     };
 
     vrrp_priorities = mkOption {
