@@ -5,12 +5,7 @@
 }: let
   cfg = config.yk8s.vault;
   inherit (lib) mkOption types;
-  mkInternalOption = args:
-    mkOption ({
-        internal = true;
-        visible = false;
-      }
-      // args);
+  inherit (config.yk8s._lib) mkInternalOption;
 in {
   options.yk8s.vault = {
     cluster_name = mkOption {
@@ -29,7 +24,7 @@ in {
     };
     _inventory_path = mkInternalOption {
       type = types.str;
-      default = "${config.yk8s._ansible.inventory_base_path}/all/vault-backend.yaml";
+      default = "all/vault-backend.yaml";
     };
   };
 }

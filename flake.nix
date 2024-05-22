@@ -43,7 +43,6 @@
             pkgs.poetry
           ];
         };
-        packages.inventory = (pkgs.formats.yaml {}).generate "inventory" config.yk8s;
 
         formatter = pkgs.alejandra;
       };

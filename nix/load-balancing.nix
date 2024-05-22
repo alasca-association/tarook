@@ -5,12 +5,7 @@
 }: let
   cfg = config.yk8s."load-balancing";
   inherit (lib) mkOption mkEnableOption types;
-  mkInternalOption = args:
-    mkOption ({
-        internal = true;
-        visible = false;
-      }
-      // args);
+  inherit (config.yk8s._lib) mkInternalOption;
 in {
   options.yk8s."load-balancing" = {
     lb_ports = mkOption {
@@ -69,7 +64,7 @@ in {
     };
     _inventory_path = mkInternalOption {
       type = types.str;
-      default = "${config.yk8s._ansible.inventory_base_path}/all/load-balancing.yaml";
+      default = "all/load-balancing.yaml";
     };
   };
   config = {
