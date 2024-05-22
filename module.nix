@@ -46,6 +46,7 @@
           mkDerivation {
             name = "yaook-group-vars";
             src = ./.;
+            preferLocalBuild = true;
             buildPhase = concatLines (mapAttrsToList (section: sectionCfg:
               trace "Section in process: ${section}" ''
                 install -m 644 -D ${mkVarFile sectionCfg} $out/${sectionCfg._inventory_path}
