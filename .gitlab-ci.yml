@@ -208,8 +208,9 @@ release-note-file-check:
     - git config --global user.email "${GITLAB_USER_EMAIL}"
   script:
     # we need to catch the exit-code from python as it otherwise will not be transmitted correctly
-    - python3 ci/lint/check-releasenote-file.py "${CI_PROJECT_DIR}" "${TARGET_BRANCH}" "${CONFIG_FILE}" "${CI_MERGE_REQUEST_IID}" "${COMMIT_FILES}" "${FORK}" "${HOTFIX}"
-    - exit_code=$?
+    - exit_code=0
+    - python3 ci/lint/check-releasenote-file.py "${CI_PROJECT_DIR}" "${TARGET_BRANCH}" "${CONFIG_FILE}" "${CI_MERGE_REQUEST_IID}" "${COMMIT_FILES}" "${FORK}" "${HOTFIX}" || exit_code=$?
+    - echo $exit_code
     - towncrier build --version x.x.x --config "${CONFIG_FILE}" --draft
     - |
       if [ "${exit_code}" != 0 ]; then
