@@ -19,7 +19,7 @@
         inherit (builtins) substring map hasAttr trace;
         inherit (pkgs.stdenv) mkDerivation;
         inherit (lib) types mkOption;
-        inherit (lib.attrsets) filterAttrs mapAttrs' mapAttrsToList;
+        inherit (lib.attrsets) filterAttrs filterAttrsRecursive mapAttrs' mapAttrsToList;
         inherit (lib.strings) concatLines;
         cfg = config.yk8s;
         mkInternalOption = args:
@@ -29,11 +29,12 @@
             }
             // args);
         filterInternal = filterAttrs (n: v: (substring 0 1 n) != "_");
+        filterNull = filterAttrsRecursive (n: v: v != null);
         mkVars = sectionCfg:
           mapAttrs' (name: value: {
             name = "${sectionCfg._ansible_prefix}${name}";
             inherit value;
-          }) (filterInternal sectionCfg);
+          }) (filterNull (filterInternal sectionCfg));
         mkVarFile = let
           mkVars' = sectionCfg:
             if hasAttr "mkVars" sectionCfg
