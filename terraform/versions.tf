@@ -6,7 +6,7 @@ terraform {
     }
     openstack = {
       source = "terraform-provider-openstack/openstack"
-      version = "~> 1.54.0"
+      version = "~> 2.0.0"
     }
     template = {
       source = "hashicorp/template"
