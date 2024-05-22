@@ -57,6 +57,7 @@
         imports = [
           ./nix/vault.nix
           ./nix/load-balancing.nix
+          ./nix/wireguard.nix
         ];
         options.yk8s = {
           _ansible.inventory_base_path = mkOption {
@@ -78,6 +79,10 @@
               type = types.anything;
               default = mkInternalOption;
               # type = types.functionTo (types.functionTo types.attrs);
+            };
+            mkVars = mkInternalOption {
+              type = types.functionTo types.attrsOf types.anything;
+              default = mkVars;
             };
           };
         };
