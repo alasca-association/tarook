@@ -47,5 +47,6 @@
 
         formatter = pkgs.alejandra;
       };
+      flake.flakeModules.yk8s = import ./module.nix;
     };
 }
