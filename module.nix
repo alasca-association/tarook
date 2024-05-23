@@ -59,6 +59,7 @@
           ./nix/vault.nix
           ./nix/load-balancing.nix
           ./nix/wireguard.nix
+          ./nix/ch-k8s-lbaas.nix
         ];
         options.yk8s = {
           _ansible.inventory_base_path = mkOption {

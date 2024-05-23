@@ -25,7 +25,6 @@ ANSIBLE_INVENTORY_ROOTPATH = pathlib.Path("inventory")
 ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory/yaook-k8s/group_vars")
 # List of top level sections which we do accept in the main config
 ALLOWED_TOP_LEVEL_SECTIONS = (
-    "ch-k8s-lbaas",
     "kubernetes",
     "node-scheduling",
     "k8s-service-layer",
@@ -42,7 +41,6 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
 # This maps defines the prefix that is assigned to each
 # variable of a section
 SECTION_VARIABLE_PREFIX_MAP = {
-    "ch-k8s-lbaas": "ch_k8s_lbaas",
     "kubernetes": "k8s",
     "wireguard": "wg",
     "ipsec": "ipsec",
@@ -469,19 +467,6 @@ def main():
         config["k8s-service-layer"].get("fluxcd"),
         kubernetes_service_storage_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("fluxcd", ""),
-    )
-
-    # ---
-    # ch-k8s-lbaas
-    # ---
-    print_process_state("CH-K8s-LBaaS")
-    ch_k8s_lbaas_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "all" / "ch-k8s-lbaas.yaml"
-    )
-    dump_to_ansible_inventory(
-        config.get("ch-k8s-lbaas"),
-        ch_k8s_lbaas_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("ch-k8s-lbaas", ""),
     )
 
     # ---

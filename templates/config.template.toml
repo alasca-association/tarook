@@ -53,47 +53,6 @@ dualstack_support = false # "•ᴗ•"
 # ANCHOR_END: terraform_config
 
 
-
-# ANCHOR: ch-k8s-lbaas_config
-# --- C&H KUBERNETES LBaaS ---
-# ansible prefix: "ch_k8s_lbaas_"
-[ch-k8s-lbaas]
-# To enable our LBaaS service, un-comment the following options and fill in a
-# unique, random, base64-encoded secret in place of `...`.
-# To generate such a secret, you can use the following command:
-# $ dd if=/dev/urandom bs=16 count=1 status=none | base64
-
-enabled       = true    # •ᴗ•
-shared_secret = "..."   # REPLACE ME
-version       = "0.7.0"
-agent_port    = 15203
-
-# Configure which IP address ("port") manager to use. Two options are available:
-# - openstack: Uses OpenStack and the yaook/k8s gateway nodes to provision
-#   LBaaS IP addresses ports.
-# - static: Uses a fixed set of IP addresses to use for load balancing. When the
-#   static port manager is used, the `agent_urls` and `static_ipv4_addresses`
-#   options must also be configured.
-#port_manager  = "openstack"
-
-# List of IPv4 addresses which are usable for the static port manager. It is
-# your responsibility to ensure that the node(s) which run the agent(s) receive
-# traffic for these IPv4 addresses.
-#static_ipv4_addresses = []
-
-# Customize URLs for the agents. This will typically be a list of HTTP URLs
-# like http://agent_ip:15203. This option is only used if the port manager is
-# set to `static`, and must be set if the port manager is `static`.
-#agent_urls = []
-
-# Configure memory and CPU resources for the lbaas controller
-#controller_cpu_request = "100m"
-#controller_memory_request = "256Mi"
-#controller_cpu_limit = "200m"
-#controller_memory_limit = "256Mi"
-
-# ANCHOR_END: ch-k8s-lbaas_config
-
 # ANCHOR: kubernetes_basic_cluster_configuration
 # --- KUBERNETES: BASIC CLUSTER CONFIGURATION ---
 # ansible prefix: "k8s_"
