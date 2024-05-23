@@ -30,6 +30,7 @@
             // args);
         filterInternal = filterAttrs (n: v: (substring 0 1 n) != "_");
         filterNull = filterAttrsRecursive (n: v: v != null);
+        # TODO flatten subsections
         mkVars = sectionCfg:
           mapAttrs' (name: value: {
             name = "${sectionCfg._ansible_prefix}${name}";
@@ -60,6 +61,7 @@
           ./load-balancing.nix
           ./wireguard.nix
           ./ch-k8s-lbaas.nix
+          ./kubernetes
         ];
         options.yk8s = {
           _ansible.inventory_base_path = mkOption {

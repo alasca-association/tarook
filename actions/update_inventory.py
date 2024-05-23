@@ -25,7 +25,6 @@ ANSIBLE_INVENTORY_ROOTPATH = pathlib.Path("inventory")
 ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory/yaook-k8s/group_vars")
 # List of top level sections which we do accept in the main config
 ALLOWED_TOP_LEVEL_SECTIONS = (
-    "kubernetes",
     "node-scheduling",
     "k8s-service-layer",
     "testing",
@@ -41,7 +40,6 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
 # This maps defines the prefix that is assigned to each
 # variable of a section
 SECTION_VARIABLE_PREFIX_MAP = {
-    "kubernetes": "k8s",
     "wireguard": "wg",
     "ipsec": "ipsec",
     "rook": "rook",
@@ -362,19 +360,6 @@ def main():
         config.get("ipsec"),
         ipsec_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("ipsec", ""),
-    )
-
-    # ---
-    # KUBERNETES
-    # ---
-    print_process_state("Kubernetes")
-    kubernetes_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "all" / "kubernetes.yaml"
-    )
-    dump_to_ansible_inventory(
-        config.get("kubernetes"),
-        kubernetes_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("kubernetes", ""),
     )
 
     # ---
