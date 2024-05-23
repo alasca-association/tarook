@@ -36,13 +36,13 @@ repos:
         stages: [commit, push, manual]
       - id: check-flake
         name: check flake
-        files: "^flake.nix$"
+        files: .*\.nix$'
         entry: ci/lint/check-flake.sh
         language: script
         stages: [commit, push, manual]
       - id: nix-fmt
         name: nix-fmt
-        files: "^flake.nix$"
+        files: '.*\.nix$'
         entry: ci/lint/format-flake.sh
         language: script
         stages: [commit, push, manual]
