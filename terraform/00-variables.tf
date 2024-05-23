@@ -165,19 +165,19 @@ variable "master_root_disk_sizes" {
 variable "master_root_disk_volume_types" {
   type        = list(string)
   default     = []
-  description = "If 'create_root_disk_on_volume=true', volume type for root disk of this particular control plane node. If 'root_disk_volume_type' is left empty, default volume type of your IaaS environment is used."
+  description = "If 'create_root_disk_on_volume=true', volume type for root disk of this particular control plane node. If left empty, the volume type specified in 'root_disk_volume_type' will be used."
 }
 
 variable "worker_root_disk_sizes" {
   type = list(number)
   default = []
-  description = "If 'create_root_disk_on_volume=true', volume type for root disk of this particular worker node. If 'root_disk_volume_type' is left empty, default volume type of your IaaS environment is used."
+  description = "If 'create_root_disk_on_volume=true', size of the root disk of this particular worker node. If left empty, the root disk size specified in 'default_worker_root_disk_size' is used."
 }
 
 variable "worker_root_disk_volume_types" {
   type        = list(string)
   default     = []
-  description = "If 'create_root_disk_on_volume=true', volume types of easdasd TODO"
+  description = "If 'create_root_disk_on_volume=true', volume types for the root disk of this particular worker node. If left empty, the volume type specified in 'root_disk_volume_type' will be used."
 }
 
 variable "gateway_root_disk_volume_size" {
@@ -189,7 +189,7 @@ variable "gateway_root_disk_volume_size" {
 variable "gateway_root_disk_volume_type" {
   type        = string
   default     = ""
-  description = "If 'create_root_disk_on_volume=true', set the volume type of the root disk volume for Gateways. Can't be configured separately for each instance"
+  description = "If 'create_root_disk_on_volume=true', set the volume type of the root disk volume for Gateways. Can't be configured separately for each instance. If left empty, the volume type specified in 'root_disk_volume_type' will be used."
 }
 
 variable "default_master_root_disk_size" {
