@@ -9,9 +9,6 @@
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [
-        ./module.nix
-      ];
       systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
       debug = true;
       perSystem = {
@@ -48,7 +45,7 @@
         formatter = pkgs.alejandra;
       };
       flake = {lib, ...}: {
-        flakeModules.yk8s = import ./module.nix;
+        flakeModules.yk8s = import ./nix/module;
         lib = rec {
           importTOML = file: fromTOML (builtins.readFile file);
           importYAML = pkgs: file: let

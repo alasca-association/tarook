@@ -115,6 +115,7 @@ in {
       });
     };
     # TODO: legacy options
+    # TODO: integrate wireguard_helper
     _ansible_prefix = mkInternalOption {
       type = types.str;
       default = "wg_";
