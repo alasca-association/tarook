@@ -88,7 +88,7 @@ No modules.
 | gateway\_flavor | n/a | `string` | `"XS"` | no |
 | gateway\_image\_name | n/a | `string` | `"Debian 12 (bookworm)"` | no |
 | gateway\_root\_disk\_volume\_size | If 'create\_root\_disk\_on\_volume=true' and the gateway flavor does not specify a disk size, the root disk volume will have this size. | `number` | `10` | no |
-| gateway\_root\_disk\_volume\_type | If 'create\_root\_disk\_on\_volume=true', set the volume type of the root disk volume for Gateways. Can't be configured separately for each instance | `string` | `""` | no |
+| gateway\_root\_disk\_volume\_type | If 'create\_root\_disk\_on\_volume=true', set the volume type of the root disk volume for Gateways. Can't be configured separately for each instance. If left empty, the volume type specified in 'root_disk_volume_type' will be used. | `string` | `""` | no |
 | gitlab\_backend | If set to true, GitLab will be used as Terraform HTTP backend. | `bool` | `false` | no |
 | gitlab\_base\_url | Base URL of GitLab for Terraform HTTP backend if 'gitlab\_backend=true'. | `string` | `""` | no |
 | gitlab\_project\_id | If 'gitlab\_backend=true', the Terraform state will be stored in the GitLab repo with this ID. | `string` | `""` | no |
@@ -99,7 +99,7 @@ No modules.
 | master\_images | n/a | `list(string)` | `[]` | no |
 | master\_names | It can be used to uniquely identify masters | `list(string)` | `[]` | no |
 | master\_root\_disk\_sizes | If 'create\_root\_disk\_on\_volume=true' and the master flavor does not specify a disk size, the root disk volume of this particular instance will have this size. | `list(number)` | `[]` | no |
-| master\_root\_disk\_volume\_types | If 'create\_root\_disk\_on\_volume=true', volume type for root disk of this particular control plane node. If 'root\_disk\_volume\_type' is left empty, default volume type of your IaaS environment is used. | `list(string)` | `[]` | no |
+| master\_root\_disk\_volume\_types | If 'create\_root\_disk\_on\_volume=true', volume type for root disk of this particular control plane node. If left empty, the volume type specified in 'root_disk_volume_type' will be used. | `list(string)` | `[]` | no |
 | masters | n/a | `number` | `3` | no |
 | monitoring\_manage\_thanos\_bucket | Create an object storage container for thanos. | `bool` | `false` | no |
 | network\_mtu | MTU for the network used for the cluster. | `number` | `1450` | no |
@@ -115,8 +115,8 @@ No modules.
 | worker\_images | n/a | `list(string)` | `[]` | no |
 | worker\_join\_anti\_affinity\_group | n/a | `list(bool)` | `[]` | no |
 | worker\_names | It can be used to uniquely identify workers | `list(string)` | `[]` | no |
-| worker\_root\_disk\_sizes | If 'create\_root\_disk\_on\_volume=true', volume type for root disk of this particular worker node. If 'root\_disk\_volume\_type' is left empty, default volume type of your IaaS environment is used. | `list(number)` | `[]` | no |
-| worker\_root\_disk\_volume\_types | If 'create\_root\_disk\_on\_volume=true', volume types of easdasd TODO | `list(string)` | `[]` | no |
+| worker\_root\_disk\_sizes | If 'create\_root\_disk\_on\_volume=true', size of the root disk of this particular worker node. If left empty, the root disk size specified in 'default_worker_root_disk_size' is used. | `list(number)` | `[]` | no |
+| worker\_root\_disk\_volume\_types | If 'create\_root\_disk\_on\_volume=true', volume types for the root disk of this particular worker node. If left empty, the volume type specified in 'root_disk_volume_type' will be used. | `list(string)` | `[]` | no |
 | workers | n/a | `number` | `4` | no |
 
 ## Outputs
