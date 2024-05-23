@@ -44,9 +44,9 @@ def deploy_terraform_config(terraform_config):
 def get_default_value_in_tf_vars(key, file_path=TF_DEFAULTS_FILE):
     with open(file_path, 'r') as file:
         content = file.read()
-    try:
-        for var in loads(content)['variable']:
-            if key in var:
-                return var[key]['default']
-    finally:
-        return None
+
+    for var in loads(content)['variable']:
+        if key in var:
+            return var.get(key).get('default')
+
+    raise KeyError("Variable {} not found in {}".format(key, file_path))

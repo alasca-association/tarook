@@ -370,8 +370,9 @@ def main():
                 ip_network, config.get("wireguard")
             ):
                 raise ValueError(
-                    f"The network `{tf_ipv4_string}` is in conflict "
-                    "with one of the wireguard networks."
+                    f"The Terraform network `{tf_ipv4_string}` is in conflict "
+                    "with one of the enabled wireguard networks. "
+                    "They are not allowed to overlap."
                 )
 
         wg_ansible_inventory_path = (
