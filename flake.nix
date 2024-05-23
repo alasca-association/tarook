@@ -62,6 +62,12 @@
             value = importYAML pkgs "${dir}/${file}";
           }) (builtins.readDir dir));
         };
+        templates.cluster-repo = {
+          description = ''
+            Template containing all the Nix parts of the cluster repo
+          '';
+          path = ./nix/templates/cluster-repo;
+        };
       };
     };
 }
