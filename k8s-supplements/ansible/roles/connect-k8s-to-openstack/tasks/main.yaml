@@ -16,6 +16,8 @@
       strict: true
   notify:
     - restart CCM
+    - restart csi-cinder-controllerplugin
+    - restart csi-cinder-nodeplugin
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed

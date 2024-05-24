@@ -10,6 +10,28 @@
     - "restart"
     - "daemonset.apps/openstack-cloud-controller-manager"
 
+- name: restart csi-cinder-controllerplugin  # noqa no-changed-when
+  ansible.builtin.command:
+  args:
+    argv:
+    - "kubectl"
+    - "-n"
+    - "kube-system"
+    - "rollout"
+    - "restart"
+    - "deployment.apps/csi-cinder-controllerplugin"
+
+- name: restart csi-cinder-nodeplugin  # noqa no-changed-when
+  ansible.builtin.command:
+  args:
+    argv:
+    - "kubectl"
+    - "-n"
+    - "kube-system"
+    - "rollout"
+    - "restart"
+    - "daemonset.apps/csi-cinder-nodeplugin"
+
 - name: restart octavia-ingress-controller  # noqa no-changed-when
   ansible.builtin.command:
   args:
