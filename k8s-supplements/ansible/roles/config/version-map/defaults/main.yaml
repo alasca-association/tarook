@@ -9,27 +9,6 @@ next_k8s_version_minor: '{{ next_k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)
 # is not included here because `kube-prometheus` comes with its own type
 # of versioning.
 image_version_map:
-  "1.26":
-    openstack:
-      # https://github.com/kubernetes/cloud-provider-openstack/releases/tag/v1.27.1
-      cinder_csi_plugin: "v1.27.1"
-      openstack_cloud_controller_manager: "v1.27.1"
-      # https://github.com/kubernetes-csi/external-attacher/releases/tag/v4.3.0
-      csi_attacher: "v4.3.0"
-      # https://github.com/kubernetes-csi/node-driver-registrar/releases/tag/v2.8.0
-      csi_node_driver_registrar: "v2.8.0"
-      # https://github.com/kubernetes-csi/external-provisioner/releases/tag/v3.5.0
-      csi_provisioner: "v3.5.0"
-      # https://github.com/kubernetes-csi/external-resizer/releases/tag/v1.8.0
-      csi_resizer: "v1.8.0"
-      # https://github.com/kubernetes-csi/external-snapshotter/releases/tag/v6.2.2
-      csi_snapshotter: "v6.2.2"
-      # https://github.com/kubernetes-csi/livenessprobe/releases/tag/v2.10.0
-      csi_livenessprobe: "v2.10.0"
-    calico_version: "{{ k8s_network_calico_custom_version | default('3.26.1') }}"
-    # https://kubernetes-csi.github.io/docs/snapshot-controller.html
-    volume_snapshot_controller: "v6.2.1"
-
   "1.27":
     openstack:
       # https://github.com/kubernetes/cloud-provider-openstack/releases/tag/v1.29.0
