@@ -8,5 +8,5 @@ collections:
   - name: amazon.aws
     version: 5.2.0
   - name: kubernetes.core
-    version: 3.0.1
+    version: 3.1.0
 ...
