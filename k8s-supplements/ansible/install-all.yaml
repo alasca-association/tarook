@@ -64,8 +64,4 @@
     - monitoring_v2
     - monitoring
 
-# ---
-# TODO: Should be factored out
-- name: Configure global monitoring
-  import_playbook: configure-global-monitoring.yaml
 ...

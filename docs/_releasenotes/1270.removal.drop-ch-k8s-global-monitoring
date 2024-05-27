@@ -1,0 +1,3 @@
+The "global monitoring" functionality has been dropped.
+It was a provider-specific feature and has been dropped
+as the LCM should be kept as general as possible.
