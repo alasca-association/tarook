@@ -16,7 +16,6 @@ k8s_version_minor: '{{ k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1")
 next_k8s_version_minor: '{{ next_k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") if next_k8s_version is defined }}'
 
 supported_k8s_versions:
-  - '1.26'
   - '1.27'
   - '1.28'
 ...

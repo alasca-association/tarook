@@ -21,7 +21,7 @@ kubernetes-validate = "^1.26.0"
 hvac = "^2.0.0"
 boto3 = "^1.26.155"
 pre-commit = "^3.3.3"
-yq = "^3.4.1"
+toml = "^0.10.2"
 python-hcl2 = "^4.3.2"
 
 [tool.poetry.group.ci]
@@ -46,11 +46,11 @@ furo = "^2024.0.0"
 towncrier = "^23.6.0"
 sphinx-multiversion = "^0.2.4"
 myst-parser = "^3.0.0"
-sphinx-design = "^0.5.0"
+sphinx-design = "^0.6.0"
 sphinx-copybutton = "^0.5.2"
 
 [tool.poetry.group.minimal-access.dependencies]
-toml = "^0.10.2"
+yq = "^3.4.1"
 
 [build-system]
 requires = ["poetry-core"]

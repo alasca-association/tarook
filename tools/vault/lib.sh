@@ -23,7 +23,7 @@ fi
 nodes_approle_accessor=$(vault read -field="$nodes_approle_name/" -format=json sys/auth | jq -r .accessor) || unset nodes_approle_accessor
 
 function get_clustername() {
-    python -c 'import toml; print (toml.load("config/config.toml").get("vault", {}).get("cluster_name", ""))'
+    tomlq --raw-output '.vault.cluster_name // error("unset")' config/config.toml
 }
 
 function check_clustername() {
@@ -331,7 +331,7 @@ function rotate_pki_issuer() {
 
 function import_etcd_backup_config() {
     etcdbackup_config_path=config/etcd_backup_s3_config.yaml
-    if etcdbackup_config="$(python3 -c 'import json, yaml, sys; json.dump(yaml.load(sys.stdin, Loader=yaml.SafeLoader), sys.stdout)' < $etcdbackup_config_path)"; then
+    if etcdbackup_config="$(yq --compact-output . "$etcdbackup_config_path")"; then
         if ! vault kv get "$cluster_path"/kv/etcdbackup > /dev/null; then
             vault kv put "$cluster_path/kv/etcdbackup" - <<<"$etcdbackup_config"
             echo "Successfully imported etcd backup credentials into vault."
@@ -367,9 +367,9 @@ function import_ipsec_eap_psk() {
 }
 
 function import_thanos_config() {
-    thanos_enabled="$(python3 -c 'import toml, sys; print(str(toml.load(sys.stdin).get("k8s-service-layer").get("prometheus").get("use_thanos", False)).lower())' < config/config.toml)"
-    manage_thanos_bucket="$(python3 -c 'import toml, sys; print(str(toml.load(sys.stdin).get("k8s-service-layer").get("prometheus").get("manage_thanos_bucket", True)).lower())' < config/config.toml)"
-    thanos_config_file="$(python3 -c 'import toml, sys; print(toml.load(sys.stdin).get("k8s-service-layer").get("prometheus").get("thanos_objectstorage_config_file"))' < config/config.toml)"
+    thanos_enabled="$(tomlq '."k8s-service-layer".prometheus.use_thanos | if (.|type)=="boolean" then . else false end' config/config.toml)"
+    manage_thanos_bucket="$(tomlq '."k8s-service-layer".prometheus.manage_thanos_bucket | if (.|type)=="boolean" then . else true end' config/config.toml)"
+    thanos_config_file="$(tomlq '."k8s-service-layer".prometheus.thanos_objectstorage_config_file | if (.|type)=="string" then . else "" end' config/config.toml)"
 
     if ! "$thanos_enabled"; then
         echo "Thanos is disabled."
@@ -385,7 +385,7 @@ function import_thanos_config() {
         echo "Please check that you configured 'k8s-service-layer.prometheus.thanos_objectstorage_config_file' correctly" >&2
         exit 1
     fi
-    if ! thanos_config="$(python3 -c 'import json, yaml, sys; json.dump(yaml.load(sys.stdin, Loader=yaml.SafeLoader), sys.stdout)' < config/"$thanos_config_file")"; then
+    if ! thanos_config="$(yq --compact-output . config/"$thanos_config_file")"; then
         echo "Failed to find Thanos object storage configuration at config/$thanos_config_file" >&2
         echo "Failing because automated mangement is disabled." >&2
         echo "Please check that you configured 'k8s-service-layer.prometheus.thanos_objectstorage_config_file' correctly" >&2

@@ -63,8 +63,8 @@ To verify your configured clustername you can use the following:
 
 .. code:: console
 
-  $ cat config/config.toml | python3 -c 'import toml, sys; toml.dump(toml.load(sys.stdin).get("vault"), sys.stdout)'
-  cluster_name = "devcluster"
+  $ tomlq --raw-output '.vault.cluster_name' config/config.toml
+  devcluster
 
 Phase 1
 ^^^^^^^

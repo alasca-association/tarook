@@ -28,7 +28,7 @@ if [ "${WG_USAGE:-true}" == "true" ]; then
     fi
 
     ipam_path="$cluster_repository/config/wireguard_ipam.toml"
-    if python3 -c "import toml, sys; sys.exit(any(user['ident'] == '$wg_user' for user in toml.load('$ipam_path')['wg_users']))" ; then
+    if ! tomlq '(.wg_users[] | select(.ident=="'"${wg_user}"'")) // error("not-found")' "$ipam_path" &>/dev/null ; then
         warningf 'failed to find wireguard user %s in trampoline configuration' "$wg_user" >&2
     fi
 
