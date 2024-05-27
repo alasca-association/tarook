@@ -28,6 +28,28 @@
               visible = false;
             }
             // args);
+        mkTopSection = options: ({
+            _ansible_prefix = mkInternalOption {
+              default = "";
+              type = types.str;
+            };
+            _inventory_path = mkInternalOption {
+              type = types.str;
+            };
+            _flatten_variables = mkInternalOption {
+              type = types.bool;
+              default = true;
+            };
+            _only_if_enabled = mkInternalOption {
+              type = types.bool;
+              default = false;
+            };
+            _variable_transformation = mkInternalOption {
+              type = types.nullOr (types.functionTo types.attrs);
+              default = null;
+            };
+          }
+          // options);
         filterInternal = filterAttrs (n: v: (substring 0 1 n) != "_");
         filterNull = filterAttrsRecursive (n: v: v != null);
         # TODO flatten subsections
@@ -38,9 +60,11 @@
           }) (filterNull (filterInternal sectionCfg));
         mkVarFile = let
           mkVars' = sectionCfg:
-            if hasAttr "mkVars" sectionCfg
-            then (trace "Using section specific handler" sectionCfg.mkVars sectionCfg)
-            else (trace "Using generic handler" mkVars sectionCfg);
+            mkVars (
+              if sectionCfg._variable_transformation == null
+              then sectionCfg
+              else (trace "Transforming variables" (sectionCfg._variable_transformation sectionCfg))
+            );
         in
           sectionCfg: (pkgs.formats.yaml {}).generate sectionCfg._inventory_path (mkVars' sectionCfg);
         mkInventory = cfg:
@@ -80,13 +104,16 @@
           };
           _lib = {
             mkInternalOption = mkInternalOption {
-              type = types.anything;
+              type = types.functionTo types.attrs;
               default = mkInternalOption;
-              # type = types.functionTo (types.functionTo types.attrs);
             };
             mkVars = mkInternalOption {
-              type = types.functionTo types.attrsOf types.anything;
+              type = types.functionTo types.attrs;
               default = mkVars;
+            };
+            mkTopSection = mkInternalOption {
+              type = types.functionTo types.attrs;
+              default = mkTopSection;
             };
           };
         };

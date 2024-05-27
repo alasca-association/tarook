@@ -5,11 +5,11 @@
 }: let
   cfg = config.yk8s.ch-k8s-lbaas;
   inherit (lib) mkOption mkEnableOption types;
-  inherit (config.yk8s._lib) mkInternalOption;
+  inherit (config.yk8s._lib) mkTopSection;
 
   ipv4Addr = types.strMatching "^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$";
 in {
-  options.yk8s.ch-k8s-lbaas = {
+  options.yk8s.ch-k8s-lbaas = mkTopSection {
     enabled = mkEnableOption "Enable out LBaas service";
     shared_secret = mkOption {
       description = ''
@@ -74,15 +74,12 @@ in {
       default = null;
       example = "256Mi";
     };
+  };
+  config.yk8s.ch-k8s-lbaas = {
     # TODO: I'm not exposing CPU limits and memory requests here for now
-    _ansible_prefix = mkInternalOption {
-      type = types.str;
-      default = "ch_k8s_lbaas";
-    };
-    _inventory_path = mkInternalOption {
-      type = types.str;
-      default = "all/ch-k8s-lbaas.yaml";
-    };
+    _ansible_prefix = "ch_k8s_lbaas";
+    _inventory_path = "all/ch-k8s-lbaas.yaml";
+    _only_if_enabled = true;
   };
   # TODO: verify static_ipv4_addresses and agent_urls are set if port_manager  = "static"
   # TODO: only evaluate if enabled = true

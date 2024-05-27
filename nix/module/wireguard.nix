@@ -5,9 +5,9 @@
 }: let
   cfg = config.yk8s.wireguard;
   inherit (lib) mkOption types;
-  inherit (config.yk8s._lib) mkInternalOption;
+  inherit (config.yk8s._lib) mkTopSection;
 in {
-  options.yk8s.wireguard = {
+  options.yk8s.wireguard = mkTopSection {
     endpoints = mkOption {
       description = ''
         Defines a WireGuard endpoint/server.
@@ -114,18 +114,12 @@ in {
         };
       });
     };
+  };
+  config.yk8s.wireguard = {
     # TODO: legacy options
     # TODO: all the stuff from update_inventory
     # TODO: integrate wireguard_helper
-    _ansible_prefix = mkInternalOption {
-      type = types.str;
-      default = "wg_";
-    };
-    _inventory_path = mkInternalOption {
-      type = types.str;
-      default = "gateways/wireguard.yaml";
-    };
-  };
-  config = {
+    _ansible_prefix = "wg_";
+    _inventory_path = "gateways/wireguard.yaml";
   };
 }

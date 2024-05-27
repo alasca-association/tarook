@@ -5,7 +5,7 @@
 }: let
   cfg = config.yk8s.kubernetes;
   inherit (lib) mkOption types;
-  inherit (config.yk8s._lib) mkInternalOption;
+  inherit (config.yk8s._lib) mkTopSection;
 in {
   imports = [
     ./storage.nix
@@ -14,7 +14,7 @@ in {
     ./network.nix
     ./kubelet.nix
   ];
-  options.yk8s.kubernetes = {
+  options.yk8s.kubernetes = mkTopSection {
     version = mkOption {
       description = ''
         Kubernetes version
@@ -62,14 +62,9 @@ in {
       type = types.int;
       default = 50;
     };
-
-    _ansible_prefix = mkInternalOption {
-      type = types.str;
-      default = "k8s_";
-    };
-    _inventory_path = mkInternalOption {
-      type = types.str;
-      default = "all/kubernetes.yaml";
-    };
+  };
+  config.yk8s.kubernetes = {
+    _ansible_prefix = "k8s_";
+    _inventory_path = "all/kubernetes.yaml";
   };
 }

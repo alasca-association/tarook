@@ -3,9 +3,9 @@
   lib,
   ...
 }: let
-  cfg = config.yk8s."load-balancing";
+  cfg = config.yk8s.load-balancing;
   inherit (lib) mkOption mkEnableOption types;
-  inherit (config.yk8s._lib) mkInternalOption;
+  inherit (config.yk8s._lib) mkTopSection;
 
   explicitPorts = types.submodule {
     options = {
@@ -41,7 +41,7 @@
     };
   };
 in {
-  options.yk8s."load-balancing" = {
+  options.yk8s."load-balancing" = mkTopSection {
     lb_ports = mkOption {
       description = ''
         lb_ports is a list of ports that are exposed by HAProxy on the gateway nodes and forwarded
@@ -87,20 +87,14 @@ in {
       type = types.listOf types.str;
       default = [];
     };
-    _ansible_prefix = mkInternalOption {
-      type = types.str;
-      default = "";
-    };
-    _inventory_path = mkInternalOption {
-      type = types.str;
-      default = "all/load-balancing.yaml";
-    };
   };
-  config = {
-    yk8s._warnings = let
-      priorityWarnings =
-        lib.concatLines (builtins.map (host: "WARNING: [load-balancer.priority] ignoring deprecated host-based priority override for host ${host}") cfg.priorities);
-    in
-      lib.optionals ((builtins.length cfg.priorities) != 0) (builtins.trace priorityWarnings [priorityWarnings]);
+  config.yk8s.load-balancing = {
+    _ansible_prefix = "";
+    _inventory_path = "all/load-balancing.yaml";
   };
+  config.yk8s._warnings = let
+    priorityWarnings =
+      lib.concatLines (builtins.map (host: "WARNING: [load-balancer.priority] ignoring deprecated host-based priority override for host ${host}") cfg.priorities);
+  in
+    lib.optionals ((builtins.length cfg.priorities) != 0) (builtins.trace priorityWarnings [priorityWarnings]);
 }

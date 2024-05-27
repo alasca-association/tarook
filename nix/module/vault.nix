@@ -5,9 +5,9 @@
 }: let
   cfg = config.yk8s.vault;
   inherit (lib) mkOption types;
-  inherit (config.yk8s._lib) mkInternalOption;
+  inherit (config.yk8s._lib) mkTopSection;
 in {
-  options.yk8s.vault = {
+  options.yk8s.vault = mkTopSection {
     cluster_name = mkOption {
       description = ''
         Name of the cluster inside Vault. The secrets engines are searched for
@@ -18,13 +18,9 @@ in {
       type = types.str;
       default = "devcluster";
     };
-    _ansible_prefix = mkInternalOption {
-      type = types.str;
-      default = "vault_";
-    };
-    _inventory_path = mkInternalOption {
-      type = types.str;
-      default = "all/vault-backend.yaml";
-    };
+  };
+  config.yk8s.vault = {
+    _ansible_prefix = "vault_";
+    _inventory_path = "all/vault-backend.yaml";
   };
 }
