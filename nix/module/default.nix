@@ -16,10 +16,10 @@
         system,
         ...
       }: let
-        inherit (builtins) substring map hasAttr trace length head;
+        inherit (builtins) substring map hasAttr trace isAttrs length head;
         inherit (pkgs.stdenv) mkDerivation;
         inherit (lib) types mkOption;
-        inherit (lib.attrsets) filterAttrs filterAttrsRecursive mapAttrs' mapAttrsToList;
+        inherit (lib.attrsets) filterAttrs filterAttrsRecursive mapAttrs' mapAttrsToList foldlAttrs;
         inherit (lib.strings) concatLines;
         cfg = config.yk8s;
         mkInternalOption = args:
@@ -36,10 +36,6 @@
             _inventory_path = mkInternalOption {
               type = types.str;
             };
-            _flatten_variables = mkInternalOption {
-              type = types.bool;
-              default = true;
-            };
             _only_if_enabled = mkInternalOption {
               type = types.bool;
               default = false;
@@ -53,11 +49,24 @@
         filterInternal = filterAttrs (n: v: (substring 0 1 n) != "_");
         filterNull = filterAttrsRecursive (n: v: v != null);
         # TODO flatten subsections
+        flatten = foldlAttrs (
+          acc: outerName: outerValue:
+            acc
+            // (
+              if isAttrs outerValue
+              then
+                mapAttrs' (name: value: {
+                  name = "${outerName}_${name}";
+                  inherit value;
+                }) (flatten outerValue)
+              else {"${outerName}" = outerValue;}
+            )
+        ) {};
         mkVars = sectionCfg:
           mapAttrs' (name: value: {
             name = "${sectionCfg._ansible_prefix}${name}";
             inherit value;
-          }) (filterNull (filterInternal sectionCfg));
+          }) (filterNull (flatten (filterInternal sectionCfg)));
         mkVarFile = let
           mkVars' = sectionCfg:
             mkVars (
