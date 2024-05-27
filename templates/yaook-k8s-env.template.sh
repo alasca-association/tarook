@@ -40,3 +40,11 @@ export TF_VAR_keypair='firstnamelastname-hostname-gendate'
 #export TF_HTTP_PASSWORD="<gitlab-access-token>"
 
 # Optional: You can also source your openrc from here.
+
+# There is a bug in poetry that makes it access the user's key ring
+# even if not necessary. It should only do that (1) when publishing
+# or (2) when using dependencies from private repositories.
+# This can lead to problems when the key ring is not available or
+# is password protected. Setting the following variable avoids that.
+# See https://github.com/python-poetry/poetry/issues/1917
+export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
