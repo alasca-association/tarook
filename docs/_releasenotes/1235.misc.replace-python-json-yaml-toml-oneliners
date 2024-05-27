@@ -1,2 +1,0 @@
-Replaced all python oneliners for reading json, yaml and json files
-with a dedicated commandline tool.
