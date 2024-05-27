@@ -19,6 +19,45 @@ earlier changes.
 
 .. towncrier release notes start
 
+v5.1.2 (2024-05-27)
+-------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- The default version of the Thanos Helm Chart has been updated to 15.1.0 (`!1188 <https://gitlab.com/yaook/k8s/-/merge_requests/1188>`_)
+- Make hosts file backing up more robust in bare metal clusters. (`!1236 <https://gitlab.com/yaook/k8s/-/merge_requests/1236>`_)
+- Use volumeV3 client at terraform. volumeV2 is not supported everywhere. (`!1245 <https://gitlab.com/yaook/k8s/-/merge_requests/1245>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+-  (`!1255 <https://gitlab.com/yaook/k8s/-/merge_requests/1255>`_)
+
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Terraform references updated (`!1189 <https://gitlab.com/yaook/k8s/-/merge_requests/1189>`_)
+- A guide on how to simulate a self-managed bare metal cluster on
+  top of OpenStack has been added to the :doc:`documentation </developer/guide/simulate-bm>`. (`!1231 <https://gitlab.com/yaook/k8s/-/merge_requests/1231>`_)
+- Instructions to install Vault have been added to the installation guide (`!1247 <https://gitlab.com/yaook/k8s/-/merge_requests/1247>`_)
+
+
+Deprecations and Removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- A service-account-issuer patch for kube-apiserver has been removed which was necessary for a flawless transition to an OIDC conformant HTTPS URL (`!1252 <https://gitlab.com/yaook/k8s/-/merge_requests/1252>`_)
+- Support for Kubernetes v1.26 has been removed (`!1253 <https://gitlab.com/yaook/k8s/-/merge_requests/1253>`_)
+
+
+Misc
+~~~~
+
+- `!1230 <https://gitlab.com/yaook/k8s/-/merge_requests/1230>`_, `!1235 <https://gitlab.com/yaook/k8s/-/merge_requests/1235>`_
+
+
 v5.1.1 (2024-05-21)
 -------------------
 
