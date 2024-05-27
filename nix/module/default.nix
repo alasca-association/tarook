@@ -16,7 +16,7 @@
         system,
         ...
       }: let
-        inherit (builtins) substring map hasAttr trace;
+        inherit (builtins) substring map hasAttr trace length head;
         inherit (pkgs.stdenv) mkDerivation;
         inherit (lib) types mkOption;
         inherit (lib.attrsets) filterAttrs filterAttrsRecursive mapAttrs' mapAttrsToList;
@@ -62,7 +62,7 @@
           mkVars' = sectionCfg:
             mkVars (
               if sectionCfg._variable_transformation == null
-              then sectionCfg
+              then (trace "Not transforming variables" sectionCfg)
               else (trace "Transforming variables" (sectionCfg._variable_transformation sectionCfg))
             );
         in
@@ -77,7 +77,18 @@
                 install -m 644 -D ${mkVarFile sectionCfg} $out/${sectionCfg._inventory_path}
               '')
             (filterInternal cfg));
-            checkPhase = concatLines (map (w: "# ${w}") cfg._warnings);
+            checkPhase = let
+              warnings = concatLines (map (w: "# ${builtins.trace "WARNING: ${w}" w}") cfg._warnings);
+              errors = concatLines (map (e: "# ${builtins.trace "ERROR: ${e}" e}") cfg._errors);
+            in
+              warnings
+              + (
+                if cfg._errors == []
+                then ""
+                else if length cfg._errors == 1
+                then throw (head cfg._errors)
+                else throw (concatLines ["Multiple errors have been encountered:"] ++ errors)
+              );
           };
       in {
         imports = [
@@ -100,6 +111,11 @@
             type = types.str;
           };
           _warnings = mkInternalOption {
+            default = [];
+            type = types.listOf types.str;
+          };
+          _errors = mkInternalOption {
+            default = [];
             type = types.listOf types.str;
           };
           _lib = {
@@ -114,6 +130,10 @@
             mkTopSection = mkInternalOption {
               type = types.functionTo types.attrs;
               default = mkTopSection;
+            };
+            logIf = mkInternalOption {
+              type = types.functionTo types.anything;
+              default = cond: msg: lib.optionals cond [msg];
             };
           };
         };

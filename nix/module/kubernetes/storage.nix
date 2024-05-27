@@ -5,6 +5,7 @@
 }: let
   cfg = config.yk8s.kubernetes;
   inherit (lib) mkOption mkEnableOption types;
+  inherit (config.yk8s._lib) logIf;
 in {
   options.yk8s.kubernetes = {
     storage = {
@@ -87,7 +88,13 @@ in {
 
         # nodeplugin_toleration = # TODO toleration submodule
       };
-      # TODO ensure storage class names are distinct
     };
   };
+  config.yk8s._errors =
+    logIf (
+      cfg.local_storage.static.enabled
+      && cfg.local_storage.dynamic.enabled
+      && cfg.local_storage.static.storageclass_name == cfg.local_storage.dynamic.storageclass_name
+    )
+    "[local_storage] Static and dynamic storage classes must have different names";
 }
