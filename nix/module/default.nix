@@ -37,6 +37,9 @@
               type = types.str;
             };
             _only_if_enabled = mkInternalOption {
+              description = ''
+                If true, the whole section is omitted from the file, except for the `enabled` value.
+              '';
               type = types.bool;
               default = false;
             };
@@ -62,11 +65,15 @@
               else {"${outerName}" = outerValue;}
             )
         ) {};
+        filterDisabled = sectionCfg:
+          if sectionCfg._only_if_enabled && ! sectionCfg.enabled
+          then {enabled = false;}
+          else sectionCfg;
         mkVars = sectionCfg:
           mapAttrs' (name: value: {
             name = "${sectionCfg._ansible_prefix}${name}";
             inherit value;
-          }) (filterNull (flatten (filterInternal sectionCfg)));
+          }) (filterNull (flatten (filterInternal (filterDisabled sectionCfg))));
         mkVarFile = let
           mkVars' = sectionCfg:
             mkVars (
