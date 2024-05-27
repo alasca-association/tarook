@@ -78,7 +78,7 @@ in {
     # TODO: I'm not exposing CPU limits and memory requests here for now
   };
   config.yk8s.ch-k8s-lbaas = {
-    _ansible_prefix = "ch_k8s_lbaas";
+    _ansible_prefix = "ch_k8s_lbaas_";
     _inventory_path = "all/ch-k8s-lbaas.yaml";
     _only_if_enabled = true;
   };

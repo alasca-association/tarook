@@ -16,7 +16,7 @@
         system,
         ...
       }: let
-        inherit (builtins) substring map hasAttr trace isAttrs length head;
+        inherit (builtins) substring map trace isAttrs length head;
         inherit (pkgs.stdenv) mkDerivation;
         inherit (lib) types mkOption;
         inherit (lib.attrsets) filterAttrs filterAttrsRecursive mapAttrs' mapAttrsToList foldlAttrs;
@@ -49,9 +49,8 @@
             };
           }
           // options);
-        filterInternal = filterAttrs (n: v: (substring 0 1 n) != "_");
-        filterNull = filterAttrsRecursive (n: v: v != null);
-        # TODO flatten subsections
+        filterInternal = filterAttrs (n: _: (substring 0 1 n) != "_");
+        filterNull = filterAttrsRecursive (_: v: v != null);
         flatten = foldlAttrs (
           acc: outerName: outerValue:
             acc
@@ -78,7 +77,7 @@
           mkVars' = sectionCfg:
             mkVars (
               if sectionCfg._variable_transformation == null
-              then (trace "Not transforming variables" sectionCfg)
+              then sectionCfg
               else (trace "Transforming variables" (sectionCfg._variable_transformation sectionCfg))
             );
         in
