@@ -6,51 +6,6 @@
 # NOTE:For some sections the inventory updater will apply prefixes to
 # the variables before passing them over to the ansible inventories.
 
-# ANCHOR: terraform_config
-# --- TERRAFORM ---
-# ansible prefix: /
-[terraform]
-# If true, prevent Terraform from performing disruptive action
-# defaults to true if unset
-prevent_disruption = true
-
-#subnet_cidr = "172.30.154.0/24"
-#masters = 3
-#workers = 3
-#worker_flavors = ["L", "M", "L"]
-
-# if set to true one must set proper values for the "azs" array according to the cloud in use
-#enable_az_management = false
-
-# Enable DualStack support
-# WARNING: DualStack support is not stable yet, see https://gitlab.com/yaook/k8s/-/issues/502
-dualstack_support = false # "•ᴗ•"
-# If you enabled DualStack-support you may want to adjust the IPv6 subnet
-#subnet_v6_cidr = "fd00::/120"
-
-# If true, create block volume for each instance and boot from there.
-# Equivalent to `openstack server create --boot-from-volume […].
-#create_root_disk_on_volume = false
-
-# Volume type that is used if `create_root_disk_on_volume` is true.
-#root_disk_volume_type = "three_times_replicated"
-
-# Enable GitLab-managed Terraform backend
-# If true, the Terraform state will be stored inside the provided gitlab project.
-# If set, the environment variables `TF_HTTP_USERNAME` and `TF_HTTP_PASSWORD`
-# must be configured in a separate file `~/.config/yaook-k8s/env`.
-#gitlab_backend = false
-
-# The base URL of your GitLab project.
-#gitlab_base_url = "https://gitlab.com"
-
-# The unique ID of your GitLab project.
-#gitlab_project_id = "01234567"
-
-# The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'
-#gitlab_state_name = "tf-state"
-
-# ANCHOR_END: terraform_config
 
 # --- KUBERNETES SERVICE LAYER ---
 # ANCHOR: ksl_rook_configuration

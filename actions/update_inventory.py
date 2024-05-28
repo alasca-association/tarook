@@ -25,7 +25,6 @@ ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory/yaook-k8s/group_vars")
 # List of top level sections which we do accept in the main config
 ALLOWED_TOP_LEVEL_SECTIONS = (
     "k8s-service-layer",
-    "terraform",
     "wireguard",
     "etcd-backup",
     "custom",

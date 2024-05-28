@@ -107,6 +107,7 @@
           };
       in {
         imports = [
+          ./terraform.nix
           ./vault.nix
           ./load-balancing.nix
           ./wireguard.nix
