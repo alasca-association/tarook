@@ -250,7 +250,25 @@ you can adjust the actual configuration for the k8s cluster,
 e.g. the amount of master and worker nodes, flavors, image names.
 The configuration file is named ``config/config.toml``.
 For a full config reference click
-:doc:`here </user/reference/cluster-configuration>`
+:doc:`here </user/reference/cluster-configuration>`. Also have a close look to
+all :doc:`terraform variables</developer/reference/terraform-docs>` that
+can be set, you need to change some of them to fit to your OpenStack cluster.
+You may need to set:
+
+- default_master_flavor
+- gateway_flavor
+- default_worker_flavor
+- public_network
+- keypair
+- azs
+- default_master_image_name
+- default_master_root_disk_size = 20
+- root_disk_volume_type
+- create_root_disk_on_volume ??
+- gateway_root_disk_volume_typ
+- gateway_image_name
+- default_worker_image_name
+- default_worker_root_disk_size
 
 Adopt the amount of nodes,
 e.g. one worker node and one master node.
