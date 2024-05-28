@@ -643,47 +643,6 @@ ip_gw   = "172.30.153.65/26"
 
 # ANCHOR_END: wireguard_config
 
-# ANCHOR: ipsec_configuration
-# --- IPSEC ---
-# ansible prefix: "ipsec_"
-[ipsec]
-enabled = false
-
-# Flag to enable the test suite.
-# Must make sure a remote endpoint, with ipsec enabled, is running and open for connections.
-# test_enabled = false
-
-# Must be a list of parent SA proposals to offer to the client.
-# Must be explicitly set if ipsec_enabled is set to true.
-#proposals =
-
-# Must be a list of ESP proposals to offer to the client.
-#esp_proposals = "{{ ipsec_proposals }}"
-
-# List of CIDRs to route to the peer. If not set, only dynamic IP
-# assignments will be routed.
-#peer_networks = []
-
-# List of CIDRs to offer to the peer.
-#local_networks = ["{{ subnet_cidr }}"]
-
-# Pool to source virtual IP addresses from. Those are the IP addresses assigned
-# to clients which do not have remote networks. (e.g.: "10.3.0.0/24")
-#virtual_subnet_pool = null
-
-# List of addresses to accept as remote. When initiating, the first single IP
-# address is used.
-#remote_addrs = false
-
-# Private address of remote endpoint.
-# only used when test_enabled is True
-#remote_private_addrs = ""
-
-# The PSK for EAP. Must be set.
-#eap_psk =
-
-# ANCHOR_END: ipsec_configuration
-
 # ANCHOR: custom_configuration
 # --- CUSTOM ---
 # ansible prefix: /

@@ -27,7 +27,6 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "k8s-service-layer",
     "terraform",
     "wireguard",
-    "ipsec",
     "etcd-backup",
     "custom",
     "vault",
@@ -38,7 +37,6 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
 # variable of a section
 SECTION_VARIABLE_PREFIX_MAP = {
     "wireguard": "wg",
-    "ipsec": "ipsec",
     "rook": "rook",
     "prometheus": "monitoring",
     "cert-manager": "k8s_cert_manager",
@@ -344,19 +342,6 @@ def main():
             wg_ansible_inventory_path,
             SECTION_VARIABLE_PREFIX_MAP.get("wireguard", ""),
         )
-
-    # ---
-    # IPSEC
-    # ---
-    print_process_state("IPSec")
-    ipsec_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "gateways" / "ipsec.yaml"
-    )
-    dump_to_ansible_inventory(
-        config.get("ipsec"),
-        ipsec_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("ipsec", ""),
-    )
 
     # ---
     # ROOK
