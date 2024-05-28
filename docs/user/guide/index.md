@@ -15,6 +15,7 @@ initialization
 quick-start
 updating-host-nodes
 minimal-access-venv
+rotate-openstack-credentials
 ```
 
 Keep this under your pillow when *running* Yaook/k8s clusters.
