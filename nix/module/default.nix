@@ -116,6 +116,7 @@
           ./node-scheduling.nix
           ./testing.nix
           ./ipsec.nix
+          ./custom.nix
         ];
         options.yk8s = {
           _ansible.inventory_base_path = mkOption {

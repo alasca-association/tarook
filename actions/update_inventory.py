@@ -27,7 +27,6 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "k8s-service-layer",
     "wireguard",
     "etcd-backup",
-    "custom",
     "vault",
     "miscellaneous",
     "nvidia",
@@ -469,21 +468,6 @@ def main():
         nvidia_vgpu_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("nvidia", ""),
     )
-
-    # ---
-    # CUSTOM
-    # ---
-    # only if custom stage is used
-    if os.getenv("K8S_CUSTOM_STAGE_USAGE", "true") == "true":
-        print_process_state("CUSTOM")
-        custom_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / "all" / "custom.yaml"
-        )
-        dump_to_ansible_inventory(
-            config.get("custom", dict()),
-            custom_ansible_inventory_path,
-            "",  # don't append prefix, we don't use vars from other sections
-        )
 
     print(
         "---\n"

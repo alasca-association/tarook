@@ -598,19 +598,6 @@ ip_gw   = "172.30.153.65/26"
 
 # ANCHOR_END: wireguard_config
 
-# ANCHOR: custom_configuration
-# --- CUSTOM ---
-# ansible prefix: /
-# Specify variables to be used in the custom stage here. See below for examples.
-
-##[custom]
-#my_var_foo = "" # makes the variable `my_custom_section_prefix_my_var = ""`
-
-#[custom.my_custom_section_prefix]
-#my_var = "" # produces the var `my_custom_section_prefix_my_var = ""`
-
-# ANCHOR_END: custom_configuration
-
 # ANCHOR: miscellaneous_configuration
 # --- MISCELLANEOUS ---
 # ansible prefix: /
