@@ -137,6 +137,13 @@
             type = types.listOf types.str;
           };
           _lib = {
+            types = mkInternalOption {
+              type = types.attrs;
+              default = {
+                ipv4Addr = types.strMatching "^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$";
+                ipv4Cidr = types.strMatching "^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}/([0-9]|[12][0-9]|3[0-2])$";
+              }
+            }
             mkInternalOption = mkInternalOption {
               type = types.functionTo types.attrs;
               default = mkInternalOption;

@@ -6,8 +6,7 @@
   cfg = config.yk8s.ch-k8s-lbaas;
   inherit (lib) mkOption mkEnableOption types;
   inherit (config.yk8s._lib) mkTopSection logIf;
-
-  ipv4Addr = types.strMatching "^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$";
+  inherit (config.yk8s._lib.types) ipv4Addr;
 in {
   options.yk8s.ch-k8s-lbaas = mkTopSection {
     enabled = mkEnableOption "Enable out LBaas service";
