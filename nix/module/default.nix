@@ -117,6 +117,7 @@
           ./testing.nix
           ./ipsec.nix
           ./custom.nix
+          ./nvidia.nix
         ];
         options.yk8s = {
           _ansible.inventory_base_path = mkOption {

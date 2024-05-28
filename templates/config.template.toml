@@ -681,12 +681,3 @@ wireguard_on_workers = false
 # it explicitly.
 # pip_mirror_url = "..."
 
-[nvidia.vgpu]
-# vGPU Support
-# If virtualize_gpu in the [kubernetes] section is set to true, please also set these variables:
-# driver_blob_url should point to a object store or otherwise web server, where the vGPU Manager installation file is available.
-# driver_blob_url= "..."
-# manager_filename should hold the name of the vGPU Manager installation file.
-# manager_filename = "..."
-
-# ANCHOR_END: miscellaneous_configuration

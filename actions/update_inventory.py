@@ -29,7 +29,6 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "etcd-backup",
     "vault",
     "miscellaneous",
-    "nvidia",
 )
 # This maps defines the prefix that is assigned to each
 # variable of a section
@@ -42,7 +41,6 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "fluxcd": "fluxcd",
     "etcd-backup": "etcd_backup",
     "vault": "yaook_vault",
-    "nvidia": "nvidia",
     "vault_backend": "vault",
 }
 
@@ -454,19 +452,6 @@ def main():
         new_misc_dict,
         misc_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("miscellaneous", ""),
-    )
-
-    # ---
-    # NVIDIA VGPU
-    # ---
-    print_process_state("NVIDIA - vGPU")
-    nvidia_vgpu_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "all" / "nvidia.yaml"
-    )
-    dump_to_ansible_inventory(
-        config.get("nvidia"),
-        nvidia_vgpu_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("nvidia", ""),
     )
 
     print(
