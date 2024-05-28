@@ -17,15 +17,13 @@ CONFIG_BASE_PATH = pathlib.Path("config")
 # Path to the main configuration
 CONFIG_PATH = pathlib.Path(CONFIG_BASE_PATH / "config.toml")
 # Path to the configuration template
-CONFIG_TEMPLATE_PATH = pathlib.Path(
-    "managed-k8s/templates/config.template.toml")
+CONFIG_TEMPLATE_PATH = pathlib.Path("managed-k8s/templates/config.template.toml")
 # Root of the Ansible inventory
 ANSIBLE_INVENTORY_ROOTPATH = pathlib.Path("inventory")
 # Base path to the Ansible inventory. Files will get written here.
 ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory/yaook-k8s/group_vars")
 # List of top level sections which we do accept in the main config
 ALLOWED_TOP_LEVEL_SECTIONS = (
-    "node-scheduling",
     "k8s-service-layer",
     "testing",
     "terraform",
@@ -488,25 +486,6 @@ def main():
         config.get("nvidia"),
         nvidia_vgpu_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("nvidia", ""),
-    )
-
-    # ---
-    # NODE SCHEDULING
-    # ---
-    # Process labels and taints for each node
-    print_process_state("Node Scheduling")
-    node_scheduling_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "all" / "node-scheduling.yaml"
-    )
-    node_scheduling_config = {
-        # We use pop here to only apply the prefix to labels + taints
-        "k8s_node_labels": config.get("node-scheduling", {}).pop("labels", {}),
-        "k8s_node_taints": config.get("node-scheduling", {}).pop("taints", {}),
-    }
-    node_scheduling_config.update(config.get("node-scheduling", {}))
-    write_to_inventory(
-        node_scheduling_config,
-        node_scheduling_inventory_path,
     )
 
     # ---

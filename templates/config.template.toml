@@ -606,40 +606,6 @@ enabled = false
 
 # ANCHOR_END: ksl_fluxcd_configuration
 
-# ANCHOR: node_scheduling_configuration
-# --- NODE SCHEDULING ---
-# ansible prefix: /
-[node-scheduling]
-# Scheduling keys control where services may run. A scheduling key corresponds
-# to both a node label and to a taint. In order for a service to run on a node,
-# it needs to have that label key. The following defines a prefix for these keys
-scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
-
-# --- NODE SCHEDULING: LABELS (sent to ansible as k8s_node_labels!) ---
-[node-scheduling.labels]
-# Labels are assigned to a node during its initialization/join process only!
-#
-# The following fields are commented out because they make assumptions on the existence
-# and naming scheme of nodes. Use them for inspiration :)
-#managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true"]
-#managed-k8s-worker-1 = ["{{ scheduling_key_prefix }}/monitoring=true"]
-#managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true"]
-#managed-k8s-worker-3 = ["{{ scheduling_key_prefix }}/monitoring=true"]
-#managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true"]
-#managed-k8s-worker-5 = ["{{ scheduling_key_prefix }}/monitoring=true"]
-#
-# --- NODE SCHEDULING: TAINTS (sent to ansible as k8s_node_taints!) ---
-[node-scheduling.taints]
-# Taints are assigned to a node during its initialization/join process only!
-#
-# The following fields are commented out because they make assumptions on the existence
-# and naming scheme of nodes. Use them for inspiration :)
-#managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
-#managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
-#managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"]
-
-# ANCHOR_END: node_scheduling_configuration
-
 # ANCHOR: wireguard_config
 # --- WIREGUARD ---
 # ansible prefix: "wg_"
