@@ -25,7 +25,6 @@ ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory/yaook-k8s/group_vars")
 # List of top level sections which we do accept in the main config
 ALLOWED_TOP_LEVEL_SECTIONS = (
     "k8s-service-layer",
-    "testing",
     "terraform",
     "wireguard",
     "ipsec",
@@ -49,7 +48,6 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "vault": "yaook_vault",
     "nvidia": "nvidia",
     "vault_backend": "vault",
-    "testing": "testing",
 }
 
 
@@ -488,18 +486,6 @@ def main():
         SECTION_VARIABLE_PREFIX_MAP.get("nvidia", ""),
     )
 
-    # ---
-    # TESTING
-    # ---
-    print_process_state("Testing")
-    test_node_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "all" / "test-nodes.yaml"
-    )
-    dump_to_ansible_inventory(
-        config.get("testing", dict()),
-        test_node_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("testing", ""),
-    )
     # ---
     # CUSTOM
     # ---

@@ -684,20 +684,6 @@ enabled = false
 
 # ANCHOR_END: ipsec_configuration
 
-# ANCHOR: testing_test_nodes_configuration
-# --- TESTING: TEST NODES ---
-# You can define specifc nodes for some
-# smoke tests. If you define these, you
-# must specify at least two nodes.
-[testing]
-# Example:
-#test-nodes = ["managed-k8s-worker-1", "managed-k8s-worker-3"]
-
-# Enforce rebooting of nodes after every system update
-#force_reboot_nodes = false
-
-# ANCHOR_END: testing_test_nodes_configuration
-
 # ANCHOR: custom_configuration
 # --- CUSTOM ---
 # ansible prefix: /
