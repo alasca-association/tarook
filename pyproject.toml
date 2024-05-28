@@ -8,7 +8,6 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-ansible = "^9.0.0"
 kubernetes = "^29.0.0"
 openshift = "^0.13.1"
 python-openstackclient = "^6.2.0"
@@ -51,6 +50,7 @@ sphinx-copybutton = "^0.5.2"
 
 [tool.poetry.group.minimal-access.dependencies]
 yq = "^3.4.1"
+ansible = "^9.0.0"
 
 [build-system]
 requires = ["poetry-core"]

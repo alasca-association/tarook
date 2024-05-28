@@ -163,6 +163,10 @@
       path: /tmp/kubeadm-join-config.yaml
       state: absent
 
+- name: Login to the Kubernetes cluster as orchestrator
+  ansible.builtin.include_role:
+    name: k8s-login
+
 - name: Provide CA certificates as ConfigMap
   include_tasks: provide-ca-as-cm.yaml
 ...

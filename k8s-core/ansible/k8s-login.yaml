@@ -1,0 +1,9 @@
+---
+- name: Login to the Kubernetes cluster as orchestrator
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+    - vars/etc.yaml
+  roles:
+    - k8s-login
+...

@@ -6,6 +6,25 @@ FAQ - Frequently Asked Questions
 
 .. _faq.how-do-i-ssh-into-my-cluster-nodes:
 
+“How do I login into the cluster?”
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Possible symptoms when running a ``kubectl`` command
+
+``error: You must be logged in to the server (Unauthorized)``
+or
+``The connection to the server localhost:8080 was refused - did you specify the right host or port?``
+
+Yaook/k8s now uses short-lived kubeconfigs. Which means that, instead of commiting them encrypted into the cluster repository, they are not committed at all but instead re-generated from the Vault when they are needed.
+
+You can login to the Yaook/k8s cluster with
+
+.. code:: console
+
+   $ ./managed-k8s/actions/k8s-login.sh
+
+This will generate a kubeconfig that is valid for 8 days (by default). After that, you need to login again.
+
 “How do I ssh into my cluster nodes?”
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

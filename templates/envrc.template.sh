@@ -88,3 +88,9 @@ export K8S_CUSTOM_STAGE_USAGE=true
 # Optional: Set this variable to false to init new clusters with the newest commit
 # on the default (devel) branch instead of the latest release.
 # export MANAGED_K8S_LATEST_RELEASE=false
+
+if [ -f "$KUBECONFIG" ] && ! yq -r '.users[0].user."client-certificate-data"' "$KUBECONFIG" | base64 -d | openssl x509 -checkend 186400 -noout >/dev/null; then
+  echo "======="
+  echo "WARNING: Your kubeconfig is expired or will expire within the next 24h. Please run ./managed-k8s/actions/k8s-login.sh to renew it"
+  echo "======="
+fi
