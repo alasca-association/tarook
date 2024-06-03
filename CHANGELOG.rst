@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v5.1.3 (2024-06-06)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+
+- A Poetry group has been added so update-inventory.py can be called with minimal dependencies. (`!1277 <https://gitlab.com/yaook/k8s/-/merge_requests/1277>`_)
+
+
 v5.1.2 (2024-05-27)
 -------------------
 
