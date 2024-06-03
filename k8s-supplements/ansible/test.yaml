@@ -91,6 +91,17 @@
     - test-network-configuration
     - check-network-configuration
 
+- name: Check ch-k8s-lbaas
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
+  roles:
+  - role: check-ch-k8s-lbaas
+    tags:
+    - check-ch-k8s-lbaas
+    when: ch_k8s_lbaas_ch_k8s_lbaas_port_manager is not defined or ch_k8s_lbaas_ch_k8s_lbaas_port_manager == 'openstack'
+
 - name: Test Calico CNI Support
   hosts: k8s_nodes
   gather_facts: false

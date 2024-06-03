@@ -32,6 +32,7 @@ ipv4-addresses = [
 {% endif %}
 
 [agents]
+additional-address-pairs=[{{ networking_fixed_ip | to_json }}{% if ipv4_enabled %},"0.0.0.0/0"{% endif %}{% if ipv6_enabled %},"::/0"{% endif %}]
 shared-secret={{ ch_k8s_lbaas_shared_secret | to_json }}
 token-lifetime=60
 
@@ -39,6 +40,7 @@ token-lifetime=60
 {% for node in groups['frontend'] %}
 [[agents.agent]]
 url="http://{{ hostvars[node]['local_ipv4_address'] }}:{{ ch_k8s_lbaas_agent_port }}"
+port-id="{{ hostvars[node]['port_id'] }}"
 {% endfor %}
 {% else %}
 {% for url in ch_k8s_lbaas_agent_urls %}

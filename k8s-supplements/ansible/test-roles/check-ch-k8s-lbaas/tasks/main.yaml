@@ -1,0 +1,51 @@
+---
+- name: Get ch-k8s-lbaas controller-config secret
+  kubernetes.core.k8s_info:
+    api_version: v1
+    name: ch-k8s-lbaas-controller-config
+    namespace: kube-system
+    kind: Secret
+  # Retry this task on failures
+  register: controller_config
+  until: controller_config is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
+
+- name: Set ch-k8s-lbaas config secret as fact
+  ansible.builtin.set_fact:
+    config: "{{ controller_config.resources[0].data['controller-config.toml'] | b64decode }}"
+
+# Close your eyes, take a deep breath. The following is needed because Ansible can't parse TOML
+# Parse controller-config.toml as dictionary and append an index to each agent variable.
+# Alternatively we could create a temporary .ini file which then gets parsed but the duplicate
+# '[[agents.agent]]' sections preclude this approach at the moment
+- name: Parse ch-k8s-lbaas controller-config secret
+  ansible.builtin.set_fact:
+    agent_id: "{{ (agent_id | default(-1)) | int + (1 if item == '[[agents.agent]]' else 0) }}"
+    config_vars: "{{ config_vars | default({}) | combine({item.split('=')[0] + (agent_id if (agent_id | default(-1) | int) > -1 else ''): item.split('=')[1]}) if '=' in item else config_vars }}"
+  loop: "{{ config.splitlines() }}"
+
+- name: Set fact for additional address pairs
+  ansible.builtin.set_fact:
+    additional_address_pairs: "{{ config_vars['additional-address-pairs'][1:-1] | replace(' ', '') | split(',') }}"
+
+- name: Check if VIP IP inside additional address pairs
+  assert:
+    quiet: true
+    fail_msg: "IP address of VIP port was not configured inside LBaaS controller-config in agents.additional-address-pairs"
+    that:
+    - ('"' + hostvars[inventory_hostname]['networking_fixed_ip'] + '"') in additional_address_pairs
+  # we will need to add support for IPv6 later
+  # https://gitlab.com/yaook/k8s/-/issues/685
+  when: hostvars[inventory_hostname]['networking_fixed_ip'] != None
+
+- name: Verify controller-config contains port IDs
+  ansible.builtin.assert:
+    quiet: true
+    fail_msg: "At least one of the gateway node port IDs is wrong or missing inside controller-config"
+    that:
+    - ('"' + (hostvars[item]['port_id']) + '"' ) == config_vars['port-id' + (index | string)]
+  loop: "{{ groups['frontend'] }}"
+  loop_control:
+    index_var: index
+...
