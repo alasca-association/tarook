@@ -15,6 +15,7 @@
       become: false
       delegate_to: "{{ groups['orchestrator'] | first }}"
       run_once: true
+      no_log: true  # prevent private key from being exposed
       block:
         - name: Lookup key in vault  # noqa ignore-errors
           ignore_errors: true
@@ -70,6 +71,7 @@
       environment:
         ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
         ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+      no_log: true  # prevent private key from being exposed
       block:
         - name: Load private key
           ansible.builtin.set_fact:

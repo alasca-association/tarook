@@ -53,6 +53,7 @@
       cert_info.valid_at.point_1 or
       not cert_info.valid_at.point_2
     delegate_to: "{{ groups['orchestrator'] | first }}"
+    no_log: true  # prevent private key from being exposed
     community.hashi_vault.vault_write:
       path: "{{ get_cert_vault_path }}"
       data: "{{ get_cert_vault_data }}"
@@ -77,6 +78,7 @@
   - name: "{{ get_cert_title }}: Write private key"  # noqa no-handler
     become: true
     when: get_cert is changed
+    no_log: true  # prevent private key from being exposed
     ansible.builtin.copy:
       dest: "{{ get_cert_destination_key }}"
       owner: "{{ get_cert_owner }}"
