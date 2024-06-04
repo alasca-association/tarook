@@ -30,7 +30,7 @@ This will generate a kubeconfig that is valid for 8 days (by default). After tha
 
 .. code:: console
 
-   $ ssh -i <path to private key> <username>@<ip address>
+   $ ssh -o UserKnownHostsFile=etc/ssh_known_hosts -i <path to private key> -l <username> <ip address>
 
 -  ``<path to private key>``
 
