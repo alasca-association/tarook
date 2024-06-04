@@ -19,7 +19,7 @@
     - prepare-node
     - bootstrap
     - always
-  - role: helpers/vault-onboarded
+  - role: bootstrap/vault-onboarded
     tags:
     - vault-onboarded
     - helpers

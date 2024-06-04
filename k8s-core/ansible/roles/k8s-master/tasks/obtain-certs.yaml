@@ -9,7 +9,7 @@
   # https://kubernetes.io/docs/setup/best-practices/certificates/
   - name: Obtain etcd server certificate
     ansible.builtin.include_role:
-      name: helpers/vault-onboarded
+      name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
@@ -28,7 +28,7 @@
 
   - name: Obtain etcd peer certificate
     ansible.builtin.include_role:
-      name: helpers/vault-onboarded
+      name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
@@ -47,7 +47,7 @@
 
   - name: Obtain etcd healthcheck certificate
     ansible.builtin.include_role:
-      name: helpers/vault-onboarded
+      name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
@@ -65,7 +65,7 @@
 
   - name: Obtain apiserver etcd client certificate
     ansible.builtin.include_role:
-      name: helpers/vault-onboarded
+      name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
@@ -82,7 +82,7 @@
 
   - name: Obtain apiserver frontend certificate
     ansible.builtin.include_role:
-      name: helpers/vault-onboarded
+      name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
@@ -101,7 +101,7 @@
 
   - name: Obtain apiserver kubelet client certificate
     ansible.builtin.include_role:
-      name: helpers/vault-onboarded
+      name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
@@ -118,7 +118,7 @@
 
   - name: Obtain apiserver front proxy client certificate
     ansible.builtin.include_role:
-      name: helpers/vault-onboarded
+      name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
