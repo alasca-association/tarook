@@ -12,11 +12,13 @@
     tags:
     - detect-user
     - bootstrap
+    - connect
     - always
   - role: bootstrap/prepare-node
     tags:
     - prepare-node
     - bootstrap
+    - connect
     - always
 
 - name: Onboard node
@@ -32,13 +34,15 @@
     when: not (ansible_facts['node_vault_onboarded'] | default(False))
     tags:
     - vault-onboarded
-    - helpers
+    - bootstrap
+    - connect
     - always
   - role: bootstrap/ssh-known-hosts
     when: not (ansible_facts['node_ssh_onboarded'] | default(False))
     tags:
     - ssh-known-hosts
     - bootstrap
+    - connect
     - always
 
 - name: Harden SSH
@@ -57,6 +61,11 @@
       patterns: "ssh_host_*_key"
       use_regex: false
     register: private_key_files
+    tags:
+    - bootstrap
+    - connect
+    - harden-ssh
+    - always
   - name: Gather all public key certificates
     when: not (ansible_facts['node_ssh_hardened'] | default(False))
     become: true
@@ -67,16 +76,32 @@
       patterns: "ssh_host_*_key-cert.pub"
       use_regex: false
     register: pub_key_cert_files
+    tags:
+    - bootstrap
+    - connect
+    - harden-ssh
+    - always
   roles:
   # https://github.com/dev-sec/ansible-collection-hardening/
   - role: devsec.hardening.ssh_hardening
     when: not (ansible_facts['node_ssh_hardened'] | default(False))
-    tags: harden-ssh
+    tags:
+    - bootstrap
+    - harden-ssh
+    - connect
+    - always
     vars:
       ssh_host_key_files: "{{ private_key_files.files | selectattr('path', 'defined') | map(attribute='path') }}"
       ssh_host_certificates: "{{ pub_key_cert_files.files | selectattr('path', 'defined') | map(attribute='path') }}"
   post_tasks:
   - name: Set fact that we're hardened
+    when: not (ansible_facts['node_ssh_hardened'] | default(False))
     set_fact:
       node_ssh_hardened: true
+      cacheable: true
+    tags:
+    - bootstrap
+    - connect
+    - harden-ssh
+    - always
 ...

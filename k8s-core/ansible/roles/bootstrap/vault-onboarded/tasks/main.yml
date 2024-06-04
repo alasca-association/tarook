@@ -321,4 +321,5 @@
   - name: Set fact that we're onboarded
     set_fact:
       node_vault_onboarded: true
+      cacheable: true
 ...

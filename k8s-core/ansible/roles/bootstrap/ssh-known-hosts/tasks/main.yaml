@@ -48,4 +48,5 @@
 - name: Set fact that we're onboarded
   set_fact:
     node_ssh_onboarded: true
+    cacheable: true
 ...
