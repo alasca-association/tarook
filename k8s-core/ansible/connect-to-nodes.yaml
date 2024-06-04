@@ -7,7 +7,6 @@
   - vars/auto_generated_preamble.yaml
   - vars/etc.yaml
   - vars/retries.yaml
-  - vars/vault-config.yaml
   roles:
   - role: bootstrap/detect-user
     tags:
@@ -19,12 +18,24 @@
     - prepare-node
     - bootstrap
     - always
+
+- name: Onboard node
+  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  - vars/vault-config.yaml
+  roles:
   - role: bootstrap/vault-onboarded
+    when: not (ansible_facts['node_vault_onboarded'] | default(False))
     tags:
     - vault-onboarded
     - helpers
     - always
   - role: bootstrap/ssh-known-hosts
+    when: not (ansible_facts['node_ssh_onboarded'] | default(False))
     tags:
     - ssh-known-hosts
     - bootstrap

@@ -1,0 +1,31 @@
+---
+- name: "Slurp public key content of {{ host_key_path }}"
+  become: true
+  slurp:
+    src: "{{ host_key_path }}"
+  register: host_key
+
+- name: "Sign public key {{ host_key_path }}"
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  community.hashi_vault.vault_write:
+    path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/ssh-ca/sign/{{ vault_node_name }}"
+    mount_point: "{{ vault_caller_auth_mount_point }}"
+    auth_method: "{{ vault_caller_auth_method }}"
+    token: "{{ vault_caller_token }}"
+    role_id: "{{ vault_caller_role_id }}"
+    secret_id: "{{ vault_caller_secret_id }}"
+    token_validate: false
+    data:
+      cert_type: host
+      public_key: "{{ host_key.content | b64decode }}"
+  register: singed_host_key_data
+
+- name: "Write certificate for {{ host_key_path }}"
+  become: true
+  copy:
+    dest: "{{ host_key_path | dirname }}/{{ host_key_path | basename | splitext | first }}-cert.pub"
+    content: "{{ singed_host_key_data.data.data.signed_key }}"
+    mode: 0644
+    owner: root
+    group: root
+...
