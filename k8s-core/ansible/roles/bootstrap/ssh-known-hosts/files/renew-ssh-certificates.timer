@@ -1,0 +1,11 @@
+[Unit]
+Description=Renew SSH certificates from vault
+After=network.target network-online.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Timer]
+OnBootSec=10
+# one day between renewals
+OnUnitActiveSec=86400

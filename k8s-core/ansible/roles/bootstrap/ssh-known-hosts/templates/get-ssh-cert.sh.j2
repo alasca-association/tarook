@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# we write public data (the certificate)
+umask 0022
+hostname_short="$(hostname -s)"
+
+function safe_redirect() {
+    dest="$1"
+    shift
+    # we don’t do "$@" | sponge, because sponge won’t learn about the exit code of "$@", so we don’t win anything
+    buf="$("$@")";
+    status="$?"
+    if [ "$status" = '0' ]; then
+        printf '%s' "$buf" | sponge "$dest"
+        return 0
+    else
+        return $status
+    fi
+}
+
+function revoke() {
+    if test -n "${token:-}"; then
+        VAULT_TOKEN="$token" vault token revoke -self
+    fi
+}
+
+trap revoke EXIT
+token="$(/usr/local/lib/yaook-k8s/vault-login.sh)"
+status=0
+for pubkey in /etc/ssh/ssh_host_*_key.pub; do
+    certname="$(dirname "$pubkey")/$(basename "$pubkey" .pub)-cert.pub"
+    if ! VAULT_TOKEN="$token" safe_redirect "$certname" vault write -field=signed_key "{{ vault_path_prefix }}/{{ vault_cluster_name }}/ssh-ca/sign/{{ vault_node_name }}" public_key=@"$pubkey" cert_type=host; then
+        printf 'failed to sign key %q\n' "$pubkey" >&2
+        status=1
+    fi
+done
+exit $status

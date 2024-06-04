@@ -40,4 +40,43 @@
     - ssh-known-hosts
     - bootstrap
     - always
+
+- name: Harden SSH
+  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  become: true
+  vars_files:
+  - vars/ssh-hardening.yaml
+  pre_tasks:
+  - name: Gather all public keys
+    when: not (ansible_facts['node_ssh_hardened'] | default(False))
+    become: true
+    find:
+      paths: /etc/ssh
+      recurse: false
+      file_type: file
+      patterns: "ssh_host_*_key"
+      use_regex: false
+    register: private_key_files
+  - name: Gather all public key certificates
+    when: not (ansible_facts['node_ssh_hardened'] | default(False))
+    become: true
+    find:
+      paths: /etc/ssh
+      recurse: false
+      file_type: file
+      patterns: "ssh_host_*_key-cert.pub"
+      use_regex: false
+    register: pub_key_cert_files
+  roles:
+  # https://github.com/dev-sec/ansible-collection-hardening/
+  - role: devsec.hardening.ssh_hardening
+    when: not (ansible_facts['node_ssh_hardened'] | default(False))
+    tags: harden-ssh
+    vars:
+      ssh_host_key_files: "{{ private_key_files.files | selectattr('path', 'defined') | map(attribute='path') }}"
+      ssh_host_certificates: "{{ pub_key_cert_files.files | selectattr('path', 'defined') | map(attribute='path') }}"
+  post_tasks:
+  - name: Set fact that we're hardened
+    set_fact:
+      node_ssh_hardened: true
 ...

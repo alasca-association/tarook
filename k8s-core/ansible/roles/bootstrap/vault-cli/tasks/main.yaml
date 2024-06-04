@@ -1,0 +1,71 @@
+---
+# https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-install
+- name: Add Hashicorp repository & install vault-cli
+  # run only once per run per node
+  when: not (vault_cli_installed | default(False))
+  become: true
+  block:
+  - name: Install prerequisites
+    apt:
+      update_cache: true
+      state: present
+      name:
+      - apt-transport-https
+      - gnupg
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
+
+  - name: Ensure keyrings directory exists
+    file:
+      state: directory
+      path: /etc/apt/keyrings
+      owner: root
+      group: root
+      mode: u=rwx,go=rx
+
+  - name: Deploy Hashicorp repository key
+    copy:
+      src: hashicorp-archive-keyring.gpg
+      dest: /etc/apt/keyrings/hashicorp-archive-keyring.gpg
+      owner: root
+      group: root
+      mode: u=rw,go=r
+
+  - name: Add Hashicorp repository to sources.list
+    copy:
+      dest: /etc/apt/sources.list.d/hashicorp.list
+      content: |
+        {{ _auto_generated_preamble }}
+        {% if apt_proxy_url is defined %}
+        deb [signed-by=/etc/apt/keyrings/hashicorp-archive-keyring.gpg] http://apt.releases.hashicorp.com {{ ansible_distribution_release }} main
+        {% else %}
+        deb [signed-by=/etc/apt/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main
+        {% endif %}
+      owner: root
+      group: root
+      mode: 0640
+
+  - name: Update apt cache
+    apt:
+      update_cache: true
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
+
+  - name: Install vault-cli
+    package:
+      state: present
+      name: vault
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ network_error_retries }}"
+    delay: "{{ network_error_delay }}"
+
+  - name: Set fact that vault-cli installed
+    become: false
+    set_fact:
+      vault_cli_installed: true
+...
