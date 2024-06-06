@@ -41,17 +41,19 @@
         {% if cert_info.valid_at.point_1 %} is older than 4w{% else %}is not older than 4w{% endif %}
         {% if cert_info.valid_at.point_2 %} and is valid 16w from now{% else %} and expires in less than 16w{% endif %}.
         {% else %}does not exist.{% endif %}
+        Renewal was{% if not (force_renewal | default(false)) %} not{% endif %} enforced.
 
   - name: "{{ get_cert_title }}: Fail if cert exists but not the key Key, or vice versa"
     ansible.builtin.fail:
       msg: Cert exists but key does not or vice versa
     when: cert_existence.stat.exists != key_existence.stat.exists
 
-  - name: "{{ get_cert_title }}: Fetch if absent or expiring"
+  - name: "{{ get_cert_title }}: Fetch if absent or expiring or explicitly requested"
     when: |
       not cert_existence.stat.exists or
       cert_info.valid_at.point_1 or
-      not cert_info.valid_at.point_2
+      not cert_info.valid_at.point_2 or
+      (force_renewal | default(false))
     delegate_to: "{{ groups['orchestrator'] | first }}"
     community.hashi_vault.vault_write:
       path: "{{ get_cert_vault_path }}"
