@@ -27,13 +27,10 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
     "k8s-service-layer",
     "wireguard",
     "etcd-backup",
-    "vault",
-    "miscellaneous",
 )
 # This maps defines the prefix that is assigned to each
 # variable of a section
 SECTION_VARIABLE_PREFIX_MAP = {
-    "wireguard": "wg",
     "rook": "rook",
     "prometheus": "monitoring",
     "cert-manager": "k8s_cert_manager",
@@ -41,7 +38,6 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "fluxcd": "fluxcd",
     "etcd-backup": "etcd_backup",
     "vault": "yaook_vault",
-    "vault_backend": "vault",
 }
 
 
