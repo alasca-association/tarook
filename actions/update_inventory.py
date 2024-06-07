@@ -33,7 +33,6 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
 SECTION_VARIABLE_PREFIX_MAP = {
     "rook": "rook",
     "prometheus": "monitoring",
-    "cert-manager": "k8s_cert_manager",
     "ingress": "k8s_ingress",
     "fluxcd": "fluxcd",
     "etcd-backup": "etcd_backup",
@@ -360,19 +359,6 @@ def main():
         kubernetes_service_monitoring_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("prometheus", ""),
         ["common_labels"],
-    )
-
-    # ---
-    # CERT MANAGER
-    # ---
-    print_process_state("CERT MANAGER")
-    kubernetes_service_cm_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "all" / "cert-manager.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("cert-manager"),
-        kubernetes_service_cm_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("cert-manager", ""),
     )
 
     # ---

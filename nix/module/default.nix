@@ -16,11 +16,12 @@
         system,
         ...
       }: let
-        inherit (builtins) substring map trace isAttrs length head;
+        inherit (builtins) substring map trace isAttrs length head readDir attrNames;
         inherit (pkgs.stdenv) mkDerivation;
         inherit (lib) types mkOption;
         inherit (lib.attrsets) filterAttrs filterAttrsRecursive mapAttrs' mapAttrsToList foldlAttrs;
         inherit (lib.strings) concatLines;
+        inherit (lib.sources) sourceFilesBySuffices;
         cfg = config.yk8s;
         mkInternalOption = args:
           mkOption ({
@@ -119,7 +120,7 @@
           ./custom.nix
           ./nvidia.nix
           ./miscellaneous.nix
-        ];
+        ] ++ (attrNames (filterAttrs (_: type: type == "directory") (readDir ../k8s-supplements/ansible/roles)));
         options.yk8s = {
           _ansible.inventory_base_path = mkOption {
             description = ''

@@ -320,49 +320,6 @@ use_helm = true
 
 # ANCHOR_END: ksl_prometheus_configuration
 
-# ANCHOR: ksl_cert_manager_configuration
-# --- KUBERNETES SERVICE LAYER : CERT MANAGER ---
-# ansible prefix: "k8s_cert_manager_"
-[k8s-service-layer.cert-manager]
-# Enable management of a cert-manager.io instance
-enabled = false # •ᴗ•
-
-# Configure in which namespace the cert-manager is run. The namespace is
-# created automatically, but never deleted automatically.
-#namespace = "k8s-svc-cert-manager"
-
-# Install or uninstall cert manager. If set to false, the cert-manager will be
-# uninstalled WITHOUT CHECK FOR DISRUPTION!
-#install = true
-
-# Scheduling key for the cert manager instance and its resources. Has no
-# default.
-#scheduling_key =
-
-# If given, a *cluster wide* Let's Encrypt issuer with that email address will
-# be generated. Requires an ingress to work correctly.
-# DO NOT ENABLE THIS IN CUSTOMER CLUSTERS, BECAUSE THEY SHOULD NOT CREATE
-# CERTIFICATES UNDER OUR NAME. Customers are supposed to deploy their own
-# ACME/Let's Encrypt issuer.
-#letsencrypt_email = "..."
-
-# By default, the ACME issuer will let the server choose the certificate chain
-# to use for the certificate. This can be used to override it.
-#letsencrypt_preferred_chain = "..."
-
-# The ingress class to use for responding to the ACME challenge.
-# The default value works for the default k8s-service-layer.ingress
-# configuration and may need to be adapted in case a different ingress is to be
-# used.
-#letsencrypt_ingress = "nginx"
-
-# This variable let's you specify the endpoint of the ACME issuer. A common usecase
-# is to switch between staging and production. [0]
-# [0]: https://letsencrypt.org/docs/staging-environment/
-# letsencrypt_server: https://acme-staging-v02.api.letsencrypt.org/directory
-
-# ANCHOR_END: ksl_cert_manager_configuration
-
 # ANCHOR: ksl_ingress_configuration
 # --- KUBERNETES SERVICE LAYER : INGRESS ---
 # ansible prefix: "k8s_ingress_"
