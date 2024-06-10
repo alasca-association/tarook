@@ -51,21 +51,45 @@ dualstack_support = false # "•ᴗ•"
 # Amount of gateway nodes
 #gateway_count = 3  # if 'spread_gateways_across_azs=true' defaults to one in each availability zone
 
+# Change the default values for all gateway nodes
+# Values can be selectively specified
+#[terraform.gateway_defaults]
+#image                      = "Debian 12 (bookworm)"
+#flavor                     = "XS"
+#root_disk_size             = 10
+#root_disk_volume_type      = ""  # == default volume type in IaaS environment
+#
+# Change the default values for all master nodes
+# Values can be selectively specified
+#[terraform.master_defaults]
+#image                      = "Ubuntu 22.04 LTS x64"
+#flavor                     = "M"
+#root_disk_size             = 50
+#root_disk_volume_type      = ""  # == default volume type in IaaS environment
+#
+# Change the default values for all worker nodes
+# Values can be selectively specified
+#[terraform.worker_defaults]
+#image                      = "Ubuntu 22.04 LTS x64"
+#flavor                     = "M"
+#root_disk_size             = 50
+#root_disk_volume_type      = ""  # == default volume type in IaaS environment
+#join_anti_affinity_group   = false
+#anti_affinity_group_name   = "cah-anti-affinity"
+#
+# Master nodes to be created
 #[terraform.masters.0]
 #[terraform.masters.1]
 #[terraform.masters.2]
 #
+# Worker nodes to be created
 #[terraform.workers.0]
-#flavor = "M"
-#
 #[terraform.workers.1]
-#flavor = "M"
-#
 #[terraform.workers.2]
-#flavor = "M"
-#
 #[terraform.workers.3]
-#flavor = "M"
+#
+# One gateway node is created per availability zone (AZ1, AZ2, AZ3),
+# see [terraform].gateway_count
 
 # ANCHOR_END: terraform_config
 

@@ -30,36 +30,6 @@ variable "keypair" {
   type = string
 }
 
-variable "default_master_image_name" {
-  type    = string
-  default = "Ubuntu 22.04 LTS x64"
-}
-
-variable "default_worker_image_name" {
-  type    = string
-  default = "Ubuntu 22.04 LTS x64"
-}
-
-variable "gateway_image_name" {
-  type    = string
-  default = "Debian 12 (bookworm)"
-}
-
-variable "gateway_flavor" {
-  type    = string
-  default = "XS"
-}
-
-variable "default_master_flavor" {
-  type    = string
-  default = "M"
-}
-
-variable "default_worker_flavor" {
-  type    = string
-  default = "M"
-}
-
 variable "azs" {
   type    = set(string)
   default = ["AZ1", "AZ2", "AZ3"]
@@ -86,41 +56,6 @@ variable "create_root_disk_on_volume" {
 variable "timeout_time" {
   type = string
   default = "30m"
-}
-
-variable "root_disk_volume_type" {
-  type = string
-  default = ""
-  description = "If 'create_root_disk_on_volume=true', the volume type to be used as default for all instances. If left empty, default of IaaS environment is used."
-}
-
-variable "worker_anti_affinity_group_name" {
-  type = string
-  default = "cah-anti-affinity"
-}
-
-variable "gateway_root_disk_volume_size" {
-  type = number
-  default = 10
-  description = "If 'create_root_disk_on_volume=true' and the gateway flavor does not specify a disk size, the root disk volume will have this size."
-}
-
-variable "gateway_root_disk_volume_type" {
-  type        = string
-  default     = ""
-  description = "If 'create_root_disk_on_volume=true', set the volume type of the root disk volume for Gateways. Can't be configured separately for each instance. If left empty, the volume type specified in 'root_disk_volume_type' will be used."
-}
-
-variable "default_master_root_disk_size" {
-  type = number
-  default = 50
-  description = "If 'create_root_disk_on_volume=true', the master flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size."
-}
-
-variable "default_worker_root_disk_size" {
-  type = number
-  default = 50
-  description = "If 'create_root_disk_on_volume=true', the worker flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size."
 }
 
 variable "network_mtu" {
@@ -173,6 +108,7 @@ variable "gitlab_state_name" {
   description = "If 'gitlab_backend=true', the terraform state file will have this name."
 }
 
+
 variable "gateway_count" {
   type = number
   default = 0  # variables can't be used here
@@ -183,6 +119,61 @@ locals {
     var.gateway_count == 0 ? (var.spread_gateways_across_azs ? length(var.azs) : 3)
     : var.gateway_count
   )
+}
+
+variable "gateway_defaults" {
+  description = <<-EOT
+    Default attributes for gateway nodes
+
+    'root_disk_size' and 'root_disk_volume_type' only apply if 'create_root_disk_on_volume=true'.
+    If 'root_disk_volume_type' is left empty the default of the IaaS environment will be used.
+  EOT
+
+  type = object({              # --- template spec ---
+    image                      = optional(string, "Debian 12 (bookworm)")
+    flavor                     = optional(string, "XS")
+    root_disk_size             = optional(number, 10)
+    root_disk_volume_type      = optional(string, "")
+  })
+  default = {                  # --- default template ---
+    image                      = "Debian 12 (bookworm)"
+    flavor                     = "XS"
+    root_disk_size             = 10
+    root_disk_volume_type      = ""
+  }
+
+  validation {
+     condition     = var.gateway_defaults.root_disk_size != 0
+     error_message = "Gateway 'root_disk_size' is zero"
+  }
+}
+
+
+variable "master_defaults" {
+  description = <<-EOT
+    Default attributes for control plane nodes
+
+    'root_disk_size' and 'root_disk_volume_type' only apply if 'create_root_disk_on_volume=true'.
+    If 'root_disk_volume_type' is left empty the default of the IaaS environment will be used.
+  EOT
+
+  type = object({              # --- template spec ---
+    image                      = optional(string, "Ubuntu 22.04 LTS x64")
+    flavor                     = optional(string, "M")
+    root_disk_size             = optional(number, 50)
+    root_disk_volume_type      = optional(string, "")
+  })
+  default = {                  # --- default template ---
+    image                      = "Ubuntu 22.04 LTS x64"
+    flavor                     = "M"
+    root_disk_size             = 50
+    root_disk_volume_type      = ""
+  }
+
+  validation {
+     condition     = var.master_defaults.root_disk_size != 0
+     error_message = "Master 'root_disk_size' is zero"
+  }
 }
 
 variable "masters" {
@@ -201,6 +192,38 @@ variable "masters" {
     "0" = {}
     "1" = {}
     "2" = {}
+  }
+}
+
+
+variable "worker_defaults" {
+  description = <<-EOT
+    Default attributes for worker nodes
+
+    'root_disk_size' and 'root_disk_volume_type' only apply if 'create_root_disk_on_volume=true'.
+    If 'root_disk_volume_type' is left empty the default of the IaaS environment will be used.
+  EOT
+
+  type = object({              # --- template spec ---
+    image                      = optional(string, "Ubuntu 22.04 LTS x64")
+    flavor                     = optional(string, "M")
+    root_disk_size             = optional(number, 50)
+    root_disk_volume_type      = optional(string, "")
+    join_anti_affinity_group   = optional(bool, false)
+    anti_affinity_group_name   = optional(string, "cah-anti-affinity")
+  })
+  default = {                  # --- default template ---
+    image                      = "Ubuntu 22.04 LTS x64"
+    flavor                     = "M"
+    root_disk_size             = 50
+    root_disk_volume_type      = ""
+    join_anti_affinity_group   = false
+    anti_affinity_group_name   = "cah-anti-affinity"
+  }
+
+  validation {
+     condition     = var.worker_defaults.root_disk_size != 0
+     error_message = "Worker 'root_disk_size' is zero"
   }
 }
 

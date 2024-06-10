@@ -3,13 +3,13 @@ locals {
   worker_nodes = {
     for name, values in var.workers :
         "${var.cluster_name}-worker-${name}" => {
-          image                    = coalesce(values.image, var.default_worker_image)
-          flavor                   = coalesce(values.flavor, var.default_worker_flavor)
+          image                    = coalesce(values.image, var.worker_defaults.image)
+          flavor                   = coalesce(values.flavor, var.worker_defaults.flavor)
           az                       = values.az  # default: null
           volume_name              = "${var.cluster_name}-worker-volume-${name}"
-          root_disk_size           = coalesce(values.root_disk_size, var.defaults_worker_root_disk_size)
-          root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.root_disk_volume_type
-          join_anti_affinity_group = coalesce(values.join_anti_affinity_group, false)
+          root_disk_size           = coalesce(values.root_disk_size, var.worker_defaults.root_disk_size)
+          root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.worker_defaults.root_disk_volume_type
+          join_anti_affinity_group = coalesce(values.join_anti_affinity_group, var.worker_defaults.join_anti_affinity_group)
         }
   }
 }
