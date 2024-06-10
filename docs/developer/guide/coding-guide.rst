@@ -40,8 +40,7 @@ For every MR you need to place a file called
 The content of the file is the actual release note and is in reStructuredText format.
 
 The ``merge-request-ID`` will automatically be added/corrected for you.
-So if you don't know the ``merge-request-ID`` in advance, just type anything (except ``+``,
-which will not be replaced and mark a note with no link to a MR)
+So if you don't know the ``merge-request-ID`` in advance, just type anything
 instead of the ID. Please provide the file in your last commit as the pipeline will
 ``git commit --amend`` and ``git push --force`` the corrected filename back to
 your branch. Don't forget to ``git pull --rebase=true`` afterwards, if you make new changes.

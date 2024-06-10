@@ -68,10 +68,11 @@ if __name__ == "__main__":
             raise RuntimeError("Releasenote type not supported. Supported types are: ",
                                types)
 
-        if (number != MR_IID and number != "+"):
+        if (number != MR_IID):
             if (fork == "True"):
                 raise RuntimeError("Provided MR-ID in releasenotes doesn't \
-                                    match the actual MR-ID.")
+                                    match the actual MR-ID. \
+                                    Please update the name of the releasenote file.")
             if (hotfix == "True" and number.isdigit()):
                 print("Provided MR-ID in releasenotes doesn't \
                         match the actual MR-ID, but we asume you know \
