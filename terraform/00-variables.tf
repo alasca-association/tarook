@@ -173,6 +173,18 @@ variable "gitlab_state_name" {
   description = "If 'gitlab_backend=true', the terraform state file will have this name."
 }
 
+variable "gateway_count" {
+  type = number
+  default = 0  # variables can't be used here
+  description = "Amount of gateway nodes to create. (default: 0 --> one for each availability zone when 'spread_gateways_across_azs=true', 3 otherwise)"
+}
+locals {
+  gateway_count = (
+    var.gateway_count == 0 ? (var.spread_gateways_across_azs ? length(var.azs) : 3)
+    : var.gateway_count
+  )
+}
+
 variable "masters" {
   description = "User defined list of control plane nodes to be created with specified values"
 

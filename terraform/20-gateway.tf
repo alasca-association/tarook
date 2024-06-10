@@ -1,12 +1,11 @@
 locals {
   gateway_nodes = {
-    for az in var.azs :  # create one gateway per availability zone
-      "${var.cluster_name}-gw-${lower(az)}" => {
+    for idx in range(local.gateway_count) :
+      "${var.cluster_name}-gw-${idx}" => {
         image                    = var.gateway_image_name
         flavor                   = var.gateway_flavor
-        az                       = var.spread_gateways_across_azs ? az : null
-        fip_description          = "Floating IP for gateway in ${az}"
-        volume_name              = "${var.cluster_name}-gw-volume-${lower(az)}"
+        az                       = var.spread_gateways_across_azs ? tolist(var.azs)[idx % length(var.azs)] : null
+        volume_name              = "${var.cluster_name}-gw-${idx}-volume"
         root_disk_size           = var.gateway_root_disk_size
         root_disk_volume_type    = var.gateway_root_disk_volume_type
       }
@@ -118,7 +117,7 @@ resource "openstack_compute_instance_v2" "gateway" {
 
 resource "openstack_networking_floatingip_v2" "gateway" {
   for_each    = local.gateway_nodes
-  description = each.value.fip_description
+  description = "Floating IP for gateway '${each.key}'${each.value.az != null ? " in ${each.value.az}" : ""}"
   pool        = var.public_network
 }
 

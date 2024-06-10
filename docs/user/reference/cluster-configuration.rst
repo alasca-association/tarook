@@ -39,17 +39,22 @@ need to adjust these values if you e.g. want to enable
 .. note::
 
    Right now there is a variable ``masters`` to configure the k8s
-   controller servers and ``workers`` for the k8s worker servers. However
-   there is no explicit variable for the gateway node count! This is
-   implicitly defined by the number of elements in the ``azs`` array.
+   controller servers and ``workers`` for the k8s worker servers.
+   The amount of gateway nodes can be controlled with the `gateway_count` variable.
+   It defaults to the number of elements in the ``azs`` array when
+   ``spread_gateways_across_azs=true`` and 3 otherwise.
 
 You can add and delete Terraform nodes simply
-by adding and removing their entries to/from the config.
+by adding and removing their entries to/from the config
+or tuning ``gateway_count`` for gateway nodes.
 Consider the following example:
 
 .. code:: diff
 
     [terraform]
+
+   - gateway_count = 3
+   + gateway_count = 2                # <-- one gateway gets deleted
 
     [terraform.worker.0]
     flavor = "M"

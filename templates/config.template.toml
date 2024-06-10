@@ -48,6 +48,9 @@ dualstack_support = false # "•ᴗ•"
 # if set to true it is ensured that gateway nodes are evenly spread across the specified availability zones
 #spread_gateways_across_azs = true
 
+# Amount of gateway nodes
+#gateway_count = 3  # if 'spread_gateways_across_azs=true' defaults to one in each availability zone
+
 #[terraform.masters.0]
 #[terraform.masters.1]
 #[terraform.masters.2]
