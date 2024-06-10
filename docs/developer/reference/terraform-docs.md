@@ -76,18 +76,9 @@ No modules.
 | azs | Defines the availability zones of your cloud to use for the creation of servers. | `set(string)` | <pre>[<br>  "AZ1",<br>  "AZ2",<br>  "AZ3"<br>]</pre> | no |
 | cluster\_name | n/a | `string` | `"managed-k8s"` | no |
 | create\_root\_disk\_on\_volume | n/a | `bool` | `false` | no |
-| default\_master\_flavor | n/a | `string` | `"M"` | no |
-| default\_master\_image\_name | n/a | `string` | `"Ubuntu 22.04 LTS x64"` | no |
-| default\_master\_root\_disk\_size | If 'create\_root\_disk\_on\_volume=true', the master flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size. | `number` | `50` | no |
-| default\_worker\_flavor | n/a | `string` | `"M"` | no |
-| default\_worker\_image\_name | n/a | `string` | `"Ubuntu 22.04 LTS x64"` | no |
-| default\_worker\_root\_disk\_size | If 'create\_root\_disk\_on\_volume=true', the worker flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size. | `number` | `50` | no |
 | dns\_nameservers\_v4 | A list of IPv4 addresses which will be configured as DNS nameservers of the IPv4 subnet. | `list(string)` | `[]` | no |
 | gateway\_count | Amount of gateway nodes to create. (default: 0 --> one for each availability zone when 'spread\_gateways\_across\_azs=true', 3 otherwise) | `number` | `0` | no |
-| gateway\_flavor | n/a | `string` | `"XS"` | no |
-| gateway\_image\_name | n/a | `string` | `"Debian 12 (bookworm)"` | no |
-| gateway\_root\_disk\_volume\_size | If 'create\_root\_disk\_on\_volume=true' and the gateway flavor does not specify a disk size, the root disk volume will have this size. | `number` | `10` | no |
-| gateway\_root\_disk\_volume\_type | If 'create\_root\_disk\_on\_volume=true', set the volume type of the root disk volume for Gateways. Can't be configured separately for each instance. If left empty, the volume type specified in 'root\_disk\_volume\_type' will be used. | `string` | `""` | no |
+| gateway\_defaults | Default attributes for gateway nodes<br><br>'root\_disk\_size' and 'root\_disk\_volume\_type' only apply if 'create\_root\_disk\_on\_volume=true'.<br>If 'root\_disk\_volume\_type' is left empty the default of the IaaS environment will be used. | <pre>object({              # --- template spec ---<br>    image                      = optional(string, "Debian 12 (bookworm)")<br>    flavor                     = optional(string, "XS")<br>    root_disk_size             = optional(number, 10)<br>    root_disk_volume_type      = optional(string, "")<br>  })</pre> | <pre>{<br>  "flavor": "XS",<br>  "image": "Debian 12 (bookworm)",<br>  "root_disk_size": 10,<br>  "root_disk_volume_type": ""<br>}</pre> | no |
 | gitlab\_backend | If set to true, GitLab will be used as Terraform HTTP backend. | `bool` | `false` | no |
 | gitlab\_base\_url | Base URL of GitLab for Terraform HTTP backend if 'gitlab\_backend=true'. | `string` | `""` | no |
 | gitlab\_project\_id | If 'gitlab\_backend=true', the Terraform state will be stored in the GitLab repo with this ID. | `string` | `""` | no |
@@ -95,18 +86,18 @@ No modules.
 | ipv4\_enabled | If set to true, ipv4 will be used | `bool` | `true` | no |
 | ipv6\_enabled | If set to true, ipv6 will be used | `bool` | `false` | no |
 | keypair | n/a | `string` | n/a | yes |
+| master\_defaults | Default attributes for control plane nodes<br><br>'root\_disk\_size' and 'root\_disk\_volume\_type' only apply if 'create\_root\_disk\_on\_volume=true'.<br>If 'root\_disk\_volume\_type' is left empty the default of the IaaS environment will be used. | <pre>object({              # --- template spec ---<br>    image                      = optional(string, "Ubuntu 22.04 LTS x64")<br>    flavor                     = optional(string, "M")<br>    root_disk_size             = optional(number, 50)<br>    root_disk_volume_type      = optional(string, "")<br>  })</pre> | <pre>{<br>  "flavor": "M",<br>  "image": "Ubuntu 22.04 LTS x64",<br>  "root_disk_size": 50,<br>  "root_disk_volume_type": ""<br>}</pre> | no |
 | masters | User defined list of control plane nodes to be created with specified values | <pre>map(<br>    object({<br>      image                    = optional(string)<br>      flavor                   = optional(string)<br>      az                       = optional(string)<br>      root_disk_size           = optional(number)<br>      root_disk_volume_type    = optional(string)<br>    })<br>  )</pre> | <pre>{<br>  "0": {},<br>  "1": {},<br>  "2": {}<br>}</pre> | no |
 | monitoring\_manage\_thanos\_bucket | Create an object storage container for thanos. | `bool` | `false` | no |
 | network\_mtu | MTU for the network used for the cluster. | `number` | `1450` | no |
 | public\_network | n/a | `string` | `"shared-public-IPv4"` | no |
-| root\_disk\_volume\_type | If 'create\_root\_disk\_on\_volume=true', the volume type to be used as default for all instances. If left empty, default of IaaS environment is used. | `string` | `""` | no |
 | spread\_gateways\_across\_azs | If true, spawn a gateway node in each availability zone listed in 'azs'. Otherwise leave the distribution to the cloud controller. | `bool` | `true` | no |
 | subnet\_cidr | n/a | `string` | `"172.30.154.0/24"` | no |
 | subnet\_v6\_cidr | n/a | `string` | `"fd00::/120"` | no |
 | thanos\_delete\_container | n/a | `bool` | `false` | no |
 | timeout\_time | n/a | `string` | `"30m"` | no |
-| worker\_anti\_affinity\_group\_name | n/a | `string` | `"cah-anti-affinity"` | no |
-| workers | User defined list of worker nodes to be created with specified values | <pre>map(<br>    object({<br>      image                    = optional(string)<br>      flavor                   = optional(string)<br>      az                       = optional(string)<br>      root_disk_size           = optional(number)<br>      root_disk_volume_type    = optional(string)<br>      join_anti_affinity_group = optional(bool)<br>    })<br>  )</pre> | <pre>{<br>  "0": {},<br>  "1": {},<br>  "2": {},<br>  "3": {}<br>}</pre> | no |
+| worker\_defaults | Default attributes for worker nodes<br><br>'root\_disk\_size' and 'root\_disk\_volume\_type' only apply if 'create\_root\_disk\_on\_volume=true'.<br>If 'root\_disk\_volume\_type' is left empty the default of the IaaS environment will be used.<br><br>Leaving 'anti\_affinity\_group' empty means to not join any anti affinity group | <pre>object({              # --- template spec ---<br>    image                      = optional(string, "Ubuntu 22.04 LTS x64")<br>    flavor                     = optional(string, "M")<br>    root_disk_size             = optional(number, 50)<br>    root_disk_volume_type      = optional(string, "")<br>    anti_affinity_group        = optional(string)<br>  })</pre> | <pre>{<br>  "flavor": "M",<br>  "image": "Ubuntu 22.04 LTS x64",<br>  "root_disk_size": 50,<br>  "root_disk_volume_type": ""<br>}</pre> | no |
+| workers | User defined list of worker nodes to be created with specified values<br><br>Leaving 'anti\_affinity\_group' empty means to not join any anti affinity group | <pre>map(<br>    object({<br>      image                    = optional(string)<br>      flavor                   = optional(string)<br>      az                       = optional(string)<br>      root_disk_size           = optional(number)<br>      root_disk_volume_type    = optional(string)<br>      anti_affinity_group      = optional(string)<br>    })<br>  )</pre> | <pre>{<br>  "0": {},<br>  "1": {},<br>  "2": {},<br>  "3": {}<br>}</pre> | no |
 
 ## Outputs
 

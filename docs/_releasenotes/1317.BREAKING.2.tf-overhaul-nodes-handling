@@ -26,6 +26,61 @@ rather than across separate lists for each type of value.
    + az       = "AZ3"
      #....
 
+The gateway/master/worker defaults are consolidated into blocks as well.
+
+.. code:: diff
+
+     [terraform]
+
+   - gateway_image_name = "Debian 12 (bookworm)"
+   - gateway_flavor = "XS"
+   - default_master_image_name = "Ubuntu 22.04 LTS x64"
+   - default_master_flavor = "M"
+   - default_master_root_disk_size = 50
+   - default_worker_image_name = "Ubuntu 22.04 LTS x64"
+   - default_worker_flavor = "L"
+   - default_worker_root_disk_size = 100
+   + #....
+   +
+   + [terraform.gateway_defaults]
+   + image                      = "Debian 12 (bookworm)"
+   + flavor                     = "XS"
+   +
+   + [terraform.master_defaults]
+   + image                      = "Ubuntu 22.04 LTS x64"
+   + flavor                     = "M"
+   + root_disk_size             = 50
+   +
+   + [terraform.worker_defaults]
+   + image                      = "Ubuntu 22.04 LTS x64"
+   + flavor                     = "L"
+   + root_disk_size             = 100
+     #....
+
+The worker anti affinity settings
+``[terraform].worker_anti_affinity_group_name``
+and ``[terraform].worker_join_anti_affinity_group``
+are merged into ``[terraform.workers.<name>].anti_affinity_group``
+or ``[terraform.worker_defaults].anti_affinity_group``.
+Unset means "no join".
+
+.. code:: diff
+
+     [terraform]
+
+   - worker_anti_affinity_group_name = "some-affinity-group"
+   - worker_join_anti_affinity_group = [false, true]
+   + #....
+   +
+   + [terraform.worker_defaults]
+   +
+   + [terraform.workers.0]
+   +
+   + [terraform.workers.1]
+   + anti_affinity_group        = "some-affinity-group"
+
+     #....
+
 .. attention:: Action required
 
    You must convert your config into the new format.

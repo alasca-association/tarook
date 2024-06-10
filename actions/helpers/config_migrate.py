@@ -32,6 +32,8 @@ def get_tf_var_defaults() -> dict:
         "workers": 4,
         "cluster_name": "managed-k8s",
         "enable_az_management": True,
+        "anti_affinity_group_name": "cah-anti-affinity",
+        "join_anti_affinity_group": False,
     }
 
 
@@ -73,8 +75,45 @@ def convert_config_into_new_format(config: dict) -> dict:
         tf_var_defaults = get_tf_var_defaults()
 
         # Mapping of new config keys to old config keys
-        node_cfg_map = {
-            "masters": {  # node group
+        tf_cfg_map = {
+            "gateway_defaults": {
+                "_type": "defaults_group",
+                "attrs": {  # attributes
+                    # new attribute           : old attribute
+                    "image"                   : "gateway_image_name"             ,  # noqa: E203, E501
+                    "flavor"                  : "gateway_flavor"                 ,  # noqa: E203, E501
+                    "root_disk_size"          : "gateway_root_disk_volume_size"  ,  # noqa: E203, E501
+                    "root_disk_volume_type"   : "gateway_root_disk_volume_type"  ,  # noqa: E203, E501
+                },
+            },
+            "master_defaults": {
+                "_type": "defaults_group",
+                "attrs": {  # attributes
+                    # new attribute           : old attribute
+                    "image"                   : "default_master_image_name"      ,  # noqa: E203, E501
+                    "flavor"                  : "default_master_flavor"          ,  # noqa: E203, E501
+                    "root_disk_size"          : "default_master_root_disk_size"  ,  # noqa: E203, E501
+                    "root_disk_volume_type"   : "root_disk_volume_type"          ,  # noqa: E203, E501
+                },
+            },
+            "worker_defaults": {  # defaults group
+                "_type": "defaults_group",
+                "attrs": {  # attributes
+                    # new attribute           : old attribute
+                    "image"                   : "default_worker_image_name"      ,  # noqa: E203, E501
+                    "flavor"                  : "default_worker_flavor"          ,  # noqa: E203, E501
+                    "root_disk_size"          : "default_worker_root_disk_size"  ,  # noqa: E203, E501
+                    "root_disk_volume_type"   : "root_disk_volume_type"          ,  # noqa: E203, E501
+                    "anti_affinity_group_name": "worker_anti_affinity_group_name",  # noqa: E203, E501
+                    # post-processing: Add `anti_affinity_group=
+                    #                   anti_affinity_group_name`
+                    #                   if not all workers have
+                    #                   `join_anti_affinity_group` set.
+                    #                  Remove `anti_affinity_group_name`.
+                },
+            },
+            "masters": {
+                "_type": "node_group",
                 "count": "masters",       # node count
                 "name":  "master_names",  # primary attribute
                 "attrs": {                # attributes
@@ -86,7 +125,8 @@ def convert_config_into_new_format(config: dict) -> dict:
                     "root_disk_volume_type"   : "master_root_disk_volume_types"  ,  # noqa: E203, E501
                 },
             },
-            "workers": {  # node group
+            "workers": {
+                "_type": "node_group",
                 "count": "workers",       # node count
                 "name":  "worker_names",  # primary attribute
                 "attrs": {                # attributes
@@ -97,49 +137,134 @@ def convert_config_into_new_format(config: dict) -> dict:
                     "root_disk_size"          : "worker_root_disk_sizes"         ,  # noqa: E203, E501
                     "root_disk_volume_type"   : "worker_root_disk_volume_types"  ,  # noqa: E203, E501
                     "join_anti_affinity_group": "worker_join_anti_affinity_group",  # noqa: E203, E501
+                    # post-processing: Add `anti_affinity_group=
+                    #                   worker_defaults.anti_affinity_group_name`
+                    #                   if `join_anti_affinity_group=true`
+                    #                  Remove `join_anti_affinity_group`.
                 },
             },
         }
 
-        def convert_node_group(grp):
-            """Convert a single group of nodes, e.g. masters, workers"""
-            return {
-                name: {  # node name
-                    # map old list-item-attribute to new attribute
-                    new_attr: old_cfg[old_attr][idx]
-                    # check all attributes
-                    for new_attr, old_attr in node_cfg_map[grp]["attrs"].items()
-                    # only create new attribute if old one existed
-                    if idx < len(old_cfg.get(old_attr, []))
-                }
-                # iterate over all nodes as per count
-                for idx, name in
-                enumerate(  # create mapping of node index and name
-                    # get list of node names
-                    # default to node index for missing node names
-                    listget(old_cfg.get(node_cfg_map[grp]["name"], []), i, str(i))
-                    for i in range(
-                        old_cfg.get(
-                            node_cfg_map[grp]["count"], tf_var_defaults[grp]
+        def post_process(converted_cfg: dict) -> None:
+            """Post process a converted YAOOK/k8s configuration (in-place)
+
+            Steps:
+                1. Merge anti affinity worker attributes
+
+                   For each worker ``anti_affinity_group`` is added when
+                    ``join_anti_affinity_group=true``;
+                    the ``join_anti_affinity_group`` attribute is removed.
+                   If all workers have ``join_anti_affinity_group=true`` set,
+                    then ``anti_affinity_group`` is set in the worker defaults
+                    instead; the ``anti_affinity_group_name`` attribute in the
+                    worker defaults is removed.
+            """
+            _workers = converted_cfg.get("workers", {})
+            _worker_defaults = converted_cfg.get("worker_defaults", {})
+
+            _anti_affinity_group_name = \
+                _worker_defaults.get(
+                    "anti_affinity_group_name",
+                    tf_var_defaults["anti_affinity_group_name"]
+                )
+
+            # step 1: Merge anti affinity attributes
+            if all(
+                worker.get(
+                    "join_anti_affinity_group",
+                    tf_var_defaults["join_anti_affinity_group"]
+                )
+                for worker in _workers.values()
+            ):
+                _worker_defaults.setdefault(
+                    "anti_affinity_group", _anti_affinity_group_name
+                )
+                for worker in _workers.values():
+                    worker.pop("anti_affinity_group", None)
+            else:
+                _worker_defaults.pop("anti_affinity_group", None)
+                for worker in _workers.values():
+                    if worker.get(
+                        "join_anti_affinity_group",
+                        tf_var_defaults["join_anti_affinity_group"]
+                    ):
+                        worker.setdefault(
+                            "anti_affinity_group", _anti_affinity_group_name
+                        )
+                    else:
+                        worker.pop("anti_affinity_group", None)
+
+            # cleanup deprecated merged worker anti affinity attributes
+            _worker_defaults.pop("anti_affinity_group_name", None)
+            if len(_worker_defaults) == 0:
+                converted_cfg.pop("worker_defaults", None)
+            for worker in _workers.values():
+                worker.pop("join_anti_affinity_group", None)
+
+        def convert_cfg_group(grp: dict) -> dict:
+            """Convert a single config group as per mapping ``tf_cfg_map``"""
+            if "count" in grp:
+                return {
+                    name: {  # item name
+                        # map old list-item-attribute to new attribute
+                        new_attr: old_cfg[old_attr][idx]
+                        # check all attributes
+                        for new_attr, old_attr in grp["attrs"].items()
+                        # only create new attribute if old one existed
+                        if idx < len(old_cfg.get(old_attr, []))
+                    }
+                    # iterate over all items as per count
+                    for idx, name in
+                    enumerate(  # create mapping of item index and name
+                        # get list of item names
+                        # default to item index for missing item names
+                        listget(old_cfg.get(grp["name"], []), i, str(i))
+                        for i in range(
+                            old_cfg.get(
+                                grp["count"], tf_var_defaults[grp["count"]]
+                            )
                         )
                     )
-                )
-            }
+                }
+            else:
+                return {
+                    # map old attribute to new attribute
+                    new_attr: old_cfg[old_attr]
+                    # check all attributes
+                    for new_attr, old_attr in grp["attrs"].items()
+                    # only create new attribute if old one existed
+                    if old_attr in old_cfg
+                }
 
         # Generate new config from old one
-        _new_cfg = {
-            grp: convert_node_group(grp) for grp in ["masters", "workers"]
+        converted_cfg = {
+            grp_name: convert_cfg_group(grp)
+            for grp_name, grp in tf_cfg_map.items()
+            # do not create group
+            #  if its attrs do not exist in the old config
+            if (
+                "count" in grp
+            )
+            or (
+                "count" not in grp
+                and any(
+                    (old_attr in old_cfg) for old_attr in grp["attrs"].values()
+                )
+            )
         }
 
+        post_process(converted_cfg)
+
         # Clear old config keys
-        for grp, keys in node_cfg_map.items():
-            new_cfg.pop(keys["count"], None)
-            new_cfg.pop(keys["name"], None)
+        for grp, keys in tf_cfg_map.items():
+            if "count" in keys:
+                new_cfg.pop(keys.get("count"), None)
+                new_cfg.pop(keys.get("name"), None)
             for _, old_attr in keys["attrs"].items():
                 new_cfg.pop(old_attr, None)
 
         # Add new config keys
-        new_cfg.update(_new_cfg)
+        new_cfg.update(converted_cfg)
 
         return new_cfg
 

@@ -3,12 +3,12 @@ locals {
   master_nodes = {
     for name, values in var.masters :
         "${var.cluster_name}-master-${name}" => {
-          image                    = coalesce(values.image, var.default_master_image_name)
-          flavor                   = coalesce(values.flavor, var.default_master_flavor)
+          image                    = coalesce(values.image, var.master_defaults.image)
+          flavor                   = coalesce(values.flavor, var.master_defaults.flavor)
           az                       = values.az  # default: null
           volume_name              = "${var.cluster_name}-master-volume-${name}"
-          root_disk_size           = coalesce(values.root_disk_size, var.default_master_root_disk_size)
-          root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.root_disk_volume_type
+          root_disk_size           = coalesce(values.root_disk_size, var.master_defaults.root_disk_size)
+          root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.master_defaults.root_disk_volume_type
         }
   }
 }

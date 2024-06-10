@@ -60,6 +60,12 @@ run python3 "$actions_dir"/helpers/terraform_migrate.py \
     --task index-based-gateway-names --config-file "${config_file}" \
     -- "$terraform_module" \
 
+# per worker anti affinity server group
+notef "${script_name}: Adapting anti affinity server group in Terraform ..."
+run python3 "$actions_dir"/helpers/terraform_migrate.py \
+    --task per-worker-anti-affinity-group --config-file "${config_file}" \
+    -- "$terraform_module" \
+
 
 # Perform config migration steps
 

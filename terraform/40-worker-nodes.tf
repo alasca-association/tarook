@@ -3,13 +3,13 @@ locals {
   worker_nodes = {
     for name, values in var.workers :
         "${var.cluster_name}-worker-${name}" => {
-          image                    = coalesce(values.image, var.default_worker_image_name)
-          flavor                   = coalesce(values.flavor, var.default_worker_flavor)
+          image                    = coalesce(values.image, var.worker_defaults.image)
+          flavor                   = coalesce(values.flavor, var.worker_defaults.flavor)
           az                       = values.az  # default: null
           volume_name              = "${var.cluster_name}-worker-volume-${name}"
-          root_disk_size           = coalesce(values.root_disk_size, var.default_worker_root_disk_size)
-          root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.root_disk_volume_type
-          join_anti_affinity_group = coalesce(values.join_anti_affinity_group, false)
+          root_disk_size           = coalesce(values.root_disk_size, var.worker_defaults.root_disk_size)
+          root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.worker_defaults.root_disk_volume_type
+          anti_affinity_group      = values.anti_affinity_group != null ? values.anti_affinity_group : var.worker_defaults.anti_affinity_group
         }
   }
 }
@@ -37,9 +37,12 @@ resource "openstack_networking_port_v2" "worker" {
   port_security_enabled = false
 }
 
-# server groups ought to be cheap so let's create one regardless of whether it's used or not
 resource "openstack_compute_servergroup_v2" "server_group" {
-  name = var.worker_anti_affinity_group_name
+  for_each = toset(distinct(
+               [for k, v in local.worker_nodes :
+                v.anti_affinity_group if v.anti_affinity_group != null]
+             ))
+  name = each.key
   policies = ["anti-affinity"]
 }
 
@@ -84,9 +87,9 @@ resource "openstack_compute_instance_v2" "worker" {
   dynamic scheduler_hints {
     # Abusing 'for_each' as a conditional
     # It's not working as a loop. The outer `each.key` is "passed" into the inner `for_each`
-    for_each = local.worker_nodes[each.key].join_anti_affinity_group == true ? [each.key] : []
+    for_each = local.worker_nodes[each.key].anti_affinity_group != null ? [each.key] : []
       content {
-        group = openstack_compute_servergroup_v2.server_group.id
+        group = openstack_compute_servergroup_v2.server_group[local.worker_nodes[each.key].anti_affinity_group].id
       }
   }
 

@@ -1,0 +1,13 @@
+The YAOOK/k8s Terraform module now allows worker nodes
+to be joined into individual anti affinity groups.
+
+.. attention:: Action required
+
+   You must migrate your Terraform state
+   by running the migration script.
+
+   .. code:: shell
+
+      ./managed-k8s/actions/migrate-to-release.sh
+
+_

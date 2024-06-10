@@ -1,0 +1,1 @@
+Terraform: Anti affinity group settings are now configurable per worker node.

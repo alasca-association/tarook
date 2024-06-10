@@ -225,6 +225,7 @@ def get_tf_var_defaults() -> dict:
         "azs": ["AZ1", "AZ2", "AZ3"],
         "cluster_name": "managed-k8s",
         "create_root_disk_on_volume": False,
+        "worker_anti_affinity_group_name": "cah-anti-affinity",
     }
 
 
@@ -469,6 +470,74 @@ def rename_gateways_index_based(
                 )
         else:
             logging.info(f"Nothing to do in {backend}.")
+
+    return outcome
+
+
+@register_task(name="per-worker-anti-affinity-group")
+def update_server_group_address(tf_mod_dir, config, dry_run: bool = False):
+    f"""Update the Terraform address of the server group
+
+    Args:
+        tf_mod_dir: The path of the YAOOK/k8s Terraform directory
+        config: A YAOOK/k8s configuration
+        dry_run: Do not apply changes if set to true
+
+    Returns:
+        {CODE_SUCCESS} for success, {CODE_FAILURE} for failure
+    """
+    outcome = CODE_SUCCESS
+
+    terraform = TerraformCLI(tf_mod_dir=tf_mod_dir)
+
+    try:
+        tf_resources = \
+            terraform.state_show_json()["values"]["root_module"]["resources"]
+    except KeyError:
+        logging.info("No resources in Terraform state.")
+        return outcome
+
+    # Determine whether server group was not already moved
+    tf_old_server_group = [
+        x for x in tf_resources
+        if (
+            x["type"] == "openstack_compute_servergroup_v2"
+            and x["name"] == "server_group"
+            and "index" not in x
+            # NOTE: A missing index indicates that the server group is not migrated
+        )
+    ]
+
+    assert len(tf_old_server_group) < 2
+
+    # Skip if server group was already moved
+    if len(tf_old_server_group) == 0:
+        logging.info("Nothing to do.")
+        return outcome
+
+    old_address = tf_old_server_group[0]["address"]
+
+    worker_anti_affinity_group_name = \
+        config["terraform"].get(
+            "worker_anti_affinity_group_name",
+            get_tf_var_defaults()["worker_anti_affinity_group_name"]
+        )
+
+    new_address = f'{old_address}["{worker_anti_affinity_group_name}"]'
+
+    if not dry_run:
+        _outcome = terraform.state_mv(old_address, new_address)
+
+        if _outcome == "fail":
+            outcome = CODE_FAILURE
+    else:
+        _outcome = "dry-run"
+
+    logging.info(
+        f"{'Would rename' if dry_run else 'Renaming'}"
+        f" the following resources in Terraform:"
+    )
+    logging.info(f"* ({_outcome:7}) {old_address} --> {new_address}")
 
     return outcome
 

@@ -37,8 +37,12 @@ Adjust the configuration to meet your needs:
   [terraform]
 
   subnet_cidr = "172.30.154.0/24"
-  default_master_image_name = "Ubuntu 22.04 LTS x64"
-  default_worker_image_name = "Ubuntu 22.04 LTS x64"
+
+  [terraform.master_defaults]
+  image  = "Ubuntu 22.04 LTS x64"
+
+  [terraform.worker_defaults]
+  image  = "Ubuntu 22.04 LTS x64"
 
   [terraform.masters.0]
 
