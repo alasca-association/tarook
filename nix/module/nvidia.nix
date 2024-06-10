@@ -22,13 +22,13 @@ in {
         type = types.str;
       };
     };
-    config.yk8s.nvidia = {
-      _ansible_prefix = "nvidia_";
-      _inventory_path = "all/nvidia.yaml";
-      _variable_transformation = vars:
-        if config.yk8s.virtualize_gpu
-        then vars
-        else {};
-    };
+  };
+  config.yk8s.nvidia = {
+    _ansible_prefix = "nvidia_";
+    _inventory_path = "all/nvidia.yaml";
+    _variable_transformation = cfg:
+      if config.yk8s.kubernetes.virtualize_gpu
+      then cfg
+      else {};
   };
 }

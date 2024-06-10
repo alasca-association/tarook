@@ -81,23 +81,33 @@
           if sectionCfg._only_if_enabled && ! sectionCfg.enabled
           then {enabled = false;}
           else sectionCfg;
-        applyFilters = sectionCfg: pipe sectionCfg [sectionCfg._variable_transformation filterDisabled filterInternal flatten filterNull];
+        applyFilters = sectionCfg: pipe sectionCfg [filterDisabled sectionCfg._variable_transformation filterInternal flatten filterNull];
         mkVars = sectionCfg:
           mapAttrs' (name: value: {
             name = "${sectionCfg._ansible_prefix}${name}";
             inherit value;
           }) (applyFilters sectionCfg);
-        mkVarFile = sectionCfg: (pkgs.formats.yaml {}).generate sectionCfg._inventory_path (mkVars (sectionCfg._variable_transformation sectionCfg));
+        mkVarFile = sectionCfg: (pkgs.formats.yaml {}).generate sectionCfg._inventory_path (mkVars sectionCfg);
+        getSections = foldlAttrs (acc: _: val:
+          acc
+          ++ (
+            if (val ? "_sectiontype" && val._sectiontype == "config")
+            then [val]
+            else if (val ? "_sectiontype" && val._sectiontype == "container")
+            then getSections val
+            else []
+          )) [];
         mkInventory = cfg:
           mkDerivation {
             name = "yaook-group-vars";
             src = ./.;
             preferLocalBuild = true;
-            buildPhase = concatLines (mapAttrsToList (section: sectionCfg:
-              trace "Section in process: ${section}" ''
-                install -m 644 -D ${mkVarFile sectionCfg} $out/${sectionCfg._inventory_path}
-              '')
-            (filterInternal cfg));
+            buildPhase = concatLines (map (sectionCfg:
+              # TODO: make sure inventory_paths are unique
+                trace "Writing file: ${sectionCfg._inventory_path}" ''
+                  install -m 644 -D ${mkVarFile sectionCfg} $out/${sectionCfg._inventory_path}
+                '')
+            (getSections cfg));
             checkPhase = let
               warnings = concatLines (map (w: "# ${builtins.trace "WARNING: ${w}" w}") cfg._warnings);
               errors = concatLines (map (e: "# ${builtins.trace "ERROR: ${e}" e}") cfg._errors);
@@ -122,7 +132,7 @@
           ./node-scheduling.nix
           ./testing.nix
           ./ipsec.nix
-          # ./custom.nix
+          ./custom.nix
           ./nvidia.nix
           ./miscellaneous.nix
           ./k8s-supplements.nix

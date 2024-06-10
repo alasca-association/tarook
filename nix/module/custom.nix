@@ -26,7 +26,7 @@ in {
   };
   config.yk8s.custom = {
     _inventory_path = "all/custom.yaml";
-    _variable_transformation = null;
+    _variable_transformation = cfg: cfg;
     _only_if_enabled = false;
   };
 }
