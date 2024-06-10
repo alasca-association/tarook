@@ -54,6 +54,12 @@ run python3 "$actions_dir"/helpers/terraform_migrate.py \
     rm "$terraform_module/02-moved-instances.tf"
 fi
 
+# index based gateway names
+notef "${script_name}: Renaming gateways to index based naming scheme in Terraform state and Openstack ..."
+run python3 "$actions_dir"/helpers/terraform_migrate.py \
+    --task index-based-gateway-names --config-file "${config_file}" \
+    -- "$terraform_module" \
+
 
 # Perform config migration steps
 

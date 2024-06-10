@@ -1,0 +1,13 @@
+Gateway node names are now index rather than availability zone based,
+leading to names like ``managed-k8s-gw-0`` instead of ``managed-k8s-gw-az1``.
+
+.. attention:: Action required
+
+   To prevent Terraform from unnecessarily rebuilding gateway nodes,
+   you must run the migration script.
+
+   .. code:: shell
+
+      ./managed-k8s/actions/migrate-to-release.sh
+
+_

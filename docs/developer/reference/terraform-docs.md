@@ -83,6 +83,7 @@ No modules.
 | default\_worker\_image\_name | n/a | `string` | `"Ubuntu 22.04 LTS x64"` | no |
 | default\_worker\_root\_disk\_size | If 'create\_root\_disk\_on\_volume=true', the worker flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size. | `number` | `50` | no |
 | dns\_nameservers\_v4 | A list of IPv4 addresses which will be configured as DNS nameservers of the IPv4 subnet. | `list(string)` | `[]` | no |
+| gateway\_count | Amount of gateway nodes to create. (default: 0 --> one for each availability zone when 'spread\_gateways\_across\_azs=true', 3 otherwise) | `number` | `0` | no |
 | gateway\_flavor | n/a | `string` | `"XS"` | no |
 | gateway\_image\_name | n/a | `string` | `"Debian 12 (bookworm)"` | no |
 | gateway\_root\_disk\_volume\_size | If 'create\_root\_disk\_on\_volume=true' and the gateway flavor does not specify a disk size, the root disk volume will have this size. | `number` | `10` | no |
