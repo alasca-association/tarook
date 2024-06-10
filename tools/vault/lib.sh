@@ -29,13 +29,13 @@ function get_clustername() {
 function check_clustername() {
     clustername="$1"
     if [ -z "$clustername" ]; then
-        echo "ERROR: vault.cluster_name must be defined in config.toml"
+        echo "ERROR: vault.cluster_name must be defined in config.toml" >&2
         exit 1
     elif [ "$clustername" == "devcluster" ]; then
-        echo "WARNING: vault.cluster_name is still the default value 'devcluster'. You may want to change it in config.toml."
+        echo "WARNING: vault.cluster_name is still the default value 'devcluster'. You may want to change it in config.toml." >&2
         read -rp "Continue (y/n)" choice
         if [ "$choice" != "y" ]; then
-            echo "Aborting."
+            echo "Aborting." >&2
             exit 2
         fi
     fi
