@@ -22,6 +22,7 @@
         inherit (lib.attrsets) filterAttrs filterAttrsRecursive mapAttrs' mapAttrsToList foldlAttrs;
         inherit (lib.strings) concatLines;
         inherit (lib.sources) sourceFilesBySuffices;
+        inherit (lib.trivial) id;
         cfg = config.yk8s;
         mkInternalOption = args:
           mkOption ({
@@ -45,8 +46,8 @@
               default = false;
             };
             _variable_transformation = mkInternalOption {
-              type = types.nullOr (types.functionTo types.attrs);
-              default = null;
+              type = types.functionTo types.attrs;
+              default = id;
             };
           }
           // options);
@@ -74,15 +75,7 @@
             name = "${sectionCfg._ansible_prefix}${name}";
             inherit value;
           }) (filterNull (flatten (filterInternal (filterDisabled sectionCfg))));
-        mkVarFile = let
-          mkVars' = sectionCfg:
-            mkVars (
-              if sectionCfg._variable_transformation == null
-              then sectionCfg
-              else (trace "Transforming variables" (sectionCfg._variable_transformation sectionCfg))
-            );
-        in
-          sectionCfg: (pkgs.formats.yaml {}).generate sectionCfg._inventory_path (mkVars' sectionCfg);
+        mkVarFile = sectionCfg: (pkgs.formats.yaml {}).generate sectionCfg._inventory_path (mkVars (sectionCfg._variable_transformation sectionCfg));
         mkInventory = cfg:
           mkDerivation {
             name = "yaook-group-vars";
