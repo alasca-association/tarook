@@ -16,10 +16,10 @@
         system,
         ...
       }: let
-        inherit (builtins) substring map trace isAttrs length head readDir attrNames;
+        inherit (builtins) substring map trace isAttrs length head readDir attrNames filter foldl';
         inherit (pkgs.stdenv) mkDerivation;
         inherit (lib) types mkOption;
-        inherit (lib.attrsets) filterAttrs filterAttrsRecursive mapAttrs' mapAttrsToList foldlAttrs;
+        inherit (lib.attrsets) filterAttrs filterAttrsRecursive mapAttrs mapAttrs' mapAttrsToList foldlAttrs unionOfDisjoint recursiveUpdate;
         inherit (lib.strings) concatLines;
         inherit (lib.sources) sourceFilesBySuffices;
         inherit (lib.trivial) id pipe;
@@ -62,9 +62,8 @@
             };
           }
           // options);
-        filterInternal = filterAttrs (n: _: (substring 0 1 n) != "_");
-        filterNull = filterAttrsRecursive (_: v: v != null);
-        flatten = foldlAttrs (
+        filterNull = withExported (filterAttrsRecursive (_: v: v != null));
+        flatten = withExported (foldlAttrs (
           acc: outerName: outerValue:
             acc
             // (
@@ -76,38 +75,62 @@
                 }) (flatten outerValue)
               else {"${outerName}" = outerValue;}
             )
-        ) {};
+        ) {});
         filterDisabled = sectionCfg:
-          if sectionCfg._only_if_enabled && ! sectionCfg.enabled
-          then {enabled = false;}
-          else sectionCfg;
-        applyFilters = sectionCfg: pipe sectionCfg [filterDisabled sectionCfg._variable_transformation filterInternal flatten filterNull];
-        mkVars = sectionCfg:
-          mapAttrs' (name: value: {
-            name = "${sectionCfg._ansible_prefix}${name}";
-            inherit value;
-          }) (applyFilters sectionCfg);
-        mkVarFile = sectionCfg: (pkgs.formats.yaml {}).generate sectionCfg._inventory_path (mkVars sectionCfg);
-        getSections = foldlAttrs (acc: _: val:
+          withExported (
+            cfg:
+              if sectionCfg._only_if_enabled && ! cfg.enabled
+              then trace "${sectionCfg._name} is disabled" {enabled = false;}
+              else {}
+          )
+          sectionCfg;
+        applyFilters = sectionCfg: pipe sectionCfg [filterDisabled sectionCfg._variable_transformation flatten filterNull addPrefix];
+        addPrefix = sectionCfg:
+          withExported (
+            mapAttrs' (name: value: {
+              name = "${sectionCfg._ansible_prefix}${name}";
+              inherit value;
+            })
+          )
+          sectionCfg;
+        withExported = func:
+          mapAttrs (n: v:
+            if n == "exported"
+            then func v
+            else v);
+        mkSectionSet = name: config:
+          {_name = name;}
+          // (foldlAttrs (acc: n: v:
+            recursiveUpdate acc (
+              if (substring 0 1 n) == "_"
+              then {
+                ${n} = v;
+              }
+              else {exported.${n} = v;}
+            )) {}
+          config);
+        mkVarFile = (pkgs.formats.yaml {}).generate;
+        getSections = foldlAttrs (acc: name: val:
           acc
           ++ (
             if (val ? "_sectiontype" && val._sectiontype == "config")
-            then [val]
+            then trace "Found config section ${name}" [(mkSectionSet name val)]
             else if (val ? "_sectiontype" && val._sectiontype == "container")
-            then getSections val
+            then trace "Found container section ${name}" (getSections val)
             else []
           )) [];
+        getExportedConfigs = cfg: filter (sectionCfg: sectionCfg ? "exported" && sectionCfg.exported != {}) (map applyFilters (getSections cfg));
+        groupExportedByPath = cfg: foldl' (acc: sectionCfg: unionOfDisjoint acc {${sectionCfg._inventory_path} = sectionCfg.exported;}) {} (getExportedConfigs cfg);
         mkInventory = cfg:
           mkDerivation {
             name = "yaook-group-vars";
             src = ./.;
             preferLocalBuild = true;
-            buildPhase = concatLines (map (sectionCfg:
-              # TODO: make sure inventory_paths are unique
-                trace "Writing file: ${sectionCfg._inventory_path}" ''
-                  install -m 644 -D ${mkVarFile sectionCfg} $out/${sectionCfg._inventory_path}
-                '')
-            (getSections cfg));
+            buildPhase = concatLines (mapAttrsToList (inventoryPath: finalSectionCfg:
+              trace "Writing file: ${inventoryPath}" ''
+                install -m 644 -D ${mkVarFile inventoryPath finalSectionCfg} $out/${inventoryPath}
+              '')
+            (groupExportedByPath cfg));
             checkPhase = let
               warnings = concatLines (map (w: "# ${builtins.trace "WARNING: ${w}" w}") cfg._warnings);
               errors = concatLines (map (e: "# ${builtins.trace "ERROR: ${e}" e}") cfg._errors);
@@ -168,10 +191,6 @@
             mkInternalOption = mkInternalOption {
               type = types.functionTo types.attrs;
               default = mkInternalOption;
-            };
-            mkVars = mkInternalOption {
-              type = types.functionTo types.attrs;
-              default = mkVars;
             };
             mkTopSection = mkInternalOption {
               type = types.functionTo types.attrs;
