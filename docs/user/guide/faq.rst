@@ -144,3 +144,14 @@ The ``Get certificate information task`` of the ``k8s-master`` fails
    you still need so make backup in case
    (e.g. ``mv ~/.ansible ~/.ansible.bak``)
 -  see `this issue <https://gitlab.com/yaook/k8s/-/issues/441>`__
+
+Ansible could not initialize the preferred locale: unsupported locale setting
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Ansible requires UTF-8 encoding since v.2.14.0.
+
+Try setting the following in your ``~/.config/yaook-k8s/env``:
+
+.. code:: console
+
+   $ [[ -z ${LC_ALL} ]] && { export LC_ALL=C.UTF-8 ; }
