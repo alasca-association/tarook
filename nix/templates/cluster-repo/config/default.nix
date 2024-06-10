@@ -10,10 +10,10 @@
 ###
 {
   wireguard = {
-    endpoints = {
-    };
-    peers = {
-    };
+    endpoints = [
+    ];
+    peers = [
+    ];
   };
   vault.cluster_name = "devcluster";
 }
