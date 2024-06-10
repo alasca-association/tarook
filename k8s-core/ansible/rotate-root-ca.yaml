@@ -13,6 +13,7 @@
     - vars/disruption.yaml
     - vars/retries.yaml
     - vars/vault-config.yaml
+    - vars/etc.yaml
   handlers:
     - name: Import k8s-master handlers
       import_tasks: roles/k8s-master/handlers/main.yaml
