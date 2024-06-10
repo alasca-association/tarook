@@ -13,14 +13,14 @@ in {
       description = ''
         You can define specifc nodes for some
         smoke tests. If you define these, you
-        must specify at least two nodes.      
+        must specify at least two nodes.
       '';
       type = with types; listOf str;
       default = [];
     };
     force_reboot_nodes = mkOption {
       description = ''
-      Enforce rebooting of nodes after every system update
+        Enforce rebooting of nodes after every system update
       '';
       type = types.bool;
       default = false;
@@ -30,6 +30,7 @@ in {
     _ansible_prefix = "testing_";
     _inventory_path = "all/test-nodes.yaml";
   };
-  config.yk8s._errors = logIf ((length cfg.test-nodes) == 1 )
-  "[testing] If you define any node, then must specify at least two";
+  config.yk8s._errors =
+    logIf ((length cfg.test-nodes) == 1)
+    "[testing] If you define any node, then must specify at least two";
 }

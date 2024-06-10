@@ -13,19 +13,17 @@ in {
       description = ''
         If true, prevent Terraform from performing disruptive action
         defaults to true if unset
-      ''
-      ;
+      '';
       type = types.bool;
       default = true;
     };
     subnet_cidr = mkOption {
       type = ipv4Cidr;
-      
     };
     masters = mkOption {
       type = types.int;
     };
-    
+
     workers = mkOption {
       type = types.int;
     };
@@ -49,13 +47,13 @@ in {
     '';
     subnet_v6_cidr = mkOption {
       description = ''
-        If you enabled DualStack-support you may want to adjust the IPv6 subnet      
+        If you enabled DualStack-support you may want to adjust the IPv6 subnet
       '';
-      type = str; # TODO ipv6cidr type
+      type = types.str; # TODO ipv6cidr type
     };
     create_root_disk_on_volume = mkEnableOption ''
       If true, create block volume for each instance and boot from there.
-      Equivalent to `openstack server create --boot-from-volume […].    
+      Equivalent to `openstack server create --boot-from-volume […].
     '';
     root_disk_volume_type = mkOption {
       description = ''
@@ -77,7 +75,7 @@ in {
       type = types.str;
       default = "https://gitlab.com";
     };
-    
+
     gitlab_project_id = mkOption {
       description = ''
         The unique ID of your GitLab project.
@@ -90,10 +88,6 @@ in {
       type = types.str;
       default = "tf-state";
     };
-
-
-
-
   };
   config.yk8s.terraform = {
     # _variable_transformation # TODO use terraform helper

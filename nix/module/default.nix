@@ -107,20 +107,27 @@
               );
           };
       in {
-        imports = [
-          ./terraform.nix
-          ./vault.nix
-          ./load-balancing.nix
-          ./wireguard.nix
-          ./ch-k8s-lbaas.nix
-          ./kubernetes
-          ./node-scheduling.nix
-          ./testing.nix
-          ./ipsec.nix
-          ./custom.nix
-          ./nvidia.nix
-          ./miscellaneous.nix
-        ] ++ (attrNames (filterAttrs (_: type: type == "directory") (readDir ../k8s-supplements/ansible/roles)));
+        imports =
+          [
+            # ./terraform.nix
+            ./vault.nix
+            ./load-balancing.nix
+            ./wireguard.nix
+            ./ch-k8s-lbaas.nix
+            ./kubernetes
+            ./node-scheduling.nix
+            ./testing.nix
+            ./ipsec.nix
+            # ./custom.nix
+            ./nvidia.nix
+            ./miscellaneous.nix
+          ]
+          ++ (let
+            path = ../../k8s-supplements/ansible/roles;
+            hasNix = n: builtins.hasAttr "default.nix" (builtins.readDir "${path}/${n}");
+            rolesWithNix = attrNames (filterAttrs (name: type: type == "directory" && hasNix name) (readDir path));
+          in
+            map (n: "${path}/${n}") rolesWithNix);
         options.yk8s = {
           _ansible.inventory_base_path = mkOption {
             description = ''
@@ -147,8 +154,8 @@
               default = {
                 ipv4Addr = types.strMatching "^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$";
                 ipv4Cidr = types.strMatching "^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}/([0-9]|[12][0-9]|3[0-2])$";
-              }
-            }
+              };
+            };
             mkInternalOption = mkInternalOption {
               type = types.functionTo types.attrs;
               default = mkInternalOption;
