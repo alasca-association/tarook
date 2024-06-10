@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v4.0.1 (2024-06-10)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- The root CA rotation has been fixed. (`!1291 <https://gitlab.com/yaook/k8s/-/merge_requests/1291>`_)
+
+
 v4.0.0 (2024-04-15)
 -------------------
 
