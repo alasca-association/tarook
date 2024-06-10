@@ -71,3 +71,6 @@ ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/rol
   -e "k8s_skip_upgrade_checks=${k8s_skip_upgrade_checks:-false}" \
   rotate-root-ca.yaml "$@"
 popd
+
+# Get a new kubeconfig
+run "$actions_dir/k8s-login.sh"
