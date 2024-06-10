@@ -135,7 +135,7 @@ Phase 1
 
    .. code:: console
 
-     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-ca.sh -n
+     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-root-ca.sh -n
 
 5. Verify workload is able to come back up
 
@@ -148,7 +148,7 @@ Phase 1
      $ ./managed-k8s/actions/test.sh
 
 8. Distribute the renewed kubeconfig(s) to the clients that need them (e.g. customers).
-   The kubeconfig in the cluster repo is updated automatically (you have to commit if, of course!).
+   The kubeconfig in the cluster repo is updated automatically (you have to commit and push it, of course!).
 
 Phase 2
 ^^^^^^^
@@ -197,7 +197,7 @@ After you spread the kubeconfigs, do the following:
 
    .. code:: console
 
-     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-ca.sh -c
+     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-root-ca.sh -c
 
 3. Verify workload is able to come back up
 
