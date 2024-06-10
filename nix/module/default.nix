@@ -81,10 +81,11 @@
             cfg:
               if sectionCfg._only_if_enabled && ! cfg.enabled
               then trace "${sectionCfg._name} is disabled" {enabled = false;}
-              else {}
+              else cfg
           )
           sectionCfg;
-        applyFilters = sectionCfg: pipe sectionCfg [filterDisabled sectionCfg._variable_transformation flatten filterNull addPrefix];
+        applyTransform = sectionCfg: withExported sectionCfg._variable_transformation sectionCfg;
+        applyFilters = sectionCfg: pipe sectionCfg [filterDisabled applyTransform flatten filterNull addPrefix];
         addPrefix = sectionCfg:
           withExported (
             mapAttrs' (name: value: {
