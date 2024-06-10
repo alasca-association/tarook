@@ -48,3 +48,6 @@ export TF_VAR_keypair='firstnamelastname-hostname-gendate'
 # is password protected. Setting the following variable avoids that.
 # See https://github.com/python-poetry/poetry/issues/1917
 export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+
+# Set locale for Ansible if not yet present
+#[[ -z ${LC_ALL} ]] && { export LC_ALL=C.UTF-8 ; }
