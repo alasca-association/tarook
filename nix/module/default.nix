@@ -30,7 +30,18 @@
               visible = false;
             }
             // args);
+        mkContainerSection = options: ({
+            _sectiontype = mkInternalOption {
+              default = "container";
+              type = types.str;
+            };
+          }
+          // options);
         mkTopSection = options: ({
+            _sectiontype = mkInternalOption {
+              default = "config";
+              type = types.str;
+            };
             _ansible_prefix = mkInternalOption {
               default = "";
               type = types.str;
@@ -100,27 +111,21 @@
               );
           };
       in {
-        imports =
-          [
-            # ./terraform.nix
-            ./vault.nix
-            ./load-balancing.nix
-            ./wireguard.nix
-            ./ch-k8s-lbaas.nix
-            ./kubernetes
-            ./node-scheduling.nix
-            ./testing.nix
-            ./ipsec.nix
-            # ./custom.nix
-            ./nvidia.nix
-            ./miscellaneous.nix
-          ]
-          ++ (let
-            path = ../../k8s-supplements/ansible/roles;
-            hasNix = n: builtins.hasAttr "default.nix" (builtins.readDir "${path}/${n}");
-            rolesWithNix = attrNames (filterAttrs (name: type: type == "directory" && hasNix name) (readDir path));
-          in
-            map (n: "${path}/${n}") rolesWithNix);
+        imports = [
+          # ./terraform.nix
+          ./vault.nix
+          ./load-balancing.nix
+          ./wireguard.nix
+          ./ch-k8s-lbaas.nix
+          ./kubernetes
+          ./node-scheduling.nix
+          ./testing.nix
+          ./ipsec.nix
+          # ./custom.nix
+          ./nvidia.nix
+          ./miscellaneous.nix
+          ./k8s-supplements.nix
+        ];
         options.yk8s = {
           _ansible.inventory_base_path = mkOption {
             description = ''
@@ -160,6 +165,10 @@
             mkTopSection = mkInternalOption {
               type = types.functionTo types.attrs;
               default = mkTopSection;
+            };
+            mkContainerSection = mkInternalOption {
+              type = types.functionTo types.attrs;
+              default = mkContainerSection;
             };
             logIf = mkInternalOption {
               type = types.functionTo types.anything;
