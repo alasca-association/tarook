@@ -22,7 +22,7 @@
         inherit (lib.attrsets) filterAttrs filterAttrsRecursive mapAttrs' mapAttrsToList foldlAttrs;
         inherit (lib.strings) concatLines;
         inherit (lib.sources) sourceFilesBySuffices;
-        inherit (lib.trivial) id;
+        inherit (lib.trivial) id pipe;
         cfg = config.yk8s;
         mkInternalOption = args:
           mkOption ({
@@ -81,11 +81,12 @@
           if sectionCfg._only_if_enabled && ! sectionCfg.enabled
           then {enabled = false;}
           else sectionCfg;
+        applyFilters = sectionCfg: pipe sectionCfg [sectionCfg._variable_transformation filterDisabled filterInternal flatten filterNull];
         mkVars = sectionCfg:
           mapAttrs' (name: value: {
             name = "${sectionCfg._ansible_prefix}${name}";
             inherit value;
-          }) (filterNull (flatten (filterInternal (filterDisabled sectionCfg))));
+          }) (applyFilters sectionCfg);
         mkVarFile = sectionCfg: (pkgs.formats.yaml {}).generate sectionCfg._inventory_path (mkVars (sectionCfg._variable_transformation sectionCfg));
         mkInventory = cfg:
           mkDerivation {
