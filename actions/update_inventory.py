@@ -33,7 +33,6 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "rook": "rook",
     "prometheus": "monitoring",
     "ingress": "k8s_ingress",
-    "vault": "yaook_vault",
 }
 
 
@@ -369,19 +368,6 @@ def main():
         config["k8s-service-layer"].get("ingress"),
         kubernetes_service_ingress_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("ingress", ""),
-    )
-
-    # ---
-    # VAULT
-    # ---
-    print_process_state("VAULT SERVICE")
-    kubernetes_service_vault_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "all" / "vault-svc.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("vault"),
-        kubernetes_service_vault_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("vault", ""),
     )
 
     # ---
