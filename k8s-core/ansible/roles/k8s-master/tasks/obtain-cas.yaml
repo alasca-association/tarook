@@ -10,12 +10,14 @@
 
   - name: Load service account key from Vault # noqa ignore-errors
     ignore_errors: true
+    no_log: true  # prevent private key from being exposed
     ansible.builtin.set_fact:
       service_account_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'k8s/service-account-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key | b64decode }}"
 
   - name: Generate private key if necessary
     when: service_account_key is not defined
     delegate_to: "{{ groups['orchestrator'] | first }}"
+    no_log: true  # prevent private key from being exposed
     community.crypto.openssl_privatekey:
       return_content: true
       type: "RSA"
@@ -25,6 +27,7 @@
 
   - name: Delete generated private key from disk
     delegate_to: "{{ groups['orchestrator'] | first }}"
+    no_log: true  # prevent private key from being exposed
     ansible.builtin.file:
       state: absent
       path: "{{ etc_dir }}/sa.key"
@@ -32,6 +35,7 @@
   - name: Store generated key in vault
     when: service_account_key is not defined
     delegate_to: "{{ groups['orchestrator'] | first }}"
+    no_log: true  # prevent private key from being exposed
     community.hashi_vault.vault_write:
       auth_method: approle
       mount_point: "{{ vault_nodes_approle }}"
@@ -44,6 +48,7 @@
 
   - name: Use generated service account key
     when: service_account_key is not defined
+    no_log: true  # prevent private key from being exposed
     ansible.builtin.set_fact:
       service_account_key: "{{ generated_service_account_key.privatekey }}"
 
@@ -54,6 +59,7 @@
 
   - name: Write service account private key
     become: true
+    no_log: true  # prevent private key from being exposed
     ansible.builtin.copy:
       dest: /etc/kubernetes/pki/sa.key
       content: "{{ service_account_key }}"

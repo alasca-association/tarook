@@ -57,9 +57,10 @@
       register: controller_nodes
     - name: Create the x509 key of the server
       community.crypto.openssl_privatekey_pipe:
-      no_log: true
+      no_log: true  # prevent private key from being exposed
       register: server_key
     - name: Generate the CSR of the server
+      no_log: true  # prevent private key from being exposed
       community.crypto.openssl_csr_pipe:
         privatekey_content: "{{ server_key.privatekey }}"
         common_name: 127.0.0.1
@@ -70,6 +71,7 @@
         subject_alt_name: "{{ (controller_nodes.resources | map(attribute='status') | map(attribute='addresses') | flatten(levels=1) | selectattr('type', 'eq', 'InternalIP') | map(attribute='address')) | map('regex_replace', '^(.*)$', 'IP:\\1') | list }}"
       register: server_csr
     - name: Create the x509 certificate of the server
+      no_log: true  # prevent private key from being exposed
       community.crypto.x509_certificate_pipe:
         provider: selfsigned
         csr_content: "{{ server_csr.csr }}"
@@ -79,9 +81,10 @@
 
     - name: Create the x509 key of the client
       community.crypto.openssl_privatekey_pipe:
-      no_log: true
+      no_log: true  # prevent private key from being exposed
       register: client_key
     - name: Generate the CSR of the client
+      no_log: true  # prevent private key from being exposed
       community.crypto.openssl_csr_pipe:
         privatekey_content: "{{ client_key.privatekey }}"
         common_name: 127.0.0.1
@@ -89,6 +92,7 @@
           CN: 127.0.0.1
       register: client_csr
     - name: Create the x509 certificate of the client
+      no_log: true  # prevent private key from being exposed
       community.crypto.x509_certificate_pipe:
         provider: selfsigned
         csr_content: "{{ client_csr.csr }}"
@@ -97,6 +101,7 @@
       register: client_cert
 
     - name: Create the secret for the etcd-metrics-proxy endpoint
+      no_log: true  # prevent private key from being exposed
       kubernetes.core.k8s:
         apply: true
         definition:
@@ -115,6 +120,7 @@
           strict: true
 
     - name: Create the secret for the prometheus scraper
+      no_log: true  # prevent private key from being exposed
       kubernetes.core.k8s:
         apply: true
         definition:
