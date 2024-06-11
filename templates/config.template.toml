@@ -454,27 +454,6 @@ enabled = false
 
 # ANCHOR_END: ksl_vault_configuration
 
-# ANCHOR: ksl_fluxcd_configuration
-# --- KUBERNETES SERVICE LAYER : FLUXCD ---
-# ansible prefix: "fluxcd_"
-[k8s-service-layer.fluxcd]
-# Enable Flux management.
-enabled = false
-
-# If enabled, choose whether to install or uninstall fluxcd2. IF SET TO
-# FALSE, FLUXCD2 WILL BE DELETED WITHOUT CHECKING FOR
-# DISRUPTION.
-#install = true
-
-# Helm chart version of fluxcd to be deployed.
-#version = "2.10.1"
-
-# Namespace to deploy the flux-system in (will be created if it does not exist, but
-# never deleted).
-#namespace = "k8s-svc-flux-system"
-
-# ANCHOR_END: ksl_fluxcd_configuration
-
 # ANCHOR: wireguard_config
 # --- WIREGUARD ---
 # ansible prefix: "wg_"
