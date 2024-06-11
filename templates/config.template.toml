@@ -369,49 +369,6 @@ enabled = false # •ᴗ•
 
 # ANCHOR_END: ksl_ingress_configuration
 
-# ANCHOR: etcd_backup_configuration
-# --- KUBERNETES SERVICE LAYER : ETCD-BACKUP ---
-# ansible prefix: "etcd_backup_"
-[k8s-service-layer.etcd-backup]
-enabled = false
-
-# Configure value for the cron job schedule for etcd backups. If not set it will be
-# set to default value of  21 */12 * * *
-#schedule = "21 * * * *"
-
-# Name of the s3 bucket to store the backups. It defaults to `etcd-backup`
-#bucket_name = "etcd-backup"
-
-# Name of the folder to keep the backup files. It defaults to `etcd-backup`
-#file_prefix = "backup"
-
-# Configure the location of the Vault kv2 storage where the credentials can
-# be found. This location is the default location used by import.sh and is
-# recommended.
-#vault_mount_point = "yaook/{{ vault_cluster_name }}/kv"
-
-# Configure the kv2 key under which the credentials are found. This location is
-# the default location used by import.sh and is recommended.
-#
-# The role expects a JSON object with `access_key` and `secret_key` keys,
-# containing the corresponding S3 credentials.
-#vault_path = "etcdbackup"
-
-# Number of days after which individual items in the bucket are dropped. Enforced by S3 lifecyle rules which
-# are also implemented by Ceph's RGW.
-#days_of_retention = 30
-
-# etcdbackup chart version to install.
-# If this is not specified, the latest version is installed.
-#chart_version=""
-
-# Metrics port on which the backup-shifter Pod will provide metrics.
-# Please note that the etcd-backup deployment runs in host network mode
-# for easier access to the etcd cluster.
-#metrics_port: 19100
-
-# ANCHOR_END: etcd_backup_configuration
-
 # ANCHOR: ksl_vault_configuration
 # --- KUBERNETES SERVICE LAYER : HASHICORP VAULT ---
 # ansible prefix: "yaook_vault_"
@@ -637,4 +594,3 @@ wireguard_on_workers = false
 # certifi, you can put its cert in `config/pip_mirror_ca.pem` to set
 # it explicitly.
 # pip_mirror_url = "..."
-

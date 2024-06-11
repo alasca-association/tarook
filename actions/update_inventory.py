@@ -26,7 +26,6 @@ ANSIBLE_INVENTORY_BASEPATH = pathlib.Path("inventory/yaook-k8s/group_vars")
 ALLOWED_TOP_LEVEL_SECTIONS = (
     "k8s-service-layer",
     "wireguard",
-    "etcd-backup",
 )
 # This maps defines the prefix that is assigned to each
 # variable of a section
@@ -35,7 +34,6 @@ SECTION_VARIABLE_PREFIX_MAP = {
     "prometheus": "monitoring",
     "ingress": "k8s_ingress",
     "fluxcd": "fluxcd",
-    "etcd-backup": "etcd_backup",
     "vault": "yaook_vault",
 }
 
@@ -385,19 +383,6 @@ def main():
         config["k8s-service-layer"].get("vault"),
         kubernetes_service_vault_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("vault", ""),
-    )
-
-    # ---
-    # ETCD-BACKUP
-    # ---
-    print_process_state("ETCD-BACKUP")
-    kubernetes_service_storage_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "all" / "etcd-backup.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("etcd-backup"),
-        kubernetes_service_storage_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("etcd-backup", ""),
     )
 
     # ---
