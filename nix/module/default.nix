@@ -187,6 +187,9 @@
               default = {
                 ipv4Addr = types.strMatching "^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$";
                 ipv4Cidr = types.strMatching "^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}/([0-9]|[12][0-9]|3[0-2])$";
+                k8sSize = types.strMatching "[1-9][0-9]*([KMGT]i)?";
+                k8sCpus = types.strMatching "[1-9][0-9]*m?";
+                k8sServiceType = types.strMatching "ClusterIP|NodeIP|LoadBalancer";
               };
             };
             mkInternalOption = mkInternalOption {

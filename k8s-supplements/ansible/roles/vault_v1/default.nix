@@ -5,7 +5,8 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.vault;
   inherit (lib) mkEnableOption mkOption types;
-  inherit (config.yk8s._lib) mkTopSection;
+  inherit (config.yk8s._lib) mkTopSection logIf;
+  inherit (config.yk8s._lib.types) k8sSize k8sServiceType;
 in {
   options.yk8s.k8s-service-layer.vault = mkTopSection {
     enabled = mkEnableOption ''
@@ -62,9 +63,97 @@ in {
       type = types.int;
       default = 5;
     };
+    init_key_threshold = mkOption {
+      description = ''
+        Threshold for the Shamir's Secret Sharing Scheme used for unsealing, i.e. the
+        number of shares required to unseal the vault after a restart
+        NOTE: On the first run, the unseal keys and the root token will be printed IN
+        PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
+        LOCATION to use the Vault instance in the future!
+      '';
+      type = types.int;
+      default = 2;
+    };
+    scheduling_key = mkOption {
+      description = ''
+        Scheduling key for the vault instance and its resources. Has no default.
+      '';
+      type = with types; nullOr str;
+      default = null;
+    };
+    storage_class = mkOption {
+      description = ''
+        Storage class for the vault file storage backend.
+      '';
+      type = types.str;
+      default = "csi-sc-cinderplugin";
+    };
+    storage_size = mkOption {
+      description = ''
+        Storage size for the vault file storage backend.
+      '';
+      type = k8sSize;
+      default = "8Gi";
+    };
+    external_ingress_issuer_name = mkOption {
+      description = ''
+        If `ingress=True` and `dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use
+        for your ACME service.
+      '';
+      type = with types; nullOr str;
+      default = null;
+    };
+    external_ingress_issuer_kind = mkOption {
+      description = ''
+        Can be `Issuer` or `ClusterIssuer`, depending on the kind of issuer you would like
+        to use for externally facing certificates.
+      '';
+      type = types.strMatching "(Cluster)?Issuer";
+      default = "ClusterIssuer";
+    };
+    enable_backups = mkOption {
+      description = ''
+        If `true`, then an additional backup service will be deployed which creates snapshots and stores
+        them in an S3 bucket.
+      '';
+      type = types.bool;
+      default = true;
+    };
+    s3_config_file = mkOption {
+      description = ''
+        Credentials to access an S3 bucket to which the backups will be written. Required if `enable_backups = true`.
+        You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
+      '';
+      type = types.str;
+      default = "vault_backup_s3_config.yaml";
+    };
+    service_type = mkOption {
+      description = ''
+        Type of the Kubernetes Service of the Vault
+        NOTE: You may set this to LoadBalancer, but note that this will still use the internal certificate.
+        If you want to expose the Vault to the outside world, use the ingress config above.
+      '';
+      type = k8sServiceType;
+      default = "ClusterIP";
+    };
+    active_node_port = mkOption {
+      description = ''
+        Node port to use for the Service which exposes the active Vault instance
+        See NOTE above regarding exposure of the Vault.
+      '';
+      type = types.port;
+      default = 32048;
+    };
   };
   config.yk8s.k8s-service-layer.vault = {
     _ansible_prefix = "yaook_vault_";
     _inventory_path = "all/vault-svc.yaml";
   };
+  config.yk8s._errors =
+    logIf (
+      cfg.ingress
+      && cfg.dnsnames != []
+      && cfg.external_ingress_issuer_name == null
+    )
+    "[k8s-service-layer.vault] If `ingress=True` and `dnsnames` is not empty, you have to set external_ingress_issuer_name";
 }
