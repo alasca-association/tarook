@@ -47,6 +47,8 @@ spec:
             - "--default-fstype=ext4"
 {% if k8s_storage_cinder_enable_topology %}
             - "--feature-gates=Topology=true"
+{% else %}
+            - "--feature-gates=Topology=false"
 {% endif %}
             - "--extra-create-metadata"
             - "--leader-election=true"
