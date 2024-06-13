@@ -13,4 +13,6 @@ k8s_ingress_memory_limit: ""
 k8s_ingress_memory_request: "128Mi"
 k8s_ingress_cpu_limit: ""
 k8s_ingress_cpu_request: "100m"
+
+monitoring_common_labels: {}
 ...

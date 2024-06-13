@@ -43,4 +43,6 @@ monitoring_thanos_retention_resolution_5m: "60d"
 monitoring_thanos_retention_resolution_1h: "180d"
 
 monitoring_prometheus_service_name: "prometheus-operated"
+
+monitoring_common_labels: {}
 ...

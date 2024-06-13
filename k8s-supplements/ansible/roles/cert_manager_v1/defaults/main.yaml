@@ -9,4 +9,6 @@ k8s_cert_manager_letsencrypt_email: null
 k8s_cert_manager_letsencrypt_preferred_chain: ""
 k8s_cert_manager_letsencrypt_ingress: nginx
 k8s_cert_manager_letsencrypt_server: https://acme-v02.api.letsencrypt.org/directory
+
+monitoring_common_labels: {}
 ...
