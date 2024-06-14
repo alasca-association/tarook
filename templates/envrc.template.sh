@@ -74,11 +74,6 @@ export USE_VAULT_IN_DOCKER=false
 KUBECONFIG="$(pwd)/etc/admin.conf"
 export KUBECONFIG
 
-# Optional: Use custom roles that can be dropped into the
-# 'cluster_repository/k8s-custom' folder and executed after
-# after initialization through the included main.yaml
-export K8S_CUSTOM_STAGE_USAGE=true
-
 # Optional: Set this variable to false to init new clusters with the newest commit
 # on the default (devel) branch instead of the latest release.
 # export MANAGED_K8S_LATEST_RELEASE=false

@@ -606,17 +606,15 @@ def main():
     # ---
     # CUSTOM
     # ---
-    # only if custom stage is used
-    if (os.getenv('K8S_CUSTOM_STAGE_USAGE', 'true') == 'true'):
-        print_process_state("CUSTOM")
-        custom_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / "all" / "custom.yaml"
-        )
-        dump_to_ansible_inventory(
-            config.get("custom", dict()),
-            custom_ansible_inventory_path,
-            ""  # don't append prefix, we don't use vars from other sections
-        )
+    print_process_state("CUSTOM")
+    custom_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "custom.yaml"
+    )
+    dump_to_ansible_inventory(
+        config.get("custom", dict()),
+        custom_ansible_inventory_path,
+        ""  # don't append prefix, we don't use vars from other sections
+    )
 
     print(
         "---\n"

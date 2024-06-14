@@ -36,11 +36,19 @@ fi
 run "./$actions_dir/update_inventory.py"
 
 # Migrate custom stage
-if [ -z "${K8S_CUSTOM_STAGE_USAGE:-}" ]; then
-  errorf "Please set K8S_CUSTOM_STAGE_USAGE as environment variable."
-  errorf "Check templates/envrc.template.sh for help"
-fi
-if [ "${K8S_CUSTOM_STAGE_USAGE}" == 'true' ]; then
+if [ -z "${K8S_CUSTOM_STAGE_USAGE:-}" ] || [ "${K8S_CUSTOM_STAGE_USAGE}" == 'false' ]; then
+  mkdir -p "$ansible_k8s_custom_playbook"
+  mkdir -p "$ansible_k8s_custom_playbook/roles"
+
+  if [ ! -f "$ansible_k8s_custom_playbook/main.yaml" ]; then
+      playbook_text="# Add your roles and tasks here:\n"
+      playbook_text+="- hosts: orchestrator\n"
+      playbook_text+="  gather_facts: false\n"
+      playbook_text+="  tasks:\n"
+      playbook_text+="  - ansible.builtin.meta: noop"
+      echo -e "$playbook_text" > "$ansible_k8s_custom_playbook/main.yaml"
+  fi
+else
   if [ -L "k8s-custom/vars/k8s-base-vars" ]; then
     run rm "k8s-custom/vars/k8s-base-vars"
   fi

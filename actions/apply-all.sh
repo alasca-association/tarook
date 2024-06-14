@@ -20,7 +20,7 @@ fi
 # Invoke whole k8s-supplements (including k8s-core)
 run "$actions_dir/apply-k8s-supplements.sh"
 
-# Invoke custom stage
-if [ "${K8S_CUSTOM_STAGE_USAGE:-true}" == 'true' ]; then
+# Invoke custom stage if it exists
+if [ -f "$ansible_k8s_custom_playbook/main.yaml" ]; then
   run "$actions_dir/apply-custom.sh"
 fi
