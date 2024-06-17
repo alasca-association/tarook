@@ -38,7 +38,7 @@ in {
       mtu = mkOption {
         description = "for OpenStack at most 1450";
         type = types.int;
-        default = 1450;
+        default = 1450; # TODO: default to terraform.network_mtu
       };
       encapsulation = mkOption {
         description = ''
