@@ -119,6 +119,18 @@ function init_k8s_cluster_pki_roles() {
         require_cn=false \
         allow_ip_sans=false \
         key_type=rsa
+    vault write "$k8s_pki_path/roles/cluster-admins_admin" \
+        max_ttl="$pki_ttl" \
+        ttl=72h \
+        allow_localhost=false \
+        enforce_hostnames=false \
+        client_flag=true \
+        server_flag=false \
+        organization=kubeadm:cluster-admins \
+        allow_any_name=true \
+        require_cn=false \
+        allow_ip_sans=false \
+        key_type=rsa
     vault write "$k8s_pki_path/roles/system-masters_apiserver" \
         max_ttl="$pki_ttl" \
         ttl="$pki_ttl" \
@@ -178,6 +190,19 @@ function init_k8s_cluster_pki_roles() {
         client_flag=true \
         server_flag=false \
         organization=system:masters \
+        allow_any_name=true \
+        allow_bare_domains=true \
+        allow_subdomains=false \
+        allow_ip_sans=false \
+        key=rsa
+    vault write "$k8s_pki_path/roles/any-cluster-admin" \
+        max_ttl="$pki_ttl" \
+        ttl="72h" \
+        allow_localhost=false \
+        enforce_hostnames=false \
+        client_flag=true \
+        server_flag=false \
+        organization=kubeadm:cluster-admins \
         allow_any_name=true \
         allow_bare_domains=true \
         allow_subdomains=false \
