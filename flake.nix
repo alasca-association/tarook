@@ -1,6 +1,7 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   inputs.flake-parts.url = "github:hercules-ci/flake-parts";
+  inputs.flake-parts-website.url = "github:hercules-ci/flake.parts-website";
 
   outputs = inputs @ {
     self,
@@ -44,8 +45,37 @@
 
         formatter = pkgs.alejandra;
       };
-      flake = {lib, ...}: {
+      imports = [
+        # TODO: import files from [1] via fetchgit
+        # [1] https://github.com/hercules-ci/flake.parts-website/blob/main/flake.nix#L45
+        #         ((fetchGit {
+        #   url = "git@github.com:my-secret/repository.git";
+        #   ref = "master";
+        #   rev = "adab8b916a45068c044658c4158d81878f9ed1c3";
+        # }) + "/render/render-module.nix")
+        inputs.flake-parts-website.flakeModules.empty-site
+      ];
+      flake = {lib, ...}: rec {
         flakeModules.yk8s = import ./nix/module;
+        flakeModules.default = flakeModules.yk8s;
+        flakeModule = flakeModules.default;
+        perSystem = {
+          config,
+          self',
+          inputs',
+          pkgs,
+          system,
+          ...
+        }: {
+          render.inputs.yk8s = {
+            sourcePath = ./nix/module;
+            baseUrl = "https://github.com/foo/my-flake-module/blob/main";
+            intro = ''
+              My private flake-parts module, with docs rendered here.
+            '';
+          };
+        };
+
         lib = rec {
           importTOML = file: fromTOML (builtins.readFile file);
           importYAML = pkgs: file: let
