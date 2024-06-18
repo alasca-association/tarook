@@ -32,7 +32,6 @@ ALLOWED_TOP_LEVEL_SECTIONS = (
 SECTION_VARIABLE_PREFIX_MAP = {
     "rook": "rook",
     "prometheus": "monitoring",
-    "ingress": "k8s_ingress",
 }
 
 
@@ -355,19 +354,6 @@ def main():
         kubernetes_service_monitoring_ansible_inventory_path,
         SECTION_VARIABLE_PREFIX_MAP.get("prometheus", ""),
         ["common_labels"],
-    )
-
-    # ---
-    # INGRESS
-    # ---
-    print_process_state("INGRESS")
-    kubernetes_service_ingress_ansible_inventory_path = (
-        ANSIBLE_INVENTORY_BASEPATH / "all" / "ingress.yaml"
-    )
-    dump_to_ansible_inventory(
-        config["k8s-service-layer"].get("ingress"),
-        kubernetes_service_ingress_ansible_inventory_path,
-        SECTION_VARIABLE_PREFIX_MAP.get("ingress", ""),
     )
 
     # ---

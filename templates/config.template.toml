@@ -320,55 +320,6 @@ use_helm = true
 
 # ANCHOR_END: ksl_prometheus_configuration
 
-# ANCHOR: ksl_ingress_configuration
-# --- KUBERNETES SERVICE LAYER : INGRESS ---
-# ansible prefix: "k8s_ingress_"
-[k8s-service-layer.ingress]
-# Enable nginx-ingress management.
-enabled = false # •ᴗ•
-
-# Namespace to deploy the ingress in (will be created if it does not exist, but
-# never deleted).
-#namespace = "k8s-svc-ingress"
-
-# If enabled, choose whether to install or uninstall the ingress. IF SET TO
-# FALSE, THE INGRESS CONTROLLER WILL BE DELETED WITHOUT CHECKING FOR
-# DISRUPTION.
-#install = true
-
-# Scheduling key for the cert manager instance and its resources. Has no
-# default.
-#scheduling_key =
-
-# Service type for the frontend Kubernetes service.
-#service_type = "LoadBalancer"
-
-# Node port for the HTTP endpoint
-#nodeport_http = 32080
-
-# Node port for the HTTPS endpoint
-#nodeport_https = 32443
-
-# Enable SSL passthrough in the controller
-#enable_ssl_passthrough = true
-
-# Replica Count
-#replica_count = 1
-
-# Allow snippet annotations
-#ingress_allow_snippet_annotations = false
-
-# Recommended memory and CPU requests and limits for the Pod.
-# For security reasons, a limit is strongly recommended and
-# has a direct impact on the security of the cluster,
-# for example to prevent a DoS attack.
-#memory_limit = ""
-#memory_request = "128Mi"
-#cpu_limit = ""
-#cpu_request = "100m"
-
-# ANCHOR_END: ksl_ingress_configuration
-
 # ANCHOR: wireguard_config
 # --- WIREGUARD ---
 # ansible prefix: "wg_"
