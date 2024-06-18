@@ -202,6 +202,8 @@ variable "worker_defaults" {
 
     'root_disk_size' and 'root_disk_volume_type' only apply if 'create_root_disk_on_volume=true'.
     If 'root_disk_volume_type' is left empty the default of the IaaS environment will be used.
+
+    Leaving 'anti_affinity_group_name' empty means to not join any anti affinity group
   EOT
 
   type = object({              # --- template spec ---
@@ -209,16 +211,13 @@ variable "worker_defaults" {
     flavor                     = optional(string, "M")
     root_disk_size             = optional(number, 50)
     root_disk_volume_type      = optional(string, "")
-    join_anti_affinity_group   = optional(bool, false)
-    anti_affinity_group_name   = optional(string, "cah-anti-affinity")
+    anti_affinity_group_name   = optional(string)
   })
   default = {                  # --- default template ---
     image                      = "Ubuntu 22.04 LTS x64"
     flavor                     = "M"
     root_disk_size             = 50
     root_disk_volume_type      = ""
-    join_anti_affinity_group   = false
-    anti_affinity_group_name   = "cah-anti-affinity"
   }
 
   validation {
@@ -228,7 +227,11 @@ variable "worker_defaults" {
 }
 
 variable "workers" {
-  description = "User defined list of worker nodes to be created with specified values"
+  description = <<-EOT
+    User defined list of worker nodes to be created with specified values
+
+    Leaving 'anti_affinity_group_name' empty means to not join any anti affinity group
+  EOT
 
   type = map(
     object({
@@ -237,7 +240,7 @@ variable "workers" {
       az                       = optional(string)
       root_disk_size           = optional(number)
       root_disk_volume_type    = optional(string)
-      join_anti_affinity_group = optional(bool)
+      anti_affinity_group_name = optional(string)
     })
   )
   default = {  # default: create 4 worker nodes

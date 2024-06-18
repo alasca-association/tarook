@@ -9,7 +9,7 @@ locals {
           volume_name              = "${var.cluster_name}-worker-volume-${name}"
           root_disk_size           = coalesce(values.root_disk_size, var.worker_defaults.root_disk_size)
           root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.worker_defaults.root_disk_volume_type
-          join_anti_affinity_group = coalesce(values.join_anti_affinity_group, var.worker_defaults.join_anti_affinity_group)
+          anti_affinity_group_name = values.anti_affinity_group_name != null ? values.anti_affinity_group_name : var.worker_defaults.anti_affinity_group_name
         }
   }
 }
@@ -34,9 +34,12 @@ resource "openstack_networking_port_v2" "worker" {
   port_security_enabled = false
 }
 
-# server groups ought to be cheap so let's create one regardless of whether it's used or not
 resource "openstack_compute_servergroup_v2" "server_group" {
-  name = var.worker_anti_affinity_group_name
+  for_each = toset(distinct(
+               [for k, v in local.worker_nodes :
+                v.anti_affinity_group_name if v.anti_affinity_group_name != null]
+             ))
+  name = each.key
   policies = ["anti-affinity"]
 }
 
@@ -81,9 +84,9 @@ resource "openstack_compute_instance_v2" "worker" {
   dynamic scheduler_hints {
     # Abusing 'for_each' as a conditional
     # It's not working as a loop. The outer `each.key` is "passed" into the inner `for_each`
-    for_each = local.workers[each.key].join_anti_affinity_group == true ? [each.key] : []
+    for_each = each.value.anti_affinity_group_name != null ? [each.key] : []
       content {
-        group = openstack_compute_servergroup_v2.server_group.id
+        group = openstack_compute_servergroup_v2.server_group[each.value.anti_affinity_group_name].id
       }
   }
 

@@ -74,8 +74,7 @@ dualstack_support = false # "•ᴗ•"
 #flavor                     = "M"
 #root_disk_size             = 50
 #root_disk_volume_type      = ""  # == default volume type in IaaS environment
-#join_anti_affinity_group   = false
-#anti_affinity_group_name   = "cah-anti-affinity"
+##anti_affinity_group_name        # == <unset>: don't join any group
 #
 # Master nodes to be created
 #[terraform.masters.0]
