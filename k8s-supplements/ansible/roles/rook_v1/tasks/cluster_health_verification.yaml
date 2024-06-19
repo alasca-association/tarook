@@ -1,5 +1,0 @@
----
-- name: Include health verification
-  ansible.builtin.include_role:
-    name: common/rook-health-verification
-...

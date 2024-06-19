@@ -4,14 +4,11 @@
   gather_facts: false
   vars_files:
   - vars/retries.yaml
+  - vars/monitoring.yaml
+  - vars/disruption.yaml
   roles:
-  - role: rook_v1
-    when: k8s_storage_rook_enabled | bool and not (rook_use_helm | default(True))
-    tags:
-    - rook_v1
-    - rook
   - role: rook_v2
-    when: (k8s_storage_rook_enabled | bool) and (rook_use_helm | default(True))
+    when: k8s_storage_rook_enabled | bool
     tags:
     - rook_v2
     - rook
