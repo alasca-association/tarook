@@ -1,6 +1,8 @@
 ---
 - name: Provide CA certificates as ConfigMap
   run_once: true
+  tags:
+  - renew-pki
   block:
   - name: Get certificate authority data
     include_tasks: get-certificate-authority-data.yaml

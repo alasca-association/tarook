@@ -11,6 +11,7 @@
     - /etc/vault/role-id
   register: cat_role_id
   changed_when: false
+  tags: always
 
 - name: Read secret-id
   become: true
@@ -24,8 +25,10 @@
     - /etc/vault/secret-id
   register: cat_secret_id
   changed_when: false
+  tags: always
 
 - name: Set credentials
   set_fact:
     vault_node_role_id: "{{ cat_role_id.stdout }}"
     vault_node_secret_id: "{{ cat_secret_id.stdout }}"
+  tags: always
