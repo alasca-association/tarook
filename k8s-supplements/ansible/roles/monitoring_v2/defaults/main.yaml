@@ -25,8 +25,8 @@ monitoring_use_thanos: false
 
 monitoring_grafana_admin_secret_name: "cah-grafana-admin"
 
-monitoring_prometheus_stack_version: "48.1.1"
-monitoring_prometheus_adapter_version: "4.2.0"
+monitoring_prometheus_stack_version: "59.1.0"
+monitoring_prometheus_adapter_version: "4.10.0"
 
 monitoring_grafana_persistent_storage_class: ""
 
