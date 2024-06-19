@@ -125,4 +125,6 @@ rook_ceph_release_map:
 
 supported_rook_releases: "{{ rook_ceph_release_map | map(attribute='rook_release') }}"
 supported_ceph_releases: "{{ rook_ceph_release_map | selectattr('rook_release', 'equalto', rook_conf_maj_min_version) | map(attribute='supported_ceph_releases') | flatten }}"
+
+monitoring_common_labels: {}
 ...

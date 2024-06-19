@@ -21,4 +21,6 @@ yaook_vault_s3_config_file: "vault_backup_s3_config.yaml"
 yaook_vault_backup_approle_path: "yaook/vault_v1/approle/"
 yaook_vault_service_type: "{{ yaook_vault_management_cluster_integration | ternary('NodePort', 'ClusterIP') }}"
 yaook_vault_service_active_node_port: 32048
+
+monitoring_common_labels: {}
 ...

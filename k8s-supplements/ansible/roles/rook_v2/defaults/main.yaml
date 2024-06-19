@@ -56,4 +56,6 @@ rook_skip_upgrade_checks: false
 rook_helm_release_name_operator: "rook-ceph"
 rook_helm_release_name_cluster: "rook-ceph-cluster"
 rook_dashboard: false
+
+monitoring_common_labels: {}
 ...

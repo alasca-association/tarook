@@ -4,7 +4,6 @@
   gather_facts: false
   vars_files:
   - vars/retries.yaml
-  - vars/monitoring.yaml
   roles:
   - role: rook_v1
     when: k8s_storage_rook_enabled | bool and not (rook_use_helm | default(True))
