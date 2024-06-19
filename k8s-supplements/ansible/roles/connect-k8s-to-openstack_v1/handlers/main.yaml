@@ -31,15 +31,4 @@
     - "rollout"
     - "restart"
     - "daemonset.apps/csi-cinder-nodeplugin"
-
-- name: restart octavia-ingress-controller  # noqa no-changed-when
-  ansible.builtin.command:
-  args:
-    argv:
-    - "kubectl"
-    - "-n"
-    - "kube-system"
-    - "rollout"
-    - "restart"
-    - "statefulset.apps/octavia-ingress-controller"
 ...
