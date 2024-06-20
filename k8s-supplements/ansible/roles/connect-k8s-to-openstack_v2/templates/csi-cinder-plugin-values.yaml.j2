@@ -1,0 +1,13 @@
+storageClass:
+  enabled: false
+secret:
+  enabled: true
+  create: false
+  name: cloud-config
+csi:
+  provisioner:
+    topology: "false"
+  plugin:
+    nodePlugin:
+      dnsPolicy: ClusterFirst
+      priorityClassName: system-node-critical

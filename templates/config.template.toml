@@ -1075,6 +1075,13 @@ wireguard_on_workers = false
 # because there might be situations where the CCM should not pick the managed network.
 #openstack_network_name = "managed-k8s-network"
 
+# Use the helm chart to deploy the CCM and the cinder csi plugin.
+# If openstack_connect_use_helm is false the deployment will be done with the help
+# of the deprecated manifest code.
+# This will be enforced for clusters with Kubernetes >= v1.29 and
+# the depricated manifest code will be dropped along with Kubernetes v1.28
+#openstack_connect_use_helm = true
+
 # Value for the kernel parameter `vm.max_map_count` on k8s worker nodes. Modifications
 # might be required depending on the software running on the nodes (e.g., ElasticSearch).
 # If you leave the value commented out you're fine and the system's default will be kept.

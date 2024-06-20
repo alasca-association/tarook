@@ -1,0 +1,20 @@
+cloudConfig:
+  global:
+    region: {{ lookup('env', 'OS_REGION_NAME') | to_yaml }}
+    auth-url: {{ lookup('env', 'OS_AUTH_URL') | to_yaml }}
+    auth-type: {{ lookup('env', 'OS_AUTH_TYPE') | to_yaml }}
+    application-credential-id: {{ lookup('env', 'OS_APPLICATION_CREDENTIAL_ID') | to_yaml }}
+    application-credential-secret: {{ lookup('env', 'OS_APPLICATION_CREDENTIAL_SECRET') | to_yaml }}
+    username: {{ lookup('env','OS_USERNAME') | to_yaml }}
+    password: {{ lookup('env','OS_PASSWORD') | to_yaml }}
+    user-domain-name: {{ lookup('env', 'OS_USER_DOMAIN_NAME') | to_yaml }}
+    tenant-name: {{ lookup('env', 'OS_PROJECT_NAME') | to_yaml }}
+    tenant-domain-id: {{ lookup('env', 'OS_PROJECT_DOMAIN_ID') | to_yaml }}
+  loadBalancer:
+    enabled: false
+cluster:
+  name: {{ cluster_name | default('managed-k8s') | to_json }}
+secret:
+  enabled: true
+  create: false
+  name: cloud-config
