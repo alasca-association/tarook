@@ -197,6 +197,8 @@ Environment Variable        Default                 Description
                                                     ``wg0``, ``wg-k8s-dev``.
                                                     This variable is used by the
                                                     ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
+``wg_endpoint``             ``0``                   The ID of the wireguard endpoint to use when connecting
+                                                    to the VPN, as defined in ``config.toml`` at ``wireguard.endpoints``.
 ``wg_private_key_file``     ``"$(pwd)/../privkey"`` Path to your WireGuard private key
                                                     file. This is not copied to any
                                                     remote machine, but needed to
