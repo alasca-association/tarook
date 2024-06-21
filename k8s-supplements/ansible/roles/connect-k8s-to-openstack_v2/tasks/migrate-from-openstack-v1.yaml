@@ -18,7 +18,6 @@
     - ["v1", "ServiceAccount", "cloud-controller-manager", "openstack-cloud-controller-manager"]
     - ["v1", "ServiceAccount", "csi-cinder-controller-sa", "cinder-csi"]
     - ["v1", "ServiceAccount", "csi-cinder-node-sa", "cinder-csi"]
-    - ["v1", "Deployment", "csi-cinder-controllerplugin", "cinder-csi"]
 
 - name: Migrate ClusterRoles
   block:
