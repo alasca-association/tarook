@@ -9,6 +9,7 @@ hidden: true
 upgrading-kubernetes
 increase-cluster-cidr
 restore-certificate-signing-ability
+super-admin
 ```
 
 ::::{grid} 2
@@ -25,6 +26,10 @@ restore-certificate-signing-ability
 ::::{grid} 2
 :::{grid-item-card} Restoring Kubernetes' certificate signing ability
 :link: /user/guide/kubernetes/restore-certificate-signing-ability
+:link-type: doc
+:::
+:::{grid-item-card} Generate a super admin kubeconfig
+:link: /user/guide/kubernetes/super-admin
 :link-type: doc
 :::
 ::::
