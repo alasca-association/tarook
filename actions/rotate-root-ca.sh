@@ -56,6 +56,9 @@ python3 "$actions_dir/update_inventory.py"
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"
 
+# Get a new kubeconfig
+run "$actions_dir/k8s-login.sh"
+
 pushd "$ansible_k8s_core_dir"
 ansible_playbook -i "$ansible_inventory_host_file" \
   -e "append_next_issuer=${next_issuer:-false}" \
