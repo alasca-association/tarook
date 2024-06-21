@@ -30,6 +30,10 @@ pki_root_ttl=43830h
 
 case "$action" in
     "prepare")
+    # Require permission when Kubernetes cluster CA backup is going to be destroyed
+    # by generate_ca_issuer()
+    require_k8s_cluster_ca_backup_destruction
+
     generate_ca_issuer "$pki_root_ttl" "next"
     init_k8s_cluster_pki_roles "$k8s_pki_path" "$pki_ttl"
     init_k8s_etcd_pki_roles "$etcd_pki_path" "$pki_ttl"

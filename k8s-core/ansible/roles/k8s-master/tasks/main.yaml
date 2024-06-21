@@ -59,6 +59,89 @@
   - /etc/kubernetes/pki/etcd
   - /var/lib/kubelet/pki
 
+- name: Ensure availability of Kubernetes cluster root CA key in Vault
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  environment:
+    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+  block:
+  - name: "Check availability of CA key in Vault: Fetch key"
+    no_log: true  # prevent private key from being exposed
+    community.hashi_vault.vault_kv2_get:
+      path: k8s-pki/cluster-root-ca
+      engine_mount_point: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv"
+      auth_method: approle
+      mount_point: "{{ vault_nodes_approle }}"
+      role_id: "{{ vault_role_id }}"
+      secret_id: "{{ vault_secret_id }}"
+      token_validate: false
+    register: get_ca_key
+    ignore_errors: true
+
+  - ansible.builtin.set_fact:
+      k8s_ca_key_avail_in_vault: >
+        {{ (get_ca_key is success)
+           and ((get_ca_key.data.data.private_key | default("")) != "") }}
+
+  - name: "Print availability of CA key in Vault"
+    debug:
+      msg: >
+        Kubernetes cluster root CA key is
+        {{ k8s_ca_key_avail_in_vault | ternary('', 'un') }}available in Vault
+        and should be
+        {{ k8s_controller_manager_enable_signing_requests | ternary('', 'un') }}available
+        because Kubernetes certificate signing is
+        {{ k8s_controller_manager_enable_signing_requests | ternary('en', 'dis') }}abled.
+
+  - name: "Ensure CA key is unavailable in Vault when signing requests are disabled"
+    when: not k8s_controller_manager_enable_signing_requests
+    block:
+    # NOTE: We don't require explicit consent here as the deletion is not
+    #       actually destructive. Users are able to undelete.
+    - name: "Ensure CA key is unavailable in Vault: Delete key"
+      no_log: true  # prevent private key from being exposed
+      # NOTE: We only attempt to delete when there is actually something to delete
+      #       so that a Vault root token only needs to be present in this case.
+      when: k8s_ca_key_avail_in_vault
+      community.hashi_vault.vault_kv2_delete:
+        path: k8s-pki/cluster-root-ca
+        engine_mount_point: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv"
+        # NOTE: Because the Vault role 'k8s-control-plane' is not allowed to
+        #       delete the CA key in Vault, we need to use the priviledges of
+        #       the caller. Currently it must insert a Vault root token here.
+        auth_method: "{{ vault_caller_auth_method }}"
+        mount_point: "{{ vault_caller_auth_mount_point }}"
+        token: "{{ vault_caller_token }}"
+        role_id: "{{ vault_caller_role_id }}"
+        secret_id: "{{ vault_caller_secret_id }}"
+        token_validate: false
+    rescue:
+    - name: "Ensure CA key is unavailable in Vault: Hint failure reason"
+      ansible.builtin.fail:
+        msg: |
+          Vault root token required!
+          Disabling Kubernetes signing requests entails the removal of the
+          Kubernetes cluster CA key from Vault's key-value store.
+          This is done by the orchestrator and requires a Vault root token.
+
+  - name: "Ensure CA key is available in Vault when signing requests are enabled"
+    when: k8s_controller_manager_enable_signing_requests
+    block:
+    - name: "Require CA key to be available in Vault"
+      ansible.builtin.fail:  # noop task, lookup is already done above
+      # NOTE: ansible.builtin.meta: noop supports no conditionals
+      failed_when: not k8s_ca_key_avail_in_vault
+    rescue:
+    - name: "Require CA key to be available in Vault: Hint failure reason"
+      ansible.builtin.fail:
+        msg: |
+          Manual intervention required!
+          Enabling Kubernetes signing requests requires the CA key to be
+          available in Vault's key-value store at 'k8s-pki/cluster-root-ca'.
+          This is done either by running the rotate-root-ca action or manual
+          upload of an externally available copy of the current CA key.
+
+# NOTE: Must come after the Vault CA key availability check
 - name: Obtain CAs
   include_tasks: obtain-cas.yaml
 
@@ -74,25 +157,8 @@
     state: absent
     path: /etc/kubernetes/pki/{{ item }}
   loop:
-  - ca.key
   - front-proxy-ca.key
   - etcd/ca.key
-
-- name: Ensure kube-controller-manager client cert flags are unset
-  become: true
-  when: local_kube_apiserver_status is not failed
-  block:
-  - name: Ensure cluster-signing-cert-file is unset
-    ansible.builtin.replace:
-      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-      regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
-      replace: '\1'
-
-  - name: Ensure --cluster-signing-key-file is unset
-    ansible.builtin.replace:
-      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-      regexp: '^(\s*-\s*--cluster-signing-key-file=).*'
-      replace: '\1'
 
 - name: Ensure that /var/lib/etcd exists
   become: true
@@ -120,9 +186,47 @@
       group: root
       mode: 0600
 
-  - name: Run kubeadm init  # noqa no-changed-when
-    # XXX: ansible command module does not support setting the umask
-    ansible.builtin.shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
+  - name: Run kubeadm init
+    block:
+    # WORKAROUND: As of kubeadm 1.28.1 only RSA and ECDSA are supported as
+    #             algorithms for the Kubernetes cluster root CA key.
+    #             Because we are using ED25519 CA keys, we prevent ca.key from
+    #             feeding into kubeadm by temporarily renaming it.
+    - name: Hide Kubernetes cluster root CA key before kubeadm init
+      # NOTE: Ansible does not support renaming files
+      block:
+      - ansible.builtin.stat:
+          path: /etc/kubernetes/pki/ca.key
+        register: k8s_ca_key_file
+      - when: k8s_ca_key_file.stat.exists
+        block:
+        - ansible.builtin.copy:
+            remote_src: true
+            src: "{{ k8s_ca_key_file.stat.path }}"
+            dest: "{{ k8s_ca_key_file.stat.path }}.bak~"
+            mode: preserve
+          register: k8s_ca_key_file_backup
+        - ansible.builtin.file:
+            path: "{{ k8s_ca_key_file.stat.path }}"
+            state: absent
+          register: k8s_ca_key_file_hidden
+
+    - name: Run kubeadm init  # noqa no-changed-when
+      # XXX: ansible command module does not support setting the umask
+      ansible.builtin.shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
+
+    - name: Unhide Kubernetes cluster root CA key after kubeadm init
+      when: k8s_ca_key_file_hidden is not skipped
+      # NOTE: Ansible does not support renaming files
+      block:
+      - ansible.builtin.copy:
+          remote_src: true
+          src: "{{ k8s_ca_key_file_backup.dest }}"
+          dest: "{{ k8s_ca_key_file_backup.src }}"
+          mode: preserve
+      - ansible.builtin.file:
+          path: "{{ k8s_ca_key_file_backup.dest }}"
+          state: absent
 
   - name: Remove kubeadm-init-config.yaml
     ansible.builtin.file:
@@ -154,14 +258,77 @@
       group: root
       mode: 0600
 
-  - name: Join the existing cluster as another control plane node  # noqa no-changed-when
-    # XXX: ansible command module does not support setting the umask
-    ansible.builtin.shell: "umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml"
+  - name: Join the existing cluster as another control plane node
+    block:
+    # WORKAROUND: As of kubeadm 1.28.1 only RSA and ECDSA are supported as
+    #             algorithms for the Kubernetes cluster root CA key.
+    #             Because we are using ED25519 CA keys, we prevent ca.key from
+    #             feeding into kubeadm by temporarily renaming it.
+    - name: Hide Kubernetes cluster root CA key before kubeadm join
+      # XXX: Ansible does not support renaming files
+      block:
+      - ansible.builtin.stat:
+          path: /etc/kubernetes/pki/ca.key
+        register: k8s_ca_key_file
+      - when: k8s_ca_key_file.stat.exists
+        block:
+        - ansible.builtin.copy:
+            remote_src: true
+            src: "{{ k8s_ca_key_file.stat.path }}"
+            dest: "{{ k8s_ca_key_file.stat.path }}.bak~"
+            mode: preserve
+          register: k8s_ca_key_file_backup
+        - ansible.builtin.file:
+            path: "{{ k8s_ca_key_file.stat.path }}"
+            state: absent
+          register: k8s_ca_key_file_hidden
+
+    - name: Join the existing cluster as another control plane node  # noqa no-changed-when
+      # XXX: ansible command module does not support setting the umask
+      ansible.builtin.shell: umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml
+
+    - name: Unhide Kubernetes cluster root CA key after kubeadm join
+      when: k8s_ca_key_file_hidden is not skipped
+      # XXX: Ansible does not support renaming files
+      block:
+      - ansible.builtin.copy:
+          remote_src: true
+          src: "{{ k8s_ca_key_file_backup.dest }}"
+          dest: "{{ k8s_ca_key_file_backup.src }}"
+          mode: preserve
+      - ansible.builtin.file:
+          path: "{{ k8s_ca_key_file_backup.dest }}"
+          state: absent
 
   - name: Remove kubeadm-join-config.yaml
     ansible.builtin.file:
       path: /tmp/kubeadm-join-config.yaml
       state: absent
+
+- name: Ensure presence of Kubernetes cluster root CA key on control plane
+  become: true
+  block:
+  - name: Ensure CA key file is present/absent
+    ansible.builtin.file:
+      state: "{{ k8s_controller_manager_enable_signing_requests | ternary('file', 'absent') }}"
+      path: /etc/kubernetes/pki/ca.key
+      mode: 0400
+
+  # NOTE: Must come after the node has joined the control plane
+  - name: Ensure kube-controller-manager client cert flags are (un)set
+    block:
+    - name: Ensure cluster-signing-cert-file is (un)set
+      ansible.builtin.replace:
+        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+        regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
+        replace: "{{ k8s_controller_manager_enable_signing_requests | ternary('\\1/etc/kubernetes/pki/ca.crt', '\\1') }}"
+
+    # NOTE: Must come after the node has joined the control plane
+    - name: Ensure --cluster-signing-key-file is (un)set
+      ansible.builtin.replace:
+        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+        regexp: '^(\s*-\s*--cluster-signing-key-file=).*'
+        replace: "{{ k8s_controller_manager_enable_signing_requests | ternary('\\1/etc/kubernetes/pki/ca.key', '\\1') }}"
 
 - name: Login to the Kubernetes cluster as orchestrator
   ansible.builtin.include_role:

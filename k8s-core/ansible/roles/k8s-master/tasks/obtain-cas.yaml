@@ -90,6 +90,34 @@
       mode: ugo=r
       content: "{{ k8s_ca_cert if not extra_ca else ([k8s_prev_ca_cert, k8s_ca_cert] | join('')) }}"
 
+  - name: Copy Kubernetes cluster root CA key from Vault
+    when: k8s_controller_manager_enable_signing_requests
+    no_log: true  # prevent private_key from being exposed
+    block:
+    - name: Fetch Kubernetes cluster root CA key from Vault
+      delegate_to: "{{ groups['orchestrator'] | first }}"
+      community.hashi_vault.vault_kv2_get:
+        auth_method: approle
+        mount_point: "{{ vault_nodes_approle }}"
+        engine_mount_point: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv"
+        path: k8s-pki/cluster-root-ca
+        role_id: "{{ vault_role_id }}"
+        secret_id: "{{ vault_secret_id }}"
+        token_validate: false
+      register: get_ca_key
+      failed_when: >
+        (get_ca_key is failed)
+        or ((get_ca_key.data.data.private_key | default("")) == "")
+
+    - name: Write Kubernetes cluster root CA key
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/kubernetes/pki/ca.key
+        owner: "{{ kubeconfig_owner | default('root') }}"
+        group: "{{ kubeconfig_group | default(kubeconfig_owner | default('root')) }}"
+        mode: u=r,go-rwx
+        content: "{{ get_ca_key.data.data.private_key }}"
+
   - name: Write k8s front proxy CA file
     become: true
     ansible.builtin.copy:
