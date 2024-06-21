@@ -61,36 +61,8 @@
       tags:
         - renew-pki
 
-- name: Upgrade the first master node
-  hosts: masters[0]
-  gather_facts: true
-  any_errors_fatal: true
-  vars_files:
-    - vars/disruption.yaml
-    - vars/retries.yaml
-    - vars/etc.yaml
-    - vars/auto_generated_preamble.yaml
-  tags:
-    - kubeadm-first-master
-  roles:
-    - role: cluster-health-verification
-      delegate_to: "{{ groups['orchestrator'] | first }}"
-      when: not (k8s_skip_upgrade_checks | bool) and not (k8s_upgrade_done | default(False))
-    - role: kubeadm-drain-node
-      when: "not (k8s_upgrade_done | default(False))"
-    - role: update-system
-      when: "not (k8s_upgrade_done | default(False))"
-    - role: kubeadm-upgrade-kubeadm
-      when: "not (k8s_upgrade_done | default(False))"
-    - role: kubeadm-patches
-      when: "not (k8s_upgrade_done | default(False))"
-    - role: kubeadm-upgrade-apply
-      when: "not (k8s_upgrade_done | default(False))"
-    - role: kubeadm-uncordon-node
-      when: "not (k8s_upgrade_done | default(False))"
-
-- name: Upgrade the residual master nodes
-  hosts: masters[1:]
+- name: Upgrade all but last master nodes
+  hosts: masters[:-1]
   gather_facts: true
   serial: 1
   any_errors_fatal: true
@@ -113,6 +85,34 @@
     - role: kubeadm-patches
       when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-upgrade-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - role: kubeadm-uncordon-node
+      when: "not (k8s_upgrade_done | default(False))"
+
+- name: Upgrade the last master node
+  hosts: masters[-1]
+  gather_facts: true
+  any_errors_fatal: true
+  vars_files:
+    - vars/disruption.yaml
+    - vars/retries.yaml
+    - vars/etc.yaml
+    - vars/auto_generated_preamble.yaml
+  tags:
+    - kubeadm-first-master
+  roles:
+    - role: cluster-health-verification
+      delegate_to: "{{ groups['orchestrator'] | first }}"
+      when: not (k8s_skip_upgrade_checks | bool) and not (k8s_upgrade_done | default(False))
+    - role: kubeadm-drain-node
+      when: "not (k8s_upgrade_done | default(False))"
+    - role: update-system
+      when: "not (k8s_upgrade_done | default(False))"
+    - role: kubeadm-upgrade-kubeadm
+      when: "not (k8s_upgrade_done | default(False))"
+    - role: kubeadm-patches
+      when: "not (k8s_upgrade_done | default(False))"
+    - role: kubeadm-upgrade-apply
       when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-uncordon-node
       when: "not (k8s_upgrade_done | default(False))"
