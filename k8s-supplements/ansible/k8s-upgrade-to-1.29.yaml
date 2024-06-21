@@ -7,13 +7,6 @@
 - name: Upgrade Kubernetes nodes
   import_playbook: "{{ ansible_k8s_core_dir }}/upgrade-k8s.yaml"
 
-- name: Force renewal Kubernetes client certificate
-  import_playbook: "{{ ansible_k8s_core_dir }}/rotate-kubeconfigs.yaml"
-  vars:
-    k8s_version_minor: '{{ next_k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") }}'
-    force_renewal: true
-  when: k8s_version is version('1.29', '<')
-
 - name: Overwrite "k8s_version"
   hosts: all
   gather_facts: false
