@@ -13,6 +13,7 @@ hide-doc: true
 .. toctree::
     :hidden:
 
+    Releases <https://gitlab.com/yaook/k8s/-/releases>
     releasenotes
 
 .. toctree::
