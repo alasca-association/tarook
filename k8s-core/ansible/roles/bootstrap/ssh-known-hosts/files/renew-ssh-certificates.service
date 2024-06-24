@@ -1,0 +1,10 @@
+[Unit]
+Description=Renew SSH certificates from vault
+
+[Service]
+Type=oneshot
+RemainAfterExit=false
+User=root
+Group=root
+EnvironmentFile=/etc/vault/config
+ExecStart=/bin/bash /var/lib/yaook-k8s/get-ssh-cert.sh

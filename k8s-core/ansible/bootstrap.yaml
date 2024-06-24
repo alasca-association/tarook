@@ -65,14 +65,4 @@
     until: update_apt is not failed
     retries: "{{ network_error_retries }}"
     delay: "{{ network_error_delay }}"
-
-- name: Harden SSH
-  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
-  become: true
-  vars_files:
-  - vars/ssh-hardening.yaml
-  roles:
-  # https://github.com/dev-sec/ansible-collection-hardening/
-  - role: devsec.hardening.ssh_hardening
-    tags: harden-ssh
 ...

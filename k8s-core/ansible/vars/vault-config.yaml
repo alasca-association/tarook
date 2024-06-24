@@ -10,4 +10,8 @@ vault_caller_auth_method: "{{ lookup('env', 'VAULT_METHOD') or (lookup('env', 'V
 vault_caller_token: "{{ lookup('env', 'VAULT_TOKEN') }}"
 vault_caller_role_id: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
 vault_caller_secret_id: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
+
+# USE_VAULT_IN_DOCKER is not set in the CI,
+# therefore we need to additionally check for the CI-specific URL
+use_vault_in_docker: "{{ true if (lookup('env', 'VAULT_ADDR') == 'https://yaook-vault:8200') else (lookup('env', 'USE_VAULT_IN_DOCKER') | default(false)) | bool }}"
 ...

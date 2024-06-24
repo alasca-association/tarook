@@ -1,0 +1,17 @@
+---
+- name: Gather all public keys
+  become: true
+  find:
+    paths: /etc/ssh
+    recurse: false
+    file_type: file
+    patterns: "ssh_host_*_key.pub"
+    use_regex: false
+  register: pub_key_files
+
+- name: Sign SSH host key
+  vars:
+    host_key_path: "{{ item }}"
+  include_tasks: sign-host-key.yaml
+  loop: "{{ pub_key_files.files | selectattr('path', 'defined') | map(attribute='path') }}"
+...

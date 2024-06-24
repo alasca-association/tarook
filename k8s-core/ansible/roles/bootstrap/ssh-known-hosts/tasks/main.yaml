@@ -8,19 +8,45 @@
     state: directory
     mode: 0755
 
-# TODO: do not use shell but proper ansible
-# TODO: ssh-keygen -F might be preferable in case the entry is hashed
-- name: Ensure host is in known_hosts file
+- name: Deploy automation
+  when: not use_vault_in_docker
+  include_tasks: deploy-automation.yaml
+
+- name: Manual renewal
+  when: use_vault_in_docker
+  include_tasks: manual-renewal.yaml
+
+- name: Write SSH CA to etc directory
   delegate_to: "{{ groups['orchestrator'] | first }}"
-  become: false
-  ansible.builtin.shell: |
-    if ! grep -q '^{{ ansible_host }}' {{ ssh_known_hosts_file }}; then
-      ssh-keyscan {{ ansible_host }} >> {{ ssh_known_hosts_file }};
-    fi
-  changed_when: false  # TODO: this could be made proper...
+  run_once: true
+  block:
+  - name: Read SSH CA from Vault
+    environment:
+      ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+      ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+    community.hashi_vault.vault_read:
+      path: "yaook/{{ vault_cluster_name }}/ssh-ca/config/ca"
+      mount_point: "{{ vault_caller_auth_mount_point }}"
+      auth_method: "{{ vault_caller_auth_method }}"
+      token: "{{ vault_caller_token }}"
+      role_id: "{{ vault_caller_role_id }}"
+      secret_id: "{{ vault_caller_secret_id }}"
+      token_validate: false
+    register: ssh_ca_vault
+
+  - name: Write SSH CA to etc directory
+    template:
+      dest: "{{ ssh_known_hosts_file }}"
+      src: "ssh_known_hosts.j2"
+      mode: 0640
 
 - name: Test the connection
   become: false
   ansible.builtin.raw: "/bin/true"
   changed_when: false
+
+- name: Set fact that we're onboarded
+  set_fact:
+    node_ssh_onboarded: true
+    cacheable: true
 ...

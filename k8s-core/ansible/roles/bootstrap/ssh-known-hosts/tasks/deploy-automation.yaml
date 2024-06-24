@@ -1,0 +1,54 @@
+---
+- name: Install dependencies
+  become: true
+  package:
+    name:
+    - jq
+    - moreutils
+    state: present
+
+- name: Deploy renew SSH certificate automation
+  become: true
+  block:
+  - name: Ensure /var/lib/yaook-k8s/ exists
+    file:
+      path: /var/lib/yaook-k8s
+      state: directory
+      recurse: true
+
+  - name: Deploy renew SSH certificate script
+    template:
+      dest: /var/lib/yaook-k8s/get-ssh-cert.sh
+      src: get-ssh-cert.sh.j2
+      owner: root
+      group: root
+      mode: 0740
+
+  - name: Deploy renew SSH certificate service
+    copy:
+      dest: /etc/systemd/system
+      src: renew-ssh-certificates.service
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: Deploy renew SSH certificate timer
+    copy:
+      dest: /etc/systemd/system
+      src: renew-ssh-certificates.timer
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: Enable timer
+    systemd_service:
+      name: renew-ssh-certificates.timer
+      enabled: true
+      no_block: true
+
+  - name: Trigger SSH certificate renewal
+    systemd_service:
+      state: started
+      daemon_reload: true
+      name: renew-ssh-certificates
+...

@@ -2,6 +2,7 @@
 galaxy_info:
   license: Apache-2.0
   author: Yaook Authors
-dependencies: []
+dependencies:
+- bootstrap/vault-cli
 allow_duplicates: true
 ...

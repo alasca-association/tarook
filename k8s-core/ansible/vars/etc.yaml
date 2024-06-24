@@ -3,5 +3,4 @@ cluster_repo_dir: "{{ (ansible_inventory_sources[0] | dirname) }}/../../"
 etc_dir: "{{ (cluster_repo_dir | dirname) }}/etc"
 config_dir: "{{ (cluster_repo_dir | dirname) }}/config"
 ssh_known_hosts_file: "{{ etc_dir }}/ssh_known_hosts"
-ssh_extra_args: "-o UserKnownHostsFile={{ ssh_known_hosts_file }}"
 ...

@@ -203,6 +203,10 @@ path "$common_path_prefix/+/ssh-ca/roles/+" {
     capabilities = ["delete"]
 }
 
+path "$common_path_prefix/+/ssh-ca/config/ca" {
+    capabilities = ["read"]
+}
+
 path "$common_path_prefix/+/ssh-ca/roles/+" {
     capabilities = ["create", "update"]
     required_parameters = ["key_type", "ttl", "allow_host_certificates", "allow_bare_domains", "allowed_domains", "algorithm_signer"]

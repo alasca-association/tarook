@@ -1,6 +1,6 @@
 ---
-- name: Onboard node
-  when: node_onboarded is not defined
+- name: Onboard node to vault
+  when: node_vault_onboarded is not defined
   block:
   - name: Read our token roles
     delegate_to: "{{ groups['orchestrator'] | first }}"
@@ -29,32 +29,56 @@
     ansible.builtin.set_fact:
       vault_node_name: "{{ inventory_hostname }}.node.{{ vault_cluster_name }}"
 
-  - name: Prepare login data directory
+  - name: Prepare vault login
     become: true
-    ansible.builtin.file:
-      state: directory
-      path: /etc/vault
-      owner: root
-      group: root
-      mode: u=rwx,go-rwx
+    block:
+    - name: Prepare login data directory
+      ansible.builtin.file:
+        state: directory
+        path: /etc/vault
+        owner: root
+        group: root
+        mode: u=rwx,go-rwx
 
-  - name: Write cluster name
-    become: true
-    ansible.builtin.copy:
-      dest: /etc/vault/cluster-name
-      owner: root
-      group: root
-      mode: ugo=r
-      content: "{{ vault_cluster_name }}"
+    - name: Write cluster name
+      ansible.builtin.copy:
+        dest: /etc/vault/cluster-name
+        owner: root
+        group: root
+        mode: ugo=r
+        content: "{{ vault_cluster_name }}"
 
-  - name: Write node name
-    become: true
-    ansible.builtin.copy:
-      dest: /etc/vault/node-name
-      owner: root
-      group: root
-      mode: ugo=r
-      content: "{{ vault_node_name }}"
+    - name: Write node name
+      ansible.builtin.copy:
+        dest: /etc/vault/node-name
+        owner: root
+        group: root
+        mode: ugo=r
+        content: "{{ vault_node_name }}"
+
+    - name: Write vault config
+      copy:
+        dest: /etc/vault/config
+        owner: root
+        group: root
+        mode: ugo=r
+        content: |
+          VAULT_ADDR={{ lookup('env', 'VAULT_ADDR') }}
+          VAULT_CACERT={{ lookup('env', 'VAULT_CACERT') }}
+
+    - name: Ensure /usr/local/lib/yaook-k8s/ exists
+      file:
+        path: /usr/local/lib/yaook-k8s/
+        state: directory
+        recurse: true
+
+    - name: Deploy vault login script
+      copy:
+        dest: /usr/local/lib/yaook-k8s/vault-login.sh
+        src: vault-login.sh
+        owner: root
+        group: root
+        mode: 0740
 
   - name: Onboard node to vault
     when: has_vault_orchestrator_role
@@ -296,6 +320,6 @@
 
   - name: Set fact that we're onboarded
     set_fact:
-      node_onboarded: true
+      node_vault_onboarded: true
       cacheable: true
 ...
