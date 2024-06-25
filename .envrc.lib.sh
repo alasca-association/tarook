@@ -7,28 +7,84 @@ layout_poetry() {
 }
 
 has_flake_support() {
-    test -z "$(comm -13 <(nix show-config | grep -Po 'experimental-features = \K(.*)' | tr " " "\n" |  sort) <(echo "flakes nix-command" | tr " " "\n"))"
+    test -z "$(comm -13 <(nix show-config 2>/dev/null | grep -Po 'experimental-features = \K(.*)' | tr " " "\n" |  sort) <(echo "flakes nix-command" | tr " " "\n"))"
+}
+
+_nix_flake_auto() {
+  if ! has nix_direnv_version || ! nix_direnv_version 2.3.0; then
+    source_url "https://raw.githubusercontent.com/nix-community/nix-direnv/2.3.0/direnvrc" "sha256-Dmd+j63L84wuzgyjITIfSxSD57Tx7v51DMxVZOsiUD8="
+  fi
+  use flake "${flake_dir}#${YAOOK_K8S_DEVSHELL}"
+}
+
+_nix_flake_manual() {
+  layout_dir=$(direnv_layout_dir)
+  mkdir -p "$layout_dir"
+  nix_hash_file="$layout_dir/nix_flake.sha256"
+  hash_command="echo '#' devshell: ${YAOOK_K8S_DEVSHELL}; find $flake_dir/nix -type f -exec sha256sum {} +"
+  reload_command="yaook-direnv-reload"
+  watch_file "$nix_hash_file"
+  nix_hashes="$(bash -c "$hash_command")"
+
+  bin_dir="$layout_dir/bin"
+  mkdir -p "$bin_dir"
+  PATH_add "$bin_dir"
+
+  out_path="$layout_dir/yaook-devshell/$flake_dir"
+  PATH_add "$out_path/bin"
+
+  cat << EOF > "$bin_dir/$reload_command"
+#!/usr/bin/env bash
+set -e
+if [[ ! -d "$PWD" ]] || [[ "\$(realpath "\$(dirname \$0)/../..")" != "$PWD" ]]; then
+  echo "Cannot find source directory; Did you move it?"
+  echo "(Looking for "$PWD")"
+  echo 'Cannot force reload with this script - use "direnv reload" manually and then try again'
+  exit 1
+fi
+
+rm -f "$out_path" 2>/dev/null
+nix build "$flake_dir#yk8s-env-${YAOOK_K8S_DEVSHELL}" -o "$out_path"
+bash -c "$hash_command" > "$nix_hash_file"
+EOF
+  chmod +x "$bin_dir/$reload_command"
+
+  if [ "$(cat "$nix_hash_file" 2>/dev/null)" != "$nix_hashes" ]; then
+    echo "========"
+    echo "WARNING: Flake changed. Update environment by running $reload_command"
+    echo "========"
+  elif [ -L "$out_path" ] && ! [ -e "$out_path"  ]; then
+    echo "========"
+    echo "WARNING: Flake environment has been garbage collected. Please rebuild by running $reload_command"
+    echo "========"
+  fi
 }
 
 use_flake_if_nix() {
   flake_dir="$(realpath "${1:-${PWD}}")"
-  if [[ "${NIX_FLAKE_ACTIVE:-""}" == *"$flake_dir"* ]]; then echo "Flake alreay active. Skipping..."; return; fi
-  if has nix; then
-    if has_flake_support;
-    then
-      if ! has nix_direnv_version || ! nix_direnv_version 2.3.0; then
-        source_url "https://raw.githubusercontent.com/nix-community/nix-direnv/2.3.0/direnvrc" "sha256-Dmd+j63L84wuzgyjITIfSxSD57Tx7v51DMxVZOsiUD8="
-      fi
-      if [ "${MINIMAL_ACCESS_VENV:-false}" == "true" ]; then
-        YAOOK_K8S_DEVSHELL="minimal"
-      fi
-      use flake "${flake_dir}#${YAOOK_K8S_DEVSHELL:-default}"
-      watch_file "$flake_dir/nix/dependencies.nix"
-      # TODO: watch "$flake_dir/nix/" after manual direnv reload (!1323) is implemented
-      export NIX_FLAKE_ACTIVE="${NIX_FLAKE_ACTIVE}:${flake_dir}"
-    else
-      echo "Not loading flake. Nix is installed, but flakes are not enabled."
-      echo "Add 'experimental-features = flakes nix-command' to either ~/.config/nix/nix.conf or /etc/nix/nix.conf"
-    fi
+  if [ "${MINIMAL_ACCESS_VENV:-false}" == "true" ]; then
+    YAOOK_K8S_DEVSHELL="minimal"
   fi
+  YAOOK_K8S_DEVSHELL=${YAOOK_K8S_DEVSHELL:-default}
+
+  if [[ "${NIX_FLAKE_ACTIVE:-""}" == *"$flake_dir"* ]]; then echo "Flake alreay active. Skipping..."; return; fi
+
+  if ! has nix; then return; fi
+
+  if ! has_flake_support; then
+    echo "Not loading flake. Nix is installed, but flakes are not enabled."
+    echo "Add 'experimental-features = flakes nix-command' to either ~/.config/nix/nix.conf or /etc/nix/nix.conf"
+    return
+  fi
+
+  if [ "${YAOOK_K8S_DIRENV_MANUAL:-false}" == "true" ]; then
+    _nix_flake_manual "$flake_dir"
+    watch_file "$flake_dir/nix"
+  else
+    _nix_flake_auto "$flake_dir"
+    # for auto-reload, only watch the file most likely to update dependencies
+    # otherwise the reload frequency would not be bearable
+    watch_file "$flake_dir/nix/dependencies.nix"
+  fi
+  export NIX_FLAKE_ACTIVE="${NIX_FLAKE_ACTIVE}:${flake_dir}"
 }
