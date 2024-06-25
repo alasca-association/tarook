@@ -1,7 +1,8 @@
 # shellcheck shell=bash
 layout_poetry() {
   poetry_dir="$(realpath "${1:-${PWD}}")"
-  mkdir -p "$PWD/.direnv"
+  layout_dir=$(direnv_layout_dir)
+  mkdir -p "$layout_dir"
   PYPROJECT_TOML="${PYPROJECT_TOML:-${poetry_dir}/pyproject.toml}"
   poetry_file="${poetry_dir}/poetry.lock"
   poetry_hash="$(sha256sum "$poetry_file" | cut -d' ' -f1)"
@@ -13,7 +14,7 @@ layout_poetry() {
     poetry_hash_file="/dev/null"
   else
     cache_dir="${XDG_CACHE_HOME:-${HOME}/.cache}/yaook-k8s/poetry/$poetry_hash"
-    poetry_hash_file="$PWD/.direnv/poetry.lock.sha256"
+    poetry_hash_file="$layout_dir/poetry.lock.sha256"
   fi
 
   if [[ ! -f "$PYPROJECT_TOML" ]]; then
