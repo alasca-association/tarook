@@ -54,17 +54,57 @@ has_flake_support() {
     test -z "$(comm -13 <(nix show-config | grep -Po 'experimental-features = \K(.*)' | tr " " "\n" |  sort) <(echo "flakes nix-command" | tr " " "\n"))"
 }
 
+_nix_flake_auto() {
+  if ! has nix_direnv_version || ! nix_direnv_version 2.3.0; then
+    source_url "https://raw.githubusercontent.com/nix-community/nix-direnv/2.3.0/direnvrc" "sha256-Dmd+j63L84wuzgyjITIfSxSD57Tx7v51DMxVZOsiUD8="
+  fi
+  flake_dir="$(realpath "${1:-${PWD}}")"
+  use flake "$flake_dir"
+  export NIX_FLAKE_ACTIVE="${NIX_FLAKE_ACTIVE}:${flake_dir}"
+}
+
+_nix_flake_manual() {
+  flake_dir="$(realpath "${1:-${PWD}}")"
+  layout_dir=$(direnv_layout_dir)
+  mkdir -p "$layout_dir"
+  nix_hash_file="$layout_dir/nix_flake.sha256"
+  watch_file "$nix_hash_file"
+  nix_hashes="$(sha256sum "$flake_dir/flake.nix" "$flake_dir/flake.lock")"
+  env_file="$layout_dir/nix-flake.env"
+  touch "$env_file"
+  bin_dir="$layout_dir/bin"
+  mkdir -p "$bin_dir"
+
+  if [ "$(cat "$nix_hash_file" 2>/dev/null)" != "$nix_hashes" ]; then
+      cat << EOF > "$bin_dir/yaook-direnv-reload"
+#!/usr/bin/env bash
+out_path="\$(nix build "$flake_dir#shell-env" --print-out-paths --no-link)"
+if [[ \$out_path =~ /nix/store/[^\"]+ ]]; then
+  echo PATH_add "\$out_path/bin" > "$env_file"
+fi
+sha256sum "$flake_dir/flake.nix" "$flake_dir/flake.lock" > "$nix_hash_file"
+EOF
+      chmod +x "$bin_dir/yaook-direnv-reload"
+      PATH_add "$bin_dir"
+      echo "========"
+      echo "WARNING: Flake changed. Please update by running yaook-direnv-reload"
+      echo "========"
+  fi
+  source_env "$env_file"
+  export NIX_FLAKE_ACTIVE="${NIX_FLAKE_ACTIVE}:${flake_dir}"
+}
+
 use_flake_if_nix() {
   flake_dir="$(realpath "${1:-${PWD}}")"
   if [[ "${NIX_FLAKE_ACTIVE:-""}" == *"$flake_dir"* ]]; then echo "Flake alreay active. Skipping..."; return; fi
   if has nix; then
     if has_flake_support;
     then
-      if ! has nix_direnv_version || ! nix_direnv_version 2.3.0; then
-        source_url "https://raw.githubusercontent.com/nix-community/nix-direnv/2.3.0/direnvrc" "sha256-Dmd+j63L84wuzgyjITIfSxSD57Tx7v51DMxVZOsiUD8="
+      if [ "${YAOOK_K8S_DIRENV_MANUAL:-false}" == "true" ]; then
+        _nix_flake_manual "$flake_dir"
+      else
+        _nix_flake_auto "$flake_dir"
       fi
-      use flake "$flake_dir"
-      export NIX_FLAKE_ACTIVE="${NIX_FLAKE_ACTIVE}:${flake_dir}"
     else
       echo "Not loading flake. Nix is installed, but flakes are not enabled."
       echo "Add 'experimental-features = flakes nix-command' to either ~/.config/nix/nix.conf or /etc/nix/nix.conf"

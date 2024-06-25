@@ -74,6 +74,12 @@
         in {
           ciImage = pkgs.dockerTools.buildLayeredImage container-image;
           streamCiImage = pkgs.writeShellScriptBin "stream-ci" (pkgs.dockerTools.streamLayeredImage container-image);
+          shell-env = pkgs.buildEnv {
+            name = "yaook-k8s-shell-env";
+            paths =
+              dependencies.yk8s
+              ++ dependencies.interactive;
+          };
         };
         formatter = pkgs.alejandra;
       };
