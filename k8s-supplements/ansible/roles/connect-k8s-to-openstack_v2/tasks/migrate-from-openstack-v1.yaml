@@ -18,6 +18,11 @@
     - ["v1", "ServiceAccount", "cloud-controller-manager", "openstack-cloud-controller-manager"]
     - ["v1", "ServiceAccount", "csi-cinder-controller-sa", "cinder-csi"]
     - ["v1", "ServiceAccount", "csi-cinder-node-sa", "cinder-csi"]
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
 - name: Migrate ClusterRoles
   block:
@@ -47,6 +52,11 @@
     - ["rbac.authorization.k8s.io/v1", "ClusterRoleBinding", "csi-resizer-binding", "cinder-csi"]
     - ["rbac.authorization.k8s.io/v1", "ClusterRoleBinding", "csi-nodeplugin-binding", "cinder-csi"]
     - ["v1", "CSIDriver", "cinder.csi.openstack.org", "cinder-csi"]
+    # Retry this task on failures
+    register: k8s_apply
+    until: k8s_apply is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
 # delete the daemonsets as the names changed
 - name: Delete daemonsets
@@ -61,6 +71,11 @@
   loop:
   - ["v1", "DaemonSet", "openstack-cloud-controller-manager"]
   - ["v1", "DaemonSet", "csi-cinder-nodeplugin"]
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 
 # delete the deployment as the name changed
 - name: Delete csi-cinder-controllerplugin deployment
@@ -72,4 +87,9 @@
       metadata:
         name: "csi-cinder-controllerplugin"
         namespace: "kube-system"
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ k8s_error_retries }}"
+  delay: "{{ k8s_error_delay }}"
 ...
