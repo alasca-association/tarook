@@ -47,6 +47,7 @@ layout_poetry() {
   export VIRTUAL_ENV
   watch_file "$PYPROJECT_TOML"
   watch_file "$poetry_dir/poetry.lock"
+  watch_file "$poetry_hash_file"
 }
 
 has_flake_support() {
