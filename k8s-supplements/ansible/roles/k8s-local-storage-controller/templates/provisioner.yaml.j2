@@ -121,7 +121,7 @@ add a new actually-version field for informational purposes. #}
 {% endif %}
 {% endif %}
       containers:
-        - image: {{ "k8s.gcr.io/sig-storage/local-volume-provisioner:%s" | format (k8s_local_storage_static_version) | to_json }}
+        - image: {{ "registry.k8s.io/sig-storage/local-volume-provisioner:%s" | format (k8s_local_storage_static_version) | to_json }}
           name: provisioner
           securityContext:
             privileged: true
@@ -135,7 +135,7 @@ add a new actually-version field for informational purposes. #}
               fieldRef:
                 fieldPath: metadata.namespace
           - name: JOB_CONTAINER_IMAGE
-            value: {{ "k8s.gcr.io/sig-storage/local-volume-provisioner:%s" | format (k8s_local_storage_static_version) | to_json }}
+            value: {{ "registry.k8s.io/sig-storage/local-volume-provisioner:%s" | format (k8s_local_storage_static_version) | to_json }}
           volumeMounts:
             - mountPath: /etc/provisioner/config
               name: provisioner-config
