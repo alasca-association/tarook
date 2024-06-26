@@ -4,11 +4,11 @@
   vars:
     target_hosts: k8s_nodes
 
-- name: Update frontend nodes
-  import_playbook: "{{ ansible_k8s_core_dir }}/update-frontend-nodes.yaml"
+# - name: Update frontend nodes
+#   import_playbook: "{{ ansible_k8s_core_dir }}/update-frontend-nodes.yaml"
 
-- name: Update Kubernetes nodes
-  import_playbook: "{{ ansible_k8s_core_dir }}/update-kubernetes-nodes.yaml"
+# - name: Update Kubernetes nodes
+#   import_playbook: "{{ ansible_k8s_core_dir }}/update-kubernetes-nodes.yaml"
 
 - name: Spawn Kubernetes
   import_playbook: "{{ ansible_k8s_core_dir }}/install-k8s.yaml"
