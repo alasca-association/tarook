@@ -23,7 +23,6 @@ variable "dualstack_support" {
 
 variable "public_network" {
   type    = string
-  default = "shared-public-IPv4"
 }
 
 variable "keypair" {
@@ -32,7 +31,6 @@ variable "keypair" {
 
 variable "azs" {
   type    = set(string)
-  default = ["AZ1", "AZ2", "AZ3"]
   description = "Defines the availability zones of your cloud to use for the creation of servers."
 }
 
@@ -131,18 +129,11 @@ variable "gateway_defaults" {
 
   type = object({              # --- template spec ---
     common_name                = optional(string, "gw-")
-    image                      = optional(string, "Debian 12 (bookworm)")
-    flavor                     = optional(string, "XS")
+    image                      = string
+    flavor                     = string
     root_disk_size             = optional(number, 10)
     root_disk_volume_type      = optional(string, "")
   })
-  default = {                  # --- default template ---
-    common_name                = "gw-"
-    image                      = "Debian 12 (bookworm)"
-    flavor                     = "XS"
-    root_disk_size             = 10
-    root_disk_volume_type      = ""
-  }
 
   validation {
      condition     = var.gateway_defaults.root_disk_size != 0
@@ -159,17 +150,11 @@ variable "master_defaults" {
   EOT
 
   type = object({              # --- template spec ---
-    image                      = optional(string, "Ubuntu 22.04 LTS x64")
-    flavor                     = optional(string, "M")
+    image                      = string
+    flavor                     = string
     root_disk_size             = optional(number, 50)
     root_disk_volume_type      = optional(string, "")
   })
-  default = {                  # --- default template ---
-    image                      = "Ubuntu 22.04 LTS x64"
-    flavor                     = "M"
-    root_disk_size             = 50
-    root_disk_volume_type      = ""
-  }
 
   validation {
      condition     = var.master_defaults.root_disk_size != 0
@@ -188,18 +173,12 @@ variable "worker_defaults" {
   EOT
 
   type = object({              # --- template spec ---
-    image                      = optional(string, "Ubuntu 22.04 LTS x64")
-    flavor                     = optional(string, "M")
+    image                      = string
+    flavor                     = string
     root_disk_size             = optional(number, 50)
     root_disk_volume_type      = optional(string, "")
     anti_affinity_group_name   = optional(string)
   })
-  default = {                  # --- default template ---
-    image                      = "Ubuntu 22.04 LTS x64"
-    flavor                     = "M"
-    root_disk_size             = 50
-    root_disk_volume_type      = ""
-  }
 
   validation {
      condition     = var.worker_defaults.root_disk_size != 0
