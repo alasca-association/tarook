@@ -17,14 +17,6 @@ check_venv
 #   run "$actions_dir/apply-prepare-gw.sh"
 # fi
 
-kubectl get nodes
-
-kubectl get secrets
-
-kubectl config current-context
-
-exit 1
-
 # Invoke whole k8s-supplements (including k8s-core)
 run "$actions_dir/apply-k8s-supplements.sh"
 

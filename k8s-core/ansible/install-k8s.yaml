@@ -44,13 +44,13 @@
 - name: Install frontend services
   import_playbook: install-frontend-services.yaml
 
-- name: Clean up control plane
-  hosts: masters
-  gather_facts: true
-  serial: 1
-  roles:
-  - role: etcd-clean-stale-members
-    tags: etcd-clean-stale-members
+# - name: Clean up control plane
+#   hosts: masters
+#   gather_facts: true
+#   serial: 1
+#   roles:
+#   - role: etcd-clean-stale-members
+#     tags: etcd-clean-stale-members
 
 - name: Spawn the K8s control plane
   hosts: masters
