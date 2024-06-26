@@ -53,26 +53,18 @@ will most certainly have more files than these.
 
 Detailed explanation:
 
--  ``config/config.toml`` holds the
+-  ``config/`` holds the
    :doc:`configuration </user/reference/cluster-configuration>` variables of
-   the cluster. A template for this file can be found in the
-   ``templates/`` directory.
+   the cluster.
 
    Note that the :doc:`initialization </user/guide/initialization>`
    script ``init.sh`` will bootstrap your configuration from that
    template.
 
--  ``config/wirguard_ipam.toml`` contains the
-   :doc:`Wireguard </user/explanation/vpn/wireguard>` IP address management.
-   This file is only of interest if you want to protect your cluster with gateway nodes.
-   This file is managed by the
-   :ref:`update_inventory.py <actions-references.update_inventorypy>` script.
-   This script will automatically assign IP addresses to your
-   :ref:`configured peers <cluster-configuration.wireguard-configuration>`.
-
 -  The ``inventory/`` directory holds your
-   :doc:`layer-specific </user/explanation/abstraction-layers>` Ansible variables. These
-   variables are managed by the
+   :doc:`layer-specific </user/explanation/abstraction-layers>` Ansible variables.
+   It is completely ephemeral and can be re-generated from the config and the state.
+   It is managed by the
    :ref:`update_inventory.py <actions-references.update_inventorypy>` script.
 
 -  ``etc/`` holds credentials and cluster-specific files
@@ -92,10 +84,19 @@ Detailed explanation:
    the same state without changes again, even if the branch of
    ``managed-k8s`` has advanced in the meantime.
 
--  ``terraform/`` is a state-only directory for Terraform. You should
-   not need to manually operate in that directory at all. The terraform
-   state is managed by the
+-  ``state/`` is a state-only directory. You should
+   not need to manually operate in that directory at all.
+
+-  ``state/terraform/`` The terraform state which is managed by the
    :ref:`apply-terraform.sh <actions-references.apply-terraformsh>` script.
+
+-  ``state/wireguard/ipam.toml`` contains the
+   :doc:`Wireguard </user/explanation/vpn/wireguard>` IP address management.
+   This file is only of interest if you want to protect your cluster with gateway nodes.
+   This file is managed by the
+   :ref:`update_inventory.py <actions-references.update_inventorypy>` script.
+   This script will automatically assign IP addresses to your
+   :ref:`configured peers <cluster-configuration.wireguard-configuration>`.
 
 *Optional:*
 
