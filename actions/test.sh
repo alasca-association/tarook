@@ -12,7 +12,7 @@ check_conf_sanity
 check_venv
 
 # Ensure that the latest config is deployed to the inventory
-python3 "$actions_dir/update_inventory.py"
+"$actions_dir/update-inventory.sh"
 
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"

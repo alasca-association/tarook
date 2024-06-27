@@ -15,14 +15,17 @@
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [
-      ];
       systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
+      debug = true;
+      imports = [
+        ./nix/renderDocs.nix
+      ];
       perSystem = {
         pkgs,
         lib,
         system,
         inputs',
+        config,
         ...
       }: let
         poetryEnvs = import ./nix/poetry.nix {
@@ -33,6 +36,7 @@
           yk8s-minimal = [
             jq
             kubectl
+            rsync
             inputs'.nixpkgs-vault1148.legacyPackages.vault
           ];
         in {
@@ -93,8 +97,38 @@
         in {
           ciImage = pkgs.dockerTools.buildLayeredImage container-image;
           streamCiImage = pkgs.writeShellScriptBin "stream-ci" (pkgs.dockerTools.streamLayeredImage container-image);
+          renderDocs = pkgs.writeShellApplication {
+            name = "render-docs";
+            text = ''
+              nix build .#docsRST -o docs/user/reference/options
+              python3 -m sphinx docs _build/html -E
+            '';
+          };
+          init = pkgs.writeShellApplication {
+            name = "init-cluster-repo";
+            runtimeInputs = dependencies.yk8s;
+            text = ''
+              ${./.}/actions/init-cluster-repo.sh
+            '';
+          };
         };
         formatter = pkgs.alejandra;
+      };
+      flake = {lib, ...}: {
+        flakeModules.yk8s = import ./nix/yk8s;
+        lib = import ./nix/lib.nix {inherit lib;};
+        templates.cluster-repo = {
+          description = ''
+            Template containing all the Nix parts of the cluster repo
+          '';
+          path = ./nix/templates/cluster-repo;
+        };
+        templates.migration = {
+          description = ''
+            Template to migrate from before vX.0.0
+          '';
+          path = ./nix/templates/migration;
+        };
       };
     };
 }

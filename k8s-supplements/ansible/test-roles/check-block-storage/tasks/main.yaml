@@ -148,7 +148,7 @@
       ansible.builtin.debug:
         msg: "Rehydration of snapshot is {{ rehydration_state.resources[0].status.phase }}"
       failed_when: 'rehydration_state.resources[0].status.phase != "Bound"'
-      when: on_openstack | default(True)
+      when: on_openstack
 
     - name: delete rehydrated volume
       kubernetes.core.k8s:

@@ -38,10 +38,10 @@ mapped to the Kubernetes version in
 `k8s-config <https://gitlab.com/yaook/k8s/-/blob/devel/k8s-base/roles/k8s-config/defaults/main.yaml>`__.
 
 However, it is possible to configure a custom version via the
-``[kubernetes.network.calico.custom_version]`` (see
+``kubernetes.network.calico.custom_version`` (see
 :ref:`here <cluster-configuration.network-configuration>`)
-variable in the ``[kubernetes.network]`` section of your
-cluster-specific ``config/config.toml``.
+variable in the ``kubernetes.network`` section of your
+cluster-specific configuration.
 
 Manually Upgrade Calico
 ~~~~~~~~~~~~~~~~~~~~~~~

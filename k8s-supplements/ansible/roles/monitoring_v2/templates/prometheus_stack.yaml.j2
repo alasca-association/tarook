@@ -53,13 +53,7 @@ grafana:
     existingSecret: {{ monitoring_grafana_admin_secret_name }}
     userKey: admin-user
     passwordKey: admin-password
-  resources:
-    limits:
-      cpu: "{{ monitoring_grafana_cpu_limit }}"
-      memory: "{{ monitoring_grafana_memory_limit }}"
-    requests:
-      cpu: "{{ monitoring_grafana_cpu_limit }}"
-      memory: "{{ monitoring_grafana_memory_request }}"
+  resources: {{ monitoring_grafana_resources | to_json }}
   tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
 {% if monitoring_grafana_persistent_storage_class | length > 0 %}
   affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json', template_vars=dict(pod_affinity_key="app.kubernetes.io/name", pod_affinity_operator="In", pod_affinity_values=["grafana"])) | to_json }}
@@ -333,13 +327,7 @@ prometheusOperator:
   admissionWebhooks:
     patch:
       priorityClassName: "system-cluster-critical"
-  resources:
-    limits:
-      cpu: {{ monitoring_prometheus_operator_cpu_limit | to_json }}
-      memory: {{ monitoring_prometheus_operator_memory_limit | to_json }}
-    requests:
-      cpu: {{ monitoring_prometheus_operator_cpu_request | to_json }}
-      memory: {{ monitoring_prometheus_operator_memory_request | to_json }}
+  resources: {{ monitoring_prometheus_resources | to_json }}
   serviceMonitor:
     relabelings:
       - sourceLabels: [__meta_kubernetes_pod_node_name]
@@ -412,13 +400,7 @@ prometheus:
       - name: prometheus
         readinessProbe:
           failureThreshold: 1000
-    resources:
-      requests:
-        cpu: "{{ monitoring_prometheus_cpu_request }}"
-        memory: "{{ monitoring_prometheus_memory_request }}"
-      limits:
-        cpu: "{{ monitoring_prometheus_cpu_limit }}"
-        memory: "{{ monitoring_prometheus_memory_limit }}"
+    resources: {{ monitoring_prometheus_resources | to_json }}
     affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json') | to_json }}
     tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
 {% if monitoring_allow_external_rules %}

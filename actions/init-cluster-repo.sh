@@ -9,9 +9,6 @@ submodule_base="submodules"
 
 submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/yaook/k8s.git}"
 
-submodule_wg_user_name="wg_user"
-submodule_wg_user_git="${MANAGED_K8S_WG_USER_GIT:-git@gitlab.cloudandheat.com:lcm/wg_user}"
-
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     if [ ! -d "$submodule_managed_k8s_name" ]; then
         if [ "${MANAGED_K8S_LATEST_RELEASE:-true}"  == "true" ]; then
@@ -46,25 +43,6 @@ fi
 # Create submodule directory
 mkdir -p "$submodule_base"
 
-# Add the Cloud&Heat wireguard peers repository as submodule
-if [ "${WG_COMPANY_USERS:-true}" == "true" ]; then
-    if [ "$(git rev-parse --is-inside-work-tree)" == "true" ]; then
-        if [ -d "$submodule_wg_user_name" ]; then
-            run git mv "$submodule_wg_user_name" "$submodule_base/$submodule_wg_user_name"
-        else
-            if [ ! -d "$submodule_base/$submodule_wg_user_name" ]; then
-                run git submodule add "$submodule_wg_user_git" "$submodule_base/$submodule_wg_user_name"
-            else
-                pushd "$cluster_repository/$submodule_base/$submodule_wg_user_name" > /dev/null
-                run git remote set-url origin "$submodule_wg_user_git"
-                popd > /dev/null
-            fi
-        fi
-    else
-        run git clone "$submodule_wg_user_git" "$submodule_base/$submodule_wg_user_name"
-    fi
-fi
-
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     run git submodule update --init --recursive
 fi
@@ -84,20 +62,10 @@ if [ "$(realpath "$new_actions_dir")" != "$(realpath "$actions_dir")" ]; then
     fi
 fi
 
-# Create Vault development container
-if [ "${USE_VAULT_IN_DOCKER:-false}" == "true" ]; then
-  "$actions_dir/vault.sh"
-fi
-
-mkdir -p config
-cp "$code_repository/templates/template.gitignore" .gitignore
-if [ -f config/config.toml ]; then
-    warningf "config/config.toml already exists, refusing to overwrite"
-else
-    cp --no-clobber "$code_repository/templates/config.template.toml" config/config.toml
-fi
+nix flake init -t "${code_repository}#cluster-repo" || true # not overriding existing files is ok
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
-	run git add .gitignore config/config.toml
+    # TODO foreach file: only add if not already tracked or in index
+	run git add flake.nix .gitignore config .envrc
 fi
 
 # custom stage
@@ -119,11 +87,11 @@ ln -sf "../../managed-k8s/k8s-supplements/ansible/vars/" "$ansible_k8s_custom_pl
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 	notef 'cluster repository initialised successfully!'
-	notef 'You should now update config/config.toml as needed and '
+	notef 'You should now update config/default.nix as needed and '
 	notef 'then run git commit -v to check and commit your changes'
 else
 	notef 'Preparations for standalone deployment completed'
-	notef 'You should now update config/config.toml as needed and '
+	notef 'You should now update config/default.nix as needed and '
 	notef 'inventory/02_trampoline/hosts with your server IPs'
 fi
 

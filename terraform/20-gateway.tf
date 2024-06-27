@@ -1,6 +1,6 @@
 locals {
   gateway_nodes = {
-    for idx in range(local.gateway_count) :
+    for idx in range(var.gateway_count) :
       "${local.nodes_prefix}${var.gateway_defaults.common_name}${idx}" => {
         image                    = var.gateway_defaults.image
         flavor                   = var.gateway_defaults.flavor

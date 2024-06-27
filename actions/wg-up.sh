@@ -29,7 +29,7 @@ if [ "${wg_usage:-true}" == "true" ]; then
         exit 2
     fi
 
-    ipam_path="$cluster_repository/config/wireguard_ipam.toml"
+    ipam_path="$cluster_repository/state/wireguard/ipam.toml"
     if ! tomlq '(.wg_users[] | select(.ident=="'"${wg_user}"'")) // error("not-found")' "$ipam_path" &>/dev/null ; then
         warningf 'failed to find wireguard user %s in trampoline configuration' "$wg_user" >&2
     fi

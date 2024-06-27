@@ -40,14 +40,12 @@ in {
   minimal = poetryEnvWithGroups ["minimal-access"];
   yk8s = poetryEnvWithGroups [
     "main"
-    "update-inventory"
     "offline-installation"
     "minimal-access"
   ];
   ci = poetryEnvWithGroups [
     "main"
     "ci"
-    "update-inventory"
     "offline-installation"
     "minimal-access"
   ];

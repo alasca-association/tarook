@@ -179,6 +179,7 @@ build-docs-check:
     - export PATH="$VIRTUAL_ENV/bin:$PATH"
   script:
     - towncrier build --version x.x.x --keep
+    - nix build .#docsRST -o docs/user/reference/options
     - sphinx-build -W docs _build/html
     - mv _build/html public
   artifacts:

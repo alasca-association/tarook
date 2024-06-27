@@ -20,6 +20,7 @@ hvac = "^2.0.0"
 boto3 = "^1.26.155"
 pre-commit = "^3.3.3"
 tomlkit = "^0.13.0"
+yq = "^3.4.1"
 
 [tool.poetry.group.ci]
 optional = true
@@ -49,12 +50,6 @@ sphinx-copybutton = "^0.5.2"
 [tool.poetry.group.minimal-access.dependencies]
 yq = "^3.4.1"
 ansible = "^9.0.0"
-
-[tool.poetry.group.update-inventory.dependencies]
-mergedeep = "^1.3.4"
-toml = "^0.10.2"
-PyYAML = "^6.0"
-python-hcl2 = "^4.3.2"
 
 [build-system]
 requires = ["poetry-core"]
