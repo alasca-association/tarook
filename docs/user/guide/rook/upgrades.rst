@@ -95,15 +95,15 @@ Steps to perform an upgrade
    :ref:`rook configuration section <cluster-configuration.rook-configuration>`
    to the **next** (supported) minor release of rook.
 
-   .. code:: toml
+   .. code:: nix
 
-      [...]
-      [k8s-service-layer.rook]
-      [...]
-      # Currently we support the following rook versions:
-      # v1.2.3, v1.3.11, v1.4.9, v1.5.12, v1.6.7, v1.7.11
-      version = "v1.6.7"
-      [...]
+      k8s-service-layer.rook = {
+         # [...]
+         # Currently we support the following rook versions:
+         # v1.2.3, v1.3.11, v1.4.9, v1.5.12, v1.6.7, v1.7.11
+         version = "v1.6.7";
+         # [...]
+      };
 
 6. Apply the k8s-supplements or at least the ``rook_v2`` role.
 

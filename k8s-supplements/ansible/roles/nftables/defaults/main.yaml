@@ -1,5 +1,0 @@
----
-lb_ports: []
-
-haproxy_stats_port: 48981
-...

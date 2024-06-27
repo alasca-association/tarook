@@ -42,7 +42,7 @@ During creation of the data, it was ensured by watching the output of
 ``ceph osd df`` that all OSDs got a share of the data to prevent a false
 negative. In addition, the procedure was repeated three times.
 
-1. Check the current disk usage of the OSDs:
+#. Check the current disk usage of the OSDs:
 
    .. code:: console
 
@@ -61,7 +61,7 @@ negative. In addition, the procedure was repeated three times.
    of data on them. One has only 1.0 GiB of data (osd.0) and one has
    5.6 GiB of data (osd.3).
 
-2. Find the OSD to remove. You can only remove the OSD with the
+#. Find the OSD to remove. You can only remove the OSD with the
    highest-numbered cinder volume PVC.
 
    .. note::
@@ -113,7 +113,7 @@ negative. In addition, the procedure was repeated three times.
    rebalanced, but I assume that (a) it will not cause data loss if you
    abort before removing the OSD and (b) ceph will tell you.
 
-3. Set the weight of the OSD to 0. This makes ceph redistribute the
+#. Set the weight of the OSD to 0. This makes ceph redistribute the
    data on that OSD to the other OSDs:
 
    .. code:: console
@@ -129,7 +129,7 @@ negative. In addition, the procedure was repeated three times.
       ``ceph osd reweight`` is a temporary measure which gets lost on a
       in/out cycle of an OSD.
 
-4. Wait for the migration to finish.
+#. Wait for the migration to finish.
 
    You can run ``watch ceph osd df`` as well as ``watch ceph -s`` to
    observe the migration status; the former will show how the number of
@@ -177,7 +177,7 @@ negative. In addition, the procedure was repeated three times.
       io:
          client:   1.2 KiB/s rd, 2 op/s rd, 0 op/s wr
 
-5. Mark the OSD as out.
+#. Mark the OSD as out.
 
    .. code:: console
 
@@ -205,14 +205,13 @@ negative. In addition, the procedure was repeated three times.
          pgs:     24 active+clean
       […]
 
-6. Reduce the number of OSDs in the Cluster CRD. Update the
-   ``config.toml`` of the cluster by decreasing
+#. Reduce the number of OSDs in the Cluster CRD. Update the
+   config of the cluster by decreasing
    ``k8s-service-layer.rook.nosds`` by one.
 
-   Run the ``toml_helper.py`` and execute stage three (possibly with
-   ``-t rook`` to only apply rook changes).
+#. Run `apply-k8s-supplements.sh` (possibly with ``AFLAGS="-t rook --diff"`` to only apply rook changes).
 
-7. Wait until the cluster has updated. Watch the output of:
+#. Wait until the cluster has updated. Watch the output of:
 
    .. code:: console
 
@@ -220,7 +219,7 @@ negative. In addition, the procedure was repeated three times.
 
    until the state has changed to Updating and back to Created.
 
-8. Wait until the operator has deleted the OSD pod.
+#. Wait until the operator has deleted the OSD pod.
 
    .. code:: console
 
@@ -232,7 +231,7 @@ negative. In addition, the procedure was repeated three times.
    (Rook will auto-delete OSDs which are marked as out and have no
    placement groups.)
 
-9. Purge the OSD. *If the data has not been moved, data loss will occur
+#. Purge the OSD. *If the data has not been moved, data loss will occur
    here!*
 
    .. code:: console

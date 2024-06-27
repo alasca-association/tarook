@@ -13,9 +13,9 @@ In such an environment, one wants to directly define fine-granular the
 nodes to used and their devices.
 
 If you’re not running on OpenStack you need to set the following
-variable to ``false``:
+variable to ``false`` in your hosts file:
 
-.. code:: toml
+.. code:: ini
 
    on_openstack = false
 
@@ -27,10 +27,10 @@ variable to ``false``:
 You can configure to automatically use all available nodes and/or
 devices:
 
-.. code:: toml
+.. code:: nix
 
-   use_all_available_nodes = true
-   use_all_available_devices = true
+   use_all_available_nodes = true;
+   use_all_available_devices = true;
 
 You do also have the option to manually define the to be used nodes,
 their configuration and devices of the configured nodes as well as
@@ -41,32 +41,38 @@ one must set ``use_all_available_nodes`` and
 In the following an example for a fine-granular
 node-device-configuration can be found:
 
-.. code:: toml
+.. code:: nix
 
    # One node
-   [[k8s-service-layer.rook.nodes]]
-   name = "HOSTNAME_OF_NODE_1"
-   # Node-specific configuration
-   [k8s-service-layer.rook.nodes.config]
-   encryptedDevice = "true"
-   # A node devices and its configuration
-   [k8s-service-layer.rook.nodes.devices."/dev/disk/by-id/x".config]
-   metadataDevice = "nvme0n1"
-   # Another node devices and its configuration
-   [k8s-service-layer.rook.nodes.devices."/dev/disk/by-id/x".config]
-   encryptedDevice = true
-   metadataDevice = "nvme0n1"
+   k8s-service-layer.rook.nodes = [
+      {
+         name = "HOSTNAME_OF_NODE_1";
 
-   # Another node
-   [[k8s-service-layer.rook.nodes]]
-   name = "HOSTNAME_OF_NODE_2"
-   [k8s-service-layer.rook.nodes.devices."/dev/disk/by-id/x".config]
-   metadataDevice = "nvme0n1"
+         # Node-specific configuration
+         config.encryptedDevice = "true"
+
+         # A node devices and its configuration
+         devices = {
+            "/dev/disk/by-id/x".config = {
+               metadataDevice = "nvme0n1";
+            };
+            "/dev/disk/by-id/x".config = {
+               encryptedDevice = true;
+               metadataDevice = "nvme0n1";
+            };
+         };
+      }
+      {
+         # Another node
+         name = "HOSTNAME_OF_NODE_2";
+         devices."/dev/disk/by-id/x".config.metadataDevice = "nvme0n1";
+      }
+   ];
 
 You can use the tool ``tools/assemble_cephcluster_storage_nodes_yaml.py``
 to generate node-device-configuration to be included in the CephCluster
 manifest. The output can manually transformed to be included in the
-``config.toml`` file as shown above. The tool has to be executed on each
+config file as shown above. The tool has to be executed on each
 storage node after the operation system has been installed. It automatically
 determines the disks suitable for OSDs and metadata devices and distributes
 the OSDs evenly across the metadata devices. This half-automated way of
