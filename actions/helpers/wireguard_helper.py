@@ -25,13 +25,13 @@ class WireGuardUser(collections.namedtuple(
 
         if with_address:
             try:
-                addresses_v4_dict = d['ips'] if 'ips' in d else {0: d['ip']}
+                addresses_v4_dict = d['ips'] if 'ips' in d else {"0": d['ip']}
             except KeyError:
                 pass
             else:
                 for endpoint, ip in addresses_v4_dict.items():
                     addressv4_interface = ipaddress.ip_interface(ip)
-                    addressesv4_ips[int(endpoint)] = addressv4_interface.ip
+                    addressesv4_ips[endpoint] = addressv4_interface.ip
 
                     if addressv4_interface.network.prefixlen != 32:
                         raise ValueError(
@@ -40,13 +40,13 @@ class WireGuardUser(collections.namedtuple(
                         )
 
             try:
-                addresses_v6_dict = d['ipsv6'] if 'ipsv6' in d else {0: d['ipv6']}
+                addresses_v6_dict = d['ipsv6'] if 'ipsv6' in d else {"0": d['ipv6']}
             except KeyError:
                 pass
             else:
                 for endpoint, ip in addresses_v6_dict.items():
                     addressv6_interface = ipaddress.ip_interface(ip)
-                    addressesv6_ips[int(endpoint)] = addressv6_interface.ip
+                    addressesv6_ips[endpoint] = addressv6_interface.ip
 
                     if addressv6_interface.network.prefixlen != 128:
                         raise ValueError(
@@ -484,13 +484,12 @@ def _dump_IPAM_config(
     with WG_IPAM_CONFIG_PATH.open("w") as fout:
         users = [user.todict() for user in assigned_users.values()]
 
-        # Cast endpoint id to string, because toml doesn't like integer keys
         for user in users:
             if 'ips' in user:
-                user['ips'] = {str(endpoint): addr
+                user['ips'] = {endpoint: addr
                                for endpoint, addr in user['ips'].items()}
             if 'ipsv6' in user:
-                user['ipsv6'] = {str(endpoint): addr
+                user['ipsv6'] = {endpoint: addr
                                  for endpoint, addr in user['ipsv6'].items()}
 
         toml.dump({
@@ -544,6 +543,10 @@ def generate_wireguard_config(
 
     # Handle legacy wireguard options
     _handle_legacy_options(wireguard_config)
+
+    # Cast endpoint id to string, because json, yaml and toml don't like integer keys
+    for ep in wireguard_config["endpoints"]:
+        ep['id'] = str(ep['id'])
 
     # Extract the IPv4 and IPv6 subnet for wireguard from the config
     endpoints = _get_endpoints_from_config(wireguard_config)
