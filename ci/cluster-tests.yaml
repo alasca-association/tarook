@@ -6,7 +6,7 @@
       - '{[^d]*,d,d[^o]*,do,do[^c]*,doc,doc[^s]*,docs?*}/**/*'
 
 .prepare_spawn_test_cleanup_k8s_cluster:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   variables:
     WG_COMPANY_USERS: "false"
     K8S_CUSTOM_STAGE_USAGE: "true"
@@ -213,9 +213,10 @@
     - cp res/custom-play.yaml k8s-custom/main.yaml
       # Note that this is basically a dummy keypair that is not used to protect any significant data
     - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
+    - direnv allow
+    - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
       # Ensure that the project is clean
     - python3 clean-up-os-project.py
-    - poetry install --with ci --sync
 
   script:
     - export VAULT_ADDR=https://yaook-vault:8200
@@ -236,14 +237,22 @@
     - cp custom-play.yaml k8s-custom/main.yaml
     - ./managed-k8s/actions/apply-terraform.sh
     - ./reachability-or-recreate.sh
+    - export AFLAGS="-e ansible_ssh_private_key_file=/root/.ssh/id_rsa"
     - ./managed-k8s/actions/apply-all.sh
     - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-frontend-nodes.sh
     - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-kubernetes-nodes.sh
     - ./managed-k8s/actions/test.sh
   after_script:
     - cd ci/
+    - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
     - ./after_script_cleanup.sh
+    # artifacts are overridden by later stages, so we need to re-export the variable here
+    # for context see https://gitlab.com/yaook/k8s/-/merge_requests/1175#note_1959887865
+    - echo "YAOOK_K8S_CI_IMAGE_TAG=$YAOOK_K8S_CI_IMAGE_TAG" > image.env
+
   artifacts:
+    reports:
+      dotenv: ci/image.env
     paths:
       - ci/podlogs/
     when: always
@@ -252,7 +261,7 @@
     - wireguard-ready
 
 .test_upgrade_path_k8s_cluster:
-  image: "registry.gitlab.com/yaook/images/k8s-ci/f1a:devel"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   services: !reference [.prepare_spawn_test_cleanup_k8s_cluster, services]
   before_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]

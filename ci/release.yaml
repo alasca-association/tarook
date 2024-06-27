@@ -1,7 +1,9 @@
 pages:
   stage: release
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   before_script:
+    - direnv allow
+    - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
     - poetry install --with docs --sync
   script:
     - git fetch && git remote prune origin
@@ -24,7 +26,7 @@ tag-release:
   stage: release
   tags:
     - docker
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   ## if you change the project wide setting back to GIT_STRATEGY=fetch keep in mind this jobs needs
   ## to be run with GIT_STRATEGY=clone
   # variables:
@@ -84,7 +86,7 @@ create-gitlab-release:
 
 merge-to-release-branch:
   stage: release
-  image: "registry.gitlab.com/yaook/images/k8s-ci/base:devel"
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   ## if you change the project wide setting back to GIT_STRATEGY=fetch keep in mind this jobs needs
   ## to be run with GIT_STRATEGY=clone
   # variables:
