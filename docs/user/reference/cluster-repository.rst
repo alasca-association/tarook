@@ -26,7 +26,8 @@ will most certainly have more files than these.
 
    your_cluster_repo
    ├── config/
-   │   ├── config.toml               # Cluster configuration
+   │   ├── config.toml               # Legacy cluster configuration
+   │   ├── default.nix               # Cluster configuration
    │   └── wireguard_ipam.toml       # WireGuard IPAM
    ├── etc/                          # Cluster-specific files
    ├── inventory/                    # Ansible inventory

@@ -3,35 +3,37 @@ Cluster Configuration
 
 The :doc:`environment variables </user/reference/environmental-variables>`
 affect how the user interact with the cluster via the
-:doc:`action scripts </user/reference/actions-references>`. The
-``config/config.toml`` however is the main configuration file and can be
-adjusted to customize the yk8s cluster to fit your needs. It also
-contains operational flags which can trigger operational tasks. After
-:doc:`initializing a cluster repository </user/guide/initialization>`, the
-``config/config.toml`` contains necessary (default) values to create a
-cluster. However, you’ll still need to adjust some of them before
-triggering a cluster creation.
+:doc:`action scripts </user/reference/actions-references>`. The directory
+``config/`` however holds the configuration of the cluster itself
+and can be adjusted to customize the yk8s cluster to fit your needs. It also
+contains operational flags which can trigger operational tasks.
+
+The ``config/default.nix`` configuration file
+---------------------------------------------
+
+After
+:doc:`initializing a cluster repository </user/guide/initialization>`,
+``config/default.nix`` contains a minimal configuration with default values.
+However, you’ll still need to adjust some of them before
+triggering cluster creation.
+
+When an action script is run, Nix automatically reads the configuration file,
+processes it, and puts variables into the ``inventory/``. The ``inventory/``
+is automatically included. Following the concept of separation of concerns,
+variables are only available to stages/layers which need them
 
 The ``config/config.toml`` configuration file
 ---------------------------------------------
 
-The ``config.toml`` configuration file is created during the
-:doc:`cluster repository initialization </user/guide/initialization>` from the
-``templates/config.template.toml`` file. You can (and must) adjust some
-of it’s values.
-
-Before triggering an action script, the
-:ref:`inventory updater <actions-references.update_inventorypy>`
-automatically reads the configuration file, processes it, and puts
-variables into the ``inventory/``. The ``inventory/`` is automatically
-included. Following the concept of separation of concerns, variables are
-only available to stages/layers which need them.
+The ``config.toml`` is the legacy configuration file and can be imported in
+``default.nix`` to allow for gradual migration.
+.
 
 Configuring Terraform
 ~~~~~~~~~~~~~~~~~~~~~
 
 You can overwrite all Terraform related variables (see below for
-where to find a complete list) in the Terraform section of your ``config.toml``.
+where to find a complete list) in the Terraform section of your config.
 
 By default 3 control plane nodes and 4 workers will get created. You’ll
 need to adjust these values if you e.g. want to enable
@@ -47,38 +49,34 @@ need to adjust these values if you e.g. want to enable
 Please not that with the introduction of ``for_each`` in our terraform
 module, you can delete individual nodes. Consider the following example:
 
-.. code:: toml
+.. code:: nix
 
-   [terraform]
-   workers = 3
-   worker_names = ["0", "1", "2"]
+   terraform.workers = 3;
+   terraform.worker_names = ["0" "1" "2"];
 
 In order to delete any of the nodes, decrease the ``workers`` count and
 remove the suffix of the worker from the list. After removing, i.e.,
 “1”, your config would look like this:
 
-.. code:: toml
+.. code:: nix
 
-   [terraform]
-   workers = 2
-   worker_names = ["0", "2"]
+   terraform.workers = 2;
+   terraform.worker_names = ["0" "2"];
 
 For an auto-generated complete list of variables, please refer to
 :doc:`Terraform docs </developer/reference/terraform-docs>`.
 
 To activate automatic backend of Terraform statefiles to Gitlab,
-adapt the Terraform section of your ``config.toml``:
-set `gitlab_backend` to True,
+set `terraform.gitlab_backend` to `true`,
 set the URL of the Gitlab project and
 the name of the Gitlab state object.
 
-.. code:: toml
+.. code:: nix
 
-   [terraform]
-   gitlab_backend    = true
-   gitlab_base_url   = "https://gitlab.com"
-   gitlab_project_id = "012345678"
-   gitlab_state_name = "tf-state"
+   terraform.gitlab_backend    = true;
+   terraform.gitlab_base_url   = "https://gitlab.com";
+   terraform.gitlab_project_id = "012345678";
+   terraform.gitlab_state_name = "tf-state";
 
 Put your Gitlab username and access token
 into the ``~/.config/yaook-k8s/env``.
@@ -106,12 +104,12 @@ Once the migration is successful,
 unset the variables above
 to continue using the "local" backend method.
 
-.. code:: toml
+.. code:: bash
 
    export TF_HTTP_USERNAME="<gitlab-username>"
    export TF_HTTP_PASSWORD="<gitlab-access-token>"
 
-Excerpt from ``templates/config.template-toml``:
+# TODO: import or link to generated docs
 
 .. raw:: html
 
