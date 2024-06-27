@@ -1,21 +1,3 @@
 ---
-k8s_ingress_install: true
-k8s_ingress_namespace: k8s-svc-ingress
-k8s_ingress_scheduling_key: null
-k8s_ingress_service_type: LoadBalancer
-k8s_ingress_nodeport_http: 32080
-k8s_ingress_nodeport_https: 32443
-k8s_ingress_replica_count: 1
-k8s_ingress_enable_ssl_passthrough: "true"
-k8s_ingress_helm_repo_url: "https://kubernetes.github.io/ingress-nginx"
-k8s_ingress_chart_ref: "ingress-nginx/ingress-nginx"
-k8s_ingress_chart_version: "4.11.1"
-k8s_ingress_release_name: "ingress"
-k8s_ingress_allow_snippet_annotations: false
-k8s_ingress_memory_limit: ""
-k8s_ingress_memory_request: "128Mi"
-k8s_ingress_cpu_limit: ""
-k8s_ingress_cpu_request: "100m"
-
 monitoring_common_labels: {}
 ...

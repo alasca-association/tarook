@@ -19,7 +19,7 @@ certRef: {{ etcd_backup_config.certRef | to_yaml }}
 
 serviceMonitor:
   enabled: {{ k8s_monitoring_enabled | bool }}
-{% if monitoring_common_labels | default(False) %}
+{% if monitoring_common_labels %}
   additionalLabels:
 {% for label_key, label_value in monitoring_common_labels.items() %}
     {{ label_key | to_json }}: {{ label_value | to_json }}

@@ -1,4 +1,0 @@
----
-fluxcd_namespace: k8s-svc-flux-system
-fluxcd_version: v0.36.0
-...

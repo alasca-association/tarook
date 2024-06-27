@@ -1,4 +1,4 @@
-{% if (item.port | default(false)) %}
+{% if (item.port %}
   {% set hosts = [container_mirror_default_host ~ ":" ~ item.port] %}
 {% else %}
   {% set hosts = item.mirrors %}

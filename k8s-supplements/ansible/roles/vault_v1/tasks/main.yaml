@@ -20,7 +20,7 @@
   ansible.builtin.import_tasks: internal_pki.yaml
 
 - name: Create the external PKI
-  when: yaook_vault_ingress | default(False)
+  when: yaook_vault_ingress
   ansible.builtin.import_tasks: external_pki.yaml
 
 - name: "{{ yaook_vault_enabled | ternary('Add', 'Remove') }} Hashicorp vault Repo"

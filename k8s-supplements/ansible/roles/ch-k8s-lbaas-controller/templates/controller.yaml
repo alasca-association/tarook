@@ -34,13 +34,7 @@ spec:
         - containerPort: 15203
           name: api
           protocol: TCP
-        resources:
-          requests:
-            cpu: {{ ch_k8s_lbaas_controller_cpu_request | to_json }}
-            memory: {{ ch_k8s_lbaas_controller_memory_request | to_json }}
-          limits:
-            cpu: {{ ch_k8s_lbaas_controller_cpu_limit | to_json }}
-            memory: {{ ch_k8s_lbaas_controller_memory_limit | to_json }}
+        resources: {{ ch_k8s_lbaas_controller_resources | to_json }}
       serviceAccountName: ch-k8s-lbaas-controller
       volumes:
       - name: config

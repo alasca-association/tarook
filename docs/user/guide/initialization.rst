@@ -7,100 +7,31 @@ Initialization
 Install System Requirements
 ---------------------------
 
-.. tabs::
+Yaook/k8s only has a single dependency: Nix. Everything else is fetched or built automatically.
 
-   .. tab:: Install requirements manually
+`Nix <https://nixos.org>`__ is a declarative package manager
+which powers NixOS but can also be installed as an additional package manager on any
+other distribution. This repository contains a flake.nix which references all necessary
+dependencies which are locked to specific versions so everybody uses an identical environment.
 
-      .. raw:: html
+1. `Install Nix <https://nixos.org/download.html#download-nix>`__
+2. `Enable flake support <https://nixos.wiki/wiki/Flakes#Permanent>`__ by adding the line
 
-         <details>
-         <summary>Install system package dependencies</summary>
+   .. code:: ini
 
+      experimental-features = nix-command flakes
 
-      yaook/k8s requires the following packages:
+   to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``
+3. (Optional) Add our binary cache so you won't have to build anything from source
 
-      - `python3-poetry <https://github.com/python-poetry/install.python-poetry.org>`__
-        - please note that a version > v1.5.0 is required
-      - jq
-      - moreutils (for ``sponge``)
-      - wireguard
-      - uuid-runtime
-      - openssl
+.. code:: ini
 
-      For Debian-based distros you can do:
+   extra-substituters = https://yaook.cachix.org
+   extra-trusted-public-keys = yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
 
-      .. code:: console
-
-         $ sudo apt install python3-poetry jq moreutils wireguard uuid-runtime kubectl openssl
-
-      Additionally, `kubectl <https://kubernetes.io/docs/tasks/tools/install-kubectl-linux>`__
-      is needed.
-
-      Furthermoe, please consult the documentations for your operation system to fulfill
-      the following dependencies.
-
-      .. raw:: html
-
-         </details>
-
-      .. raw:: html
-
-         <details>
-         <summary>Install Terraform</summary>
-
-      Follow `the upstream instructions on installing Terraform <https://www.terraform.io/downloads>`__.
-
-      .. raw:: html
-
-         </details>
-      .. raw:: html
-
-         <details>
-         <summary>Install Vault</summary>
-
-      Follow `the upstream instructions on installing Vault <https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-install>`__.
-
-      .. raw:: html
-
-         </details>
-
-      .. raw:: html
-
-         <details>
-         <summary>Install helm</summary>
-
-      Follow `the upstream instructions on installing
-      Helm. <https://helm.sh/docs/intro/install/>`__
-
-      .. raw:: html
-
-         </details>
-
-   .. tab:: Install requirements using Nix
-
-      `Nix <https://nixos.org>`__ is a declarative package manager
-      which powers NixOS but can also be installed as an additional package manager on any
-      other distribution. This repository contains a flake.nix which references all necessary
-      dependencies which are locked to specific versions so everybody uses an identical environment.
-
-      1. `Install Nix <https://nixos.org/download.html#download-nix>`__
-      2. `Enable flake support <https://nixos.wiki/wiki/Flakes#Permanent>`__ by adding the line
-
-         .. code:: ini
-
-            experimental-features = nix-command flakes
-
-         to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``
-      3. (Optional) Add our binary cache so you won't have to build anything from source
-
-         .. code:: ini
-
-            extra-substituters = https://yaook.cachix.org
-            extra-trusted-public-keys = yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
-
-         to ``/etc/nix/nix.conf``
-      4. Run ``nix shell`` in this directory to enter an environment with all requirements available
-         If you use direnv, it will automatically load all requirements once you enter the directory.
+to ``/etc/nix/nix.conf``
+4. Run ``nix shell`` in this directory to enter an environment with all requirements available
+If you use direnv, it will automatically load all requirements once you enter the directory.
 
 We also strongly recommend installing and using:
 
@@ -200,7 +131,7 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
    This ``init-cluster-repo.sh`` script will:
 
    -  Add all necessary submodules.
-   -  Copy a ``config.toml`` template to ``./config/config.toml`` if no
+   -  Copy a configuration template to ``./config/`` if no
       config exists in the cluster repository yet.
    -  Update ``.gitignore`` to current standards.
 
