@@ -6,13 +6,11 @@ The ``fluxcd2_v2`` role deploys a useful set of controllers
 via the `fluxcd2 community helm chart <https://github.com/fluxcd-community/helm-charts/>`__
 , to manage further K8s workload in a GitOps manner.
 
-The installation can be activated by setting the ``enabled`` field in
-the ``k8s-service-layer.fluxcd`` to ``true``.
+The installation can be activated by setting
 
-.. code:: toml
+.. code:: nix
 
-   [k8s-service-layer.fluxcd]
-   enabled = true
+   k8s-service-layer.fluxcd.enabled = true;
 
 For further configuration options please refer to
 :ref:`the Flux configuration section <cluster-configuration.flux>`.
@@ -32,9 +30,8 @@ on subsequent LCM runs.
 If you want to postpone the migration,
 you have to set:
 
-.. code:: toml
+.. code:: nix
 
-   [k8s-service-layer.fluxcd]
-   legacy = true
+   k8s-service-layer.fluxcd.legacy = true;
 
 However, the ``fluxcd2_v1`` will be dropped very soon.

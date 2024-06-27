@@ -9,6 +9,7 @@ hidden: true
 services/index
 actions-references
 cluster-configuration
+options/index
 cluster-repository
 environmental-variables
 ```

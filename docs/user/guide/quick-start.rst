@@ -15,7 +15,7 @@ If you are having problems, please visit our :doc:`FAQ </user/guide/faq>`.
 2. :ref:`Create required resources. <initialization.required-system-resources>`
 3. :ref:`Initialize cluster repository. <initialization.create-and-initialize-cluster-repository>`
 
-4. Configure cluster in ``./config/config.toml``.
+4. Configure cluster in ``./config/default.nix``.
 
    .. note::
       If you plan on deploying OpenStack using `yaook/operator <https://gitlab.com/yaook/operator>`_
@@ -25,22 +25,22 @@ If you are having problems, please visit our :doc:`FAQ </user/guide/faq>`.
       your Kubernetes cluster.
 
    -  There are
-      :doc:`many configuration options available </user/reference/cluster-configuration>`,
+      :doc:`many configuration options available </user/reference/options/index>`,
       but the minimum
       changes that need to be made to the configuration file are:
 
       -  You need to add your (public) wireguard key to the
-         :ref:`wireguard peer configuration <cluster-configuration.wireguard-configuration>`.
+         :ref:`wireguard peer configuration <configuration-options.yk8s.wireguard.peers>`.
 
       -  As your cluster runs on top of OpenStack, you can enable the
-         ``ch-k8s-lbaas`` :ref:`loadbalancing <cluster-configuration.configuring-load-balancing>`
+         ``ch-k8s-lbaas`` :ref:`loadbalancing <cluster-configuration.ch-k8s-lbaas>`
          to allow the creation of Kubernetes services of type
          `LoadBalancer <https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer>`_.
          If you want to do so, you also need to create the
          ``ch-k8s-lbaas.shared_secret`` secret.
 
       - Check for
-        :doc:`terraform variables</developer/reference/terraform-docs>`
+        :ref:`cluster-configuration.configuring-terraform`
         that can be set, you need to change some of them to fit to your
         OpenStack cluster, e.g.
         the flavors, images, ... of the gateway, master and worker nodes.

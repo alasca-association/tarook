@@ -196,7 +196,7 @@ Environment Variable        Default                 Description
                                                     This variable is used by the
                                                     ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
 ``wg_endpoint``             ``0``                   The ID of the wireguard endpoint to use when connecting
-                                                    to the VPN, as defined in ``config.toml`` at ``wireguard.endpoints``.
+                                                    to the VPN, as defined in the config at ``wireguard.endpoints``.
 ``wg_private_key_file``     ``"$(pwd)/../privkey"`` Path to your WireGuard private key
                                                     file. This is not copied to any
                                                     remote machine, but needed to
@@ -351,7 +351,7 @@ YAOOK_K8S_DEVSHELL                          ``default`` Selects the devShell to 
 Template
 --------
 
-The template file is located at ``templates/envrc.template.sh``.
+The template file is located at ``nix/templates/cluster-repo/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
 
 .. literalinclude:: /templates/envrc.template.sh
    :language: bash

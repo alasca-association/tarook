@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 

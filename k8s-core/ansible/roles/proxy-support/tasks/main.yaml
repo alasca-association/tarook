@@ -34,7 +34,7 @@
 
 - name: Control and create proxy configuration for Ubuntu machines
   become: true
-  when: (cluster_behind_proxy | default(false)) and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  when: cluster_behind_proxy and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   block:
     - name: Ensure /etc/environment contains proxy configuration
       become: true

@@ -1,13 +1,13 @@
 ---
 - name: Check OpenStack credentials
-  when: ((on_openstack | default(False)) | bool) and ((check_openstack_credentials | default(True)) | bool)
+  when: (on_openstack | bool) and (check_openstack_credentials | bool)
   delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   become: false
   block:
   - name: Are we using application credentials?
     set_fact:
-      using_app_creds: "{{ (lookup('env', 'OS_AUTH_TYPE') | default('v3password')) == 'v3applicationcredential' }}"
+      using_app_creds: "{{ (lookup('env', 'OS_AUTH_TYPE') | default('v3password', true)) == 'v3applicationcredential' }}"
   - name: Attempt to get a keystone token to validate the existence of credentials
     ansible.builtin.uri:
       url: "{{ lookup('env', 'OS_AUTH_URL') }}/auth/tokens"
@@ -29,8 +29,8 @@
         the task couldn't create a keystone token. Maybe you forgot to source them?
         If you think you know better, e.g., you know what you're doing or this is a
         network problem, disable this check by passing `-e check_openstack_credentials=false`
-        via the CLI or by setting this flag in the `[miscellaneous]` section of your
-        config.toml.
+        via the CLI or by setting this flag in the `miscellaneous` section of your
+        config.
         Note: The keystone token is not used anywhere and its creation acts as a sanity
         check because just checking for the existence of certain variables is cumbersome.
         This test is necessary because otherwise certain tasks will write nonesense configs

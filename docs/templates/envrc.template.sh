@@ -1,1 +1,1 @@
-../../templates/envrc.template.sh
+../../nix/templates/cluster-repo/.envrc

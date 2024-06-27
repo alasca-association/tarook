@@ -89,8 +89,8 @@ serviceMonitor:
 {% for target in monitoring_internet_probe_targets %}
       - name: {{ target.name | to_json }}
         url: {{ target.url | to_json }}
-        interval: {{ target.interval | default("60s") | to_json }}
-        scrapeTimeout: {{ target.scrapeTimeout | default("60s") | to_json }}
+        interval: {{ target.interval | to_json }}
+        scrapeTimeout: {{ target.scrapeTimeout | to_json }}
         module: {{ target.module | default("http_2xx") | to_json }}
 {% endfor %}
 
