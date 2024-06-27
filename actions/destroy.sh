@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 actions_dir="$(realpath "$(dirname "$0")")"
+
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
+
+# Ensure that the latest config is deployed to the inventory
+"$actions_dir/update-inventory.sh"
+
 load_conf_vars
 
 check_venv
@@ -92,4 +97,4 @@ if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")
 fi
 
 # Purge the remaining terraform directory. Its existence is a condition for additional disruption checks.
-rm -f "$terraform_state_dir/config.tfvars.json"
+rm -fr "$terraform_state_dir"

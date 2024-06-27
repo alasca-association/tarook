@@ -2,7 +2,7 @@ cloudConfig:
   loadBalancer:
     enabled: false
 cluster:
-  name: {{ cluster_name | default('managed-k8s') | to_json }}
+  name: {{ cluster_name | to_json }}
 secret:
   enabled: true
   create: false

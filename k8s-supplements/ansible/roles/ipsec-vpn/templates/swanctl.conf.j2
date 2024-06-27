@@ -38,7 +38,7 @@ connections {
 {% endfor %}
         }
         dpd_delay = 1
-{% if ipsec_virtual_subnet_pool %}
+{% if ipsec_virtual_subnet_pool is defined %}
         pools = home
 {% endif %}
         version = 2
@@ -47,7 +47,7 @@ connections {
     }
 }
 
-{% if ipsec_virtual_subnet_pool %}
+{% if ipsec_virtual_subnet_pool is defined %}
 pools {
     home {
         addrs = {{ ipsec_virtual_subnet_pool }}

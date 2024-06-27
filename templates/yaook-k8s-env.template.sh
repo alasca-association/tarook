@@ -43,7 +43,7 @@ export TF_VAR_keypair='firstnamelastname-hostname-gendate'
 
 # If you want to load the optional interactive dependencies into your devShell
 # Recommended if you're on NixOS. Not recommended on Debian et al.
-# export YAOOK_DEVSHELL="withInteractive"
+# export YAOOK_K8S_DEVSHELL="withInteractive"
 
 # There is a bug in poetry that makes it access the user's key ring
 # even if not necessary. It should only do that (1) when publishing

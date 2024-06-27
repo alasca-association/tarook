@@ -32,13 +32,14 @@ General procedure
 
       $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.x.y
 
-3. Once the upgrade executed successfully, update your ``config.toml``
+3. Once the upgrade executed successfully, update your config
    to point to the new K8s version:
 
-   .. code:: toml
+   .. code:: nix
 
-      [kubernetes]
-      version="1.x.y"
+      kubernetes = {
+         version="1.x.y";
+      };
 
 Skip Intermittent Cluster Health Verification
 ---------------------------------------------

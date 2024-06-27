@@ -29,50 +29,39 @@ OpenStack resources:
   $ export WG_USAGE=false
   $ export TF_USAGE=true
 
-Configure the ``[terraform]`` section in your ``config/config.toml``.
-Adjust the configuration to meet your needs:
+Configure the ``terraform`` section. Adjust the following example to meet your needs:
 
-.. code:: toml
+.. code:: nix
 
-  [terraform]
+  terraform = {
+    cluster_name = "devcluster";
 
-  subnet_cidr = "172.30.154.0/24"
-  cluster_name = "managed-k8s"
+    public_network = "shared-public-IPv4";
+    subnet_cidr = "192.168.67.0/24";
 
-  [terraform.master_defaults]
-  image  = "Ubuntu 22.04 LTS x64"
+    master_defaults = {
+      flavor = "M";
+      image = "Ubuntu 22.04 LTS x64";
+    };
+    worker_defaults = {
+      flavor = "M";
+      image = "Ubuntu 22.04 LTS x64";
+    };
+    gateway_defaults = {
+      image = "Debian 12 (bookworm)";
+      flavor = "XS";
+    };
 
-  [terraform.worker_defaults]
-  image  = "Ubuntu 22.04 LTS x64"
-
-  [terraform.nodes.master-0]
-  role   = "master"
-
-  [terraform.nodes.master-1]
-  role   = "master"
-
-  [terraform.nodes.master-2]
-  role   = "master"
-
-  [terraform.nodes.worker-0]
-  role   = "worker"
-  flavor = "L"
-
-  [terraform.nodes.worker-1]
-  role   = "worker"
-  flavor = "L"
-
-  [terraform.nodes.worker-2]
-  role   = "worker"
-  flavor = "XL"
-
-  [terraform.nodes.worker-3]
-  role   = "worker"
-  flavor = "XL"
-
-  [terraform.nodes.worker-4]
-  role   = "worker"
-  flavor = "XL"
+    nodes = {
+      master-0.role = "master";
+      master-1.role = "master";
+      master-2.role = "master";
+      worker-0.role = "worker";
+      worker-1.role = "worker";
+      worker-2.role = "worker";
+      worker-3.role = "worker";
+    };
+  };
 
 Creation of the harbour infrastructure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -100,11 +89,11 @@ their ports and associated floating IPs:
 Also remove the ``[gateways]`` section from the inventory ``inventory/yaook-k8s/hosts`` now
 and replace ``gateways`` with ``masters`` in the ``[frontend:children]`` section.
 
-We can now disable Terraform in our ``.envrc``:
+We can now disable Terraform:
 
-.. code:: console
+.. code:: nix
 
-  $ export TF_USAGE=false
+  terraform.enable = false;
 
 Create a jump host
 ~~~~~~~~~~~~~~~~~~
@@ -143,7 +132,7 @@ which has been created previously by Terraform
 * Set ``on_openstack`` to ``false``
 * Set ``networking_fixed_ip`` to the networking fixed ip created by Terraform
   * Check out the following vars-file: ``inventory/yaook-k8s/group_vars/all/terraform_networking-trampoline.yaml``
-* Set ``subnet_cidr`` to the subnet cidr created by Terraform (and configured above in your ``config/config.toml``)
+* Set ``subnet_cidr`` to the subnet cidr created by Terraform (and configured above)
   * Check out the following vars-file: ``inventory/yaook-k8s/group_vars/all/terraform_networking-trampoline.yaml``
 * Set ``ipv4_enabled`` to ``true``
 * Set ``ipv6_enabled`` to ``false``
@@ -291,10 +280,9 @@ Ensure ch-k8s-lbaas is disabled
 
 Ensure you disabled ch-k8s-lbaas:
 
-.. code:: toml
+.. code:: nix
 
-  [ch-k8s-lbaas]
-  enabled = false
+  ch-k8s-lbaas.enabled = false;
 
 Configuring Storage Classes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -305,9 +293,8 @@ which is not available when not connecting the Kubernetes cluster to the
 underlying OpenStack.
 
 If you want to deploy Vault, set another storage class
-in your ``config/config.toml``:
+in your configuration:
 
-.. code:: toml
+.. code:: nix
 
-  [k8s-service-layer.vault]
-  storage_class = "local-storage"
+  k8s-service-layer.vault.storage_class = "local-storage";

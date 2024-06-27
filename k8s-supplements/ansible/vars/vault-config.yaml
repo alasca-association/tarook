@@ -1,8 +1,4 @@
 ---
-vault_policy_prefix: yaook
-vault_path_prefix: yaook
-vault_nodes_approle: yaook/nodes
-
 vault_caller_auth_mount_point: "{{ lookup('env', 'VAULT_AUTH_PATH') }}"
 # not using | default() here, because lookup always returns a value, but it
 # might be empty

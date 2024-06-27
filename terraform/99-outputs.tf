@@ -10,19 +10,13 @@ resource "local_file" "inventory_yaook-k8s" {
     ipv6_enabled = var.ipv6_enabled,
     ipv4_enabled = var.ipv4_enabled,
   })
-  filename        = "../../inventory/yaook-k8s/hosts"
+  filename        = "../../state/terraform/rendered/hosts"
   file_permission = 0640
 }
 
 resource "local_file" "trampoline_gateways" {
   content         = data.template_file.trampoline_gateways.rendered
-  filename        = "../../inventory/yaook-k8s/group_vars/all/terraform_networking-trampoline.yaml"
-  file_permission = 0640
-}
-
-resource "local_file" "final_group_all" {
-  content         = data.template_file.trampoline_gateways.rendered
-  filename        = "../../inventory/yaook-k8s/group_vars/all/terraform_networking-trampoline.yaml"
+  filename        = "../../state/terraform/rendered/terraform_networking-trampoline.yaml"
   file_permission = 0640
 }
 
@@ -34,14 +28,14 @@ resource "local_file" "final_networking" {
     subnet_cidr            = try(openstack_networking_subnet_v2.cluster_subnet[0].cidr, null),
     subnet_v6_cidr         = try(openstack_networking_subnet_v2.cluster_v6_subnet[0].cidr, null),
   })
-  filename        = "../../inventory/yaook-k8s/group_vars/all/terraform_networking.yaml"
+  filename        = "../../state/terraform/rendered/terraform_networking.yaml"
   file_permission = 0640
 }
 
-# Please note that if gitlab_backend is set to true in config.toml
+# Please note that if gitlab_backend is set to true in the config
 # it will override this local backend configuration
 terraform {
   backend "local" {
-    path = "../../terraform/terraform.tfstate"
+    path = "../../state/terraform/terraform.tfstate"
   }
 }

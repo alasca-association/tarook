@@ -3,15 +3,14 @@
 cluster_repository="$(realpath ".")"
 code_repository="$(realpath "$actions_dir/../")"
 etc_directory="$(realpath "etc")"
-config_file="$cluster_repository/config/config.toml"
+group_vars_dir="${cluster_repository}/inventory/yaook-k8s/group_vars"
 
 submodule_managed_k8s_name="managed-k8s"
 
 terraform_min_version="1.3.0"
-terraform_state_dir="$cluster_repository/terraform"
+terraform_state_dir="$cluster_repository/state/terraform"
 terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"
 terraform_plan="$terraform_state_dir/plan.tfplan"
-terraform_disruption_setting="terraform.prevent_disruption"
 
 ansible_directory="$code_repository/ansible"
 
@@ -28,7 +27,7 @@ ansible_k8s_custom_inventory="$cluster_repository/k8s-custom/inventory"
 ansible_k8s_sl_vars_base="$ansible_inventory_base/04_k8s_service_layer"
 ansible_k8s_ms_vars_base="$ansible_inventory_base/05_k8s_managed_service"
 
-vault_dir="${VAULT_DIR:-$cluster_repository/vault}"
+vault_dir="${VAULT_DIR:-$cluster_repository/state/vault}"
 
 if [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'true' ]; then
     use_color='true'
@@ -68,14 +67,16 @@ function load_vault_container_name() {
 function load_conf_vars() {
     # All the things with side-effects should got here
 
-    tf_usage=${tf_usage:-"$(tomlq '.terraform | if has ("enabled") then .enabled else true end' "$config_file")"}
-    terraform_prevent_disruption="$(
-        tomlq ".$terraform_disruption_setting"'
-            | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
-            "$config_file" 2>/dev/null
-    )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
-
-    wg_usage=${wg_usage:-"$(tomlq '.wireguard | if has("enabled") then .enabled else true end' "$config_file")"}
+    if [ -e "$terraform_state_dir/config.tfvars.json" ]; then
+        terraform_prevent_disruption="$(
+            jq '.prevent_disruption | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
+                "$terraform_state_dir/config.tfvars.json" 2>/dev/null
+        )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
+        tf_usage=${tf_usage:-"$(jq '. | if has ("enabled") then .enabled else true end' "$terraform_state_dir/config.tfvars.json")"}
+    else
+        tf_usage=false
+    fi
+    wg_usage=${wg_usage:-"$(yq '. | if has("wg_enabled") then .wg_enabled else true end' "$group_vars_dir/gateways/wireguard.yaml")"}
 
     if [ "${wg_usage:-true}" == "true" ]; then
         wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
@@ -125,9 +126,9 @@ function require_harbour_disruption() {
         errorf '$MANAGED_K8S_DISRUPT_THE_HARBOUR is set to %q' "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" >&2
         if [ "${tf_usage:-true}" == 'true' ]; then
             if [ -z ${terraform_prevent_disruption+x} ]; then
-                errorf "and ${terraform_disruption_setting} in ${config_file}"' is unset or invalid' >&2
+                errorf "and terraform.prevent_disruption in the config is unset or invalid" >&2
             else
-                errorf "and ${terraform_disruption_setting} in ${config_file}"' is set to %q' \
+                errorf "and terraform.prevent_disruption in the config is set to %q" \
                        "${terraform_prevent_disruption}" >&2
             fi
         fi

@@ -25,7 +25,7 @@
 
 - name: Install NGINX ingress
   vars:
-    scheduling_key: "{{ k8s_ingress_scheduling_key }}"
+    scheduling_key: "{{ k8s_ingress_scheduling_key | default(None) }}"
   kubernetes.core.helm:
     chart_ref: "{{ k8s_ingress_chart_ref }}"
     release_namespace: "{{ k8s_ingress_namespace }}"

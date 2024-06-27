@@ -28,8 +28,8 @@ frontend healthz
 {% if port is mapping %}
 {% set front_port = port.external %}
 {% set back_port = port.nodeport %}
-{% set layer = (port.layer | default("tcp")) %}
-{% if (port.use_proxy_protocol | default(False)) %}
+{% set layer = port.layer %}
+{% if port.use_proxy_protocol %}
 {% set _= backend_options.append("send-proxy") %}
 {% endif %}
 {% else %}

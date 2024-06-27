@@ -14,9 +14,8 @@ the `openstack-cloud-controller-manager` and the
 If you want to trigger the migration manually,
 you have to set:
 
-.. code:: toml
+.. code:: nix
 
-   [miscellaneous]
-   openstack_connect_use_helm = true
+   miscellaneous.openstack_connect_use_helm = true;
 
 ``connect_k8s_to_openstack_v1`` will be dropped soon.
