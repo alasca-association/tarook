@@ -1,15 +1,9 @@
 image:
   tag: "{{ rook_version }}"
-resources:
-  limits:
-    memory: {{ rook_operator_memory_limit | to_json }}
-    cpu: {{ rook_operator_cpu_limit | to_json }}
-  requests:
-    memory: {{ rook_operator_memory_request | to_json }}
-    cpu: {{ rook_operator_cpu_request | to_json }}
+resources: {{ rook_operator_resources | to_json }}
 
 nodeSelector:
-{% if rook_scheduling_key %}
+{% if rook_scheduling_key is defined %}
   {{ rook_scheduling_key | to_json }}: "true"
 {% endif %}
 

@@ -84,7 +84,4 @@ commands as our second-best option.
 Vault Configuraton
 ------------------
 
-.. literalinclude:: /templates/config.template.toml
-   :language: toml
-   :start-after: # ANCHOR: ksl_vault_configuration
-   :end-before: # ANCHOR_END: ksl_vault_configuration
+See :ref:`cluster-configuration.vault`

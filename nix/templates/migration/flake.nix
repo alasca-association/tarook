@@ -1,0 +1,38 @@
+{
+  inputs.yk8s.url = "git+file:managed-k8s";
+  inputs.nixpkgs.follows = "yk8s/nixpkgs";
+  inputs.flake-parts.follows = "yk8s/flake-parts";
+
+  outputs = inputs @ {
+    self,
+    flake-parts,
+    ...
+  }:
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      imports = [
+        inputs.yk8s.flakeModules.yk8s
+      ];
+      systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
+      debug = true;
+      perSystem = {
+        pkgs,
+        lib,
+        config,
+        ...
+      }: {
+        formatter = pkgs.alejandra;
+        yk8s =
+          import ./config {
+            inherit pkgs lib config;
+            yk8s-lib = inputs.yk8s.lib;
+          }
+          // {
+            # Don't change this except you know what you're doing
+            state_directory =
+              if builtins.pathExists ./state
+              then ./state
+              else null;
+          };
+      };
+    };
+}

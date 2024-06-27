@@ -19,7 +19,7 @@ To build the documentation use:
 
 ```shell
 # Build documentation
-python3 -m sphinx docs _build/html
+nix run .#renderDocs
 
 # Open in Firefox
 firefox _build/html/index.html

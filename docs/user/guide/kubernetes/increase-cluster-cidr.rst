@@ -41,7 +41,7 @@ Steps to change the cluster-cidr:
    => `IPPools have to be applied with calicoctl instead of kubectl <https://github.com/projectcalico/calico/issues/2923>`__.
 
 5. Optional: change pod_subnet in
-   ``/var/lib/metal-controller/{CLUSTER}/config/config.toml`` in the
+   ``/var/lib/metal-controller/{CLUSTER}/config`` in the
    metal-controller running in the deploy cluster.
 
    .. hint::

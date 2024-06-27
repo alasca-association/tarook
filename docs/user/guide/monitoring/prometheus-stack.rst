@@ -13,8 +13,8 @@ Take a look at the ``values.yaml`` files of
 the individual helm charts to see what you can (or can`t) potentially
 modify.
 Note that not all values might be exposed in the
-``config.toml``. The data path is
-``config.toml -> inventory/prometheus.yaml -> monitoring_v2 -> templates/prometheus_stack.yaml.j2``.
+config. The data path is
+``config -> inventory/prometheus.yaml -> monitoring_v2 -> templates/prometheus_stack.yaml.j2``.
 If a field that you need isn’t listed in ``prometheus_stack.yaml`` or
 statically configured, please
 `open an issue <https://gitlab.com/yaook/k8s/-/issues>`__
@@ -24,15 +24,16 @@ yaook/k8s’ developer guide can be found
 `here <https://yaook.gitlab.io/meta/01-developing.html#workflow>`__.
 
 Yaook/k8s also allows the upgrade of the kube-prometheus-stack.
-You can adjust the ``prometheus_stack_version`` in the ``config.toml``
+You can adjust the ``prometheus_stack_version`` in the config
 
-.. code:: toml
+.. code:: nix
 
    ...
-   [monitoring]
-   ...
-   prometheus_stack_version = 59.1.0
-   ...
+   monitoring = {
+      ...
+      prometheus_stack_version = "59.1.0";
+      ...
+   };
 
 If the variable isn`t set, the default will be used, which can be found via the
 following call as ``monitoring_prometheus_stack_version``.
@@ -225,9 +226,8 @@ Custom bucket management
 """"""""""""""""""""""""
 
 The custom bucket management can be enabled by setting
-``k8s-service-layer.prometheus.manage_thanos_bucket``
-to ``false``
-in your ``config/config.toml``.
+``k8s-service-layer.prometheus.manage_thanos_bucket = false``
+in your config.
 
 You must supply a valid configuration for a
 `supported Thanos client <https://thanos.io/tip/thanos/storage.md/#supported-clients>`__.
@@ -236,7 +236,7 @@ This configuration must be stored in your cluster key-value secrets engine
 under ``kv/data/thanos-config``.
 Inserting a Thanos client config into vault can be automated by storing the
 configuration at ``config/thanos.yaml`` (or specifying another location
-in your ``config/config.toml`` under
+in your config under
 ``k8s-service-layer.prometheus.thanos_objectstorage_config_file``)
 and then triggering the vault update script:
 

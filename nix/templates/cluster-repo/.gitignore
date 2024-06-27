@@ -1,0 +1,8 @@
+*.key
+etc/kubeadm_token
+/wg*.conf
+.terraform
+etc/manifests/
+.envrc.local
+/.direnv
+inventory

@@ -29,7 +29,7 @@
 
 - name: "{{ k8s_cert_manager_install | ternary('I', 'Uni') }}nstall Cert Manager"
   vars:
-    scheduling_key: "{{ k8s_cert_manager_scheduling_key }}"
+    scheduling_key: "{{ k8s_cert_manager_scheduling_key | default(None) }}"
   kubernetes.core.helm:
     chart_ref: "{{ k8s_cert_manager_chart_ref }}"
     release_namespace: "{{ k8s_cert_manager_namespace }}"
@@ -39,10 +39,10 @@
     chart_version: "{{ k8s_cert_manager_chart_version }}"
     values: "{{ lookup('template', 'cert_manager_values.yaml.j2') | from_yaml }}"
 
-- name: "{{ (k8s_cert_manager_install and k8s_cert_manager_letsencrypt_email) | ternary('I', 'Uni') }}nstall Let's Encrypt cluster issuer"
+- name: "{{ (k8s_cert_manager_install and (k8s_cert_manager_letsencrypt_email is defined)) | ternary('I', 'Uni') }}nstall Let's Encrypt cluster issuer"
   kubernetes.core.k8s:
     apply: true
-    state: "{{ k8s_cert_manager_letsencrypt_email | ternary('present', 'absent') }}"
+    state: "{{ (k8s_cert_manager_letsencrypt_email is defined) | ternary('present', 'absent') }}"
     definition:
       apiVersion: v1
       kind: ClusterIssuer
@@ -50,7 +50,7 @@
         name: k8s-letsencrypt
       spec:
         acme:
-          email: "{{ k8s_cert_manager_letsencrypt_email }}"
+          email: "{{ k8s_cert_manager_letsencrypt_email | default('') }}"
           preferredChain: "{{ k8s_cert_manager_letsencrypt_preferred_chain }}"
           privateKeySecretRef:
             name: letsencrypt-default-issuer-account-key

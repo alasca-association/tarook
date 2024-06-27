@@ -6,8 +6,6 @@
 # test ping wouldn't go through reliably. If you want to lookup the CIDR, log into the runner nodes and
 # checkout the `environment` variable in the indiviual `[[runners]]` sections.
 
-haproxy_ports        = [30060]
-
 azs = ["AZ1", "AZ2", "AZ3"]
 spread_gateways_across_azs = false
 cluster_name         = "ci"
@@ -66,7 +64,7 @@ flavor = "M"
 
 [load-balancing]
 deprecated_nodeport_lb_test_port = 30060
-lb_ports                         = ["{{ deprecated_nodeport_lb_test_port }}"]
+lb_ports                         = [30060]
 
 [wireguard]
 
@@ -128,7 +126,6 @@ service_subnet = "10.96.0.0/12"
 [k8s-service-layer.rook]
 namespace                = "rook-ceph"
 cluster_name             = "rook-ceph"
-use_helm                 = true
 skip_upgrade_checks      = true
 nodeplugin_toleration    = true
 nmons                    = 3
@@ -147,9 +144,7 @@ use_host_networking = true
 dashboard = true
 
 mds_memory_limit   = "4Gi"
-mds_memory_request = "{{ rook_mds_memory_limit }}"
-mds_cpu_limit      = "1"
-mds_cpu_request    = "{{ rook_mds_cpu_limit }}"
+mds_cpu_request    = "1"
 
 mon_cpu_limit      = "500m"
 mon_cpu_request    = "100m"

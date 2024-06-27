@@ -22,13 +22,12 @@ Kubernetes cluster.
 If you want to make use of GPUs inside of Kubernetes, set
 :ref:`the following <cluster-configuration.kubelet-configuration>`:
 
-.. code:: toml
+.. code:: nix
 
-   [kubernetes]
    # Set this variable if this cluster contains worker with GPU access
    # and you want to make use of these inside of the cluster,
    # so that the driver and surrounding framework is deployed.
-   is_gpu_cluster = true
+   yk8s.kubernetes.is_gpu_cluster = true
 
 This will trigger the setup automation. GPU support inside Kubernetes is
 achieved by 3 main components:
@@ -86,17 +85,18 @@ the grubfile is not changed and therefore presets are kept and the
 us to make additional modifications in the future.
 
 To enable the vGPU support in Yaook/k8s, the following variables must be
-set in the ``config.toml``. The ``config.template.toml`` can be found
-`here <https://gitlab.com/yaook/k8s/-/blob/devel/templates/config.template.toml>`__.
+set in the configuration. For a full reference see
+:ref:`cluster-configuration.nvidia-configuration`.
 The vGPU Manager software can be downloaded in the
 `NVIDIA Licensing portal <https://ui.licensing.nvidia.com/>`__.
 
-.. code:: toml
+.. code:: nix
 
    # vGPU Support
-   [nvidia.vgpu]
-   driver_blob_url = "foo"   # vGPU manager storage location
-   manager_filename = "bar"  # vGPU manager
+   yk8s.nvidia.vgpu = {
+      driver_blob_url = "foo";   # vGPU manager storage location
+      manager_filename = "bar";  # vGPU manager
+   }
 
 After Yaook/k8s has been rolled out, the folder for the chosen
 configuration still has to be found. The following steps have to be done

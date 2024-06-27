@@ -54,7 +54,7 @@ the OSD count.
    known kernel bug, this may crash the Ceph workers. Ceph will recover
    from this, however, it may lead to temporarily unavailable data.
 
-1. Ensure that the cluster is healthy and pick a victim OSD to remove:
+#. Ensure that the cluster is healthy and pick a victim OSD to remove:
 
    .. code:: console
 
@@ -107,20 +107,19 @@ the OSD count.
    (This is also an excellent example of OSD IDs not mapping 1:1 to
    volume indices.)
 
-2. Set the new target volume size. Update the ``config.toml`` of
+#. Set the new target volume size. Update the config of the
    kubernetes cluster by setting
    ``k8s-service-layer.rook.osd_volume_size`` to the new desired size.
 
-   Run the ``toml_helper.py`` and apply the changes by running ansible
-   stage 3 (possibly with ``-t rook`` to only apply the rook changes).
+#. Run `apply-k8s-supplements.sh` (possibly with ``AFLAGS="-t rook --diff"`` to only apply rook changes).
 
-3. Evict all data from the victim OSD.
+#. Evict all data from the victim OSD.
 
    .. code:: console
 
       toolbox# ceph osd crush reweight $name 0
 
-4. Wait for the migration to finish.
+#. Wait for the migration to finish.
 
    You can run ``watch ceph osd df`` as well as ``watch ceph -s`` to
    observe the migration status; the former will show how the number of
@@ -167,7 +166,7 @@ the OSD count.
       io:
          client:   852 B/s rd, 1 op/s rd, 0 op/s wr
 
-5. Mark the OSD as out.
+#. Mark the OSD as out.
 
    .. code:: console
 
@@ -195,7 +194,7 @@ the OSD count.
          pgs:     48 active+clean
       […]
 
-6. Restart the operator to trigger the removal of the evicted OSD:
+#. Restart the operator to trigger the removal of the evicted OSD:
 
    .. code:: console
 
@@ -203,7 +202,7 @@ the OSD count.
       $ sleep 5
       $ kubectl -n rook-ceph scale deployment rook-ceph-operator --replicas 1
 
-7. Wait until the operator has deleted the OSD pod (should be at most
+#. Wait until the operator has deleted the OSD pod (should be at most
    10 minutes).
 
    .. code:: console
@@ -216,7 +215,7 @@ the OSD count.
    (Rook will auto-delete OSDs which are marked as out and have no
    placement groups.)
 
-8. Purge the OSD. *If the data has not been moved, data loss will occur
+#. Purge the OSD. *If the data has not been moved, data loss will occur
    here!*
 
    .. code:: console
@@ -233,7 +232,7 @@ the OSD count.
    should say that there are now only 2 OSDs (if you started out with
    3), all of which should be up and in.
 
-9. Delete the preparation job and the PVC.
+#. Delete the preparation job and the PVC.
 
    .. caution::
 
