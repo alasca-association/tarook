@@ -11,7 +11,7 @@ What Do We Need?
     - At least 3 VMs need to be able to spawn:\
       by default we need 10 VMs (using our VM provider):
       17 VCPUs, 32 GB RAM and 4 floating IPs,\
-      but you can configure the VMs later in ``config/config.toml``\
+      but you can configure the VMs later in the config\
 
     .. note::
 
@@ -46,57 +46,12 @@ You can find the actual requirements
 
 .. code:: console
 
-    $ sudo apt install direnv \
-        jq \
-        moreutils \
-        openssl \
-        python3-pip \
-        python3-poetry \
-        python3-toml \
-        python3-venv \
-        uuid-runtime \
-        wireguard
-
-Install Terraform
------------------
-
-Terraform allows infrastructure to be expressed as code
-in a simple, human-readable language called HCL (HashiCorp Configuration Language).
-It reads configuration files and provides an execution plan of changes,
-which can be reviewed for safety and then applied and provisioned.
-
-To `install Terraform <https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli#install-terraform>`__,
-we run these commands:
-
-.. code:: console
-
-    $ wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-    $ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-    $ sudo apt update
-    $ sudo apt install terraform
-
-    $ # Check your installation
-    $ terraform version
-
-Install Helm
-------------
-
-Helm is the package manager for Kubernetes.
-It is used to build Helm charts,
-which are packages of Kubernetes resources
-that are used to deploy apps to a cluster.
-Please follow this `install instructions <https://helm.sh/docs/intro/install/>`__:
-
-.. code:: console
-
-    $ curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
-    $ sudo apt-get install apt-transport-https --yes
-    $ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-    $ sudo apt-get update
-    $ sudo apt-get install helm
-
-    $ # Check your installation
-    $ helm version
+    $ sh <(curl -L https://nixos.org/nix/install) --daemon
+    $ cat <<EOF >> /etc/nix/nix.conf
+    experimental-features = nix-command flakes
+    extra-substituters = https://yaook.cachix.org
+    extra-trusted-public-keys = yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
+    EOF
 
 Configure WireGuard
 -------------------
@@ -248,31 +203,30 @@ Configure the Cluster
 As a next step
 you can adjust the actual configuration for the K8s cluster,
 e.g. the amount of master and worker nodes, flavors, image names.
-The configuration file is named ``config/config.toml``.
-For a full config reference click
-:doc:`here </user/reference/cluster-configuration>`. Also have a close look to
-all :doc:`terraform variables</developer/reference/terraform-docs>` that
-can be set, you need to change some of them to fit to your OpenStack cluster.
+The configuration file is located at ``config/default.nix``.
+You probably need to change some of the default values to fit to
+your OpenStack cluster.
 
-Add the master and worker nodes to create your cluster with,
-e.g. 2 master and 3 worker nodes.
+For a full config reference click
+:doc:`here </user/reference/options/index>`.
+
+Adopt the amount of nodes,
+e.g. one worker node and one master node.
 Please have a look `here <https://docs.yaook.cloud/requirements/k8s-cluster.html#size>`__
 for a recommended size
 of a YAOOK/K8s cluster.
 
-.. code:: toml
+.. code:: nix
 
-   [terraform.nodes.master-0]
-   role = "master"
-   [terraform.nodes.master-1]
-   role = "master"
-
-   [terraform.nodes.worker-0]
-   role = "worker"
-   [terraform.nodes.worker-1]
-   role = "worker"
-   [terraform.nodes.worker-2]
-   role = "worker"
+    kubernetes = {
+        nodes = {
+            master-0.role = "master";
+            master-1.role = "master";
+            worker-0.role = "worker";
+            worker-1.role = "worker";
+            worker-2.role = "worker";
+        };
+    };
 
 Create a string of 16 random characters:
 
@@ -280,12 +234,11 @@ Create a string of 16 random characters:
 
     $ dd if=/dev/urandom bs=16 count=1 status=none | base64
 
-In ``config/config.toml`` look for ``ANCHOR: ch-k8s-lbaas_config``,
-and edit ``shared_secret`` with the output above:
+In your config, set
 
-.. code:: toml
+.. code:: nix
 
-    shared_secret = "<16_chars_generated_above>"
+    ch-k8s-lbaas.shared_secret = "<16_chars_generated_above>";
 
 Look for a wireguard public key:
 
@@ -296,11 +249,14 @@ Look for a wireguard public key:
 Copy and paste it under
 ``ANCHOR: wireguard_config``, behind ``[wireguard]``.
 
-.. code:: toml
+.. code:: nix
 
-    [[wireguard.peers]]
-    pub_key = "<content_of_the_file_wg.pub>"
-    ident   = "<your_wg_user_name>"  # see_above
+    wireguard.peers = [
+        {
+            pub_key = "<content_of_the_file_wg.pub>";
+            ident   = "<your_wg_user_name>";  # see_above
+        }
+    ];
 
 Initialise Vault
 ----------------
@@ -365,12 +321,11 @@ for what to execute in which order.
     You should not export that variable
     to avoid breaking things by accident.
 
-    In ``config/config.toml`` add
+    In the config, set
 
-    .. code:: toml
+    .. code:: nix
 
-        [terraform]
-        prevent_disruption = false
+        terraform.prevent_disruption = false;
 
     Than run
 
@@ -406,12 +361,11 @@ and to establish the WireGuard connection:
 
     $ bash managed-k8s/actions/wg-up.sh
 
-To tear down your cluster, set the following in ``config/config.toml``:
+To tear down your cluster, set the following in your config:
 
-.. code:: toml
+.. code:: nix
 
-    [terraform]
-    prevent_disruption = false
+    terraform.prevent_disruption = false;
 
 Than run:
 

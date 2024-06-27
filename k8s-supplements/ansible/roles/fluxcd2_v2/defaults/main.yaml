@@ -1,7 +1,0 @@
----
-fluxcd_namespace: k8s-svc-flux-system
-fluxcd_install: true
-fluxcd_helm_repo_url: https://fluxcd-community.github.io/helm-charts
-fluxcd_version: 2.9.2
-fluxcd_scheduling_key: null
-...

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+actions_dir="$(realpath "$(dirname "$0")")/../../actions"
 
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
@@ -11,8 +12,10 @@ if [ "$#" -ne "$arg_num" ]; then
     exit 2
 fi
 
+# Ensure that the latest config is deployed to the inventory
+"$actions_dir/update-inventory.sh"
+
 cluster="$(get_clustername)"
-check_clustername "$cluster"
 # reload the lib to update the vars after initializing the clustername
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"

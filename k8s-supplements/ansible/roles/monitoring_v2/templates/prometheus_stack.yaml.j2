@@ -47,21 +47,15 @@ grafana:
   priorityClassName: "system-cluster-critical"
   enabled: {{ monitoring_use_grafana | bool }}
   persistence:
-    enabled: {{ monitoring_grafana_persistent_storage_class | ternary(true,false) }}
-    storageClassName: "{{ monitoring_grafana_persistent_storage_class }}"
+    enabled: {{ monitoring_grafana_persistent_storage_class is defined }}
+    storageClassName: "{{ monitoring_grafana_persistent_storage_class | default("") }}"
   admin:
     existingSecret: {{ monitoring_grafana_admin_secret_name }}
     userKey: admin-user
     passwordKey: admin-password
-  resources:
-    limits:
-      cpu: "{{ monitoring_grafana_cpu_limit }}"
-      memory: "{{ monitoring_grafana_memory_limit }}"
-    requests:
-      cpu: "{{ monitoring_grafana_cpu_limit }}"
-      memory: "{{ monitoring_grafana_memory_request }}"
+  resources: {{ monitoring_grafana_resources | to_json }}
   tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
-{% if monitoring_grafana_persistent_storage_class | length > 0 %}
+{% if monitoring_grafana_persistent_storage_class is defined %}
   affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json', template_vars=dict(pod_affinity_key="app.kubernetes.io/name", pod_affinity_operator="In", pod_affinity_values=["grafana"])) | to_json }}
 {% else %}
   affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json') | to_json }}
@@ -146,7 +140,7 @@ grafana:
             path: /var/lib/grafana/dashboards/managed
   grafana.ini:
     server:
-{% if monitoring_grafana_root_url | length > 0 %}
+{% if monitoring_grafana_root_url is defined %}
       root_url: {{ monitoring_grafana_root_url | to_json }}
 {% endif %}
 
@@ -333,13 +327,7 @@ prometheusOperator:
   admissionWebhooks:
     patch:
       priorityClassName: "system-cluster-critical"
-  resources:
-    limits:
-      cpu: {{ monitoring_prometheus_operator_cpu_limit | to_json }}
-      memory: {{ monitoring_prometheus_operator_memory_limit | to_json }}
-    requests:
-      cpu: {{ monitoring_prometheus_operator_cpu_request | to_json }}
-      memory: {{ monitoring_prometheus_operator_memory_request | to_json }}
+  resources: {{ monitoring_prometheus_resources | to_json }}
   serviceMonitor:
     relabelings:
       - sourceLabels: [__meta_kubernetes_pod_node_name]
@@ -378,7 +366,7 @@ prometheus:
     secrets:
       - etcd-metrics-proxy
     serviceMonitorSelectorNilUsesHelmValues: {{  monitoring_common_labels | ternary(true, false) }}
-{% if monitoring_prometheus_persistent_storage_class %}
+{% if monitoring_prometheus_persistent_storage_class is defined %}
     storageSpec:
       volumeClaimTemplate:
         spec:
@@ -412,13 +400,7 @@ prometheus:
       - name: prometheus
         readinessProbe:
           failureThreshold: 1000
-    resources:
-      requests:
-        cpu: "{{ monitoring_prometheus_cpu_request }}"
-        memory: "{{ monitoring_prometheus_memory_request }}"
-      limits:
-        cpu: "{{ monitoring_prometheus_cpu_limit }}"
-        memory: "{{ monitoring_prometheus_memory_limit }}"
+    resources: {{ monitoring_prometheus_resources | to_json }}
     affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json') | to_json }}
     tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
 {% if monitoring_allow_external_rules %}

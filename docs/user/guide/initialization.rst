@@ -7,100 +7,28 @@ Initialization
 Install System Requirements
 ---------------------------
 
-.. tabs::
+YAOOK/K8s only has a single primary dependency: Nix. Everything else is fetched or built automatically.
 
-   .. tab:: Install requirements manually
+`Nix <https://nixos.org>`__ is a declarative package manager
+which powers NixOS but can also be installed as an additional separate package manager on any
+other GNU/Linux distribution. This repository contains a flake.nix which references all necessary
+dependencies locked to specific versions so everybody can produce the same identical environment.
 
-      .. raw:: html
+1. `Install Nix <https://nixos.org/download.html#download-nix>`__
+2. `Enable flake support <https://nixos.wiki/wiki/Flakes#Permanent>`__ by adding the following line to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``.
 
-         <details>
-         <summary>Install system package dependencies</summary>
+   .. code:: ini
 
+      experimental-features = nix-command flakes
+3. (Optional) Add our binary cache in ``/etc/nix/nix.conf``
+   so you won't have to build anything from source
 
-      YAOOK/K8s requires the following packages:
+   .. code:: ini
 
-      - `python3-poetry <https://github.com/python-poetry/install.python-poetry.org>`__
-        - please note that a version > v1.5.0 is required
-      - jq
-      - moreutils (for ``sponge``)
-      - wireguard
-      - uuid-runtime
-      - openssl
-
-      For Debian-based distros you can do:
-
-      .. code:: console
-
-         $ sudo apt install python3-poetry jq moreutils wireguard uuid-runtime kubectl openssl
-
-      Additionally, `kubectl <https://kubernetes.io/docs/tasks/tools/install-kubectl-linux>`__
-      is needed.
-
-      Furthermoe, please consult the documentations for your operation system to fulfill
-      the following dependencies.
-
-      .. raw:: html
-
-         </details>
-
-      .. raw:: html
-
-         <details>
-         <summary>Install Terraform</summary>
-
-      Follow `the upstream instructions on installing Terraform <https://www.terraform.io/downloads>`__.
-
-      .. raw:: html
-
-         </details>
-      .. raw:: html
-
-         <details>
-         <summary>Install Vault</summary>
-
-      Follow `the upstream instructions on installing Vault <https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-install>`__.
-
-      .. raw:: html
-
-         </details>
-
-      .. raw:: html
-
-         <details>
-         <summary>Install helm</summary>
-
-      Follow `the upstream instructions on installing
-      Helm. <https://helm.sh/docs/intro/install/>`__
-
-      .. raw:: html
-
-         </details>
-
-   .. tab:: Install requirements using Nix
-
-      `Nix <https://nixos.org>`__ is a declarative package manager
-      which powers NixOS but can also be installed as an additional package manager on any
-      other distribution. This repository contains a flake.nix which references all necessary
-      dependencies which are locked to specific versions so everybody uses an identical environment.
-
-      1. `Install Nix <https://nixos.org/download.html#download-nix>`__
-      2. `Enable flake support <https://nixos.wiki/wiki/Flakes#Permanent>`__ by adding the line
-
-         .. code:: ini
-
-            experimental-features = nix-command flakes
-
-         to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``
-      3. (Optional) Add our binary cache so you won't have to build anything from source
-
-         .. code:: ini
-
-            extra-substituters = https://yaook.cachix.org
-            extra-trusted-public-keys = yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
-
-         to ``/etc/nix/nix.conf``
-      4. Run ``nix shell`` in this directory to enter an environment with all requirements available
-         If you use direnv, it will automatically load all requirements once you enter the directory.
+      extra-substituters = https://yaook.cachix.org
+      extra-trusted-public-keys = yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
+4. Run ``nix shell`` in this directory to enter an environment with all requirements available
+   If you use direnv, it will automatically load all requirements once you enter the directory.
 
 We also strongly recommend installing and using:
 
@@ -151,21 +79,39 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
       $ git init my-cluster-repository
       $ cd my-cluster-repository
 
-2. Clone the ``yaook/k8s`` repository to a location **outside** of your
-   cluster repository:
+2. Initialize the cluster repository:
+
+   If you want to checkout a specific branch, do eg.
 
    .. code:: console
 
-      $ pushd $somewhere_else
-      $ git clone https://gitlab.com/yaook/k8s.git
-      $ popd
+      $ export MANAGED_K8S_LATEST_RELEASE=false
+      $ export MANAGED_K8S_GIT_BRANCH=<branchname>
+
+   .. code:: console
+
+      $ nix run "git+https://gitlab.com/yaook/k8s#init"
+
+   If you want to use the init script from a specific branch instead, use eg.
+
+   .. code:: console
+
+      $ nix run "git+https://gitlab.com/yaook/k8s?ref=<branchname>#init"
+
+   This init script will:
+
+   -  Add all necessary submodules.
+   -  Copy a configuration template to ``./config/`` if no
+      config exists in the cluster repository yet.
+   -  Update ``.gitignore`` to current standards.
+   -  Add a ``.envrc`` template
 
 3. Setup your environment variables:
 
    1. User specific variables (if not already exists):
 
       1. Copy the template located at
-         ``$somewhere_else/k8s/templates/yaook-k8s-env.template.sh``
+         ``managed-k8s/templates/yaook-k8s-env.template.sh``
          to ``~/.config/yaook-k8s/env``.
 
          .. code:: console
@@ -176,46 +122,11 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
          :ref:`minimal changes <environmental-variables.minimal-required-changes>`
          to ``~/.config/yaook-k8s/env``.
 
-   2. Cluster specific variables:
+   2. Make the **cluster specific**
+      :ref:`minimal changes <environmental-variables.minimal-required-changes>`
+      to ``./.envrc``.
 
-      1. Copy the template located at
-         :ref:`$somewhere_else/k8s/templates/envrc.template.sh <environmental-variables.template>`
-         to ``./.envrc``.
-
-         .. code:: console
-
-            $ cp $somewhere_else/k8s/templates/envrc.template.sh ./.envrc
-
-      2. Make the **cluster specific**
-         :ref:`minimal changes <environmental-variables.minimal-required-changes>`
-         to ``./.envrc``.
-   3. Make sure they have taken effect by running ``direnv allow``.
-
-4. Initialize the cluster repository:
-
-   .. code:: console
-
-      $ $somewhere_else/k8s/actions/init-cluster-repo.sh
-
-   This ``init-cluster-repo.sh`` script will:
-
-   -  Add all necessary submodules.
-   -  Copy a ``config.toml`` template to ``./config/config.toml`` if no
-      config exists in the cluster repository yet.
-   -  Update ``.gitignore`` to current standards.
-
-5. Make sure poetry is up to date (otherwise installing the dependencies might fail),
-   see `here <https://python-poetry.org/docs/#installation>`__
-
-6. Activate the virtual environment with all python dependencies
-
-   .. note::
-
-      This is handled automatically for you if you use the default ``.envrc``
-
-   .. code:: console
-
-      $ poetry shell -C managed-k8s
+3. Make sure they have taken effect by running ``direnv allow``.
 
 .. _initialization.initialize-vault-for-a-development-setup:
 

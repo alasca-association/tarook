@@ -49,32 +49,32 @@ Prerequisites
 Necessary changes in your config file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Adjust your ``config/config.toml`` to meet the following statements:
+Adjust your config to meet the following statements:
 
--  set ``ipv4_enabled = true`` and ``ipv6_enabled = true``
+-  set ``terraform.ipv4_enabled = true`` and ``terraform.ipv6_enabled = true``
 
    - these variables are used across all stages
      to adjust setups and resources
 
--  specify ``subnet_v6_cidr``
+-  specify ``terraform.subnet_v6_cidr``
 
    -  this is the IPv6 subnet that will be created via Terraform
    -  e.g.:
 
-      -  ``subnet_v6_cidr = "fd00::/120"``
+      -  ``terraform.subnet_v6_cidr = "fd00::/120"``
 
--  specify ``wg_ipv6_cidr`` as well as ``wg_ipv6_gw``
+-  specify ``wireguard.wg_ipv6_cidr`` as well as ``wireguard.wg_ipv6_gw``
 
    -  this is the IPv6 CIDR for the allowed IP addresses of wireguard as
       well as the server/gateway IP address
    -  e.g.:
 
-      -  ``wg_ipv6_cidr = "fd01::/120"``
-      -  ``wg_ipv6_gw = "fd01::1/120"``
+      -  ``wireguard.wg_ipv6_cidr = "fd01::/120";``
+      -  ``wireguard.wg_ipv6_gw = "fd01::1/120";``
 
 -  you have to choose calico as CNI plugin
 
-   -  ``k8s_network_plugin = calico``
+   -  ``kubernetes.network.plugin = "calico"``
 
 Design / Procedure considerations
 ---------------------------------

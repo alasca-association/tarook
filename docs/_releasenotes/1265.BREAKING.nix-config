@@ -1,0 +1,43 @@
+The configuration has been reworked and is now based on Nix, which makes Nix a hard dependency.
+
+All configuration options are documented at :doc:`/user/reference/options/index`.
+
+The cluster repository layout has changed:
+
+::
+
+   your_cluster_repo
+   ├── config/                           # All user configuration now resides in this directory
+   │   ├── config.toml                   # Legacy cluster configuration, referenced in default.nix
+   │   ├── default.nix                   # Nix-based cluster configuration
+   │   └── hosts                         # Manual Ansible hosts file for bare-metal, referenced in default.nix
+   ├── inventory/yaook-k8s/              # Ansible inventory is now completely generated and MAY be excluded from version control
+   │   ├── group-vars/                   # Variables passed to Ansible
+   │   └── hosts                         # Ansible hosts file, generated from config even for bare-metal
+   ├── state/                            # Auto-generated files that need to be preserved. MUST be checked into version control
+   │   ├── wireguard/
+   │   │   └── ipam.toml                 # WireGuard IP address management
+   │   ├── terraform/                    # Terraform specific state files
+   ┊   ┊
+
+
+
+.. attention:: Action required
+
+    Ensure you've installed and configured Nix according to :ref:`initialization.install-system-requirements`
+
+.. attention:: Action required
+
+    In order to migrate to the new cluster repository layout, run
+
+    .. code:: shell
+
+       ./managed-k8s/actions/migrate-cluster-repo.sh
+
+    For all bare-metal clusters, make sure to add
+
+    .. code:: nix
+        miscellaneous.hosts_file = ./hosts
+
+    to ``config/default.nix``
+_

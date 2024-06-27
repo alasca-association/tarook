@@ -20,7 +20,7 @@
   ansible.builtin.import_tasks: internal_pki.yaml
 
 - name: Create the external PKI
-  when: yaook_vault_ingress | default(False)
+  when: yaook_vault_ingress
   ansible.builtin.import_tasks: external_pki.yaml
 
 - name: "{{ yaook_vault_enabled | ternary('Add', 'Remove') }} Hashicorp vault Repo"
@@ -35,7 +35,7 @@
 
 - name: Deploy Vault
   vars:
-    scheduling_key: "{{ yaook_vault_scheduling_key }}"
+    scheduling_key: "{{ yaook_vault_scheduling_key | default(None) }}"
   kubernetes.core.helm:
     chart_ref: hashicorp/vault
     chart_version: "{{ yaook_vault_chart_version }}"

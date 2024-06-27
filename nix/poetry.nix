@@ -15,7 +15,6 @@
         (builtins.mapAttrs (name: modified prev."${name}") {
           pynacl = [
             (rm.lists {nativeBuildInputs = with final; [sphinxHook];})
-            (rm.lists {outputs = ["doc"];})
           ];
           pyjwt = [
             (rm.lists {nativeBuildInputs = with final; [sphinxHook sphinx-rtd-theme];})
@@ -42,14 +41,12 @@ in {
   minimal = poetryEnvWithGroups ["minimal-access"];
   yk8s = poetryEnvWithGroups [
     "main"
-    "update-inventory"
     "offline-installation"
     "minimal-access"
   ];
   ci = poetryEnvWithGroups [
     "main"
     "ci"
-    "update-inventory"
     "offline-installation"
     "minimal-access"
   ];

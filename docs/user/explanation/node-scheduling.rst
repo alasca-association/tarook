@@ -45,7 +45,7 @@ A more detailed explanation can be found in the respective
 which reworked this behavior.
 
 For details on how to configure labels and taints for nodes, please refer to
-:ref:`Node-Scheduling: Labels and Taints Configuration <cluster-configuration.node-scheduling-labels-taints-configuration>`
+:ref:`Node-Scheduling: Labels and Taints Configuration <configuration-options.yk8s.node-scheduling>`
 
 Defining a common Scheduling-Key-Prefix
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,7 +56,7 @@ YAOOK/K8s allows to define such a scheduling-key-prefix and then
 use it in the label and taint definitions.
 
 Please refer to the
-:ref:`Node-Scheduling: Labels and Taints Configuration <cluster-configuration.node-scheduling-labels-taints-configuration>`
+:ref:`Node-Scheduling: Labels and Taints Configuration <configuration-options.yk8s.node-scheduling>`
 for details on how to label and taint nodes with a common scheduling-key-prefix.
 
 Use scheduling keys for Services
@@ -71,8 +71,8 @@ and storage nodes.
 
 For details on how to use scheduling keys for our supported
 storage solution rook, please refer to the
-:ref:`Rook Configuration <cluster-configuration.rook-configuration>`
+:ref:`Rook Configuration <configuration-options.yk8s.k8s-service-layer.rook>`
 
 For details on how to use scheduling keys for our supported
 monitoring solution, an extended prometheus stack, please refer to the
-:ref:`Prometheus-based Monitoring Configuration <cluster-configuration.prometheus-configuration>`
+:ref:`Prometheus-based Monitoring Configuration <configuration-options.yk8s.k8s-service-layer.prometheus>`

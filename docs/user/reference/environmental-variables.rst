@@ -161,10 +161,6 @@ Environment Variable                    Default                                 
 ``MANAGED_K8S_GIT_BRANCH``                                                                                      If set and ``MANAGED_K8S_LATEST_RELEASE`` set to
                                                                                                                 ``false``, the specified branch will be checked out by
                                                                                                                 ``init-cluster-repo.sh``.
-``MANAGED_K8S_WG_USER_GIT``             ``gitlab.cloudandheat.com:lcm/wg_user``                                 Git URL to a repository with wireguard
-                                                                                                                keys to provision. Can be enabled by
-                                                                                                                setting ``WG_COMPANY_USERS`` (see below).
-                                                                                                                (see below).
 ``TERRAFORM_MODULE_PATH``               ``../terraform``                                                        Path to the Terraform root module to
                                                                                                                 change the working directory for the
                                                                                                                 execution of the Terraform commands.
@@ -196,7 +192,7 @@ Environment Variable        Default                 Description
                                                     This variable is used by the
                                                     ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
 ``wg_endpoint``             ``0``                   The ID of the wireguard endpoint to use when connecting
-                                                    to the VPN, as defined in ``config.toml`` at ``wireguard.endpoints``.
+                                                    to the VPN, as defined in the config at ``wireguard.endpoints``.
 ``wg_private_key_file``     ``"$(pwd)/../privkey"`` Path to your WireGuard private key
                                                     file. This is not copied to any
                                                     remote machine, but needed to
@@ -213,17 +209,11 @@ Environment Variable        Default                 Description
                                                     prevent leakage. This variable is
                                                     used by the ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
 ``wg_user``                 ``"firstnamelastname"`` Your WireGuard user name as
-                                                    defined in the :ref:`wireguard configuration<cluster-configuration.wireguard-configuration>`
+                                                    defined in the :ref:`wireguard configuration<configuration-options.yk8s.wireguard>`
                                                     (or, if enabled, ``wg_user`` `repository <https://gitlab.cloudandheat.com/lcm/wg_user>`__).
                                                     You **MUST** adjust this variable.
                                                     This variable is used by the
                                                     ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
-``WG_COMPANY_USERS``        ``false``               If set to true, ``init-cluster-repo.sh`` will
-                                                    clone the repository
-                                                    ``MANAGED_K8S_WG_USER_GIT``. The
-                                                    inventory updater will then
-                                                    configure the wireguard users from
-                                                    that repository.
 =========================== ======================= =======================
 
 .. _environmental-variables.ssh-configuration:
@@ -351,7 +341,7 @@ YAOOK_K8S_DEVSHELL                          ``default`` Selects the devShell to 
 Template
 --------
 
-The template file is located at ``templates/envrc.template.sh``.
+The template file is located at ``nix/templates/cluster-repo/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
 
 .. literalinclude:: /templates/envrc.template.sh
    :language: bash

@@ -3,6 +3,7 @@ ch-k8s-lbaas
 
 The ch-k8s-lbaas load-balancing solution resides in its own
 `official repository <https://github.com/cloudandheat/ch-k8s-lbaas>`__.
+Its configuraton reference can be found at :ref:`configuration-options.yk8s.ch-k8s-lbaas`
 
 Functionality Visualization
 ---------------------------
@@ -13,11 +14,3 @@ Functionality Visualization
    :align: center
 
 |
-
-ch-k8-lbaas Configuraton
-------------------------
-
-.. literalinclude:: /templates/config.template.toml
-   :language: toml
-   :start-after: # ANCHOR: ch-k8s-lbaas_config
-   :end-before: # ANCHOR_END: ch-k8s-lbaas_config

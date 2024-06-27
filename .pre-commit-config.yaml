@@ -18,7 +18,7 @@ repos:
       - id: trailing-whitespace
         exclude: '.*(\.drawio|\.svg)$'
       - id: end-of-file-fixer
-        exclude: '.*(\.drawio|\.svg|\.nix)$'
+        exclude: '.*(\.drawio|\.svg|\.nix)$' # Nix files are fixed by nix-fmt
       - id: mixed-line-ending
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
@@ -36,13 +36,13 @@ repos:
         stages: [pre-commit, pre-push, manual]
       - id: check-flake
         name: check flake
-        files: "^flake.nix$"
+        files: .*\.nix$'
         entry: ci/lint/check-flake.sh
         language: script
         stages: [pre-commit, pre-push, manual]
       - id: nix-fmt
         name: nix-fmt
-        files: "^flake.nix$"
+        files: '.*\.nix$'
         entry: ci/lint/format-flake.sh
         language: script
         stages: [pre-commit, pre-push, manual]

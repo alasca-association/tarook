@@ -33,7 +33,7 @@ Enabling the fix
 
 1. Enable signing requests in the config
 
-   Set ``[kubernetes.controller_manager].enable_signing_requests=true`` in config/config.toml
+   Set ``kubernetes.controller_manager..enable_signing_requests = true`` in the config
 
 2. Configure k8s_control_plane Vault policy
 
@@ -108,7 +108,7 @@ Enabling the fix
 
             .. code:: shell
 
-               clustername="$(tomlq --raw-output .vault.cluster_name config/config.toml)"
+               clustername="$(yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
                vault kv put -mount="yaook/${clustername}/kv" k8s-pki/cluster-root-ca private_key=@current-ca.key
 
 
@@ -120,7 +120,7 @@ Enabling the fix
 
             .. code:: shell
 
-               clustername="$(tomlq --raw-output .vault.cluster_name config/config.toml)"
+               clustername="$(yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
                export VAULT_TOKEN=$root_token
                ca_key_version="$(vault kv get -format=json -mount=yaook/${clustername}/kv k8s-pki/cluster-root-ca | jq .data.metadata.version)"
                vault kv undelete -versions="${ca_key_version}" -mount=yaook/${clustername}/kv k8s-pki/cluster-root-ca
@@ -150,10 +150,11 @@ Enabling the fix
 Disabling the fix
 -----------------
 
-1. Disable signing requests in the config
+1. Set ``kubernetes.controller_manager.enable_signing_requests = false``
 
    .. code:: shell
 
+      # If you're using config.toml:
       tomlq --in-place --toml-output '.kubernetes.controller_manager.enable_signing_requests=false' config/config.toml
 
 
@@ -193,7 +194,7 @@ Disabling the fix
 
             .. code:: shell
 
-               clustername="$(tomlq --raw-output .vault.cluster_name config/config.toml)"
+               clustername="$(yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
                ca_key_version="$(vault kv get -format=json -mount=yaook/${clustername}/kv k8s-pki/cluster-root-ca | jq .data.metadata.version)"
                vault kv undelete -versions="${ca_key_version}" -mount=yaook/${clustername}/kv k8s-pki/cluster-root-ca
 
@@ -206,7 +207,7 @@ Disabling the fix
 
             .. code:: shell
 
-               clustername="$(tomlq --raw-output .vault.cluster_name config/config.toml)"
+               clustername="$(yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
                vault kv destroy -mount=yaook/${clustername}/kv \
                    -versions="0,$(
                        vault kv metadata get -format=json -mount=yaook/${clustername}/kv k8s-pki/cluster-root-ca \

@@ -1,6 +1,6 @@
 ---
 global:
-{% if monitoring_thanos_storage_class != None %}
+{% if monitoring_thanos_storage_class is defined %}
   storageClass: {{ monitoring_thanos_storage_class | to_json }}
 {% endif %}
 
@@ -10,48 +10,33 @@ compactor:
   retentionResolutionRaw: {{ monitoring_thanos_retention_resolution_raw | quote }}
   retentionResolution5m: {{ monitoring_thanos_retention_resolution_5m | quote }}
   retentionResolution1h: {{ monitoring_thanos_retention_resolution_1h | quote }}
-  resources:
-    requests:
-      memory: {{ monitoring_thanos_compact_memory_request | quote }}
-      cpu: {{ monitoring_thanos_compact_cpu_request | quote }}
-    limits:
-      memory: {{ monitoring_thanos_compact_memory_limit | quote }}
+  resources: {{ monitoring_thanos_compact_resources | to_json }}
   tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
   affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json') | to_json }}
   persistence:
-    enabled: {{ monitoring_thanos_storage_class != None }}
-{% if monitoring_thanos_compactor_size != None %}
+    enabled: {{ monitoring_thanos_storage_class is defined }}
+{% if monitoring_thanos_compactor_size is defined %}
     size: {{ monitoring_thanos_compactor_size | to_json }}
 {% endif %}
 
 storegateway:
   enabled: true
-{% if monitoring_thanos_store_in_memory_max_size != 0 %}
+{% if monitoring_thanos_store_in_memory_max_size is defined %}
   extraFlags:
   - "--index-cache-size={{ monitoring_thanos_store_in_memory_max_size }}"
 {% endif %}
-  resources:
-    requests:
-      memory: {{ monitoring_thanos_store_memory_request | quote }}
-      cpu: {{ monitoring_thanos_store_cpu_request | quote }}
-    limits:
-      memory: {{ monitoring_thanos_store_memory_limit | quote }}
+  resources: {{ monitoring_thanos_store_resources | to_json }}
   tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
   affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json') | to_json }}
   persistence:
-    enabled: {{ monitoring_thanos_storage_class != None }}
-{% if monitoring_thanos_storegateway_size != None %}
+    enabled: {{ monitoring_thanos_storage_class is defined }}
+{% if monitoring_thanos_storegateway_size is defined %}
     size: {{ monitoring_thanos_storegateway_size | to_json }}
 {% endif %}
 
 query:
   enabled: true
-  resources:
-    requests:
-      memory: {{ monitoring_thanos_query_memory_request | quote }}
-      cpu: {{ monitoring_thanos_query_cpu_request | quote }}
-    limits:
-      memory: {{ monitoring_thanos_query_memory_limit | quote }}
+  resources: {{ monitoring_thanos_query_resources | to_json }}
   dnsDiscovery:
     enabled: true
     sidecarsService: "prometheus-operated"
