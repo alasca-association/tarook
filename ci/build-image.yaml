@@ -1,7 +1,7 @@
 build_image:
   tags:
     - docker
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.21.2"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.23.1"
   stage: build-image
   rules:
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -42,7 +42,7 @@ build_image:
 deploy_image:
   tags:
     - docker
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.21.2"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.23.1"
   stage: tag-image
   rules:
     - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
