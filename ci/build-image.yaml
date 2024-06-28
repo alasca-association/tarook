@@ -45,7 +45,7 @@ deploy_image:
   image:
     name: "quay.io/skopeo/stable:latest"
     entrypoint: ["/bin/bash"]
-  stage: release
+  stage: tag-image
   rules:
     - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
       when: on_success

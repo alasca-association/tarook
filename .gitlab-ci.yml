@@ -27,6 +27,7 @@ stages:
 - hotfix-prepare
 - cluster-tests
 - diagnostic-tools
+- tag-image
 - release
 
 include:
