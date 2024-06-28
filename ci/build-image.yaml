@@ -11,6 +11,13 @@ build_image:
     - ci/build-image.yaml
     - ci/container-image/*
     when: always
+  - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+    changes:
+    - flake.nix
+    - flake.lock
+    - ci/build-image.yaml
+    - ci/container-image/*
+    when: always
   - when: never
   before_script:
     - |
