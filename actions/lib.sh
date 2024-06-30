@@ -22,7 +22,7 @@ terraform_prevent_disruption="$(
 )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
 ansible_directory="$code_repository/ansible"
 
-ansible_inventory_base="$cluster_repository/inventory/yaook-k8s/"
+ansible_inventory_base="$cluster_repository/inventory/yaook-k8s"
 ansible_inventory_host_file="$ansible_inventory_base/hosts"
 
 ansible_k8s_core_dir="$code_repository/k8s-core/ansible"
