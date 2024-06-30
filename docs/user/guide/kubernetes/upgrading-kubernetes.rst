@@ -7,26 +7,32 @@ Upgrade implications / disruptions
 -  All pods will be rescheduled at least once, sometimes more often
 -  All pods without a controller will be deleted
 -  Data in emptyDir volumes will be lost
--  (if enabled) Ceph storage will be blocking/unavailable for the
-   duration of the upgrade
 
 General procedure
 -----------------
 
-1. Agree on a time window with the customer. Make sure they are aware of
-   the disruptions.
+.. note::
 
-2. Ensure that the cluster is healthy. All pods managed by us should be
+   With Kubernetes v1.29, the user specified in the ``admin.conf`` kubeconfig
+   is now bound to the ``kubeadm:cluster-admins`` RBAC group.
+   You should therefore re-generate your ``admin.conf`` kubeconfig
+   after upgrading to Kubernetes v1.29 by e.g. using our login script
+
+   .. code::
+
+      $ ./managed-k8s/actions/k8s-login.sh
+
+1. Ensure that the cluster is healthy. All pods managed by us should be
    Running or Completed. Pods managed by the customer should also be in
    such states; but if they are not, there’s nothing we can do about it.
 
-3. Execute the upgrade playbook from within the cluster repository:
+2. Execute the upgrade playbook from within the cluster repository:
 
    .. code:: console
 
       $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.x.y
 
-4. Once the upgrade executed successfully, update your ``config.toml``
+3. Once the upgrade executed successfully, update your ``config.toml``
    to point to the new k8s version:
 
    .. code:: toml

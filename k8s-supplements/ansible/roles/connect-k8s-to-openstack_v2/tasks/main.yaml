@@ -7,6 +7,11 @@
       name: csi-cinder-nodeplugin
       namespace: kube-system
     register: os_ns_info
+    failed_when: not os_ns_info.api_found
+    # Retry this task on failures
+    until: os_ns_info is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
 
   - name: Trigger migration
     include_tasks: migrate-from-openstack-v1.yaml

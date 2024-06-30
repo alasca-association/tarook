@@ -53,6 +53,16 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
+path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/cluster-admins_admin" {
+    capabilities = ["create", "update"]
+    required_parameters = ["common_name", "ttl"]
+    allowed_parameters = {
+        "ttl" = [],
+        # common name is enforced by the PKI role config
+        "common_name" = []
+    }
+}
+
 path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/system-masters_apiserver" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
@@ -238,6 +248,18 @@ path "$nodes_approle_path/role/+" {
 }
 
 path "$common_path_prefix/+/k8s-pki/issue/any-master" {
+    capabilities = ["create", "update"]
+    required_parameters = ["common_name", "ttl"]
+    allowed_parameters = {
+        "ttl" = [],
+        # common name is not restricted; the orchestrator role is able to
+        # create approles which in turn have policies which allow the creation
+        # of an admin credential -> this is only a shortcut, not a gap.
+        "common_name" = []
+    }
+}
+
+path "$common_path_prefix/+/k8s-pki/issue/any-cluster-admin" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {

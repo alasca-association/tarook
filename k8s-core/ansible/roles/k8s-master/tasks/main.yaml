@@ -211,6 +211,28 @@
             state: absent
           register: k8s_ca_key_file_hidden
 
+    - name: Generate super admin kubeconfig
+      become: false
+      # Generate super-admin.conf file for Kubernetes 1.29 and later
+      # as kubeadm init requires it for initialization.
+      # Delete it afterwards
+      when: k8s_version_minor is version('1.29', '>=')
+      # must use block to be able to set environment
+      environment:
+        ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+        ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+      block:
+      - name: Generate super admin kubeconfig
+        ansible.builtin.include_tasks: mkkubeconfig.yaml
+        vars:
+          kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
+          vault_role_id: "{{ vault_node_role_id }}"
+          vault_secret_id: "{{ vault_node_secret_id }}"
+          kubeconfig_title: super-admin
+          kubeconfig_destination: /etc/kubernetes/super-admin.conf
+          kubeconfig_role: system-masters_admin
+          kubeconfig_user: kubernetes-super-admin
+
     - name: Run kubeadm init  # noqa no-changed-when
       # XXX: ansible command module does not support setting the umask
       ansible.builtin.shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
@@ -231,6 +253,11 @@
   - name: Remove kubeadm-init-config.yaml
     ansible.builtin.file:
       path: /tmp/kubeadm-init-config.yaml
+      state: absent
+
+  - name: Remove super admin kubeconfig
+    file:
+      path: /etc/kubernetes/super-admin.conf
       state: absent
 
   - name: Configure bridge-nf-call-iptables

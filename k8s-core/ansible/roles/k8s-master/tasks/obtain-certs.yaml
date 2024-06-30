@@ -27,6 +27,7 @@
         ip_sans: "{{ local_ipv4_address }},127.0.0.1,::1{% if local_ipv6_address | default(False) %},{{ local_ipv6_address }}{% endif %}"
         ttl: 8784h
       get_cert_notify: Restart etcd
+      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain etcd peer certificate
     ansible.builtin.include_role:
@@ -46,6 +47,7 @@
         ip_sans: "{{ local_ipv4_address }},127.0.0.1,::1{% if local_ipv6_address | default(False) %},{{ local_ipv6_address }}{% endif %}"
         ttl: 8784h
       get_cert_notify: Restart etcd
+      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain etcd healthcheck certificate
     ansible.builtin.include_role:
@@ -64,6 +66,7 @@
         alt_names: "{{ inventory_hostname }}"
         ttl: 8784h
       get_cert_notify: Restart etcd
+      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain apiserver etcd client certificate
     ansible.builtin.include_role:
@@ -81,6 +84,7 @@
         common_name: "{{ inventory_hostname }}"
         ttl: 8784h
       get_cert_notify: Restart kube-apiserver
+      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain apiserver frontend certificate
     ansible.builtin.include_role:
@@ -100,6 +104,7 @@
         ip_sans: "{{ networking_fixed_ip }},{{ local_ipv4_address }},127.0.0.1,::1{% if networking_fixed_ip_v6 | default(False) %},{{ networking_fixed_ip_v6 }},{{ local_ipv6_address }}{% endif %},{{ k8s_network_service_subnet | ansible.utils.nthhost(1) }}"
         ttl: 8784h
       get_cert_notify: Restart kube-apiserver
+      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain apiserver kubelet client certificate
     ansible.builtin.include_role:
@@ -117,6 +122,7 @@
         common_name: "apiserver:{{ inventory_hostname }}.node.{{ vault_cluster_name }}"
         ttl: 8784h
       get_cert_notify: Restart kube-apiserver
+      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain apiserver front proxy client certificate
     ansible.builtin.include_role:
@@ -134,3 +140,4 @@
         common_name: "front-proxy-client"
         ttl: 8784h
       get_cert_notify: Restart kube-apiserver
+      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"

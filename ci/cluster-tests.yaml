@@ -274,6 +274,12 @@
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.28.9
     # Update k8s version
   - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.28.9\"}}"'
+
+    # Upgrade cluster to k8s v1.29
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.29.6
+    # Update k8s version
+  - 'python3 managed-k8s/tools/patch_config.py --patch-config "{\"kubernetes\":{\"version\":\"1.29.6\"}}"'
+  - ./managed-k8s/actions/k8s-login.sh
   - ./managed-k8s/actions/apply-custom.sh
 
   - ./managed-k8s/actions/test.sh

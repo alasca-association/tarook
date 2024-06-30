@@ -1,0 +1,22 @@
+With Kubernetes v1.29, the user specified in the ``admin.conf`` kubeconfig
+is now bound to the ``kubeadm:cluster-admins`` RBAC group.
+This requires an update to the Vault cluster policies and configuration.
+
+**You must update your vault policies and roles and a root token must be sourced.**
+
+To upgrade your Kubernetes cluster from version v1.28 to v1.29, follow these steps:
+
+.. warning::
+
+    You must upgrade to a version greater than ``v1.29.5`` due to
+    `kubeadm #3055 <https://github.com/kubernetes/kubeadm/issues/3055>`_
+
+.. code:: console
+
+    $ ./managed-k8s/tools/vault/init.sh
+    $ ./managed-k8s/tools/vault/update.sh
+    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.29.x
+    $ ./managed-k8s/actions/k8s-login.sh
+
+Note that the default upgrade procedure has changed such that addons get upgraded
+after all control plane nodes got upgraded and not along with the first control plane node.
