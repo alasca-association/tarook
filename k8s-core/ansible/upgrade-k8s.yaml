@@ -61,8 +61,8 @@
       tags:
         - renew-pki
 
-- name: Upgrade all but last master nodes
-  hosts: masters[:-1]
+- name: Upgrade all but first master nodes
+  hosts: masters[1:]
   gather_facts: true
   serial: 1
   any_errors_fatal: true
@@ -89,8 +89,8 @@
     - role: kubeadm-uncordon-node
       when: "not (k8s_upgrade_done | default(False))"
 
-- name: Upgrade the last master node
-  hosts: masters[-1]
+- name: Upgrade the first master node
+  hosts: masters[0]
   gather_facts: true
   any_errors_fatal: true
   vars_files:
