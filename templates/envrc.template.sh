@@ -41,9 +41,6 @@ layout poetry ./managed-k8s
 # please see docs/admin/cluster-repo.md in the managed-k8s lcm
 # repository.
 
-# Wireguard: Use wireguard on gateways (default: True)
-export WG_USAGE=true
-
 # Wireguard: Role out C&H company members
 export WG_COMPANY_USERS=false
 
@@ -53,9 +50,6 @@ export wg_conf_name
 
 # Specifies which wireguard endpoint to use as client
 export wg_endpoint=0
-
-# Terraform: Use Terraform (default: True)
-export TF_USAGE=true
 
 # Optional: Vault: Activate Hashicorp Vault Docker container
 export USE_VAULT_IN_DOCKER=false
@@ -79,11 +73,6 @@ export USE_VAULT_IN_DOCKER=false
 # Optional: Useful to be able to interact with the cluster via kubectl.
 KUBECONFIG="$(pwd)/etc/admin.conf"
 export KUBECONFIG
-
-# Optional: Use custom roles that can be dropped into the
-# 'cluster_repository/k8s-custom' folder and executed after
-# after initialization through the included main.yaml
-export K8S_CUSTOM_STAGE_USAGE=true
 
 # Optional: Set this variable to false to init new clusters with the newest commit
 # on the default (devel) branch instead of the latest release.

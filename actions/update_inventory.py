@@ -271,9 +271,9 @@ def main():
     # ---
     # TERRAFORM
     # ---
-    if (os.getenv('TF_USAGE', 'true') == 'true'):
+    if config["terraform"]["enabled"]:
         print_process_state("Terraform")
-        tf_config = config.get("terraform")
+        tf_config = config["terraform"]
         # If we want to use thanos, then the user can decide if terraform should create
         # an object storage container. These variables are set in an upper stage
         # and cannot be made available easily to tf except for making the user
@@ -326,7 +326,7 @@ def main():
     # WIREGUARD
     # ---
     # only if wireguard is desired
-    if (os.getenv('WG_USAGE', 'true') == 'true'):
+    if config["wireguard"]["enabled"]:
         print_process_state("Wireguard")
         ip_networks = []
         tf_ipv4_string = None
@@ -606,17 +606,15 @@ def main():
     # ---
     # CUSTOM
     # ---
-    # only if custom stage is used
-    if (os.getenv('K8S_CUSTOM_STAGE_USAGE', 'true') == 'true'):
-        print_process_state("CUSTOM")
-        custom_ansible_inventory_path = (
-            ANSIBLE_INVENTORY_BASEPATH / "all" / "custom.yaml"
-        )
-        dump_to_ansible_inventory(
-            config.get("custom", dict()),
-            custom_ansible_inventory_path,
-            ""  # don't append prefix, we don't use vars from other sections
-        )
+    print_process_state("CUSTOM")
+    custom_ansible_inventory_path = (
+        ANSIBLE_INVENTORY_BASEPATH / "all" / "custom.yaml"
+    )
+    dump_to_ansible_inventory(
+        config.get("custom", dict()),
+        custom_ansible_inventory_path,
+        ""  # don't append prefix, we don't use vars from other sections
+    )
 
     print(
         "---\n"

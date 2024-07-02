@@ -10,6 +10,11 @@
 # --- TERRAFORM ---
 # ansible prefix: /
 [terraform]
+
+# Allows to disable execution of the terraform stage by setting it to false.
+# Intended use case are bare-metal or otherwise pre-provisioned setups.
+enabled = true
+
 # If true, prevent Terraform from performing disruptive action
 # defaults to true if unset
 prevent_disruption = true
@@ -954,6 +959,8 @@ scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com"
 # --- WIREGUARD ---
 # ansible prefix: "wg_"
 [wireguard]
+enabled = true
+
 # Set the environment variable "WG_COMPANY_USERS" or this field to 'false' if C&H company members
 # should not be rolled out as wireguard peers.
 #rollout_company_users = false

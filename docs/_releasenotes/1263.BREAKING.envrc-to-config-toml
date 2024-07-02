@@ -1,0 +1,9 @@
+Some :doc:`environment variables </user/reference/environmental-variables>` have been removed.
+
+``WG_USAGE`` and ``TF_USAGE`` have been moved from ``.envrc`` to ``config.toml``.
+If they have been set to false, the respective options ``wireguard.enabled`` and
+``terraform.enabled`` in ``config.toml`` need to be set accordingly.
+If they were not touched (i.e. they are set to true), no action is required.
+
+``CUSTOM_STAGE_USAGE`` has been removed. The custom stage is now always run
+if the playbook exists. No manual action required.

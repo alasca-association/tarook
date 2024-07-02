@@ -14,9 +14,9 @@ install_prerequisites
 # Ensure that the latest config is deployed to the inventory
 python3 "$actions_dir/update_inventory.py"
 
-if [ "${TF_USAGE:-true}" == 'false' ]; then
+if [ "${tf_usage:-true}" == 'false' ]; then
   errorf "It seems like you're not running on top of OpenStack,"
-  errorf "because TF_USAGE is false."
+  errorf "because terraform.enabled is false."
   errorf "Gateways are OpenStack-specific and must not be prepared"
   errorf "for other use cases. You must not execute this action script."
   exit 1

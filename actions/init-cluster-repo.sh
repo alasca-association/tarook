@@ -93,23 +93,22 @@ if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 	run git add .gitignore config/config.toml
 fi
 
-if [ "${K8S_CUSTOM_STAGE_USAGE:-true}" == 'true' ]; then
-    mkdir -p "$ansible_k8s_custom_playbook"
-    mkdir -p "$ansible_k8s_custom_playbook/roles"
+# custom stage
+mkdir -p "$ansible_k8s_custom_playbook"
+mkdir -p "$ansible_k8s_custom_playbook/roles"
 
-    if [ ! -f "$ansible_k8s_custom_playbook/main.yaml" ]; then
-        playbook_text="# Add your roles and tasks here:\n"
-        playbook_text+="- hosts: orchestrator\n"
-        playbook_text+="  gather_facts: false\n"
-        playbook_text+="  tasks:\n"
-        playbook_text+="  - ansible.builtin.meta: noop"
-        echo -e "$playbook_text" > "$ansible_k8s_custom_playbook/main.yaml"
-    fi
-
-    mkdir -p "$ansible_k8s_custom_playbook/vars"
-    ln -sf "../../managed-k8s/k8s-core/ansible/vars/" "$ansible_k8s_custom_playbook/vars/k8s-core-vars"
-    ln -sf "../../managed-k8s/k8s-supplements/ansible/vars/" "$ansible_k8s_custom_playbook/vars/k8s-supplements-vars"
+if [ ! -f "$ansible_k8s_custom_playbook/main.yaml" ]; then
+    playbook_text="# Add your roles and tasks here:\n"
+    playbook_text+="- hosts: orchestrator\n"
+    playbook_text+="  gather_facts: false\n"
+    playbook_text+="  tasks:\n"
+    playbook_text+="  - ansible.builtin.meta: noop"
+    echo -e "$playbook_text" > "$ansible_k8s_custom_playbook/main.yaml"
 fi
+
+mkdir -p "$ansible_k8s_custom_playbook/vars"
+ln -sf "../../managed-k8s/k8s-core/ansible/vars/" "$ansible_k8s_custom_playbook/vars/k8s-core-vars"
+ln -sf "../../managed-k8s/k8s-supplements/ansible/vars/" "$ansible_k8s_custom_playbook/vars/k8s-supplements-vars"
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 	notef 'cluster repository initialised successfully!'

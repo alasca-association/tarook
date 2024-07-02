@@ -9,7 +9,6 @@
   image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   variables:
     WG_COMPANY_USERS: "false"
-    K8S_CUSTOM_STAGE_USAGE: "true"
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
     MANAGED_K8S_LATEST_RELEASE: "false"
@@ -208,13 +207,13 @@
     - export MANAGED_K8S_GIT="$(realpath .)"
     - cd ci
     - git init
+    - direnv allow
+    - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
     - ../actions/init-cluster-repo.sh
     - ../actions/init-cluster-repo.sh # A second run to check idempotency
     - cp res/custom-play.yaml k8s-custom/main.yaml
       # Note that this is basically a dummy keypair that is not used to protect any significant data
     - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
-    - direnv allow
-    - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
       # Ensure that the project is clean
     - python3 clean-up-os-project.py
 
@@ -313,7 +312,6 @@ containerd:
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
     # so we need to reference the default vars here (only one level of nesting is allowed)
     WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
-    K8S_CUSTOM_STAGE_USAGE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, K8S_CUSTOM_STAGE_USAGE]
     ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
     MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]
@@ -342,7 +340,6 @@ containerd-k8s-upgrade:
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
     # so we need to reference the default vars here (only one level of nesting is allowed)
     WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
-    K8S_CUSTOM_STAGE_USAGE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, K8S_CUSTOM_STAGE_USAGE]
     ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
     MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]

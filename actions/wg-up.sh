@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-if [ "${WG_USAGE:-true}" == "true" ]; then
-    actions_dir="$(dirname "$0")"
-    # shellcheck source=actions/lib.sh
-    . "$actions_dir/lib.sh"
 
+actions_dir="$(dirname "$0")"
+# shellcheck source=actions/lib.sh
+. "$actions_dir/lib.sh"
+
+if [ "${wg_usage:-true}" == "true" ]; then
     validate_wireguard
 
     wg_subnet="$(jq -r .subnet_cidr "$terraform_state_dir/config.tfvars.json")"

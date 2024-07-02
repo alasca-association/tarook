@@ -10,6 +10,7 @@ export KUBECONFIG="$cluster_repository/etc/admin.conf"
 
 submodule_managed_k8s_name="managed-k8s"
 
+tf_usage=${tf_usage:-"$(tomlq '.terraform | if has ("enabled") then .enabled else true end' "$config_file")"}
 terraform_min_version="0.14.0"
 terraform_state_dir="$cluster_repository/terraform"
 terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"
@@ -20,6 +21,9 @@ terraform_prevent_disruption="$(
            | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
           "$config_file" 2>/dev/null
 )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
+
+wg_usage=${wg_usage:-"$(tomlq '.wireguard | if has("enabled") then .enabled else true end' "$config_file")"}
+
 ansible_directory="$code_repository/ansible"
 
 ansible_inventory_base="$cluster_repository/inventory/yaook-k8s"
@@ -49,7 +53,7 @@ else
     echo "$vault_container_name" > "$vault_dir/container-name"
 fi
 
-if [ "${WG_USAGE:-true}" == "true" ]; then
+if [ "${wg_usage:-true}" == "true" ]; then
     wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
     wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
     wg_endpoint="${wg_endpoint:-0}"
@@ -76,7 +80,7 @@ function ansible_disruption_allowed() {
 
 function harbour_disruption_allowed() {
     [ "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" = 'true' ] \
- && [ "${TF_USAGE:-true}+${terraform_prevent_disruption:-true}" != 'true+true' ]
+ && [ "${tf_usage:-true}+${terraform_prevent_disruption:-true}" != 'true+true' ]
     # when Terraform is used also factor in its config
 }
 
@@ -93,7 +97,7 @@ function require_harbour_disruption() {
     if ! harbour_disruption_allowed; then
         # shellcheck disable=SC2016
         errorf '$MANAGED_K8S_DISRUPT_THE_HARBOUR is set to %q' "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" >&2
-        if [ "${TF_USAGE:-true}" == 'true' ]; then
+        if [ "${tf_usage:-true}" == 'true' ]; then
             if [ -z ${terraform_prevent_disruption+x} ]; then
                 errorf "and ${terraform_disruption_setting} in ${config_file}"' is unset or invalid' >&2
             else
