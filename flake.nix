@@ -43,6 +43,7 @@
             direnv
             git
             gnupg
+            gnutar
             netcat
             sonobuoy
           ];
