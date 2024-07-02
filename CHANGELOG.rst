@@ -19,6 +19,167 @@ earlier changes.
 
 .. towncrier release notes start
 
+v6.0.0 (2024-07-02)
+-------------------
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+- We now use short-lived (8d) kubeconfigs
+
+  The kubeconfig at ``etc/admin.conf`` is now only valid for 8 days after creation (was 1 year). Also, it is now discouraged to check it into version control but instead refresh it on each orchestrator as it is needed using ``tools/vault/k8s-login.sh``.
+
+  If your automation relies on the kubeconfig to be checked into VCS or for it to be valid for one year, you probably need to adapt it.
+
+  In order to switch to the short-lived kubeconfig, run
+
+  .. code:: console
+
+      $ git rm etc/admin.conf
+      $ git commit etc/admin.conf -m "Remove kubeconfig from git"
+      $ ./managed-k8s/actions/k8s-login.sh
+
+  Which will remove the long-term kubeconfig and generate a short-lived one. (`!1178 <https://gitlab.com/yaook/k8s/-/merge_requests/1178>`_)
+- We now provide an opt-in regression fix
+  that restores Kubernetes' ability to respond to certificate signing requests.
+
+  Using the fix is completely optional,
+  see :doc:`/user/guide/kubernetes/restore-certificate-signing-ability`.
+  for futher details.
+
+  **Action required**:
+  As a prerequisite for making the regression fix functional
+  you must update your Vault policies by executing the following:
+
+  .. code:: shell
+
+      # execute with Vault root token sourced
+      ./managed-k8s/tools/vault/init.sh
+
+  . (`!1219 <https://gitlab.com/yaook/k8s/-/merge_requests/1219>`_)
+- Some :doc:`environment variables </user/reference/environmental-variables>` have been removed.
+
+  ``WG_USAGE`` and ``TF_USAGE`` have been moved from ``.envrc`` to ``config.toml``.
+  If they have been set to false, the respective options ``wireguard.enabled`` and
+  ``terraform.enabled`` in ``config.toml`` need to be set accordingly.
+  If they were not touched (i.e. they are set to true), no action is required.
+
+  ``CUSTOM_STAGE_USAGE`` has been removed. The custom stage is now always run
+  if the playbook exists. No manual action required. (`!1263 <https://gitlab.com/yaook/k8s/-/merge_requests/1263>`_)
+- SSH host key verification has been re-enabled. Nodes are getting signed SSH certificates.
+  For clusters not using a vault running inside docker as backend, automated certificate renewal
+  is configured on the nodes.
+  The SSH CA is stored inside ``$CLUSTER_REPOSITORY/etc/ssh-known-hosts`` and can be used to ssh to nodes.
+
+  The vault policies have been adjusted to allow the orchestrator role to read the SSH CA from vault.
+  You must update the vault policies therefore:
+
+  .. note::
+
+     A root token is required.
+
+  .. code:: console
+
+     $ ./managed-k8s/tools/vault/init.sh
+
+  This is needed just once. (`!1272 <https://gitlab.com/yaook/k8s/-/merge_requests/1272>`_)
+- With Kubernetes v1.29, the user specified in the ``admin.conf`` kubeconfig
+  is now bound to the ``kubeadm:cluster-admins`` RBAC group.
+  This requires an update to the Vault cluster policies and configuration.
+
+  **You must update your vault policies and roles and a root token must be sourced.**
+
+  To upgrade your Kubernetes cluster from version v1.28 to v1.29, follow these steps:
+
+  .. warning::
+
+      You must upgrade to a version greater than ``v1.29.5`` due to
+      `kubeadm #3055 <https://github.com/kubernetes/kubeadm/issues/3055>`_
+
+  .. code:: console
+
+      $ ./managed-k8s/tools/vault/init.sh
+      $ ./managed-k8s/tools/vault/update.sh
+      $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.29.x
+      $ ./managed-k8s/actions/k8s-login.sh
+
+  Note that the default upgrade procedure has changed such that addons get upgraded
+  after all control plane nodes got upgraded and not along with the first control plane node. (`!1284 <https://gitlab.com/yaook/k8s/-/merge_requests/1284>`_)
+
+
+New Features
+~~~~~~~~~~~~
+
+- Add option to install CCM and cinder csi plugin via helm charts.
+  The migration to the helm chart will be enforced when upgrading to Kubernetes v1.29. (`!1107 <https://gitlab.com/yaook/k8s/-/merge_requests/1107>`_)
+- A guide on how to rotate OpenStack credentials has been added. (`!1266 <https://gitlab.com/yaook/k8s/-/merge_requests/1266>`_)
+
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- The CI image is now built as part of this repo's pipeline using a Nix Flake (`!1175 <https://gitlab.com/yaook/k8s/-/merge_requests/1175>`_)
+- Thanos CPU limits have been removed (`!1186 <https://gitlab.com/yaook/k8s/-/merge_requests/1186>`_)
+- PKI renewal during Kubernetes upgrades has been refined and can be explicitly triggered or skipped via the newly introduced ``renew-pki`` tag. (`!1251 <https://gitlab.com/yaook/k8s/-/merge_requests/1251>`_)
+- All releasenotes will now have a link to their corresponding MR. (`!1294 <https://gitlab.com/yaook/k8s/-/merge_requests/1294>`_)
+-  (`!1325 <https://gitlab.com/yaook/k8s/-/merge_requests/1325>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- Adjust .gitignore template to keep the whole inventory (`!1274 <https://gitlab.com/yaook/k8s/-/merge_requests/1274>`_)
+- After each phase of a root CA rotation a new kubeconfig is automatically generated (`!1293 <https://gitlab.com/yaook/k8s/-/merge_requests/1293>`_)
+-  (`!1298 <https://gitlab.com/yaook/k8s/-/merge_requests/1298>`_, `!1316 <https://gitlab.com/yaook/k8s/-/merge_requests/1316>`_, `!1336 <https://gitlab.com/yaook/k8s/-/merge_requests/1336>`_)
+- The common monitoring labels feature has been fixed. (`!1303 <https://gitlab.com/yaook/k8s/-/merge_requests/1303>`_)
+- Keys in the wireguard endpoint dict have been fixed. (`!1329 <https://gitlab.com/yaook/k8s/-/merge_requests/1329>`_)
+
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- add hints for terraform config (`!1246 <https://gitlab.com/yaook/k8s/-/merge_requests/1246>`_)
+- A variable setting to avoid problems with the keyring backend has been added to the template of ``~/.config/yaook-k8s/env``. (`!1269 <https://gitlab.com/yaook/k8s/-/merge_requests/1269>`_)
+- A hint to fix incorrect locale settings for Ansible has been added. (`!1297 <https://gitlab.com/yaook/k8s/-/merge_requests/1297>`_)
+-  (`!1308 <https://gitlab.com/yaook/k8s/-/merge_requests/1308>`_, `!1315 <https://gitlab.com/yaook/k8s/-/merge_requests/1315>`_)
+- A missing variable has been added to the reference (`!1313 <https://gitlab.com/yaook/k8s/-/merge_requests/1313>`_)
+
+
+Deprecations and Removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Support for rook_v1 has been dropped. We do only support deploying rook via helm from now on. (`!1042 <https://gitlab.com/yaook/k8s/-/merge_requests/1042>`_)
+- Deprecated vault policies have been removed after a sufficient transition time.
+
+  .. hint::
+
+    A root token is required.
+
+  .. code:: console
+
+    ./managed-k8s/tools/vault/init.sh
+
+  Execute the above to remove them from your vault instance. (`!1318 <https://gitlab.com/yaook/k8s/-/merge_requests/1318>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+-  (`!1268 <https://gitlab.com/yaook/k8s/-/merge_requests/1268>`_, `!1276 <https://gitlab.com/yaook/k8s/-/merge_requests/1276>`_, `!1281 <https://gitlab.com/yaook/k8s/-/merge_requests/1281>`_, `!1282 <https://gitlab.com/yaook/k8s/-/merge_requests/1282>`_, `!1287 <https://gitlab.com/yaook/k8s/-/merge_requests/1287>`_, `!1296 <https://gitlab.com/yaook/k8s/-/merge_requests/1296>`_, `!1301 <https://gitlab.com/yaook/k8s/-/merge_requests/1301>`_, `!1306 <https://gitlab.com/yaook/k8s/-/merge_requests/1306>`_, `!1307 <https://gitlab.com/yaook/k8s/-/merge_requests/1307>`_, `!1309 <https://gitlab.com/yaook/k8s/-/merge_requests/1309>`_, `!1310 <https://gitlab.com/yaook/k8s/-/merge_requests/1310>`_, `!1311 <https://gitlab.com/yaook/k8s/-/merge_requests/1311>`_, `!1312 <https://gitlab.com/yaook/k8s/-/merge_requests/1312>`_, `!1319 <https://gitlab.com/yaook/k8s/-/merge_requests/1319>`_, `!1320 <https://gitlab.com/yaook/k8s/-/merge_requests/1320>`_, `!1321 <https://gitlab.com/yaook/k8s/-/merge_requests/1321>`_, `!1322 <https://gitlab.com/yaook/k8s/-/merge_requests/1322>`_, `!1334 <https://gitlab.com/yaook/k8s/-/merge_requests/1334>`_)
+
+
+Security
+~~~~~~~~
+
+- All Ansible tasks that handle secret keys are now prevented from logging them. (`!1295 <https://gitlab.com/yaook/k8s/-/merge_requests/1295>`_)
+
+
+Misc
+~~~~
+
+- `!1271 <https://gitlab.com/yaook/k8s/-/merge_requests/1271>`_, `!1328 <https://gitlab.com/yaook/k8s/-/merge_requests/1328>`_
+
+
 v5.1.4 (2024-06-07)
 -------------------
 

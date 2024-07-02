@@ -1,1 +1,0 @@
-PKI renewal during Kubernetes upgrades has been refined and can be explicitly triggered or skipped via the newly introduced ``renew-pki`` tag.

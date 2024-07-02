@@ -1,2 +1,0 @@
-Add option to install CCM and cinder csi plugin via helm charts.
-The migration to the helm chart will be enforced when upgrading to Kubernetes v1.29.
