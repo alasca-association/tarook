@@ -332,7 +332,6 @@ def main():
         tf_ipv4_string = None
         tf_ipv6_string = None
 
-        # Getting IPv4 cluster network
         if (os.getenv('wg_user') == 'gitlab-ci-runner'):  # if in gitlab ci
             tf_ipv4_string = os.getenv('TF_VAR_subnet_cidr')
         elif 'subnet_cidr' in tf_config:
