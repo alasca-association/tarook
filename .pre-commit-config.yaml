@@ -18,7 +18,7 @@ repos:
       - id: trailing-whitespace
         exclude: '.*(\.drawio|\.svg)$'
       - id: end-of-file-fixer
-        exclude: '.*(\.drawio|\.svg)$'
+        exclude: '.*(\.drawio|\.svg|\.nix)$'
       - id: mixed-line-ending
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
