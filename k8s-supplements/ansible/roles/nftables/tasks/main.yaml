@@ -40,6 +40,7 @@
     owner: root
     group: root
     mode: 0600
+  notify: reload nftables
 
 - name: Create nftables config for k8s API server
   become: true
