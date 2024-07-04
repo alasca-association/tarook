@@ -66,11 +66,11 @@ function load_conf_vars() {
                 | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
                 "$config_file" 2>/dev/null
         )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
-        tf_usage=${tf_usage:-"$(tomlq '.terraform | if has ("enabled") then .enabled else true end' "$config_file")"}
+        tf_usage=${tf_usage:-"$(tomlq '.terraform | if has ("enabled") then .enabled else true end' "$config_file")"}   
     else
         tf_usage=false
     fi
-
+    
     wg_usage=${wg_usage:-"$(tomlq '.wireguard | if has("enabled") then .enabled else true end' "$config_file")"}
 
     if [ "${wg_usage:-true}" == "true" ]; then
