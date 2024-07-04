@@ -10,19 +10,11 @@ export KUBECONFIG="$cluster_repository/etc/admin.conf"
 
 submodule_managed_k8s_name="managed-k8s"
 
-tf_usage=${tf_usage:-"$(tomlq '.terraform | if has ("enabled") then .enabled else true end' "$config_file")"}
 terraform_min_version="0.14.0"
 terraform_state_dir="$cluster_repository/terraform"
 terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"
 terraform_plan="$terraform_state_dir/plan.tfplan"
 terraform_disruption_setting="terraform.prevent_disruption"
-terraform_prevent_disruption="$(
-    tomlq ".$terraform_disruption_setting"'
-           | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
-          "$config_file" 2>/dev/null
-)" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
-
-wg_usage=${wg_usage:-"$(tomlq '.wireguard | if has("enabled") then .enabled else true end' "$config_file")"}
 
 ansible_directory="$code_repository/ansible"
 
@@ -38,28 +30,6 @@ ansible_k8s_ms_vars_base="$ansible_inventory_base/05_k8s_managed_service"
 
 vault_dir="${VAULT_DIR:-$cluster_repository/vault}"
 
-# We assign to each repository a unique container name. We need to have
-# different container names per repository in order to ensure that a dev can
-# run multiple vault instances in parallel and without conflict *and* that the
-# data is still located in the corresponding repository for committing with
-# git.
-# While the latter is not strictly sensible for development, we'll need this
-# during executing the upgrade path from pass to Vault.
-if [ -e "$vault_dir/container-name" ]; then
-    vault_container_name="$(cat "$vault_dir/container-name")"
-else
-    mkdir -p "$vault_dir"
-    vault_container_name="yaook-vault-$(uuidgen --random | cut -d'-' -f1-3)"
-    echo "$vault_container_name" > "$vault_dir/container-name"
-fi
-
-if [ "${wg_usage:-true}" == "true" ]; then
-    wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
-    wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
-    wg_endpoint="${wg_endpoint:-0}"
-    ansible_wg_template="$etc_directory/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}.conf"
-fi
-
 if [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'true' ]; then
     use_color='true'
 elif [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'false' ]; then
@@ -70,6 +40,47 @@ else
     use_color='false'
 fi
 
+function load_vault_container_name() {
+    # We assign to each repository a unique container name. We need to have
+    # different container names per repository in order to ensure that a dev can
+    # run multiple vault instances in parallel and without conflict *and* that the
+    # data is still located in the corresponding repository for committing with
+    # git.
+    # While the latter is not strictly sensible for development, we'll need this
+    # during executing the upgrade path from pass to Vault.
+    if [ -e "$vault_dir/container-name" ]; then
+        vault_container_name="$(cat "$vault_dir/container-name")"
+    else
+        mkdir -p "$vault_dir"
+        vault_container_name="yaook-vault-$(uuidgen --random | cut -d'-' -f1-3)"
+        echo "$vault_container_name" > "$vault_dir/container-name"
+    fi
+}
+
+function load_conf_vars() {
+    # All the things with side-effects should got here
+
+    if [ -e "$terraform_state_dir/config.tfvars.json" ]; then
+        terraform_prevent_disruption="$(
+            tomlq ".$terraform_disruption_setting"'
+                | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
+                "$config_file" 2>/dev/null
+        )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
+        tf_usage=${tf_usage:-"$(tomlq '.terraform | if has ("enabled") then .enabled else true end' "$config_file")"}
+    else
+        tf_usage=false
+    fi
+
+    wg_usage=${wg_usage:-"$(tomlq '.wireguard | if has("enabled") then .enabled else true end' "$config_file")"}
+
+    if [ "${wg_usage:-true}" == "true" ]; then
+        wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
+        wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
+        wg_endpoint="${wg_endpoint:-0}"
+        ansible_wg_template="$etc_directory/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}.conf"
+    fi
+}
+
 function color_enabled() {
     [ "$use_color" = 'true' ]
 }
@@ -79,6 +90,7 @@ function ansible_disruption_allowed() {
 }
 
 function harbour_disruption_allowed() {
+    load_conf_vars
     [ "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" = 'true' ] \
  && [ "${tf_usage:-true}+${terraform_prevent_disruption:-true}" != 'true+true' ]
     # when Terraform is used also factor in its config
@@ -94,6 +106,7 @@ function require_ansible_disruption() {
 }
 
 function require_harbour_disruption() {
+    load_conf_vars
     if ! harbour_disruption_allowed; then
         # shellcheck disable=SC2016
         errorf '$MANAGED_K8S_DISRUPT_THE_HARBOUR is set to %q' "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" >&2
