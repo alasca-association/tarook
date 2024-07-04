@@ -113,6 +113,7 @@ merge-to-release-branch:
         git push
       fi
     - git checkout "${CI_COMMIT_BRANCH}"
+    - touch docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"
     - git add docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"
     - git commit -m "Trigger MR to devel for "${CI_COMMIT_BRANCH}"" --allow-empty
     - |
