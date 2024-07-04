@@ -89,6 +89,20 @@
       flake = {lib, ...}: {
         flakeModules.yk8s = import ./nix/module;
         lib = import ./nix/lib.nix {inherit lib;};
+        templates.cluster-repo = {
+          description = ''
+            Template containing all the Nix parts of the cluster repo
+          '';
+          path = ./nix/templates/cluster-repo;
+        };
+        templates.migration = {
+          # TODO generate
+          # TODO add version
+          description = ''
+            Template to migrate from before vX.0.0
+          '';
+          path = ./nix/templates/migration;
+        };
       };
     };
 }
