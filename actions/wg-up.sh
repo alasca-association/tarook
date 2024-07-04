@@ -4,6 +4,7 @@ set -euo pipefail
 actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
+load_conf_vars
 
 if [ "${wg_usage:-true}" == "true" ]; then
     validate_wireguard

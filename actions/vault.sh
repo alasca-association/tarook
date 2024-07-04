@@ -4,6 +4,8 @@ actions_dir="$(dirname "$0")"
 
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
+load_conf_vars
+load_vault_container_name
 
 vault_image="$(bash "$actions_dir/detect-vault-image.sh")"
 

@@ -41,6 +41,7 @@ fi
 
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
+load_conf_vars
 
 check_venv
 
