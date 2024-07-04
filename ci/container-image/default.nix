@@ -13,14 +13,15 @@
     '';
   };
   tmpdir = pkgs.runCommand "tmp-dir" {} "mkdir -p $out/tmp;";
+  deps = dependencies pkgs;
 in {
   name = "registry.gitlab.com/yaook/k8s/ci";
   contents = pkgs.buildEnv {
     name = "image-root";
     paths =
-      dependencies.yk8s
-      ++ dependencies.interactive
-      ++ dependencies.ci
+      deps.yk8s
+      ++ deps.interactive
+      ++ deps.ci
       ++ (with pkgs; [
         fakeNss # provides /etc/passwd and /etc/group
         dockerTools.usrBinEnv

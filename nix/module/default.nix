@@ -1,4 +1,4 @@
-{
+{dependencies}: {
   inputs,
   lib,
   self,
@@ -28,6 +28,11 @@
           # Pin all programs exported by this module to the version managed in the yaook/k8s repo
           pkgs = import inputs.yk8s.inputs.nixpkgs {
             inherit system;
+            config.allowUnfreePredicate = pkg:
+              builtins.elem (inputs.nixpkgs.outputs.lib.getName pkg) [
+                "terraform"
+                "vault"
+              ];
           };
         };
         imports = [
@@ -120,6 +125,13 @@
               fi
               out=$(nix build --print-out-paths --no-link .#yk8s-outputs)
               rsync -rL --chmod 664 "$out/" .
+            '';
+          };
+          action = pkgs.writeShellApplication {
+            name = "yaook-k8s-action";
+            runtimeInputs = (dependencies pkgs).yk8s;
+            text = ''
+              bash "${../..}/actions/$1"
             '';
           };
         };

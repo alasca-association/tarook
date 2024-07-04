@@ -7,7 +7,47 @@
     nixpkgs,
     flake-parts,
     ...
-  }:
+  }: let
+    dependencies = pkgs:
+      with pkgs; {
+        yk8s = [
+          coreutils
+          gcc # so poetry can build netifaces
+          git
+          gnugrep
+          gnused
+          gzip
+          iproute2 # for wg-up
+          jq
+          kubectl
+          kubernetes-helm
+          moreutils
+          openssh
+          openssl
+          openstackclient
+          poetry
+          terraform
+          util-linux # for uuidgen
+          vault
+          wireguard-tools
+        ];
+        ci = [
+          direnv
+          gnupg
+          gnutar
+          netcat
+          sonobuoy
+        ];
+        interactive = [
+          bashInteractive
+          vim
+          dnsutils
+          iputils
+          k9s
+          curl
+        ];
+      };
+  in
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
       debug = true;
@@ -17,46 +57,7 @@
         inputs',
         config,
         ...
-      }: let
-        dependencies = with pkgs; {
-          yk8s = [
-            coreutils
-            gcc # so poetry can build netifaces
-            gnugrep
-            gnused
-            gzip
-            iproute2 # for wg-up
-            jq
-            kubectl
-            kubernetes-helm
-            moreutils
-            openssh
-            openssl
-            openstackclient
-            poetry
-            terraform
-            util-linux # for uuidgen
-            vault
-            wireguard-tools
-          ];
-          ci = [
-            direnv
-            git
-            gnupg
-            gnutar
-            netcat
-            sonobuoy
-          ];
-          interactive = [
-            bashInteractive
-            vim
-            dnsutils
-            iputils
-            k9s
-            curl
-          ];
-        };
-      in {
+      }: {
         _module.args.pkgs = import nixpkgs {
           inherit system;
           config.allowUnfreePredicate = pkg:
@@ -66,14 +67,21 @@
             ];
         };
         devShells.default = pkgs.mkShell {
-          nativeBuildInputs = dependencies.interactive;
-          buildInputs = dependencies.yk8s;
+          nativeBuildInputs = (dependencies pkgs).interactive;
+          buildInputs = (dependencies pkgs).yk8s;
         };
         packages = let
           container-image = import ./ci/container-image {inherit pkgs dependencies;};
         in {
           ciImage = pkgs.dockerTools.buildLayeredImage container-image;
           streamCiImage = pkgs.writeShellScriptBin "stream-ci" (pkgs.dockerTools.streamLayeredImage container-image);
+          init = pkgs.writeShellApplication {
+            name = "init-cluster-repo";
+            runtimeInputs = (dependencies pkgs).yk8s;
+            text = ''
+              ${./.}/actions/init-cluster-repo.sh
+            '';
+          };
           migrate = pkgs.writeShellApplication {
             name = "migrate-cluster-repo";
             runtimeInputs = with pkgs; [];
@@ -87,7 +95,7 @@
         formatter = pkgs.alejandra;
       };
       flake = {lib, ...}: {
-        flakeModules.yk8s = import ./nix/module;
+        flakeModules.yk8s = import ./nix/module {inherit dependencies;};
         lib = import ./nix/lib.nix {inherit lib;};
         templates.cluster-repo = {
           description = ''
