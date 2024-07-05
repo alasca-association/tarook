@@ -1,1 +1,0 @@
-A variable setting to avoid problems with the keyring backend has been added to the template of ``~/.config/yaook-k8s/env``.

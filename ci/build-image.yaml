@@ -39,16 +39,10 @@ build_image:
     reports:
       dotenv: image.env
 
-deploy_image:
-  tags:
-    - docker
+
+.deploy_image:
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.23.1"
   stage: tag-image
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
-      when: on_success
-    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
-      when: on_success
   before_script:
     - |
       cat > /etc/nix/nix.conf <<EOF
@@ -56,10 +50,30 @@ deploy_image:
       sandbox = false
       extra-experimental-features = nix-command flakes
       EOF
+
+deploy_image_default_branch:
+  image: !reference [.deploy_image, image]
+  stage: !reference [.deploy_image, stage]
+  before_script: !reference [.deploy_image, before_script]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+      when: on_success
   script:
   - nix run nixpkgs#skopeo -- login -u gitlab-ci-token -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
   - nix run nixpkgs#skopeo -- --insecure-policy copy "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}" "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${CI_COMMIT_REF_NAME}"
-  - |
-    if [ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]; then
-      nix run nixpkgs#skopeo -- --insecure-policy copy "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}" "docker://${YAOOK_K8S_CI_IMAGE_NAME}:latest";
-    fi
+  - nix run nixpkgs#skopeo -- --insecure-policy copy "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}" "docker://${YAOOK_K8S_CI_IMAGE_NAME}:latest";
+  tags:
+  - docker
+
+deploy_image_release:
+  image: !reference [.deploy_image, image]
+  stage: !reference [.deploy_image, stage]
+  before_script: !reference [.deploy_image, before_script]
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
+      when: on_success
+  script:
+  - nix run nixpkgs#skopeo -- login -u gitlab-ci-token -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
+  - nix run nixpkgs#skopeo -- --insecure-policy copy "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}" "docker://${YAOOK_K8S_CI_IMAGE_NAME}:$(cat ./version)"
+  tags:
+  - docker

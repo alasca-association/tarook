@@ -1,1 +1,0 @@
-Support for rook_v1 has been dropped. We do only support deploying rook via helm from now on.
