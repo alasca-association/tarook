@@ -1,0 +1,1 @@
+When initializing a new Wireguard endpoint, nftables may not get reloaded. This has been fixed.
