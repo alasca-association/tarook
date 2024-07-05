@@ -385,8 +385,14 @@ prometheus:
     thanos:
       objectStorageConfig:
         optional: false
+{% if monitoring_prometheus_stack_version is version('51.0.0', '>=') %}
+        existingSecret:
+          name: thanos-sidecar-bucket-credentials-config
+          key: thanos.yaml
+{% else %}
         name: thanos-sidecar-bucket-credentials-config
         key: thanos.yaml
+{% endif %}
 {% endif %}
     containers:
       - name: prometheus

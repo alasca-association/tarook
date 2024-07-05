@@ -530,7 +530,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 # If you set this empty (not unset), the latest version is used
 # Note that upgrades require additional steps and maybe even LCM changes are needed:
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#upgrading-chart
-#prometheus_stack_version = "48.1.1"
+#prometheus_stack_version = "59.1.0"
 
 # Configure persistent storage for Prometheus
 # By default an empty-dir is used.
