@@ -31,7 +31,9 @@ ansible_inventory_host_file="$ansible_inventory_base/hosts"
 
 ansible_k8s_core_dir="$code_repository/k8s-core/ansible"
 ansible_k8s_supplements_dir="$code_repository/k8s-supplements/ansible"
-ansible_k8s_custom_playbook="$cluster_repository/k8s-custom"
+ansible_k8s_custom_dispatch_dir="$code_repository/k8s-custom/ansible"
+ansible_k8s_custom_playbook_dir="$cluster_repository/k8s-custom"
+ansible_k8s_custom_playbook="$ansible_k8s_custom_playbook_dir/main.yaml"
 
 ansible_k8s_sl_vars_base="$ansible_inventory_base/04_k8s_service_layer"
 ansible_k8s_ms_vars_base="$ansible_inventory_base/05_k8s_managed_service"

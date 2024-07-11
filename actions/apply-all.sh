@@ -21,6 +21,6 @@ fi
 run "$actions_dir/apply-k8s-supplements.sh"
 
 # Invoke custom stage if it exists
-if [ -f "$ansible_k8s_custom_playbook/main.yaml" ]; then
+if [ -f "$ansible_k8s_custom_playbook" ]; then
   run "$actions_dir/apply-custom.sh"
 fi

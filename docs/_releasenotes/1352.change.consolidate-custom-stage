@@ -1,0 +1,22 @@
+The entrypoint for the custom stage has been moved into the LCM. It now includes
+the connect-to-nodes role and then dispatches to the custom playbook. If you had
+included connect-to-nodes in the custom playbook, you may now remove it.
+
+.. code:: diff
+
+  diff --git a/k8s-custom/main.yaml b/k8s-custom/main.yaml
+  -# Node bootstrap is needed in most cases
+  -- name: Initial node bootstrap
+  -  hosts: frontend:k8s_nodes
+  -  gather_facts: false
+  -  vars_files:
+  -    - k8s-core-vars/ssh-hardening.yaml
+  -    - k8s-core-vars/disruption.yaml
+  -    - k8s-core-vars/etc.yaml
+  -  roles:
+  -    - role: bootstrap/detect-user
+  -      tag: detect-user
+  -    - role: bootstrap/ssh-known-hosts
+  -      tags: ssh-known-hosts
+
+.

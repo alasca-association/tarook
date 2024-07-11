@@ -18,10 +18,12 @@ python3 "$actions_dir/update_inventory.py"
 "$actions_dir/wg-up.sh"
 
 # Make roles from all stages accessible
-ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles:$ansible_k8s_custom_playbook/roles"
+ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles:$ansible_k8s_custom_playbook_dir/roles"
 export ANSIBLE_ROLES_PATH
 
-cd "$ansible_k8s_custom_playbook"
+pushd "$ansible_k8s_custom_dispatch_dir"
 ansible_playbook -i "$ansible_inventory_host_file" \
   -e "ansible_k8s_core_dir=$ansible_k8s_core_dir" \
+  -e "ansible_k8s_custom_playbook=$ansible_k8s_custom_playbook" \
   main.yaml "$@"
+popd

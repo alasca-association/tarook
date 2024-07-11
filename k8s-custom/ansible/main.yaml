@@ -1,0 +1,7 @@
+---
+- name: Connect to, prepare & bootstrap all nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
+  vars:
+    target_hosts: all:!orchestrator
+- name: Run custom playbook
+  import_playbook: "{{ ansible_k8s_custom_playbook }}"
