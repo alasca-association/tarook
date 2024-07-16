@@ -56,15 +56,22 @@
         mode: ugo=r
         content: "{{ vault_node_name }}"
 
-    - name: Write vault config
+    - name: Copy Vault CA cert to node
+      when: lookup('env', 'VAULT_CACERT') | length > 0
       copy:
+        src: "{{ lookup('env', 'VAULT_CACERT') }}"
+        dest: /etc/vault/vault-ca.crt
+        owner: root
+        group: root
+        mode: ugo=r
+
+    - name: Write vault config
+      template:
+        src: vault-config.j2
         dest: /etc/vault/config
         owner: root
         group: root
         mode: ugo=r
-        content: |
-          VAULT_ADDR={{ lookup('env', 'VAULT_ADDR') }}
-          VAULT_CACERT={{ lookup('env', 'VAULT_CACERT') }}
 
     - name: Ensure /usr/local/lib/yaook-k8s/ exists
       file:
