@@ -1,0 +1,4 @@
+{{ _auto_generated_preamble }}
+
+VAULT_ADDR={{ lookup('env', 'VAULT_ADDR') }}
+VAULT_CACERT={{ (lookup('env', 'VAULT_CACERT') | length > 0) | ternary('/etc/vault/vault-ca.crt', '') }}
