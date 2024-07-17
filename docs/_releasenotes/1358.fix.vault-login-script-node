@@ -1,3 +1,0 @@
-If the vault instance is not publicly routable, nodes were not able to
-login to it as the vault certificate handling was faulty.
-This has been fixed.
