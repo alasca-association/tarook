@@ -9,6 +9,9 @@ k8s_network_calico_image_registry: "quay.io"
 
 k8s_network_calico_encapsulation: "None"
 
+k8s_network_ipv4_nat_outgoing: true
+k8s_network_ipv6_nat_outgoing: false
+
 calico_values_file_path: "{{ k8s_network_calico_values_file_path | default('values.yaml.j2') }}"
 
 calico_calicoctl_binary_source: "https://github.com/projectcalico/calico/releases/download"

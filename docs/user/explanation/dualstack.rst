@@ -2,13 +2,12 @@ DualStack-Support on Kubernetes with Calico
 ===========================================
 
 .. warning::
-   DualStack support is currently non-functional.
-   It is planned to re-add it in the near future.
+   DualStack support is currently not well tested.
 
 .. note::
 
    It is currently not possible to create an IPv6-only cluster
-   (IPv4-only is default).
+   with terraform.
 
    It is **not possible to upgrade** a single stack cluster to a
    dualStack cluster.
@@ -45,7 +44,7 @@ Necessary changes in your config file
 
 Adjust your ``config/config.toml`` to meet the following statements:
 
--  set ``dualstack-support=true``
+-  set ``ipv6_enabled = true``
 
    -  this variable is used across all stages to adjust setups and
       resources
@@ -213,3 +212,11 @@ the correct route to the currently active gateway.
    You can still connect to the secondary gateways using their
    public (floating) IP addresses or by using the currently active
    gateway as jumphost.
+
+
+IPv6-Only Cluster
+-----------------
+IPv6-only clusters are possible by setting ``ipv4_enabled = false`` in the
+``config/config.toml``.
+**This currently does not work with Terraform and has only been tested with bare-metal
+setups.**

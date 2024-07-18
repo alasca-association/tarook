@@ -3,7 +3,7 @@
   delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   vars:
-    kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
+    kubeconfig_api_server_url: "https://{% if ipv4_enabled %}{{ networking_fixed_ip }}{% else %}[{{ networking_fixed_ip_v6 }}]{% endif %}:{{ k8s_apiserver_frontend_port }}"
   ansible.builtin.shell:  # noqa command-instead-of-shell no-changed-when
     chdir: "{{ cluster_repo_dir }}"
     cmd: "{{ cluster_repo_dir }}/managed-k8s/tools/vault/k8s-login.sh {% if super_admin %}-s{% endif %} {{ kubeconfig_api_server_url }}"

@@ -72,7 +72,7 @@
     with_nested:
     - "{{ calico_busybox_pod_information.resources }}"
     - "{{ calico_busybox_pod_information.resources }}"
-    when: dualstack_support
+    when: ipv6_enabled
     loop_control:
       label: "{{ item[0].metadata.name }} --> {{ item[1].metadata.name }} ({{ item[1].status.podIPs[1]['ip'] | default('not defined') }})"
 

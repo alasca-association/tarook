@@ -48,7 +48,11 @@ metadata:
 subsets:
   - addresses:
 {% for node in groups['frontend'] %}
+{% if ipv4_enabled %}
     - ip: {{ hostvars[node]["local_ipv4_address"] }}
+{% else %}
+    - ip: {{ hostvars[node]["local_ipv6_address"] }}
+{% endif %}
 {% endfor %}
     ports:
       - name: metrics

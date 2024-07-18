@@ -72,7 +72,7 @@
     tags:
     - test-dualstack
     - check-dualstack
-    when: dualstack_support
+    when: ipv4_enabled and ipv6_enabled
 
 - name: Test Calico CNI Support
   hosts: k8s_nodes

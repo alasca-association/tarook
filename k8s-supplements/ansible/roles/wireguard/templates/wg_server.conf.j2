@@ -1,7 +1,7 @@
 {{ _auto_generated_preamble }}
 
 [Interface]
-Address = {{ endpoint.ip_gw }} {%- if dualstack_support %}, {{ endpoint.ipv6_gw }}{% endif %}
+Address = {{ endpoint.ip_gw }} {%- if ipv6_enabled %}, {{ endpoint.ipv6_gw }}{% endif %}
 
 ListenPort = {{ endpoint.port }}
 PrivateKey = {{ wg_gw_priv_key }}
@@ -10,6 +10,6 @@ PrivateKey = {{ wg_gw_priv_key }}
 # {{ peer["ident"] }}
 [Peer]
 PublicKey = {{ peer["pub_key"] }}
-AllowedIps = {{ peer["ips"][endpoint.id] }} {%- if dualstack_support %}, {{ peer["ipsv6"][endpoint.id] }}{% endif %}
+AllowedIps = {{ peer["ips"][endpoint.id] }} {%- if ipv6_enabled %}, {{ peer["ipsv6"][endpoint.id] }}{% endif %}
 
 {% endfor %}

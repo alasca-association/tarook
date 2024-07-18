@@ -7,7 +7,8 @@ resource "local_file" "inventory_yaook-k8s" {
     gateway_fips  = openstack_networking_floatingip_v2.gateway,
     workers       = openstack_compute_instance_v2.worker,
     worker_ports  = openstack_networking_port_v2.worker,
-    dualstack_support = var.dualstack_support,
+    ipv6_enabled = var.ipv6_enabled,
+    ipv4_enabled = var.ipv4_enabled,
   })
   filename        = "../../inventory/yaook-k8s/hosts"
   file_permission = 0640

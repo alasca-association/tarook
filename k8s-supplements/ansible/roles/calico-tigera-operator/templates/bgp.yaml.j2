@@ -16,6 +16,7 @@ spec:
   peerSelector: has(node-role.kubernetes.io/control-plane)
 {# BGP config for calico is not necessary if gateway (frontend) nodes are identical to master nodes #}
 {% if groups['masters'] | symmetric_difference(groups['frontend']) | length != 0 %}
+{% if ipv4_enabled %}
 ---
 apiVersion: projectcalico.org/v3
 kind: BGPPeer
@@ -25,8 +26,8 @@ spec:
   peerIP: {{ networking_fixed_ip | ipaddr | to_json }}
   asNumber: {{ k8s_network_bgp_gateway_as | to_json }}
   keepOriginalNextHop: true
-
-{% if dualstack_support %}
+{% endif %}
+{% if ipv6_enabled %}
 ---
 apiVersion: projectcalico.org/v3
 kind: BGPPeer

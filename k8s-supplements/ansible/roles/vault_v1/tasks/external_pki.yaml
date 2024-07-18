@@ -59,8 +59,6 @@
         namespace: "{{ yaook_vault_namespace }}"
       spec:
         internalTrafficPolicy: Cluster
-        ipFamilies:
-        - IPv4
         ipFamilyPolicy: SingleStack
         ports:
         - name: https

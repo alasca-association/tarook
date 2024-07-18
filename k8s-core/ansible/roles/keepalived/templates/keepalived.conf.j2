@@ -8,7 +8,7 @@ vrrp_script chk_haproxy {
     rise 2
 }
 
-{% if dualstack_support %}
+{% if ipv4_enabled and ipv6_enabled %}
 
 # Virtual Group Gateway
 # Group the VRRP instances
@@ -20,6 +20,7 @@ vrrp_sync_group VGG {
 }
 {% endif %}
 
+{% if ipv4_enabled %}
 vrrp_instance VIP_1 {
     state MASTER
     interface {{ ansible_default_ipv4.interface }}
@@ -39,11 +40,12 @@ vrrp_instance VIP_1 {
     }
     notify /etc/keepalived/notifier.sh
 }
+{% endif %}
 
-{% if dualstack_support %}
+{% if ipv6_enabled %}
 vrrp_instance VIP_1_V6 {
     state MASTER
-    interface {{ ansible_default_ipv4.interface }}
+    interface {{ ansible_default_ipv6.interface }}
     virtual_router_id 47
     priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
     advert_int 1
@@ -54,6 +56,7 @@ vrrp_instance VIP_1_V6 {
     virtual_ipaddress {
         {{ networking_fixed_ip_v6 }}
     }
+    unicast_src_ip {{ local_ipv6_address }}
     unicast_peer {
         {% for hostname in groups['frontend'] %}
         {% set peer = hostvars[hostname] %}

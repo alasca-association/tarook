@@ -1,44 +1,9 @@
+{% if ipv4_enabled %}
 net.ipv4.ip_forward=1
-{% if dualstack_support %}
+{% endif %}
+{% if ipv6_enabled %}
 net.ipv6.conf.all.forwarding=1
-# You wanna know why?
-# You're sure?
-# Really sure?
-# Okay. Don't say I didn't warn you.
-#
-# So first of all you need to know that in contrast to DHCPv4 (wait for it),
-# DHCPv6 only hands out addresses. It does not provide *any* routing
-# information, which notably includes (or excludes, if you will) information
-# about the local prefix.
-#
-# That means you cannot learn whether you are in a /120, /64 or whatever via
-# DHCPv6. You need to listen to router advertisments for that.
-#
-# However, linux tries to be really smart. If you are a router, you don't need
-# to listen to router advertisments, right? So it ignores RAs (even if
-# accept_ra is set to 1), if IPv6 forwarding is enabled (because that means
-# you are a router, right?) [1].
-#
-# There is an escape hatch: you can set accept_ra to 2 for any interface, and
-# that will override the above to always accept RAs. The problem with that is
-# that we cannot really achieve that because the
-# /etc/network/interfaces.d/50-cloud-init file has `accept_ra 1` in there, so
-# the accept_ra flag is under control of networking.service.
-#
-# So the only way out is to enable forwarding for `all`, which, by the way is
-# the only switch controlling actual forwarding -- the linux forwarding engine
-# does not care for the individual forwarding switches on the interfaces [2]),
-# and disable it for at least eth0.
-#
-# As sysctl application races with bringing up interfaces, we set both the
-# default and eth0 explicitly to 0.
-#
-# So. much. joy. And to add insult to injury this will only bite you once the
-# initial RA (which was received before setting forwarding to 1) loses its
-# validity.
-#
-#    [1]: http://strugglers.net/~andy/blog/2011/09/04/linux-ipv6-router-advertisements-and-forwarding/
-#    [2]: https://bugzilla.redhat.com/show_bug.cgi?id=38533#c1
-net.ipv6.conf.default.forwarding=0
+{% if ipv4_enabled %}
 net.ipv6.conf.{{ ansible_default_ipv4.interface }}.forwarding=0
+{% endif %}
 {% endif %}

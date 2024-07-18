@@ -7,10 +7,12 @@ nodeRegistration:
 {% if on_openstack %}
     cloud-provider: "external"
 {% endif %}
-{% if dualstack_support %}
+{% if ipv4_enabled and ipv6_enabled %}
     node-ip: {{ [local_ipv4_address, local_ipv6_address] | join(",") | to_json }}
-{% else %}
+{% elif ipv4_enabled %}
     node-ip: {{ local_ipv4_address | to_json }}
+{% elif ipv6_enabled %}
+    node-ip: {{ local_ipv6_address | to_json }}
 {% endif %}
 {% set labels = k8s_node_labels[inventory_hostname] | default([]) %}
 {% if labels %}
@@ -33,21 +35,28 @@ nodeRegistration:
 {% endif %}
 
 localAPIEndpoint:
+{% if ipv4_enabled %}
   advertiseAddress: {{ local_ipv4_address | to_json }}
+{% else %}
+  advertiseAddress: {{ local_ipv6_address | to_json }}
+{% endif %}
   bindPort: 6443
 
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 kubernetesVersion: "v{{ k8s_version }}"
-controlPlaneEndpoint: "{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
+controlPlaneEndpoint: "{% if ipv4_enabled %}{{ networking_fixed_ip }}{% else %}[{{ networking_fixed_ip_v6 }}]{% endif %}:{{ k8s_apiserver_frontend_port }}"
 networking:
-{% if dualstack_support %}
-  podSubnet: {{ [k8s_network_pod_subnet, k8s_network_pod_subnet_v6] | join(",") | to_json }}
-  serviceSubnet: {{ [k8s_network_service_subnet, k8s_network_service_subnet_v6] | join(",") | to_json }}
-{% else %}
-  podSubnet: {{ k8s_network_pod_subnet | to_json }}
-  serviceSubnet: {{ k8s_network_service_subnet | to_json }}
+{% if ipv4_enabled and ipv6_enabled %}
+    podSubnet: {{ [k8s_network_pod_subnet, k8s_network_pod_subnet_v6] | join(",") | to_json }}
+    serviceSubnet: {{ [k8s_network_service_subnet, k8s_network_service_subnet_v6] | join(",") | to_json }}
+{% elif ipv4_enabled %}
+    podSubnet: {{ k8s_network_pod_subnet | to_json }}
+    serviceSubnet: {{ k8s_network_service_subnet | to_json }}
+{% elif ipv6_enabled %}
+    podSubnet: {{ k8s_network_pod_subnet_v6 | to_json }}
+    serviceSubnet: {{ k8s_network_service_subnet_v6 | to_json }}
 {% endif %}
 
 apiServer:
@@ -57,19 +66,37 @@ apiServer:
     enable-admission-plugins: NodeRestriction
 
 controllerManager:
-    extraArgs:
-      bind-address: "0.0.0.0"
-      large-cluster-size-threshold: "{{ k8s_controller_manager_large_cluster_size_threshold | default(50) }}"
+  extraArgs:
+{% if ipv4_enabled %}
+    bind-address: "0.0.0.0"
+{% else %}
+    bind-address: "::"
+{% endif %}
+    large-cluster-size-threshold: "{{ k8s_controller_manager_large_cluster_size_threshold | default(50) }}"
+{% if ipv6_enabled %}
+    # The size for the pod subnets of the nodes.
+    # This value is not respected by calico.
+    # The maximum allowed diff is 16 bits and the smallest allowed value is /112
+    node-cidr-mask-size-ipv6: "{{ [((k8s_network_pod_subnet_v6 | split('/'))[1] | int) + 16, 112] | min }}"
+{% endif %}
 
 scheduler:
     extraArgs:
-      "bind-address" : "0.0.0.0"
+{% if ipv4_enabled %}
+      bind-address: "0.0.0.0"
+{% else %}
+      bind-address: "::"
+{% endif %}
 
 ---
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
+{% if ipv4_enabled %}
 metricsBindAddress: "0.0.0.0:10249"
-{% if dualstack_support %}
+{% else %}
+metricsBindAddress: "[::]:10249"
+{% endif %}
+{% if ipv6_enabled %}
 mode: ipvs
 {% endif %}
 
@@ -77,3 +104,8 @@ mode: ipvs
 kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
 cgroupDriver: systemd
+{% if ipv4_enabled and ipv6_enabled %}
+featureGates:
+  # defaults to true with k8s >= 1.29
+  CloudDualStackNodeIPs: true
+{% endif %}

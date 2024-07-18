@@ -27,10 +27,11 @@ prevent_disruption = true
 # if set to true one must set proper values for the "azs" array according to the cloud in use
 #enable_az_management = false
 
-# Enable DualStack support
-# WARNING: DualStack support is not stable yet, see https://gitlab.com/yaook/k8s/-/issues/502
-dualstack_support = false # "•ᴗ•"
-# If you enabled DualStack-support you may want to adjust the IPv6 subnet
+# Optionally enable IPv6 for DualStack support
+# WARNING: IPv6 isn't fully supported by all components yet. (e.g. LBaaS)
+#ipv6_enabled = false
+
+# If you enabled IPv6-support you may want to adjust the IPv6 subnet
 #subnet_v6_cidr = "fd00::/120"
 
 # If true, create block volume for each instance and boot from there.
@@ -286,9 +287,11 @@ enabled = false # •ᴗ•
 # This is the subnet used by Kubernetes for Pods. Subnets will be delegated
 # automatically to each node.
 pod_subnet = "10.244.0.0/16" # •ᴗ•
+# pod_subnet_v6 = "fdff:2::/56"
 
 # This is the subnet used by Kubernetes for Services.
 service_subnet = "10.96.0.0/12" # •ᴗ•
+# service_subnet_v6 = "fdff:3::/108"
 
 # calico:
 # High-performance, pure IP networking, policy engine. Calico provides

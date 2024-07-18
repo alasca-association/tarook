@@ -86,7 +86,11 @@ metadata:
 subsets:
   - addresses:
 {% for gw in groups["gateways"] %}
+{% if ipv4_enabled %}
     - ip: {{ hostvars[gw]['local_ipv4_address'] | to_json }}
+{% else %}
+    - ip: {{ hostvars[gw]['local_ipv6_address'] | to_json }}
+{% endif %}
 {% endfor %}
     ports:
       - name: api

@@ -20,14 +20,14 @@ resource "openstack_networking_port_v2" "gw_vip_port" {
   }
 
   dynamic "fixed_ip" {
-    for_each = var.dualstack_support ? [1] : []
+    for_each = var.ipv6_enabled ? [1] : []
     content {
         subnet_id = openstack_networking_subnet_v2.cluster_v6_subnet[0].id
     }
   }
 
   dynamic "fixed_ip" {
-    for_each = var.dualstack_support ? [1] : []
+    for_each = var.ipv6_enabled ? [1] : []
     content {
         subnet_id = openstack_networking_subnet_v2.cluster_v6_subnet[0].id
     }
@@ -56,7 +56,7 @@ resource "openstack_networking_port_v2" "gateway" {
   }
 
   dynamic "fixed_ip" {
-    for_each = var.dualstack_support ? [1] : []
+    for_each = var.ipv6_enabled ? [1] : []
     content {
         subnet_id = openstack_networking_subnet_v2.cluster_v6_subnet[0].id
     }
@@ -139,6 +139,7 @@ data "template_file" "trampoline_gateways" {
     networking_floating_ip  = openstack_networking_floatingip_v2.gw_vip_fip.address,
     subnet_cidr             = openstack_networking_subnet_v2.cluster_subnet.cidr,
     subnet_v6_cidr          = try(jsonencode(openstack_networking_subnet_v2.cluster_v6_subnet[0].cidr), "null"),
-    dualstack_support       = var.dualstack_support,
+    ipv6_enabled       = var.ipv6_enabled,
+    ipv4_enabled       = var.ipv4_enabled,
   }
 }

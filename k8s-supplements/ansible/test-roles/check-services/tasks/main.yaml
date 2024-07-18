@@ -51,7 +51,7 @@
     delay: "{{ k8s_error_delay }}"
 
   - name: Validate Services for DualStack-Clusters
-    when: dualstack_support
+    when: ipv6_enabled and ipv4_enabled
     ansible.builtin.include_tasks: dualstack-services.yaml
 
   - name: delete namespace

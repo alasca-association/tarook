@@ -349,8 +349,8 @@ def main():
 
         # Getting IPv6 cluster network
         if (
-            'dualstack_support' in tf_config and
-            tf_config['dualstack_support'] == 'true'
+            'ipv6_enabled' in tf_config and
+            tf_config['ipv6_enabled'] == 'true'
         ):
             if 'subnet_v6_cidr' in tf_config:
                 tf_ipv6_string = tf_config['subnet_v6_cidr']

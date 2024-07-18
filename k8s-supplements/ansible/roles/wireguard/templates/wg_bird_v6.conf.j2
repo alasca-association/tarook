@@ -3,7 +3,7 @@
 filter k8s_worker_v6 {
     {% for ep in wg_endpoints %}
     {% if ep.ipv6_cidr %}
-    if net = {{ wg_ipv6_cidr }} then accept;
+    if net = {{ ep.ipv6_cidr }} then accept;
     {% endif %}
     {% endfor %}
     if scope = SCOPE_ORGANIZATION then accept;

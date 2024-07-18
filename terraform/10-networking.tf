@@ -16,8 +16,8 @@ resource "openstack_networking_subnet_v2" "cluster_subnet" {
 }
 
 resource "openstack_networking_subnet_v2" "cluster_v6_subnet" {
-  # Create only if dualstack support is enabled
-  count = var.dualstack_support ? 1 : 0
+  # Create only if ipv6 support is enabled
+  count = var.ipv6_enabled ? 1 : 0
 
   name = "${var.cluster_name}-network-v6"
   network_id = openstack_networking_network_v2.cluster_network.id
@@ -39,8 +39,8 @@ resource "openstack_networking_router_interface_v2" "cluster_router_iface" {
 }
 
 resource "openstack_networking_router_interface_v2" "cluster_router_iface_v6" {
-  # Create only if dualstack support is enabled
-  count = var.dualstack_support ? 1 : 0
+  # Create only if ipv6 support is enabled
+  count = var.ipv6_enabled ? 1 : 0
 
   router_id = openstack_networking_router_v2.cluster_router.id
   subnet_id = openstack_networking_subnet_v2.cluster_v6_subnet[0].id

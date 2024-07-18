@@ -1,17 +1,25 @@
 {{ _auto_generated_preamble }}
 
 frontend k8s_front
+  {% if ipv4_enabled %}
   bind {{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}
-  {% if dualstack_support %}
+  {% endif %}
+  {% if ipv6_enabled %}
   bind {{ networking_fixed_ip_v6 }}:{{ k8s_apiserver_frontend_port }} transparent
+  {% if ipv4_enabled %}
   acl ipv4_request src 0.0.0.0/0
   use_backend k8s_back6 if !ipv4_request
+  {% endif %}
   {% endif %}
   mode tcp
   log global
   option tcplog
   timeout client 600s
+  {% if ipv4_enabled %}
   default_backend k8s_back
+  {% else %}
+  default_backend k8s_back6
+  {% endif %}
   maxconn {{ haproxy_frontend_k8s_api_maxconn }}
 
 {% macro backend_common_options() -%}
@@ -24,6 +32,7 @@ frontend k8s_front
   timeout server 600s
 {%- endmacro %}
 
+{% if ipv4_enabled %}
 backend k8s_back
   option httpchk
   http-check send meth GET ver HTTP/1.1 hdr Host 192.168.0.14
@@ -32,8 +41,9 @@ backend k8s_back
   {% for host in groups['masters'] %}
   server {{ host }} {{ hostvars[host]['local_ipv4_address'] }}:6443 check check-ssl verify none
   {% endfor %}
+{% endif %}
 
-{% if dualstack_support %}
+{% if ipv6_enabled %}
 backend k8s_back6
   option httpchk
   http-check send meth GET ver HTTP/1.1 hdr Host fe80::14
