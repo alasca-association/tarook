@@ -1,2 +1,0 @@
-The default version of the kube-prometheus-stack helm chart has
-been updated to 59.1.0, and prometheus-adapter to version 4.10.0.

@@ -19,6 +19,38 @@ earlier changes.
 
 .. towncrier release notes start
 
+v6.0.1 (2024-07-17)
+-------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- The default version of the kube-prometheus-stack helm chart has
+  been updated to 59.1.0, and prometheus-adapter to version 4.10.0. (`!1314 <https://gitlab.com/yaook/k8s/-/merge_requests/1314>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- When initializing a new Wireguard endpoint, nftables may not get reloaded. This has been fixed. (`!1339 <https://gitlab.com/yaook/k8s/-/merge_requests/1339>`_)
+- If the vault instance is not publicly routable, nodes were not able to
+  login to it as the vault certificate handling was faulty.
+  This has been fixed. (`!1358 <https://gitlab.com/yaook/k8s/-/merge_requests/1358>`_)
+- A fix to properly generate short-lived kubeconfigs with intermediate CAs has been supplied. (`!1359 <https://gitlab.com/yaook/k8s/-/merge_requests/1359>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+-  (`!1335 <https://gitlab.com/yaook/k8s/-/merge_requests/1335>`_, `!1338 <https://gitlab.com/yaook/k8s/-/merge_requests/1338>`_, `!1344 <https://gitlab.com/yaook/k8s/-/merge_requests/1344>`_, `!1345 <https://gitlab.com/yaook/k8s/-/merge_requests/1345>`_, `!1346 <https://gitlab.com/yaook/k8s/-/merge_requests/1346>`_, `!1349 <https://gitlab.com/yaook/k8s/-/merge_requests/1349>`_, `!1350 <https://gitlab.com/yaook/k8s/-/merge_requests/1350>`_, `!1354 <https://gitlab.com/yaook/k8s/-/merge_requests/1354>`_, `!1355 <https://gitlab.com/yaook/k8s/-/merge_requests/1355>`_, `!1356 <https://gitlab.com/yaook/k8s/-/merge_requests/1356>`_)
+
+
+Misc
+~~~~
+
+- `!1337 <https://gitlab.com/yaook/k8s/-/merge_requests/1337>`_, `!1343 <https://gitlab.com/yaook/k8s/-/merge_requests/1343>`_
+
+
 v6.0.0 (2024-07-02)
 -------------------
 
