@@ -68,7 +68,10 @@ Breaking changes
   .. code:: console
 
       $ git rm etc/admin.conf
+      $ sed --in-place '/^etc\/admin\.conf$/d' .gitignore
       $ git commit etc/admin.conf -m "Remove kubeconfig from git"
+      $ ./managed-k8s/tools/vault/init.sh
+      $ ./managed-k8s/tools/vault/update.sh
       $ ./managed-k8s/actions/k8s-login.sh
 
   Which will remove the long-term kubeconfig and generate a short-lived one. (`!1178 <https://gitlab.com/yaook/k8s/-/merge_requests/1178>`_)
@@ -121,6 +124,11 @@ Breaking changes
 
   **You must update your vault policies and roles and a root token must be sourced.**
 
+  .. code:: console
+
+      $ ./managed-k8s/tools/vault/init.sh
+      $ ./managed-k8s/tools/vault/update.sh
+
   To upgrade your Kubernetes cluster from version v1.28 to v1.29, follow these steps:
 
   .. warning::
@@ -130,8 +138,6 @@ Breaking changes
 
   .. code:: console
 
-      $ ./managed-k8s/tools/vault/init.sh
-      $ ./managed-k8s/tools/vault/update.sh
       $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.29.x
       $ ./managed-k8s/actions/k8s-login.sh
 
@@ -161,6 +167,7 @@ Bugfixes
 ~~~~~~~~
 
 - Adjust .gitignore template to keep the whole inventory (`!1274 <https://gitlab.com/yaook/k8s/-/merge_requests/1274>`_)
+  **Action recommended**: Adapt your .gitignore with ``sed --in-place '/^!\?\/inventory\/.*$/d' .gitignore``.
 - After each phase of a root CA rotation a new kubeconfig is automatically generated (`!1293 <https://gitlab.com/yaook/k8s/-/merge_requests/1293>`_)
 -  (`!1298 <https://gitlab.com/yaook/k8s/-/merge_requests/1298>`_, `!1316 <https://gitlab.com/yaook/k8s/-/merge_requests/1316>`_, `!1336 <https://gitlab.com/yaook/k8s/-/merge_requests/1336>`_)
 - The common monitoring labels feature has been fixed. (`!1303 <https://gitlab.com/yaook/k8s/-/merge_requests/1303>`_)

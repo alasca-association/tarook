@@ -1,5 +1,4 @@
 *.key
-etc/admin.conf
 etc/ssh_known_hosts
 etc/kubeadm_token
 /wg*.conf
