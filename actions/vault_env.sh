@@ -6,6 +6,8 @@ actions_dir="$(pwd)/managed-k8s/"
 
 # shellcheck source=actions/lib.sh
 . "$actions_dir/actions/lib.sh"
+load_conf_vars
+load_vault_container_name
 
 # attempt to start vault right away
 if ! "$actions_dir/actions/vault.sh"; then
