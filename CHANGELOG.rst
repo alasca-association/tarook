@@ -19,8 +19,33 @@ earlier changes.
 
 .. towncrier release notes start
 
-v5.1.4 (2024-06-10)
+v5.1.5 (2024-07-22)
 -------------------
+
+.. note::
+
+    This release replaces all releases since and including 5.1.2.
+
+Patch release 5.1.2 and its successors 5.1.3 and 5.1.4 were withdrawn due to
+`#676 "Release v5.1.2 is breaking due to openstack_blockstorage_volume_v3" <https://gitlab.com/yaook/k8s/-/issues/676>`_
+
+This release reverts the breaking change introduced by
+`!1245 "terraform use volume_v3 API" <https://gitlab.com/yaook/k8s/-/merge_requests/1245>`_,
+while retaining all other changes introduced by the withdrawn releases that were withdrawn.
+
+`!1245 "terraform use volume_v3 API" <https://gitlab.com/yaook/k8s/-/merge_requests/1245>`_
+will be re-added with a later major release.
+
+.. attention::
+
+    DO NOT update to this or a higher non-major release if you are currently
+    on one of the withdrawn releases.
+    Make sure to only upgrade to the major release *which re-adds*
+    `!1245 "terraform use volume_v3 API" <https://gitlab.com/yaook/k8s/-/merge_requests/1245>`_
+    instead.
+
+v5.1.4 (2024-06-07) [withdrawn]
+-------------------------------
 
 Bugfixes
 ~~~~~~~~
@@ -28,8 +53,8 @@ Bugfixes
 - The root CA rotation has been fixed. (`!1289 <https://gitlab.com/yaook/k8s/-/merge_requests/1289>`_)
 
 
-v5.1.3 (2024-06-06)
--------------------
+v5.1.3 (2024-06-06) [withdrawn]
+-------------------------------
 
 New Features
 ~~~~~~~~~~~~
@@ -37,8 +62,13 @@ New Features
 - A Poetry group has been added so update-inventory.py can be called with minimal dependencies. (`!1277 <https://gitlab.com/yaook/k8s/-/merge_requests/1277>`_)
 
 
-v5.1.2 (2024-05-27)
--------------------
+v5.1.2 (2024-05-27) [withdrawn]
+-------------------------------
+
+.. note::
+
+    This release was withdrawn due to
+    `#676 "Release v5.1.2 is breaking due to openstack_blockstorage_volume_v3" <https://gitlab.com/yaook/k8s/-/issues/676>`_
 
 Changed functionality
 ~~~~~~~~~~~~~~~~~~~~~
