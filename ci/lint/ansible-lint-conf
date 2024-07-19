@@ -21,3 +21,4 @@ exclude_paths:
 
 extra_vars:
   ansible_k8s_core_dir: "{{ playbook_dir }}/../../k8s-core/ansible"
+  ansible_k8s_custom_playbook: "{{ playbook_dir }}/../../ci/custom-play.yaml"
