@@ -19,6 +19,17 @@ earlier changes.
 
 .. towncrier release notes start
 
+v6.0.3 (2024-07-22)
+-------------------
+
+Updated the changelog after a few patch releases in the v5.1 series
+were withdrawn and superseded by another patch release.
+
+Because the v6.0 release series already includes
+the breaking change that is removed again in the v5.1 release series,
+we kept it and just added it to the v6.0.0 release notes.
+
+
 v6.0.2 (2024-07-20)
 -------------------
 
@@ -190,6 +201,36 @@ Breaking changes
 
   Note that the default upgrade procedure has changed such that addons get upgraded
   after all control plane nodes got upgraded and not along with the first control plane node. (`!1284 <https://gitlab.com/yaook/k8s/-/merge_requests/1284>`_)
+- Use volumeV3 client at terraform. volumeV2 is not supported everywhere.
+
+  .. note::
+
+      This breaking change was originally introduced by release 5.1.2,
+      but was reverted again with release 5.1.5
+      as release 5.1.2 got withdrawn.
+
+  If you have ``[terraform].create_root_disk_on_volume = true`` set in your config,
+  you must migrate the ``openstack_blockstorage_volume_v2`` resources
+  in your Terraform state to the v3 resource type
+  in order to prevent rebuilds of all servers and their volumes.
+
+  .. code:: shell
+
+      # Execute the lines produced by the following script
+      # This will import all v2 volumes as v3 volumes
+      #  and remove the v2 volume resources from the Terraform state.
+
+      terraform_module="managed-k8s/terraform"
+      terraform_config="../../terraform/config.tfvars.json"
+      for item in $( \
+          terraform -chdir=$terraform_module show -json \
+          | jq --raw-output '.values.root_module.resources[] | select(.type == "openstack_blockstorage_volume_v2") | .name+"[\""+.index+"\"]"+","+.values.id' \
+      ); do
+          echo "terraform -chdir=$terraform_module import -var-file=$terraform_config 'openstack_blockstorage_volume_v3.${item%,*}' '${item#*,}' " \
+               "&& terraform -chdir=$terraform_module state rm 'openstack_blockstorage_volume_v2.${item%,*}'"
+      done
+
+  (`!1245 <https://gitlab.com/yaook/k8s/-/merge_requests/1245>`_)
 
 
 New Features
@@ -266,8 +307,33 @@ Misc
 - `!1271 <https://gitlab.com/yaook/k8s/-/merge_requests/1271>`_, `!1328 <https://gitlab.com/yaook/k8s/-/merge_requests/1328>`_
 
 
-v5.1.4 (2024-06-07)
+v5.1.5 (2024-07-22)
 -------------------
+
+.. note::
+
+    This release replaces all releases since and including 5.1.2.
+
+Patch release 5.1.2 and its successors 5.1.3 and 5.1.4 were withdrawn due to
+`#676 "Release v5.1.2 is breaking due to openstack_blockstorage_volume_v3" <https://gitlab.com/yaook/k8s/-/issues/676>`_
+
+This release reverts the breaking change introduced by
+`!1245 "terraform use volume_v3 API" <https://gitlab.com/yaook/k8s/-/merge_requests/1245>`_,
+while retaining all other changes introduced by the withdrawn releases that were withdrawn.
+
+`!1245 "terraform use volume_v3 API" <https://gitlab.com/yaook/k8s/-/merge_requests/1245>`_
+will be re-added with a later major release.
+
+.. attention::
+
+    DO NOT update to this or a higher non-major release if you are currently
+    on one of the withdrawn releases.
+    Make sure to only upgrade to the major release *which re-adds*
+    `!1245 "terraform use volume_v3 API" <https://gitlab.com/yaook/k8s/-/merge_requests/1245>`_
+    instead.
+
+v5.1.4 (2024-06-07) [withdrawn]
+-------------------------------
 
 Bugfixes
 ~~~~~~~~
@@ -275,8 +341,8 @@ Bugfixes
 - The root CA rotation has been fixed. (`!1289 <https://gitlab.com/yaook/k8s/-/merge_requests/1289>`_)
 
 
-v5.1.3 (2024-06-06)
--------------------
+v5.1.3 (2024-06-06) [withdrawn]
+-------------------------------
 
 New Features
 ~~~~~~~~~~~~
@@ -284,8 +350,13 @@ New Features
 - A Poetry group has been added so update-inventory.py can be called with minimal dependencies. (`!1277 <https://gitlab.com/yaook/k8s/-/merge_requests/1277>`_)
 
 
-v5.1.2 (2024-05-27)
--------------------
+v5.1.2 (2024-05-27) [withdrawn]
+-------------------------------
+
+.. note::
+
+    This release was withdrawn due to
+    `#676 "Release v5.1.2 is breaking due to openstack_blockstorage_volume_v3" <https://gitlab.com/yaook/k8s/-/issues/676>`_
 
 Changed functionality
 ~~~~~~~~~~~~~~~~~~~~~
