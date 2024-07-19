@@ -1,7 +1,8 @@
 ---
-prometheus_bird_exporter_version: 1.4.1
+prometheus_bird_exporter_version: 1.4.3
 prometheus_bird_exporter_checksums:
   1.4.1: "sha256:529c11f0f6e564b33570027a080f16c78900051c625084bd6c493b74f52ca5ba"
+  1.4.3: "sha256:d461e186f64bd484f9bfddd8b692d86a5ba418cb0af643ddaa4a3bee3edc99c2"
 prometheus_bird_exporter_checksum: "{{ prometheus_bird_exporter_checksums[prometheus_bird_exporter_version] }}"
 prometheus_bird_exporter_user: bird-exporter
 prometheus_bird_exporter_source: "https://github.com/czerwonk/bird_exporter/releases/download"
