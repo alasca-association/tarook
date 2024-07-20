@@ -19,6 +19,53 @@ earlier changes.
 
 .. towncrier release notes start
 
+v6.0.2 (2024-07-20)
+-------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- Sourcing lib.sh is now side-effect free (`!1340 <https://gitlab.com/yaook/k8s/-/merge_requests/1340>`_)
+- The entrypoint for the custom stage has been moved into the LCM. It now includes
+  the connect-to-nodes role and then dispatches to the custom playbook. If you had
+  included connect-to-nodes in the custom playbook, you may now remove it.
+
+  .. code:: diff
+
+    diff --git a/k8s-custom/main.yaml b/k8s-custom/main.yaml
+    -# Node bootstrap is needed in most cases
+    -- name: Initial node bootstrap
+    -  hosts: frontend:k8s_nodes
+    -  gather_facts: false
+    -  vars_files:
+    -    - k8s-core-vars/ssh-hardening.yaml
+    -    - k8s-core-vars/disruption.yaml
+    -    - k8s-core-vars/etc.yaml
+    -  roles:
+    -    - role: bootstrap/detect-user
+    -      tag: detect-user
+    -    - role: bootstrap/ssh-known-hosts
+    -      tags: ssh-known-hosts
+
+  . (`!1352 <https://gitlab.com/yaook/k8s/-/merge_requests/1352>`_)
+- The version of bird-exporter for prometheus has been updated to
+  1.4.3, haproxy-exporter to 0.15, and keepalived-exporter to 0.7.0. (`!1357 <https://gitlab.com/yaook/k8s/-/merge_requests/1357>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+-  (`!1366 <https://gitlab.com/yaook/k8s/-/merge_requests/1366>`_)
+- The required actions in the notes of release v6.0.0
+  were incomplete and are fixed now.
+
+
+Other Tasks
+~~~~~~~~~~~
+
+-  (`!1360 <https://gitlab.com/yaook/k8s/-/merge_requests/1360>`_, `!1361 <https://gitlab.com/yaook/k8s/-/merge_requests/1361>`_, `!1364 <https://gitlab.com/yaook/k8s/-/merge_requests/1364>`_, `!1365 <https://gitlab.com/yaook/k8s/-/merge_requests/1365>`_)
+
+
 v6.0.1 (2024-07-17)
 -------------------
 
