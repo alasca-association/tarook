@@ -75,10 +75,11 @@ create-gitlab-release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   script:
-    - echo "running release_job for $(cat ./version)"
+    - export VERSION_MAJOR_MINOR=$(grep -Po '^[0-9]+\.[0-9]+' "./version")
+    - echo "running release_job for $(cat ./version) on branch release/v$VERSION_MAJOR_MINOR"
   release:                                         # See https://docs.gitlab.com/ee/ci/yaml/#release for available properties
     tag_name: "v$(cat ./version)"
-    description: "Please have a look at the [Releasenotes](${CI_PAGES_URL}/release/v$(cat ./version)/releasenotes.html) for current changes."
+    description: "Please have a look at the [Releasenotes](${CI_PAGES_URL}/${YAOOK_K8S_RELEASE_BRANCH_PREFIX}${VERSION_MAJOR_MINOR}/releasenotes.html) for current changes."
   needs: ["tag-release"]
   rules:
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
