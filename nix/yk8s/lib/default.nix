@@ -7,6 +7,7 @@
   types = import ./types {inherit lib;};
   transform = import ./transform.nix {inherit lib;};
   k8s = import ./k8s.nix {inherit lib;};
+  proxmox = import ./proxmox.nix {inherit lib;};
 
   inherit
     (options)
