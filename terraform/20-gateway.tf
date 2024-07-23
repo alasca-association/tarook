@@ -65,7 +65,7 @@ resource "openstack_networking_port_v2" "gateway" {
   port_security_enabled = false
 }
 
-resource "openstack_blockstorage_volume_v3" "gateway-volume" {
+resource "openstack_blockstorage_volume_v2" "gateway-volume" {
   for_each = var.create_root_disk_on_volume == true ? local.gateways : {}
   name        = each.value.volume_name
   size        = (data.openstack_compute_flavor_v2.gateway.disk > 0) ? data.openstack_compute_flavor_v2.gateway.disk : var.gateway_root_disk_volume_size
@@ -97,7 +97,7 @@ resource "openstack_compute_instance_v2" "gateway" {
     # Using "for_each" for check the conditional "create_root_disk_on_volume". It's not working as a loop. "dummy" should make this just more visible.
     for_each = var.create_root_disk_on_volume == true ? ["dummy"] : []
       content {
-      uuid                  = openstack_blockstorage_volume_v3.gateway-volume[each.key].id
+      uuid                  = openstack_blockstorage_volume_v2.gateway-volume[each.key].id
       source_type           = "volume"
       boot_index            = 0
       destination_type      = "volume"
