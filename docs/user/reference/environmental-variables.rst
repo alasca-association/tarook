@@ -259,6 +259,7 @@ SSH Configuration
 Environment Variable        Default                                     Description
 =========================== =========================================== ====================
 ``TF_VAR_keypair``          ``"firstnamelastname-hostname-gendate"``    Defines the keypair name (in OpenStack) which will be used during the creation of new instances. Does not affect instances which have already been created. You **MUST** adjust this variable if you want to deploy on top of OpenStack. This variable is used by the ``apply-terraform.sh``:ref:`-script<actions-references.apply-terraformsh>`.
+``TF_VAR_ssh_key``                                                      The public SSH key which will be used during the creation of new Proxmox VMs. Does not affect instances which have already been created. This variable is used by the ``apply-terraform.sh``:ref:`-script<actions-references.apply-terraformsh>`.
 ``MANAGED_K8S_SSH_USER``                                                The SSH user to use to log into the machines. This variable *SHOULD* be set. By default, the Ansible automation is written such that it’ll auto-detect one of the default SSH users (``centos``, ``debian``, ``ubuntu``) to connect to the machines. This only works if the machines were created with a keypair of which you hold the private key (see ``TF_VAR_keypair``).
 =========================== =========================================== ====================
 
