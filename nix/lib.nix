@@ -10,4 +10,5 @@
     name = lib.strings.removeSuffix ".yaml" file;
     value = importYAML pkgs "${dir}/${file}";
   }) (builtins.readDir dir));
+  proxmox = import ./module/proxmox/lib.nix {inherit lib;};
 }
