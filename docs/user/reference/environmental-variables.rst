@@ -44,6 +44,12 @@ minimally (sic!) adjust the following ones:
          -  ``wg_private_key_command`` (user specific)
          -  ``wg_user`` (user specific)
 
+   -  If you’re deploying on top of Proxmox:
+
+      -  :ref:`SSH Configuration<environmental-variables.ssh-configuration>`
+
+         -  ``TF_VAR_ssh_key`` (user specific)
+
 2. Cluster-specific changes to the cluster environment ``.envrc``:
 
    - :ref:`OpenStack Credentials <environmental-variables.openstack-credentials>`
@@ -52,6 +58,14 @@ minimally (sic!) adjust the following ones:
      It is recommended to place these into a separate file ``.openrc`` which then
      can be sourced in the ``.envrc``.
      It is also highly recommended to not directly specify the ``OS_PASSWORD``,
+     but to dynamically retrieve it from a secure place.
+
+   - :ref:`Proxmox Credentials <environmental-variables.proxmox-credentials>`
+     if the cluster shall be run on top of Proxmox.
+
+     It is recommended to place these into a separate file ``.openrc`` which then
+     can be sourced in the ``.envrc``.
+     It is also highly recommended to not directly specify the ``PROXMOX_VE_PASSWORD``,
      but to dynamically retrieve it from a secure place.
 
    -  For potentially productive setups, setting
@@ -146,6 +160,29 @@ Sample openrc for application credentials based authentication
    export OS_REGION_NAME="abcd"
    export OS_INTERFACE=public
    export OS_IDENTITY_API_VERSION=3
+
+.. _environmental-variables.proxmox-credentials:
+
+Proxmox Credentials
+-------------------
+
+``PROXMOX_VE_ENDPOINT`` needs to be set to the endpoint of the Proxmox environment.
+
+For authentication, use:
+
+* Either ``PROXMOX_VE_USERNAME`` and ``PROXMOX_VE_PASSWORD``
+* or ``PROXMOX_VE_API_TOKEN`` (takes precedence).
+
+Sample env file
+~~~~~~~~~~~~~~~
+
+.. code:: shell
+
+   export PROXMOX_VE_ENDPOINT=https://example.org:8000
+   export PROXMOX_VE_USERNAME=myuser@pve
+   export PROXMOX_VE_PASSWORD=mypassword
+
+See `<https://registry.terraform.io/providers/bpg/proxmox/latest/docs#environment-variables-summary>`_ for further details.
 
 External resources
 ------------------
@@ -259,6 +296,7 @@ SSH Configuration
 Environment Variable        Default                                     Description
 =========================== =========================================== ====================
 ``TF_VAR_keypair``          ``"firstnamelastname-hostname-gendate"``    Defines the keypair name (in OpenStack) which will be used during the creation of new instances. Does not affect instances which have already been created. You **MUST** adjust this variable if you want to deploy on top of OpenStack. This variable is used by the ``apply-terraform.sh``:ref:`-script<actions-references.apply-terraformsh>`.
+``TF_VAR_ssh_key``                                                      The public SSH key which will be used during the creation of new Proxmox VMs. Does not affect instances which have already been created. This variable is used by the ``apply-terraform.sh``:ref:`-script<actions-references.apply-terraformsh>`.
 ``MANAGED_K8S_SSH_USER``                                                The SSH user to use to log into the machines. This variable *SHOULD* be set. By default, the Ansible automation is written such that it’ll auto-detect one of the default SSH users (``centos``, ``debian``, ``ubuntu``) to connect to the machines. This only works if the machines were created with a keypair of which you hold the private key (see ``TF_VAR_keypair``).
 =========================== =========================================== ====================
 

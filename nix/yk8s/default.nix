@@ -36,6 +36,7 @@
           ./infra.nix
           ./terraform.nix
           ./openstack
+          ./proxmox
           ./vault.nix
           ./load-balancing.nix
           ./kubernetes
