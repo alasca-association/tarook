@@ -75,22 +75,23 @@ _nix_flake_manual() {
   bin_dir="$layout_dir/bin"
   mkdir -p "$bin_dir"
 
-  if [ "$(cat "$nix_hash_file" 2>/dev/null)" != "$nix_hashes" ]; then
-      cat << EOF > "$bin_dir/yaook-direnv-reload"
+  cat << EOF > "$bin_dir/yaook-direnv-reload"
 #!/usr/bin/env bash
 out_path="$layout_dir/flake-output"
 nix build "$flake_dir#shell-env" -o \$out_path
 echo PATH_add "\$out_path/bin" > "$env_file"
+echo export NIX_FLAKE_ACTIVE="\${NIX_FLAKE_ACTIVE}:${flake_dir}" >> "$env_file"
 sha256sum "$flake_dir/flake.nix" "$flake_dir/flake.lock" > "$nix_hash_file"
 EOF
-      chmod +x "$bin_dir/yaook-direnv-reload"
-      PATH_add "$bin_dir"
-      echo "========"
-      echo "WARNING: Flake changed. Please update by running yaook-direnv-reload"
-      echo "========"
+  chmod +x "$bin_dir/yaook-direnv-reload"
+  PATH_add "$bin_dir"
+
+  if [ "$(cat "$nix_hash_file" 2>/dev/null)" != "$nix_hashes" ]; then
+    echo "========"
+    echo "WARNING: Flake changed. Please update by running yaook-direnv-reload"
+    echo "========"
   fi
   source_env "$env_file"
-  export NIX_FLAKE_ACTIVE="${NIX_FLAKE_ACTIVE}:${flake_dir}"
 }
 
 use_flake_if_nix() {
