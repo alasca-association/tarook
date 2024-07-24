@@ -78,10 +78,9 @@ _nix_flake_manual() {
   if [ "$(cat "$nix_hash_file" 2>/dev/null)" != "$nix_hashes" ]; then
       cat << EOF > "$bin_dir/yaook-direnv-reload"
 #!/usr/bin/env bash
-out_path="\$(nix build "$flake_dir#shell-env" --print-out-paths --no-link)"
-if [[ \$out_path =~ /nix/store/[^\"]+ ]]; then
-  echo PATH_add "\$out_path/bin" > "$env_file"
-fi
+out_path="$layout_dir/flake-output"
+nix build "$flake_dir#shell-env" -o \$out_path
+echo PATH_add "\$out_path/bin" > "$env_file"
 sha256sum "$flake_dir/flake.nix" "$flake_dir/flake.lock" > "$nix_hash_file"
 EOF
       chmod +x "$bin_dir/yaook-direnv-reload"
