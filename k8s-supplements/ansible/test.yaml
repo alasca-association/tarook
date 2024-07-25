@@ -161,6 +161,7 @@
   - vars/retries.yaml
   vars:
     gateway: "{{ groups['gateways'] | first or groups['masters'] | first }}"
+    first_worker: "{{ groups['workers'] | first }}"
     deprecated_nodeport_lb_test_port: "{{ hostvars[groups['frontend'] | first ]['deprecated_nodeport_lb_test_port'] | default(0) }}"
   roles:
   - role: check-services

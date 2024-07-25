@@ -16,7 +16,7 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
 
-  - name: Apply the nginx+service manifest
+  - name: Apply the nginx+service manifest (deprecated LB)
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx.yaml') }}"
       state: present
@@ -30,13 +30,13 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
 
-  - name: Check the connection
+  - name: Check the connection (deprecated LB)
     ansible.builtin.uri:
       url: "http://{{ hostvars[gateway]['ansible_host'] }}:{{ deprecated_nodeport_lb_test_port }}"
     register: curl_result
     failed_when: curl_result.status != 200
 
-  - name: Remove the Service
+  - name: Remove the Service (deprecated LB)
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx.yaml') }}"
       state: absent
@@ -50,8 +50,7 @@
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
 
-  - name: Validate Services for DualStack-Clusters
-    when: ipv6_enabled and ipv4_enabled
+  - name: Validate NodePort Services
     ansible.builtin.include_tasks: dualstack-services.yaml
 
   - name: delete namespace

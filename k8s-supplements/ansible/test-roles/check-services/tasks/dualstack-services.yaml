@@ -1,5 +1,6 @@
 ---
 - name: Check dual stack service functionality
+  when: ipv6_enabled and ipv4_enabled
   block:
   - name: Apply the nginx+service manifest (DualStack)
     kubernetes.core.k8s:
@@ -14,14 +15,6 @@
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
-
-  - name: Check the connection to the DualStack service
-    vars:
-      svc_test_port: 30060
-    ansible.builtin.uri:
-      url: "http://{{ hostvars[gateway]['ansible_host'] }}:{{ svc_test_port }}"
-    register: curl_result
-    failed_when: curl_result.status != 200
 
   - name: Get the DualStack Service information
     kubernetes.core.k8s_info:
@@ -45,6 +38,22 @@
       msg: "The DualStack service does not have an IPv6 Address"
     when: nginx_service_cluster_ips | ipv6 | length==0
 
+  - name: Check the connection to the DualStack service (IPv4)
+    vars:
+      svc_test_port: 30060
+    ansible.builtin.uri:
+      url: "http://{{ hostvars[first_worker]['local_ipv4_address'] }}:{{ svc_test_port }}"
+    register: curl_result
+    failed_when: curl_result.status != 200
+
+  - name: Check the connection to the DualStack service (IPv6)
+    vars:
+      svc_test_port: 30060
+    ansible.builtin.uri:
+      url: "http://[{{ hostvars[first_worker]['local_ipv6_address'] }}]:{{ svc_test_port }}"
+    register: curl_result
+    failed_when: curl_result.status != 200
+
   - name: Remove the DualStack service
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_dual_stack.yaml.j2') }}"
@@ -60,6 +69,7 @@
     delay: "{{ k8s_error_delay }}"
 
 - name: Check SingleStack IPv4 service functionality
+  when: ipv4_enabled
   block:
   - name: Apply the nginx+service manifest (SingleStack IPv4)
     kubernetes.core.k8s:
@@ -74,14 +84,6 @@
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
-
-  - name: Check the connection to the SingleStack IPv4 service
-    vars:
-      svc_test_port: 30060
-    ansible.builtin.uri:
-      url: "http://{{ hostvars[gateway]['ansible_host'] }}:{{ svc_test_port }}"
-    register: curl_result
-    failed_when: curl_result.status != 200
 
   - name: Get the SingleStack IPv4 service information
     kubernetes.core.k8s_info:
@@ -105,6 +107,14 @@
       msg: "The SingleStack IPv4 service has an IPv6 Address"
     when: nginx_service_cluster_ips | ipv6 | length>0
 
+  - name: Check the connection to the SingleStack IPv4 service
+    vars:
+      svc_test_port: 30060
+    ansible.builtin.uri:
+      url: "http://{{ hostvars[first_worker]['local_ipv4_address'] }}:{{ svc_test_port }}"
+    register: curl_result
+    failed_when: curl_result.status != 200
+
   - name: Remove the SingleStack IPv4 service
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'nginx_single_stack_v4.yaml.j2') }}"
@@ -120,6 +130,7 @@
     delay: "{{ k8s_error_delay }}"
 
 - name: Check SingleStack IPv6 service functionality
+  when: ipv6_enabled
   block:
   - name: Apply the nginx+service manifest (SingleStack IPv6)
     kubernetes.core.k8s:
@@ -134,14 +145,6 @@
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
-
-  - name: Check the connection to the SingleStack IPv6 service
-    vars:
-      svc_test_port: 30060
-    ansible.builtin.uri:
-      url: "http://{{ hostvars[gateway]['ansible_host'] }}:{{ svc_test_port }}"
-    register: curl_result
-    failed_when: curl_result.status != 200
 
   - name: Get the SingleStack IPv6 service information
     kubernetes.core.k8s_info:
@@ -164,6 +167,14 @@
     ansible.builtin.fail:
       msg: "The SingleStack IPv6 does not have an IPv6 Address"
     when: nginx_service_cluster_ips | ipv6 | length==0
+
+  - name: Check the connection to the SingleStack IPv6 service
+    vars:
+      svc_test_port: 30060
+    ansible.builtin.uri:
+      url: "http://[{{ hostvars[first_worker]['local_ipv6_address'] }}]:{{ svc_test_port }}"
+    register: curl_result
+    failed_when: curl_result.status != 200
 
   - name: Remove the SingleStack IPv6 service
     kubernetes.core.k8s:
