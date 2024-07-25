@@ -1,4 +1,5 @@
-router id {{ local_ipv4_address | ipmath(1) }};
+{{ _auto_generated_preamble }}
+router id {{ local_ipv4_address }};
 table master;
 debug protocols all;
 
@@ -7,8 +8,8 @@ listen bgp v6only;
 protocol kernel {
     table master;
     scan time 60;
-    import none;
     export all;
+    learn;
 }
 
 protocol direct {
