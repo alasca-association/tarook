@@ -6,7 +6,7 @@ controller:
   tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
   service:
 {% if ipv4_enabled and ipv6_enabled %}
-    ipFamilyPolicy: DualStack
+    ipFamilyPolicy: PreferDualStack
 {% else %}
     ipFamilyPolicy: SingleStack
 {% endif %}
