@@ -57,7 +57,7 @@
       owner: bird
       group: bird
       mode: 0640
-    notify: restart bird
+    notify: restart bird6
 
   - name: Create drop-in directory for bird6 configs
     ansible.builtin.file:
