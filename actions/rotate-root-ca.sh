@@ -45,6 +45,8 @@ load_conf_vars
 
 check_venv
 
+check_conf_sanity
+
 require_ansible_disruption
 
 require_vault_token

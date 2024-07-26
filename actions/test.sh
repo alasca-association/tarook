@@ -7,6 +7,8 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 load_conf_vars
 
+check_conf_sanity
+
 check_venv
 
 # Ensure that the latest config is deployed to the inventory

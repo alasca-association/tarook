@@ -6,6 +6,8 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 load_conf_vars
 
+check_conf_sanity
+
 require_vault_token
 
 while getopts s flag

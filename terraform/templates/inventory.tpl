@@ -1,6 +1,8 @@
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
 on_openstack=True
+ipv6_enabled=%{ if ipv6_enabled }True%{ else }False%{ endif }
+ipv4_enabled=%{ if ipv4_enabled }True%{ else }False%{ endif }
 
 [orchestrator]
 localhost ansible_connection=local ansible_python_interpreter="{{ ansible_playbook_python }}"
