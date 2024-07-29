@@ -7,7 +7,7 @@
 }: let
   cfg = config.yk8s.terraform;
   modules-lib = import ./lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRemovedOptionModule;
+  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModuleWithNewSection;
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
@@ -41,6 +41,11 @@
 in {
   imports = [
     (mkRemovedOptionModule "terraform" "haproxy_ports" "")
+    (mkRenamedOptionModuleWithNewSection "terraform" "subnet_cidr" "infra" "subnet_cidr")
+    (mkRenamedOptionModuleWithNewSection "terraform" "subnet_v6_cidr" "infra" "subnet_v6_cidr")
+    (mkRenamedOptionModuleWithNewSection "terraform" "ipv4_enabled" "infra" "ipv4_enabled")
+    (mkRenamedOptionModuleWithNewSection "terraform" "ipv6_enabled" "infra" "ipv6_enabled")
+    (mkRenamedOptionModuleWithNewSection "terraform" "cluster_name" "infra" "cluster_name")
   ];
 
   options.yk8s.terraform = mkTopSection {
@@ -100,10 +105,10 @@ in {
       The name of a Terraform node is composed from the following parts:
 
       - for master/worker nodes:
-        ``terraform.cluster_name`` ``<the nodes' table name>``
+        ``infra.cluster_name`` ``<the nodes' table name>``
 
       - for gateway nodes:
-        ``terraform.cluster_name`` ``terraform.gateway_defaults.common_name`` ``<numeric-index>``
+        ``infra.cluster_name`` ``terraform.gateway_defaults.common_name`` ``<numeric-index>``
 
       .. code:: nix
 
@@ -176,34 +181,10 @@ in {
       default = true;
     };
 
-    cluster_name = mkOption {
-      type = types.nonEmptyStr;
-    };
-
     prevent_disruption = mkOption {
       description = ''
         If true, prevent Terraform from performing disruptive action
         defaults to true if unset
-      '';
-      type = types.bool;
-      default = true;
-    };
-
-    subnet_cidr = mkOption {
-      type = ipv4Cidr;
-      default = "172.30.154.0/24";
-    };
-
-    subnet_v6_cidr = mkOption {
-      type = types.nonEmptyStr;
-      default = "fd00::/120";
-    };
-
-    ipv6_enabled = mkEnableOption "IPv6";
-
-    ipv4_enabled = mkOption {
-      description = ''
-        If set to true, ipv4 will be used
       '';
       type = types.bool;
       default = true;
@@ -402,7 +383,7 @@ in {
         message = "At least one node with role=master must be given.";
       }
       {
-        assertion = config.yk8s.terraform.ipv4_enabled;
+        assertion = config.yk8s.infra.ipv4_enabled;
         message = "YAOOK/k8s Terraform does not yet support IPv6-only, see #685";
       }
       (let
@@ -426,10 +407,10 @@ in {
             # be compared to the old default value
             "managed-k8s";
       in {
-        assertion = cluster_exists -> (config.yk8s.terraform.cluster_name == current_cluster_name);
+        assertion = cluster_exists -> (config.yk8s.infra.cluster_name == current_cluster_name);
         message = ''
           Will not update terraform config because there is a mismatch between the deployed and future cluster_name. This would cause death and destruction.
-          Set `terraform.cluster_name` back to ${current_cluster_name}. Your suggested change ${config.yk8s.terraform.cluster_name} is unacceptable.
+          Set `infra.cluster_name` back to ${current_cluster_name}. Your suggested change ${config.yk8s.infra.cluster_name} is unacceptable.
         '';
       })
     ];
@@ -457,8 +438,10 @@ in {
     _state_packages = [
       (
         let
+          infraCfg = lib.attrsets.getAttrs ["cluster_name" "ipv4_enabled" "ipv6_enabled" "subnet_cidr" "subnet_v6_cidr"] config.yk8s.infra;
+          mergedCfg = lib.attrsets.recursiveUpdate cfg infraCfg;
           transformations = [removeObsoleteOptions filterInternal filterNull];
-          varsFile = (pkgs.formats.json {}).generate "tfvars.json" (pipe cfg transformations);
+          varsFile = (pkgs.formats.json {}).generate "tfvars.json" (pipe mergedCfg transformations);
         in (pkgs.runCommandLocal "tfvars.json" {} ''
           install -m 644 -D ${varsFile} $out/${tfvars_file_path}
         '')

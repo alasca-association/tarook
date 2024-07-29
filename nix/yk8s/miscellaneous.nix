@@ -7,16 +7,17 @@
 }: let
   cfg = config.yk8s.miscellaneous;
   modules-lib = import ./lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRemovedOptionModule;
+  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModuleWithNewSection;
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath;
-  inherit (yk8s-lib.types) ipv4Cidr;
 in {
   imports = [
     (mkRemovedOptionModule "miscellaneous" "ingress_whitelisting" "")
     (mkRemovedOptionModule "miscellaneous" "container_runtime" "")
     (mkRemovedOptionModule "miscellaneous" "pip_mirror_url" "")
+    (mkRenamedOptionModuleWithNewSection "miscellaneous" "subnet_cidr" "infra" "subnet_cidr")
+    (mkRenamedOptionModuleWithNewSection "miscellaneous" "hosts_file" "infra" "hosts_file")
   ];
   options.yk8s.miscellaneous = mkTopSection {
     _docs.preface = ''
@@ -91,7 +92,7 @@ in {
       '';
       type = with types; nullOr nonEmptyStr;
       default = null;
-      example = "\${config.yk8s.terraform.cluster_name}-network";
+      example = "\${config.yk8s.infra.cluster_name}-network";
     };
     openstack_cinder_volume_type = mkOption {
       description = ''
@@ -224,35 +225,6 @@ in {
       type = with types; nullOr nonEmptyStr;
       default = null;
     };
-
-    subnet_cidr = mkOption {
-      description = ''
-        In case it is not set via terraform
-      '';
-      type = types.nullOr ipv4Cidr;
-      default = null;
-      apply = v:
-        if v == null && config.yk8s.terraform.enabled == false
-        then throw "miscellaneous.subnet_cidr must be set if terraform is disabled"
-        else if v != null && config.yk8s.terraform.enabled == true
-        then throw "miscellaneous.subnet_cidr mustn't be set if terraform is enabled"
-        else v;
-    };
-
-    hosts_file = mkOption {
-      description = ''
-        A custom hosts file in case terraform is disabled
-      '';
-      type = with types; nullOr pathInStore;
-      default = null;
-      example = "hosts_file = ./hosts;";
-      apply = v:
-        if v == null && config.yk8s.terraform.enabled == false
-        then throw "miscellaneous.hosts_file must be set if terraform is disabled"
-        else if v != null && config.yk8s.terraform.enabled == true
-        then throw "miscellaneous.hosts_file mustn't be set if terraform is enabled"
-        else v;
-    };
   };
   config.yk8s.assertions = [
     {
@@ -268,14 +240,10 @@ in {
       message = "miscellaneous.no_proxy must be set if miscellaneous.cluster_behind_proxy is true";
     }
   ];
-  config.yk8s._inventory_packages =
-    [
-      (mkGroupVarsFile {
-        inherit cfg;
-        inventory_path = "all/miscellaneous.yaml";
-        transformations = [(lib.attrsets.filterAttrs (n: _: n != "hosts_file"))];
-      })
-    ]
-    ++ lib.optional (cfg.hosts_file != null)
-    (linkToPath cfg.hosts_file "hosts");
+  config.yk8s._inventory_packages = [
+    (mkGroupVarsFile {
+      inherit cfg;
+      inventory_path = "all/miscellaneous.yaml";
+    })
+  ];
 }

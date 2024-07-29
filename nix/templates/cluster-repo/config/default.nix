@@ -15,15 +15,17 @@ in {
     {
       # A reference for all available options can be found at
       # https://yaook.gitlab.io/k8s/devel/user/reference/options/index.html
+      infra = {
+        cluster_name = "devcluster";
+        subnet_cidr = "192.168.67.0/24";
+      };
+
       terraform = {
         enabled = true;
-
-        cluster_name = "devcluster";
 
         azs = ["AZ1" "AZ2" "AZ3"];
 
         public_network = "shared-public-IPv4";
-        subnet_cidr = "192.168.67.0/24";
 
         master_defaults = {
           flavor = "M";
@@ -67,7 +69,7 @@ in {
           }
         ];
       };
-      vault.cluster_name = cfg.terraform.cluster_name;
+      vault.cluster_name = cfg.infra.cluster_name;
     };
   ###
   ### Importing from legacy config.toml
