@@ -5,6 +5,34 @@
       # match changes in subdirs other than "docs"
       - '{[^d]*,d,d[^o]*,do,do[^c]*,doc,doc[^s]*,docs?*}/**/*'
 
+.cluster-rules-containerd:
+  rules:
+    # run on merge.merge_train only if files outside docs have changed
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
+      <<: *test-rules-changes
+      when: on_success
+    # run always on release-prepare
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      when: on_success
+    # otherwise create manual job
+    - when: manual
+      allow_failure: true
+
+.cluster-rules-k8s-upgrade:
+  rules:
+    # run on merge.merge_train only if files outside docs have changed
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
+      <<: *test-rules-changes
+      needs: ["containerd"]
+      when: on_success
+    # run always on release-prepare
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      needs: ["containerd"]
+      when: on_success
+    # otherwise create manual job
+    - when: manual
+      allow_failure: true
+
 .prepare_spawn_test_cleanup_k8s_cluster:
   image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   variables:
@@ -293,20 +321,29 @@
 containerd:
   environment:
     name: spawn-cluster
-  rules:
-    # run on merge.merge_train only if files outside docs have changed
-    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
-      <<: *test-rules-changes
-      when: on_success
-    # run always on release-prepare
-    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
-      when: on_success
-    # otherwise create manual job
-    - when: manual
-      allow_failure: true
+  rules: !reference [.cluster-rules-containerd, rules]
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   stage: cluster-tests
   script:
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
+  retry: 2
+  variables:
+    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
+    # so we need to reference the default vars here (only one level of nesting is allowed)
+    WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
+    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
+    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+    MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]
+
+# with dual stack
+containerd-ds:
+  environment:
+    name: spawn-cluster
+  rules: !reference [.cluster-rules-containerd, rules]
+  extends: .prepare_spawn_test_cleanup_k8s_cluster
+  stage: cluster-tests
+  script:
+  - tomlq --in-place --toml-output '.terraform.ipv6_enabled = true' config/config.toml
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   retry: 2
   variables:
@@ -321,21 +358,32 @@ containerd:
 containerd-k8s-upgrade:
   environment:
     name: spawn-cluster
-  rules:
-    # run on merge.merge_train only if files outside docs have changed
-    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
-      <<: *test-rules-changes
-      needs: ["containerd"]
-      when: on_success
-    # run always on release-prepare
-    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
-      needs: ["containerd"]
-      when: on_success
-    # otherwise create manual job
-    - when: manual
-      allow_failure: true
+  rules: !reference [.cluster-rules-k8s-upgrade, rules]
   extends: .test_upgrade_path_k8s_cluster
   stage: cluster-tests
+  retry: 2
+  variables:
+    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
+    # so we need to reference the default vars here (only one level of nesting is allowed)
+    WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]
+    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
+    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+    MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]
+    ci_vault_config_hcl: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_vault_config_hcl]
+    ci_cert_vaultchain_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultchain_crt]
+    ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
+    ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
+
+# with dual stack
+containerd-ds-k8s-upgrade:
+  environment:
+    name: spawn-cluster
+  rules: !reference [.cluster-rules-k8s-upgrade, rules]
+  extends: .test_upgrade_path_k8s_cluster
+  stage: cluster-tests
+  script:
+  - tomlq --in-place --toml-output '.terraform.ipv6_enabled = true' config/config.toml
+  - !reference [.test_upgrade_path_k8s_cluster, script]
   retry: 2
   variables:
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
