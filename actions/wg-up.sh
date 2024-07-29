@@ -9,8 +9,8 @@ load_conf_vars
 if [ "${wg_usage:-true}" == "true" ]; then
     validate_wireguard
 
-    wg_subnet="$(jq -r .subnet_cidr "$terraform_state_dir/config.tfvars.json")"
-    wg_subnet_v6="$(jq -r .subnet_v6_cidr "$terraform_state_dir/config.tfvars.json")"
+    wg_subnet="$(yq -r .subnet_cidr "$group_vars_dir/all/infra.yaml")"
+    wg_subnet_v6="$(yq -r .subnet_v6_cidr "$group_vars_dir/all/infra.yaml")"
     # the grep is there to ignore any routes going via the interface we're going to
     # take down later either way
     wg_existing_route="$(ip route show to "$wg_subnet" 2>/dev/null | grep -v "dev $wg_interface" || true)"

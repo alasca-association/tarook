@@ -7,7 +7,7 @@
 }: let
   cfg = config.yk8s.terraform;
   modules-lib = import ./lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRemovedOptionModule;
+  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModuleWithNewSection;
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
@@ -41,6 +41,10 @@
 in {
   imports = [
     (mkRemovedOptionModule "terraform" "haproxy_ports" "")
+    (mkRenamedOptionModuleWithNewSection "terraform" "subnet_cidr" "infra" "subnet_cidr")
+    (mkRenamedOptionModuleWithNewSection "terraform" "subnet_v6_cidr" "infra" "subnet_v6_cidr")
+    (mkRenamedOptionModuleWithNewSection "terraform" "ipv4_enabled" "infra" "ipv4_enabled")
+    (mkRenamedOptionModuleWithNewSection "terraform" "ipv6_enabled" "infra" "ipv6_enabled")
   ];
 
   options.yk8s.terraform = mkTopSection {
@@ -189,26 +193,6 @@ in {
       description = ''
         If true, prevent Terraform from performing disruptive action
         defaults to true if unset
-      '';
-      type = types.bool;
-      default = true;
-    };
-
-    subnet_cidr = mkOption {
-      type = ipv4Cidr;
-      default = "172.30.154.0/24";
-    };
-
-    subnet_v6_cidr = mkOption {
-      type = types.str;
-      default = "fd00::/120";
-    };
-
-    ipv6_enabled = mkEnableOption "IPv6";
-
-    ipv4_enabled = mkOption {
-      description = ''
-        If set to true, ipv4 will be used
       '';
       type = types.bool;
       default = true;
@@ -461,8 +445,10 @@ in {
     _state_packages = [
       (
         let
+          infraCfg = lib.attrsets.getAttrs ["ipv4_enabled" "ipv6_enabled" "subnet_cidr" "subnet_v6_cidr"] config.yk8s.infra;
+          mergedCfg = lib.attrsets.recursiveUpdate cfg infraCfg;
           transformations = [removeObsoleteOptions filterInternal filterNull];
-          varsFile = (pkgs.formats.json {}).generate "tfvars.json" (pipe cfg transformations);
+          varsFile = (pkgs.formats.json {}).generate "tfvars.json" (pipe mergedCfg transformations);
         in (pkgs.runCommandLocal "tfvars.json" {} ''
           install -m 644 -D ${varsFile} $out/${tfvars_file_path}
         '')
