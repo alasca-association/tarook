@@ -1,16 +1,17 @@
 ---
-- name: wait for ssh to become available
-  delegate_to: "{{ groups['orchestrator'] | first }}"
-  become: false
-  ansible.builtin.wait_for:
-    host: "{{ ansible_host | default(inventory_hostname) }}"
-    port: 22
-    sleep: 5
-    timeout: 300
-    state: started
-  check_mode: false
-  tags:
-  - detect-user
+# TODO: This doesnt work with jumphosts apparently
+# - name: wait for ssh to become available
+#   delegate_to: "{{ groups['orchestrator'] | first }}"
+#   become: false
+#   ansible.builtin.wait_for:
+#     host: "{{ ansible_host | default(inventory_hostname) }}"
+#     port: 22
+#     sleep: 5
+#     timeout: 300
+#     state: started
+#   check_mode: false
+#   tags:
+#   - detect-user
 
 - name: Ensure etc_dir exists
   delegate_to: "{{ groups['orchestrator'] | first }}"
