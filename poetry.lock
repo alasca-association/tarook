@@ -1827,13 +1827,13 @@ stevedore = ">=2.0.1"
 
 [[package]]
 name = "python-openstackclient"
-version = "6.6.0"
+version = "6.6.1"
 description = "OpenStack Command-line Client"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "python-openstackclient-6.6.0.tar.gz", hash = "sha256:bbef1ed34829c41052b2eca26480e29ca1f72be058d1430da5341ec44c4f295c"},
-    {file = "python_openstackclient-6.6.0-py3-none-any.whl", hash = "sha256:149ce7d3740b7b054ab8257f92b260cdfd8b969ffe8a2215bd3682984387b327"},
+    {file = "python-openstackclient-6.6.1.tar.gz", hash = "sha256:23b486ecdf90d7388db91d1a89546e357fb92fd94a2ca8bfafe22ac8ec0196c4"},
+    {file = "python_openstackclient-6.6.1-py3-none-any.whl", hash = "sha256:99963dea828483744115d6b629ed14052e7e75886d52c9ef81d234cc0d457fe7"},
 ]
 
 [package.dependencies]
@@ -1847,6 +1847,7 @@ pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 python-cinderclient = ">=3.3.0"
 python-keystoneclient = ">=3.22.0"
 python-novaclient = ">=18.1.0"
+requests = ">=2.14.2"
 stevedore = ">=2.0.1"
 
 [[package]]
