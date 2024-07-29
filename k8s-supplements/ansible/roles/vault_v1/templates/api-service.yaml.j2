@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: vault
+    app.kubernetes.io/name: vault
+  name: vault-external-active
+  namespace: "{{ yaook_vault_namespace }}"
+spec:
+  internalTrafficPolicy: Cluster
+  {% if ipv4_enabled and ipv6_enabled %}
+  ipFamilyPolicy: PreferDualStack
+  {% else %}
+  ipFamilyPolicy: SingleStack
+  {% endif %}
+  ipFamilies:
+  {% if ipv4_enabled %}
+  - IPv4
+  {% endif %}
+  {% if ipv6_enabled %}
+  - IPv6
+  {% endif %}
+  ports:
+  - name: https
+    port: 8250
+    protocol: TCP
+    targetPort: 8250
+  - name: https-internal
+    port: 8251
+    protocol: TCP
+    targetPort: 8251
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: vault
+    app.kubernetes.io/name: vault
+    component: server
+    vault-active: "true"
+  sessionAffinity: None
+  type: ClusterIP
+...
