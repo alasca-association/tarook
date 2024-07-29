@@ -11,7 +11,7 @@
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath;
-  inherit (yk8s-lib.types) ipv4Cidr;
+  inherit (yk8s-lib.types) ipv4Cidr ipv4Addr;
 in {
   imports = [
     (mkRemovedOptionModule "miscellaneous" "ingress_whitelisting" "")
@@ -96,7 +96,7 @@ in {
       '';
       type = with types; nullOr str;
       default = null;
-      example = "\${config.yk8s.terraform.cluster_name}-network";
+      example = "\${config.yk8s.infra.cluster_name}-network";
     };
     openstack_connect_use_helm = mkOption {
       description = ''
@@ -230,35 +230,6 @@ in {
       type = with types; nullOr str;
       default = null;
     };
-
-    subnet_cidr = mkOption {
-      description = ''
-        In case it is not set via terraform
-      '';
-      type = types.nullOr ipv4Cidr;
-      default = null;
-      apply = v:
-        if v == null && config.yk8s.terraform.enabled == false
-        then throw "miscellaneous.subnet_cidr must be set if terraform is disabled"
-        else if v != null && config.yk8s.terraform.enabled == true
-        then throw "miscellaneous.subnet_cidr mustn't be set if terraform is enabled"
-        else v;
-    };
-
-    hosts_file = mkOption {
-      description = ''
-        A custom hosts file in case terraform is disabled
-      '';
-      type = with types; nullOr pathInStore;
-      default = null;
-      example = "./hosts";
-      apply = v:
-        if v == null && config.yk8s.terraform.enabled == false
-        then throw "miscellaneous.hosts_file must be set if terraform is disabled"
-        else if v != null && config.yk8s.terraform.enabled == true
-        then throw "miscellaneous.hosts_file mustn't be set if terraform is enabled"
-        else v;
-    };
   };
   config.yk8s.assertions = [
     {
@@ -274,14 +245,10 @@ in {
       message = "miscellaneous.no_proxy must be set if miscellaneous.cluster_behind_proxy is true";
     }
   ];
-  config.yk8s._inventory_packages =
-    [
-      (mkGroupVarsFile {
-        inherit cfg;
-        inventory_path = "all/miscellaneous.yaml";
-        transformations = [(lib.attrsets.filterAttrs (n: _: n != "hosts_file"))];
-      })
-    ]
-    ++ lib.optional (cfg.hosts_file != null)
-    (linkToPath cfg.hosts_file "hosts");
+  config.yk8s._inventory_packages = [
+    (mkGroupVarsFile {
+      inherit cfg;
+      inventory_path = "all/miscellaneous.yaml";
+    })
+  ];
 }

@@ -32,6 +32,7 @@
         };
         imports = [
           ./assertions.nix
+          ./infra.nix
           ./terraform.nix
           ./vault.nix
           ./load-balancing.nix

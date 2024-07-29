@@ -25,8 +25,6 @@ resource "local_file" "final_networking" {
     subnet_id              = try(openstack_networking_subnet_v2.cluster_subnet[0].id, null),
     subnet_v6_id           = try(openstack_networking_subnet_v2.cluster_v6_subnet[0].id, null),
     floating_ip_network_id = data.openstack_networking_network_v2.public_network.id,
-    subnet_cidr            = try(openstack_networking_subnet_v2.cluster_subnet[0].cidr, null),
-    subnet_v6_cidr         = try(openstack_networking_subnet_v2.cluster_v6_subnet[0].cidr, null),
   })
   filename        = "../../state/terraform/rendered/terraform_networking.yaml"
   file_permission = 0640
