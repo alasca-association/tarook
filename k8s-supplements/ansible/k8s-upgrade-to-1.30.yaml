@@ -1,0 +1,54 @@
+---
+- name: Connect to Kubernetes nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
+  vars:
+    target_hosts: k8s_nodes
+
+- name: Upgrade Kubernetes nodes
+  import_playbook: "{{ ansible_k8s_core_dir }}/upgrade-k8s.yaml"
+
+- name: Overwrite "k8s_version"
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Overwrite k8s_version with next_k8s_version
+      ansible.builtin.set_fact:
+        k8s_version: "{{ next_k8s_version }}"
+      tags: always
+
+- name: Update OpenStack components
+  import_playbook: connect-k8s-to-openstack.yaml
+
+- name: Update volume snapshot controller
+  import_playbook: install-volume-snapshot-controller.yaml
+
+- name: Update Calico
+  import_playbook: install-calico.yaml
+
+- name: Update ch-k8s-lbaas
+  import_playbook: install-ch-k8s-lbaas.yaml
+
+- name: Update monitoring stack
+  import_playbook: install-monitoring.yaml
+
+- name: Final upgrade note
+  gather_facts: false
+  hosts: orchestrator
+  run_once: true
+  tasks:
+    - name: Final upgrade note
+      ansible.builtin.debug:
+        msg: >
+          Congratulations!
+
+            \o/     The upgrade to
+             |      {{ next_k8s_version }}
+            / \     is complete.
+
+          You MUST now change the k8s_version variable to
+          {{ next_k8s_version | to_json }}.
+
+          You SHOULD refresh your kubeconfig
+          by running `./managed-k8s/actions/k8s-login.sh`.
+      tags: always
+...
