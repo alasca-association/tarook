@@ -25,8 +25,9 @@ frontend k8s_front
 {%- endmacro %}
 
 backend k8s_back
+  option httpchk
+  http-check send meth GET ver HTTP/1.1 hdr Host 192.168.0.14
   {{ backend_common_options() }}
-  option httpchk GET / "HTTP/1.1\r\nHost: 192.168.0.14\r\n\r\n"
 
   {% for host in groups['masters'] %}
   server {{ host }} {{ hostvars[host]['local_ipv4_address'] }}:6443 check check-ssl verify none
@@ -34,8 +35,9 @@ backend k8s_back
 
 {% if dualstack_support %}
 backend k8s_back6
+  option httpchk
+  http-check send meth GET ver HTTP/1.1 hdr Host fe80::14
   {{ backend_common_options() }}
-  option httpchk GET / "HTTP/1.1\r\nHost: fe80::14\r\n\r\n"
 
   {% for host in groups['masters'] %}
   server {{ host }} {{ hostvars[host]['local_ipv6_address'] }}:6443 check check-ssl verify none
