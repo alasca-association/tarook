@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# DEPRECATION NOTICE
+# This script is deprecated and will be removed in a future release
+
 """
 This script is used in the CI to update the cluster configuration.
 It takes a JSON-dict as command line argument and patches (deep
