@@ -101,7 +101,7 @@
       get_cert_vault_data:
         common_name: "kube-apiserver"
         alt_names: "{{ inventory_hostname }},{{ inventory_hostname }}.node.{{ vault_cluster_name }},kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.{{ vault_cluster_name }},kubernetes.default.svc.cluster.local"
-        ip_sans: "{{ networking_fixed_ip }},{{ local_ipv4_address }},127.0.0.1,::1{% if networking_fixed_ip_v6 | default(False) %},{{ networking_fixed_ip_v6 }},{{ local_ipv6_address }}{% endif %},{{ k8s_network_service_subnet | ansible.utils.nthhost(1) }}"
+        ip_sans: "{% if ipv4_enabled %}{{ networking_fixed_ip }},{{ k8s_network_service_subnet | ansible.utils.nthhost(1) }},{% endif %}{% if ipv6_enabled %}{{ networking_fixed_ip_v6 }},{{ k8s_network_service_subnet_v6 | ansible.utils.nthhost(1) }},{% endif %}{% if local_ipv4_address is defined %}{{ local_ipv4_address }},{% endif %}{% if local_ipv6_address is defined %}{{ local_ipv6_address }},{% endif %}127.0.0.1,::1"
         ttl: 8784h
       get_cert_notify: Restart kube-apiserver
       force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
