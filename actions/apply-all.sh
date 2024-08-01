@@ -8,6 +8,8 @@ load_conf_vars
 
 check_venv
 
+set_kubeconfig
+
 # Invoke Terraform, if configured
 if [ "${tf_usage:-true}" == 'true' ]; then
   run "$actions_dir/apply-terraform.sh"

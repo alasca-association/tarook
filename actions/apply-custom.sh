@@ -20,6 +20,8 @@ python3 "$actions_dir/update_inventory.py"
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"
 
+set_kubeconfig
+
 # Make roles from all stages accessible
 ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles:$ansible_k8s_custom_playbook_dir/roles"
 export ANSIBLE_ROLES_PATH

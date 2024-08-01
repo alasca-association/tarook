@@ -35,6 +35,8 @@ install_prerequisites
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"
 
+set_kubeconfig
+
 pushd "$ansible_k8s_core_dir"
 # Include k8s-core roles
 ansible_playbook -i "$ansible_inventory_host_file" \

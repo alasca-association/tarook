@@ -60,6 +60,8 @@ require_ansible_disruption
 
 "$actions_dir/wg-up.sh"
 
+set_kubeconfig
+
 pushd "$ansible_k8s_supplements_dir"
 ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles" \
     ansible_playbook -i "$ansible_inventory_host_file" "$playbook" \

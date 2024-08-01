@@ -5,9 +5,6 @@ code_repository="$(realpath "$actions_dir/../")"
 etc_directory="$(realpath "etc")"
 config_file="$cluster_repository/config/config.toml"
 
-# Set kubeconfig
-export KUBECONFIG="$cluster_repository/etc/admin.conf"
-
 submodule_managed_k8s_name="managed-k8s"
 
 terraform_min_version="0.14.0"
@@ -41,6 +38,14 @@ elif [ -t 1 ] || [ -t 2 ]; then
 else
     use_color='false'
 fi
+
+function set_kubeconfig() {
+    # Export KUBECONFIG if not already exported
+    # Export with default if unset or empty
+    if [[ -z "${KUBECONFIG:+x}" || ! "${KUBECONFIG@a}" == *x* ]]; then
+        export KUBECONFIG="${KUBECONFIG:-$cluster_repository/etc/admin.conf}"
+    fi
+}
 
 function load_vault_container_name() {
     # We assign to each repository a unique container name. We need to have

@@ -10,6 +10,8 @@ check_conf_sanity
 
 require_vault_token
 
+set_kubeconfig
+
 while getopts s flag
 do
     case "${flag}" in

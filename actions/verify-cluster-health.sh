@@ -25,6 +25,8 @@ shift $(( OPTIND - 1 ))
 
 check_venv
 
+set_kubeconfig
+
 pushd "$ansible_k8s_supplements_dir"
 # Include k8s-core roles
 ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles" \
