@@ -117,7 +117,7 @@ cluster_name = "devcluster" # "•ᴗ•"
 
 enabled       = true    # •ᴗ•
 shared_secret = "..."   # REPLACE ME
-version       = "0.7.0"
+#version       = "0.9.0"
 agent_port    = 15203
 
 # Configure which IP address ("port") manager to use. Two options are available:

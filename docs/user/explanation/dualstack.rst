@@ -1,9 +1,6 @@
 DualStack-Support on Kubernetes with Calico
 ===========================================
 
-.. warning::
-   DualStack support is currently not well tested.
-
 .. note::
 
    It is currently not possible to create an IPv6-only cluster
@@ -11,6 +8,16 @@ DualStack-Support on Kubernetes with Calico
 
    It is **not possible to upgrade** a single stack cluster to a
    dualStack cluster.
+
+.. warning::
+
+   Currently IPv6-based LoadBalancer services are not tested
+   nor supported by ch-k8s-lbaas.
+   See `#683 <https://gitlab.com/yaook/k8s/-/issues/683>`__.
+
+.. note::
+
+   Clusters enabling IPv6 **must** use ch-k8s-lbaas >= v0.9.0 (if it is enabled).
 
 Motivation
 ----------
