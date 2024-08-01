@@ -88,7 +88,7 @@ subsets:
 {% for gw in groups["gateways"] %}
 {% if ipv4_enabled %}
     - ip: {{ hostvars[gw]['local_ipv4_address'] | to_json }}
-{% else %}
+{% elif ipv6_enabled %}
     - ip: {{ hostvars[gw]['local_ipv6_address'] | to_json }}
 {% endif %}
 {% endfor %}

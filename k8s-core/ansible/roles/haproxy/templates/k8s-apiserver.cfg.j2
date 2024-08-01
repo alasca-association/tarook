@@ -17,7 +17,7 @@ frontend k8s_front
   timeout client 600s
   {% if ipv4_enabled %}
   default_backend k8s_back
-  {% else %}
+  {% elif ipv6_enabled %}
   default_backend k8s_back6
   {% endif %}
   maxconn {{ haproxy_frontend_k8s_api_maxconn }}

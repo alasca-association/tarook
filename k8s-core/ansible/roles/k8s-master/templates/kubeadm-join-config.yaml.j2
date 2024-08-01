@@ -44,7 +44,7 @@ controlPlane:
   localAPIEndpoint:
 {% if ipv4_enabled %}
     advertiseAddress: {{ local_ipv4_address | to_json }}
-{% else %}
+{% elif ipv6_enabled %}
     advertiseAddress: {{ local_ipv6_address | to_json }}
 {% endif %}
     bindPort: 6443

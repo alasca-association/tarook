@@ -9,7 +9,7 @@
       kubernetes.core.k8s_exec:
         namespace: kube-system
         pod: "etcd-{{ inventory_hostname }}"
-        command: "etcdctl --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/peer.crt --key /etc/kubernetes/pki/etcd/peer.key --endpoints https://{% if ipv4_enabled %}127.0.0.1{% else %}[::1]{% endif %}:2379 member list -w json"
+        command: "etcdctl --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/peer.crt --key /etc/kubernetes/pki/etcd/peer.key --endpoints https://{% if ipv4_enabled %}127.0.0.1{% elif ipv6_enabled %}[::1]{% endif %}:2379 member list -w json"
       register: etcd_members
     - name: Detect stale entries
       loop: "{{ (etcd_members.stdout | from_json).members }}"

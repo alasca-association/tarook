@@ -23,7 +23,7 @@ ssh_listen_to_v6:
 
 ssh_listen_to_dual: "{{ ssh_listen_to_v4 + ssh_listen_to_v6 }}"
 
-ssh_listen_to: "{{ ssh_listen_to_dual if ipv4_enabled and ipv6_enabled else ssh_listen_to_v4 if ipv4_enabled else ssh_listen_to_v6 }}"
+ssh_listen_to: "{{ ssh_listen_to_dual if ipv4_enabled and ipv6_enabled else ssh_listen_to_v4 if ipv4_enabled else ssh_listen_to_v6 if ipv6_enabled }}"
 
 network_ipv6_enable: "{{ ipv6_enabled }}"
 ...

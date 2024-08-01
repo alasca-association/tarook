@@ -50,7 +50,7 @@ subsets:
 {% for node in groups['frontend'] %}
 {% if ipv4_enabled %}
     - ip: {{ hostvars[node]["local_ipv4_address"] }}
-{% else %}
+{% elif ipv6_enabled %}
     - ip: {{ hostvars[node]["local_ipv6_address"] }}
 {% endif %}
 {% endfor %}

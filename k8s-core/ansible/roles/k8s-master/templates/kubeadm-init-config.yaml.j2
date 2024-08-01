@@ -37,7 +37,7 @@ nodeRegistration:
 localAPIEndpoint:
 {% if ipv4_enabled %}
   advertiseAddress: {{ local_ipv4_address | to_json }}
-{% else %}
+{% elif ipv6_enabled %}
   advertiseAddress: {{ local_ipv6_address | to_json }}
 {% endif %}
   bindPort: 6443
@@ -69,7 +69,7 @@ controllerManager:
   extraArgs:
 {% if ipv4_enabled %}
     bind-address: "0.0.0.0"
-{% else %}
+{% elif ipv6_enabled %}
     bind-address: "::"
 {% endif %}
     large-cluster-size-threshold: "{{ k8s_controller_manager_large_cluster_size_threshold | default(50) }}"
@@ -84,7 +84,7 @@ scheduler:
     extraArgs:
 {% if ipv4_enabled %}
       bind-address: "0.0.0.0"
-{% else %}
+{% elif ipv6_enabled %}
       bind-address: "::"
 {% endif %}
 
@@ -93,7 +93,7 @@ apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
 {% if ipv4_enabled %}
 metricsBindAddress: "0.0.0.0:10249"
-{% else %}
+{% elif ipv6_enabled %}
 metricsBindAddress: "[::]:10249"
 {% endif %}
 {% if ipv6_enabled %}
