@@ -35,10 +35,13 @@ if [ "$#" -ne "$arg_num" ]; then
     exit 2
 fi
 
+check_vault_token_policy
+
 pushd "$ansible_k8s_core_dir"
 # Include k8s-core roles
 ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles" \
   ansible_playbook -i "$ansible_inventory_host_file" \
   -e "super_admin=${super_admin:-false}" \
+  -e "direct_generation=true" \
   k8s-login.yaml "$@"
 popd

@@ -147,6 +147,15 @@ function require_vault_token() {
     fi
 }
 
+function check_vault_token_policy() {
+    if (vault token lookup -format=json | jq --exit-status 'any(.data.policies[] | contains("root", "yaook/orchestrator"); .)' &> /dev/null); then
+        return
+    fi
+    errorf 'Your vault token has insufficient policies for a KUBECONFIG generation'
+    errorf 'The token must either be a root token or have the "yaook/orchestrator" policy'
+    exit 2
+}
+
 function ccode() {
     if ! color_enabled; then
         return
