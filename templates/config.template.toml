@@ -739,6 +739,15 @@ enabled = false # •ᴗ•
 # Enable nginx-ingress management.
 enabled = false # •ᴗ•
 
+# Helm chart version
+#chart_version = "4.11.1"
+# Helm repository URL
+#helm_repo_url = "https://kubernetes.github.io/ingress-nginx"
+# Helm chart reference
+#chart_ref = "ingress-nginx/ingress-nginx"
+# Helm release name
+#release_name = "ingress"
+
 # Namespace to deploy the ingress in (will be created if it does not exist, but
 # never deleted).
 #namespace = "k8s-svc-ingress"
