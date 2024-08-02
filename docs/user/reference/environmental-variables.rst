@@ -148,16 +148,19 @@ External resources
 ======================================= ======================================================================= ===================================================
 Environment Variable                    Default                                                                 Description
 ======================================= ======================================================================= ===================================================
-``MANAGED_K8S_GIT``                     ``gitlab.com:yaook/k8s``                                                This git URL is used by ``init.sh`` to
+``MANAGED_K8S_GIT``                     ``gitlab.com:yaook/k8s``                                                This git URL is used by ``init-cluster-repo.sh`` to
                                                                                                                 bootstrap the LCM (``yaook/k8s``)
                                                                                                                 repository. Can be used to override
                                                                                                                 the repository to use another mirror.
-``MANAGED_K8S_LATEST_RELEASE``          ``true``                                                                If set to ``true``, ``init.sh`` will checkout the
+``MANAGED_K8S_LATEST_RELEASE``          ``true``                                                                If set to ``true``, ``init-cluster-repo.sh`` will checkout the
                                                                                                                 release version that is written in the ``version`` file
                                                                                                                 on the default branch of ``MANAGED_K8S_GIT``.
 
                                                                                                                 If set to ``false``, the default branch of
                                                                                                                 ``MANAGED_K8S_GIT`` is used (usually ``devel``).
+``MANAGED_K8S_GIT_BRANCH``                                                                                      If set and ``MANAGED_K8S_LATEST_RELEASE`` set to
+                                                                                                                ``false``, the specified branch will be checked out by
+                                                                                                                ``init-cluster-repo.sh``.
 ``MANAGED_K8S_WG_USER_GIT``             ``gitlab.cloudandheat.com:lcm/wg_user``                                 Git URL to a repository with wireguard
                                                                                                                 keys to provision. Can be enabled by
                                                                                                                 setting ``WG_COMPANY_USERS`` (see below).
@@ -215,7 +218,7 @@ Environment Variable        Default                 Description
                                                     You **MUST** adjust this variable.
                                                     This variable is used by the
                                                     ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
-``WG_COMPANY_USERS``        ``false``               If set to true, ``init.sh`` will
+``WG_COMPANY_USERS``        ``false``               If set to true, ``init-cluster-repo.sh`` will
                                                     clone the repository
                                                     ``MANAGED_K8S_WG_USER_GIT``. The
                                                     inventory updater will then
@@ -275,7 +278,7 @@ Environment Variable                        Default     Description
 
    If you have already initialized you cluster repository,
    you’ll need to rerun the
-   ``init.sh``:ref:`-script <actions-references.init-cluster-reposh>`
+   ``init-cluster-repo.sh``:ref:`-script <actions-references.init-cluster-reposh>`
    after enabling the Customization layer.
 
 .. _environmental-variables.vault-tooling-variables:

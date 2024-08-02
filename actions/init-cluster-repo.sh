@@ -22,6 +22,13 @@ if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
             notef "Adding $submodule_managed_k8s_name submodule on release v$version_major_minor..."
 
             run git submodule add -b "release/v$version_major_minor" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
+        elif [ -n "${MANAGED_K8S_GIT_BRANCH:-}" ]; then
+            # Checkout specified branch
+
+            echo ''
+            notef "Adding $submodule_managed_k8s_name submodule on branch $MANAGED_K8S_GIT_BRANCH..."
+
+            run git submodule add -b "$MANAGED_K8S_GIT_BRANCH" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
         else
             run git submodule add "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
         fi
