@@ -56,7 +56,7 @@
 - name: Deploy bird configuration for wireguard routes
   become: true
   block:
-    - name: Ensure that drop-in directory for bird configs exist
+    - name: Ensure that drop-in directory for bird configs exist (IPv4)
       ansible.builtin.file:
         path: /etc/bird.d/
         state: directory
