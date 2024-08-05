@@ -23,9 +23,9 @@ $ terraform-docs -c docs/.terraform-docs.yaml terraform
 
 | Name | Version |
 |------|---------|
-| local | >= 2.4.0 |
-| openstack | ~> 2.1.0 |
-| template | >= 2.2.0 |
+| local | 2.5.1 |
+| openstack | 2.1.0 |
+| template | 2.2.0 |
 
 ## Modules
 
@@ -83,7 +83,6 @@ No modules.
 | default\_worker\_image\_name | n/a | `string` | `"Ubuntu 22.04 LTS x64"` | no |
 | default\_worker\_root\_disk\_size | If 'create\_root\_disk\_on\_volume=true', the worker flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size. | `number` | `50` | no |
 | dns\_nameservers\_v4 | A list of IPv4 addresses which will be configured as DNS nameservers of the IPv4 subnet. | `list(string)` | `[]` | no |
-| dualstack\_support | If set to true, dualstack support related resources will be (re-)created | `bool` | n/a | yes |
 | enable\_az\_management | If set to false, the availability zone of instances will not be managed. This is useful in CI environments if the Cloud Is Full. | `bool` | `true` | no |
 | gateway\_flavor | n/a | `string` | `"XS"` | no |
 | gateway\_image\_name | n/a | `string` | `"Debian 12 (bookworm)"` | no |
@@ -93,6 +92,8 @@ No modules.
 | gitlab\_base\_url | Base URL of GitLab for Terraform HTTP backend if 'gitlab\_backend=true'. | `string` | `""` | no |
 | gitlab\_project\_id | If 'gitlab\_backend=true', the Terraform state will be stored in the GitLab repo with this ID. | `string` | `""` | no |
 | gitlab\_state\_name | If 'gitlab\_backend=true', the terraform state file will have this name. | `string` | `""` | no |
+| ipv4\_enabled | If set to true, ipv4 will be used | `bool` | `true` | no |
+| ipv6\_enabled | If set to true, ipv6 will be used | `bool` | `false` | no |
 | keypair | n/a | `string` | n/a | yes |
 | master\_azs | n/a | `list(string)` | `[]` | no |
 | master\_flavors | n/a | `list(string)` | `[]` | no |

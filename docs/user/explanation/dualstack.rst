@@ -51,10 +51,10 @@ Necessary changes in your config file
 
 Adjust your ``config/config.toml`` to meet the following statements:
 
--  set ``ipv6_enabled = true``
+-  set ``ipv4_enabled = true`` and ``ipv6_enabled = true``
 
-   -  this variable is used across all stages to adjust setups and
-      resources
+   - these variables are used across all stages
+     to adjust setups and resources
 
 -  specify ``subnet_v6_cidr``
 
@@ -219,11 +219,3 @@ the correct route to the currently active gateway.
    You can still connect to the secondary gateways using their
    public (floating) IP addresses or by using the currently active
    gateway as jumphost.
-
-
-IPv6-Only Cluster
------------------
-IPv6-only clusters are possible by setting ``ipv4_enabled = false`` in the
-``config/config.toml``.
-**This currently does not work with Terraform and has only been tested with bare-metal
-setups.**
