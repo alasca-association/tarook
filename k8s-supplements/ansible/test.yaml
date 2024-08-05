@@ -65,14 +65,13 @@
     tags:
     - test-ccm
 
-- name: Validate DualStack-Support
+- name: Validate Kubernetes network configuration
   hosts: k8s_nodes
   roles:
-  - role: check-dualstack
+  - role: check-network-configuration
     tags:
-    - test-dualstack
-    - check-dualstack
-    when: ipv4_enabled and ipv6_enabled
+    - test-network-configuration
+    - check-network-configuration
 
 - name: Test Calico CNI Support
   hosts: k8s_nodes
