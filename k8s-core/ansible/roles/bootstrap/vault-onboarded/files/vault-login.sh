@@ -4,7 +4,7 @@ umask 0077
 vault_dir=/etc/vault
 # shellcheck disable=SC1091
 . "$vault_dir/config"
-export VAULT_ADDR VAULT_CAPATH
+export VAULT_ADDR VAULT_CACERT
 for delay in 1 2 4 8 16 0; do
     role_id="$(cat "$vault_dir/role-id")"
     secret_id="$(cat "$vault_dir/secret-id")"
