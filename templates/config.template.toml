@@ -286,11 +286,11 @@ enabled = false # •ᴗ•
 [kubernetes.network]
 # This is the subnet used by Kubernetes for Pods. Subnets will be delegated
 # automatically to each node.
-pod_subnet = "10.244.0.0/16" # •ᴗ•
+#pod_subnet = "10.244.0.0/16"
 # pod_subnet_v6 = "fdff:2::/56"
 
 # This is the subnet used by Kubernetes for Services.
-service_subnet = "10.96.0.0/12" # •ᴗ•
+#service_subnet = "10.96.0.0/12"
 # service_subnet_v6 = "fdff:3::/108"
 
 # calico:
