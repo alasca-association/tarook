@@ -687,6 +687,15 @@ cluster_name = "rook-ceph" # •ᴗ•
 # Enable management of a cert-manager.io instance
 enabled = false # •ᴗ•
 
+# Helm chart version
+#chart_version = "1.15.2"
+# Helm repository URL
+#helm_repo_url = "https://charts.jetstack.io"
+# Helm chart reference
+#chart_ref = "jetstack/cert-manager"
+# Helm release name
+#release_name = "cert-manager"
+
 # Configure in which namespace the cert-manager is run. The namespace is
 # created automatically, but never deleted automatically.
 #namespace = "k8s-svc-cert-manager"
@@ -729,6 +738,15 @@ enabled = false # •ᴗ•
 [k8s-service-layer.ingress]
 # Enable nginx-ingress management.
 enabled = false # •ᴗ•
+
+# Helm chart version
+#chart_version = "4.11.1"
+# Helm repository URL
+#helm_repo_url = "https://kubernetes.github.io/ingress-nginx"
+# Helm chart reference
+#chart_ref = "ingress-nginx/ingress-nginx"
+# Helm release name
+#release_name = "ingress"
 
 # Namespace to deploy the ingress in (will be created if it does not exist, but
 # never deleted).
