@@ -1,6 +1,12 @@
 Rook - General information
 ==========================
 
+.. warning::
+
+   Even if ``ipv4_enabled`` and ``ipv6_enabled``,
+   only one IP family will be used for the Ceph daemons
+   whereas IPv4 is preferred over IPv6.
+
 .. todo::
 
    needs updates (differentiate between on OpenStack and on Bare

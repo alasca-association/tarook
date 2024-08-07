@@ -46,9 +46,16 @@ cephClusterSpec:
     createPrometheusRules: true
 {% endif %}
 
-{% if rook_use_host_networking %}
   network:
+{% if rook_use_host_networking %}
     provider: host
+{% endif %}
+    # https://gitlab.com/yaook/k8s/-/merge_requests/1304#note_2041293843
+    dualStack: false
+{% if ipv4_enabled %}
+    ipFamily: "IPv4"
+{% elif ipv6_enabled %}
+    ipFamily: "IPv6"
 {% endif %}
   crashCollector:
     disable: false
