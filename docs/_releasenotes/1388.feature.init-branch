@@ -1,1 +1,0 @@
-Add `MANAGED_K8S_GIT_BRANCH` environment variable to allow specifying a branch that should be checked out when running `init-cluster-repo.sh`.
