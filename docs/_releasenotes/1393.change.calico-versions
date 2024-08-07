@@ -1,9 +1,0 @@
-The mapped Calico versions have been bumped due to a bug which can result in high CPU
-utilization on nodes. If no custom Calico version is configured, Calico will get updated
-automatically on the next rollout. It is strongly recommended to do a rollout.
-
-.. code:: console
-
-  $ AFLAGS="--diff -t calico" bash managed-k8s/actions/apply-k8s-supplements.sh
-
-.

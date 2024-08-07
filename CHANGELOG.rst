@@ -19,6 +19,52 @@ earlier changes.
 
 .. towncrier release notes start
 
+v6.1.0 (2024-08-07)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+
+- Added support for Kubernetes v1.30 (`!1385 <https://gitlab.com/yaook/k8s/-/merge_requests/1385>`_)
+- Configuration options have been added to cert-manager and ingress-controller to further streamline general helm chart handling. (`!1387 <https://gitlab.com/yaook/k8s/-/merge_requests/1387>`_)
+- Add `MANAGED_K8S_GIT_BRANCH` environment variable to allow specifying a branch that should be checked out when running `init-cluster-repo.sh`. (`!1388 <https://gitlab.com/yaook/k8s/-/merge_requests/1388>`_)
+
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- The mapped Calico versions have been bumped due to a bug which can result in high CPU
+  utilization on nodes. If no custom Calico version is configured, Calico will get updated
+  automatically on the next rollout. It is strongly recommended to do a rollout.
+
+  .. code:: console
+
+    $ AFLAGS="--diff -t calico" bash managed-k8s/actions/apply-k8s-supplements.sh
+
+  . (`!1393 <https://gitlab.com/yaook/k8s/-/merge_requests/1393>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- `!1397 <https://gitlab.com/yaook/k8s/-/merge_requests/1397>`_
+
+
+Deprecations and Removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Support for Kubernetes v1.27 has been removed (`!1362 <https://gitlab.com/yaook/k8s/-/merge_requests/1362>`_)
+- The ``tools/patch_config.py`` script was deprecated in favor of ``tomlq``. (`!1379 <https://gitlab.com/yaook/k8s/-/merge_requests/1379>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- `!1347 <https://gitlab.com/yaook/k8s/-/merge_requests/1347>`_, `!1368 <https://gitlab.com/yaook/k8s/-/merge_requests/1368>`_, `!1370 <https://gitlab.com/yaook/k8s/-/merge_requests/1370>`_, `!1372 <https://gitlab.com/yaook/k8s/-/merge_requests/1372>`_, `!1378 <https://gitlab.com/yaook/k8s/-/merge_requests/1378>`_, `!1380 <https://gitlab.com/yaook/k8s/-/merge_requests/1380>`_, `!1384 <https://gitlab.com/yaook/k8s/-/merge_requests/1384>`_, `!1386 <https://gitlab.com/yaook/k8s/-/merge_requests/1386>`_, `!1392 <https://gitlab.com/yaook/k8s/-/merge_requests/1392>`_, `!1394 <https://gitlab.com/yaook/k8s/-/merge_requests/1394>`_, `!1398 <https://gitlab.com/yaook/k8s/-/merge_requests/1398>`_, `!1399 <https://gitlab.com/yaook/k8s/-/merge_requests/1399>`_
+- The link from Gitlab releases to release notes has been fixed. (`!1371 <https://gitlab.com/yaook/k8s/-/merge_requests/1371>`_)
+- The apiserver backend was adapted to modern haproxy versions (`!1381 <https://gitlab.com/yaook/k8s/-/merge_requests/1381>`_)
+
+
 v6.0.3 (2024-07-22)
 -------------------
 

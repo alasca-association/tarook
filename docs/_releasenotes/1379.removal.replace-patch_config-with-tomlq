@@ -1,1 +1,0 @@
-The ``tools/patch_config.py`` script was deprecated in favor of ``tomlq``.
