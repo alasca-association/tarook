@@ -1787,48 +1787,26 @@ requests = ">=2.14.2"
 stevedore = ">=1.20.0"
 
 [[package]]
-name = "python-novaclient"
-version = "18.6.0"
-description = "Client library for OpenStack Compute API"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "python-novaclient-18.6.0.tar.gz", hash = "sha256:573c10aa420b0898d35fb146edd8bb005806bfff0131ae2b5a30ca22ac89477b"},
-    {file = "python_novaclient-18.6.0-py3-none-any.whl", hash = "sha256:ec88aa47a4cf9bc411eb65fb1623adcd68b02079386a644d6accb74e8349b529"},
-]
-
-[package.dependencies]
-iso8601 = ">=0.1.11"
-keystoneauth1 = ">=3.5.0"
-"oslo.i18n" = ">=3.15.3"
-"oslo.serialization" = ">=2.18.0,<2.19.1 || >2.19.1"
-"oslo.utils" = ">=3.33.0"
-pbr = ">=2.0.0,<2.1.0 || >2.1.0"
-PrettyTable = ">=0.7.2"
-stevedore = ">=2.0.1"
-
-[[package]]
 name = "python-openstackclient"
-version = "6.6.1"
+version = "7.0.0"
 description = "OpenStack Command-line Client"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "python-openstackclient-6.6.1.tar.gz", hash = "sha256:23b486ecdf90d7388db91d1a89546e357fb92fd94a2ca8bfafe22ac8ec0196c4"},
-    {file = "python_openstackclient-6.6.1-py3-none-any.whl", hash = "sha256:99963dea828483744115d6b629ed14052e7e75886d52c9ef81d234cc0d457fe7"},
+    {file = "python-openstackclient-7.0.0.tar.gz", hash = "sha256:d470e3598c929d923fd768fdf866f51bd34a91bfb17eb70ca1363fabb68bd2e0"},
+    {file = "python_openstackclient-7.0.0-py3-none-any.whl", hash = "sha256:a843389d27f86133c5e8d97f9e25e2e307668d8c1bcd170d205f502c1fde8d2b"},
 ]
 
 [package.dependencies]
 cliff = ">=3.5.0"
 cryptography = ">=2.7"
 iso8601 = ">=0.1.11"
-openstacksdk = ">=2.0.0"
+openstacksdk = ">=3.3.0"
 osc-lib = ">=2.3.0"
 "oslo.i18n" = ">=3.15.3"
 pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 python-cinderclient = ">=3.3.0"
 python-keystoneclient = ">=3.22.0"
-python-novaclient = ">=18.1.0"
 requests = ">=2.14.2"
 stevedore = ">=2.0.1"
 
@@ -2889,4 +2867,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "5d428aeccf9f0f2116b46b595f9679d477edd1294798387c4d73312e53a757a2"
+content-hash = "8c1370efd83cd85d7ae3843c3168ec5b1ca9546674100eb6bdc3b42e92320df6"
