@@ -6,7 +6,7 @@ General Information
 
 Calico will be setup by using the operator-based
 approach. More detailed: the
-`Tigera Calico Operator <https://docs.tigera.io/calico/3.25/getting-started/kubernetes/helm#how-to>`__
+`Tigera Calico Operator <https://docs.tigera.io/calico/latest/getting-started/kubernetes/helm#how-to>`__
 is deployed. The Tigera operator is deployed via ``helm``.
 
 It is possible to customize the Calico setup to some extend. Please
@@ -16,11 +16,11 @@ for options.
 
 In addition to the Tigera operator which rolls out and sets up the basic
 Calico installation, the
-`Calico API servers <https://docs.tigera.io/calico/3.25/operations/install-apiserver>`__
+`Calico API servers <https://docs.tigera.io/calico/latest/operations/install-apiserver>`__
 are configured and deployed. This allows to manage Calico-specific
 resources via ``kubectl``. However, note that this currently does not
 replace the complete functionality of
-`calicoctl <https://github.com/projectcalico/calico/tree/master/calicoctl#calicoctl>`__.
+`calicoctl <https://docs.tigera.io/calico/latest/reference/calicoctl/>`__.
 Therefore, we’re still deploying ``calicoctl`` on all control-plane
 nodes.
 
