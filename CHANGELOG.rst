@@ -27,7 +27,7 @@ New Features
 
 - Added support for Kubernetes v1.30 (`!1385 <https://gitlab.com/yaook/k8s/-/merge_requests/1385>`_)
 - Configuration options have been added to cert-manager and ingress-controller to further streamline general helm chart handling. (`!1387 <https://gitlab.com/yaook/k8s/-/merge_requests/1387>`_)
-- Add `MANAGED_K8S_GIT_BRANCH` environment variable to allow specifying a branch that should be checked out when running `init-cluster-repo.sh`. (`!1388 <https://gitlab.com/yaook/k8s/-/merge_requests/1388>`_)
+- Add ``MANAGED_K8S_GIT_BRANCH`` environment variable to allow specifying a branch that should be checked out when running ``init-cluster-repo.sh``. (`!1388 <https://gitlab.com/yaook/k8s/-/merge_requests/1388>`_)
 
 
 Changed functionality
