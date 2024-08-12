@@ -315,12 +315,12 @@ plugin = "calico" # •ᴗ•
 #mtu = 1450 # for OpenStack at most 1450
 
 # Only takes effect for operator-based installations
-# https://docs.tigera.io/calico/3.25/reference/installation/api#operator.tigera.io/v1.EncapsulationType
+# https://docs.tigera.io/calico/latest/reference/installation/api/#operator.tigera.io/v1.EncapsulationType
 #encapsulation = "None"
 
 # Only takes effect for manifest-based installations
 # Define if the IP-in-IP encapsulation of calico should be activated
-# https://docs.tigera.io/calico/3.24/reference/resources/ippool#spec
+# https://docs.tigera.io/calico/latest/reference/resources/ippool#spec
 #ipipmode = "Never"
 
 # Make the auto detection method variable as one downside of
@@ -337,7 +337,7 @@ plugin = "calico" # •ᴗ•
 # We're mapping a fitting calico version to the configured Kubernetes version.
 # You can however pick a custom Calico version.
 # Be aware that not all combinations of Kubernetes and Calico versions are recommended:
-# https://projectcalico.docs.tigera.io/getting-started/kubernetes/requirements
+# https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements
 # Any version should work as long as
 # you stick to the calico-Kubernetes compatibility matrix.
 #
