@@ -13,6 +13,22 @@
       cp openrc_f1a.sh $out/root/openrc.sh
     '';
   };
+  userSetup = pkgs.stdenv.mkDerivation {
+    name = "user-setup";
+    src = ./.;
+    postInstall = ''
+      install -D -m622 user-setup/group $out/etc/group
+      install -D -m622 user-setup/passwd $out/etc/passwd
+      install -D -m620 user-setup/shadow $out/etc/shadow
+    '';
+  };
+  nixConfig = pkgs.stdenv.mkDerivation {
+    name = "nix-config";
+    src = ./.;
+    postInstall = ''
+      install -D nix.conf $out/etc/nix/nix.conf
+    '';
+  };
   tmpdir = pkgs.runCommand "tmp-dir" {} "mkdir -p $out/tmp;";
 in {
   name = "registry.gitlab.com/yaook/k8s/ci";
@@ -24,11 +40,12 @@ in {
       ++ (with pkgs; [
         poetryEnvs.ci
         bashInteractive
-        fakeNss # provides /etc/passwd and /etc/group
         dockerTools.usrBinEnv
         dockerTools.caCertificates
         ciFiles
         tmpdir
+        userSetup
+        nixConfig
       ]);
   };
   fakeRootCommands = ''
@@ -45,5 +62,5 @@ in {
       "HOME=/root"
     ];
   };
-  maxLayers = 100;
+  maxLayers = 120;
 }
