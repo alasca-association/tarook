@@ -23,6 +23,8 @@ monitoring_prometheus_adapter_release_name: "prometheus-adapter"
 monitoring_use_grafana: true
 monitoring_use_thanos: false
 
+monitoring_remote_writes: []
+
 monitoring_grafana_admin_secret_name: "cah-grafana-admin"
 
 monitoring_prometheus_stack_version: "59.1.0"

@@ -361,6 +361,13 @@ prometheus:
         action: replace
   prometheusSpec:
     priorityClassName: "system-cluster-critical"
+{% if monitoring_remote_writes | length > 0 %}
+    remoteWrite:
+{% for remote_write in monitoring_remote_writes %}
+      - url: {{ remote_write.url | to_json }}
+        writeRelabelConfigs: {{ remote_write.write_relabel_configs | to_json }}
+{% endfor %}
+{% endif %}
     secrets:
       - etcd-metrics-proxy
     serviceMonitorSelectorNilUsesHelmValues: {{  monitoring_common_labels | ternary(true, false) }}
