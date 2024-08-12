@@ -8,6 +8,9 @@ resource "openstack_networking_network_v2" "cluster_network" {
 }
 
 resource "openstack_networking_subnet_v2" "cluster_subnet" {
+  # Create only if ipv4 support is enabled
+  count = var.ipv4_enabled ? 1 : 0
+
   name = "${var.cluster_name}-network-v4"
   network_id = openstack_networking_network_v2.cluster_network.id
   cidr       = var.subnet_cidr
@@ -34,8 +37,11 @@ resource "openstack_networking_router_v2" "cluster_router" {
 }
 
 resource "openstack_networking_router_interface_v2" "cluster_router_iface" {
+  # Create only if ipv4 support is enabled
+  count = var.ipv4_enabled ? 1 : 0
+
   router_id = openstack_networking_router_v2.cluster_router.id
-  subnet_id = openstack_networking_subnet_v2.cluster_subnet.id
+  subnet_id = openstack_networking_subnet_v2.cluster_subnet[0].id
 }
 
 resource "openstack_networking_router_interface_v2" "cluster_router_iface_v6" {

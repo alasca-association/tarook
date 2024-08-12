@@ -19,8 +19,11 @@ resource "openstack_networking_port_v2" "worker" {
 
   network_id = openstack_networking_network_v2.cluster_network.id
 
-  fixed_ip {
-    subnet_id = openstack_networking_subnet_v2.cluster_subnet.id
+  dynamic "fixed_ip" {
+    for_each = var.ipv4_enabled ? [1] : []
+    content {
+        subnet_id = openstack_networking_subnet_v2.cluster_subnet[0].id
+    }
   }
 
   dynamic "fixed_ip" {

@@ -282,13 +282,6 @@ def main():
             raise ValueError("Neither IPv4 nor IPv6 are enabled. \
                 Configure at least one.")
 
-        # https://gitlab.com/yaook/k8s/-/issues/685
-        if not tf_config.get('ipv4_enabled', True) \
-           and tf_config.get('ipv6_enabled', False):
-
-            raise ValueError("IPv6-only clusters are currently not \
-                supported on top of OpenStack.")
-
         # If we want to use thanos, then the user can decide if terraform should create
         # an object storage container. These variables are set in an upper stage
         # and cannot be made available easily to tf except for making the user

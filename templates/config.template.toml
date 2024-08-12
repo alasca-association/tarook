@@ -27,6 +27,11 @@ prevent_disruption = true
 # if set to true one must set proper values for the "azs" array according to the cloud in use
 #enable_az_management = false
 
+# NOTE: Disabling this to build an IPv6-only cluster with Terraform
+#       is not supported yet and will fail.
+# https://gitlab.com/yaook/k8s/-/issues/685
+#ipv4_enabled = true
+
 # Optionally enable IPv6 for DualStack support
 # WARNING: IPv6 isn't fully supported by all components yet. (e.g. LBaaS)
 #ipv6_enabled = false
