@@ -61,6 +61,7 @@
             gnupg
             gnutar
             netcat
+            nix
             sonobuoy
           ];
           interactive = [

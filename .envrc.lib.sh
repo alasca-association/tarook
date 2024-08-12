@@ -69,9 +69,9 @@ use_flake_if_nix() {
       _poetry_common "${flake_dir}"
       watch_file "${flake_dir}/nix/poetry.nix"
       if [ "${MINIMAL_ACCESS_VENV:-false}" == "true" ]; then
-        use flake "${flake_dir}#minimal"
+        use flake "${flake_dir}?shallow=1#minimal"
       else
-        use flake "${flake_dir}#${YAOOK_K8S_DEVSHELL:-default}"
+        use flake "${flake_dir}?shallow=1#${YAOOK_K8S_DEVSHELL:-default}"
       fi
       export NIX_FLAKE_ACTIVE="${NIX_FLAKE_ACTIVE}:${flake_dir}"
     else
