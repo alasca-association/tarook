@@ -277,34 +277,6 @@ Monitoring Configuration
 
 |
 
-Global Monitoring Configuration
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-It is possible to connect the monitoring stack of your yk8s-cluster to
-an external endpoint like e.g. a monitoring-cluster. The following
-section can be used to enable and configure that.
-
-.. note::
-
-   This requires changes and therefore the (re-)appliance of
-   all layers.
-
-.. raw:: html
-
-   <details>
-   <summary>config.toml: Kubernetes - Global Monitoring Configuration</summary>
-
-.. literalinclude:: /templates/config.template.toml
-   :language: toml
-   :start-after: # ANCHOR: kubernetes_global_monitoring_configuration
-   :end-before: # ANCHOR_END: kubernetes_global_monitoring_configuration
-
-.. raw:: html
-
-   </details>
-
-|
-
 .. _cluster-configuration.network-configuration:
 
 Network Configuration

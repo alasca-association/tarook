@@ -100,11 +100,6 @@ storageclass_name = "local-storage-dynamic"
 [kubernetes.monitoring]
 enabled = true
 
-[kubernetes.global_monitoring]
-enabled       = true
-nodeport      = 31911
-nodeport_name = "ch-k8s-global-monitoring"
-
 [kubernetes.network]
 plugin         = "calico"
 pod_subnet     = "10.244.0.0/16"

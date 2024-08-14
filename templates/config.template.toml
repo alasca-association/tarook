@@ -279,19 +279,6 @@ enabled = false # •ᴗ•
 
 # ANCHOR_END: kubernetes_monitoring_configuration
 
-# ANCHOR: kubernetes_global_monitoring_configuration
-# --- KUBERNETES: GLOBAL MONITORING CONFIGURATION ---
-# ansible prefix: "k8s_global_monitoring"
-[kubernetes.global_monitoring]
-# This section contains global monitoring related information
-
-# Enable/Disable global monitoring
-enabled       = false                      # •ᴗ•
-#nodeport      = 31911
-#nodeport_name = "ch-k8s-global-monitoring"
-
-# ANCHOR_END: kubernetes_global_monitoring_configuration
-
 # ANCHOR: kubernetes_network_configuration
 # --- KUBERNETES: NETWORK CONFIGURATION ---
 # ansible prefix: "k8s_network"
