@@ -19,6 +19,20 @@ earlier changes.
 
 .. towncrier release notes start
 
+v6.0.5 (2024-08-19)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- In the v6.0.0 release notes,
+  we now draw attention to committing
+  ``etc/ssh_known_hosts`` in the cluster repository
+  so that the re-enabled SSH host key verification
+  does not require every user to use TOFU at first.
+  (`!1413 <https://gitlab.com/yaook/k8s/-/merge_requests/1413>`_)
+
+
 v6.0.4 (2024-08-15)
 -------------------
 
@@ -171,7 +185,9 @@ Breaking changes
 - SSH host key verification has been re-enabled. Nodes are getting signed SSH certificates.
   For clusters not using a vault running inside docker as backend, automated certificate renewal
   is configured on the nodes.
-  The SSH CA is stored inside ``$CLUSTER_REPOSITORY/etc/ssh-known-hosts`` and can be used to ssh to nodes.
+  The SSH CA is stored inside ``$CLUSTER_REPOSITORY/etc/ssh_known_hosts`` and can be used to ssh to nodes.
+
+  Attention: Make sure that file is not gitignored and is committed after rollout.
 
   The vault policies have been adjusted to allow the orchestrator role to read the SSH CA from vault.
   You must update the vault policies therefore:
