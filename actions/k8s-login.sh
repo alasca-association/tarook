@@ -31,6 +31,9 @@ if [ "$#" -ne "$arg_num" ]; then
     exit 2
 fi
 
+# Ensure that the latest config is deployed to the inventory
+python3 "$actions_dir/update_inventory.py"
+
 pushd "$ansible_k8s_core_dir"
 # Include k8s-core roles
 ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles" \
