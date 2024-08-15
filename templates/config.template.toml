@@ -654,7 +654,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 # url="http://example.com/healthz"  # The URL that blackbox will scrape
 # interval="60s"                    # Scraping interval. Overrides value set in `defaults`
 # scrapeTimeout="60s"               # Scrape timeout. Overrides value set in `defaults`
-# module = "http_2xx"               # module to be used. Can be "http_2xx" (default), "icmp" or "tcp_connect".
+# module = "http_2xx"               # module to be used. Can be "http_2xx" (default), "http_api" (allow status codes 200, 300, 401), "http_api_insecure", "icmp" or "tcp_connect".
 
 # If at least one common_label is defined, Prometheus will be created with selectors
 # matching these labels and only ServiceMonitors that meet the criteria of the selector,
