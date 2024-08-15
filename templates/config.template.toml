@@ -1103,7 +1103,7 @@ wireguard_on_workers = false
 # the depricated manifest code will be dropped along with Kubernetes v1.28
 #openstack_connect_use_helm = true
 
-# Value for the kernel parameter `vm.max_map_count` on k8s worker nodes. Modifications
+# Value for the kernel parameter `vm.max_map_count` on k8s nodes. Modifications
 # might be required depending on the software running on the nodes (e.g., ElasticSearch).
 # If you leave the value commented out you're fine and the system's default will be kept.
 #vm_max_map_count = 262144
