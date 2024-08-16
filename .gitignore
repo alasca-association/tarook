@@ -1,3 +1,4 @@
+wt-*
 *.sw*
 *.pyc
 *.retry
