@@ -31,8 +31,8 @@
   - role: k8s-packages
     tags: k8s-packages
 
-- name: Configure sysctl on K8s workers
-  hosts: workers
+- name: Configure sysctl on K8s nodes
+  hosts: k8s_nodes
   gather_facts: false
   roles:
   - role: vm-max-map-count
