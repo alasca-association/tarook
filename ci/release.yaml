@@ -77,7 +77,7 @@ create-gitlab-release:
   variables:
     VERSION_MAJOR_MINOR_FILE: "version_major_minor.txt"
   script:
-    - export VERSION_MAJOR_MINOR=$(grep -Po '^[0-9]+\.[0-9]+' "./version")
+    - export VERSION_MAJOR_MINOR=$(grep -Eo '^[0-9]+\.[0-9]+' "./version")
     - echo "Put $VERSION_MAJOR_MINOR into $VERSION_MAJOR_MINOR_FILE"
     - echo "$VERSION_MAJOR_MINOR" > "$VERSION_MAJOR_MINOR_FILE"
     - echo "running release_job for $(cat ./version) on branch release/v$VERSION_MAJOR_MINOR"
