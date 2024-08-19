@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v6.1.1 (2024-08-15)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- Fixed a bug in k8s-login.sh which would fail if the etc directory did not exist. (`!1416 <https://gitlab.com/yaook/k8s/-/merge_requests/1416>`_)
+
+
 v6.1.0 (2024-08-07)
 -------------------
 
