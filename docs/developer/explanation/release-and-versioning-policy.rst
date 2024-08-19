@@ -56,6 +56,8 @@ The repository is structured in four branch-types:
    :alt: branching-model
    :align: center
 
+.. _release-and-versioning-policy.versioning-specification:
+
 Versioning specification
 ************************
 
@@ -201,3 +203,127 @@ Please have a look at its pipeline. We will differentiate two cases:
 
 2. The ``merge-to-release-branch`` job has been triggered, but the MR back to devel or the release-branch isn't finished.
     - Please wait for the release to be fully finished. Afterwards follow the process described above.
+
+Release withdrawal process
+**************************
+
+Please read the full section before starting the release-withdrawal-process.
+We will outline the mandatory steps here.
+
+In this chapter we will call the release to be withdrawn simply "the release"
+and its successors of the same kind (minor, patch) "the successors".
+
+Why we established this process
++++++++++++++++++++++++++++++++
+
+We might need to withdraw a release for the following reasons:
+
+- Violation of our :ref:`versioning specification <release-and-versioning-policy.versioning-specification>`
+- Security vulnerabilities or malfunction
+- Licensing issues
+- ...
+
+The procedure
++++++++++++++
+
+.. tip::
+
+    We will utilize the :ref:`hotfixing-process <releases-and-versioning-policy.hotfix-process>`
+    for withdrawing releases. Make sure to understand it before proceeding.
+
+Withdrawing a release basically means to:
+
+1. Mark the release as withdrawn in our changelog
+
+   We do this by appending ``[withdrawn]``
+   to the headline of the release AND its successors.
+   Additionally the reason for the withdrawal
+   shall be inserted as a notice below the headline of the release.
+
+   Our `Gitlab releases page <https://gitlab.com/yaook/k8s/-/releases>`_
+   will be updated in the same manner.
+
+2. Revert the offending changes introduced by the release
+   OR fix them right away
+
+   For reversal the tools of our source control management are to be used.
+   Attention shall be given to changes introduced by successors
+   which depend on the to be reverted ones.
+
+3. Publish a new "replacement" release
+
+   We are using :ref:`hotfixing-process <releases-and-versioning-policy.hotfix-process>`
+   to publish the changed changelog and the reverted changes/fixes
+   together in a single new release (that contains no other changes).
+
+   The new release must be a patch release
+   which acts as a replacement for the withdrawn release(s)
+   and an update target for users of prior releases.
+
+   If the reverted changes or fixes
+   are not suitable for a patch release (example 1),
+   we *additionally* create a "replacement" minor/major release
+   as an update target for users of the withdrawn release(s)
+   and clearly state in the "replacement" patch release
+   that users of the withdrawn release(s)
+   must update to the "replacement" minor/major release instead.
+
+   In case the next minor/major release series already started,
+   we instead hotfix *it* as well (example 3).
+
+   Exception: When fixing a SemVer violation
+   we just add the release note of the reverted change(s)
+   to the release notes of the next minor/major release
+   effectively moving the change to the next suitable release.
+   (example 2)
+
+Examples
+########
+
+- (1) Patch release contains breaking change
+
+  .. code::
+
+      ...
+      5.1.0
+      5.1.1
+      5.1.2 [withdrawn]  <-- includes breaking change
+      5.1.3 [withdrawn]
+      5.1.4 [withdrawn]
+      ---
+      5.1.5              <-- patch release withdraws 5.1.2-5.1.4 + reverts breaking change
+                             (target for users of releases up to 5.1.1)
+      6.0.0              <-- next major release re-adds breaking change
+                             (target for users of releases 5.1.2-5.1.4)
+
+- (2) Patch release contains functionality change
+  and next minor release already exists
+
+  .. code::
+
+      ...
+      5.1.0
+      5.1.1
+      5.1.2 [withdrawn]  <-- changes old functionality
+      5.2.0
+      5.2.1
+      ---
+      5.1.3              <-- patch release withdraws 5.1.2 + reverts functionality change
+                             (v5.1-target for users of releases up to 5.1.1)
+      5.2.2              <-- patch release in next minor release series
+                              adds functionality change to release notes of 5.2.0
+                             (v5.2-target for users of all releases)
+
+- (3) Release contains security vulnerability
+
+  .. code::
+
+      ...
+      3.0.0
+      3.0.1
+      3.1.0 [withdrawn]  <-- introduces severe security vulnerability
+      4.0.0
+      ---
+      3.1.1              <-- patch release withdraws 3.1.0 + adds security patch
+                             (target for users of releases up to 3.1.0)
+      4.0.1              <-- patch release hotfixes next release series in the same manner
