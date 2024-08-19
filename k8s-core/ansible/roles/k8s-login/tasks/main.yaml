@@ -10,6 +10,14 @@
     stdin: "{% if vault_cluster_name == 'devcluster' %} y {% endif %}"
   register: kubeconfig
 
+- name: Ensure etc_dir exists
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  ansible.builtin.file:
+    path: "{{ etc_dir }}"
+    state: directory
+    mode: '0755'
+  check_mode: false
+
 - name: Write short-lived orchestrator kubeconfig
   delegate_to: "{{ groups['orchestrator'] | first }}"
   ansible.builtin.copy:
