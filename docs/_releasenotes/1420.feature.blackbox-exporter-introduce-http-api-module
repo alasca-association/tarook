@@ -1,1 +1,1 @@
-Add new modules `http_api` and `http_api_insecure` for Blackbox exporter allowing status codes 200, 300, 401 to be returned for http probes. `http_api_insecure` additionally doesn't care for the issuer of a certificate.
+Add new modules ``http_api`` and ``http_api_insecure`` for Blackbox exporter allowing status codes 200, 300, 401 to be returned for http probes. ``http_api_insecure`` additionally doesn't care for the issuer of a certificate.
