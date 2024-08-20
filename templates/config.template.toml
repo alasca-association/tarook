@@ -533,6 +533,11 @@ cluster_name = "rook-ceph" # •ᴗ•
 # The value has to be a valid StorageClass available in your cluster.
 #grafana_persistent_storage_class=""
 
+# Reference to an (existing) secret containing credentials
+# for the Grafana admin user. If the secret does not already exist,
+# it is automatically created with the default credentials.
+#grafana_admin_secret_name = "cah-grafana-admin"
+
 # Enable use of Thanos
 #use_thanos = false
 
