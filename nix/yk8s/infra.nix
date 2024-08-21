@@ -56,16 +56,16 @@ in {
 
     hosts_file = mkOption {
       description = ''
-        A custom hosts file in case terraform is disabled
+        A custom hosts file in case openstack is disabled
       '';
       type = with types; nullOr pathInStore;
       default = null;
       example = "./hosts";
       apply = v:
-        if v == null && config.yk8s.terraform.enabled == false
-        then throw "infra.hosts_file must be set if terraform is disabled"
-        else if v != null && config.yk8s.terraform.enabled == true
-        then throw "infra.hosts_file must not be set if terraform is enabled"
+        if v == null && config.yk8s.openstack.enabled == false
+        then throw "infra.hosts_file must be set if openstack is disabled"
+        else if v != null && config.yk8s.openstack.enabled == true
+        then throw "infra.hosts_file must not be set if openstack is enabled"
         else v;
     };
   };

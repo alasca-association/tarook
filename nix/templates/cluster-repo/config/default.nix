@@ -20,7 +20,7 @@ in {
         subnet_cidr = "192.168.67.0/24";
       };
 
-      terraform = {
+      openstack = {
         enabled = true;
 
         azs = ["AZ1" "AZ2" "AZ3"];

@@ -34,6 +34,7 @@
           ./assertions.nix
           ./infra.nix
           ./terraform.nix
+          ./openstack.nix
           ./vault.nix
           ./load-balancing.nix
           ./kubernetes
