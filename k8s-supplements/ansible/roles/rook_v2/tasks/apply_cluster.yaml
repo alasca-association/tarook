@@ -10,6 +10,6 @@
     release_name: "{{ rook_helm_release_name_cluster }}"
     release_state: present
     values: "{{ lookup('template', 'cluster-values.yaml.j2') | from_yaml }}"
-    wait: true
+    wait: false
   register: cluster_status
 ...

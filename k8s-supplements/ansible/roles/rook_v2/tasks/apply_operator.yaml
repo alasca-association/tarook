@@ -11,6 +11,6 @@
     release_name: "{{ rook_helm_release_name_operator }}"
     release_state: present
     values: "{{ lookup('template', 'operator-values.yaml.j2') | from_yaml }}"
-    wait: true
+    wait: false
   register: operator_status
 ...
