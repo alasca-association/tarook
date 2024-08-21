@@ -87,23 +87,17 @@ their ports and associated floating IPs:
       openstack port delete "$gateway"
   done
 
-Reconfigure the inventory ``inventory/yaook-k8s/hosts``:
+Adapt the inventory and write it to ``config/hosts``
+
+.. code:: bash
+
+  yq -y 'del(.gateways) | .frontend.children = {masters: {}}' inventory/yaook-k8s/hosts > config/hosts
+
+Now disable OpenStack and import our hosts file into the config:
 
 .. code:: nix
 
-  cp inventory/yaook-k8s/hosts config/hosts
-  chmod u+w config/hosts
-
-... and set ``infra.hosts_file = ./hosts;`` in the config.
-
-Also remove the ``[gateways]`` section from ``config/hosts``
-and replace ``gateways`` with ``masters`` in the ``[frontend:children]`` section.
-
-We can now disable Terraform:
-
-.. code:: nix
-
-  terraform.enable = false;
+  infra.ansible_hosts = yk8s-lib.importYAML ./hosts;
   openstack.enable = false;
 
 Create a jump host

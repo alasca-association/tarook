@@ -10,7 +10,8 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkDisableOption linkToPath;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkDisableOption linkToPath mkYamlAtPath mkInternalOption;
+  inherit (yk8s-lib.transform) filterNull;
   inherit
     (yk8s-lib.types)
     ipv4Addr
@@ -18,6 +19,7 @@
     ipv4Cidr
     ipv6Cidr
     k8sClusterName
+    absolutePosixPath
     ;
 in {
   options.yk8s.infra = mkTopSection {
@@ -71,10 +73,8 @@ in {
       type = types.nullOr ipv4Addr;
       default = null;
       apply = v:
-        if v == null && cfg.ipv4_enabled && config.yk8s.openstack.enabled == false
-        then throw "config.yk8s.infra.networking_fixed_ip must be set if config.yk8s.infra.ipv4_enabled=true and config.yk8s.openstack.enabled=false"
-        else if v != null && config.yk8s.openstack.enabled == true
-        then throw "config.yk8s.infra.networking_fixed_ip must not be set if config.yk8s.openstack.enabled=true"
+        if cfg.ipv4_enabled && v == null && config.yk8s.terraform.enabled
+        then builtins.trace "INFO: config.yk8s.infra.networking_fixed_ip is not yet set. Terraform stage needs to be run first." v
         else v;
     };
 
@@ -82,38 +82,171 @@ in {
       type = with types; nullOr ipv6Addr;
       default = null;
       apply = v:
-        if v == null && cfg.ipv6_enabled && config.yk8s.openstack.enabled == false
-        then throw "config.yk8s.infra.networking_fixed_ip_v6 must be set if config.yk8s.infra.ipv6_enabled=true and config.yk8s.openstack.enabled=false"
-        else if v != null && config.yk8s.openstack.enabled == true
-        then throw "config.yk8s.infra.networking_fixed_ip_v6 must not be set if config.yk8s.openstack.enabled=true"
+        if cfg.ipv6_enabled && v == null && config.yk8s.terraform.enabled
+        then builtins.trace "INFO: config.yk8s.infra.networking_fixed_ip_v6 is not yet set. Terraform stage needs to be run first." v
+        else v;
+    };
+
+    networking_floating_ip = mkInternalOption {
+      # TODO: move to yk8s.wireguard when ipsec gets removed
+      description = ''
+        Address that is used by Wireguard and IPsec to connect to the active gateway node.
+      '';
+      type = types.nullOr ipv4Addr;
+      default = null;
+      apply = v:
+        if v == null && config.yk8s.terraform.enabled
+        then builtins.trace "INFO: config.yk8s.infra.networking_floating_ip is not yet set. Terraform stage needs to be run first." v
         else v;
     };
 
     hosts_file = mkOption {
       description = ''
-        A custom hosts file in case :ref:`configuration-options.yk8s.openstack.enabled` is set to ``false``
+        A custom hosts file. This option is deprecated. Use :ref:`configuration-options.yk8s.infra.ansible_hosts` instead.
       '';
       type = with types; nullOr pathInStore;
       default = null;
       example = lib.options.literalExpression "./hosts";
-      apply = v:
-        if v == null && config.yk8s.openstack.enabled == false
-        then throw "infra.hosts_file must be set if openstack is disabled"
-        else if v != null && config.yk8s.openstack.enabled == true
-        then throw "infra.hosts_file must not be set if openstack is enabled"
-        else v;
     };
+
+    ansible_hosts = let
+      applyGroupSubmoduleAttrs = lib.mapAttrs (_: lib.filterAttrs (_: a: a != {}));
+      groupSubmodule = types.submodule {
+        options = {
+          children = mkOption {
+            visible = "shallow"; # Otherwise renderDocs chokes on the recursive submodule
+            type = types.attrsOf groupSubmodule;
+            default = {};
+            apply = applyGroupSubmoduleAttrs;
+          };
+          hosts = mkOption {
+            type = with types; attrsOf anything;
+            default = {};
+          };
+          vars = mkOption {
+            type = with types; attrsOf anything;
+            default = {};
+          };
+        };
+      };
+    in
+      mkOption {
+        description = ''
+          Entries to the Ansible hosts file. Will be rendered to a YAML-based file into the inventory.
+          This option is mandatory for bare-metal clusters and is automatically managed if Terraform is used.
+
+          Check the parts regarding YAML in the Ansible documentation: https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html
+        '';
+        default = null;
+        apply = v:
+          if v == null && config.yk8s.terraform.enabled
+          then builtins.trace "INFO: infra.ansible_hosts is not yet set. Terraform stage needs to be run first." v
+          else applyGroupSubmoduleAttrs v;
+        type = types.nullOr (types.submodule {
+          freeformType = types.attrsOf groupSubmodule;
+          options = {
+            all.vars.ansible_python_interpreter = mkOption {
+              type = absolutePosixPath;
+              default = "/usr/bin/python3";
+            };
+            frontend = mkOption {
+              visible = "shallow"; # Otherwise the submodule's options are repeated here
+              type = groupSubmodule;
+              default = {children.gateways = {};};
+              example = {children.masters = {};};
+            };
+            gateways = mkOption {
+              visible = "shallow"; # Otherwise the submodule's options are repeated here
+              type = groupSubmodule;
+              default = {};
+            };
+            k8s_nodes = mkInternalOption {
+              readOnly = true;
+              type = groupSubmodule;
+              default = {
+                children = {
+                  masters = {};
+                  workers = {};
+                };
+              };
+            };
+            masters = mkOption {
+              visible = "shallow"; # Otherwise the submodule's options are repeated here
+              type = groupSubmodule;
+              example = {
+                hosts = {
+                  devcluster-master-1 = {
+                    ansible_host = "172.30.154.66";
+                    local_ipv4_address = "172.30.154.66";
+                  };
+                };
+              };
+            };
+            workers = mkOption {
+              visible = "shallow"; # Otherwise the submodule's options are repeated here
+              type = groupSubmodule;
+              default = {};
+              example = {
+                hosts = {
+                  devcluster-worker-1 = {
+                    ansible_host = "172.30.154.99";
+                    local_ipv4_address = "172.30.154.99";
+                  };
+                };
+              };
+            };
+            orchestrator = mkOption {
+              visible = "shallow"; # Otherwise the submodule's options are repeated here
+              type = groupSubmodule;
+              default = {
+                hosts.localhost = {
+                  ansible_connection = "local";
+                  ansible_python_interpreter = "{{ ansible_playbook_python }}";
+                };
+              };
+            };
+          };
+        });
+      };
   };
+
+  config.yk8s.assertions = [
+    {
+      assertion =
+        (cfg.ansible_hosts != null)
+        -> (cfg.ansible_hosts.orchestrator.children or {}) == {} && (builtins.length (builtins.attrNames cfg.ansible_hosts.orchestrator.hosts)) == 1;
+      message = "config.yk8s.infra.ansible_hosts.orchestrator must contain exactly one host and no children";
+    }
+    {
+      assertion = cfg.ipv4_enabled -> config.yk8s.terraform.enabled || cfg.networking_fixed_ip != null;
+      message = "config.yk8s.infra.networking_fixed_ip must be set if Terraform is not used";
+    }
+    {
+      assertion = cfg.ipv6_enabled -> config.yk8s.terraform.enabled || cfg.networking_fixed_ip_v6 != null;
+      message = "config.yk8s.infra.networking_fixed_ip_v6 must be set if Terraform is not used";
+    }
+    {
+      assertion = (config.yk8s.wireguard.enabled || config.yk8s.ipsec.enabled) -> config.yk8s.terraform.enabled || cfg.networking_floating_ip != null;
+      message = "config.yk8s.infra.networking_floating_ip must be set if Wireguard or IPsec is used.";
+    }
+    {
+      assertion = cfg.ansible_hosts != null -> cfg.hosts_file == null;
+      message = "config.yk8s.infra.hosts_file must not be set if config.yk8s.infra.ansible_hosts is used (which implicitly happens through Terraform).";
+    }
+    {
+      assertion = ! config.yk8s.terraform.enabled -> (cfg.ansible_hosts == null && cfg.hosts_file == null);
+      message = "One of config.yk8s.infra.hosts_file and config.yk8s.infra.ansible_hosts must be set";
+    }
+  ];
+  config.yk8s.warnings = lib.optional (cfg.hosts_file != null) "config.yk8s.infra.hosts_file is deprecated. Use config.yk8s.infra.ansible_hosts instead.";
   config.yk8s._inventory_packages =
-    [
+    (lib.optional (cfg.ansible_hosts != null) (mkYamlAtPath "hosts" (filterNull cfg.ansible_hosts)))
+    ++ (lib.optional (cfg.hosts_file != null) (linkToPath cfg.hosts_file "hosts"))
+    ++ [
       (mkGroupVarsFile {
         inherit cfg;
         inventory_path = "all/infra.yaml";
-        transformations =
-          [(lib.attrsets.filterAttrs (n: _: n != "hosts_file"))]
-          ++ (lib.optional config.yk8s.openstack.enabled (lib.attrsets.filterAttrs (n: _: ! (builtins.elem n ["networking_fixed_ip" "networking_fixed_ip_v6"]))));
+        transformations = [(c: removeAttrs c ["hosts_file" "ansible_hosts"])];
       })
-    ]
-    ++ lib.optional (cfg.hosts_file != null)
-    (linkToPath cfg.hosts_file "hosts");
+    ];
 }

@@ -1,0 +1,1 @@
+Ansible hosts can now be defined and referenced via Nix. See :ref:`configuration-options.yk8s.infra.ansible_hosts`.

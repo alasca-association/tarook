@@ -190,11 +190,26 @@ resource "openstack_networking_floatingip_associate_v2" "gateway" {
   ]
 }
 
-data "template_file" "trampoline_gateways" {
-  template = file("${path.module}/templates/trampoline_gateways.tpl")
-  vars = {
-    networking_fixed_ip      = try(jsonencode(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[0]), "null"),
-    networking_fixed_ip_v6   = try(jsonencode(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[1]), "null"),
-    networking_floating_ip  = openstack_networking_floatingip_v2.gw_vip_fip.address,
-  }
+output gateways {
+  value = openstack_compute_instance_v2.gateway
+  sensitive = true
+}
+output gateway_ports {
+  value = openstack_networking_port_v2.gateway
+}
+output gateway_fips {
+  value = openstack_networking_floatingip_v2.gateway
+}
+
+output networking_fixed_ip {
+  value = try(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[0], null)
+}
+
+output networking_fixed_ip_v6 {
+  value = try(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[1], null)
+
+}
+
+output networking_floating_ip {
+  value = openstack_networking_floatingip_v2.gw_vip_fip.address
 }
