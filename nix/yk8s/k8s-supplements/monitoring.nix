@@ -381,8 +381,11 @@ in {
     };
     thanos_objectstorage_container_name = mkOption {
       type = types.nonEmptyStr;
-      default = "${config.yk8s.terraform.cluster_name}-monitoring-thanos-data";
-      defaultText = "\${config.yk8s.terraform.cluster_name}-monitoring-thanos-data";
+      default =
+        if config.yk8s.openstack.enabled
+        then "${config.yk8s.openstack.cluster_name}-monitoring-thanos-data"
+        else "monitoring-thanos-data";
+      defaultText = "\${config.yk8s.openstack.cluster_name}-monitoring-thanos-data";
     };
     thanos_objectstorage_config_file = mkOption {
       type = with types; nullOr nonEmptyStr;

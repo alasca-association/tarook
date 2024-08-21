@@ -67,15 +67,11 @@ function load_vault_container_name() {
 function load_conf_vars() {
     # All the things with side-effects should got here
 
-    if [ -e "$terraform_state_dir/config.tfvars.json" ]; then
-        terraform_prevent_disruption="$(
-            jq '.prevent_disruption | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
-                "$terraform_state_dir/config.tfvars.json" 2>/dev/null
-        )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
-        tf_usage=${tf_usage:-"$(jq '. | if has ("enabled") then .enabled else true end' "$terraform_state_dir/config.tfvars.json")"}
-    else
-        tf_usage=false
-    fi
+    terraform_prevent_disruption="$(
+        yq '.prevent_disruption | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
+            "$group_vars_dir/all/terraform.yaml" 2>/dev/null
+    )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
+    tf_usage=${tf_usage:-"$(yq '. | if has ("enabled") then .enabled else true end' "$group_vars_dir/all/terraform.yaml")"}
     wg_usage=${wg_usage:-"$(yq '. | if has("wg_enabled") then .wg_enabled else true end' "$group_vars_dir/gateways/wireguard.yaml")"}
 
     if [ "${wg_usage:-true}" == "true" ]; then
