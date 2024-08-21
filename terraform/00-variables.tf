@@ -16,9 +16,21 @@ variable "subnet_v6_cidr" {
                           # terraform recognizes this variable as optional
 }
 
-variable "dualstack_support" {
-  description = "If set to true, dualstack support related resources will be (re-)created"
+variable "ipv6_enabled" {
+  description = "If set to true, ipv6 will be used"
   type = bool
+  default = false
+}
+
+variable "ipv4_enabled" {
+  description = "If set to true, ipv4 will be used"
+  type = bool
+  default = true
+
+  validation {
+    condition     = var.ipv4_enabled
+    error_message = "YAOOK/k8s Terraform does not support IPv6-only yet, see #685"
+  }
 }
 
 variable "public_network" {

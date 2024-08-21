@@ -5,6 +5,18 @@ controller:
   affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json') | to_json }}
   tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
   service:
+{% if ipv4_enabled and ipv6_enabled %}
+    ipFamilyPolicy: PreferDualStack
+{% else %}
+    ipFamilyPolicy: SingleStack
+{% endif %}
+    ipFamilies:
+{% if ipv4_enabled %}
+      - IPv4
+{% endif %}
+{% if ipv6_enabled %}
+      - IPv6
+{% endif %}
     type: "{{ k8s_ingress_service_type }}"
     nodePorts:
       http: "{{ k8s_ingress_nodeport_http }}"

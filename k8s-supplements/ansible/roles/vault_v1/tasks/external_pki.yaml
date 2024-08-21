@@ -48,37 +48,7 @@
     validate:
       fail_on_error: true
       strict: true
-    definition:
-      apiVersion: v1
-      kind: Service
-      metadata:
-        labels:
-          app.kubernetes.io/instance: vault
-          app.kubernetes.io/name: vault
-        name: vault-external-active
-        namespace: "{{ yaook_vault_namespace }}"
-      spec:
-        internalTrafficPolicy: Cluster
-        ipFamilies:
-        - IPv4
-        ipFamilyPolicy: SingleStack
-        ports:
-        - name: https
-          port: 8250
-          protocol: TCP
-          targetPort: 8250
-        - name: https-internal
-          port: 8251
-          protocol: TCP
-          targetPort: 8251
-        publishNotReadyAddresses: true
-        selector:
-          app.kubernetes.io/instance: vault
-          app.kubernetes.io/name: vault
-          component: server
-          vault-active: "true"
-        sessionAffinity: None
-        type: ClusterIP
+    definition: "{{ lookup('template', 'api-service.yaml.j2') }}"
 
 - name: Create Vault Ingress (external)
   kubernetes.core.k8s:

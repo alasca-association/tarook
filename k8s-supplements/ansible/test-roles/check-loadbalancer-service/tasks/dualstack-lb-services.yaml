@@ -25,9 +25,19 @@
     delay: 5
     retries: 60
 
-  - name: require service to be reachable from this machine and respond to HTTP
+  - name: require service to be reachable from this machine and respond to HTTP (IPv4)
     ansible.builtin.uri:
-      url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
+      url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:{{ check_loadbalancer_service_port }}"
+      status_code: 200
+    register: uri_result
+    until: uri_result is not failed
+    delay: 1
+    retries: 60
+
+  - name: require service to be reachable from this machine and respond to HTTP (IPv6)
+    when: false  # disabled https://gitlab.com/yaook/k8s/-/issues/683
+    ansible.builtin.uri:
+      url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[1].ip }}:{{ check_loadbalancer_service_port }}"
       status_code: 200
     register: uri_result
     until: uri_result is not failed
@@ -49,7 +59,7 @@
     delay: "{{ k8s_error_delay }}"
 
 - name: Check single stack IPv6 lb service functionality
-  when: false  # Currently we do not support IPv6 single stack load balanced services (refer to the dualstack docs)
+  when: false  # disabled https://gitlab.com/yaook/k8s/-/issues/683
   block:
   - name: Create SingleStack IPv6 load-balanced service
     kubernetes.core.k8s:
@@ -75,10 +85,9 @@
     delay: 5
     retries: 60
 
-  - name: require service to be reachable from this machine and respond to HTTP
-    become: false
+  - name: require service to be reachable from this machine and respond to HTTP (IPv6)
     ansible.builtin.uri:
-      url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:80"
+      url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[0].ip }}:{{ check_loadbalancer_service_port }}"
       status_code: 200
     register: uri_result
     until: uri_result is not failed

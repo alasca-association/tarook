@@ -56,13 +56,14 @@
 - name: Deploy bird configuration for wireguard routes
   become: true
   block:
-    - name: Ensure that drop-in directory for bird configs exist
+    - name: Ensure that drop-in directory for bird configs exist (IPv4)
       ansible.builtin.file:
         path: /etc/bird.d/
         state: directory
         owner: root
         group: bird
         mode: 0750
+      when: ipv4_enabled
 
     - name: Ensure that drop-in directory for bird configs exist (IPv6)
       ansible.builtin.file:
@@ -71,7 +72,7 @@
         owner: root
         group: bird
         mode: 0750
-      when: dualstack_support
+      when: ipv6_enabled
 
     - name: Create bird config for IPv4 wireguard routes
       ansible.builtin.template:
@@ -81,6 +82,7 @@
         group: bird
         mode: 0640
       notify: restart bird
+      when: ipv4_enabled
 
     - name: Create bird config for IPv6 wireguard routes
       ansible.builtin.template:
@@ -89,6 +91,6 @@
         owner: bird
         group: bird
         mode: 06400
-      when: dualstack_support
+      when: ipv6_enabled
       notify: restart bird6
 ...

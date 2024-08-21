@@ -40,13 +40,13 @@
     name: bird6
     enabled: false
     state: stopped
-  when: not dualstack_support
+  when: not ipv6_enabled
   tags:
   - bird
 
 - name: Initialize config of bird6 for IPv6 support
   become: true
-  when: dualstack_support
+  when: ipv6_enabled
   tags:
   - bird6
   block:
@@ -57,7 +57,7 @@
       owner: bird
       group: bird
       mode: 0640
-    notify: restart bird
+    notify: restart bird6
 
   - name: Create drop-in directory for bird6 configs
     ansible.builtin.file:
@@ -87,6 +87,7 @@
       group: bird
       mode: "u=rw,g=r,o-rwx"
     notify: restart bird
+    when: ipv4_enabled
 
   - name: Configure BIRD for calico (IPv6)
     ansible.builtin.template:
@@ -96,5 +97,5 @@
       group: bird
       mode: "u=rw,g=r,o-rwx"
     notify: restart bird6
-    when: dualstack_support
+    when: ipv6_enabled
 ...

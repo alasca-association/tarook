@@ -1,5 +1,6 @@
 ---
 ch_k8s_lbaas_enabled: false
+ch_k8s_lbaas_version: "0.9.0"
 ch_k8s_lbaas_use_floating_ips: true
 ch_k8s_lbaas_controller_image: "registry.gitlab.com/yaook/ch-k8s-lbaas/controller:{{ ch_k8s_lbaas_version }}"
 
@@ -23,6 +24,8 @@ ch_k8s_lbaas_agent_binary_checksums:
   "0.5.0": "sha256:dd61b1f0f21bff40572708971a0f02ddf36b8aefae83959c93a6658c1ae01c29"
   "0.6.0": "sha256:4663704629513ed6abf44617278bafa69c11764b70c61e5f9234dc3b5447cdc0"
   "0.7.0": "sha256:ce2f088b7829a3778f35a3f13bc7e5f48fb69cd3e899ceb5dfa3518a62d0f5b4"
+  "0.8.0": "sha256:339605b3238066ad074522e893022ba94f09fc6b0a1623fafd1ad0f9c66e9a69"
+  "0.9.0": "sha256:a9b6171078d41f415b11cf600700942ca714e2236fcac31460733fcb9a816cf9"
 
 ch_k8s_lbaas_agent_binary_checksum: "{{ ch_k8s_lbaas_agent_binary_checksums[ch_k8s_lbaas_version] | default('invalid checksum') }}"
 

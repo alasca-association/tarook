@@ -6,6 +6,8 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 load_conf_vars
 
+check_conf_sanity
+
 while getopts s flag
 do
     case "${flag}" in
@@ -22,6 +24,8 @@ done
 shift $(( OPTIND - 1 ))
 
 check_venv
+
+set_kubeconfig
 
 pushd "$ansible_k8s_supplements_dir"
 # Include k8s-core roles

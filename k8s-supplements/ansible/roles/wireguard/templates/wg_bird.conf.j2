@@ -2,7 +2,7 @@
 
 filter k8s_worker {
     {% for ep in wg_endpoints %}
-    {% if ep.enabled %}
+    {% if ep.enabled and ep.ip_cidr is defined %}
     if net = {{ ep.ip_cidr }} then accept;
     {% endif %}
     {% endfor %}

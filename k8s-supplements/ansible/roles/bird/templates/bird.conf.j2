@@ -13,11 +13,7 @@ protocol kernel {
 protocol direct {
     table master;
     import filter {
-        if net = {{ subnet_cidr }} then {
-          scope = SCOPE_UNIVERSE;
-        } else {
-          scope = SCOPE_HOST;
-        }
+        scope = SCOPE_HOST;
         accept;
     };
     export none;

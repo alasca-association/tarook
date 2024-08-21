@@ -9,10 +9,12 @@ nodeRegistration:
 {% if on_openstack %}
     cloud-provider: "external"
 {% endif %}
-{% if dualstack_support %}
+{% if ipv4_enabled and ipv6_enabled %}
     node-ip: {{ [local_ipv4_address, local_ipv6_address] | join(",") | to_json }}
-{% else %}
+{% elif ipv4_enabled %}
     node-ip: {{ local_ipv4_address | to_json }}
+{% elif ipv6_enabled %}
+    node-ip: {{ local_ipv6_address | to_json }}
 {% endif %}
 {% set labels = k8s_node_labels[inventory_hostname] | default([]) %}
 {% if labels %}
@@ -40,5 +42,9 @@ discovery:
 
 controlPlane:
   localAPIEndpoint:
+{% if ipv4_enabled %}
     advertiseAddress: {{ local_ipv4_address | to_json }}
+{% elif ipv6_enabled %}
+    advertiseAddress: {{ local_ipv6_address | to_json }}
+{% endif %}
     bindPort: 6443

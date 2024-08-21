@@ -45,6 +45,8 @@ load_conf_vars
 
 check_venv
 
+check_conf_sanity
+
 require_ansible_disruption
 
 require_vault_token
@@ -56,6 +58,8 @@ python3 "$actions_dir/update_inventory.py"
 
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"
+
+set_kubeconfig
 
 # Get a new kubeconfig
 run "$actions_dir/k8s-login.sh"

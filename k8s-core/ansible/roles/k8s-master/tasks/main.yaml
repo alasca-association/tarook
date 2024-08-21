@@ -10,6 +10,7 @@
 
 - name: Check reachability of local kube-apiserver
   ansible.builtin.wait_for:
+    host: "{% if ipv4_enabled %}127.0.0.1{% elif ipv6_enabled %}::1{% endif %}"
     port: 6443
     timeout: 5
   ignore_errors: true
@@ -18,7 +19,7 @@
 - name: Check reachability of load-balanced kube-apiserver
   when: local_kube_apiserver_status is failed
   vars:
-    host: "{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
+    host: "{% if ipv4_enabled %}{{ networking_fixed_ip }}{% elif ipv6_enabled %}[{{ networking_fixed_ip_v6 }}]{% endif %}:{{ k8s_apiserver_frontend_port }}"
   ansible.builtin.uri:
     url: "https://{{ host }}"
     status_code: 403

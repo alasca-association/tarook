@@ -164,7 +164,7 @@
 
   - name: Patch 'kube-public/cluster-info' ConfigMap
     vars:
-      kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
+      kubeconfig_api_server_url: "https://{% if ipv4_enabled %}{{ networking_fixed_ip }}{% elif ipv6_enabled %}[{{ networking_fixed_ip_v6 }}]{% endif %}:{{ k8s_apiserver_frontend_port }}"
     kubernetes.core.k8s:
       state: present
       definition: "{{ lookup('template', 'cluster-info-cm.yaml.j2') | from_yaml }}"

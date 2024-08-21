@@ -22,24 +22,28 @@ installation:
   controlPlaneReplicas: {{ cp_replicas }}
   calicoNetwork:
     mtu: {{ k8s_network_calico_mtu | to_json }}
+{% if ipv4_enabled %}
     nodeAddressAutodetectionV4:
       cidrs:
         - "{{ subnet_cidr }}"
-{% if dualstack_support %}
+{% endif %}
+{% if ipv6_enabled %}
     nodeAddressAutodetectionV6:
       cidrs:
-        - "{{ subnet_cidr }}"
+        - "{{ subnet_v6_cidr }}"
 {% endif %}
     ipPools:
+{% if ipv4_enabled %}
     - blockSize: 26
       cidr: "{{ k8s_network_pod_subnet }}"
-      natOutgoing: Enabled
+      natOutgoing: {{ k8s_network_ipv4_nat_outgoing | ternary('Enabled', 'Disabled') }}
       nodeSelector: all()
       encapsulation: "{{ k8s_network_calico_encapsulation }}"
-{% if dualstack_support %}
-    - blockSize: 26
+{% endif %}
+{% if ipv6_enabled %}
+    - blockSize: 122
       cidr: "{{ k8s_network_pod_subnet_v6 }}"
-      natOutgoing: Disabled
+      natOutgoing: {{ k8s_network_ipv6_nat_outgoing | ternary('Enabled', 'Disabled') }}
       nodeSelector: all()
       encapsulation: "{{ k8s_network_calico_encapsulation }}"
 {% endif %}

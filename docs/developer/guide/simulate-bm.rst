@@ -113,7 +113,8 @@ which has been created previously by Terraform
   * Check out the following vars-file: ``inventory/yaook-k8s/group_vars/all/terraform_networking-trampoline.yaml``
 * Set ``subnet_cidr`` to the subnet cidr created by Terraform (and configured above in your ``config/config.toml``)
   * Check out the following vars-file: ``inventory/yaook-k8s/group_vars/all/terraform_networking-trampoline.yaml``
-* Set ``dualstack_support`` to ``false``
+* Set ``ipv4_enabled`` to ``true``
+* Set ``ipv6_enabled`` to ``false``
 * Add the jump host as target
 
 Your hosts file should end up similar to this:
@@ -126,7 +127,8 @@ Your hosts file should end up similar to this:
   on_openstack=False
   networking_fixed_ip=172.30.154.75
   subnet_cidr=172.30.154.0/24
-  dualstack_support=False
+  ipv6_enabled=False
+  ipv4_enabled=True
 
   [other]
   mk8s-jump-host ansible_host=<floating ip> local_ipv4_address=172.30.154.104

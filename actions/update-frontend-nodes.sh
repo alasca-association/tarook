@@ -6,6 +6,8 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 load_conf_vars
 
+check_conf_sanity
+
 check_venv
 
 require_ansible_disruption
@@ -32,6 +34,8 @@ install_prerequisites
 
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"
+
+set_kubeconfig
 
 # Trigger whole LCM
 pushd "$ansible_k8s_core_dir"

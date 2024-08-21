@@ -1,13 +1,3 @@
-# https://kubernetes.io/docs/tasks/network/validate-dual-stack/
-#
-# https://kubernetes.io/docs/tasks/network/validate-dual-stack/#validate-pod-addressing
-# --> is implicitly checked in "check-calico/test-pod-connectivity"
-#
-# https://kubernetes.io/docs/tasks/network/validate-dual-stack/#validate-services
-# --> is checked in "check-services"
-#
-# https://kubernetes.io/docs/tasks/network/validate-dual-stack/#create-a-dual-stack-load-balanced-service
-# --> is checked in "check-loadbalancer-service"
 ---
 - name: Get k8s node information
   delegate_to: "{{ groups['orchestrator'] | first }}"
@@ -34,11 +24,6 @@
       ansible.builtin.set_fact:
         node_has_internal_ipv6: true
 
-    - name: Fail if the k8s node does not have an internal IPv4 and IPv6 address
-      when: not node_has_internal_ipv4 or not node_has_internal_ipv6
-      ansible.builtin.fail:
-        msg: "The k8s node does not have an Internal IPv4 and IPv6 address"
-
 - name: Validate the k8s node PodCIDR address blocks
   vars:
     k8s_node_address_blocks: "{{ k8s_node_info['resources'][0]['spec']['podCIDRs'] }}"
@@ -56,4 +41,18 @@
       when: item | ipv6
       ansible.builtin.set_fact:
         node_has_ipv6_address_block: true
+
+- name: Fail if the k8s node is not properly setup (IPv4)
+  when: ipv4_enabled
+  assert:
+    that:
+      - node_has_internal_ipv4
+      - node_has_ipv4_address_block
+
+- name: Fail if the k8s node is not properly setup (IPv6)
+  when: ipv6_enabled
+  assert:
+    that:
+      - node_has_internal_ipv6
+      - node_has_ipv6_address_block
 ...

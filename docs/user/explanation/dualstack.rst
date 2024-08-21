@@ -1,17 +1,23 @@
 DualStack-Support on Kubernetes with Calico
 ===========================================
 
-.. warning::
-   DualStack support is currently non-functional.
-   It is planned to re-add it in the near future.
-
 .. note::
 
    It is currently not possible to create an IPv6-only cluster
-   (IPv4-only is default).
+   with terraform.
 
    It is **not possible to upgrade** a single stack cluster to a
    dualStack cluster.
+
+.. warning::
+
+   Currently IPv6-based LoadBalancer services are not tested
+   nor supported by ch-k8s-lbaas.
+   See `#683 <https://gitlab.com/yaook/k8s/-/issues/683>`__.
+
+.. note::
+
+   Clusters enabling IPv6 **must** use ch-k8s-lbaas >= v0.9.0 (if it is enabled).
 
 Motivation
 ----------
@@ -45,10 +51,10 @@ Necessary changes in your config file
 
 Adjust your ``config/config.toml`` to meet the following statements:
 
--  set ``dualstack-support=true``
+-  set ``ipv4_enabled = true`` and ``ipv6_enabled = true``
 
-   -  this variable is used across all stages to adjust setups and
-      resources
+   - these variables are used across all stages
+     to adjust setups and resources
 
 -  specify ``subnet_v6_cidr``
 

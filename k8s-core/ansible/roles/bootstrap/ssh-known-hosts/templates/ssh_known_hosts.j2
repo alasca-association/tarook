@@ -1,6 +1,6 @@
 {% for host in groups['frontend'] %}
-@cert-authority {{ host }},{{ hostvars[host]['local_ipv4_address'] }},{{ hostvars[host]['ansible_host'] }} {{ ssh_ca_vault.data.data.public_key }}
+@cert-authority {{ host }},{% if ipv4_enabled and hostvars[host]['local_ipv4_address'] is defined %}{{ hostvars[host]['local_ipv4_address'] }},{% endif %}{% if ipv6_enabled and hostvars[host]['local_ipv6_address'] is defined %}{{ hostvars[host]['local_ipv6_address'] }},{% endif %}{{ hostvars[host]['ansible_host'] }} {{ ssh_ca_vault.data.data.public_key }}
 {% endfor %}
 {% for host in groups['k8s_nodes'] %}
-@cert-authority {{ host }},{{ hostvars[host]['local_ipv4_address'] }},{{ hostvars[host]['ansible_host'] }} {{ ssh_ca_vault.data.data.public_key }}
+@cert-authority {{ host }},{% if ipv4_enabled and hostvars[host]['local_ipv4_address'] is defined %}{{ hostvars[host]['local_ipv4_address'] }},{% endif %}{% if ipv6_enabled and hostvars[host]['local_ipv6_address'] is defined %}{{ hostvars[host]['local_ipv6_address'] }},{% endif %}{{ hostvars[host]['ansible_host'] }} {{ ssh_ca_vault.data.data.public_key }}
 {% endfor %}

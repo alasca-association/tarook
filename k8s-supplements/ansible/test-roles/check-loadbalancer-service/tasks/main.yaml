@@ -78,7 +78,7 @@
     delay: "{{ k8s_error_delay }}"
 
   - name: Validate LB-Services for DualStack-Clusters
-    when: dualstack_support
+    when: ipv6_enabled and ipv4_enabled
     ansible.builtin.include_tasks: dualstack-lb-services.yaml
 
   - name: Clean up k8s preliminaries (ServiceAccount, RBAC, echo-Deployment)

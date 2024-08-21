@@ -274,6 +274,14 @@ def main():
     if config["terraform"]["enabled"]:
         print_process_state("Terraform")
         tf_config = config["terraform"]
+
+        # Fail if neither IPv4 nor IPv6 are enabled
+        if not tf_config.get('ipv4_enabled', True) \
+           and not tf_config.get('ipv6_enabled', False):
+
+            raise ValueError("Neither IPv4 nor IPv6 are enabled. \
+                Configure at least one.")
+
         # If we want to use thanos, then the user can decide if terraform should create
         # an object storage container. These variables are set in an upper stage
         # and cannot be made available easily to tf except for making the user
@@ -349,8 +357,8 @@ def main():
 
         # Getting IPv6 cluster network
         if (
-            'dualstack_support' in tf_config and
-            tf_config['dualstack_support'] == 'true'
+            'ipv6_enabled' in tf_config and
+            tf_config['ipv6_enabled'] == 'true'
         ):
             if 'subnet_v6_cidr' in tf_config:
                 tf_ipv6_string = tf_config['subnet_v6_cidr']

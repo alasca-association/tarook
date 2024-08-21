@@ -53,7 +53,7 @@
     register: calico_busybox_pod_information
 
   # ping each Pod from each Pod with a nested loop
-  - name: ping each BusyBox Pod from every BusyBox Pod
+  - name: ping each BusyBox Pod from every BusyBox Pod (IPv4)
     kubernetes.core.k8s_exec:
       namespace: "{{ check_calico_namespace }}"
       pod: "{{ item[0].metadata.name }}"
@@ -61,6 +61,7 @@
     with_nested:
     - "{{ calico_busybox_pod_information.resources }}"
     - "{{ calico_busybox_pod_information.resources }}"
+    when: ipv4_enabled
     loop_control:
       label: "{{ item[0].metadata.name }} --> {{ item[1].metadata.name }} ({{ item[1].status.podIP }})"
 
@@ -72,7 +73,7 @@
     with_nested:
     - "{{ calico_busybox_pod_information.resources }}"
     - "{{ calico_busybox_pod_information.resources }}"
-    when: dualstack_support
+    when: ipv6_enabled
     loop_control:
       label: "{{ item[0].metadata.name }} --> {{ item[1].metadata.name }} ({{ item[1].status.podIPs[1]['ip'] | default('not defined') }})"
 

@@ -5,9 +5,6 @@ code_repository="$(realpath "$actions_dir/../")"
 etc_directory="$(realpath "etc")"
 config_file="$cluster_repository/config/config.toml"
 
-# Set kubeconfig
-export KUBECONFIG="$cluster_repository/etc/admin.conf"
-
 submodule_managed_k8s_name="managed-k8s"
 
 terraform_min_version="0.14.0"
@@ -41,6 +38,14 @@ elif [ -t 1 ] || [ -t 2 ]; then
 else
     use_color='false'
 fi
+
+function set_kubeconfig() {
+    # Export KUBECONFIG if not already exported
+    # Export with default if unset or empty
+    if [[ -z "${KUBECONFIG:+x}" || ! "${KUBECONFIG@a}" == *x* ]]; then
+        export KUBECONFIG="${KUBECONFIG:-$cluster_repository/etc/admin.conf}"
+    fi
+}
 
 function load_vault_container_name() {
     # We assign to each repository a unique container name. We need to have
@@ -80,6 +85,15 @@ function load_conf_vars() {
         wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
         wg_endpoint="${wg_endpoint:-0}"
         ansible_wg_template="$etc_directory/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}.conf"
+    fi
+}
+
+function check_conf_sanity() {
+    if ! (ansible-inventory -i "${ansible_inventory_base}" --host localhost \
+            | jq --exit-status '.ipv4_enabled or .ipv6_enabled' &> /dev/null); then
+        errorf "Neither IPv4 nor IPv6 are enabled."
+        errorf "Enable at least one in your hosts file $ansible_inventory_host_file."
+        exit 2
     fi
 }
 
@@ -131,6 +145,15 @@ function require_vault_token() {
         errorf '$VAULT_TOKEN is not set but required during this stage'
         exit 1
     fi
+}
+
+function check_vault_token_policy() {
+    if (vault token lookup -format=json | jq --exit-status 'any(.data.policies[] | contains("root", "yaook/orchestrator"); .)' &> /dev/null); then
+        return
+    fi
+    errorf 'Your vault token has insufficient policies for a KUBECONFIG generation'
+    errorf 'The token must either be a root token or have the "yaook/orchestrator" policy'
+    exit 2
 }
 
 function ccode() {

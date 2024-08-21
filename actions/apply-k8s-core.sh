@@ -8,6 +8,8 @@ load_conf_vars
 
 check_venv
 
+check_conf_sanity
+
 require_vault_token
 
 install_prerequisites
@@ -17,6 +19,8 @@ python3 "$actions_dir/update_inventory.py"
 
 # Bring the wireguard interface up if configured so
 "$actions_dir/wg-up.sh"
+
+set_kubeconfig
 
 # Trigger whole LCM
 pushd "$ansible_k8s_core_dir"

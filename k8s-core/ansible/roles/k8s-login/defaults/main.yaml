@@ -1,3 +1,5 @@
 ---
 super_admin: false
+# directly triggered via the k8s-login.sh action script
+direct_generation: false
 ...

@@ -31,7 +31,7 @@ worker_images        = ["Ubuntu 20.04 LTS x64", "Ubuntu 22.04 LTS x64"]
 enable_az_management = false
 cluster_name         = "ci"
 
-dualstack_support = false
+ipv6_enabled = false
 subnet_v6_cidr    = "fd00::/120"
 
 # dd2a only
@@ -69,7 +69,6 @@ ident   = "gitlab-ci-runner"
 [ch-k8s-lbaas]
 enabled       = true
 shared_secret = "IYeOlEFO1h3uc9x1bdw9thNNgmn1gm8dmzos3f04PLmFjt3d"
-version       = "0.7.0"
 agent_port    = 15203
 
 [kubernetes]

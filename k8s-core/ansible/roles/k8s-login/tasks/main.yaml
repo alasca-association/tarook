@@ -1,28 +1,31 @@
 ---
-- name: Generate short-lived orchestrator kubeconfig
-  delegate_to: "{{ groups['orchestrator'] | first }}"
-  run_once: true
-  vars:
-    kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
-  ansible.builtin.shell:  # noqa command-instead-of-shell no-changed-when
-    chdir: "{{ cluster_repo_dir }}"
-    cmd: "{{ cluster_repo_dir }}/managed-k8s/tools/vault/k8s-login.sh {% if super_admin %}-s{% endif %} {{ kubeconfig_api_server_url }}"
-    stdin: "{% if vault_cluster_name == 'devcluster' %} y {% endif %}"
-  register: kubeconfig
+- name: Generate short-lived kubeconfig if orchestrator
+  when: direct_generation or has_vault_orchestrator_role
+  block:
+  - name: Generate short-lived orchestrator kubeconfig
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    run_once: true
+    vars:
+      kubeconfig_api_server_url: "https://{% if ipv4_enabled %}{{ networking_fixed_ip }}{% elif ipv6_enabled %}[{{ networking_fixed_ip_v6 }}]{% endif %}:{{ k8s_apiserver_frontend_port }}"
+    ansible.builtin.shell:  # noqa command-instead-of-shell no-changed-when
+      chdir: "{{ cluster_repo_dir }}"
+      cmd: "{{ cluster_repo_dir }}/managed-k8s/tools/vault/k8s-login.sh {% if super_admin %}-s{% endif %} {{ kubeconfig_api_server_url }}"
+      stdin: "{% if vault_cluster_name == 'devcluster' %} y {% endif %}"
+    register: kubeconfig
 
-- name: Ensure etc_dir exists
-  delegate_to: "{{ groups['orchestrator'] | first }}"
-  ansible.builtin.file:
-    path: "{{ etc_dir }}"
-    state: directory
-    mode: '0755'
-  check_mode: false
+  - name: Ensure etc_dir exists
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    ansible.builtin.file:
+      path: "{{ etc_dir }}"
+      state: directory
+      mode: '0755'
+    check_mode: false
 
-- name: Write short-lived orchestrator kubeconfig
-  delegate_to: "{{ groups['orchestrator'] | first }}"
-  ansible.builtin.copy:
-    content: "{{ kubeconfig.stdout }}"
-    dest: "{{ etc_dir }}/admin.conf"
-    mode: 0400
-  no_log: true
+  - name: Write short-lived orchestrator kubeconfig
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    ansible.builtin.copy:
+      content: "{{ kubeconfig.stdout }}"
+      dest: "{{ etc_dir }}/admin.conf"
+      mode: 0400
+    no_log: true
 ...
