@@ -1040,9 +1040,6 @@ enabled = false
 # only used when test_enabled is True
 #remote_private_addrs = ""
 
-# The PSK for EAP. Must be set.
-#eap_psk =
-
 # ANCHOR_END: ipsec_configuration
 
 # ANCHOR: testing_test_nodes_configuration
