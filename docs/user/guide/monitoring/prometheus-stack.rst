@@ -51,6 +51,22 @@ The upgrade routine can be triggered by running the following:
 
     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="--diff -t monitoring" bash managed-k8s/actions/apply-k8s-supplements.sh
 
+Prometheus
+----------
+
+By default we deploy exactly one Prometheus server if the monitoring is enabled.
+This instance doesn't have persistent storage unless ``prometheus_persistent_storage_class``
+is set in ``config.toml``. Prometheus scrapes all *PodMonitors* and *ServiceMonitors*
+it can find in the different namespaces. This behavior can be altered by setting
+``[k8s-service-layer.prometheus.common_labels]`` in ``config.toml`` to only scrape
+resources which match a certain label set.
+
+Prometheus can be integrated into existing Prometheus-based monitoring setups via `federation <https://prometheus.io/docs/prometheus/latest/federation/>`__
+which is a pull-based approach for gathering a subset of its metrics.
+The alternative way is using a push-based approach called `remote write <https://prometheus.io/docs/practices/remote_write/>`__.
+Remote write allows your Prometheus to actively send metrics to an endpoint (remote write receiver or target)
+and is configured via ``[[k8s-service-layer.prometheus.remote_writes]]`` in ``config.toml``.
+
 Grafana
 -------
 

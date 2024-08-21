@@ -533,6 +533,19 @@ cluster_name = "rook-ceph" # •ᴗ•
 #prometheus_persistent_storage_class = ""
 #prometheus_persistent_storage_resource_request = "50Gi"
 
+# Enable remote write for Prometheus
+# https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#monitoring.coreos.com/v1.RemoteWriteSpec
+#[[k8s-service-layer.prometheus.remote_writes]]
+#url = "http://remote-write-receiver:9090/api/v1/write"
+#
+#[[k8s-service-layer.prometheus.remote_writes.write_relabel_configs]]
+#targetLabel = "prometheus"
+#replacement = "my-cluster"
+#
+#[[k8s-service-layer.prometheus.remote_writes.write_relabel_configs]]
+#targetLabel = "cluster"
+#replacement = "my-cluster"
+
 # Enable grafana
 #use_grafana = true
 
