@@ -107,6 +107,23 @@ in {
       # TODO common practice is to set this from the calico section
       default = config.yk8s.kubernetes.network.plugin == "calico";
     };
+
+    subnet_id = mkOption {
+      type = with types; nullOr nonEmptyStr;
+      default = null;
+      apply = v:
+        if v == null && config.yk8s.terraform.enabled
+        then builtins.trace "INFO: ch-k8s-lbaas.subnet_id is not yet set. Terraform stage needs to be run first." v
+        else v;
+    };
+    floating_ip_network_id = mkOption {
+      type = with types; nullOr nonEmptyStr;
+      default = null;
+      apply = v:
+        if v == null && config.yk8s.terraform.enabled
+        then builtins.trace "INFO: ch-k8s-lbaas.floating_ip_network_id is not yet set. Terraform stage needs to be run first." v
+        else v;
+    };
   };
   config.yk8s.assertions = [
     # Due to OVN support, require version >= 0.8.0 (warn only if not in semver2 format)

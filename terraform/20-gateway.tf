@@ -190,16 +190,38 @@ resource "openstack_networking_floatingip_associate_v2" "gateway" {
   ]
 }
 
-data "template_file" "trampoline_gateways" {
-  template = file("${path.module}/templates/trampoline_gateways.tpl")
-  vars = {
-    networking_fixed_ip      = try(jsonencode(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[0]), "null"),
-    networking_fixed_ip_v6   = try(jsonencode(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[1]), "null"),
-    wireguard_gw_fixed_ip_v6 = try(jsonencode(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[2]), "null"),
-    networking_floating_ip  = openstack_networking_floatingip_v2.gw_vip_fip.address,
-    subnet_cidr             = try(jsonencode(openstack_networking_subnet_v2.cluster_subnet[0].cidr), "null"),
-    subnet_v6_cidr          = try(jsonencode(openstack_networking_subnet_v2.cluster_v6_subnet[0].cidr), "null"),
-    ipv6_enabled       = var.ipv6_enabled,
-    ipv4_enabled       = var.ipv4_enabled,
-  }
+output gateways {
+  value = openstack_compute_instance_v2.gateway
+  sensitive = true
+}
+output gateway_ports {
+  value = openstack_networking_port_v2.gateway
+}
+output gateway_fips {
+  value = openstack_networking_floatingip_v2.gateway
+}
+
+output networking_fixed_ip {
+  value = try(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[0], null)
+}
+
+output networking_fixed_ip_v6 {
+  value = try(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[1], null)
+
+}
+
+output wireguard_gw_fixed_ip_v6 {
+  value = try(openstack_networking_port_v2.gw_vip_port.all_fixed_ips[2], null)
+}
+
+output networking_floating_ip {
+  value = openstack_networking_floatingip_v2.gw_vip_fip.address
+}
+
+output subnet_cidr {
+  value = try(openstack_networking_subnet_v2.cluster_subnet[0].cidr, null)
+}
+
+output subnet_v6_cidr {
+  value = try(openstack_networking_subnet_v2.cluster_v6_subnet[0].cidr, null)
 }

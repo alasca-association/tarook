@@ -234,3 +234,11 @@ resource "openstack_networking_secgroup_rule_v2" "barndoor-ipv6-opts-egress" {
   protocol = "ipv6-opts"
   security_group_id = openstack_networking_secgroup_v2.barndoor.id
 }
+
+output subnet_id {
+  value = try(openstack_networking_subnet_v2.cluster_subnet[0].id, null)
+}
+
+output subnet_v6_id {
+  value = try(openstack_networking_subnet_v2.cluster_v6_subnet[0].id, null)
+}

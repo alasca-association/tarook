@@ -19,7 +19,7 @@ the YAOOK/K8s cluster.
 Cluster Repository Structure
 ----------------------------
 
-The following schema shows all non-generated files. A local checkout
+The following schema shows an example set of files. A local checkout
 will most certainly have more files than these.
 
 ::

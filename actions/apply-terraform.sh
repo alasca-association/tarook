@@ -46,7 +46,8 @@ elif [ $rc != $RC_NO_DISRUPTION ] && [ $rc != $RC_DISRUPTION ]; then
     errorf 'error during execution of check_plan.py. Aborting' >&2
     exit 4
 fi
-run terraform -chdir="$terraform_module" apply "$terraform_plan"
+run terraform -chdir="$terraform_module" apply "$terraform_plan" | sed '/Outputs:/,$d' # we don't want Terraform to dump all the outputs to the console
+terraform -chdir="$terraform_module" output -json > "$terraform_state_dir/outputs.json"
 
 if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ]; then
     notef 'Pulling latest Terraform state from Gitlab for disaster recovery purposes.'

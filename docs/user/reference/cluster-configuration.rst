@@ -17,8 +17,7 @@ The cluster repository layout
    your_cluster_repo
    ├── config/                           # All user configuration now resides in this directory
    │   ├── config.toml                   # Legacy cluster configuration, referenced in default.nix
-   │   ├── default.nix                   # Nix-based cluster configuration
-   │   └── hosts                         # Manual Ansible hosts file for bare-metal, referenced in default.nix
+   │   └── default.nix                   # Nix-based cluster configuration
    ├── inventory/yaook-k8s/              # Ansible inventory is now completely generated and MAY be excluded from version control
    │   ├── group-vars/                   # Variables passed to Ansible
    │   └── hosts                         # Ansible hosts file, generated from config even for bare-metal

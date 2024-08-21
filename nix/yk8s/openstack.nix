@@ -310,6 +310,17 @@ in {
     };
   };
   config.yk8s = lib.mkMerge [
+    {
+      _inventory_packages = [
+        (mkGroupVarsFile {
+          inherit cfg;
+          inventory_path = "all/openstack.yaml";
+          ansible_prefix = "openstack_";
+          only_if_enabled = true;
+          transformations = [(c: builtins.removeAttrs c nonAnsibleOptions)];
+        })
+      ];
+    }
     (lib.mkIf cfg.enabled {
       terraform.enabled = true;
 
@@ -367,17 +378,64 @@ in {
           message = "A minimum network MTU of 1280 Bytes is required for IPv6. Please adjust 'yk8s.openstack.network_mtu' accordingly.";
         }
       ];
+
+      infra = {
+        networking_floating_ip = config.yk8s.terraform.outputs.networking_floating_ip.value or null;
+        networking_fixed_ip = config.yk8s.terraform.outputs.networking_fixed_ip.value or null;
+        networking_fixed_ip_v6 = config.yk8s.terraform.outputs.networking_fixed_ip_v6.value or null;
+        ansible_hosts =
+          if config.yk8s.terraform.outputs == null
+          then null
+          else {
+            all.vars = {
+            };
+
+            gateways.hosts =
+              lib.mapAttrs (
+                name: _:
+                  {
+                    ansible_host = config.yk8s.terraform.outputs.gateway_fips.value.${name}.address;
+                    port_id = config.yk8s.terraform.outputs.gateway_ports.value.${name}.id;
+                    local_ipv4_address = builtins.head config.yk8s.terraform.outputs.gateway_ports.value.${name}.all_fixed_ips;
+                  }
+                  // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
+                    local_ipv6_address = builtins.elemAt config.yk8s.terraform.outputs.gateway_ports.value.${name}.all_fixed_ips 1;
+                  }
+              )
+              config.yk8s.terraform.outputs.gateways.value;
+
+            masters.hosts =
+              lib.mapAttrs (
+                name: _:
+                  {
+                    ansible_host = builtins.head config.yk8s.terraform.outputs.master_ports.value.${name}.all_fixed_ips;
+                    port_id = config.yk8s.terraform.outputs.master_ports.value.${name}.id;
+                    local_ipv4_address = builtins.head config.yk8s.terraform.outputs.master_ports.value.${name}.all_fixed_ips;
+                  }
+                  // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
+                    local_ipv6_address = builtins.elemAt config.yk8s.terraform.outputs.master_ports.value.${name}.all_fixed_ips 1;
+                  }
+              )
+              config.yk8s.terraform.outputs.masters.value;
+            workers.hosts =
+              lib.mapAttrs (
+                name: _:
+                  {
+                    ansible_host = builtins.head config.yk8s.terraform.outputs.worker_ports.value.${name}.all_fixed_ips;
+                    port_id = config.yk8s.terraform.outputs.worker_ports.value.${name}.id;
+                    local_ipv4_address = builtins.head config.yk8s.terraform.outputs.worker_ports.value.${name}.all_fixed_ips;
+                  }
+                  // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
+                    local_ipv6_address = builtins.elemAt config.yk8s.terraform.outputs.worker_ports.value.${name}.all_fixed_ips 1;
+                  }
+              )
+              config.yk8s.terraform.outputs.workers.value;
+          };
+      };
+      ch-k8s-lbaas = {
+        subnet_id = config.yk8s.terraform.outputs.subnet_id.value or null;
+        floating_ip_network_id = config.yk8s.terraform.outputs.floating_ip_network_id.value;
+      };
     })
-    {
-      _inventory_packages = [
-        (mkGroupVarsFile {
-          inherit cfg;
-          inventory_path = "all/openstack.yaml";
-          ansible_prefix = "openstack_";
-          only_if_enabled = true;
-          transformations = [(c: builtins.removeAttrs c nonAnsibleOptions)];
-        })
-      ];
-    }
   ];
 }

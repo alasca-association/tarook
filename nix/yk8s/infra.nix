@@ -10,8 +10,8 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath;
-  inherit (yk8s-lib.types) ipv4Cidr;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath mkYamlAtPath removeAttrsByPath;
+  inherit (yk8s-lib.types) ipv4Cidr ipv4Addr;
 in {
   options.yk8s.infra = mkTopSection {
     _docs.preface = ''
@@ -49,29 +49,151 @@ in {
       default = "fd00::/120";
     };
 
+    networking_fixed_ip = mkOption {
+      type = types.nullOr ipv4Addr;
+      default = null;
+      apply = v:
+        if cfg.ipv4_enabled && v == null && config.yk8s.terraform.enabled
+        then builtins.trace "INFO: infra.networking_fixed_ip is not yet set. Terraform stage needs to be run first." v
+        else v;
+    };
+
+    networking_fixed_ip_v6 = mkOption {
+      type = with types; nullOr nonEmptyStr;
+      default = null;
+      apply = v:
+        if cfg.ipv6_enabled && v == null && config.yk8s.terraform.enabled
+        then builtins.trace "INFO: infra.networking_fixed_ip_v6 is not yet set. Terraform stage needs to be run first." v
+        else v;
+    };
+
+    networking_floating_ip = mkOption {
+      # TODO: move to yk8s.wireguard when ipsec gets removed
+      description = ''
+        Address that is used by Wireguard and IPsec to connect to the active gateway node.
+      '';
+      type = types.nullOr ipv4Addr;
+      default = null;
+      apply = v:
+        if v == null && config.yk8s.terraform.enabled
+        then builtins.trace "INFO: infra.networking_floating_ip is not yet set. Terraform stage needs to be run first." v
+        else v;
+    };
+
     hosts_file = mkOption {
       description = ''
-        A custom hosts file in case openstack is disabled
+        A custom hosts file. This option is deprecated. Use :ref:`configuration-options.yk8s.infra.ansible_hosts` instead.
       '';
       type = with types; nullOr pathInStore;
       default = null;
       example = "./hosts";
-      apply = v:
-        if v == null && config.yk8s.openstack.enabled == false
-        then throw "infra.hosts_file must be set if openstack is disabled"
-        else if v != null && config.yk8s.openstack.enabled == true
-        then throw "infra.hosts_file must not be set if openstack is enabled"
-        else v;
+    };
+
+    ansible_hosts = let
+      applyGroupSubmoduleAttrs = lib.mapAttrs (_: lib.filterAttrs (_: a: a != {}));
+      groupSubmodule = types.submodule {
+        options = {
+          children = mkOption {
+            type = types.attrsOf groupSubmodule;
+            default = {};
+            apply = applyGroupSubmoduleAttrs;
+          };
+          hosts = mkOption {
+            type = types.attrs;
+            default = {};
+          };
+          vars = mkOption {
+            type = types.attrs;
+            default = {};
+          };
+        };
+      };
+    in
+      mkOption {
+        description = ''
+          Entries to the Ansible hosts file. Will be rendered to a YAML-based file into the inventory.
+
+          Check the parts regarding YAML in the Ansible documentation: https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html
+        '';
+        default = null;
+        apply = v:
+          if v == null && config.yk8s.terraform.enabled
+          then builtins.trace "INFO: infra.ansible_hosts is not yet set. Terraform stage needs to be run first." (applyGroupSubmoduleAttrs v)
+          else applyGroupSubmoduleAttrs v;
+        type = types.nullOr (types.submodule {
+          freeformType = types.attrsOf groupSubmodule;
+          options = {
+            all.vars.ansible_python_interpreter = mkOption {
+              type = types.nonEmptyStr;
+              default = "/usr/bin/python3";
+            };
+            gateways = mkOption {
+              type = groupSubmodule;
+            };
+            masters = mkOption {
+              type = groupSubmodule;
+            };
+            workers = mkOption {
+              type = groupSubmodule;
+              default = {};
+            };
+            orchestrator = mkOption {
+              type = groupSubmodule;
+              default = {
+                hosts.localhost = {
+                  ansible_connection = "local";
+                  ansible_python_interpreter = "{{ ansible_playbook_python }}";
+                };
+              };
+            };
+          };
+        });
+      };
+  };
+
+  config.yk8s.infra.ansible_hosts = {
+    frontend.children = lib.mkDefault {
+      gateways = {};
+    };
+
+    k8s_nodes.children = lib.mkDefault {
+      masters = {};
+      workers = {};
     };
   };
-  config.yk8s._inventory_packages =
-    [
-      (mkGroupVarsFile {
-        inherit cfg;
-        inventory_path = "all/infra.yaml";
-        transformations = [(lib.attrsets.filterAttrs (n: _: n != "hosts_file"))];
-      })
-    ]
-    ++ lib.optional (cfg.hosts_file != null)
-    (linkToPath cfg.hosts_file "hosts");
+
+  config.yk8s.assertions = [
+    {
+      assertion = cfg.ipv4_enabled -> config.yk8s.terraform.enabled || cfg.networking_fixed_ip != null;
+      message = "infra.networking_fixed_ip must be set if Terraform is not used";
+    }
+    {
+      assertion = cfg.ipv6_enabled -> config.yk8s.terraform.enabled || cfg.networking_fixed_ip_v6 != null;
+      message = "infra.networking_fixed_ip_v6 must be set if Terraform is not used";
+    }
+    {
+      assertion = (config.yk8s.wireguard.enabled || config.yk8s.ipsec.enabled) -> config.yk8s.terraform.enabled || cfg.networking_floating_ip != null;
+      message = "infra.networking_floating_ip must be set if Wireguard or IPsec is used.";
+    }
+    {
+      assertion = cfg.ansible_hosts != null -> cfg.hosts_file == null;
+      message = "infra.hosts_file must not be set if infra.ansible_hosts is used (which implicitly happens through Terraform).";
+    }
+  ];
+  config.yk8s.warnings = lib.optional (cfg.hosts_file != null) "infra.hosts_file is deprecated. Use infra.ansible_hosts instead.";
+  config.yk8s._inventory_packages = [
+    (
+      if (cfg.ansible_hosts != null)
+      then
+        (
+          mkYamlAtPath "hosts" cfg.ansible_hosts
+        )
+      else (linkToPath cfg.hosts_file "hosts")
+    )
+    (mkGroupVarsFile {
+      cfg = removeAttrsByPath cfg [["hosts_file"] ["ansible_hosts"]];
+      inventory_path = "all/infra.yaml";
+      transformations = [(lib.attrsets.filterAttrs (n: _: n != "hosts_file"))];
+    })
+  ];
 }

@@ -172,28 +172,26 @@ in {
       default = null;
       example = "tf-state";
     };
+
+    outputs = mkInternalOption {
+      readOnly = true;
+      type = with types; nullOr attrs;
+      default = let
+        tfOutputsPath = "terraform/outputs.json";
+        tfOutputsFullPath = "${config.yk8s.state_directory}/${tfOutputsPath}";
+      in
+        if config.yk8s.state_directory != null && builtins.pathExists tfOutputsFullPath
+        then builtins.fromJSON (builtins.readFile tfOutputsFullPath)
+        else null;
+    };
   };
   config.yk8s = {
-    _inventory_packages =
-      [
-        (mkGroupVarsFile {
-          cfg = lib.attrsets.getAttrs ["enabled" "prevent_disruption"] cfg;
-          inventory_path = "all/terraform.yaml";
-        })
-      ]
-      ++ lib.optionals cfg.enabled (
-        let
-          linkTfstateIfExists = source: target:
-            if config.yk8s.state_directory != null && builtins.pathExists "${config.yk8s.state_directory}/${source}"
-            then [(linkToPath "${config.yk8s.state_directory}/${source}" target)]
-            else
-              builtins.trace "INFO: ${config.yk8s._state_base_path}/${source} does not yet exist. Terraform stage needs to be run first."
-              [];
-        in
-          (linkTfstateIfExists "terraform/rendered/hosts" "hosts")
-          ++ (linkTfstateIfExists "terraform/rendered/terraform_networking-trampoline.yaml" "group_vars/all/terraform_networking-trampoline.yaml")
-          ++ (linkTfstateIfExists "terraform/rendered/terraform_networking.yaml" "group_vars/all/terraform_networking.yaml")
-      );
+    _inventory_packages = [
+      (mkGroupVarsFile {
+        cfg = lib.attrsets.getAttrs ["enabled" "prevent_disruption"] cfg;
+        inventory_path = "all/terraform.yaml";
+      })
+    ];
     _state_packages =
       lib.optional cfg.enabled
       (
