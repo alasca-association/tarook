@@ -30,10 +30,12 @@ in {
       plugin in use.
     '';
     mtu = mkOption {
-      description = "for OpenStack at most 1450";
       type = types.int;
-      default = config.yk8s.terraform.network_mtu;
-      defaultText = "\${config.yk8s.terraform.network_mtu}";
+      default =
+        if config.yk8s.openstack.enabled
+        then config.yk8s.openstack.network_mtu
+        else 1500;
+      defaultText = "\${if config.yk8s.openstack.enabled then config.yk8s.openstack.network_mtu else 1500}";
     };
     encapsulation = mkOption {
       description = ''

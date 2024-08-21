@@ -16,6 +16,8 @@
     mkMultiResourceOptions
     ;
 
+  inherit (transform) removeAttrByPath removeAttrsByPath;
+
   mkGroupVarsFile = {
     cfg,
     inventory_path,
