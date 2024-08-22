@@ -88,23 +88,24 @@ prevent_disruption = true
 #root_disk_volume_type      = ""  # == default volume type in IaaS environment
 ##anti_affinity_group             # == <unset>: don't join any group
 #
-# Master nodes to be created
-#[terraform.nodes.master-0]
+# Master nodes to be created (at least one)
+#[terraform.nodes.<master-name>]
 #role = "master"
-#[terraform.nodes.master-1]
-#role = "master"
-#[terraform.nodes.master-2]
-#role = "master"
+#image                    =
+#flavor                   =
+#az                       =
+#root_disk_size           =
+#root_disk_volume_type    =
 #
 # Worker nodes to be created
-#[terraform.nodes.worker-0]
+#[terraform.nodes.<worker-name>]
 #role = "worker"
-#[terraform.nodes.worker-1]
-#role = "worker"
-#[terraform.nodes.worker-2]
-#role = "worker"
-#[terraform.nodes.worker-3]
-#role = "worker"
+#image                    =
+#flavor                   =
+#az                       =
+#root_disk_size           =
+#root_disk_volume_type    =
+#anti_affinity_group      =
 #
 # One gateway node is created per availability zone (AZ1, AZ2, AZ3),
 # see [terraform].gateway_count

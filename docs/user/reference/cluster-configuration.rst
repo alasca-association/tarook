@@ -82,6 +82,10 @@ Consider the following example:
    +flavor = "S"
    +image = "Ubuntu 22.04 LTS x64"
 
+.. attention::
+
+    You must configure at least one master node.
+
 For an auto-generated complete list of variables, please refer to
 :doc:`Terraform docs </developer/reference/terraform-docs>`.
 

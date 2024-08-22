@@ -224,6 +224,7 @@ variable "nodes" {
   description = <<-EOT
     User defined list of control plane and worker nodes to be created with specified values
 
+    The list must contain at least one control plane node.
     'role' must be one of: "master", "worker".
     'anti_affinity_group' must not be set when role!="worker"
     Leaving 'anti_affinity_group' empty means to not join any anti affinity group
@@ -240,16 +241,12 @@ variable "nodes" {
       anti_affinity_group      = optional(string)
     })
   )
-  default = {  # default: create 3 master and 4 worker nodes
-    "master-0"                 = {role="master"}
-    "master-1"                 = {role="master"}
-    "master-2"                 = {role="master"}
-    "worker-0"                 = {role="worker"}
-    "worker-1"                 = {role="worker"}
-    "worker-2"                 = {role="worker"}
-    "worker-3"                 = {role="worker"}
-  }
+  default = {}  # default: create no nodes
 
+  validation {  # Require at least one master node
+    condition     = length([for x in var.nodes: x if x.role == "master"]) >= 1
+    error_message = "At least one node with role=master must be given."
+  }
   validation {  # Validate role
     condition     = alltrue([for x in var.nodes: contains(["master", "worker"], x.role)])
     error_message = "Invalid node role: Must be 'master' or 'worker'."
