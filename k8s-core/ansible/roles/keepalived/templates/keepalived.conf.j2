@@ -23,7 +23,27 @@ vrrp_sync_group VGG {
 {% if ipv4_enabled %}
 vrrp_instance VIP_1 {
     state MASTER
-    interface {{ ansible_default_ipv4.interface }}
+    interface {{ public_ipv4_interface }}
+    # All VRRP instances belonging to the same cluster must share this id
+    virtual_router_id 47
+    priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass {{ vrrp_password }}
+    }
+    virtual_ipaddress {
+        {{ public_fixed_ip }}
+    }
+    track_script {
+        chk_haproxy
+    }
+    notify /etc/keepalived/notifier.sh
+}
+{% if public_fixed_ip != networking_fixed_ip %}
+vrrp_instance VIP_2 {
+    state MASTER
+    interface {{ private_ipv4_interface }}
     # All VRRP instances belonging to the same cluster must share this id
     virtual_router_id 47
     priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
@@ -41,11 +61,37 @@ vrrp_instance VIP_1 {
     notify /etc/keepalived/notifier.sh
 }
 {% endif %}
+{% endif %}
 
 {% if ipv6_enabled %}
 vrrp_instance VIP_1_V6 {
     state MASTER
-    interface {{ ansible_default_ipv6.interface }}
+    interface {{ public_ipv6_interface }}
+    virtual_router_id 47
+    priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
+    advert_int 1
+    virtual_ipaddress {
+        {{ public_fixed_ip_v6 }}
+    }
+    unicast_src_ip {{ local_ipv6_address | ipaddr }}
+    unicast_peer {
+        {% for hostname in groups['frontend'] %}
+        {% set peer = hostvars[hostname] %}
+        {% if not peer.local_ipv6_address == local_ipv6_address %}
+        {{ peer.local_ipv6_address | ipaddr }}
+        {% endif %}
+        {% endfor %}
+    }
+    nopreempt
+    track_script {
+        chk_haproxy
+    }
+    notify /etc/keepalived/notifier.sh
+}
+{% if public_fixed_ip_v6 != networking_fixed_ip_v6 %}
+vrrp_instance VIP_1_V6 {
+    state MASTER
+    interface {{ private_interface_v6 }}
     virtual_router_id 47
     priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
     advert_int 1
@@ -67,6 +113,7 @@ vrrp_instance VIP_1_V6 {
     }
     notify /etc/keepalived/notifier.sh
 }
+{% endif %}
 {% endif %}
 
 include /var/lib/ch-k8s-lbaas-agent/keepalived/*.conf

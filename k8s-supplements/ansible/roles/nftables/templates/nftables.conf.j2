@@ -5,7 +5,8 @@
 
 flush ruleset
 
-define wan = {{ ansible_default_ipv4.interface }}
+define lan = {{ private_ipv4_interface }}
+define wan = {{ public_ipv4_interface }}
 define haproxy_stats_port = {{ haproxy_stats_port }}
 define haproxy_prom_metrics_port = 9101
 define keepalived_prom_metrics_port = 9650
@@ -56,7 +57,7 @@ table inet filter {
     set ipv4_internal_accepted {
         type ipv4_addr; flags interval;
         elements = {
-            {{ priv_ip_cidr }},
+            {{ subnet_cidr }},
             {% for ep in wg_endpoints %}
             {% if ep.enabled and ep.ip_cidr is defined %}
             {{ ep.ip_cidr }},
@@ -132,16 +133,18 @@ table inet filter {
         jump base_checks
 
         {% if ipv4_enabled %}
-        iifname @wg_iifnames oifname $wan ip daddr {{ priv_ip_cidr }} ct state new counter accept;
-        iifname $wan oifname $wan ip saddr {{ priv_ip_cidr }} ct state new counter accept;
+        iifname @wg_iifnames oifname $lan ip daddr {{ subnet_cidr }} ct state new counter accept;
+        iifname $lan oifname $lan ip saddr {{ subnet_cidr }} ct state new counter accept;
+        iifname $lan oifname $wan ip saddr {{ subnet_cidr }} ct state new counter accept;
         {% endif %}
 
         {% if ipv6_enabled %}
-        iifname @wg_iifnames oifname $wan ip6 daddr {{ subnet_v6_cidr }} ct state new counter accept comment "Forward IPv6 traffic from Wireguard to internal";
-        iifname $wan oifname $wan ip6 saddr {{ subnet_v6_cidr }} ct state new counter accept comment "Forward IPv6 traffic from internal to Wireguard";
+        iifname @wg_iifnames oifname $lan ip6 daddr {{ subnet_v6_cidr }} ct state new counter accept comment "Forward IPv6 traffic from Wireguard to internal";
+        iifname $lan oifname $lan ip6 saddr {{ subnet_v6_cidr }} ct state new counter accept comment "Forward IPv6 traffic from internal to Wireguard";
+        iifname $lan oifname $wan ip6 saddr {{ subnet_v6_cidr }} ct state new counter accept comment "Forward IPv6 traffic from internal to Wireguard";
 
-        iifname @wg_iifnames oifname $wan meta l4proto { icmp, ipv6-icmp } limit rate 5/second accept comment "Forward ICMPv6 traffic over Wireguard to internal";
-        iifname $wan oifname @wg_iifnames meta l4proto { icmp, ipv6-icmp } limit rate 5/second accept comment "Forward internal ICMPv6 traffic over Wireguard";
+        iifname @wg_iifnames oifname $lan meta l4proto { icmp, ipv6-icmp } limit rate 5/second accept comment "Forward ICMPv6 traffic over Wireguard to internal";
+        iifname $lan oifname @wg_iifnames meta l4proto { icmp, ipv6-icmp } limit rate 5/second accept comment "Forward internal ICMPv6 traffic over Wireguard";
         {% endif %}
 
     }

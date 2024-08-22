@@ -71,7 +71,7 @@
 
 - name: Ensure swanctl is disabled on the VRRP backups
   become: true
-  when: networking_fixed_ip not in ansible_facts.all_ipv4_addresses
+  when: public_fixed_ip not in ansible_facts.all_ipv4_addresses
   ansible.builtin.systemd:
     name: "{{ strongswan_service }}"
     enabled: false
@@ -79,7 +79,7 @@
 
 - name: Start swanctl on the VRRP master
   become: true
-  when: networking_fixed_ip in ansible_facts.all_ipv4_addresses
+  when: public_fixed_ip in ansible_facts.all_ipv4_addresses
   ansible.builtin.systemd:
     name: "{{ strongswan_service }}"
     enabled: false

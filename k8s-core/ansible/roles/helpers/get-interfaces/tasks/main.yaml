@@ -1,0 +1,42 @@
+---
+- name: Set private IPv4 facts
+  when: ipv4_enabled
+  block:
+  - name: Get internal interface for IPv4
+    loop: "{{ ansible_interfaces }}"
+    when: hostvars[inventory_hostname]['ansible_'~item].ipv4.address == local_ipv4_address # TODO also check ipv4_secondaries
+    set_fact:
+      private_ipv4_interface: "{{ item }}"
+  - name: Get public interface
+    when: public_ipv4_address is defined
+    block:
+    - name: Get public interface
+      loop: "{{ ansible_interfaces }}"
+      when: hostvars[inventory_hostname]['ansible_'~item].ipv4.address == public_ipv4_address # TODO also check ipv4_secondaries
+      set_fact:
+        public_ipv4_interface: "{{ item }}"
+  - name: Set public interface to internal interface
+    when: public_ipv4_address is not defined
+    set_fact:
+      public_ipv4_interface: "{{ private_ipv4_interface }}"
+- name: Set ipv6 interfaces
+  when: ipv6_enabled
+  block:
+  - name: Get internal interface for IPv6
+    loop: "{{ ansible_interfaces }}"
+    when: hostvars[inventory_hostname]['ansible_'~item].ipv6[0].address == local_ipv6_address # TODO also check other ipv6 addresses
+    set_fact:
+      private_ipv6_interface: "{{ item }}"
+  - name: Get public interface
+    when: public_ipv4_address is defined
+    block:
+    - name: Get internal interface for IPv6
+      loop: "{{ ansible_interfaces }}"
+      when: hostvars[inventory_hostname]['ansible_'~item].ipv6[0].address == public_ipv6_address # TODO also check other ipv6 addresses
+      set_fact:
+        public_ipv6_interface: "{{ item }}"
+  - name: Set public interface to internal interface
+    when: public_ipv6_address is not defined
+    set_fact:
+      public_ipv6_interface: "{{ private_ipv6_interface }}"
+...

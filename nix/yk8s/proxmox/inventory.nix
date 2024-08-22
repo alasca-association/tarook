@@ -23,7 +23,9 @@ in
 
     [gateways]
   ''
-  + concatLines (mapAttrsToList (n: v: "${n} ansible_host=${v.external_ipv4_address} local_ipv4_address=${v.ipv4_address}")
+  + concatLines (mapAttrsToList (
+      n: v: "${n} ansible_host=${v.external_ipv4_address} local_ipv4_address=${v.ipv4_address} public_ipv4_address=${v.external_ipv4_address}"
+    )
     (filterAttrs (_: v: v.role == "gateway") cfg.nodes))
   + ''
 

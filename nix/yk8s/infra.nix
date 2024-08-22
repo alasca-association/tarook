@@ -50,6 +50,21 @@ in {
       default = "fd00::/120";
     };
 
+    public_fixed_ip = mkOption {
+      # TODO maybe move this option to proxmox
+      description = ''
+        Must be set if openstack is disabled
+      '';
+      type = types.nullOr ipv4Addr;
+      default = null;
+      apply = v:
+        if v == null && config.yk8s.openstack.enabled == false
+        then throw "infra.public_fixed_ip must be set if openstack is disabled"
+        else if v != null && config.yk8s.openstack.enabled == true
+        then throw "infra.public_fixed_ip must not be set if openstack is enabled"
+        else v;
+    };
+
     networking_fixed_ip = mkOption {
       # TODO maybe move this option to proxmox
       description = ''
