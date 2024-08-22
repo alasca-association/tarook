@@ -64,6 +64,28 @@ in {
         else v;
     };
 
+    public_fixed_ip = mkOption {
+      type = types.nullOr ipv4Addr;
+      default = null;
+      apply = v:
+        if cfg.ipv4_enabled && v == null
+        then
+          throw
+          "config.yk8s.infra.public_fixed_ip must be set if ipv4 is enabled"
+        else v;
+    };
+
+    public_fixed_ip_v6 = mkOption {
+      type = with types; nullOr nonEmptyStr;
+      default = null;
+      apply = v:
+        if cfg.ipv6_enabled && v == null
+        then
+          throw
+          "config.yk8s.infra.public_fixed_ip_v6 must be set if ipv6 is enabled"
+        else v;
+    };
+
     networking_fixed_ip = mkOption {
       type = with types; nullOr yk8s.networking.ipv4Addr;
       default = null;
