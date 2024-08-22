@@ -1,1 +1,0 @@
-The sysctl settings ``fs.inotify.max_user_instances``, ``fs.inotify.max_user_watches`` and ``vm.max_map_count`` are now also adjusted on master nodes.
