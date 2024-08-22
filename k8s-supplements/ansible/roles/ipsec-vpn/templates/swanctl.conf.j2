@@ -14,7 +14,7 @@ connections {
     rw-eap {
         {# Use the public VIP to communicate with the remote endpoint instead
            of exposing our own public ip -#}
-        local_addrs = {{ networking_fixed_ip }}
+        local_addrs = {{ public_fixed_ip }}
 {% if ipsec_remote_addrs %}
         remote_addrs = {{ ipsec_remote_addrs | join(", ") }}
 {% endif %}

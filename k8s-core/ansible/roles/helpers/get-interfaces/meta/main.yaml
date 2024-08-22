@@ -1,7 +1,6 @@
 ---
 galaxy_info:
   license: Apache-2.0
-  author: Tarook Authors
+  author: Yaook Authors
 dependencies:
-- helpers/get-interfaces
 ...

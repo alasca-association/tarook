@@ -667,6 +667,8 @@ in {
         networking_floating_ip = config.yk8s.terraform.outputs.networking_floating_ip.value;
         networking_fixed_ip = config.yk8s.terraform.outputs.networking_fixed_ip.value or null;
         networking_fixed_ip_v6 = config.yk8s.terraform.outputs.networking_fixed_ip_v6.value or null;
+        public_fixed_ip = config.yk8s.terraform.outputs.networking_fixed_ip.value or null;
+        public_fixed_ip_v6 = config.yk8s.terraform.outputs.networking_fixed_ip_v6.value or null;
         ansible_hosts = let
           nodeConfigs =
             lib.mapAttrs (

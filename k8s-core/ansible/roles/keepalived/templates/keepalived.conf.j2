@@ -41,7 +41,29 @@ vrrp_sync_group VGG {
 {% if ipv4_enabled %}
 vrrp_instance VIP_1 {
     state BACKUP
-    interface {{ ansible_default_ipv4.interface }}
+    interface {{ public_ipv4_interface }}
+    # All VRRP instances belonging to the same cluster must share this id
+    virtual_router_id 47
+    priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
+    advert_int 1
+    virtual_ipaddress {
+        {{ public_fixed_ip }}
+    }
+    # Stop nodes with higher priority taking over the master role
+    # to prevent unnecessary traffic interruption and flapping if the higher
+    # priority node has problems and goes absent and becomes available frequently.
+    # We do not really care which gateway exactly is master but that connectivity
+    # is stable.
+    nopreempt
+    track_script {
+        chk_haproxy
+    }
+    notify /etc/keepalived/notifier.sh
+}
+{% if public_fixed_ip != networking_fixed_ip %}
+vrrp_instance VIP_2 {
+    state BACKUP
+    interface {{ private_ipv4_interface }}
     # All VRRP instances belonging to the same cluster must share this id
     virtual_router_id 47
     priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
@@ -61,11 +83,33 @@ vrrp_instance VIP_1 {
     notify /etc/keepalived/notifier.sh
 }
 {% endif %}
+{% endif %}
 
 {% if ipv6_enabled %}
 vrrp_instance VIP_1_V6 {
     state BACKUP
-    interface {{ ansible_default_ipv6.interface }}
+    interface {{ public_ipv6_interface }}
+    virtual_router_id 47
+    priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
+    advert_int 1
+    virtual_ipaddress {
+        {{ public_fixed_ip_v6 }}
+    }
+    # Stop nodes with higher priority taking over the master role
+    # to prevent unnecessary traffic interruption and flapping if the higher
+    # priority node has problems and goes absent and becomes available frequently.
+    # We do not really care which gateway exactly is master but that connectivity
+    # is stable.
+    nopreempt
+    track_script {
+        chk_haproxy
+    }
+    notify /etc/keepalived/notifier.sh
+}
+{% if public_fixed_ip_v6 != networking_fixed_ip_v6 %}
+vrrp_instance VIP_1_V6 {
+    state BACKUP
+    interface {{ private_interface_v6 }}
     virtual_router_id 47
     priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
     advert_int 1
@@ -83,6 +127,7 @@ vrrp_instance VIP_1_V6 {
     }
     notify /etc/keepalived/notifier.sh
 }
+{% endif %}
 {% endif %}
 
 {% if ch_k8s_lbaas_enabled %}
