@@ -283,6 +283,8 @@ kube-state-metrics:
     {{ label_key | to_json }}: {{ label_value | to_json }}
 {% endfor %}
 {% endif %}
+  metricLabelsAllowlist:
+    - namespaces=[*]
 
 ##
 nodeExporter:
