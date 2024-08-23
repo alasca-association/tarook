@@ -22,17 +22,6 @@ export TF_DATA_DIR="$terraform_state_dir/.terraform"
 
 OVERRIDE_FILE="$terraform_module/backend_override.tf"
 
-function tf_init_http () {
-    run terraform -chdir="$terraform_module" init \
-                  -upgrade \
-                  -backend-config="address=$backend_address" \
-                  -backend-config="lock_address=$backend_address/lock" \
-                  -backend-config="unlock_address=$backend_address/lock" \
-                  -backend-config="lock_method=POST" \
-                  -backend-config="unlock_method=DELETE" \
-                  -backend-config="retry_wait_min=5"
-}
-
 function tf_init_http_migrate () {
     run terraform -chdir="$terraform_module" init \
                   -migrate-state \
@@ -44,11 +33,6 @@ function tf_init_http_migrate () {
                   -backend-config="lock_method=POST" \
                   -backend-config="unlock_method=DELETE" \
                   -backend-config="retry_wait_min=5"
-}
-
-function tf_init_local () {
-    run terraform -chdir="$terraform_module" init \
-                  -upgrade
 }
 
 function tf_init_local_migrate () {
@@ -167,16 +151,6 @@ else
         rm -f "$OVERRIDE_FILE"
         tf_init_local
     fi
-fi
-
-# Prepare possible migration steps
-# count -> foreach migration
-# shellcheck source=actions/helpers/migrate-count-to-for-each.sh
-
-if [ -f "$terraform_state_dir"/terraform.tfstate ]; then
-  # Only attempt to migrate if we have a terraform state in first place
-  source "$actions_dir"/helpers/migrate-count-to-for-each.sh
-  run terraform_migrate_foreach "$terraform_module/02-moved-instances.tf"
 fi
 
 run terraform -chdir="$terraform_module" plan --var-file="$var_file" --out "$terraform_plan"

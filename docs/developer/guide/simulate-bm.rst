@@ -35,12 +35,44 @@ Adjust the configuration to meet your needs:
 .. code:: toml
 
   [terraform]
-  masters = 3
-  workers = 5
-  worker_flavors = [ "L", "L", "XL", "XL", "XL"]
+
   subnet_cidr = "172.30.154.0/24"
-  default_master_image_name = "Ubuntu 22.04 LTS x64"
-  default_worker_image_name = "Ubuntu 22.04 LTS x64"
+  cluster_name = "managed-k8s"
+
+  [terraform.master_defaults]
+  image  = "Ubuntu 22.04 LTS x64"
+
+  [terraform.worker_defaults]
+  image  = "Ubuntu 22.04 LTS x64"
+
+  [terraform.nodes.master-0]
+  role   = "master"
+
+  [terraform.nodes.master-1]
+  role   = "master"
+
+  [terraform.nodes.master-2]
+  role   = "master"
+
+  [terraform.nodes.worker-0]
+  role   = "worker"
+  flavor = "L"
+
+  [terraform.nodes.worker-1]
+  role   = "worker"
+  flavor = "L"
+
+  [terraform.nodes.worker-2]
+  role   = "worker"
+  flavor = "XL"
+
+  [terraform.nodes.worker-3]
+  role   = "worker"
+  flavor = "XL"
+
+  [terraform.nodes.worker-4]
+  role   = "worker"
+  flavor = "XL"
 
 Creation of the harbour infrastructure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -59,7 +91,7 @@ their ports and associated floating IPs:
 
 .. code-block:: bash
 
-  for gateway in managed-k8s-gw-az1 managed-k8s-gw-az2 managed-k8s-gw-az3; do
+  for gateway in managed-k8s-gw-0 managed-k8s-gw-1 managed-k8s-gw-2; do
       openstack server delete "$gateway"
       openstack floating ip delete $(openstack floating ip list --port "$gateway" -f value -c ID)
       openstack port delete "$gateway"

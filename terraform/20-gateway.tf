@@ -1,12 +1,14 @@
 locals {
-  gateways = {
-    for idx in range(length(var.azs)) :
-    "${var.cluster_name}-gw-${lower(var.azs[idx])}" => {
-      az              = var.enable_az_management ? var.azs[idx] : null
-      fip_description = "Floating IP for gateway in ${var.azs[idx]}"
-      volume_name     = "${var.cluster_name}-gw-volume-${try(var.azs[idx], idx)}"
-      root_disk_volume_type = try(var.gateway_root_disk_volume_type, var.root_disk_volume_type)
-    }
+  gateway_nodes = {
+    for idx in range(local.gateway_count) :
+      "${local.nodes_prefix}${var.gateway_defaults.common_name}${idx}" => {
+        image                    = var.gateway_defaults.image
+        flavor                   = var.gateway_defaults.flavor
+        az                       = var.spread_gateways_across_azs ? tolist(var.azs)[idx % length(var.azs)] : null
+        volume_name              = "${local.nodes_prefix}${var.gateway_defaults.common_name}${idx}-volume"
+        root_disk_size           = var.gateway_defaults.root_disk_size
+        root_disk_volume_type    = var.gateway_defaults.root_disk_volume_type
+      }
   }
 }
 
@@ -49,7 +51,7 @@ resource "openstack_networking_floatingip_v2" "gw_vip_fip" {
 
 
 resource "openstack_networking_port_v2" "gateway" {
-  for_each = local.gateways
+  for_each = local.gateway_nodes
   name = each.key
 
   network_id = openstack_networking_network_v2.cluster_network.id
@@ -72,9 +74,9 @@ resource "openstack_networking_port_v2" "gateway" {
 }
 
 resource "openstack_blockstorage_volume_v3" "gateway-volume" {
-  for_each = var.create_root_disk_on_volume == true ? local.gateways : {}
+  for_each = var.create_root_disk_on_volume == true ? local.gateway_nodes : {}
   name        = each.value.volume_name
-  size        = (data.openstack_compute_flavor_v2.gateway.disk > 0) ? data.openstack_compute_flavor_v2.gateway.disk : var.gateway_root_disk_volume_size
+  size        = (data.openstack_compute_flavor_v2.gateway.disk > 0) ? data.openstack_compute_flavor_v2.gateway.disk : each.value.root_disk_size
   image_id    = data.openstack_images_image_v2.gateway.id
   volume_type = each.value.root_disk_volume_type
   availability_zone = each.value.az
@@ -90,13 +92,13 @@ resource "openstack_blockstorage_volume_v3" "gateway-volume" {
 }
 
 resource "openstack_compute_instance_v2" "gateway" {
-  for_each = openstack_networking_port_v2.gateway
+  for_each = local.gateway_nodes
 
-  name              = each.value.name
+  name              = each.key
   flavor_id         = data.openstack_compute_flavor_v2.gateway.id
   image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.gateway.id : null
   key_pair          = var.keypair
-  availability_zone = local.gateways[each.key].az
+  availability_zone = each.value.az
   config_drive      = true
 
   dynamic block_device {
@@ -112,7 +114,7 @@ resource "openstack_compute_instance_v2" "gateway" {
   }
 
   network {
-    port = each.value.id
+    port = openstack_networking_port_v2.gateway[each.key].id
   }
   lifecycle {
     ignore_changes = [key_pair, image_id, config_drive]
@@ -120,8 +122,8 @@ resource "openstack_compute_instance_v2" "gateway" {
 }
 
 resource "openstack_networking_floatingip_v2" "gateway" {
-  for_each    = local.gateways
-  description = each.value.fip_description
+  for_each    = local.gateway_nodes
+  description = "Floating IP for gateway '${each.key}'${each.value.az != null ? " in ${each.value.az}" : ""}"
   pool        = var.public_network
 }
 

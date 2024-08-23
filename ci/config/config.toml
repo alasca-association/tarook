@@ -7,28 +7,9 @@
 # checkout the `environment` variable in the indiviual `[[runners]]` sections.
 
 haproxy_ports        = [30060]
-workers              = 7
-worker_flavors = [
-  "XL", # storage-0
-  "L", # cpu-0
-  "L", # storage-1
-  "L", # cpu-1
-  "XL", # storage-2
-  "CH-8C:32:100s-GN:1xTeslaT4", # gpu-0
-  "M", # cpu-2
-]
-worker_names = [
-  "storage-0",
-  "cpu-0", # labeled for monitoring
-  "storage-1",
-  "cpu-1", # labeled for monitoring
-  "storage-2",
-  "gpu-0",
-  "cpu-2", # labeled for monitoring
-]
-master_images        = ["Ubuntu 20.04 LTS x64", "Ubuntu 22.04 LTS x64"]
-worker_images        = ["Ubuntu 20.04 LTS x64", "Ubuntu 22.04 LTS x64"]
-enable_az_management = false
+
+azs = ["AZ1", "AZ2", "AZ3"]
+spread_gateways_across_azs = false
 cluster_name         = "ci"
 
 ipv6_enabled = false
@@ -37,6 +18,51 @@ subnet_v6_cidr    = "fd00::/120"
 # dd2a only
 #azs = ["nova"]
 #public_network = "floating-IPv4"
+
+[terraform.nodes.master-0]
+role   = "master"
+image  = "Ubuntu 20.04 LTS x64"
+
+[terraform.nodes.master-1]
+role   = "master"
+image  = "Ubuntu 22.04 LTS x64"
+az     = "AZ1"  # just for testing this option
+
+[terraform.nodes.master-2]
+role   = "master"
+
+[terraform.nodes.worker-storage-0]
+role   = "worker"
+flavor = "XL"
+image  = "Ubuntu 20.04 LTS x64"
+
+[terraform.nodes.worker-cpu-0]
+role   = "worker"  # labeled for monitoring
+flavor = "L"
+image  = "Ubuntu 22.04 LTS x64"
+
+[terraform.nodes.worker-storage-1]
+role   = "worker"
+flavor = "L"
+az     = "AZ2"  # just for testing this option
+
+[terraform.nodes.worker-cpu-1]
+role   = "worker"  # labeled for monitoring
+flavor = "L"
+az     = "AZ3"  # just for testing this option
+
+[terraform.nodes.worker-storage-2]
+role   = "worker"
+flavor = "XL"
+
+[terraform.nodes.worker-gpu-0]
+role   = "worker"
+flavor = "CH-8C:32:100s-GN:1xTeslaT4"
+
+[terraform.nodes.worker-cpu-2]
+role   = "worker"  # labeled for monitoring
+flavor = "M"
+
 
 [load-balancing]
 deprecated_nodeport_lb_test_port = 30060

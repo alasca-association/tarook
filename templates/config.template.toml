@@ -20,12 +20,6 @@ enabled = true
 prevent_disruption = true
 
 #subnet_cidr = "172.30.154.0/24"
-#masters = 3
-#workers = 3
-#worker_flavors = ["L", "M", "L"]
-
-# if set to true one must set proper values for the "azs" array according to the cloud in use
-#enable_az_management = false
 
 # NOTE: Disabling this to build an IPv6-only cluster with Terraform
 #       is not supported yet and will fail.
@@ -60,6 +54,61 @@ prevent_disruption = true
 
 # The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'
 #gitlab_state_name = "tf-state"
+
+
+# if set to true it is ensured that gateway nodes are evenly spread across the specified availability zones
+#spread_gateways_across_azs = true
+
+# Amount of gateway nodes
+#gateway_count = 3  # if 'spread_gateways_across_azs=true' defaults to one in each availability zone
+
+# Change the default values for all gateway nodes
+# Values can be selectively specified
+#[terraform.gateway_defaults]
+#common_name                = "gw-"  # NOTE: will be suffixed by an index
+#image                      = "Debian 12 (bookworm)"
+#flavor                     = "XS"
+#root_disk_size             = 10
+#root_disk_volume_type      = ""  # == default volume type in IaaS environment
+#
+# Change the default values for all master nodes
+# Values can be selectively specified
+#[terraform.master_defaults]
+#image                      = "Ubuntu 22.04 LTS x64"
+#flavor                     = "M"
+#root_disk_size             = 50
+#root_disk_volume_type      = ""  # == default volume type in IaaS environment
+#
+# Change the default values for all worker nodes
+# Values can be selectively specified
+#[terraform.worker_defaults]
+#image                      = "Ubuntu 22.04 LTS x64"
+#flavor                     = "M"
+#root_disk_size             = 50
+#root_disk_volume_type      = ""  # == default volume type in IaaS environment
+##anti_affinity_group             # == <unset>: don't join any group
+#
+# Master nodes to be created (at least one)
+#[terraform.nodes.<master-name>]
+#role = "master"
+#image                    =
+#flavor                   =
+#az                       =
+#root_disk_size           =
+#root_disk_volume_type    =
+#
+# Worker nodes to be created
+#[terraform.nodes.<worker-name>]
+#role = "worker"
+#image                    =
+#flavor                   =
+#az                       =
+#root_disk_size           =
+#root_disk_volume_type    =
+#anti_affinity_group      =
+#
+# One gateway node is created per availability zone (AZ1, AZ2, AZ3),
+# see [terraform].gateway_count
 
 # ANCHOR_END: terraform_config
 

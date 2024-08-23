@@ -42,92 +42,10 @@ variable "keypair" {
   type = string
 }
 
-variable "default_master_image_name" {
-  type    = string
-  default = "Ubuntu 22.04 LTS x64"
-}
-
-variable "default_worker_image_name" {
-  type    = string
-  default = "Ubuntu 22.04 LTS x64"
-}
-
-variable "gateway_image_name" {
-  type    = string
-  default = "Debian 12 (bookworm)"
-}
-
-variable "gateway_flavor" {
-  type    = string
-  default = "XS"
-}
-
-variable "default_master_flavor" {
-  type    = string
-  default = "M"
-}
-
-variable "default_worker_flavor" {
-  type    = string
-  default = "M"
-}
-
 variable "azs" {
-  type    = list(string)
+  type    = set(string)
   default = ["AZ1", "AZ2", "AZ3"]
-  description = "If 'enable_az_management=true' defines which availability zones of your cloud to use to distribute the spawned server for better HA. Additionally the count of the array will define how many gateway server will be spawned. The naming of the elements doesn't matter if 'enable_az_management=false'. It is also used for unique naming of gateways."
-}
-
-variable "masters" {
-  type    = number
-  default = 3
-}
-
-variable "workers" {
-  type    = number
-  default = 4
-}
-
-variable "worker_flavors" {
-  type    = list(string)
-  default = []
-}
-
-variable "worker_images" {
-  type    = list(string)
-  default = []
-}
-
-variable "worker_azs" {
-  type    = list(string)
-  default = []
-}
-
-// It can be used to uniquely identify workers
-variable "worker_names" {
-  type    = list(string)
-  default = []
-}
-
-variable "master_flavors" {
-  type    = list(string)
-  default = []
-}
-
-variable "master_images" {
-  type    = list(string)
-  default = []
-}
-
-variable "master_azs" {
-  type    = list(string)
-  default = []
-}
-
-// It can be used to uniquely identify masters
-variable "master_names" {
-  type    = list(string)
-  default = []
+  description = "Defines the availability zones of your cloud to use for the creation of servers."
 }
 
 variable "thanos_delete_container" {
@@ -135,11 +53,11 @@ variable "thanos_delete_container" {
   default = false
 }
 
-// If set to false, the availability zone of instances will not be managed.
-// This is useful in CI environments if the Cloud Is Full.
-variable "enable_az_management" {
+// Setting this to false is useful in CI environments if the Cloud Is Full.
+variable "spread_gateways_across_azs" {
   type    = bool
   default = true
+  description = "If true, spawn a gateway node in each availability zone listed in 'azs'. Otherwise leave the distribution to the cloud controller."
 }
 
 variable "create_root_disk_on_volume" {
@@ -150,70 +68,6 @@ variable "create_root_disk_on_volume" {
 variable "timeout_time" {
   type = string
   default = "30m"
-}
-
-variable "root_disk_volume_type" {
-  type = string
-  default = ""
-  description = "If 'create_root_disk_on_volume=true', the volume type to be used as default for all instances. If left empty, default of IaaS environment is used."
-}
-
-variable "worker_join_anti_affinity_group" {
-  type = list(bool)
-  default = []
-}
-
-variable "worker_anti_affinity_group_name" {
-  type = string
-  default = "cah-anti-affinity"
-}
-
-variable "master_root_disk_sizes" {
-  type = list(number)
-  default = []
-  description = "If 'create_root_disk_on_volume=true' and the master flavor does not specify a disk size, the root disk volume of this particular instance will have this size."
-}
-
-variable "master_root_disk_volume_types" {
-  type        = list(string)
-  default     = []
-  description = "If 'create_root_disk_on_volume=true', volume type for root disk of this particular control plane node. If left empty, the volume type specified in 'root_disk_volume_type' will be used."
-}
-
-variable "worker_root_disk_sizes" {
-  type = list(number)
-  default = []
-  description = "If 'create_root_disk_on_volume=true', size of the root disk of this particular worker node. If left empty, the root disk size specified in 'default_worker_root_disk_size' is used."
-}
-
-variable "worker_root_disk_volume_types" {
-  type        = list(string)
-  default     = []
-  description = "If 'create_root_disk_on_volume=true', volume types for the root disk of this particular worker node. If left empty, the volume type specified in 'root_disk_volume_type' will be used."
-}
-
-variable "gateway_root_disk_volume_size" {
-  type = number
-  default = 10
-  description = "If 'create_root_disk_on_volume=true' and the gateway flavor does not specify a disk size, the root disk volume will have this size."
-}
-
-variable "gateway_root_disk_volume_type" {
-  type        = string
-  default     = ""
-  description = "If 'create_root_disk_on_volume=true', set the volume type of the root disk volume for Gateways. Can't be configured separately for each instance. If left empty, the volume type specified in 'root_disk_volume_type' will be used."
-}
-
-variable "default_master_root_disk_size" {
-  type = number
-  default = 50
-  description = "If 'create_root_disk_on_volume=true', the master flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size."
-}
-
-variable "default_worker_root_disk_size" {
-  type = number
-  default = 50
-  description = "If 'create_root_disk_on_volume=true', the worker flavor does not specify a disk size and no specific value has been given, the root disk volume will have this size."
 }
 
 variable "network_mtu" {
@@ -264,6 +118,148 @@ variable "gitlab_state_name" {
   type = string
   default = ""
   description = "If 'gitlab_backend=true', the terraform state file will have this name."
+}
+
+
+variable "gateway_count" {
+  type = number
+  default = 0  # variables can't be used here
+  description = "Amount of gateway nodes to create. (default: 0 --> one for each availability zone when 'spread_gateways_across_azs=true', 3 otherwise)"
+}
+locals {
+  gateway_count = (
+    var.gateway_count == 0 ? (var.spread_gateways_across_azs ? length(var.azs) : 3)
+    : var.gateway_count
+  )
+}
+
+variable "gateway_defaults" {
+  description = <<-EOT
+    Default attributes for gateway nodes
+
+    'root_disk_size' and 'root_disk_volume_type' only apply if 'create_root_disk_on_volume=true'.
+    If 'root_disk_volume_type' is left empty the default of the IaaS environment will be used.
+  EOT
+
+  type = object({              # --- template spec ---
+    common_name                = optional(string, "gw-")
+    image                      = optional(string, "Debian 12 (bookworm)")
+    flavor                     = optional(string, "XS")
+    root_disk_size             = optional(number, 10)
+    root_disk_volume_type      = optional(string, "")
+  })
+  default = {                  # --- default template ---
+    common_name                = "gw-"
+    image                      = "Debian 12 (bookworm)"
+    flavor                     = "XS"
+    root_disk_size             = 10
+    root_disk_volume_type      = ""
+  }
+
+  validation {
+     condition     = var.gateway_defaults.root_disk_size != 0
+     error_message = "Gateway 'root_disk_size' is zero"
+  }
+}
+
+variable "master_defaults" {
+  description = <<-EOT
+    Default attributes for control plane nodes
+
+    'root_disk_size' and 'root_disk_volume_type' only apply if 'create_root_disk_on_volume=true'.
+    If 'root_disk_volume_type' is left empty the default of the IaaS environment will be used.
+  EOT
+
+  type = object({              # --- template spec ---
+    image                      = optional(string, "Ubuntu 22.04 LTS x64")
+    flavor                     = optional(string, "M")
+    root_disk_size             = optional(number, 50)
+    root_disk_volume_type      = optional(string, "")
+  })
+  default = {                  # --- default template ---
+    image                      = "Ubuntu 22.04 LTS x64"
+    flavor                     = "M"
+    root_disk_size             = 50
+    root_disk_volume_type      = ""
+  }
+
+  validation {
+     condition     = var.master_defaults.root_disk_size != 0
+     error_message = "Master 'root_disk_size' is zero"
+  }
+}
+
+variable "worker_defaults" {
+  description = <<-EOT
+    Default attributes for worker nodes
+
+    'root_disk_size' and 'root_disk_volume_type' only apply if 'create_root_disk_on_volume=true'.
+    If 'root_disk_volume_type' is left empty the default of the IaaS environment will be used.
+
+    Leaving 'anti_affinity_group' empty means to not join any anti affinity group
+  EOT
+
+  type = object({              # --- template spec ---
+    image                      = optional(string, "Ubuntu 22.04 LTS x64")
+    flavor                     = optional(string, "M")
+    root_disk_size             = optional(number, 50)
+    root_disk_volume_type      = optional(string, "")
+    anti_affinity_group        = optional(string)
+  })
+  default = {                  # --- default template ---
+    image                      = "Ubuntu 22.04 LTS x64"
+    flavor                     = "M"
+    root_disk_size             = 50
+    root_disk_volume_type      = ""
+  }
+
+  validation {
+     condition     = var.worker_defaults.root_disk_size != 0
+     error_message = "Worker 'root_disk_size' is zero"
+  }
+}
+
+
+variable "nodes" {
+  description = <<-EOT
+    User defined list of control plane and worker nodes to be created with specified values
+
+    The list must contain at least one control plane node.
+    'role' must be one of: "master", "worker".
+    'anti_affinity_group' must not be set when role!="worker"
+    Leaving 'anti_affinity_group' empty means to not join any anti affinity group
+  EOT
+
+  type = map(
+    object({
+      role                     = string            # one of: 'master', 'worker'
+      image                    = optional(string)
+      flavor                   = optional(string)
+      az                       = optional(string)
+      root_disk_size           = optional(number)
+      root_disk_volume_type    = optional(string)
+      anti_affinity_group      = optional(string)
+    })
+  )
+  default = {}  # default: create no nodes
+
+  validation {  # Require at least one master node
+    condition     = length([for x in var.nodes: x if x.role == "master"]) >= 1
+    error_message = "At least one node with role=master must be given."
+  }
+  validation {  # Validate role
+    condition     = alltrue([for x in var.nodes: contains(["master", "worker"], x.role)])
+    error_message = "Invalid node role: Must be 'master' or 'worker'."
+  }
+  # Validate worker node attributes are not used for master nodes
+  validation {
+    condition     = alltrue([for x in var.nodes: x.anti_affinity_group == null if x.role == "master"])
+    error_message = "'anti_affinity_group' must not be set for master nodes"
+  }
+}
+
+locals {
+  nodes_prefix = (var.cluster_name == "" ? "" : "${var.cluster_name}-")
 }
 
 # ANCHOR_END: terraform_variables
