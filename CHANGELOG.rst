@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v7.0.1 (2024-08-26)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- kube-state-metrics not being able to read namespace labels has been fixed (`!1438 <https://gitlab.com/yaook/k8s/-/merge_requests/1438>`_)
+
+
 v7.0.0 (2024-08-22)
 -------------------
 
