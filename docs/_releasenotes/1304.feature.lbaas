@@ -1,9 +1,0 @@
-Support for ch-k8s-lbaas v0.8.0 and v0.9.0 has been added.
-The ch-k8s-lbaas version is now an optional variable. To ensure
-the latest supported version is used, one can simply unset it.
-
-.. code:: console
-
-  $ tomlq --in-place --toml-output 'del(."ch-k8s-lbaas".version)' config/config.toml
-
-.

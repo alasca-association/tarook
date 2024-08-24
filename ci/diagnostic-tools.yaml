@@ -8,6 +8,8 @@
   script:
   # Spawn and test cluster
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
+  - ./managed-k8s/actions/k8s-login.sh
+  - export KUBECONFIG="$(pwd)/etc/admin.conf"
   - kubectl taint node ci-worker-gpu-0 k8s.yaook.cloud/gpu-node=true:NoSchedule-
   - kubectl taint node ci-worker-storage-0 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
   - kubectl taint node ci-worker-storage-1 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
@@ -49,7 +51,6 @@ sonobuoy-tests:
   stage: diagnostic-tools
   retry: 1    # because this test lasts hours and could block the CI for a significant amount of time
   variables:
-    KUBECONFIG: etc/admin.conf
     # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
     # so we need to reference the default vars here (only one level of nesting is allowed)
     WG_COMPANY_USERS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, WG_COMPANY_USERS]

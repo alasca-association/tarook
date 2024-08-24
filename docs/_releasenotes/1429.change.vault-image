@@ -1,1 +1,0 @@
-The vault image used in the CI and for local development has been changed to "hashicorp/vault".

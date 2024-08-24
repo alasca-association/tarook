@@ -19,6 +19,94 @@ earlier changes.
 
 .. towncrier release notes start
 
+v7.0.0 (2024-08-22)
+-------------------
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+- The dual stack support has been reworked and fixed.
+  The variable ``dualstack_support`` has been split into two variables,
+  ``ipv4_enabled`` (defaults to true) and ``ipv6_enabled`` (defaults to false)
+  to allow ipv6-only deployments and a more fine-granular configuration.
+
+  The following configuration changes are recommended, but not mandatory:
+
+  .. code:: diff
+
+    [terraform]
+    -dualstack_support = false
+    +ipv6_enabled = false
+
+  Existing clusters running on OpenStack must execute the Terraform stage once:
+
+  .. code:: console
+
+    $ ./managed-k8s/actions/apply-terraform.sh
+
+  to re-generate the inventory and hosts file for Ansible. (`!1304 <https://gitlab.com/yaook/k8s/-/merge_requests/1304>`_)
+
+
+New Features
+~~~~~~~~~~~~
+
+- Support for ch-k8s-lbaas v0.8.0 and v0.9.0 has been added.
+  The ch-k8s-lbaas version is now an optional variable. To ensure
+  the latest supported version is used, one can simply unset it.
+
+  .. code:: console
+
+    $ tomlq --in-place --toml-output 'del(."ch-k8s-lbaas".version)' config/config.toml
+
+  . (`!1304 <https://gitlab.com/yaook/k8s/-/merge_requests/1304>`_)
+- Introduce support for setting remote write targets (``[[remote_writes]]``) for Prometheus (`!1396 <https://gitlab.com/yaook/k8s/-/merge_requests/1396>`_)
+- Add new modules ``http_api`` and ``http_api_insecure`` for Blackbox exporter allowing status codes 200, 300, 401 to be returned for http probes. ``http_api_insecure`` additionally doesn't care for the issuer of a certificate. (`!1420 <https://gitlab.com/yaook/k8s/-/merge_requests/1420>`_)
+- The default version for rook/Ceph has been bumped to v1.14.9. (`!1430 <https://gitlab.com/yaook/k8s/-/merge_requests/1430>`_)
+
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- The sysctl settings ``fs.inotify.max_user_instances``, ``fs.inotify.max_user_watches`` and ``vm.max_map_count`` are now also adjusted on master nodes. (`!1419 <https://gitlab.com/yaook/k8s/-/merge_requests/1419>`_)
+- The vault image used in the CI and for local development has been changed to "hashicorp/vault". (`!1429 <https://gitlab.com/yaook/k8s/-/merge_requests/1429>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- `!1426 <https://gitlab.com/yaook/k8s/-/merge_requests/1426>`_
+
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- We now explain our release withdrawal procedure
+  in the :doc:`Release and Versioning Policy </developer/explanation/release-and-versioning-policy>` (`!1376 <https://gitlab.com/yaook/k8s/-/merge_requests/1376>`_)
+- The documentation now links to the latest version of the Calico docs
+  instead of a specific version (where possible). (`!1408 <https://gitlab.com/yaook/k8s/-/merge_requests/1408>`_)
+- The :doc:`generated Terraform docs </developer/reference/terraform-docs>` was updated. (`!1434 <https://gitlab.com/yaook/k8s/-/merge_requests/1434>`_)
+
+
+Deprecations and Removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- The "global monitoring" functionality has been dropped.
+  It was a provider-specific feature and has been dropped
+  as the LCM should be kept as general as possible. (`!1270 <https://gitlab.com/yaook/k8s/-/merge_requests/1270>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- `!1400 <https://gitlab.com/yaook/k8s/-/merge_requests/1400>`_, `!1403 <https://gitlab.com/yaook/k8s/-/merge_requests/1403>`_, `!1404 <https://gitlab.com/yaook/k8s/-/merge_requests/1404>`_, `!1406 <https://gitlab.com/yaook/k8s/-/merge_requests/1406>`_, `!1409 <https://gitlab.com/yaook/k8s/-/merge_requests/1409>`_, `!1411 <https://gitlab.com/yaook/k8s/-/merge_requests/1411>`_, `!1421 <https://gitlab.com/yaook/k8s/-/merge_requests/1421>`_, `!1422 <https://gitlab.com/yaook/k8s/-/merge_requests/1422>`_, `!1425 <https://gitlab.com/yaook/k8s/-/merge_requests/1425>`_, `!1427 <https://gitlab.com/yaook/k8s/-/merge_requests/1427>`_, `!1428 <https://gitlab.com/yaook/k8s/-/merge_requests/1428>`_, `!1431 <https://gitlab.com/yaook/k8s/-/merge_requests/1431>`_
+
+
+Misc
+~~~~
+
+- `!1405 <https://gitlab.com/yaook/k8s/-/merge_requests/1405>`_, `!1407 <https://gitlab.com/yaook/k8s/-/merge_requests/1407>`_, `!1435 <https://gitlab.com/yaook/k8s/-/merge_requests/1435>`_
+
+
 v6.1.2 (2024-08-19)
 -------------------
 
