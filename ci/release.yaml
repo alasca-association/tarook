@@ -84,7 +84,6 @@ create-gitlab-release:
   release:                                         # See https://docs.gitlab.com/ee/ci/yaml/#release for available properties
     tag_name: "v$(cat ./version)"
     tag_message: "Release v$(cat ./version)"
-    name: "Release v$(cat ./version) of $CI_PROJECT_NAME"
     description: "Please have a look at the [Releasenotes](${CI_PAGES_URL}/${YAOOK_K8S_RELEASE_BRANCH_PREFIX}$(cat $VERSION_MAJOR_MINOR_FILE)/releasenotes.html) for current changes."
   needs: ["tag-release"]
   rules:
