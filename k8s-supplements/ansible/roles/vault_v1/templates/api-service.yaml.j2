@@ -9,18 +9,18 @@ metadata:
   namespace: "{{ yaook_vault_namespace }}"
 spec:
   internalTrafficPolicy: Cluster
-  {% if ipv4_enabled and ipv6_enabled %}
+{% if ipv4_enabled and ipv6_enabled %}
   ipFamilyPolicy: PreferDualStack
-  {% else %}
+{% else %}
   ipFamilyPolicy: SingleStack
-  {% endif %}
+{% endif %}
   ipFamilies:
-  {% if ipv4_enabled %}
+{% if ipv4_enabled %}
   - IPv4
-  {% endif %}
-  {% if ipv6_enabled %}
+{% endif %}
+{% if ipv6_enabled %}
   - IPv6
-  {% endif %}
+{% endif %}
   ports:
   - name: https
     port: 8250
