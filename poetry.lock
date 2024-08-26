@@ -27,13 +27,13 @@ ansible-core = ">=2.16.10,<2.17.0"
 
 [[package]]
 name = "ansible-compat"
-version = "24.7.0"
+version = "24.8.0"
 description = "Ansible compatibility goodies"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "ansible_compat-24.7.0-py3-none-any.whl", hash = "sha256:9f18ed1104e3affc716a95720bdd7e0c01bb1ecb0c316335fd23c31ade6e4582"},
-    {file = "ansible_compat-24.7.0.tar.gz", hash = "sha256:7bc7a0c20a505a1eb6ff9877071fe20330130429087da298e25099a14f70d02f"},
+    {file = "ansible_compat-24.8.0-py3-none-any.whl", hash = "sha256:cb06e037380e6789f50e0d31cf16bba02cf741c661d657f56c77c246ca600edc"},
+    {file = "ansible_compat-24.8.0.tar.gz", hash = "sha256:cfaadc63f4d85dcbf4788f7bcec2ca8563e7b5c9fd3058005efd7988f1c1722c"},
 ]
 
 [package.dependencies]
@@ -226,17 +226,17 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "boto3"
-version = "1.35.0"
+version = "1.35.5"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "boto3-1.35.0-py3-none-any.whl", hash = "sha256:ada32dab854c46a877cf967b8a55ab1a7d356c3c87f1c8bd556d446ff03dfd95"},
-    {file = "boto3-1.35.0.tar.gz", hash = "sha256:bdc242e3ea81decc6ea551b04b2c122f088c29269d8e093b55862946aa0fcfc6"},
+    {file = "boto3-1.35.5-py3-none-any.whl", hash = "sha256:2cef3aa476181395c260f4b6e6c5565e5a3022a874fb6b579d8e6b169f94e0b3"},
+    {file = "boto3-1.35.5.tar.gz", hash = "sha256:5724ddeda8e18c7614c20a09c20159ed87ff7439755cf5e250a1a3feaf9afb7e"},
 ]
 
 [package.dependencies]
-botocore = ">=1.35.0,<1.36.0"
+botocore = ">=1.35.5,<1.36.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.10.0,<0.11.0"
 
@@ -245,13 +245,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.35.0"
+version = "1.35.5"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.35.0-py3-none-any.whl", hash = "sha256:a3c96fe0b6afe7d00bad6ffbe73f2610953065fcdf0ed697eba4e1e5287cc84f"},
-    {file = "botocore-1.35.0.tar.gz", hash = "sha256:6ab2f5a5cbdaa639599e3478c65462c6d6a10173dc8b941bfc69b0c9eb548f45"},
+    {file = "botocore-1.35.5-py3-none-any.whl", hash = "sha256:8116b72c7ae845c195146e437e2afd9d17538a37b3f3548dcf67c12c86ba0742"},
+    {file = "botocore-1.35.5.tar.gz", hash = "sha256:3a0086c7124cb3b0d9f98563d00ffd14a942c3f9e731d8d1ccf0d3a1ac7ed884"},
 ]
 
 [package.dependencies]
@@ -801,13 +801,13 @@ license = ["ukkonen"]
 
 [[package]]
 name = "idna"
-version = "3.7"
+version = "3.8"
 description = "Internationalized Domain Names in Applications (IDNA)"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 files = [
-    {file = "idna-3.7-py3-none-any.whl", hash = "sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0"},
-    {file = "idna-3.7.tar.gz", hash = "sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc"},
+    {file = "idna-3.8-py3-none-any.whl", hash = "sha256:050b4e5baadcd44d760cedbd2b8e639f2ff89bbc7a5730fcc662954303377aac"},
+    {file = "idna-3.8.tar.gz", hash = "sha256:d838c2c0ed6fced7693d5e8ab8e734d5f8fda53a039c0164afb0b82e771e3603"},
 ]
 
 [[package]]
@@ -823,13 +823,13 @@ files = [
 
 [[package]]
 name = "importlib-metadata"
-version = "8.2.0"
+version = "8.4.0"
 description = "Read metadata from Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "importlib_metadata-8.2.0-py3-none-any.whl", hash = "sha256:11901fa0c2f97919b288679932bb64febaeacf289d18ac84dd68cb2e74213369"},
-    {file = "importlib_metadata-8.2.0.tar.gz", hash = "sha256:72e8d4399996132204f9a16dcc751af254a48f8d1b20b9ff0f98d4a8f901e73d"},
+    {file = "importlib_metadata-8.4.0-py3-none-any.whl", hash = "sha256:66f342cc6ac9818fc6ff340576acd24d65ba0b3efabb2b4ac08b598965a4a2f1"},
+    {file = "importlib_metadata-8.4.0.tar.gz", hash = "sha256:9a547d3bc3608b025f93d403fdd1aae741c24fbb8314df4b155675742ce303c5"},
 ]
 
 [package.dependencies]
@@ -842,18 +842,22 @@ test = ["flufl.flake8", "importlib-resources (>=1.3)", "jaraco.test (>=5.4)", "p
 
 [[package]]
 name = "importlib-resources"
-version = "6.4.3"
+version = "6.4.4"
 description = "Read resources from Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "importlib_resources-6.4.3-py3-none-any.whl", hash = "sha256:2d6dfe3b9e055f72495c2085890837fc8c758984e209115c8792bddcb762cd93"},
-    {file = "importlib_resources-6.4.3.tar.gz", hash = "sha256:4a202b9b9d38563b46da59221d77bb73862ab5d79d461307bcb826d725448b98"},
+    {file = "importlib_resources-6.4.4-py3-none-any.whl", hash = "sha256:dda242603d1c9cd836c3368b1174ed74cb4049ecd209e7a1a0104620c18c5c11"},
+    {file = "importlib_resources-6.4.4.tar.gz", hash = "sha256:20600c8b7361938dc0bb2d5ec0297802e575df486f5a544fa414da65e13721f7"},
 ]
 
 [package.extras]
+check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1)"]
+cover = ["pytest-cov"]
 doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-test = ["jaraco.test (>=5.4)", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-ruff (>=0.2.1)", "zipp (>=3.17)"]
+enabler = ["pytest-enabler (>=2.2)"]
+test = ["jaraco.test (>=5.4)", "pytest (>=6,!=8.1.*)", "zipp (>=3.17)"]
+type = ["pytest-mypy"]
 
 [[package]]
 name = "iso8601"
@@ -1007,12 +1011,12 @@ adal = ["adal (>=1.0.2)"]
 
 [[package]]
 name = "kubernetes-validate"
-version = "1.30.0"
+version = "1.31.0"
 description = "validates kubernetes resource definitions against schemas"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "kubernetes_validate-1.30.0.tar.gz", hash = "sha256:a164d2e3628fdf866b90abeccef864a06b388bb9a67481a798cd0645a9a5313c"},
+    {file = "kubernetes_validate-1.31.0.tar.gz", hash = "sha256:dfac1011e4d93e1b3633272b7fb1ecbfa6721c9393662859ccc252a7c4d8c555"},
 ]
 
 [package.dependencies]
@@ -1478,13 +1482,13 @@ stevedore = ">=1.20.0"
 
 [[package]]
 name = "oslo-config"
-version = "9.5.0"
+version = "9.6.0"
 description = "Oslo Configuration API"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "oslo.config-9.5.0-py3-none-any.whl", hash = "sha256:f5e9a6848c35a1c8975677d623ffcf31bbb7177d14cb8f43505b2a4c679dcdd0"},
-    {file = "oslo.config-9.5.0.tar.gz", hash = "sha256:aa500044886b6c55f76577cb5a93492a4596c5f9283376760ea7852cc49c99a3"},
+    {file = "oslo.config-9.6.0-py3-none-any.whl", hash = "sha256:7bcd6c3d9dbdd6e4d49a9a6dc3d10ae96073ebe3175280031adc0cbc76500967"},
+    {file = "oslo.config-9.6.0.tar.gz", hash = "sha256:9f05ef70e48d9a61a8d0c9bed389da24f2ef5a89df5b6e8deb7c741d6113667e"},
 ]
 
 [package.dependencies]
@@ -1502,42 +1506,42 @@ test = ["bandit (>=1.7.0,<1.8.0)", "coverage (>=4.0)", "fixtures (>=3.0.0)", "ha
 
 [[package]]
 name = "oslo-context"
-version = "5.5.0"
+version = "5.6.0"
 description = "Oslo Context library"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "oslo.context-5.5.0-py3-none-any.whl", hash = "sha256:aa858a42aac9858bf259bc0804513a8f9bf36916f9cfc8937708f6c90ad68259"},
-    {file = "oslo.context-5.5.0.tar.gz", hash = "sha256:eae0317b29928f1934df4c60b860fe8625247cb297c5cc62fef8eb5827b12fac"},
+    {file = "oslo.context-5.6.0-py3-none-any.whl", hash = "sha256:51bfab0a3915dcea3823612fdd0737e839d33c8551168ae8e1bcfdd07ba60985"},
+    {file = "oslo.context-5.6.0.tar.gz", hash = "sha256:5222c32636be070a230df9d3141a0b27a95f0a3b6978f4c1485bcada47a4c3cb"},
 ]
 
 [package.dependencies]
 debtcollector = ">=1.2.0"
-pbr = ">=2.0.0,<2.1.0 || >2.1.0"
+pbr = ">=2.0.0"
 
 [[package]]
 name = "oslo-i18n"
-version = "6.3.0"
+version = "6.4.0"
 description = "Oslo i18n library"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "oslo.i18n-6.3.0-py3-none-any.whl", hash = "sha256:698eb5c63a01359ed6d91031d6331098190d38be0bdda7d270264d6f86bc79e7"},
-    {file = "oslo.i18n-6.3.0.tar.gz", hash = "sha256:64a251edef8bf1bb1d4e6f78d377e149d4f15c1a9245de77f172016da6267444"},
+    {file = "oslo.i18n-6.4.0-py3-none-any.whl", hash = "sha256:5417778ba3b1920b70b99859d730ac9bf37f18050dc28af890c66345ba855bc0"},
+    {file = "oslo.i18n-6.4.0.tar.gz", hash = "sha256:66e04c041e9ff17d07e13ec7f48295fbc36169143c72ca2352a3efcc98e7b608"},
 ]
 
 [package.dependencies]
-pbr = ">=2.0.0,<2.1.0 || >2.1.0"
+pbr = ">=2.0.0"
 
 [[package]]
 name = "oslo-log"
-version = "6.1.1"
+version = "6.1.2"
 description = "oslo.log library"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "oslo.log-6.1.1-py3-none-any.whl", hash = "sha256:f7f162ab03dc3f0728d8abee2806677146a2704aa22d4b3d7a9e4d1c1c68a26e"},
-    {file = "oslo.log-6.1.1.tar.gz", hash = "sha256:e35a12cfe4cad13ffb0aeda99fcca20a705d0f694a84c2ef7b07b45960f88fb4"},
+    {file = "oslo.log-6.1.2-py3-none-any.whl", hash = "sha256:8e6f47800a40271a7d6e40948a6717d76fadb28ef54d27b93a3a587aed2f8981"},
+    {file = "oslo.log-6.1.2.tar.gz", hash = "sha256:f768047df9d706c484dd6665dcbbea289021d48cb7ce5abf7a1f69a09491f5fe"},
 ]
 
 [package.dependencies]
@@ -1573,13 +1577,13 @@ tzdata = {version = ">=2022.4", markers = "python_version >= \"3.9\""}
 
 [[package]]
 name = "oslo-utils"
-version = "7.2.0"
+version = "7.3.0"
 description = "Oslo Utility library"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "oslo.utils-7.2.0-py3-none-any.whl", hash = "sha256:53ce2d88fd1e9035e6be18c53447353d3e92ea0473d88272f43dc334ea9295af"},
-    {file = "oslo.utils-7.2.0.tar.gz", hash = "sha256:94f8053391a33502dab4d84465403262ca19ffd8cfd29a1a5ea3c8aa620ef610"},
+    {file = "oslo.utils-7.3.0-py3-none-any.whl", hash = "sha256:a25c0a3270f71fcfa822a72c3f74bd61fe41e97240812986695cd32d4a171fb1"},
+    {file = "oslo.utils-7.3.0.tar.gz", hash = "sha256:59a5d3e4e7bbc78d801ccebc2b823e429b624c12bb6e3b6e76f71c29f2bf21df"},
 ]
 
 [package.dependencies]
@@ -1751,13 +1755,13 @@ windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "pyparsing"
-version = "3.1.2"
+version = "3.1.4"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
 optional = false
 python-versions = ">=3.6.8"
 files = [
-    {file = "pyparsing-3.1.2-py3-none-any.whl", hash = "sha256:f9db75911801ed778fe61bb643079ff86601aca99fcae6345aa67292038fb742"},
-    {file = "pyparsing-3.1.2.tar.gz", hash = "sha256:a1bac0ce561155ecc3ed78ca94d3c9378656ad4c94c1270de543f621420f94ad"},
+    {file = "pyparsing-3.1.4-py3-none-any.whl", hash = "sha256:a6a7ee4235a3f944aa1fa2249307708f893fe5717dc603503c6c7969c070fb7c"},
+    {file = "pyparsing-3.1.4.tar.gz", hash = "sha256:f86ec8d1a83f11977c9a6ea7598e8c27fc5cddfa5b07ea2241edbbde1d7bc032"},
 ]
 
 [package.extras]
@@ -2627,17 +2631,17 @@ test = ["pytest"]
 
 [[package]]
 name = "stevedore"
-version = "5.2.0"
+version = "5.3.0"
 description = "Manage dynamic plugins for Python applications"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "stevedore-5.2.0-py3-none-any.whl", hash = "sha256:1c15d95766ca0569cad14cb6272d4d31dae66b011a929d7c18219c176ea1b5c9"},
-    {file = "stevedore-5.2.0.tar.gz", hash = "sha256:46b93ca40e1114cea93d738a6c1e365396981bb6bb78c27045b7587c9473544d"},
+    {file = "stevedore-5.3.0-py3-none-any.whl", hash = "sha256:1efd34ca08f474dad08d9b19e934a22c68bb6fe416926479ba29e5013bcc8f78"},
+    {file = "stevedore-5.3.0.tar.gz", hash = "sha256:9a64265f4060312828151c204efbe9b7a9852a0d9228756344dbc7e4023e375a"},
 ]
 
 [package.dependencies]
-pbr = ">=2.0.0,<2.1.0 || >2.1.0"
+pbr = ">=2.0.0"
 
 [[package]]
 name = "subprocess-tee"
