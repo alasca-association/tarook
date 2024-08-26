@@ -1,1 +1,0 @@
-kube-state-metrics not being able to read namespace labels has been fixed
