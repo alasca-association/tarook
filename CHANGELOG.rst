@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v7.0.2 (2024-08-26)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug has been fixed which prevented the configuration of an exposed Vault service. (`!1448 <https://gitlab.com/yaook/k8s/-/merge_requests/1448>`_)
+
+
 v7.0.1 (2024-08-26)
 -------------------
 
