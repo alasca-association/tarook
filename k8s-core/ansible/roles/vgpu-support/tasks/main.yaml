@@ -5,8 +5,8 @@
   become: true
   when:
     - k8s_virtualize_gpu | default(False)
-    - node_has_gpu
-    - _allow_disruption or k8s_install_status == "not_initialized"
+    - ansible_local['gpu-node']['node_has_gpu'] | bool
+    - _allow_disruption or ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
     - ansible_facts['pkg_mgr'] == "apt"
   block:
     - name: Get CPU information  # noqa no-changed-when

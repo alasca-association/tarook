@@ -21,4 +21,20 @@
     tags:
     - haproxy
     - frontend
+
+- name: Set static fact that frontend node is initialized
+  hosts: frontend
+  gather_facts: false
+  tasks:
+  - name: Set static fact that frontend node is initialized
+    become: true
+    vars:
+      content:
+        frontend_install_status: "initialized"
+    copy:
+      dest: /etc/ansible/facts.d/frontend-initialized.fact
+      owner: root
+      group: root
+      mode: 0644
+      content: "{{ content | to_json }}"
 ...

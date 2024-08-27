@@ -4,16 +4,14 @@
   vars:
     target_hosts: frontend
 
-- name: Check if frontend nodes are initialized
+- name: Group frontend nodes by initialization status
   hosts: frontend
-  gather_facts: false
-  vars_files:
-  - vars/disruption.yaml
-  - vars/retries.yaml
+  gather_facts: true
   tags: update-frontend-nodes
-  roles:
-  - role: helpers/is-frontend-initialized
-    tags: update-system
+  tasks:
+  - name: Group frontend nodes by initialization status
+    ansible.builtin.group_by:
+      key: "{{ ansible_local['frontend-initialized']['frontend_install_status'] | default('not_initialized') }}_frontend_nodes"
 
 - name: Upgrade uninitialized frontend nodes
   gather_facts: true

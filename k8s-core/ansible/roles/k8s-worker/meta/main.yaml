@@ -3,7 +3,5 @@ galaxy_info:
   license: Apache-2.0
   author: Yaook Authors
 dependencies:
-- helpers/is-k8s-installed
-- helpers/gpu-support-detection
 - helpers/vault-approle
 ...

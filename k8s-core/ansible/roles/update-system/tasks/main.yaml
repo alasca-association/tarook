@@ -46,7 +46,10 @@
   delay: "{{ network_error_delay }}"
   when:
     - ansible_pkg_mgr == 'apt'
-    - _allow_disruption or k8s_install_status == 'not_initialized' or frontend_install_status == 'not_initialized'
+    - |
+      _allow_disruption
+      or ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
+      or ansible_local['frontend-initialized']['frontend_install_status'] | default('not_initialized') != 'initialized'
 
 - name: Reboot block  # noqa no-handler
   become: true

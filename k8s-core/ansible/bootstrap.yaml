@@ -16,6 +16,14 @@
     apt:
       update_cache: true
     tags: always
+  - name: Ensure static fact directory exists
+    become: true
+    file:
+      state: directory
+      path: /etc/ansible/facts.d
+      owner: root
+      group: root
+      mode: u=rwx,go=rx
   roles:
   - role: bootstrap/journald
     tags:
@@ -65,4 +73,17 @@
     until: update_apt is not failed
     retries: "{{ network_error_retries }}"
     delay: "{{ network_error_delay }}"
+
+- name: Detect GPU
+  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  vars_files:
+  - vars/retries.yaml
+  roles:
+  - role: bootstrap/gpu-support-detection
+    when:
+    - "'gateways' not in group_names"
+    - ansible_local['gpu-node']['node_has_gpu'] is not defined
+    tags:
+    - bootstrap
+    - gpu-support-detection
 ...

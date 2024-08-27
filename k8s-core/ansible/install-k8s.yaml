@@ -14,12 +14,12 @@
   - role: k8s-networking
     tags: k8s-networking
   - role: nvidia-cuda-drivers
-    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool
     tags:
     - gpu-support
     - nvidia-cuda-drivers
   - role: nvidia-container-toolkit
-    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool
     tags:
     - gpu-support
     - nvidia-container-toolkit
@@ -50,6 +50,7 @@
   serial: 1
   roles:
   - role: etcd-clean-stale-members
+    when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') == 'initialized'
     tags: etcd-clean-stale-members
 
 - name: Spawn the K8s control plane

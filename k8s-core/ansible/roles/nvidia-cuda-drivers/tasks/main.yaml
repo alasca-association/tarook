@@ -1,7 +1,7 @@
 ---
 - name: Install GPU drivers
   become: true
-  when: node_has_gpu
+  when: ansible_local['gpu-node']['node_has_gpu'] | bool
   block:
   # https://docs.nvidia.com/datacenter/cloud-native/kubernetes/k8s-containerd.html#disable-nouveau
   - name: Blacklist Nouveau driver
