@@ -1,7 +1,26 @@
 ---
-- name: Connect to, prepare & bootstrap all nodes
+- name: Connect to all nodes
   import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
   vars:
     target_hosts: all:!orchestrator
+
+- name: Fail if node got not bootstrapped once, yet
+  any_errors_fatal: true
+  hosts: all:!orchestrator
+  tasks:
+  - name: Fail if node got not bootstrapped once, yet
+    when: not ansible_local['bootstrap']['bootstrapped'] | default(False) | bool
+    fail:
+      msg: |
+        ERROR
+
+        We're at an advanced stage of the rollout,
+        but the node did not get bootstrapped yet!
+        Please ensure the k8s-core/bootstrap playbook
+        is executed at least once against every node
+        before proceeding.
+        This is automatically done if the install-all
+        playbook of either k8s-core or k8s-supplements is executed.
+
 - name: Run custom playbook
   import_playbook: "{{ ansible_k8s_custom_playbook }}"

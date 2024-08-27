@@ -7,7 +7,6 @@
     name: bootstrap/vault-cli
 
 - name: Onboard node to vault
-  when: node_vault_onboarded is not defined
   block:
   - name: Read our token roles
     delegate_to: "{{ groups['orchestrator'] | first }}"
@@ -331,9 +330,4 @@
 
         Token info: {{ token_info }}
     when: token_info is failed or not (token_info.data.data.policies | default([]))
-
-  - name: Set fact that we're onboarded
-    set_fact:
-      node_vault_onboarded: true
-      cacheable: true
 ...
