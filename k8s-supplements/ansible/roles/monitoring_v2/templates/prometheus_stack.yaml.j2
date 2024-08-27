@@ -144,6 +144,11 @@ grafana:
           folder: 'managed-dashboards'
           options:
             path: /var/lib/grafana/dashboards/managed
+  grafana.ini:
+    server:
+{% if monitoring_grafana_root_url | length > 0 %}
+      root_url: {{ monitoring_grafana_root_url | to_json }}
+{% endif %}
 
 ##
 kubeApiServer:
