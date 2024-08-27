@@ -134,9 +134,15 @@
 
 - name: Add monitoring
   ansible.builtin.import_tasks: monitoring.yaml
-  when: k8s_monitoring_enabled | bool
+  when:
+  - k8s_monitoring_enabled | bool
+  - yaook_vault_root_token is defined
+  - yaook_vault_root_token | length > 0
 
 - name: Add backups
-  when: yaook_vault_enable_backups
   ansible.builtin.include_tasks: backup.yaml
+  when:
+  - yaook_vault_enable_backups | bool
+  - yaook_vault_root_token is defined
+  - yaook_vault_root_token | length > 0
 ...
