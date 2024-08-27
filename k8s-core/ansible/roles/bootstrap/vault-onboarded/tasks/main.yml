@@ -1,4 +1,11 @@
 ---
+# Do not make it an explicit dependency because otherwise
+# it is executed every time the "get_cert.yml" task is included
+# somewhere. Consider refactoring the code instead.
+- name: Install vault-cli
+  include_role:
+    name: bootstrap/vault-cli
+
 - name: Onboard node to vault
   when: node_vault_onboarded is not defined
   block:
