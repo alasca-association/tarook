@@ -1,0 +1,50 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vault-metrics-token-renewer
+  namespace: "{{ yaook_vault_namespace }}"
+spec:
+  # The job to run at 1:00 PM (13:00) every Thursday
+  schedule: "0 13 * * 4"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: vault-token-renewal-metrics-request
+            image: alpine/k8s:{{ k8s_version }}
+            env:
+              - name: VAULT_ADDR
+                value: "vault.{{ yaook_vault_namespace }}.svc.cluster.local:8200"
+              - name: VAULT_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: prometheus-bearer-token
+                    key: token
+            volumeMounts:
+            - name: ca-cert
+              mountPath: /certs
+              readOnly: true
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Renew periodic Vault token
+                RESPONSE=$(curl --cacert /certs/ca.crt -s -X POST -H "X-Vault-Token: $VAULT_TOKEN" \
+                    https://$VAULT_ADDR/v1/auth/token/renew-self)
+              # Check if renewal was successful
+                if echo $RESPONSE | jq -e '.auth.renewable == true' > /dev/null; then
+                  echo "Token renewed successfully: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+                else
+                  echo "Token renewal failed: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+                  exit 1
+                fi
+          volumes:
+          - name: ca-cert
+            secret:
+              secretName: vault-cert-internal
+              items:
+              - key: ca.crt
+                path: ca.crt
+          restartPolicy: OnFailure
