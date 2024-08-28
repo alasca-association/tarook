@@ -347,6 +347,10 @@ enabled = false # •ᴗ•
 #service_subnet = "10.96.0.0/12"
 # service_subnet_v6 = "fdff:3::/108"
 
+# If enabled, the service cluster IP range will be announced to external
+# BGP peers. By default, only per-node pod networks are announced.
+#bgp_announce_service_ips = false
+
 # calico:
 # High-performance, pure IP networking, policy engine. Calico provides
 # layer 3 networking capabilities and associates a virtual router with each node.
