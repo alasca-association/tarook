@@ -435,7 +435,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 #custom_ceph_version = ""
 
 # The helm chart version to be used.
-#version = "v1.14.9"
+#version = "v1.15.2"
 
 # Enable the ceph dashboard for viewing cluster status
 #dashboard = false

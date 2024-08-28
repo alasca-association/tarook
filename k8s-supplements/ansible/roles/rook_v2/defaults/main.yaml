@@ -45,7 +45,7 @@ rook_pools:
     replicated: 1
 rook_nodeplugin_toleration: true
 rook_use_host_networking: false
-rook_version: "v1.14.9" # default
+rook_version: "v1.15.2" # default
 rook_scheduling_key: null
 rook_mon_scheduling_key: null
 rook_mgr_scheduling_key: null
