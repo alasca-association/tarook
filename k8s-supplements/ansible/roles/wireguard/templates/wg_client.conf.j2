@@ -7,3 +7,4 @@ Address = {%- if ipv4_enabled and endpoint.ip_cidr is defined %}{{ item['ips'][e
 PublicKey = {{ lookup('file', (wg_local_pub_path, keyfile_name) | path_join ) }}
 Endpoint = {% if ipv4_enabled +%}{{ networking_floating_ip }}:{{ endpoint.port }}{% endif +%}
 AllowedIPs = {% if ipv4_enabled and endpoint.ip_cidr is defined %}{{ endpoint.ip_cidr }}, {{ subnet_cidr }}{% endif +%}{%- if ipv6_enabled and endpoint.ipv6_cidr is defined +%}, {{ endpoint.ipv6_cidr }}, {{ subnet_v6_cidr }}{% endif +%}
+PersistentKeepalive = 25
