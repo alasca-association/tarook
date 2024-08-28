@@ -6,6 +6,15 @@ metadata:
 spec:
   nodeToNodeMeshEnabled: false
   asNumber: {{ k8s_network_bgp_worker_as | to_json }}
+{% if k8s_network_bgp_announce_service_ips %}
+  serviceClusterIPs:
+{% if ipv4_enabled %}
+  - cidr: {{ k8s_network_service_subnet | to_json }}
+{% endif %}
+{% if ipv6_enabled %}
+  - cidr: {{ k8s_network_service_subnet_v6 | to_json }}
+{% endif %}
+{% endif %}
 ---
 kind: BGPPeer
 apiVersion: projectcalico.org/v3
