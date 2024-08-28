@@ -70,3 +70,10 @@ The yaook/k8s LCM exclusively uses HashiCorp Vault
 as secrets management backend.
 For more information, please refer to:
 :doc:`/user/explanation/services/vault`.
+
+----
+
+.. note::
+
+   Please be aware that the supplied Kubernetes distribution
+   is not hardened for multitenancy.
