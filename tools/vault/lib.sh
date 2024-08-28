@@ -483,7 +483,7 @@ function import_ipsec_eap_psk() {
 function import_thanos_config() {
     thanos_enabled="$(tomlq '."k8s-service-layer".prometheus.use_thanos | if (.|type)=="boolean" then . else false end' "${config_file}")"
     manage_thanos_bucket="$(tomlq '."k8s-service-layer".prometheus.manage_thanos_bucket | if (.|type)=="boolean" then . else true end' "${config_file}")"
-    thanos_config_file="$(tomlq '."k8s-service-layer".prometheus.thanos_objectstorage_config_file | if (.|type)=="string" then . else "" end' "${config_file}")"
+    thanos_config_file="$(tomlq -r '."k8s-service-layer".prometheus.thanos_objectstorage_config_file | if (.|type)=="string" then . else "" end' "${config_file}")"
 
     if ! "$thanos_enabled"; then
         echo "Thanos is disabled."
@@ -493,25 +493,34 @@ function import_thanos_config() {
         echo "Thanos object storage is configured to be automatically managed"
         return;
     fi
-    if [ "${thanos_config_file}" == 'None' ]; then
+    if vault kv get "$cluster_path"/kv/thanos-config > /dev/null && [ "${thanos_config_file}" == 'None' ]; then
+        echo "A Thanos object storage configuration already has been stored in vault."
+        echo "There is no k8s-service-layer.prometheus.thanos_objectstorage_config_file configured"
+        echo "So it is assumed that configuration should not get updated"
+        return
+    fi
+    if vault kv get "$cluster_path"/kv/thanos-config > /dev/null && [ ! -f "config/$thanos_config_file" ]; then
+        echo "A Thanos object storage configuration already has been stored in vault."
+        echo "There is no file found at config/$thanos_config_file"
+        echo "So it is assumed that configuration should not get updated"
+        return
+    fi
+    if ! vault kv get "$cluster_path"/kv/thanos-config > /dev/null && [ "${thanos_config_file}" == 'None' ]; then
+        echo "No configuration stored in vault." >&2
         echo "No Thanos object storage configuration file configured." >&2
-        echo "Failing because automated mangement is disabled." >&2
+        echo "Therefore, failing because automated mangement is also disabled." >&2
         echo "Please check that you configured 'k8s-service-layer.prometheus.thanos_objectstorage_config_file' correctly" >&2
         exit 1
     fi
-    if ! thanos_config="$(yq --compact-output . config/"$thanos_config_file")"; then
+    if ! vault kv get "$cluster_path"/kv/thanos-config > /dev/null && [ ! -f "config/$thanos_config_file" ]; then
         echo "Failed to find Thanos object storage configuration at config/$thanos_config_file" >&2
+        echo "There is also nothing stored in Vault yet." >&2
         echo "Failing because automated mangement is disabled." >&2
         echo "Please check that you configured 'k8s-service-layer.prometheus.thanos_objectstorage_config_file' correctly" >&2
-        echo "And config/$thanos_config_file is a valid thanos client configuration" >&2
+        echo "and config/$thanos_config_file is a valid thanos client configuration" >&2
         exit 1
     fi
-    if vault kv get "$cluster_path"/kv/thanos-config > /dev/null; then
-        echo "A Thanos object storage configuration already has been stored in vault." >&2
-        echo "Please manually remove the existing data from vault," >&2
-        echo "if you want to import a new configuration file." >&2
-        exit 1
-    fi
+    thanos_config="$(yq --compact-output . config/"$thanos_config_file")"
     vault kv put "$cluster_path/kv/thanos-config" - <<<"$thanos_config"
     echo "Successfully imported Thanos object storage configuration into vault."
     echo "Removing Thanos object storage configuration file: config/$thanos_config_file"
