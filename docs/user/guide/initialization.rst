@@ -91,7 +91,15 @@ Install System Requirements
             experimental-features = nix-command flakes
 
          to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``
-      3. Run ``nix shell`` in this directory to enter an environment with all requirements available
+      3. (Optional) Add our binary cache so you won't have to build anything from source
+
+         .. code:: ini
+
+            extra-substituters = https://yaook.cachix.org
+            extra-trusted-public-keys = yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
+
+         to ``/etc/nix/nix.conf``
+      4. Run ``nix shell`` in this directory to enter an environment with all requirements available
          If you use direnv, it will automatically load all requirements once you enter the directory.
 
 We also strongly recommend installing and using:
