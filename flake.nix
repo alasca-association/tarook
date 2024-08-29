@@ -66,6 +66,9 @@
             ];
         };
         devShells.default = pkgs.mkShell {
+          buildInputs = dependencies.yk8s;
+        };
+        devShells.withInteractive = pkgs.mkShell {
           nativeBuildInputs = dependencies.interactive;
           buildInputs = dependencies.yk8s;
         };

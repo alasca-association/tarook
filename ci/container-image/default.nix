@@ -19,9 +19,9 @@ in {
     name = "image-root";
     paths =
       dependencies.yk8s
-      ++ dependencies.interactive
       ++ dependencies.ci
       ++ (with pkgs; [
+        bashInteractive
         fakeNss # provides /etc/passwd and /etc/group
         dockerTools.usrBinEnv
         dockerTools.caCertificates

@@ -1,0 +1,1 @@
+The devShell can now be selected with the env var ``YAOOK_K8S_DEVSHELL`` (defaulting to ``'default'``)
