@@ -52,10 +52,44 @@
         "type": "github"
       }
     },
+    "nixpkgs-terraform157": {
+      "locked": {
+        "lastModified": 1694118906,
+        "narHash": "sha256-XN5GagDT6y+5/+ztPzCn2h0HyWEsyJPZwJrMhmnRPmM=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "39ed4b64ba5929e8e9221d06b719a758915e619b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "39ed4b64ba5929e8e9221d06b719a758915e619b",
+        "type": "github"
+      }
+    },
+    "nixpkgs-vault1148": {
+      "locked": {
+        "lastModified": 1701876149,
+        "narHash": "sha256-urbRmKuTuwlvz2PnYVY06drHrzOSFx3siodoXWc7+MU=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "7cf8d6878561e8b2e4b1186f79f1c0e66963bdac",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "7cf8d6878561e8b2e4b1186f79f1c0e66963bdac",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-terraform157": "nixpkgs-terraform157",
+        "nixpkgs-vault1148": "nixpkgs-vault1148"
       }
     }
   },
