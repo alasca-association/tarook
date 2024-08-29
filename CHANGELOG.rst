@@ -19,6 +19,214 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.0.0 (2024-08-28)
+-------------------
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+- The YAOOK/k8s Terraform module now allows worker nodes
+  to be joined into individual anti affinity groups.
+
+  .. attention:: Action required
+
+     You must migrate your Terraform state
+     by running the migration script.
+
+     .. code:: shell
+
+        ./managed-k8s/actions/migrate-to-release.sh
+
+  _ (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
+- The yk8s Terraform module
+  does not build a default set of nodes (3 masters + 4 workers) anymore
+  when no nodes are given. (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
+- The automatic just-in-time migration of Terraform resources
+  from ``count`` to ``for_each`` introduced in July 2022
+  was removed in favor of a once-and-for-all migration.
+
+  .. code::
+
+      ./managed-k8s/actions/migrate-to-release.sh
+
+  _ (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
+- YAOOK/k8s Terraform does not implicitly assign
+  nodes to availability zones anymore
+  if actually none was configured for a node.
+
+  For all master and worker nodes,
+  availability zones must now be configured explicitly;
+  and ``[terraform].enable_az_management`` has been removed therefore.
+
+  Not configuring availability zones,
+  now leaves the choice to the cloud controller
+  which may or may not select one.
+  To achieve the same effect for gateway nodes,
+  turn off ``[terraform].spread_gateways_across_azs``.
+
+  .. attention:: Action required
+
+     To prevent Terraform from unneccessarily rebuilding master and worker nodes,
+     you must run the migration script.
+     This will determine each nodes' availability zone in the Terraform state
+     to set in the config for you.
+
+     .. code::
+
+         ./managed-k8s/actions/migrate-to-release.sh
+
+  _ (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
+- The format of the ``[terraform]`` config section changed significantly.
+
+  Terraform nodes are now to be configured as blocks of values
+  rather than across separate lists for each type of value.
+
+  Furthermore you now have control over the whole name of Terraform nodes,
+  see :ref:`the documentation <cluster-configuration.configuring-terraform>`
+  for further details.
+
+  .. code:: diff
+
+       [terraform]
+
+     - masters = 2
+     - master_names = ["X", "Y"]
+     - master_flavors = ["M", "M"]
+     - master_images = ["Ubuntu 20.04 LTS x64", "Ubuntu 22.04 LTS x64"]
+     - master_azs = ["AZ1", "AZ3"]
+     + #....
+     +
+     + [terraform.nodes.master-X]
+     + role     = "master"  # mandatory
+     + flavor   = "M"
+     + image    = "Ubuntu 20.04 LTS x64"
+     + az       = "AZ1"
+     + #....
+     +
+     + [terraform.nodes.worker-A]
+     + role     = "worker"  # mandatory
+     + flavor   = "S"
+     + image    = "Debian 12 (bookworm)"
+     + az       = "AZ3"
+       #....
+
+  The gateway/master/worker defaults are consolidated into blocks as well.
+
+  .. code:: diff
+
+       [terraform]
+
+     - gateway_image_name = "Debian 12 (bookworm)"
+     - gateway_flavor = "XS"
+     - default_master_image_name = "Ubuntu 22.04 LTS x64"
+     - default_master_flavor = "M"
+     - default_master_root_disk_size = 50
+     - default_worker_image_name = "Ubuntu 22.04 LTS x64"
+     - default_worker_flavor = "L"
+     - default_worker_root_disk_size = 100
+     + #....
+     +
+     + [terraform.gateway_defaults]
+     + image                      = "Debian 12 (bookworm)"
+     + flavor                     = "XS"
+     +
+     + [terraform.master_defaults]
+     + image                      = "Ubuntu 22.04 LTS x64"
+     + flavor                     = "M"
+     + root_disk_size             = 50
+     +
+     + [terraform.worker_defaults]
+     + image                      = "Ubuntu 22.04 LTS x64"
+     + flavor                     = "L"
+     + root_disk_size             = 100
+       #....
+
+  The worker anti affinity settings
+  ``[terraform].worker_anti_affinity_group_name``
+  and ``[terraform].worker_join_anti_affinity_group``
+  are merged into ``[terraform.workers.<name>].anti_affinity_group``
+  or ``[terraform.worker_defaults].anti_affinity_group``.
+  Unset means "no join".
+
+  .. code:: diff
+
+       [terraform]
+
+     - worker_anti_affinity_group_name = "some-affinity-group"
+     - worker_join_anti_affinity_group = [false, true]
+     + #....
+     +
+     + [terraform.worker_defaults]
+     +
+     + [terraform.workers.0]
+     +
+     + [terraform.workers.1]
+     + anti_affinity_group        = "some-affinity-group"
+
+       #....
+
+  .. attention:: Action required
+
+     You must convert your config into the new format.
+
+     .. code:: shell
+
+        ./managed-k8s/actions/migrate-to-release.sh
+
+  _ (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
+- Gateway node names are now index rather than availability zone based,
+  leading to names like ``managed-k8s-gw-0`` instead of ``managed-k8s-gw-az1``.
+
+  .. attention:: Action required
+
+     To prevent Terraform from unnecessarily rebuilding gateway nodes,
+     you must run the migration script.
+
+     .. code:: shell
+
+        ./managed-k8s/actions/migrate-to-release.sh
+
+  _ (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
+
+
+New Features
+~~~~~~~~~~~~
+
+- Terraform: Anti affinity group settings are now configurable per worker node. (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
+- Terraform: The amount of gateway nodes created is not dependent
+  on the amount of availability zones anymore
+  and can be set with ``[terraform].gateway_count``.
+  The setting's default yields the previous behavior
+  when ``[terraform].spread_gateway_across_azs`` is enabled
+  which it is by default. (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
+- A rework has been done which now allows to trigger a specific playbook of k8s-core or k8s-supplements.
+  The default behavior of triggering ``install-all.yaml`` has been preserved.
+  See :ref:`apply-k8s-core.sh <actions-references.apply-k8s-coresh>` and
+  :ref:`apply-k8s-supplements.sh <actions-references.apply-k8s-supplementssh>`
+  for usage information. (`!1433 <https://gitlab.com/yaook/k8s/-/merge_requests/1433>`_)
+- It is now possible to set the root URL for Grafana (`!1447 <https://gitlab.com/yaook/k8s/-/merge_requests/1447>`_)
+
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- The minimum Terraform version is increased to 1.3 (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- Importing the Thanos object storage configuration has been reworked to not fail erroneously. (`!1437 <https://gitlab.com/yaook/k8s/-/merge_requests/1437>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- The Terraform code responsible for generating the instance resources
+  was streamlined. (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
+- `!1441 <https://gitlab.com/yaook/k8s/-/merge_requests/1441>`_, `!1442 <https://gitlab.com/yaook/k8s/-/merge_requests/1442>`_, `!1444 <https://gitlab.com/yaook/k8s/-/merge_requests/1444>`_, `!1445 <https://gitlab.com/yaook/k8s/-/merge_requests/1445>`_
+
+
 v7.0.2 (2024-08-26)
 -------------------
 

@@ -1,3 +1,0 @@
-The yk8s Terraform module
-does not build a default set of nodes (3 masters + 4 workers) anymore
-when no nodes are given.

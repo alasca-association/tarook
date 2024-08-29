@@ -1,9 +1,0 @@
-The automatic just-in-time migration of Terraform resources
-from ``count`` to ``for_each`` introduced in July 2022
-was removed in favor of a once-and-for-all migration.
-
-.. code::
-
-    ./managed-k8s/actions/migrate-to-release.sh
-
-_

@@ -1,5 +1,0 @@
-A rework has been done which now allows to trigger a specific playbook of k8s-core or k8s-supplements.
-The default behavior of triggering ``install-all.yaml`` has been preserved.
-See :ref:`apply-k8s-core.sh <actions-references.apply-k8s-coresh>` and
-:ref:`apply-k8s-supplements.sh <actions-references.apply-k8s-supplementssh>`
-for usage information.
