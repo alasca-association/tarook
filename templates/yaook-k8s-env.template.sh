@@ -41,6 +41,10 @@ export TF_VAR_keypair='firstnamelastname-hostname-gendate'
 
 # Optional: You can also source your openrc from here.
 
+# If you want to load the optional interactive dependencies into your devShell
+# Recommended if you're on NixOS. Not recommended on Debian et al.
+# export YAOOK_DEVSHELL="withInteractive"
+
 # There is a bug in poetry that makes it access the user's key ring
 # even if not necessary. It should only do that (1) when publishing
 # or (2) when using dependencies from private repositories.

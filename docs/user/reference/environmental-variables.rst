@@ -343,6 +343,7 @@ Variables which do not really fit into another category.
 Environment Variable                        Default     Description
 =========================================== =========== ===================
 MINIMAL_ACCESS_VENV                         ``false``   Boolean value which defaults to ``false``. If set to ``true``, a minimal virtual Python environment which contains barely enough to establish a connection to the cluster will be sourced when moving into the cluster repository.
+YAOOK_K8S_DEVSHELL                          ``default`` Selects the devShell to be loaded. Possible values can be found in ``flake.nix``.
 =========================================== =========== ===================
 
 .. _environmental-variables.template:
