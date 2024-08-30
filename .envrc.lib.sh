@@ -1,6 +1,7 @@
 # shellcheck shell=bash
 layout_poetry() {
   poetry_dir="$(realpath "${1:-${PWD}}")"
+  if [[ "${NIX_FLAKE_ACTIVE:-""}" == *"$poetry_dir"* ]]; then echo "Flake containing poetry env alreay active. Skipping poetry layout."; return; fi
   mkdir -p "$PWD/.direnv"
   PYPROJECT_TOML="${PYPROJECT_TOML:-${poetry_dir}/pyproject.toml}"
   poetry_file="${poetry_dir}/poetry.lock"
