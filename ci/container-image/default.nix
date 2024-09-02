@@ -1,6 +1,7 @@
 {
   pkgs,
   dependencies,
+  poetryEnvs,
 }: let
   ciFiles = pkgs.stdenv.mkDerivation {
     name = "ci-files";
@@ -21,6 +22,7 @@ in {
       dependencies.yk8s
       ++ dependencies.ci
       ++ (with pkgs; [
+        poetryEnvs.ci
         bashInteractive
         fakeNss # provides /etc/passwd and /etc/group
         dockerTools.usrBinEnv

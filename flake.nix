@@ -25,24 +25,9 @@
         inputs',
         ...
       }: let
-        inherit (inputs.poetry2nix.lib.mkPoetry2Nix {inherit pkgs;}) mkPoetryEnv overrides;
-        poetryEnv = mkPoetryEnv {
-          projectDir = ./.;
-          groups = ["ci"];
-          overrides = overrides.withDefaults (final: prev:
-            lib.attrsets.mapAttrs (n: v:
-              prev.${n}.overridePythonAttrs (old: {
-                nativeBuildInputs =
-                  old.nativeBuildInputs
-                  or []
-                  ++ map (p: pkgs.python312Packages.${p}) v;
-              }))
-            {
-              os-client-config = ["setuptools"];
-              kubernetes-validate = ["setuptools"];
-              sphinx-multiversion = ["setuptools"];
-            });
-          python = pkgs.python312;
+        poetryEnvs = import ./nix/poetry.nix {
+          inherit pkgs lib;
+          inherit (inputs) poetry2nix;
         };
         dependencies = with pkgs; {
           yk8s = [
@@ -59,7 +44,6 @@
             openssh
             openssl
             poetry
-            poetryEnv
             inputs'.nixpkgs-terraform157.legacyPackages.terraform
             util-linux # for uuidgen
             inputs'.nixpkgs-vault1148.legacyPackages.vault
@@ -75,11 +59,11 @@
           ];
           interactive = [
             bashInteractive
+            curl
             vim
             dnsutils
             iputils
             k9s
-            curl
           ];
         };
       in {
@@ -87,15 +71,15 @@
           inherit system;
         };
         devShells.default = pkgs.mkShell {
-          buildInputs = dependencies.yk8s;
+          buildInputs = dependencies.yk8s ++ [poetryEnvs.yk8s];
         };
         devShells.withInteractive = pkgs.mkShell {
           nativeBuildInputs = dependencies.interactive;
-          buildInputs = dependencies.yk8s;
+          buildInputs = dependencies.yk8s ++ [poetryEnvs.yk8s];
         };
-        devShells.poetry = poetryEnv.env;
+        devShells.poetry = poetryEnvs.yk8s.env;
         packages = let
-          container-image = import ./ci/container-image {inherit pkgs dependencies;};
+          container-image = import ./ci/container-image {inherit pkgs dependencies poetryEnvs;};
         in {
           ciImage = pkgs.dockerTools.buildLayeredImage container-image;
           streamCiImage = pkgs.writeShellScriptBin "stream-ci" (pkgs.dockerTools.streamLayeredImage container-image);
