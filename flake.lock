@@ -128,15 +128,16 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1724417163,
-        "narHash": "sha256-gD0N0pnKxWJcKtbetlkKOIumS0Zovgxx/nMfOIJIzoI=",
-        "owner": "nix-community",
+        "lastModified": 1725298301,
+        "narHash": "sha256-2rvQukUqwjwAXCFJFM8oWWZcwnVBYOyIHeZ3UdvclmU=",
+        "owner": "lykos153",
         "repo": "poetry2nix",
-        "rev": "7619e43c2b48c29e24b88a415256f09df96ec276",
+        "rev": "581b49dc71c50aa94331b0f41bebdaf9e77b5083",
         "type": "github"
       },
       "original": {
-        "owner": "nix-community",
+        "owner": "lykos153",
+        "ref": "feature/default-deps-main-group",
         "repo": "poetry2nix",
         "type": "github"
       }
