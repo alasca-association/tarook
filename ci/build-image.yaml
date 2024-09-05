@@ -1,7 +1,7 @@
 build_image:
   tags:
     - docker
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.24.4"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.24.5"
   stage: build-image
   rules:
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -42,7 +42,7 @@ build_image:
 
 
 .deploy_image:
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.24.4"
+  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.24.5"
   stage: tag-image
   before_script:
     - |
