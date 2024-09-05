@@ -110,7 +110,7 @@ resource "openstack_networking_port_v2" "gateway" {
   ]
 
   lifecycle {
-    ignore_changes = ["allowed_address_pairs"]
+    ignore_changes = [allowed_address_pairs]
   }
 }
 
