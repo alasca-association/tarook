@@ -230,34 +230,48 @@ For details on the use of Vault in yaook/k8s, please see the
 
 To initialize a **local** Vault instance for **development purposes**, do the following:
 
-1. Start the docker container:
-
-   .. code:: console
-
-      $ ./managed-k8s/actions/vault.sh
-
-
-   .. Note::
-      This is not suited for productive deployments or production use,
-      for many reasons!
-
-   .. Note::
-      If you are using rootless docker or podman, set ``VAULT_IN_DOCKER_USE_ROOTLESS=true``
-      in ``~/.config/yaook-k8s/env``
-
-2. Ensure that sourcing (comment in) ``vault_env.sh`` is part of your ``.envrc``.
+1. Ensure that sourcing (comment it in) ``vault_env.sh`` is part of your ``.envrc``.
 
    .. code:: console
 
       $ sed -i '/#source \"\$(pwd)\/managed-k8s\/actions\/vault_env.sh\"/s/^#//g' .envrc
 
-3. Run the init command for vault
+2. Ensure that setting ``USE_VAULT_IN_DOCKER`` to ``true`` is part of your ``.envrc``.
+
+   .. code:: console
+
+      $ sed -i '/export USE_VAULT_IN_DOCKER=false/s/false/true/g' .envrc
+      $ sed -i '/#export USE_VAULT_IN_DOCKER=/s/^#//g' .envrc
+
+   .. hint::
+
+      If you are using rootless docker or podman,
+      additionally set ``VAULT_IN_DOCKER_USE_ROOTLESS=true``
+      in ``~/.config/yaook-k8s/env``
+
+3. Don't forget to allow your changes:
+
+   .. code:: console
+
+      $ direnv allow .envrc
+
+4. Start the docker container:
+
+   .. code:: console
+
+      $ ./managed-k8s/actions/vault.sh
+
+   .. warning::
+      This is not suited for productive deployments or production use,
+      for many reasons!
+
+5. Run the init command for vault
 
    .. code:: console
 
       $  ./managed-k8s/tools/vault/init.sh
 
-4. If you are starting with a new created cluster run:
+6. If you are starting with a new created cluster run:
 
    .. code:: console
 
