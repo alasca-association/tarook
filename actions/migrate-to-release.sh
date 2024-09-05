@@ -12,8 +12,6 @@ set_kubeconfig
 if [ "${tf_usage:-true}" == 'true' ]; then
   notef "Triggering Terraform"
   run "$actions_dir/apply-terraform.sh"
-else
-  notef "Nothing to do as Terraform is disabled."
 fi
 
 if [ "$(tomlq --raw-output '."ch-k8s-lbaas".enabled' config/config.toml)" == 'true' ]; then
@@ -28,3 +26,6 @@ if [ "$(tomlq --raw-output '."ch-k8s-lbaas".enabled' config/config.toml)" == 'tr
   notef "Triggering install-ch-k8s-lbaas.yaml playbook to update ch-k8s-lbaas."
   run "$actions_dir/apply-k8s-supplements.sh" install-ch-k8s-lbaas.yaml
 fi
+
+notef "Update keepalived configuration."
+AFLAGS="--diff -t keepalived" run "$actions_dir/apply-k8s-core.sh" install-frontend-services.yaml

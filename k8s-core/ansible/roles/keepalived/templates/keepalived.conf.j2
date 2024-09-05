@@ -28,13 +28,19 @@ vrrp_instance VIP_1 {
     virtual_router_id 47
     priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
     advert_int 1
-    authentication {
-        auth_type PASS
-        auth_pass {{ vrrp_password }}
-    }
     virtual_ipaddress {
         {{ networking_fixed_ip }}
     }
+    unicast_src_ip {{ local_ipv4_address | ipaddr }}
+    unicast_peer {
+        {% for hostname in groups['frontend'] %}
+        {% set peer = hostvars[hostname] %}
+        {% if not peer.local_ipv4_address == local_ipv4_address %}
+        {{ peer.local_ipv4_address | ipaddr }}
+        {% endif %}
+        {% endfor %}
+    }
+    nopreempt
     track_script {
         chk_haproxy
     }
