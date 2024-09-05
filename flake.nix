@@ -29,26 +29,32 @@
           inherit pkgs lib;
           inherit (inputs) poetry2nix;
         };
-        dependencies = with pkgs; {
-          yk8s = [
-            coreutils
-            gcc # so poetry can build netifaces
-            gnugrep
-            gnused
-            gzip
-            iproute2 # for wg-up
+        dependencies = with pkgs; let
+          yk8s-minimal = [
             jq
             kubectl
-            kubernetes-helm
-            moreutils
-            openssh
-            openssl
-            poetry
-            inputs'.nixpkgs-terraform157.legacyPackages.terraform
-            util-linux # for uuidgen
             inputs'.nixpkgs-vault1148.legacyPackages.vault
-            wireguard-tools
           ];
+        in {
+          inherit yk8s-minimal;
+          yk8s =
+            yk8s-minimal
+            ++ [
+              coreutils
+              gcc # so poetry can build netifaces
+              gnugrep
+              gnused
+              gzip
+              iproute2 # for wg-up
+              kubernetes-helm
+              moreutils
+              openssh
+              openssl
+              poetry
+              inputs'.nixpkgs-terraform157.legacyPackages.terraform
+              util-linux # for uuidgen
+              wireguard-tools
+            ];
           ci = [
             direnv
             git
@@ -72,6 +78,9 @@
         };
         devShells.default = pkgs.mkShell {
           buildInputs = dependencies.yk8s ++ [poetryEnvs.yk8s];
+        };
+        devShells.minimal = pkgs.mkShell {
+          buildInputs = dependencies.yk8s-minimal ++ [poetryEnvs.minimal];
         };
         devShells.withInteractive = pkgs.mkShell {
           nativeBuildInputs = dependencies.interactive;
