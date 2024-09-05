@@ -1,8 +1,23 @@
 # ANCHOR: terraform_variables
 
+# Needed as otherwise Terraform complains about an unknown variable passed
+# tflint-ignore: terraform_unused_declarations
+variable "enabled" {
+  type = bool
+  description = "Reflect the option to enable Terraform globally."
+  default = true
+}
+
 variable "cluster_name" {
   type = string
   default = "managed-k8s"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "prevent_disruption" {
+  type = bool
+  description = "Prevent Terraform from doing any disruptive actions."
+  default = true
 }
 
 variable "subnet_cidr" {
