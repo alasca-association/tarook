@@ -3,6 +3,13 @@
 [Interface]
 PrivateKey = REPLACEME
 Address = {%- if ipv4_enabled and endpoint.ip_cidr is defined %}{{ item['ips'][endpoint.id] }}{% endif +%}{%- if ipv6_enabled and endpoint.ipv6_cidr is defined %}, {{ item['ipsv6'][endpoint.id] }}{% endif +%}
+{% if network_mtu is defined %}
+{% if ipv6_enabled %}
+MTU = {{ [network_mtu | int - 80, 1492] | min }}
+{% elif ipv4_enabled %}
+MTU = {{ [network_mtu | int - 60, 1492] | min }}
+{% endif %}
+{% endif %}
 [Peer]
 PublicKey = {{ lookup('file', (wg_local_pub_path, keyfile_name) | path_join ) }}
 Endpoint = {% if ipv4_enabled +%}{{ networking_floating_ip }}:{{ endpoint.port }}{% endif +%}

@@ -33,6 +33,7 @@ resource "local_file" "final_networking" {
     floating_ip_network_id = data.openstack_networking_network_v2.public_network.id,
     subnet_cidr            = try(openstack_networking_subnet_v2.cluster_subnet[0].cidr, null),
     subnet_v6_cidr         = try(openstack_networking_subnet_v2.cluster_v6_subnet[0].cidr, null),
+    network_mtu            = var.network_mtu,
   })
   filename        = "../../inventory/yaook-k8s/group_vars/all/terraform_networking.yaml"
   file_permission = 0640

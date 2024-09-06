@@ -6,6 +6,14 @@ Address = {% if ipv4_enabled and endpoint.ip_gw is defined %}{{ endpoint.ip_gw }
 ListenPort = {{ endpoint.port }}
 PrivateKey = {{ wg_gw_priv_key }}
 
+{% if network_mtu is defined %}
+{% if ipv6_enabled %}
+MTU = {{ network_mtu | int - 80 }}
+{% elif ipv4_enabled %}
+MTU = {{ network_mtu | int - 60 }}
+{% endif %}
+{% endif %}
+
 {% for peer in wg_peers %}
 # {{ peer["ident"] }}
 [Peer]
