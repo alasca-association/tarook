@@ -19,6 +19,24 @@ in
 
       cluster_name = "devcluster";
 
+      azs = ["AZ1" "AZ2" "AZ3"];
+
+      public_network = "shared-public-IPv4";
+      subnet_cidr = "192.168.67.0/24";
+
+      master_defaults = {
+        flavor = "M";
+        image = "Ubuntu 22.04 LTS x64";
+      };
+      worker_defaults = {
+        flavor = "M";
+        image = "Ubuntu 22.04 LTS x64";
+      };
+      gateway_defaults = {
+        image = "Debian 12 (bookworm)";
+        flavor = "XS";
+      };
+
       nodes = {
         master-0.role = "master";
         master-1.role = "master";

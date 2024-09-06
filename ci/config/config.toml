@@ -17,6 +17,20 @@ subnet_v6_cidr    = "fd00::/120"
 #azs = ["nova"]
 #public_network = "floating-IPv4"
 
+public_network = "shared-public-IPv4"
+
+[terraform.master_defaults]
+flavor = "M"
+image = "Ubuntu 22.04 LTS x64"
+
+[terraform.worker_defaults]
+flavor = "M"
+image = "Ubuntu 22.04 LTS x64"
+
+[terraform.gateway_defaults]
+image = "Debian 12 (bookworm)"
+flavor = "XS"
+
 [terraform.nodes.master-0]
 role   = "master"
 image  = "Ubuntu 20.04 LTS x64"
