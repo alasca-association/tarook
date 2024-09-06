@@ -244,6 +244,16 @@ in {
         assertion = cfg.enabled -> allUnique (map (p: p.id) cfg.endpoints);
         message = "wireguard.endpoints.[].id are not unique";
       }
+      {
+        # 636 = 576 (reasonable minimum MTU for IPv4) + 20 (IPv4 Header) + 8 (UDP Header) + 32 (Wireguard Header)
+        assertion = cfg.enabled && config.yk8s.infra.ipv4_enabled && config.yk8s.openstack.enabled -> config.yk8s.openstack.network_mtu >= 636;
+        message = "For Wireguard to work over IPv4, a minimum network MTU of 636 Bytes is required. Please adjust 'yk8s.openstack.network_mtu' accordingly.";
+      }
+      {
+        # 1360 = 1280 (technical minimum MTU for IPv6) + 40 (IPv6 Header) + 8 (UDP Header) + 32 (Wireguard Header)
+        assertion = cfg.enabled && config.yk8s.infra.ipv6_enabled && config.yk8s.openstack.enabled -> config.yk8s.openstack.network_mtu >= 1360;
+        message = "For Wireguard to work over IPv6, a minimum network MTU of 1360 Bytes is required. Please adjust 'yk8s.openstack.network_mtu' accordingly.";
+      }
     ];
   };
 }

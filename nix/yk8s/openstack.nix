@@ -47,7 +47,6 @@
     "thanos_delete_container"
     "spread_gateways_across_azs"
     "create_root_disk_on_volume"
-    "network_mtu"
     "dns_nameservers_v4"
     "monitoring_manage_thanos_bucket"
     "gateway_count"
