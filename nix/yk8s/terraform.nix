@@ -215,7 +215,6 @@ in {
 
     public_network = mkOption {
       type = types.str;
-      default = "shared-public-IPv4";
     };
 
     keypair = mkOption {
@@ -228,7 +227,7 @@ in {
 
     azs = mkOption {
       description = "Defines the availability zones of your cloud to use for the creation of servers.";
-      default = ["AZ1" "AZ2" "AZ3"];
+      default = [];
       type = with types; listOf str;
     };
 
@@ -329,8 +328,6 @@ in {
 
     gateway_defaults = recursiveUpdate commonNodeDefaultOptions {
       root_disk_size.default = 10;
-      image.default = "Debian 12 (bookworm)";
-      flavor.default = "XS";
       common_name = mkOption {
         type = types.str;
         default = "gw-";
@@ -339,14 +336,10 @@ in {
 
     master_defaults = recursiveUpdate commonNodeDefaultOptions {
       root_disk_size.default = 50;
-      flavor.default = "M";
-      image.default = "Ubuntu 22.04 LTS x64";
     };
 
     worker_defaults = recursiveUpdate commonNodeDefaultOptions {
       root_disk_size.default = 50;
-      flavor.default = "M";
-      image.default = "Ubuntu 22.04 LTS x64";
 
       anti_affinity_group = mkOption {
         description = ''
