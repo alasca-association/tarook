@@ -15,9 +15,9 @@ Possible symptoms when running a ``kubectl`` command
 or
 ``The connection to the server localhost:8080 was refused - did you specify the right host or port?``
 
-Yaook/k8s now uses short-lived kubeconfigs. Which means that, instead of commiting them encrypted into the cluster repository, they are not committed at all but instead re-generated from the Vault when they are needed.
+YAOOK/K8s now uses short-lived kubeconfigs. Which means that, instead of commiting them encrypted into the cluster repository, they are not committed at all but instead re-generated from the Vault when they are needed.
 
-You can login to the Yaook/k8s cluster with
+You can login to the YAOOK/K8s cluster with
 
 .. code:: console
 
@@ -63,8 +63,8 @@ This will generate a kubeconfig that is valid for 8 days (by default). After tha
 
             $ ./managed-k8s/actions/wg-up.sh
 
-“How can I test my yk8s-Cluster?”
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+“How can I test my YAOOK/K8s-Cluster?”
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We recommend testing whether your cluster was successfully deployed by
 :ref:`manually logging into the
@@ -74,10 +74,10 @@ nodes <faq.how-do-i-ssh-into-my-cluster-nodes>` and/or by running:
 
    $ ./managed-k8s/actions/test.sh
 
-“How can I delete my yk8s-Cluster?”
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+“How can I delete my YAOOK/K8s-Cluster?”
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can delete the yk8s-Cluster and all associated OpenStack resources
+You can delete the YAOOK/K8s-Cluster and all associated OpenStack resources
 by triggering the :ref:`destroy.sh <actions-references.destroysh>` script.
 
 .. Warning::
@@ -91,7 +91,7 @@ by triggering the :ref:`destroy.sh <actions-references.destroysh>` script.
 
 .. code:: shell
 
-   $ # Destroy the yk8s cluster and delete all OpenStack resources
+   $ # Destroy the YAOOK/K8s cluster and delete all OpenStack resources
    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_DISRUPT_THE_HARBOUR=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
 
 Troubleshooting

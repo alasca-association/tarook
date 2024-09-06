@@ -1,4 +1,4 @@
-Increase k8s cluster CIDR
+Increase K8s cluster CIDR
 =========================
 
 .. note::

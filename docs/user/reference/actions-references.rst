@@ -63,7 +63,7 @@ execute this script only once.
 
 ``k8s-login.sh`` generates a new kubeconfig valid for 8 days.
 
-Yaook/k8s uses short-lived certificates for its kubeconfigs to enhance security.
+YAOOK/K8s uses short-lived certificates for its kubeconfigs to enhance security.
 What that means is that the kubeconfig generated during a run of yaook/k8s-core
 is only valid for 8 days and needs to be refreshed using this script.
 
@@ -113,7 +113,7 @@ to manage credentials and secrets.
 ~~~~~~~~~~~~~~~~
 
 The ``apply-all.sh``-script is a wrapper script which can be used
-to create a yaook/k8s-cluster on top of OpenStack.
+to create a YAOOK/K8s-cluster on top of OpenStack.
 
 In general, if you do not want to trigger action scripts in a more fine
 grained manner, this is the script to keep the cluster in sync.
@@ -205,7 +205,7 @@ Usage:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``apply-prepare-gw.sh``-script takes the necessary
-preparations to deploy a yaook-k8s-cluster on top of OpenStack
+preparations to deploy a YAOOK/K8s cluster on top of OpenStack
 which covers bootstrapping, preparation and configuration
 of the gateway nodes in front of the Kubernetes cluster.
 

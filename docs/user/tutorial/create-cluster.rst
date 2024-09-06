@@ -1,7 +1,7 @@
-How to Create a Yaook Kubernetes Cluster
-========================================
+How to Create a YAOOK/K8s Cluster
+=================================
 
-In this tutorial, we are going to set up a Yaook Kubernetes cluster using OpenStack virtual machines.
+In this tutorial, we are going to set up a YAOOK/K8s cluster using OpenStack virtual machines.
 
 
 What Do We Need?
@@ -35,7 +35,7 @@ What Do We Need?
   in case the FAQ can't help.
 
 Now we are going to install all dependencies
-that we need to create a Yaook cluster.
+that we need to create a YAOOK/K8s cluster.
 
 Prepare the Workstation
 -----------------------
@@ -109,7 +109,7 @@ In front of the actual Kubernetes cluster,
 at least one gateway host is configured,
 which exposes a SSH and WireGuard endpoint to the public.
 These are your access points towards the whole cluster
-until you expose services explicitly via the k8s mechanics.
+until you expose services explicitly via the K8s mechanics.
 
 .. code:: console
 
@@ -165,7 +165,7 @@ Create project folder:
     $ mkdir ~/clusters
     $ cd ~/clusters
 
-Clone ``yaook/k8s`` repository:
+Clone ``YAOOK/K8s`` repository:
 
 .. code:: console
 
@@ -246,7 +246,7 @@ Configure the Cluster
 ---------------------
 
 As a next step
-you can adjust the actual configuration for the k8s cluster,
+you can adjust the actual configuration for the K8s cluster,
 e.g. the amount of master and worker nodes, flavors, image names.
 The configuration file is named ``config/config.toml``.
 For a full config reference click
@@ -258,7 +258,7 @@ Add the master and worker nodes to create your cluster with,
 e.g. 2 master and 3 worker nodes.
 Please have a look `here <https://docs.yaook.cloud/requirements/k8s-cluster.html#size>`__
 for a recommended size
-of a yaook kubernetes cluster.
+of a YAOOK/K8s cluster.
 
 .. code:: toml
 
@@ -305,7 +305,7 @@ Copy and paste it under
 Initialise Vault
 ----------------
 
-Yaook/K8s uses `HashiCorp Vault <https://www.vaultproject.io/>`__
+YAOOK/K8s uses `HashiCorp Vault <https://www.vaultproject.io/>`__
 to store secrets (passwords, tokens, certificates, encryption keys, and other sensitive data).
 
 .. note::
@@ -379,7 +379,7 @@ for what to execute in which order.
         $ MANAGED_K8S_DISRUPT_THE_HARBOUR=true bash managed-k8s/actions/apply-terraform.sh
 
 From this point on
-you can use the k8s cluster for deploying any application.
+you can use the K8s cluster for deploying any application.
 
 Enjoy Your Cluster!
 -------------------
@@ -397,7 +397,7 @@ and then run it:
 
     $ k9s
 
-The next time you would like to play with your Yaook Kubernetes cluster
+The next time you would like to play with your YAOOK/K8s cluster
 (e.g., after a workstation reboot),
 please don't forget to open the directory with your cluster to load the environment,
 and to establish the WireGuard connection:

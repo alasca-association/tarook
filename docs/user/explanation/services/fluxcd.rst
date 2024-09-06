@@ -2,9 +2,9 @@ FluxCD
 ======
 
 The ``fluxcd2_v2`` role deploys a useful set of controllers
-(`fluxcd <https://fluxcd.io/>`__) into the kubernetes cluster
+(`fluxcd <https://fluxcd.io/>`__) into the Kubernetes cluster
 via the `fluxcd2 community helm chart <https://github.com/fluxcd-community/helm-charts/>`__
-, to manage further k8s workload in a GitOps manner.
+, to manage further K8s workload in a GitOps manner.
 
 The installation can be activated by setting the ``enabled`` field in
 the ``k8s-service-layer.fluxcd`` to ``true``.

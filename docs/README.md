@@ -1,4 +1,4 @@
-# Yaook/k8s Handbook
+# YAOOK/K8s Handbook
 
 This documentation is generated using sphinx.
 

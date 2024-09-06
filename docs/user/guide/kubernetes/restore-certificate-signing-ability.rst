@@ -6,10 +6,10 @@ Restoring Kubernetes' ability to sign certificates
    Requires at least version 6.0
 
 
-Since YAOOK/k8s migrated
+Since YAOOK/K8s migrated
 to :doc:`Hashicorp Vault </user/explanation/services/vault>` for managing PKI
 and therefore clears the Kubernetes cluster root CA key from the control plane,
-YAOOK/k8s clusters are not able to respond
+YAOOK/K8s clusters are not able to respond
 to certificate signing requests (CSRs) anymore
 since access to PKI keys ceased. [1]_
 
@@ -19,7 +19,7 @@ for now we provide a workaround fix to restore the CSR functionality.
 The fix must be explicitly turned on
 by setting ``[kubernetes.controller_manager].enable_signing_requests=true`` in the config.
 
-.. [1] Prior to YAOOK/k8s v6.0 CA private keys in Vault were never accessible.
+.. [1] Prior to YAOOK/K8s v6.0 CA private keys in Vault were never accessible.
 .. [2] https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/#custom-signers
 
 
@@ -39,7 +39,7 @@ Enabling the fix
 
    Executing 'tools/vault/init.sh' will take care of that.
    This assumes you already have a Vault instance running
-   and reachable from your YAOOK/k8s shell environment.
+   and reachable from your YAOOK/K8s shell environment.
 
    .. note::
 

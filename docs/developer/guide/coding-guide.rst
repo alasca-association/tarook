@@ -3,7 +3,7 @@ Coding Guide
 
 This document contains a coding guideline specifically written for this
 repository. For general information please refer to the
-`Yaook Development Process Documentation <https://yaook.gitlab.io/meta/01-development-process.html>`__.
+`YAOOK Development Process Documentation <https://yaook.gitlab.io/meta/01-development-process.html>`__.
 
 pre-commit-hooks
 ----------------

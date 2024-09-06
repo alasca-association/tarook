@@ -1,7 +1,7 @@
 Introduction
 ===================
 
-The yaook/k8s project uses mostly Ansible to provide a customizable, highly available,
+The YAOOK/K8s project uses mostly Ansible to provide a customizable, highly available,
 scalable and flexible kubeadm-based Kubernetes cluster installation and
 lifecycle-management on top of OpenStack or bare-metal.
 

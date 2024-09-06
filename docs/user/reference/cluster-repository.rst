@@ -14,7 +14,7 @@ consists of:
    defines the platform layout and other properties of the cluster
 
 A user checks out the cluster repository and uses it to interact with
-the yk8s-cluster.
+the YAOOK/K8s cluster.
 
 Cluster Repository Structure
 ----------------------------

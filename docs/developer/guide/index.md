@@ -10,7 +10,7 @@ coding-guide
 simulate-bm
 ```
 
-Keep this at hand when *developing* with Yaook/k8s.
+Keep this at hand when *developing* with YAOOK/K8s.
 
 
 ::::{grid} 2

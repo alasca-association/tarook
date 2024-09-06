@@ -238,7 +238,7 @@ Random notes from Jonas
 -  ``EAP_IDENTITY not supported, sending EAP_NAK`` -> You also need
    lib{charon,strongswan}-extra-plugins installed, may need restart of
    strongswan-starter to apply
--  ``ipsec_subnet`` should be set to the k8s subnet methinks?? or at
+-  ``ipsec_subnet`` should be set to the K8s subnet methinks?? or at
    least not defaulted to some strange range…
 
 Additional info on the usage in the LCM

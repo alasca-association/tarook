@@ -61,7 +61,7 @@ Steps to perform an upgrade
    (Please select your target version on the Documentation page)
 
 2. Determine which rook version is currently deployed. It should be the
-   currently configured rook version in your managed-k8s cluster
+   currently configured rook version in your managed YAOOK/K8s cluster
    configuration file. To be sure, you can check the actual deployed
    version with the following commands:
 
@@ -85,7 +85,7 @@ Steps to perform an upgrade
         -o jsonpath='{.spec.cephVersion.image}'
 
 4. Depending on the currently deployed rook version, determine the
-   *next* (supported) minor release.The managed-k8s cluster
+   *next* (supported) minor release. The managed YAOOK/K8s cluster
    configuration template states all supported versions. If in doubt,
    all supported rook releases are also stated in the
    ``k8s-service-layer/rook_v1`` role and at
@@ -206,7 +206,7 @@ Read the corresponding upgrade page at the
    place and under the correct circumstances in ``version_checks.yaml``
 -  **Test your changes**
 
-   -  Configure the new rook version in your managed-k8s cluster
+   -  Configure the new rook version in your managed YAOOK/K8s cluster
       configuration
    -  Make sure the correct upgrade tasks are included
    -  The ``rook-ceph-operator`` logs are very helpful to observe the

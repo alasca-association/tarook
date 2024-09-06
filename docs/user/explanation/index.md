@@ -19,4 +19,4 @@ snapshots
 ssh-host-key
 ```
 
-In-depth explanations and discussion about how (and why) Yaook/k8s works from the user perspective.
+In-depth explanations and discussion about how (and why) YAOOK/K8s works from the user perspective.

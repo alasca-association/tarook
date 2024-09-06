@@ -1,10 +1,10 @@
-# YAOOK/k8s
+# YAOOK/K8s
 
-YAOOK/k8s is a Lifecycle-Management tool to provide and operate a customizable, highly available, and flexible kubernetes cluster.
+YAOOK/K8s is a Lifecycle-Management tool to provide and operate a customizable, highly available, and flexible Kubernetes cluster.
 
-YAOOK/k8s is part of the [Yaook](https://yaook.cloud) project. All Yaook related resources are publicly available under https://gitlab.com/yaook.
+YAOOK/K8s is part of the [Yaook](https://yaook.cloud) project. All Yaook related resources are publicly available under https://gitlab.com/yaook.
 
-For further information on how to install and use YAOOK/k8s, please refer to the [documentation](#documentation).
+For further information on how to install and use YAOOK/K8s, please refer to the [documentation](#documentation).
 
 ## Documentation
 

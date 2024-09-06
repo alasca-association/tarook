@@ -1,8 +1,8 @@
 Quick Start Guide
 =================
 
-If you want to create a yaook/k8s cluster on OpenStack, follow the following
-steps. A bare-metal yk8s cluster requires further preparations.
+If you want to create a YAOOK/K8s cluster on OpenStack, follow the following
+steps. A bare-metal YAOOK/K8s cluster requires further preparations.
 
 Commands are assumed to be executed at the top level of the :doc:`/user/reference/cluster-repository`,
 if not stated otherwise.
@@ -19,7 +19,7 @@ If you are having problems, please visit our :doc:`FAQ </user/guide/faq>`.
 
    .. note::
       If you plan on deploying OpenStack using `yaook/operator <https://gitlab.com/yaook/operator>`_
-      on top of your yaook/k8s cluster, please refer to the
+      on top of your YAOOK/K8s cluster, please refer to the
       `cluster requirements of yaook/operator <https://docs.yaook.cloud/requirements/k8s-cluster.html>`__
       to see which features are recommended and required to be present in
       your Kubernetes cluster.
@@ -52,7 +52,7 @@ If you are having problems, please visit our :doc:`FAQ </user/guide/faq>`.
 
       $ ./managed-k8s/actions/apply-all.sh
 
-7. Get yourself a hot beverage and joyfully watch as your yaook/k8s cluster
+7. Get yourself a hot beverage and joyfully watch as your YAOOK/K8s cluster
    gets created and tested.
 
 

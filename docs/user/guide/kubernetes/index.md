@@ -13,7 +13,7 @@ super-admin
 ```
 
 ::::{grid} 2
-:::{grid-item-card} Increase k8s cluster CIDR
+:::{grid-item-card} Increase K8s cluster CIDR
 :link: /user/guide/kubernetes/increase-cluster-cidr
 :link-type: doc
 :::
