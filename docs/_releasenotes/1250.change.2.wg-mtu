@@ -1,0 +1,10 @@
+The Wireguard MTU is now conditionally set on the server and on the client side.
+For clients, it is clipped to a maximum of 1492 which is the maximum of a usual DSL connection.
+
+It is recommended to update the Wireguard client templates by executing:
+
+.. code:: console
+
+  $ AFLAGS="--diff -t wireguard" bash managed-k8s/actions/apply-prepare-gw.sh
+
+.
