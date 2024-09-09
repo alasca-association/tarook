@@ -2,6 +2,69 @@
 - name: Initialize node connection
   import_playbook: "connect-to-nodes.yaml"
 
+- name: Onboard node
+  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  vars_files:
+  - vars/disruption.yaml
+  - vars/auto_generated_preamble.yaml
+  - vars/etc.yaml
+  - vars/retries.yaml
+  - vars/vault-config.yaml
+  roles:
+  - role: bootstrap/vault-onboarded
+    tags:
+    - vault-onboarded
+    - bootstrap
+    - always
+  - role: bootstrap/ssh-known-hosts
+    tags:
+    - ssh-known-hosts
+    - bootstrap
+    - always
+
+- name: Harden SSH
+  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  become: true
+  vars_files:
+  - vars/ssh-hardening.yaml
+  pre_tasks:
+  - name: Gather all public keys
+    become: true
+    find:
+      paths: /etc/ssh
+      recurse: false
+      file_type: file
+      patterns: "ssh_host_*_key"
+      use_regex: false
+    register: private_key_files
+    tags:
+    - bootstrap
+    - harden-ssh
+    - always
+  - name: Gather all public key certificates
+    become: true
+    find:
+      paths: /etc/ssh
+      recurse: false
+      file_type: file
+      patterns: "ssh_host_*_key-cert.pub"
+      use_regex: false
+    register: pub_key_cert_files
+    tags:
+    - bootstrap
+    - harden-ssh
+    - always
+  roles:
+  # https://github.com/dev-sec/ansible-collection-hardening/
+  - role: devsec.hardening.ssh_hardening
+    tags:
+    - bootstrap
+    - harden-ssh
+    - always
+    vars:
+      ssh_host_key_files: "{{ private_key_files.files | selectattr('path', 'defined') | map(attribute='path') }}"
+      ssh_host_certificates: "{{ pub_key_cert_files.files | selectattr('path', 'defined') | map(attribute='path') }}"
+
 - name: Prepare node
   hosts: "{{ target_hosts | default('all:!orchestrator') }}"
   gather_facts: true # we need facts and at this point in time we can get them
@@ -16,6 +79,14 @@
     apt:
       update_cache: true
     tags: always
+  - name: Ensure static fact directory exists
+    become: true
+    file:
+      state: directory
+      path: /etc/ansible/facts.d
+      owner: root
+      group: root
+      mode: u=rwx,go=rx
   roles:
   - role: bootstrap/journald
     tags:
@@ -65,4 +136,35 @@
     until: update_apt is not failed
     retries: "{{ network_error_retries }}"
     delay: "{{ network_error_delay }}"
+
+- name: Detect GPU
+  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  vars_files:
+  - vars/retries.yaml
+  roles:
+  - role: bootstrap/gpu-support-detection
+    when:
+    - "'gateways' not in group_names"
+    - ansible_local['gpu-node']['node_has_gpu'] is not defined
+    tags:
+    - bootstrap
+    - gpu-support-detection
+
+- name: Set static fact that node got bootstrapped once
+  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  gather_facts: false
+  tags:
+  - bootstrap
+  tasks:
+  - name: Set static fact that node got bootstrapped once
+    become: true
+    vars:
+      content:
+        bootstrapped: true
+    copy:
+      dest: /etc/ansible/facts.d/bootstrap.fact
+      owner: root
+      group: root
+      mode: 0644
+      content: "{{ content | to_json }}"
 ...

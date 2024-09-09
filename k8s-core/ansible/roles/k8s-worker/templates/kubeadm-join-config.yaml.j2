@@ -16,7 +16,7 @@ nodeRegistration:
     node-ip: {{ local_ipv6_address | to_json }}
 {% endif %}
 {% set labels = k8s_node_labels[inventory_hostname] | default([]) %}
-{% if k8s_is_gpu_cluster and not k8s_virtualize_gpu and node_has_gpu %}
+{% if k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool %}
 {{ labels.append("k8s.yaook.cloud/gpu-node=true") }}
 {% endif %}
 {% if labels %}
@@ -24,7 +24,7 @@ nodeRegistration:
 {% endif %}
   name: {{ inventory_hostname }}
 {% set taints = k8s_node_taints[inventory_hostname] | default([]) %}
-{% if node_has_gpu and k8s_is_gpu_cluster and not k8s_virtualize_gpu %}
+{% if ansible_local['gpu-node']['node_has_gpu'] | bool and k8s_is_gpu_cluster and not k8s_virtualize_gpu %}
 {{ taints.append("k8s.yaook.cloud/gpu-node=true:NoSchedule") }}
 {% endif %}
 {% if taints %}

@@ -4,6 +4,24 @@
   vars:
     target_hosts: k8s_nodes
 
+- name: Fail if node got not bootstrapped once, yet
+  any_errors_fatal: true
+  hosts: k8s_nodes
+  tasks:
+  - name: Fail if node got not bootstrapped once, yet
+    when: not ansible_local['bootstrap']['bootstrapped'] | default(False) | bool
+    fail:
+      msg: |
+        ERROR
+
+        We're at an advanced stage of the rollout,
+        but the node did not get bootstrapped yet!
+        Please ensure the k8s-core/bootstrap playbook
+        is executed at least once against every node
+        before proceeding.
+        This is automatically done if the install-all
+        playbook of either k8s-core or k8s-supplements is executed.
+
 - name: Install calico with the tigera operator
   hosts: masters
   gather_facts: false

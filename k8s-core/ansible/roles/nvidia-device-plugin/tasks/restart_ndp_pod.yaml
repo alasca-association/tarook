@@ -4,7 +4,7 @@
 # as unhealthy on systemctl reloads + kubelet restarts.
 - name: Restart nvdp Pod
   delegate_to: "{{ groups['orchestrator'] | first }}"
-  when: node_has_gpu
+  when: ansible_local['gpu-node']['node_has_gpu'] | bool
   block:
   - name: "Get nvidia-device-plugin Pod running on node {{ inventory_hostname }}"
     kubernetes.core.k8s_info:

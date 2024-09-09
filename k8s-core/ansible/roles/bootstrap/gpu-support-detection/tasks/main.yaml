@@ -16,7 +16,15 @@
   changed_when: false
   register: gpu_test
 
-- name: Set gpu fact
-  set_fact:
-    node_has_gpu: "{{ ((gpu_test.stdout | length) > 0) | bool }}"
+- name: Set static fact about GPU
+  become: true
+  vars:
+    content:
+      node_has_gpu: "{{ ((gpu_test.stdout | length) > 0) | bool }}"
+  copy:
+    dest: /etc/ansible/facts.d/gpu-node.fact
+    owner: root
+    group: root
+    mode: 0644
+    content: "{{ content | to_json }}"
 ...

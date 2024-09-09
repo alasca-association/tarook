@@ -2,7 +2,6 @@
 # tasks file for etcd-clean-stale-members
 
 - name: Detect and remove stale etcd members
-  when: k8s_install_status == "initialized"
   delegate_to: "{{ groups['orchestrator'] | first }}"
   block:
     - name: Get etcd members

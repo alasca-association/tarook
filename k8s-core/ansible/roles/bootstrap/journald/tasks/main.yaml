@@ -1,6 +1,9 @@
 ---
 - name: Configure journald
-  when: _allow_disruption or k8s_install_status == 'not_initialized' or frontend_install_status == 'not_initialized'
+  when: |
+    _allow_disruption
+    or ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
+    or ansible_local['frontend-initialized']['frontend_install_status'] | default('not_initialized') != 'initialized'
   block:
   - name: Create configuration for journald
     become: true

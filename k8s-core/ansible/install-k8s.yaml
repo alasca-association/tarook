@@ -2,6 +2,24 @@
 - name: Initialize node connection
   import_playbook: "connect-to-nodes.yaml"
 
+- name: Fail if node got not bootstrapped once, yet
+  any_errors_fatal: true
+  hosts: all:!orchestrator
+  tasks:
+  - name: Fail if node got not bootstrapped once, yet
+    when: not ansible_local['bootstrap']['bootstrapped'] | default(False) | bool
+    fail:
+      msg: |
+        ERROR
+
+        We're at an advanced stage of the rollout,
+        but the node did not get bootstrapped yet!
+        Please ensure the k8s-core/bootstrap playbook
+        is executed at least once against every node
+        before proceeding.
+        This is automatically done if the install-all
+        playbook of either k8s-core or k8s-supplements is executed.
+
 - name: Prepare the k8s nodes
   hosts: k8s_nodes
   gather_facts: true
@@ -14,12 +32,12 @@
   - role: k8s-networking
     tags: k8s-networking
   - role: nvidia-cuda-drivers
-    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool
     tags:
     - gpu-support
     - nvidia-cuda-drivers
   - role: nvidia-container-toolkit
-    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool
     tags:
     - gpu-support
     - nvidia-container-toolkit
@@ -50,6 +68,7 @@
   serial: 1
   roles:
   - role: etcd-clean-stale-members
+    when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') == 'initialized'
     tags: etcd-clean-stale-members
 
 - name: Spawn the K8s control plane

@@ -29,7 +29,7 @@
   include_tasks: obtain-kubeconfigs.yaml
 
 - name: Join the k8s cluster steps
-  when: k8s_install_status == "not_initialized"
+  when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
   become: true
   block:
   - name: Create kubeadm-join-config.yaml
@@ -57,4 +57,15 @@
       name: kubelet-configuration
     vars:
       _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
+
+  - name: Set static fact that kubernetes is initialized
+    vars:
+      content:
+        k8s_install_status: "initialized"
+    copy:
+      dest: /etc/ansible/facts.d/kubernetes-initialized.fact
+      owner: root
+      group: root
+      mode: 0644
+      content: "{{ content | to_json }}"
 ...

@@ -2,7 +2,5 @@
 galaxy_info:
   license: Apache-2.0
   author: Yaook Authors
-dependencies:
-  - helpers/is-k8s-installed
-  - helpers/is-frontend-initialized
+dependencies: []
 ...

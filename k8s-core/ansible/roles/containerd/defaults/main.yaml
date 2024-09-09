@@ -1,5 +1,4 @@
 ---
-node_has_gpu: false
 container_mirror_ca: "{{ lookup('file', '%s/../../config/mirror-ca.pem' | format(etc_dir), errors='ignore') }}"
 container_mirrors: []
 ...

@@ -2,7 +2,6 @@
 # https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-install
 - name: Add Hashicorp repository & install vault-cli
   # run only once per run per node
-  when: not (vault_cli_installed | default(False))
   become: true
   block:
   - name: Install prerequisites
@@ -63,9 +62,4 @@
     until: task_result is not failed
     retries: "{{ network_error_retries }}"
     delay: "{{ network_error_delay }}"
-
-  - name: Set fact that vault-cli installed
-    become: false
-    set_fact:
-      vault_cli_installed: true
 ...

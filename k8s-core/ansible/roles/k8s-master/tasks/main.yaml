@@ -333,6 +333,17 @@
       path: /tmp/kubeadm-join-config.yaml
       state: absent
 
+  - name: Set static fact that kubernetes is initialized
+    vars:
+      content:
+        k8s_install_status: "initialized"
+    copy:
+      dest: /etc/ansible/facts.d/kubernetes-initialized.fact
+      owner: root
+      group: root
+      mode: 0644
+      content: "{{ content | to_json }}"
+
 - name: Ensure presence of Kubernetes cluster root CA key on control plane
   become: true
   block:

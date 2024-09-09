@@ -1,7 +1,7 @@
 ---
 - name: Install nvidia-container-toolkit
   become: true
-  when: node_has_gpu
+  when: ansible_local['gpu-node']['node_has_gpu'] | bool
   block:
   - name: Ensure keyrings directory exists
     ansible.builtin.file:
