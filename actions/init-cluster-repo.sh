@@ -101,6 +101,7 @@ if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 fi
 
 # custom stage
+mkdir -p "$ansible_k8s_custom_inventory"
 mkdir -p "$ansible_k8s_custom_playbook_dir"
 mkdir -p "$ansible_k8s_custom_playbook_dir/roles"
 

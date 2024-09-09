@@ -27,7 +27,9 @@ ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/rol
 export ANSIBLE_ROLES_PATH
 
 pushd "$ansible_k8s_custom_dispatch_dir"
-ansible_playbook -i "$ansible_inventory_host_file" \
+ansible_playbook \
+  -i "$ansible_inventory_host_file" \
+  -i "$ansible_k8s_custom_inventory" \
   -e "ansible_k8s_core_dir=$ansible_k8s_core_dir" \
   -e "ansible_k8s_custom_playbook=$ansible_k8s_custom_playbook" \
   main.yaml "$@"

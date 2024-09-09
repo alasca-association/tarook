@@ -62,15 +62,6 @@ else
   if [ ! -L "$ansible_k8s_custom_playbook_dir/vars/k8s-supplements-vars" ]; then
     run ln -sf "../../$submodule_managed_k8s_name/k8s-supplements/ansible/vars/" "$ansible_k8s_custom_playbook_dir/vars/k8s-supplements-vars"
   fi
-  if [ -f "k8s-custom/inventory/default.yaml" ]; then
-    run rm "k8s-custom/inventory/default.yaml"
-  fi
-  if [ -f "k8s-custom/inventory/README.md" ]; then
-    run rm "k8s-custom/inventory/README.md"
-  fi
-  if [ -d "k8s-custom/inventory" ]; then
-    run rmdir "k8s-custom/inventory"
-  fi
 fi
 
 # Copy gitignore

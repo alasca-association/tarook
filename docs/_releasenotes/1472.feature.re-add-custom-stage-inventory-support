@@ -1,0 +1,5 @@
+Support for a separate inventory for the custom stage was added.
+It is used in addition to the main inventory.
+
+Previously, the custom stage inventory was silently dropped with release v4.0.0.
+This is now noted in the v4.0.0 release notes.
