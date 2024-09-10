@@ -1,0 +1,3 @@
+``tools/patch_config.py`` was removed
+completing its deprecation cycle
+since release 6.1.0.
