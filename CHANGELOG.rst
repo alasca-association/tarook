@@ -905,6 +905,11 @@ Breaking changes
 
   Please refer to the :doc:`respective documentation </user/reference/actions-references>` (`!823 <https://gitlab.com/yaook/k8s/-/merge_requests/823>`_).
 
+- The custom stage now uses the main inventory exclusively,
+  like all other stages.
+  A seperate inventory for the custom stage is not supported anymore
+  and will be removed by the migrate-cluster-repo action.
+
 
 Changed functionality
 ~~~~~~~~~~~~~~~~~~~~~
