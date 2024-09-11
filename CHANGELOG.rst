@@ -19,6 +19,16 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.0.1 (2024-09-09)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- The release migration script was fixed
+  to support bare metal cluster repos as well. (`!1470 <https://gitlab.com/yaook/k8s/-/merge_requests/1470>`_)
+
+
 v8.0.0 (2024-08-28)
 -------------------
 
