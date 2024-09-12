@@ -1889,13 +1889,13 @@ requests = ">=2.14.2"
 
 [[package]]
 name = "python-openstackclient"
-version = "7.0.0"
+version = "7.1.0"
 description = "OpenStack Command-line Client"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "python-openstackclient-7.0.0.tar.gz", hash = "sha256:d470e3598c929d923fd768fdf866f51bd34a91bfb17eb70ca1363fabb68bd2e0"},
-    {file = "python_openstackclient-7.0.0-py3-none-any.whl", hash = "sha256:a843389d27f86133c5e8d97f9e25e2e307668d8c1bcd170d205f502c1fde8d2b"},
+    {file = "python-openstackclient-7.1.0.tar.gz", hash = "sha256:9effc299c5694220bae457778e6cd9b23aea1bc3bfcd04e3a04f8d86385a0554"},
+    {file = "python_openstackclient-7.1.0-py3-none-any.whl", hash = "sha256:711fdf839fcdbc2fe7070d1aa4968c9ee4f7d06806d1c388932ff88acf89406d"},
 ]
 
 [package.dependencies]
@@ -1908,7 +1908,7 @@ osc-lib = ">=2.3.0"
 pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 python-cinderclient = ">=3.3.0"
 python-keystoneclient = ">=3.22.0"
-requests = ">=2.14.2"
+requests = ">=2.27.0"
 stevedore = ">=2.0.1"
 
 [[package]]
