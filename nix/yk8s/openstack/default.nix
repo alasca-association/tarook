@@ -6,13 +6,11 @@
   ...
 }: let
   cfg = config.yk8s.openstack;
-  modules-lib = import ./lib/modules.nix {inherit lib;};
+  modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule;
   inherit (lib) mkEnableOption mkOption;
-  inherit (lib.attrsets) filterAttrs recursiveUpdate;
-  inherit (lib.trivial) pipe;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkDisableOption linkToPath types;
-  inherit (yk8s-lib.transform) removeObsoleteOptions filterInternal;
+  inherit (lib.attrsets) recursiveUpdate;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkDisableOption types;
   inherit (yk8s-lib.options) mkHelmReleaseOptions;
   inherit (yk8s-lib.k8s) mkAffinity mkTolerations;
   inherit (builtins) fromJSON readFile pathExists length;
@@ -54,8 +52,9 @@
         - :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
 
       '';
-      type = with types; nullOr types.bool;
-      default = null;
+      type = types.bool;
+      default = cfg.create_root_disk_on_volume;
+      defaultText = lib.literalExpression "false";
     };
   };
   # NOTE: Some options are not used by Ansible but other parts of the LCM,
@@ -77,89 +76,19 @@
   ];
 in {
   imports = [
+    ./00-provider.nix
+    ./10-networking.nix
+    ./20-gateway-networking.nix
+    ./30-nodes.nix
+    ./40-object-storage.nix
+
     (mkRenamedOptionModule ["openstack" "cinder_enable_topology"] ["openstack" "cinder" "enable_topology"])
     (mkRenamedOptionModule ["openstack" "cinder_volume_type"] ["openstack" "cinder" "volume_type"])
   ];
+
   options.yk8s.openstack = mkTopSection {
     _docs.order = 1;
-    _docs.preface = ''
-      .. note::
-
-         :ref:`configuration-options.yk8s.openstack.nodes`
-         allows you to configure
-         the k8s master and worker servers.
-         The ``role`` attribute must be used to distinguish both [1]_.
-
-         The amount of gateway nodes can be controlled with
-         :ref:`configuration-options.yk8s.openstack.gateway_count`.
-
-      .. [1] Caveat: Changing the role of a Terraform node
-                     will completely rebuild the node.
-
-      .. attention::
-
-          You must configure at least one master node.
-
-      You can add and delete Terraform nodes simply
-      by adding and removing their entries to/from the config
-      or tuning :ref:`configuration-options.yk8s.openstack.gateway_count` for gateway nodes.
-      Consider the following example:
-
-      .. code:: diff
-
-          openstack = {
-
-         -  gateway_count = 3;
-         +  gateway_count = 2;                 # <-- one gateway gets deleted
-
-            nodes = {
-              worker-0 = {
-                role = "worker";
-                flavor = "M";
-                image = "Debian 12 (bookworm)";
-              };
-         -    worker-1 = {                     # <-- gets deleted
-         -      role = "worker";
-         -      flavor = "M";
-         -    };
-              worker-2 = {
-                role = "worker";
-                flavor = "L";
-              };
-         +    mon1 = {                         # <-- gets created
-         +      role = "worker";
-         +      flavor = "S";
-         +      image = "Ubuntu 22.04 LTS x64";
-         +    };
-            };
-         };
-
-      The name of an OpenStack node is composed from the following parts:
-
-      - for master/worker nodes:
-        ``yk8s.infra.cluster_name`` ``<the nodes' key in yk8s.openstack.nodes>``
-
-      - for gateway nodes:
-        ``yk8s.infra.cluster_name`` ``yk8s.openstack.gateway_defaults.common_name`` ``<numeric-index>``
-
-      .. code:: nix
-
-         openstack = {
-
-          cluster_name = "yk8s";
-          gateway_count = 1;
-          #....
-
-          gateway_defaults.common_name = "gateway-";
-
-          nodes.master-x.role = "master";
-          nodes.worker-a.role = "worker";
-
-          # yields the following node names:
-          # - yk8s-gateway-0
-          # - yk8s-master-x
-          # - yk8s-worker-a
-    '';
+    _docs.preface = builtins.readFile ./preface.rst;
 
     enabled = mkOption {
       description = ''
@@ -167,6 +96,15 @@ in {
       '';
       type = types.bool;
       default = true;
+    };
+
+    nodes_prefix = yk8s-lib.mkInternalOption {
+      readOnly = true;
+      type = lib.types.str;
+      default =
+        if config.yk8s.infra.cluster_name == ""
+        then ""
+        else "${config.yk8s.infra.cluster_name}-";
     };
 
     public_network = mkOption {
@@ -183,7 +121,7 @@ in {
         Will most of the time be set via the environment variable TF_VAR_keypair
       '';
       type = with types; nullOr yk8s.openstack.keypairName;
-      default = null;
+      default = yk8s-lib.tfRef "var.keypair"; # this will make Terraform read it from TF_VAR_keypair
     };
 
     azs = mkOption {
@@ -355,6 +293,8 @@ in {
 
         You may also specify those attributes or a subset of them
         using :ref:`yk8s.openstack.{master,worker}_defaults <configuration-options.yk8s.openstack>`.
+
+        Gateways are created automatically, and should not be explicitly added here.
       '';
       type = types.attrsOf (types.submodule {
         options = {
@@ -362,6 +302,7 @@ in {
             type = types.enum [
               "master"
               "worker"
+              "gateway"
             ];
           };
           image = mkOption {
@@ -424,9 +365,33 @@ in {
             type = with types; nullOr yk8s.openstack.serverGroupName;
             default = null;
           };
+          vm_name = mkInternalOption {
+            type = types.nonEmptyStr;
+          };
         };
       });
       default = {};
+      apply = lib.mapAttrs (
+        # fill all null values with defaults
+        nodeName: nodeValues: (lib.foldlAttrs (acc: k: v:
+            acc
+            // lib.optionalAttrs ((!builtins.hasAttr k acc) || v != null) {
+              ${k} = v;
+            }) (
+            lib.getAttr nodeValues.role
+            {
+              "master" = cfg.master_defaults;
+              "worker" = cfg.worker_defaults;
+              "gateway" = cfg.gateway_defaults;
+            }
+          )
+          (
+            nodeValues
+            // {
+              vm_name = "${cfg.nodes_prefix}${nodeName}";
+            }
+          ))
+      );
     };
 
     network_name = mkOption {
@@ -553,12 +518,27 @@ in {
             ["cinder" "helm" "values"]
             ["cloud_controller_manager" "helm" "values"]
           ];
-          transformations = [(c: builtins.removeAttrs c nonAnsibleOptions)];
+          transformations = [(c: removeAttrs c nonAnsibleOptions)];
         })
       ];
     }
     (lib.mkIf cfg.enabled {
       terraform.enabled = true;
+
+      openstack.nodes = builtins.foldl' (acc: idx: let
+        node_name = "${cfg.gateway_defaults.common_name}${toString idx}";
+      in
+        acc
+        // {
+          "${node_name}" = {
+            role = "gateway";
+            az =
+              if cfg.spread_gateways_across_azs
+              then builtins.elemAt cfg.azs (lib.mod idx (builtins.length cfg.azs))
+              else null;
+          };
+        })
+      {} (lib.range 0 (cfg.gateway_count - 1));
 
       _targets.terraform.assertions = [
         (let
@@ -587,7 +567,7 @@ in {
           }
           {
             assertion = config.yk8s.infra.ipv4_enabled;
-            message = "config.yk8s.openstack: Tarook Terraform does not yet support IPv6-only, see #685";
+            message = "config.yk8s.openstack: Tarook Terraform does not yet support IPv6-only, see https://gitlab.com/alasca.cloud/tarook/tarook/-/work_items/685";
           }
           (let
             current_config_file =
@@ -661,82 +641,71 @@ in {
           (lib.filterAttrs (n: _: lib.hasSuffix "_defaults" n))
           (lib.mapAttrsToList (n: _: n))
         ])
-        ++ lib.mapAttrsToList (nodeName: nodeOptions: {
-          assertion =
-            (nodeOptions.root_disk_size != null)
-            -> any (v: v == true) [
-              cfg.create_root_disk_on_volume
-              cfg."${nodeOptions.role}_defaults".create_root_disk_on_volume
-              nodeOptions.create_root_disk_on_volume
-            ];
-          message = ''
-            config.yk8s.openstack.nodes.${nodeName}.root_disk_size:
-              is set, but will not have any effect
-              because none of the following options is enabled:
-                - config.yk8s.openstack.nodes.${nodeName}.create_root_disk_on_volume
-                - config.yk8s.openstack.${nodeOptions.role}_defaults.create_root_disk_on_volume
-                - config.yk8s.openstack.create_root_disk_on_volume
+        ++ (lib.mapAttrsToList (nodeName: nodeOptions: {
+            assertion =
+              (nodeOptions.root_disk_size != null)
+              -> any (v: v == true) [
+                cfg.create_root_disk_on_volume
+                cfg."${nodeOptions.role}_defaults".create_root_disk_on_volume
+                nodeOptions.create_root_disk_on_volume
+              ];
+            message = ''
+              config.yk8s.openstack.nodes.${nodeName}.root_disk_size:
+                is set, but will not have any effect
+                because none of the following options is enabled:
+                  - config.yk8s.openstack.nodes.${nodeName}.create_root_disk_on_volume
+                  - config.yk8s.openstack.${nodeOptions.role}_defaults.create_root_disk_on_volume
+                  - config.yk8s.openstack.create_root_disk_on_volume
 
-              Set at least one of these to `true`
-              or unset config.yk8s.openstack.nodes.${nodeName}.root_disk_size.
-          '';
-        })
-        cfg.nodes;
+                Set at least one of these to `true`
+                or unset config.yk8s.openstack.nodes.${nodeName}.root_disk_size.
+            '';
+          })
+          cfg.nodes);
       _targets.ansible.warnings = [];
       infra = {
         networking_floating_ip = config.yk8s.terraform.outputs.networking_floating_ip.value;
         networking_fixed_ip = config.yk8s.terraform.outputs.networking_fixed_ip.value or null;
         networking_fixed_ip_v6 = config.yk8s.terraform.outputs.networking_fixed_ip_v6.value or null;
-        ansible_hosts = {
-          all.vars = {
-          };
-
-          frontend.children = {
-            gateways = {};
-          };
-
-          gateways.hosts =
+        ansible_hosts = let
+          nodeConfigs =
             lib.mapAttrs (
-              name: _:
-                {
-                  ansible_host = config.yk8s.terraform.outputs.gateway_fips.value.${name}.address;
-                  port_id = config.yk8s.terraform.outputs.gateway_ports.value.${name}.id;
-                  local_ipv4_address = builtins.head config.yk8s.terraform.outputs.gateway_ports.value.${name}.all_fixed_ips;
+              nodeName: nodeValues: let
+                vmValues = config.yk8s.terraform.outputs."node_${nodeValues.vm_name}".value;
+                networkValues = builtins.head vmValues.network;
+                fipValues = config.yk8s.terraform.outputs."floatingip_${nodeValues.vm_name}".value;
+              in
+                rec {
+                  ansible_host =
+                    if nodeValues.role == "gateway"
+                    then fipValues.address
+                    else local_ipv4_address;
+                  port_id = networkValues.port;
+                  local_ipv4_address = networkValues.fixed_ip_v4;
                 }
                 // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
-                  local_ipv6_address = builtins.elemAt config.yk8s.terraform.outputs.gateway_ports.value.${name}.all_fixed_ips 1;
+                  local_ipv6_address = lib.removePrefix "[" (lib.removeSuffix "]" networkValues.fixed_ip_v6);
                 }
             )
-            config.yk8s.terraform.outputs.gateways.value;
-
-          masters.hosts =
-            lib.mapAttrs (
-              name: _:
-                {
-                  ansible_host = builtins.head config.yk8s.terraform.outputs.master_ports.value.${name}.all_fixed_ips;
-                  port_id = config.yk8s.terraform.outputs.master_ports.value.${name}.id;
-                  local_ipv4_address = builtins.head config.yk8s.terraform.outputs.master_ports.value.${name}.all_fixed_ips;
-                }
-                // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
-                  local_ipv6_address = builtins.elemAt config.yk8s.terraform.outputs.master_ports.value.${name}.all_fixed_ips 1;
-                }
-            )
-            config.yk8s.terraform.outputs.masters.value;
-          workers.hosts =
-            lib.mapAttrs (
-              name: _:
-                {
-                  ansible_host = builtins.head config.yk8s.terraform.outputs.worker_ports.value.${name}.all_fixed_ips;
-                  port_id = config.yk8s.terraform.outputs.worker_ports.value.${name}.id;
-                  local_ipv4_address = builtins.head config.yk8s.terraform.outputs.worker_ports.value.${name}.all_fixed_ips;
-                }
-                // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
-                  local_ipv6_address = builtins.elemAt config.yk8s.terraform.outputs.worker_ports.value.${name}.all_fixed_ips 1;
-                }
-            )
-            config.yk8s.terraform.outputs.workers.value;
-        };
+            cfg.nodes;
+        in
+          lib.foldlAttrs (
+            acc: nodeName: nodeConfig: let
+              path =
+                (lib.getAttr cfg.nodes.${nodeName}.role
+                  {
+                    "gateway" = ["gateways"];
+                    "master" = ["masters"];
+                    "worker" = ["workers"];
+                  })
+                ++ ["hosts" "${cfg.nodes.${nodeName}.vm_name}"];
+            in
+              lib.recursiveUpdate acc (lib.setAttrByPath path nodeConfig)
+          )
+          {}
+          nodeConfigs;
       };
+
       ch-k8s-lbaas = {
         subnet_id = config.yk8s.terraform.outputs.subnet_id.value;
         floating_ip_network_id = config.yk8s.terraform.outputs.floating_ip_network_id.value;

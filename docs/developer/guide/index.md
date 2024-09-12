@@ -9,6 +9,7 @@ hidden: true
 coding-guide
 simulate-bm
 read-config
+terraform-state-migrations
 ```
 
 Keep this at hand when *developing* with Tarook.
@@ -25,6 +26,10 @@ Keep this at hand when *developing* with Tarook.
 :::
 :::{grid-item-card} Using configuration variables in scripts
 :link: /developer/guide/read-config
+:link-type: doc
+:::
+:::{grid-item-card} Adding Terraform state migrations
+:link: /developer/guide/terraform-state-migrations
 :link-type: doc
 :::
 ::::

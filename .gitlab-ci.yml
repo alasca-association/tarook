@@ -61,24 +61,6 @@ include:
     - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
       when: on_success
 
-tflint:
-  image:
-    name: "ghcr.io/terraform-linters/tflint:v0.61.0"
-    entrypoint: ["/bin/sh", "-c"]
-  stage: lint
-  script:
-    - tflint --chdir=terraform/
-  tags:
-    - docker
-  rules:
-    - !reference [.default_lint_rules, rules]
-    - changes:
-      - 'terraform/**/*'
-      - 'docs/_releasenotes/*ghcr.io-terraform-linters-tflint*'
-      if: $SKIP_LINT != "true"
-      when: on_success
-    - when: never
-
 shellcheck:
   image: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/koalaman/shellcheck-alpine:v0.11.0"
   stage: lint
