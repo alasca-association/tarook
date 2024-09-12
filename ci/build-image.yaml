@@ -8,6 +8,8 @@ build_image:
     changes:
     - flake.nix
     - flake.lock
+    - pyproject.toml
+    - poetry.lock
     - ci/build-image.yaml
     - ci/container-image/*
     when: always
@@ -15,6 +17,8 @@ build_image:
     changes:
     - flake.nix
     - flake.lock
+    - pyproject.toml
+    - poetry.lock
     - ci/build-image.yaml
     - ci/container-image/*
     when: always
