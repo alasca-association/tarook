@@ -10,4 +10,4 @@ actions_dir="$(realpath "$(dirname "$0")")"
 
 cd "$terraform_state_dir"
 export TF_DATA_DIR="$terraform_state_dir/.terraform"
-exec terraform -chdir="$terraform_module" "$@"
+exec terraform "$@"

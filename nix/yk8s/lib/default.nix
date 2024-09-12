@@ -32,6 +32,8 @@
         cat ${preamble} ${file} > $out
       '';
 
+  tfRef = ref: "\${${ref}}";
+
   mkGroupVarsFile = {
     cfg,
     inventory_path,

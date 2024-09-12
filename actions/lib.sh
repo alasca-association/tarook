@@ -5,6 +5,7 @@ code_repository="$(realpath "$actions_dir/../")"
 etc_directory="$(realpath "etc")"
 group_vars_dir="${cluster_repository}/inventory/yaook-k8s/group_vars"
 conf_vars_file="${cluster_repository}/inventory/conf_vars/main.yaml"
+terraform_vars_dir="${cluster_repository}/inventory/terraform"
 state_dir="$cluster_repository/state"
 
 release_migration_lock="$state_dir/release-migration-in-progress"
@@ -17,7 +18,6 @@ terraform_min_version="1.3.0"
 terraform_state_dir="$state_dir/terraform"
 terraform_disruption_lock="$terraform_state_dir/prevent_disruption.lock"
 export TF_DATA_DIR="$terraform_state_dir/.terraform"
-terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"
 terraform_plan="$terraform_state_dir/plan.tfplan"
 
 ansible_directory="$code_repository/ansible"
@@ -226,10 +226,12 @@ function ansible_playbook() {
 }
 
 function load_gitlab_vars() {
-    gitlab_base_url="$(jq -r .gitlab_base_url   "$terraform_state_dir/config.tfvars.json")"
-    gitlab_project_id="$(jq -r .gitlab_project_id "$terraform_state_dir/config.tfvars.json")"
-    gitlab_state_name="$(jq -r .gitlab_state_name "$terraform_state_dir/config.tfvars.json")"
-    backend_address="$gitlab_base_url/api/v4/projects/$gitlab_project_id/terraform/state/$gitlab_state_name"
+    gitlab_conf_file="$terraform_vars_dir/gitlab.yaml"
+
+    gitlab_base_url="$(yq -r .base_url   "$gitlab_conf_file")"
+    gitlab_project_id="$(yq -r .project_id "$gitlab_conf_file")"
+    gitlab_state_name="$(yq -r .state_name "$gitlab_conf_file")"
+    backend_address="$(yq -r .backend_address "$gitlab_conf_file")"
 }
 
 # true: HTTP/200 response; false: HTTP/404; exit: HTTP/*
@@ -282,39 +284,14 @@ function check_venv() {
 }
 
 function tf_init() {
-    OVERRIDE_FILE="$terraform_module/backend_override.tf"
 
-    function tf_init_http () {
-        run terraform -chdir="$terraform_module" init \
-                      -upgrade \
-                      -backend-config="address=$backend_address" \
-                      -backend-config="lock_address=$backend_address/lock" \
-                      -backend-config="unlock_address=$backend_address/lock" \
-                      -backend-config="lock_method=POST" \
-                      -backend-config="unlock_method=DELETE" \
-                      -backend-config="retry_wait_min=5"
-    }
-
-    function tf_init_local () {
-        run terraform -chdir="$terraform_module" init \
+    function _tf_init () {
+        run terraform init \
                       -upgrade
     }
 
-    function tf_init_http_migrate () {
-        run terraform -chdir="$terraform_module" init \
-                      -migrate-state \
-                      -force-copy \
-                      -upgrade \
-                      -backend-config="address=$backend_address" \
-                      -backend-config="lock_address=$backend_address/lock" \
-                      -backend-config="unlock_address=$backend_address/lock" \
-                      -backend-config="lock_method=POST" \
-                      -backend-config="unlock_method=DELETE" \
-                      -backend-config="retry_wait_min=5"
-    }
-
-    function tf_init_local_migrate () {
-        run terraform -chdir="$terraform_module" init \
+    function _tf_init_migrate () {
+        run terraform init \
                       -migrate-state \
                       -force-copy \
                       -upgrade
@@ -355,26 +332,16 @@ function tf_init() {
     fi
 
     # gitlab_backend=true
-    if [ "$(jq -r .gitlab_backend "$terraform_state_dir/config.tfvars.json")" = true ]; then
-
-        # Here we create an override_file which overrides the `local` terraform backend to http(gitlab) backend
-        if [ ! -f "$OVERRIDE_FILE" ]; then
-        cat > "$OVERRIDE_FILE" <<-EOF
-terraform {
-	backend "http" {}
-}
-EOF
-        fi
-
+    if [ "$(jq -r '.terraform.backend | has("http")' "$terraform_state_dir/config.tf.json")" = true ]; then
         if tf_state_present_on_gitlab; then
-            tf_init_http
+            _tf_init
         else
             if  [ -f "$terraform_state_dir/terraform.tfstate" ]; then
-                tf_init_http_migrate
+                _tf_init_migrate
                 # Delete terraform statefiles locally if they exist (-f)
                 rm -f "$terraform_state_dir/terraform.tfstate" "$terraform_state_dir/terraform.tfstate.backup"
             else
-                tf_init_http    # first init
+                _tf_init    # first init
             fi
         fi
 
@@ -383,9 +350,8 @@ EOF
 
         if all_gitlab_vars_are_set; then
             if tf_state_present_on_gitlab; then
-                rm -f "$OVERRIDE_FILE"
                 notef "Terraform statefile on GitLab found. Migration from http to local."
-                if tf_init_local_migrate; then
+                if _tf_init_migrate; then
                     # delete tf_statefile from GitLab
                     GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" --request DELETE "$backend_address")
                     check_return_code "$GITLAB_RESPONSE"
@@ -404,8 +370,7 @@ EOF
                 exit 2
             fi
         else
-            rm -f "$OVERRIDE_FILE"
-            tf_init_local
+            _tf_init
         fi
     fi
 }
