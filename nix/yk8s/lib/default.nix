@@ -32,6 +32,9 @@
         cat ${preamble} ${file} > $out
       '';
 
+  # Generates a Terraform/OpenTofu ressource reference with proper escaping
+  tfRef = ref: "\${${ref}}";
+
   mkGroupVarsFile = {
     cfg,
     inventory_path,

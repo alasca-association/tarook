@@ -19,15 +19,16 @@ fi
 
 "$actions_dir/update-inventory.sh" terraform
 
-var_file="$terraform_state_dir/config.tfvars.json"
+tf_prepare
+
 cd "$terraform_state_dir"
 
 tf_init
 
-run terraform -chdir="$terraform_module" plan --var-file="$var_file" --out "$terraform_plan"
+run terraform plan --out "$terraform_plan"
 # strict mode terminates the execution of this script immediately
 set +e
-terraform -chdir="$terraform_module" show -json "$terraform_plan" | python3 "$actions_dir/helpers/check_plan.py"
+terraform show -json "$terraform_plan" | python3 "$actions_dir/helpers/check_plan.py"
 rc=$?
 set -e
 RC_DISRUPTION=47
@@ -41,8 +42,8 @@ elif [ $rc != $RC_NO_DISRUPTION ] && [ $rc != $RC_DISRUPTION ]; then
     errorf 'error during execution of check_plan.py. Aborting' >&2
     exit 4
 fi
-run terraform -chdir="$terraform_module" apply "$terraform_plan" | sed '/Outputs:/,$d' # we don't want Terraform to dump all the outputs to the console
-terraform -chdir="$terraform_module" output -json > "$terraform_state_dir/outputs.json"
+run terraform apply "$terraform_plan" | sed '/Outputs:/,$d' # we don't want Terraform to dump all the outputs to the console
+terraform output -json > "$terraform_state_dir/outputs.json"
 
 if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ]; then
     notef 'Pulling latest Terraform state from Gitlab for disaster recovery purposes.'

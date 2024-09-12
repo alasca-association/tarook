@@ -9,5 +9,5 @@ actions_dir="$(realpath "$(dirname "$0")")"
 "$actions_dir/update-inventory.sh" terraform
 
 cd "$terraform_state_dir"
-export TF_DATA_DIR="$terraform_state_dir/.terraform"
-exec terraform -chdir="$terraform_module" "$@"
+tf_prepare
+exec terraform "$@"
