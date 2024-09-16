@@ -33,6 +33,7 @@
             os-client-config = ["setuptools"];
             kubernetes-validate = ["setuptools"];
             sphinx-multiversion = ["setuptools"];
+            urllib3 = ["hatch-vcs"];
           }));
       python = pkgs.python312;
     };
