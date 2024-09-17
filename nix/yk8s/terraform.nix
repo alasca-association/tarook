@@ -15,7 +15,6 @@
   inherit (yk8s-lib.types) ipv4Cidr;
   inherit (yk8s-lib.transform) filterNull removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
-  tfvars_file_path = "terraform/config.tfvars.json";
 in {
   imports = [
     (mkRemovedOptionModule "terraform" "haproxy_ports" "")
