@@ -436,6 +436,7 @@ in {
               ./00-variables.nix
               ./01-discovery.nix
               ./50-object-storage.nix
+              ./99-backend.nix
               {
                 var = let
                 in
