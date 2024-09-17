@@ -7,6 +7,7 @@
     url = "github:lykos153/poetry2nix/feature/default-deps-main-group";
     inputs.nixpkgs.follows = "nixpkgs";
   };
+  inputs.terranix.url = "github:terranix/terranix";
 
   outputs = inputs @ {
     self,
