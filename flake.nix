@@ -5,6 +5,7 @@
   inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
   inputs.flake-parts.url = "github:hercules-ci/flake-parts";
   inputs.systems.url = "github:nix-systems/x86_64-linux/2ecfcac5e15790ba6ce360ceccddb15ad16d08a8";
+  inputs.terranix.url = "github:terranix/terranix";
 
   outputs = inputs @ {
     self,
