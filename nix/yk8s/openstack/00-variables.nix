@@ -1,6 +1,10 @@
-{lib, ...}: {
+{
+  lib,
+  config,
+  ...
+}: {
   options = {
-    vars = lib.mkOption {
+    var = lib.mkOption {
       description = ''
         Variables passed in by the Nix module
       '';

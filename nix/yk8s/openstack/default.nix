@@ -2,7 +2,9 @@
   config,
   lib,
   yk8s-lib,
+  terranix-lib,
   pkgs,
+  system,
   ...
 }: let
   cfg = config.yk8s.openstack;
@@ -15,11 +17,11 @@
   inherit (yk8s-lib.types) ipv4Cidr;
   inherit (yk8s-lib.transform) filterNull removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
-  tfvars_file_path = "terraform/config.tfvars.json";
+  tfconfig_file_path = "terraform/config.tf.json";
   checkClusterName = v: let
     current_config_file =
       if config.yk8s.state_directory != null
-      then "${config.yk8s.state_directory}/${tfvars_file_path}"
+      then "${config.yk8s.state_directory}/${tfconfig_file_path}"
       else null;
     current_config = fromJSON (readFile current_config_file);
     cluster_exists =
@@ -371,7 +373,7 @@ in {
       (let
         current_config_file =
           if config.yk8s.state_directory != null
-          then "${config.yk8s.state_directory}/${tfvars_file_path}"
+          then "${config.yk8s.state_directory}/${tfconfig_file_path}"
           else null;
         current_config = fromJSON (readFile current_config_file);
         cluster_exists =
@@ -423,13 +425,26 @@ in {
           filteredOpenstackCfg = yk8s-lib.removeAttrByPath cfg ["enabled"];
           filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["prevent_disruption"]];
           infraCfg = lib.attrsets.getAttrs ["ipv4_enabled" "ipv6_enabled" "subnet_cidr" "subnet_v6_cidr"] config.yk8s.infra;
+          transformations = [removeObsoleteOptions filterInternal filterNull];
           mergedCfg =
-            builtins.foldl' (acc: e: lib.attrsets.recursiveUpdate acc (removeObsoleteOptions e)) {}
+            builtins.foldl' (acc: e: lib.attrsets.recursiveUpdate acc (pipe e transformations)) {}
             [filteredOpenstackCfg filteredTerraformCfg infraCfg];
-          transformations = [filterInternal filterNull];
-          varsFile = (pkgs.formats.json {}).generate "tfvars.json" (pipe mergedCfg transformations);
+          varsFile = terranix-lib.terranixConfiguration {
+            inherit system;
+            modules = [
+              ./00-provider.nix
+              ./00-variables.nix
+              ./01-discovery.nix
+              ./50-object-storage.nix
+              {
+                var = let
+                in
+                  mergedCfg;
+              }
+            ];
+          };
         in (pkgs.runCommandLocal "tfvars.json" {} ''
-          install -m 644 -D ${varsFile} $out/${tfvars_file_path}
+          install -m 644 -D ${varsFile} $out/${tfconfig_file_path}
         '')
       )
     ];
