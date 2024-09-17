@@ -7,6 +7,7 @@
     url = "github:nix-community/poetry2nix";
     inputs.nixpkgs.follows = "nixpkgs";
   };
+  inputs.terranix.url = "github:terranix/terranix";
 
   outputs = inputs @ {
     self,
