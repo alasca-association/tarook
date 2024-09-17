@@ -432,9 +432,11 @@ in {
           varsFile = terranix-lib.terranixConfiguration {
             inherit system;
             modules = [
+              ./versions.nix
               ./00-provider.nix
               ./00-variables.nix
               ./01-discovery.nix
+              ./10-networking.nix
               ./50-object-storage.nix
               ./99-backend.nix
               {

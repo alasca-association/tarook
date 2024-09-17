@@ -20,8 +20,6 @@ var_file="$terraform_state_dir/config.tfvars.json"
 cd "$terraform_state_dir"
 export TF_DATA_DIR="$terraform_state_dir/.terraform"
 
-OVERRIDE_FILE="$terraform_module/backend_override.tf"
-
 function tf_init_http_migrate () {
     run terraform -chdir="$terraform_module" init \
                   -migrate-state \
@@ -90,15 +88,6 @@ if [ "$(jq -r .gitlab_backend "$terraform_state_dir/config.tfvars.json")" = true
         exit 2
     fi
 
-    # Here we create an override_file which overrides the `local` terraform backend to http(gitlab) backend
-    if [ ! -f "$OVERRIDE_FILE" ]; then
-		cat > "$OVERRIDE_FILE" <<-EOF
-		terraform {
-			backend "http" {}
-		}
-		EOF
-    fi
-
     if tf_state_present_on_gitlab; then
         tf_init_http
     else
@@ -127,7 +116,6 @@ else
 
     if all_gitlab_vars_are_set; then
         if tf_state_present_on_gitlab; then
-            rm -f "$OVERRIDE_FILE"
             notef "Terraform statefile on GitLab found. Migration from http to local."
             if tf_init_local_migrate; then
                 # delete tf_statefile from GitLab
@@ -148,7 +136,6 @@ else
             exit 2
         fi
     else
-        rm -f "$OVERRIDE_FILE"
         tf_init_local
     fi
 fi
