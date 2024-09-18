@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-actions_dir="$(cd "$(dirname "$0")/../.." && pwd)"
+actions_dir="$(cd "$(dirname "$0")/../../actions" && pwd)"
 
 # Ensure that the latest config is deployed to the inventory
 "$actions_dir/update-inventory.sh"
