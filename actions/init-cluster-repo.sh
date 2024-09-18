@@ -62,7 +62,7 @@ if [ "$(realpath "$new_actions_dir")" != "$(realpath "$actions_dir")" ]; then
     fi
 fi
 
-run nix flake init -t "${code_repository}#cluster-repo?shallow=1" || true # not overriding existing files is ok
+run nix flake init -t "${code_repository}?shallow=1#cluster-repo" || true # not overriding existing files is ok
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     # TODO foreach file: only add if not already tracked or in index
 	run git add flake.nix .gitignore config .envrc
