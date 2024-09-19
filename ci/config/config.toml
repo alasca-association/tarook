@@ -95,10 +95,8 @@ ident   = "gitlab-ci-runner"
 [ch-k8s-lbaas]
 enabled       = true
 shared_secret = "IYeOlEFO1h3uc9x1bdw9thNNgmn1gm8dmzos3f04PLmFjt3d"
-agent_port    = 15203
 
 [kubernetes]
-version = "1.30.5"
 is_gpu_cluster = true
 virtualize_gpu = false
 
@@ -106,9 +104,6 @@ virtualize_gpu = false
 evictionsoft_memory_period = "1m25s"
 evictionhard_nodefs_available = "12%"
 evictionhard_nodefs_inodesfree = "7%"
-
-[kubernetes.apiserver]
-frontend_port = 8888
 
 [kubernetes.storage]
 rook_enabled          = true
@@ -186,7 +181,6 @@ use_thanos                          = true
 use_grafana                         = true
 grafana_persistent_storage_class    = "rook-ceph-cephfs"
 prometheus_persistent_storage_class = "csi-sc-cinderplugin"
-thanos_objectstorage_container_name = "ci-monitoring-thanos-data"
 scheduling_key                      = "{{ scheduling_key_prefix }}/monitoring"
 grafana_memory_limit = "768Mi"
 grafana_memory_request = "768Mi"
