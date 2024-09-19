@@ -7,6 +7,7 @@
   cfg = config.yk8s.node-scheduling;
   inherit (lib) mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  nodeNames = map (n: "${config.yk8s.terraform.cluster_name}-${n}") (builtins.attrNames config.yk8s.terraform.nodes);
 in {
   options.yk8s.node-scheduling = mkTopSection {
     _docs.preface = ''
@@ -50,10 +51,12 @@ in {
           managed-k8s-worker-5 = ["''${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"];
         }
       '';
-      apply = v: (builtins.all (e:
-        if config.yk8s.terraform.enabled -> builtins.elem e (builtins.attrNames config.yk8s.terraform.nodes)
-        then v
-        else throw "(node-scheduling) Label defined for ${e}, but node not found in Terraform config") (builtins.attrNames v));
+      apply = v:
+        builtins.seq (builtins.all (e:
+          if config.yk8s.terraform.enabled -> builtins.elem e nodeNames
+          then true
+          else throw "(node-scheduling) Label defined for ${e}, but node not found in Terraform config") (builtins.attrNames v))
+        v;
     };
     taints = mkOption {
       description = ''
@@ -68,10 +71,12 @@ in {
           managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"];
         }
       '';
-      apply = v: (builtins.all (e:
-        if config.yk8s.terraform.enabled -> builtins.elem e (builtins.attrNames config.yk8s.terraform.nodes)
-        then v
-        else throw "(node-scheduling) Taint defined for ${e}, but node not found in Terraform config") (builtins.attrNames v));
+      apply = v:
+        builtins.seq (builtins.all (e:
+          if config.yk8s.terraform.enabled -> builtins.elem e nodeNames
+          then true
+          else throw "(node-scheduling) Taint defined for ${e}, but node not found in Terraform config") (builtins.attrNames v))
+        v;
     };
   };
   config.yk8s._inventory_packages = [
