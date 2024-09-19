@@ -96,4 +96,4 @@ if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")
 fi
 
 # Purge the remaining terraform directory. Its existence is a condition for additional disruption checks.
-rm -f "$terraform_state_dir/config.tfvars.json"
+rm -fr "$terraform_state_dir"
