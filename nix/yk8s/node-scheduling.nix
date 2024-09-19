@@ -92,6 +92,7 @@ in {
           inherit value;
         }))
       ];
+      unflat = ["k8s_node_labels" "k8s_node_taints"];
     })
   ];
 }
