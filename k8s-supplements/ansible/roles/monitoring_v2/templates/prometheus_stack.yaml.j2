@@ -373,6 +373,13 @@ prometheus:
 {% for remote_write in monitoring_remote_writes %}
       - url: {{ remote_write.url | to_json }}
         writeRelabelConfigs: {{ remote_write.write_relabel_configs | to_json }}
+        basicAuth:
+          username:
+            name: {{ remote_write.basic_auth_secret_name | to_json }}
+            key: username
+          password:
+            name: {{ remote_write.basic_auth_secret_name | to_json }}
+            key: password
 {% endfor %}
 {% endif %}
     secrets:
