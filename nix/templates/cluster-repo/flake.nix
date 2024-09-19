@@ -1,13 +1,14 @@
 {
   inputs.yk8s.url = "git+file:managed-k8s";
   inputs.nixpkgs.follows = "yk8s/nixpkgs";
+  inputs.flake-parts.follows = "yk8s/flake-parts";
 
   outputs = inputs @ {
     self,
-    yk8s,
+    flake-parts,
     ...
   }:
-    yk8s.inputs.flake-parts.lib.mkFlake {inherit inputs;} {
+    flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
         inputs.yk8s.flakeModules.yk8s
       ];
