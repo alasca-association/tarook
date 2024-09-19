@@ -63,9 +63,9 @@ use_flake_if_nix() {
         source_url "https://raw.githubusercontent.com/nix-community/nix-direnv/2.3.0/direnvrc" "sha256-Dmd+j63L84wuzgyjITIfSxSD57Tx7v51DMxVZOsiUD8="
       fi
       if [ "${MINIMAL_ACCESS_VENV:-false}" == "true" ]; then
-        use flake "${flake_dir}#minimal"
+        use flake "${flake_dir}?shallow=1#minimal"
       else
-        use flake "${flake_dir}#${YAOOK_K8S_DEVSHELL:-default}"
+        use flake "${flake_dir}?shallow=1#${YAOOK_K8S_DEVSHELL:-default}"
       fi
       export NIX_FLAKE_ACTIVE="${NIX_FLAKE_ACTIVE}:${flake_dir}"
     else
