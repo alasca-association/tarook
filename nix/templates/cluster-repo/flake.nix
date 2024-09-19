@@ -1,6 +1,6 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   inputs.yk8s.url = "git+file:managed-k8s";
+  inputs.nixpkgs.follows = "yk8s/nixpkgs";
 
   outputs = inputs @ {
     self,
