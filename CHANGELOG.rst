@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v6.1.4 (2024-09-20)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- Spawning clusters on Openstack with apply-all.sh has been fixed (`!1488 <https://gitlab.com/yaook/k8s/-/merge_requests/1488>`_)
+
+
 v6.1.3 (2024-08-26)
 -------------------
 
