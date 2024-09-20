@@ -2,6 +2,9 @@
 set -euo pipefail
 actions_dir="$(dirname "$0")"
 
+# Ensure that the latest config is deployed to the inventory
+"$actions_dir/update-inventory.sh"
+
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 load_conf_vars
@@ -11,9 +14,6 @@ check_conf_sanity
 check_venv
 
 require_ansible_disruption
-
-# Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
 
 while getopts s flag
 do
