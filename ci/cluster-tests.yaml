@@ -262,8 +262,6 @@
     - vault kv put yaook/k8s.ci.yaook.cloud/kv/ipsec-eap-psk ipsec_eap_psk="$IPSEC_EAP_PSK"
       # Create custom play
     - cp custom-play.yaml k8s-custom/main.yaml
-    - ./managed-k8s/actions/apply-terraform.sh
-    - ./reachability-or-recreate.sh
     - export AFLAGS="-e ansible_ssh_private_key_file=/root/.ssh/id_rsa"
     - ./managed-k8s/actions/apply-all.sh
     - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-frontend-nodes.sh
