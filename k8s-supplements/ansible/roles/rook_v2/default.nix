@@ -378,6 +378,7 @@ in {
       inherit cfg;
       ansible_prefix = "rook_";
       inventory_path = "all/rook.yaml";
+      transformations = [yk8s-lib.transform.filterNull];
     })
   ];
 }
