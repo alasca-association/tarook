@@ -67,16 +67,12 @@ function load_vault_container_name() {
 function load_conf_vars() {
     # All the things with side-effects should got here
 
-    if [ -e "$terraform_state_dir/config.tfvars.json" ]; then
-        terraform_prevent_disruption="$(
-            tomlq ".$terraform_disruption_setting"'
-                | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
-                "$config_file" 2>/dev/null
-        )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
-        tf_usage=${tf_usage:-"$(tomlq '.terraform | if has ("enabled") then .enabled else true end' "$config_file")"}
-    else
-        tf_usage=false
-    fi
+    tf_usage=${tf_usage:-"$(tomlq '.terraform | if has ("enabled") then .enabled else true end' "$config_file")"}
+    terraform_prevent_disruption="$(
+        tomlq ".$terraform_disruption_setting"'
+            | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
+            "$config_file" 2>/dev/null
+    )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
 
     wg_usage=${wg_usage:-"$(tomlq '.wireguard | if has("enabled") then .enabled else true end' "$config_file")"}
 
