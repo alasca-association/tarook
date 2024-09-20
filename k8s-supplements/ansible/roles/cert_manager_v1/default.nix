@@ -101,7 +101,7 @@ in {
         is to switch between staging and production.
         See https://letsencrypt.org/docs/staging-environment/
       '';
-      type = with types; nullOr str;
+      type = types.str;
       default = "https://acme-v02.api.letsencrypt.org/directory";
       example = "https://acme-staging-v02.api.letsencrypt.org/directory";
     };

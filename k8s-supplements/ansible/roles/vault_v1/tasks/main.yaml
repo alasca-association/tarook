@@ -35,7 +35,7 @@
 
 - name: Deploy Vault
   vars:
-    scheduling_key: "{{ yaook_vault_scheduling_key }}"
+    scheduling_key: "{{ yaook_vault_scheduling_key | default(None) }}"
   kubernetes.core.helm:
     chart_ref: hashicorp/vault
     chart_version: "{{ yaook_vault_chart_version }}"

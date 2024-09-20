@@ -37,6 +37,7 @@
         ++ [
           (t.flatten {except = cfg._internal.unflat ++ unflat;})
           (t.addPrefix ansible_prefix)
+          t.filterNull
         ]
       );
   in

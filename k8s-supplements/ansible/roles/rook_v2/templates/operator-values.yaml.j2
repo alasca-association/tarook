@@ -3,7 +3,7 @@ image:
 resources: {{ rook_operator_resources | to_json }}
 
 nodeSelector:
-{% if rook_scheduling_key %}
+{% if rook_scheduling_key is defined %}
   {{ rook_scheduling_key | to_json }}: "true"
 {% endif %}
 

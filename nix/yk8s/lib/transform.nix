@@ -42,7 +42,26 @@
       attrs;
 
   filterInternal = lib.attrsets.filterAttrsRecursive (n: _: n != "_internal");
-  filterNull = lib.attrsets.filterAttrsRecursive (_: v: v != null);
+  filterNull = lib.attrsets.foldlAttrs (acc: n: v:
+    acc
+    // (
+      if v == null
+      then {}
+      else if builtins.isAttrs v
+      then {${n} = filterNull v;}
+      else if builtins.isList v
+      then {
+        ${n} =
+          map (
+            e:
+              if builtins.isAttrs e
+              then filterNull e
+              else e
+          )
+          v;
+      }
+      else {${n} = v;}
+    )) {};
   flatten = {except}: let
     inherit (builtins) isAttrs elem;
     inherit (lib.attrsets) foldlAttrs mapAttrs';
