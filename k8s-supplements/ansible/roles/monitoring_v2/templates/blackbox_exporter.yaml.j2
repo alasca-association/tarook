@@ -8,14 +8,14 @@ config:
       http:
         valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
         follow_redirects: true
-        preferred_ip_protocol: "ip4"
+        preferred_ip_protocol: {{ 'ip6' if ipv6_enabled else ('ip4' if ipv4_enabled) }}
     http_api:
       prober: http
       timeout: 5s
       http:
         valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
         follow_redirects: true
-        preferred_ip_protocol: "ip4"
+        preferred_ip_protocol: {{ 'ip6' if ipv6_enabled else ('ip4' if ipv4_enabled) }}
         valid_status_codes:
         - 200
         - 300
@@ -26,7 +26,7 @@ config:
       http:
         valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
         follow_redirects: true
-        preferred_ip_protocol: "ip4"
+        preferred_ip_protocol: {{ 'ip6' if ipv6_enabled else ('ip4' if ipv4_enabled) }}
         tls_config:
           insecure_skip_verify: true
         valid_status_codes:
@@ -37,12 +37,12 @@ config:
       prober: icmp
       timeout: 5s
       icmp:
-        preferred_ip_protocol: "ip4"
+        preferred_ip_protocol: {{ 'ip6' if ipv6_enabled else ('ip4' if ipv4_enabled) }}
     tcp_connect:
       prober: tcp
       timeout: 5s
       tcp:
-        preferred_ip_protocol: "ip4"
+        preferred_ip_protocol: {{ 'ip6' if ipv6_enabled else ('ip4' if ipv4_enabled) }}
 
 serviceMonitor:
   enabled: true
