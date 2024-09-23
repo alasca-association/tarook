@@ -382,18 +382,16 @@ in {
             description = ''
               Scraping interval. Overrides value set in `defaults`
             '';
-            type = with types; nullOr str;
-            default = null;
-            example = "60s";
+            type = types.str;
+            default = "60s";
           };
 
           scrapeTimeout = mkOption {
             description = ''
               Scrape timeout. Overrides value set in `defaults`
             '';
-            type = with types; nullOr str;
-            default = null;
-            example = "60s";
+            type = types.str;
+            default = "60s";
           };
           module = mkOption {
             description = ''
