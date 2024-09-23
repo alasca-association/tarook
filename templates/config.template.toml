@@ -614,6 +614,9 @@ cluster_name = "rook-ceph" # •ᴗ•
 # The full public facing url you use in browser, used for redirects and emails
 #grafana_root_url = ""
 
+# Enable referencing multiple K8s clusters by a single Grafana datasource
+#grafana_dashboard_multicluster_support = true
+
 # Enable use of Thanos
 #use_thanos = false
 

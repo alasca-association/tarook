@@ -87,6 +87,11 @@ grafana:
       folderAnnotation: customer-dashboards
       provider:
         foldersFromFilesStructure: true
+{% if monitoring_grafana_dashboard_multicluster_support %}
+      multicluster:
+        global:
+          enabled: true
+{% endif %}
   serviceMonitor:
     enabled: true
 {% if monitoring_common_labels %}
