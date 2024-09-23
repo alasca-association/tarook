@@ -215,7 +215,7 @@ cephBlockPools:
   - name: "{{ item.name }}"
     spec:
       failureDomain: "{{ item.failure_domain }}"
-{% if item.erasure_coded %}
+{% if item.erasure_coded is defined %}
       erasureCoded:
         dataChunks: {{ item.erasure_coded.data_chunks }}
         codingChunks: {{ item.erasure_coded.coding_chunks }}
