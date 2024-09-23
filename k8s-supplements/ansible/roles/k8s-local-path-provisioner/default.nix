@@ -57,6 +57,6 @@ in {
       default = "v0.0.20"; # TODO either ensure leading "v" or add it?
     };
 
-    # nodeplugin_toleration = # TODO toleration submodule
+    nodeplugin_toleration = config.yk8s.kubernetes.storage.nodeplugin_toleration;
   };
 }

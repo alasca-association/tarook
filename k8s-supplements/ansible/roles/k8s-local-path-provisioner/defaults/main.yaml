@@ -1,3 +1,0 @@
----
-k8s_local_storage_dynamic_nodeplugin_toleration: "{{ storage_nodeplugin_toleration | default(False) }}" # TODO shouldn't this be k8s_storage_nodeplugin_toleration?
-...
