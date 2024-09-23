@@ -22,6 +22,8 @@ in {
       (mkRemovedOptionModule "k8s-service-layer.prometheus" "thanos_metadata_volume_size" "")
       (mkRemovedOptionModule "k8s-service-layer.prometheus" "thanos_metadata_volume_storage_class" "")
       (mkRemovedOptionModule "k8s-service-layer.prometheus" "grafana_plugins" "")
+      (mkRemovedOptionModule "k8s-service-layer.prometheus" "prometheus_monitor_all_namespaces" "")
+      (mkRemovedOptionModule "k8s-service-layer.prometheus" "monitor_all_namespaces" "")
 
       (mkRenamedOptionModule "k8s-service-layer.prometheus" "prometheus_operator_cpu_request" "operator_resources.cpu.request")
       (mkRenamedOptionModule "k8s-service-layer.prometheus" "prometheus_operator_cpu_limit" "operator_resources.cpu.limit")
@@ -292,16 +294,6 @@ in {
       '';
       type = with types; nullOr k8sSize;
       default = null;
-    };
-
-    prometheus_monitor_all_namespaces = mkOption {
-      description = ''
-        By default, the monitoring will capture all namespaces. If this is not
-        desired, the following switch can be turned off. In that case, only the
-        kube-system, monitoring and rook namespaces are scraped by Prometheus.
-      '';
-      type = types.bool;
-      default = true;
     };
 
     alertmanager_replicas = mkOption {
