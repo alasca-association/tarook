@@ -16,6 +16,7 @@ in {
   imports = [
     (mkRemovedOptionModule "miscellaneous" "ingress_whitelisting" "")
     (mkRemovedOptionModule "miscellaneous" "container_runtime" "")
+    (mkRemovedOptionModule "miscellaneous" "pip_mirror_url" "")
   ];
   options.yk8s.miscellaneous = mkTopSection {
     _docs.preface = ''
@@ -29,25 +30,17 @@ in {
       circumstances.
     '';
 
-    wireguard_on_workers = mkOption {
-      description = ''
-        Install wireguard on all workers (without setting up any server-side stuff)
-        so that it can be used from within Pods.
-      '';
-      type = types.bool;
-      default = false;
-    };
+    wireguard_on_workers = mkEnableOption ''
+      to install wireguard on all workers (without setting up any server-side stuff)
+      so that it can be used from within Pods.
+    '';
 
-    cluster_behind_proxy = mkOption {
-      description = ''
-        Configuration details if the cluster will be placed behind a HTTP proxy.
-        If unconfigured images will be used to setup the cluster, the updates of
-        package sources, the download of docker images and the initial cluster setup will fail.
-        NOTE: These chances are currently only tested for Debian-based operating systems and not for RHEL-based!
-      '';
-      type = types.bool;
-      default = false;
-    };
+    cluster_behind_proxy = mkEnableOption ''
+      the cluster will be placed behind a HTTP proxy.
+      If unconfigured images will be used to setup the cluster, the updates of
+      package sources, the download of docker images and the initial cluster setup will fail.
+      NOTE: These chances are currently only tested for Debian-based operating systems and not for RHEL-based!
+    '';
 
     haproxy_frontend_k8s_api_maxconn = mkOption {
       type = types.ints.positive;
@@ -238,19 +231,6 @@ in {
       default = null;
     };
 
-    pip_mirror_url = mkOption {
-      description = ''
-        Custom PyPI mirror
-        Use this in offline setups or to use a pull-through cache for
-        accessing the PyPI.
-        If the TLS certificate used by the mirror is not signed by a CA in
-        certifi, you can put its cert in `config/pip_mirror_ca.pem` to set
-        it explicitly.
-      '';
-      type = with types; nullOr str;
-      default = null;
-    };
-
     subnet_cidr = mkOption {
       description = ''
         In case it is not set via terraform
@@ -280,6 +260,20 @@ in {
         else v;
     };
   };
+  config.yk8s.assertions = [
+    {
+      assertion = cfg.cluster_behind_proxy -> cfg.http_proxy != null;
+      message = "miscellaneous.http_proxy must be set if miscellaneous.cluster_behind_proxy is true";
+    }
+    {
+      assertion = cfg.cluster_behind_proxy -> cfg.https_proxy != null;
+      message = "miscellaneous.https_proxy must be set if miscellaneous.cluster_behind_proxy is true";
+    }
+    {
+      assertion = cfg.cluster_behind_proxy -> cfg.no_proxy != null;
+      message = "miscellaneous.no_proxy must be set if miscellaneous.cluster_behind_proxy is true";
+    }
+  ];
   config.yk8s._inventory_packages =
     [
       (mkGroupVarsFile {
