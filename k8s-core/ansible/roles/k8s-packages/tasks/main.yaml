@@ -15,7 +15,7 @@
   when: ansible_pkg_mgr == 'apt'
 
 - name: Expand NO_PROXY configuration on Ubuntu machines
-  when: (cluster_behind_proxy | default(false)) and ansible_distribution == 'Ubuntu'
+  when: cluster_behind_proxy and ansible_distribution == 'Ubuntu'
   become: true
   ansible.builtin.lineinfile:
     path: /etc/environment
@@ -27,7 +27,7 @@
     - no_proxy
 
 - name: Expand NO_PROXY configuration on RHEL machines
-  when: (cluster_behind_proxy | default(false)) and ansible_distribution == 'Red Hat Enterprise Linux'
+  when: cluster_behind_proxy and ansible_distribution == 'Red Hat Enterprise Linux'
   become: true
   ansible.builtin.lineinfile:
     path: /etc/profile.d/proxy.sh

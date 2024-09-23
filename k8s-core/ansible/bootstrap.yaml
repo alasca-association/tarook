@@ -120,7 +120,7 @@
   - vars/retries.yaml
   roles:
   - role: proxy-support
-    when: cluster_behind_proxy | default(false)
+    when: cluster_behind_proxy
     tags: proxy-support
 
 - name: Update apt cache
