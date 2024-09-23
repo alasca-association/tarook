@@ -355,9 +355,9 @@ in {
             default = {};
           };
           devices = mkOption {
-            default = null;
+            default = [];
             type = with types;
-              nullOr (listOf (submodule {
+              listOf (submodule {
                 options = {
                   name = mkOption {
                     type = types.str;
@@ -367,7 +367,7 @@ in {
                     default = {};
                   };
                 };
-              }));
+              });
           };
         };
       });
