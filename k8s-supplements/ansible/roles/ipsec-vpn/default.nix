@@ -52,8 +52,8 @@ in {
         List of CIDRs to route to the peer. If not set, only dynamic IP
         assignments will be routed.
       '';
-      type = with types; nullOr (listOf str);
-      default = null;
+      type = with types; listOf str;
+      default = [];
     };
 
     local_networks = mkOption {
