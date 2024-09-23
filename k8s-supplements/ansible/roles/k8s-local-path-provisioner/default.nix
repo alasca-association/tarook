@@ -57,6 +57,15 @@ in {
       default = "v0.0.20"; # TODO either ensure leading "v" or add it?
     };
 
-    nodeplugin_toleration = config.yk8s.kubernetes.storage.nodeplugin_toleration;
+    nodeplugin_toleration = mkOption {
+      description = ''
+        nodeplugin toleration.
+        Setting this to true will cause the dynamic storage plugin
+        to run on all nodes (ignoring all taints). This is often desirable.
+      '';
+      type = types.bool;
+      default = config.yk8s.kubernetes.storage.nodeplugin_toleration;
+      defaultText = "\${config.yk8s.kubernetes.storage.nodeplugin_toleration}";
+    };
   };
 }
