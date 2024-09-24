@@ -1,11 +1,17 @@
 # shellcheck shell=bash
-layout_poetry() {
+
+_poetry_common() {
   poetry_dir="$(realpath "${1:-${PWD}}")"
+  pyproject_toml="${poetry_dir}/pyproject.toml"
+  poetry_lock="${poetry_dir}/poetry.lock"
+  watch_file "$pyproject_toml"
+  watch_file "$poetry_lock"
+}
+
+layout_poetry() {
+  _poetry_common "$1"
   if [[ "${NIX_FLAKE_ACTIVE:-""}" == *"$poetry_dir"* ]]; then echo "Flake containing poetry env alreay active. Skipping poetry layout."; return; fi
-  mkdir -p "$PWD/.direnv"
-  PYPROJECT_TOML="${PYPROJECT_TOML:-${poetry_dir}/pyproject.toml}"
-  poetry_file="${poetry_dir}/poetry.lock"
-  poetry_hash="$(sha256sum "$poetry_file" | cut -d' ' -f1)"
+  poetry_hash="$(sha256sum "$poetry_lock" | cut -d' ' -f1)"
   if [[ "${POETRY_ACTIVE:-""}" == "$poetry_hash" ]]; then echo "Poetry already active. Skipping..."; return; fi
   poetry_extra_args=()
   if [ "${MINIMAL_ACCESS_VENV:-false}" == "true" ]; then
@@ -17,13 +23,13 @@ layout_poetry() {
     poetry_hash_file="$PWD/.direnv/poetry.lock.sha256"
   fi
 
-  if [[ ! -f "$PYPROJECT_TOML" ]]; then
-      log_status "No pyproject.toml found. Executing \`poetry init\` to create a \`$PYPROJECT_TOML\` first."
+  if [[ ! -f "$pyproject_toml" ]]; then
+      log_status "No pyproject.toml found. Executing \`poetry init\` to create a \`$pyproject_toml\` first."
       poetry -C "$poetry_dir" init
   fi
 
   mkdir -p "$cache_dir"
-  cp -t "$cache_dir" "$PYPROJECT_TOML" "$poetry_file"
+  cp -t "$cache_dir" "$pyproject_toml" "$poetry_lock"
 
   VIRTUAL_ENV=$(poetry -C "$cache_dir" env info --path 2>/dev/null ; true)
 
@@ -45,8 +51,6 @@ layout_poetry() {
   PATH_add "$VIRTUAL_ENV/bin"
   export POETRY_ACTIVE="$poetry_hash"
   export VIRTUAL_ENV
-  watch_file "$PYPROJECT_TOML"
-  watch_file "$poetry_dir/poetry.lock"
 }
 
 has_flake_support() {
@@ -62,6 +66,8 @@ use_flake_if_nix() {
       if ! has nix_direnv_version || ! nix_direnv_version 2.3.0; then
         source_url "https://raw.githubusercontent.com/nix-community/nix-direnv/2.3.0/direnvrc" "sha256-Dmd+j63L84wuzgyjITIfSxSD57Tx7v51DMxVZOsiUD8="
       fi
+      _poetry_common "${flake_dir}"
+      watch_file "${flake_dir}/nix/poetry.nix"
       if [ "${MINIMAL_ACCESS_VENV:-false}" == "true" ]; then
         use flake "${flake_dir}#minimal"
       else
