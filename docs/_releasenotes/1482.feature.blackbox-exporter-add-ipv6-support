@@ -1,0 +1,8 @@
+Add IPv6 support for Blackbox exporter
+
+Add IPv6 support for etcd-metrics-exporter
+
+Bump Keepalived exporter to version 0.7.1 which introduces IPv6 support
+https://github.com/gen2brain/keepalived_exporter/releases/tag/v0.7.1
+
+Only deploy Bird ServiceMonitor when the Bird exporter is actually deployed
