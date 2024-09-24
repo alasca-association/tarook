@@ -47,7 +47,12 @@ If you are having problems, please visit our :doc:`FAQ </user/guide/faq>`.
       $ ./managed-k8s/actions/apply-all.sh
 
 7. Get yourself a hot beverage and joyfully watch as your yaook/k8s cluster
-   gets created and tested.
+   gets created.
 
+8. Optional: Test the cluster
 
-8. :ref:`Start using your cluster <faq.how-do-i-ssh-into-my-cluster-nodes>`.
+   .. code:: console
+
+      $ ./managed-k8s/actions/test.sh
+
+9. :ref:`Start using your cluster <faq.how-do-i-ssh-into-my-cluster-nodes>`.
