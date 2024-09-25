@@ -62,6 +62,17 @@ in {
         ``kubernetes.local_storage.dynamic.enabled`` or
         ``kubernetes.local_storage.static.enabled`` local
         storage (or both) (see :ref:`storage configuration <cluster-configuration.storage-configuration>`).
+
+      .. _cluster-configuration.rook-configuration.updating-immutable-options:
+
+      Updating immutable options
+      """"""""""""""""""""""""""
+
+      Some options are immutable when deployed.
+      If you want to change them nonetheless, follow these manual steps:
+      1. Increase the size of the corresponding PVC
+      2. Delete the stateful set: ``kubectl delete -n monitoring sts --cascade=false <statefulset_name>``
+      3. Re-deploy it with the LCM: ``AFLAGS="--diff --tags rook --tags rook_v2" bash managed-k8s/actions/apply-k8s-supplements.sh``
     '';
 
     # If kubernetes.storage.rook_enabled is enabled, rook will be installed.
@@ -114,6 +125,9 @@ in {
     };
 
     mon_volume_size = mkOption {
+      description = ''
+        Immutable when deployed. (See also `_cluster-configuration.rook-configuration.updating-immutable-options`_)
+      '';
       type = k8sSize;
       default = "10Gi";
     };
@@ -124,6 +138,8 @@ in {
         storage class you have configured in the kubernetes.local_storage section (or
         you should know what your are doing). Note that this is not the storage class
         name that rook will provide.
+
+        Immutable when deployed. (See also `_cluster-configuration.rook-configuration.updating-immutable-options`_)
       '';
       type = types.str;
       default = config.yk8s.kubernetes.local_storage.dynamic.storageclass_name;
@@ -246,6 +262,9 @@ in {
     };
 
     osd_storage_class = mkOption {
+      description = ''
+        Immutable when deployed. (See also `_cluster-configuration.rook-configuration.updating-immutable-options`_)
+      '';
       type = types.str;
       default = "csi-sc-cinderplugin";
     };
@@ -253,6 +272,8 @@ in {
     osd_volume_size = mkOption {
       description = ''
         The size of the storage backing each OSD.
+
+        Immutable when deployed. (See also `_cluster-configuration.rook-configuration.updating-immutable-options`_)
       '';
       type = k8sSize;
       default = "90Gi";

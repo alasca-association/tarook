@@ -1,0 +1,11 @@
+Marked the following immutable config setting as such:
+- ``k8s-service-layer.prometheus.thanos_storegateway_size``
+- ``k8s-service-layer.prometheus.thanos_storegateway_size``
+- ``k8s-service-layer.prometheus.thanos_compactor_size``
+- ``k8s-service-layer.rook.mon_volume_storage_class``
+- ``k8s-service-layer.rook.mon_volume_size``
+- ``k8s-service-layer.rook.osd_volume_size``
+- ``k8s-service-layer.rook.osd_storage_class``
+
+A manual workaround to change these settings nonetheless
+is outlined in the docs.
