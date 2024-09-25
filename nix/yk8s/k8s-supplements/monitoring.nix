@@ -153,9 +153,16 @@ in {
         k8s-service-layer.prometheus.thanos_storegateway_size = "XGi";
         k8s-service-layer.prometheus.thanos_compactor_size = "YGi";
 
-      Options
-      *******
+      .. _cluster-configuration.prometheus-configuration.updating-immutable-options:
 
+      Updating immutable options
+      **************************
+
+      Some options are immutable when deployed.
+      If you want to change them nonetheless, follow these manual steps:
+      1. Increase the size of the corresponding PVC
+      2. Delete the stateful set: ``kubectl delete -n monitoring sts --cascade=false thanos-<storegateway|compactor>``
+      3. Re-deploy it with the LCM: ``AFLAGS="--diff --tags thanos" bash managed-k8s/actions/apply-k8s-supplements.sh``
     '';
 
     install = mkOption {
@@ -335,6 +342,8 @@ in {
       description = ''
         You can explicitly set the PV size for each component.
         If left undefined, the helm chart defaults will be used
+
+        Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-configuration.updating-immutable-options`)
       '';
       type = with types; nullOr k8sSize;
       default = null;
@@ -344,6 +353,8 @@ in {
       description = ''
         You can explicitly set the PV size for each component.
         If left undefined, the helm chart defaults will be used
+
+        Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-configuration.updating-immutable-options`)
       '';
       type = with types; nullOr k8sSize;
       default = null;
