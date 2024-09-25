@@ -446,7 +446,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 # storage class you have configured in the kubernetes.local_storage section (or
 # you should know what your are doing). Note that this is not the storage class
 # name that rook will provide.
-#mon_volume_storage_class = "local-storage"
+#mon_volume_storage_class = "local-storage"  # immutable when deployed
 
 # Enables rook to use the host network.
 #use_host_networking = false
@@ -496,7 +496,7 @@ cluster_name = "rook-ceph" # •ᴗ•
 #nosds = 3
 
 # The size of the storage backing each OSD.
-#osd_volume_size = "90Gi"
+#osd_volume_size = "90Gi"  # immutable when deployed
 
 # Enable the rook toolbox, which is a pod with ceph tools installed to
 # introspect the cluster state.
@@ -636,8 +636,8 @@ cluster_name = "rook-ceph" # •ᴗ•
 #thanos_storage_class = null
 # You can explicitly set the PV size for each component.
 # If left undefined, the helm chart defaults will be used
-#thanos_storegateway_size = null
-#thanos_compactor_size = null
+#thanos_storegateway_size = null  # immutable when deployed
+#thanos_compactor_size = null  # immutable when deployed
 
 # By default, the monitoring will capture all namespaces. If this is not
 # desired, the following switch can be turned off. In that case, only the

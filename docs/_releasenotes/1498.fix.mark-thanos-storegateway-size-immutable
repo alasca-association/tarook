@@ -1,0 +1,2 @@
+Marked the ``k8s-service-layer.prometheus.thanos_storegateway_size`` config setting immutable
+and outlined a manual workaround to increase the size nonetheless.

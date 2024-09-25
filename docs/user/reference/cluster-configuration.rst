@@ -421,6 +421,19 @@ The used rook setup is explained in more detail
 
    </details>
 
+.. attention::
+
+   The following settings are immutable:
+   - ``mon_volume_storage_class``
+   - ``mon_volume_size``
+   - ``osd_volume_size``
+   - ``osd_storage_class``
+
+   If you still want to change them, follow these manual steps:
+   1. Increase the size of the corresponding PVC
+   2. Delete the stateful set: ``kubectl delete -n monitoring sts --cascade=false <statefulset_name>``
+   3. Re-deploy it with the LCM: ``AFLAGS="--diff --tags rook --tags rook_v2" bash managed-k8s/actions/apply-k8s-supplements.sh``
+
 |
 
 .. _cluster-configuration.prometheus-configuration:
@@ -517,6 +530,17 @@ size for each component like in the following.
    thanos_compactor_size = "YGi"
    thanos_query_size = "ZGi"
    # [...]
+
+.. attention::
+
+   The following options are immutable:
+   - ``thanos_storegateway_size``
+   - ``thanos_compactor_size``
+
+   If you still want to increase it, follow these manual steps:
+   1. Increase the size of the corresponding PVC
+   2. Delete the stateful set: ``kubectl delete -n monitoring sts --cascade=false thanos-<storegateway|compactor>``
+   3. Re-deploy it with the LCM: ``AFLAGS="--diff --tags thanos" bash managed-k8s/actions/apply-k8s-supplements.sh``
 
 |
 
