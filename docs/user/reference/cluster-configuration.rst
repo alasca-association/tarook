@@ -515,7 +515,6 @@ size for each component like in the following.
    thanos_storage_class = "SOME_STORAGE_CLASS"
    thanos_storegateway_size = "XGi"
    thanos_compactor_size = "YGi"
-   thanos_query_size = "ZGi"
    # [...]
 
 |

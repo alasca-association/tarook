@@ -1,0 +1,3 @@
+Some leftover occurances
+of the dropped ``k8s-service-layer.prometheus.thanos_query_size`` config option
+have been removed.

@@ -16,7 +16,6 @@ monitoring_thanos_objectstorage_container_name: "{{ cluster_name }}-monitoring-t
 monitoring_thanos_storage_class: null
 monitoring_thanos_storegateway_size: null
 monitoring_thanos_compactor_size: null
-monitoring_thanos_query_size: null
 
 monitoring_scheduling_key: null
 monitoring_scheduling_value: null
