@@ -50,7 +50,7 @@
         release_name: "calico"
         release_state: present
         update_repo_cache: true
-        values: "{{ lookup('template', calico_values_file_path) | from_yaml }}"
+        values: "{{ k8s_network_calico_values | to_json }}"
 
     # Give the operator some time to create the CRDs
     - name: Pause for 20s
