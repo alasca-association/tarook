@@ -33,6 +33,6 @@
       release_namespace: "{{ k8s_nvidia_device_plugin_namespace }}"
       release_name: nvdp
       release_state: "{{ k8s_nvidia_device_plugin_install | ternary('present', 'absent') }}"
-      values: "{{ lookup('template', 'nvdp_values.yaml.j2') | from_yaml }}"
+      values: "{{ k8s_nvidia_device_plugin_values | to_json }}"
       update_repo_cache: true
 ...
