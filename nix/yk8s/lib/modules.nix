@@ -2,6 +2,7 @@
 with lib; let
   yk8s-lib.transform = import ./transform.nix {inherit lib;};
   yk8s-lib.types = import ./types.nix {inherit lib;};
+  yk8s-lib.options = import ./options.nix {inherit lib;};
 in rec {
   /*
      Return a module that causes a warning to be shown if the
@@ -317,4 +318,96 @@ in rec {
       ]) []
     resources;
   };
+
+  /*
+  Return a module that adds three options values, default_values and extra_values.
+
+  It takes the top section as its first argument and a prefix as its second. The
+  prefix will be prepended to either option name and may contain subsections
+  separated by dots.
+
+  The options that are added are:
+
+  default_values is an internal option. It will be pre-filled inside the LCM with
+  the values from the configuration.
+  This option will not be passed to the inventory.
+
+  extra_values is the place where additional values can be passed that
+  are not directly exposed by the LCM.
+  This option will not be passed to the inventory.
+
+  values is the attribute set that is finally passed to Helm. It is the result of
+  merging default_values and extra_values.
+  It will be exempt from flattening.
+
+  For example
+   imports =
+      [
+        (mkHelmValuesModule "nvidia" "device_plugin"
+      ]
+  */
+
+  mkHelmValuesModule = sectionName: prefix: let
+    sec = ["yk8s"] ++ (splitString "." sectionName);
+    splitPrefix = splitString "." prefix;
+    opt =
+      if (builtins.length splitPrefix) > 1
+      then init splitPrefix
+      else [];
+    finalPrefix = last splitPrefix;
+    valuesOpt =
+      if finalPrefix != ""
+      then "${finalPrefix}_values"
+      else "values";
+    extraValuesOpt =
+      if finalPrefix != ""
+      then "${finalPrefix}_extra_values"
+      else "extra_values";
+    defaultValuesOpt =
+      if finalPrefix != ""
+      then "${finalPrefix}_default_values"
+      else "default_values";
+  in
+    {config, ...}: {
+      options =
+        lib.recursiveUpdate
+        (setAttrByPath (sec ++ opt ++ [valuesOpt]) (lib.mkOption {
+          description = ''
+            These are the values that are passed to Helm. You most likely do not want to
+            set them directly as that would override all values set by the LCM.
+
+            Use the respective extra_values instead.
+          '';
+          type = lib.types.attrs;
+          default = {};
+        }))
+        (lib.recursiveUpdate
+          (setAttrByPath (sec ++ opt ++ [defaultValuesOpt]) (yk8s-lib.options.mkInternalOption {
+            description = ''
+              These are the default values set inside the module. They will be merged with extraValues and be exposed in values.
+            '';
+            type = lib.types.attrs;
+            default = {};
+          }))
+          (setAttrByPath (sec ++ opt ++ [extraValuesOpt]) (lib.mkOption {
+            description = ''
+              Any additional values that should be passed to the Helm chart. Will not be checked.
+
+              When the same value is set by the LCM and by extra_values, then extra_values takes precedence.
+            '';
+            type = lib.types.attrs;
+            default = {};
+          })));
+      config = lib.mkMerge [
+        (setAttrByPath (sec ++ ["_internal" "unflat"]) [valuesOpt])
+        (setAttrByPath (sec ++ ["_internal" "removedOptions"]) [(opt ++ [defaultValuesOpt]) (opt ++ [extraValuesOpt])])
+        (
+          setAttrByPath (sec ++ opt ++ [valuesOpt]) (
+            lib.recursiveUpdate
+            (getAttrFromPath (sec ++ opt ++ [defaultValuesOpt]) config)
+            (getAttrFromPath (sec ++ opt ++ [extraValuesOpt]) config)
+          )
+        )
+      ];
+    };
 }
