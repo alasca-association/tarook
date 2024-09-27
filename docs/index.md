@@ -2,7 +2,7 @@
 hide-doc: true
 ---
 
-# Welcome to Yaook/k8s's documentation!
+# Welcome to YAOOK/K8s's documentation!
 
 ```{eval-rst}
 .. toctree::
@@ -39,7 +39,7 @@ hide-doc: true
 :::{grid-item-card}  Quick Start Guide
 :link: /user/guide/quick-start
 :link-type: doc
-The quick start guide is meant to give you a kickstart in deploying your first Yaook/k8s cluster.
+The quick start guide is meant to give you a kickstart in deploying your first YAOOK/K8s cluster.
 :::
 ::::
 
@@ -57,12 +57,12 @@ The releasenotes give you all essential information about recent changes.
 :::{grid-item-card}  User Explanations
 :link: /user/explanation/index
 :link-type: doc
-In-depth explanations and discussion about how (and why) Yaook/k8s works from the user perspective.
+In-depth explanations and discussion about how (and why) YAOOK/K8s works from the user perspective.
 :::
 :::{grid-item-card}  User Guide
 :link: /user/guide/index
 :link-type: doc
-Keep this under your pillow when *running* Yaook/k8s clusters.
+Keep this under your pillow when *running* YAOOK/K8s clusters.
 :::
 ::::
 
@@ -70,12 +70,12 @@ Keep this under your pillow when *running* Yaook/k8s clusters.
 :::{grid-item-card}  User References
 :link: /user/reference/index
 :link-type: doc
-Technical reference documentation of Yaook/k8s from the user perspective.
+Technical reference documentation of YAOOK/K8s from the user perspective.
 :::
 :::{grid-item-card}  User Tutorials
 :link: /user/tutorial/index
 :link-type: doc
-User facing tutorials on Yaook/k8s.
+User facing tutorials on YAOOK/K8s.
 :::
 ::::
 
@@ -85,12 +85,12 @@ User facing tutorials on Yaook/k8s.
 :::{grid-item-card}  Developer Explanations
 :link: /developer/explanation/index
 :link-type: doc
-In-depth explanations and discussion about how (and why) Yaook/k8s works from the developer perspective.
+In-depth explanations and discussion about how (and why) YAOOK/K8s works from the developer perspective.
 :::
 :::{grid-item-card}  Developer Guides
 :link: /developer/guide/index
 :link-type: doc
-Keep this at hand when *developing* with Yaook/k8s.
+Keep this at hand when *developing* with YAOOK/K8s.
 :::
 ::::
 
@@ -98,6 +98,6 @@ Keep this at hand when *developing* with Yaook/k8s.
 :::{grid-item-card}  Developer References
 :link: /developer/reference/index
 :link-type: doc
-Technical reference documentation of Yaook/k8s from the developer perspective.
+Technical reference documentation of YAOOK/K8s from the developer perspective.
 :::
 ::::

@@ -17,7 +17,7 @@ Install System Requirements
          <summary>Install system package dependencies</summary>
 
 
-      yaook/k8s requires the following packages:
+      YAOOK/K8s requires the following packages:
 
       - `python3-poetry <https://github.com/python-poetry/install.python-poetry.org>`__
         - please note that a version > v1.5.0 is required
@@ -114,10 +114,10 @@ Required System Resources
 OpenStack Key-Pair
 ~~~~~~~~~~~~~~~~~~
 
-Assuming you are deploying your yk8s cluster on top of OpenStack, you
+Assuming you are deploying your YAOOK/K8s cluster on top of OpenStack, you
 have to `create a ssh key pair in your OpenStack
 project <https://docs.openstack.org/horizon/latest/user/configure-access-and-security-for-instances.html#add-a-key-pair>`__.
-Since the SSH configuration on the kubernetes host nodes will be
+Since the SSH configuration on the Kubernetes host nodes will be
 hardened, your key has to be in the format of a supported cryptographic
 algorithm. A list of these and an example of how to create such a key
 can be found in the :ref:`appendix <initialization.appendix>`.
@@ -141,7 +141,7 @@ WireGuard Key
 Create and Initialize Cluster Repository
 ----------------------------------------
 
-To deploy a yk8s cluster, you need to create a git repository which will
+To deploy a YAOOK/K8s cluster, you need to create a git repository which will
 serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
 1. Create an empty directory as your cluster repository:
@@ -222,11 +222,11 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 Initialize Vault for a Development Setup
 ----------------------------------------
 
-As of Summer 2023, yaook/k8s exclusively supports `HashiCorp Vault <https://vaultproject.io>`__
+As of Summer 2023, YAOOK/K8s exclusively supports `HashiCorp Vault <https://vaultproject.io>`__
 as backend for storing secrets.
 Previously, `pass <https://www.passwordstore.org/>`__ was used.
-For details on the use of Vault in yaook/k8s, please see the
-:doc:`Use of HashiCorp Vault in yaook/k8s </developer/explanation/vault>` section.
+For details on the use of Vault in YAOOK/K8s, please see the
+:doc:`Use of HashiCorp Vault in YAOOK/K8s </developer/explanation/vault>` section.
 
 To initialize a **local** Vault instance for **development purposes**, do the following:
 

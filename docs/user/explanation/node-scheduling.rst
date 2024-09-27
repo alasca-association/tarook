@@ -4,7 +4,7 @@ Scheduling (Taints and Labels)
 Motivation
 ----------
 
--  In k8s, labels on nodes are used to influence pod scheduling
+-  In K8s, labels on nodes are used to influence pod scheduling
    (e.g. confine pods to certain nodes)
 -  Taints are used to prevent pods from scheduling on nodes unless they
    specifically tolerate a taint
@@ -52,7 +52,7 @@ Defining a common Scheduling-Key-Prefix
 
 It is often desirable to use a common prefix
 for self-defined labels and taints for consistency.
-Yaook/k8s allows to define such a scheduling-key-prefix and then
+YAOOK/K8s allows to define such a scheduling-key-prefix and then
 use it in the label and taint definitions.
 
 Please refer to the

@@ -33,7 +33,7 @@ General procedure
       $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.x.y
 
 3. Once the upgrade executed successfully, update your ``config.toml``
-   to point to the new k8s version:
+   to point to the new K8s version:
 
    .. code:: toml
 

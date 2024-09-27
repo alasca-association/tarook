@@ -1,7 +1,7 @@
 Prometheus Stack
 ================
 
-yaook/k8s uses the kube-prometheus-stack helm chart with an additional
+YAOOK/K8s uses the kube-prometheus-stack helm chart with an additional
 abstraction layer.
 To figure out the used version, you could use:
 
@@ -23,7 +23,7 @@ or, even preferable,
 yaook/k8s’ developer guide can be found
 `here <https://yaook.gitlab.io/meta/01-developing.html#workflow>`__.
 
-Yaook/k8s also allows the upgrade of the kube-prometheus-stack.
+YAOOK/K8s also allows the upgrade of the kube-prometheus-stack.
 You can adjust the ``prometheus_stack_version`` in the ``config.toml``
 
 .. code:: toml
@@ -85,7 +85,7 @@ Custom dashboards and datasources
 By default, Grafana will be rolled with two sidecars
 (``grafana-sc-dashboard``, ``grafana-sc-datasources``) that are
 configured to pick up *additional* dashboards/datasources in *any*
-namespace. These extra resources can reside either in k8s ``Secrets`` or
+namespace. These extra resources can reside either in K8s ``Secrets`` or
 in ``ConfigMaps``. They have to have a label ``grafana_dashboard`` set.
 To configure a custom, *logical* folder for one or more dashboard, add
 the annotation ``customer-dashboards=<Folder name>``.

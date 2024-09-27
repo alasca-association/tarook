@@ -9,4 +9,4 @@ hidden: true
 terraform-docs
 ```
 
-Technical reference documentation of Yaook/k8s from the developer perspective.
+Technical reference documentation of YAOOK/K8s from the developer perspective.

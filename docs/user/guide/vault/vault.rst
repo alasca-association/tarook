@@ -5,7 +5,7 @@ Managing Clusters in Vault
 --------------------------
 
 The following scripts are provided in order to manage a Vault instance
-for yaook/k8s.
+for YAOOK/K8s.
 
 Please see
 :ref:`Vault tooling variables <environmental-variables.vault-tooling-variables>`
@@ -32,7 +32,7 @@ for additional environment variables accepted by these tools.
    cluster inside Vault, with intermediate CAs only. This setup is not
    immediately usable, because the intermediate CAs first need to be
    signed with a root CA. Management of that root CA is out of scope for
-   yaook/k8s; this script is intended to integrate with your own
+   YAOOK/K8s; this script is intended to integrate with your own
    separate root CA infrastructure. The certificate sign requests are
    provided as ``*.csr`` files in the working directory.
 
@@ -170,10 +170,10 @@ that very same cluster.
 Motivation
 ~~~~~~~~~~
 
-As every yaook/k8s cluster needs a Vault instance it uses as a root of
+As every YAOOK/K8s cluster needs a Vault instance it uses as a root of
 trust and identity, the question becomes where to host that Vault
 instance. An obvious answer is to run it inside Kubernetes. However, if
-you were to use yaook/k8s again, where would *that* cluster have its
+you were to use YAOOK/K8s again, where would *that* cluster have its
 root of trust?
 
 The answer is pivoting. When a cluster has no other Vault to rely on,
@@ -207,7 +207,7 @@ prerequisites are necessary:
 
    -  The cluster has been deployed or migrated to use another Vault
       (the *source Vault*). This can be the development Vault setup
-      provided with yaook/k8s.
+      provided with YAOOK/K8s.
 
    -  The *source Vault* instance uses Raft.
 
@@ -219,11 +219,11 @@ prerequisites are necessary:
 
    -  The cluster has not been upgraded to use Vault yet.
 
--  No Vault has been deployed with yaook/k8s inside the cluster yet.
+-  No Vault has been deployed with YAOOK/K8s inside the cluster yet.
 
    .. note::
 
-      If there already exists a Vault instance with yaook/k8s
+      If there already exists a Vault instance with YAOOK/K8s
       inside the cluster, all data inside it will be erased by following
       this procedure.
 
@@ -331,7 +331,7 @@ Procedure
             the *Active Since* timestamp.
 
       4. Obtain a root token for the *target Vault* instance. As you have
-         just freshly installed it with yaook/k8s, the root token will be in
+         just freshly installed it with YAOOK/K8s, the root token will be in
          ``inventory/.etc/vault_root_token``.
 
       5. Scale the vault down to one replica.
@@ -421,9 +421,9 @@ Procedure
             $ kubectl -n k8s-svc-vault exec -it vault-1 -c vault -- vault operator unseal
             $ kubectl -n k8s-svc-vault exec -it vault-2 -c vault -- vault operator unseal
 
-          Congrats! You now have the data inside the k8s cluster.
+          Congrats! You now have the data inside the K8s cluster.
 
-      12. To test that yaook/k8s is able to talk to the Vault instance,
+      12. To test that YAOOK/K8s is able to talk to the Vault instance,
           you can now run any `k8s-core` with ``AFLAGS="-t vault-onboarded"``.
 
       13. Done!

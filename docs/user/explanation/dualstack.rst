@@ -29,10 +29,10 @@ addresses to
 This enables Pod off-cluster egress routing (e.g. the Internet) via
 both, IPv4 and IPv6 interfaces.
 
-Enabling DualStack-Support for managed-k8s
-------------------------------------------
+Enabling DualStack-Support for managed YAOOK/K8s
+------------------------------------------------
 
-This section states necessary config changes to your mk8s setup to
+This section states necessary config changes to your managed YAOOK/K8s setup to
 enable DualStack-support.
 
 Prerequisites
@@ -40,7 +40,7 @@ Prerequisites
 
 -  Kubernetes ``v1.21`` or later
 -  Calico ``v3.11`` or later
--  For managed-k8s-on-OpenStack clusters:
+-  For managed YAOOK/K8s on OpenStack clusters:
 
    -  Terraform ``v0.12`` or later
    -  `ch-k8s-lbaas <https://github.com/cloudandheat/ch-k8s-lbaas>`__
@@ -80,7 +80,7 @@ Design / Procedure considerations
 ---------------------------------
 
 The following section provides an overview of assumptions, requirements
-and design decisions for the DualStack support in managed-k8s.
+and design decisions for the DualStack support in managed YAOOK/K8s.
 
 DualStack-Support in OpenStack
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,8 +106,8 @@ in OpenStack requires:
 
 -  creating an IPv6 router interface
 
-DualStack-Support for mk8s
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+DualStack-Support for managed YAOOK/K8s
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. note::
 
@@ -117,7 +117,7 @@ DualStack-Support for mk8s
 Some information about the general DualStack support in Kubernetes:
 
 -  Introduced with ``v1.16``, but not fully supported yet
--  The DualStack feature for the k8s control plane has been fully added
+-  The DualStack feature for the K8s control plane has been fully added
    in ``v1.21``
 -  ``PodStatus.PodIPs`` can now hold multiple IP addresses
 -  ``PodStatus.PodIP`` (legacy) is required to be the same as
@@ -130,7 +130,7 @@ Some information about the general DualStack support in Kubernetes:
 `Creating a Kubernetes cluster with DualStack-Support <https://kubernetes.io/docs/concepts/services-networking/dual-stack/#enable-ipv4-ipv6-dual-stack>`__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In managed-k8s, we do initialize the k8s cluster with the help of
+In managed-k8s, we do initialize the K8s cluster with the help of
 `kubeadm <https://kubernetes.io/docs/reference/setup-tools/kubeadm/>`__
 and the corresponding
 `configuration file <https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/#config-file>`__.
@@ -148,7 +148,7 @@ usually the IPv4 address. The node IPs are checked in the
 Currently not working
 ~~~~~~~~~~~~~~~~~~~~~
 
-DualStack support for the k8s control plane
+DualStack support for the K8s control plane
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``controlPlaneEndpoint`` either has to be *one* IP address or a
@@ -199,15 +199,15 @@ DualStack-Support and Wireguard
 The wireguard role has been extended to create an export filter for
 bird. The BGP instances using this export filter will propagate a route
 to the wireguard subnet. The k8s-bgp role has been adjusted so that only
-the gateway with the VIPs will peer with the k8s nodes. This is
+the gateway with the VIPs will peer with the K8s nodes. This is
 necessary, because otherwise when trying to connect to a node over IPv6,
 the node does not know a route back out of cluster.
 
-The BGP setup has been adjusted so that the k8s nodes peer with the
-currently LB-master gateway. All k8s nodes need to peer with the
+The BGP setup has been adjusted so that the K8s nodes peer with the
+currently LB-master gateway. All K8s nodes need to peer with the
 LB-master gateway, because calico/node will not forward infrastructure
 routes to peers. If the LB-master gateway dies, the next LB-master
-automatically connects to the k8s nodes. This way, the k8s nodes know
+automatically connects to the K8s nodes. This way, the K8s nodes know
 the correct route to the currently active gateway.
 
 .. note::

@@ -108,7 +108,7 @@ the OSD count.
    volume indices.)
 
 2. Set the new target volume size. Update the ``config.toml`` of
-   kubernetes cluster by setting
+   Kubernetes cluster by setting
    ``k8s-service-layer.rook.osd_volume_size`` to the new desired size.
 
    Run the ``toml_helper.py`` and apply the changes by running ansible

@@ -15,9 +15,9 @@ Requirements
 Versioning Overview
 -------------------
 
-Yaook/k8s is developed and versioned according to cycles. Each development cycle has a predefined
+YAOOK/K8s is developed and versioned according to cycles. Each development cycle has a predefined
 amount of to-be-implemented features (but can of course have additional features and fixes implemented).
-During each cycle contributors can merge changes to the main branch (``devel``) of the k8s repository.
+During each cycle contributors can merge changes to the main branch (``devel``) of the K8s repository.
 
 When the cycle ends all changes on the main branch are pushed to a ``release-prepare/v$Major.$Minor.$Patch`` branch.
 The goal of the ``release-prepare/v$Major.$Minor.$Patch`` branch is to have a chance to test changes in a stable and controlled way.
@@ -35,7 +35,7 @@ The repository is structured in four branch-types:
 ``devel``
     The main working branch of the repository. Any change is first merged in here.
     Code in here can be expected to pass all linting as well as very basic functionality tests.
-    When developing on Yaook/k8s this should be your base branch. You should not run any useful deployment from here.
+    When developing on YAOOK/K8s this should be your base branch. You should not run any useful deployment from here.
     This branch is the only long-living branch.
 
 ``feature``
@@ -70,12 +70,12 @@ We define the following versioning scheme following the SemVer concept (https://
 
 .. _release-and-versioning-policy.yaook-k8s-implementation:
 
-Yaook/k8s implementation
+YAOOK/K8s implementation
 ************************
 
 The following describes the practical implementation of these concepts.
 
-The release pipeline of the Yaook/k8s repository is following these steps:
+The release pipeline of the YAOOK/K8s repository is following these steps:
     - create a ``release-prepare/v$Major.$Minor.$Patch``-branch based off
         - ``devel``, if it's a major or minor release
         - the corresponding ``release/v$Major.$Minor``-branch, if it's a patch-release
@@ -108,7 +108,7 @@ Please read the full section before starting a hotfix-process. We will outline t
 Why we established this process
 +++++++++++++++++++++++++++++++
 
-We might from time to time need to build hotfixes for yaook/k8s. In this case we need to make sure each release has
+We might from time to time need to build hotfixes for YAOOK/K8s. In this case we need to make sure each release has
 
 - the correct version number,
 - a changelog entry,

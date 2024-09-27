@@ -9,7 +9,7 @@ hidden: true
 create-cluster
 ```
 
-User facing tutorials on Yaook/k8s.
+User facing tutorials on YAOOK/K8s.
 
 ---
 
@@ -17,6 +17,6 @@ User facing tutorials on Yaook/k8s.
 :::{grid-item-card} Cluster Creation
 :link: /user/tutorial/create-cluster
 :link-type: doc
-Tutorial on how to create a yaook/k8s cluster.
+Tutorial on how to create a YAOOK/K8s cluster.
 :::
 ::::

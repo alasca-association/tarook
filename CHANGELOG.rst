@@ -44,7 +44,7 @@ v8.0.0 (2024-08-28)
 Breaking changes
 ~~~~~~~~~~~~~~~~
 
-- The YAOOK/k8s Terraform module now allows worker nodes
+- The YAOOK/K8s Terraform module now allows worker nodes
   to be joined into individual anti affinity groups.
 
   .. attention:: Action required
@@ -57,7 +57,7 @@ Breaking changes
         ./managed-k8s/actions/migrate-to-release.sh
 
   _ (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
-- The yk8s Terraform module
+- The YAOOK/K8s Terraform module
   does not build a default set of nodes (3 masters + 4 workers) anymore
   when no nodes are given. (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
 - The automatic just-in-time migration of Terraform resources
@@ -69,7 +69,7 @@ Breaking changes
       ./managed-k8s/actions/migrate-to-release.sh
 
   _ (`!1317 <https://gitlab.com/yaook/k8s/-/merge_requests/1317>`_)
-- YAOOK/k8s Terraform does not implicitly assign
+- YAOOK/K8s Terraform does not implicitly assign
   nodes to availability zones anymore
   if actually none was configured for a node.
 
@@ -843,7 +843,7 @@ Breaking changes
   It is set to ``true`` by default.
 
   Ultimately this prevents unintended destruction of the harbour infrastructure
-  and hence the whole yk8s deployment
+  and hence the whole YAOOK/K8s deployment
   when ``MANAGED_K8S_RELEASE_THE_KRAKEN`` must be used,
   e.g. during Kubernetes upgrades. (`!1176 <https://gitlab.com/yaook/k8s/-/merge_requests/1176>`_)
 - Vault tools now read the cluster name from ``config.toml``
@@ -936,7 +936,7 @@ Changed functionality
 - The custom stage is enabled by default now. (`!823 <https://gitlab.com/yaook/k8s/-/merge_requests/823>`_)
 - Change etcd-backup to use the new Service and ServiceMonitor manifests supplied by the Helm chart.
 
-  The old manifests that were included in the yk8s repo in the past will be overwritten
+  The old manifests that were included in the YAOOK/K8s repo in the past will be overwritten
   (``etcd-backup`` ServiceMonitor) and removed (``etcd-backup-monitoring`` Service) in
   existing installations. (`!1131 <https://gitlab.com/yaook/k8s/-/merge_requests/1131>`_)
 
@@ -1256,7 +1256,7 @@ New Features
 - Add support for Kubernetes v1.26 (`!813 <https://gitlab.com/yaook/k8s/-/merge_requests/813>`_)
 - Support the bitnami thanos helm chart
 
-  This will create new service names for thanos in k8s.
+  This will create new service names for thanos in K8s.
   The migration to the bitnami thanos helm chart is triggered by default. (`!816 <https://gitlab.com/yaook/k8s/-/merge_requests/816>`_)
 - Add tool to assemble snippets for CephCluster manifest
 

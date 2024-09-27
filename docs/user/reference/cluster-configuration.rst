@@ -5,7 +5,7 @@ The :doc:`environment variables </user/reference/environmental-variables>`
 affect how the user interact with the cluster via the
 :doc:`action scripts </user/reference/actions-references>`. The
 ``config/config.toml`` however is the main configuration file and can be
-adjusted to customize the yk8s cluster to fit your needs. It also
+adjusted to customize the YAOOK/K8s cluster to fit your needs. It also
 contains operational flags which can trigger operational tasks. After
 :doc:`initializing a cluster repository </user/guide/initialization>`, the
 ``config/config.toml`` contains necessary (default) values to create a
@@ -42,7 +42,7 @@ need to adjust these values if you e.g. want to enable
 .. note::
 
    There is a variable ``nodes`` to configure
-   the k8s master and worker servers.
+   the K8s master and worker servers.
    The ``role`` attribute must be used to distinguish both [1]_.
 
    The amount of gateway nodes can be controlled with the `gateway_count` variable.
@@ -465,9 +465,9 @@ if a lot of metrics are requested.
 
 We therefore added an option to configure the
 ``index-cache-size``
-(see `Tweak Thanos configuration (!1116) · Merge requests · YAOOK / k8s · GitLab <https://gitlab.com/yaook/k8s/-/merge_requests/1116/diffs>`__
+(see `Tweak Thanos configuration (!1116) · Merge requests · YAOOK / K8s · GitLab <https://gitlab.com/yaook/k8s/-/merge_requests/1116/diffs>`__
 and (see `Thanos - Highly available Prometheus setup with long term storage capabilities <https://thanos.io/tip/components/store.md/#in-memory-index-cache>`__)
-which should prevent that and is available as of `release/v3.0 · YAOOK / k8s · GitLab <https://gitlab.com/yaook/k8s/-/blob/release/v3.0/CHANGELOG.rst>`__.
+which should prevent that and is available as of `release/v3.0 · YAOOK / K8s · GitLab <https://gitlab.com/yaook/k8s/-/blob/release/v3.0/CHANGELOG.rst>`__.
 
 It can be configured by setting
 the following in the clusters ``config/config.toml``:
@@ -494,7 +494,7 @@ to the same value as ``thanos_store_memory_limit``.
 Persistence
 ***********
 
-With `release/v3.0 · YAOOK / k8s · GitLab <https://gitlab.com/yaook/k8s/-/blob/release/v3.0/CHANGELOG.rst>`__,
+With `release/v3.0 · YAOOK / K8s · GitLab <https://gitlab.com/yaook/k8s/-/blob/release/v3.0/CHANGELOG.rst>`__,
 persistence for Thanos components has been reworked.
 By default, Thanos components use emptyDirs.
 Depending on the size of the cluster and the metrics
@@ -799,7 +799,7 @@ default as it requires some prethinking.
 Custom Configuration
 --------------------
 
-Since yaook/k8s allows to
+Since YAOOK/K8s allows to
 :ref:`execute custom playbook(s) <abstraction-layers.customization>`, the
 following section allows you to specify your own custom variables to be
 used in these.

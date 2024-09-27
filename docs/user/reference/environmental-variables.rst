@@ -318,11 +318,11 @@ Vault tooling variables
    with.
 
 -  ``YAOOK_K8S_VAULT_PATH_PREFIX`` (default: ``yaook``): Vault URI path
-   prefix to be used for all secrets engines used by yaook/k8s. Changing
+   prefix to be used for all secrets engines used by YAOOK/K8s. Changing
    this is not fully supported and at your own risk.
 
 -  ``YAOOK_K8S_VAULT_POLICY_PREFIX`` (default: ``yaook``): Vault policy
-   name prefix to be used for all policies created by yaook/k8s.
+   name prefix to be used for all policies created by YAOOK/K8s.
    Changing this is not fully supported and at your own risk.
 
 -  ``YAOOK_K8S_VAULT_NODES_APPROLE_NAME`` (default:

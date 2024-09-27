@@ -13,4 +13,4 @@ cluster-repository
 environmental-variables
 ```
 
-Technical reference documentation of Yaook/k8s from the user perspective.
+Technical reference documentation of YAOOK/K8s from the user perspective.
