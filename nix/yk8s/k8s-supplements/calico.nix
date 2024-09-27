@@ -1,4 +1,5 @@
 {
+  options,
   config,
   lib,
   yk8s-lib,
@@ -6,9 +7,10 @@
 }: let
   cfg = config.yk8s.kubernetes.network.calico;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRemovedOptionModule;
+  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule;
   inherit (lib) mkOption;
   inherit (yk8s-lib) mkSubSection types;
+  inherit (yk8s-lib.options) mkHelmReleaseOptions;
 in {
   imports = [
     (mkRemovedOptionModule ["kubernetes" "network" "calico" "use_tigera_operator"] "")
@@ -16,6 +18,10 @@ in {
     (mkRemovedOptionModule ["kubernetes" "network" "calico" "ipv6_autodetection_method"] "")
     (mkRemovedOptionModule ["kubernetes" "network" "calico" "calico_ip_autodetection_method"] "")
     (mkRemovedOptionModule ["kubernetes" "network" "calico" "calico_ipv6_autodetection_method"] "")
+
+    (mkRenamedOptionModule ["kubernetes" "network" "calico" "image_registry"] ["kubernetes" "network" "calico" "helm" "values" "installation" "registry"])
+    (mkRenamedOptionModule ["kubernetes" "network" "calico" "mtu"] ["kubernetes" "network" "calico" "helm" "values" "installation" "calicoNetwork" "mtu"])
+    (mkRenamedOptionModule ["kubernetes" "network" "calico" "custom_version"] ["kubernetes" "network" "calico" "helm" "chart_version"])
   ];
 
   options.yk8s.kubernetes.network.calico = mkSubSection {
@@ -33,15 +39,71 @@ in {
       type = types.bool;
       default = true;
     };
-
-    mtu = mkOption {
-      type = types.ints.positive;
-      default =
-        if config.yk8s.openstack.enabled
-        then config.yk8s.openstack.network_mtu
-        else 1500;
-      defaultText = "\${if config.yk8s.openstack.enabled then config.yk8s.openstack.network_mtu else 1500}";
+    helm = mkHelmReleaseOptions {
+      descriptionName = "Calico";
+      defaultRepoUrl = "https://docs.tigera.io/calico/charts";
+      defaultChartRef = "tigera-operator";
+      # renovate: datasource=helm depName=tigera-operator registryUrl=https://docs.tigera.io/calico/charts
+      defaultChartVersion = "3.30.2";
+      defaultReleaseNamespace = "tigera-operator";
+      defaultReleaseName = "calico";
+      valuesDocUrl = "https://github.com/projectcalico/calico/blob/master/charts/tigera-operator/values.yaml";
+      chartOptions = {
+        installation = {
+          registry = mkOption {
+            description = ''
+              Specify the registry endpoint
+              Changing this value can be useful if one endpoint hosts outdated images or you're subject to rate limiting
+            '';
+            type = types.yk8s.networking.subdomainName;
+            default = "quay.io";
+          };
+          controlPlaneReplicas = let
+            cp_replicas =
+              if config.yk8s.infra.ansible_hosts == null
+              then
+                builtins.trace
+                lib.concatStrings [
+                  "INFO: config.yk8s.kubernetes.network.calico.helm.values.installation.controlPlaneReplicas:"
+                  " cannot determine number of Kubernetes nodes, so only one replica will be used."
+                  " Set the option manually or specify the nodes through config.yk8s.infra.ansible_hosts"
+                  " to prevent this behavior, especially if the cluster has 150 nodes or more."
+                ]
+                1
+              else let
+                inherit (builtins) length attrNames;
+                inherit (config.yk8s.infra.ansible_hosts) masters workers;
+                # A single Typha can support hundreds of Felix instances. That means we can
+                # safely scale it by the number of k8s nodes divided by fifty and ensure that
+                # at least two exist, if we have enough nodes for that
+                minimum_number_cp = let
+                  nodeCount = length (attrNames (masters.hosts // workers.hosts));
+                in
+                  lib.max 2 (nodeCount / 50);
+                # more typhas than we have k8s masters makes no sense and is also impossible
+                # to schedule (once we actually prevent typhas from running on random
+                # nodes...), but it could happen on small clusters using the logic above.
+                maximum_number_cp = length (attrNames masters.hosts);
+                # now we pick the smallest number, because the maximum is a hard maximum and the minimum is a soft minimum
+              in
+                lib.min minimum_number_cp maximum_number_cp;
+          in
+            mkOption {
+              default = cp_replicas;
+              defaultText = "automatic";
+            };
+          calicoNetwork.mtu = mkOption {
+            type = types.ints.positive;
+            default =
+              if config.yk8s.openstack.enabled
+              then config.yk8s.openstack.network_mtu
+              else 1500;
+            defaultText = "\${if config.yk8s.openstack.enabled then config.yk8s.openstack.network_mtu else 1500}";
+          };
+        };
+      };
     };
+
     encapsulation = mkOption {
       description = ''
         EncapsulationType is the type of encapsulation to use on an IP pool.
@@ -78,38 +140,86 @@ in {
       type = types.yk8s.networking.ipv4Addr;
       default = "244.0.0.1";
     };
-    image_registry = mkOption {
-      description = ''
-        Specify the registry endpoint
-        Changing this value can be useful if one endpoint hosts outdated images or you're subject to rate limiting
-      '';
-      type = types.yk8s.networking.subdomainName;
-      default = "quay.io";
-    };
     values_file_path = mkOption {
       description = ''
+        .. note:: DEPRECATED
+
+           This option is going to be removed.
+           Please use :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.values` instead.
+
         For the operator-based installation,
         it is possible to link to self-maintained values file for the helm chart
-      '';
-      type = with types; nullOr pathInStore;
-      default = null;
-      example = lib.options.literalExpression "./vault/helm/values.yaml";
-    };
-    custom_version = mkOption {
-      description = ''
-        We're mapping a fitting calico version to the configured Kubernetes version.
-        You can however pick a custom Calico version.
-        Be aware that not all combinations of Kubernetes and Calico versions are recommended:
-        https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements
-        Any version should work as long as
-        you stick to the calico-Kubernetes compatibility matrix.
 
-        If not specified here, a predefined Calico version will be matched against
-        the above specified Kubernetes version.
       '';
-      type = with types; nullOr yk8s.helm.chartVersion;
-      default = null;
-      example = "3.25.1";
+      type = types.pathInStore;
+      default = (yk8s-lib.mkYaml "yk8s-calico-values.yaml" cfg.helm.values).outPath;
+      defaultText = "Values given in :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.values`";
+      example = lib.options.literalExpression "./calico/helm/values.yaml";
     };
   };
+  config.yk8s.kubernetes.network.calico.helm.values =
+    {
+      installation = {
+        enabled = true;
+        nodeMetricsPort = 9092;
+        typhaMetricsPort = 9093;
+        controlPlaneNodeSelector."node-role.kubernetes.io/control-plane" = "";
+        nonPrivileged = "True";
+        calicoNetwork = {
+          ipPools =
+            (lib.optional config.yk8s.infra.ipv4_enabled
+              {
+                blockSize = 26;
+                cidr = config.yk8s.kubernetes.network.pod_subnet;
+                natOutgoing =
+                  if config.yk8s.kubernetes.network.ipv4_nat_outgoing
+                  then "Enabled"
+                  else "Disabled";
+                nodeSelector = "all()";
+                encapsulation = cfg.encapsulation;
+              })
+            ++ (lib.optional config.yk8s.infra.ipv6_enabled
+              {
+                blockSize = 122;
+                cidr = config.yk8s.kubernetes.network.pod_subnet_v6;
+                natOutgoing =
+                  if config.yk8s.kubernetes.network.ipv6_nat_outgoing
+                  then "Enabled"
+                  else "Disabled";
+                nodeSelector = "all()";
+                encapsulation = cfg.encapsulation;
+              });
+          nodeAddressAutodetectionV4 = lib.optionalAttrs config.yk8s.infra.ipv4_enabled {
+            # This works because calico only uses the routing table and
+            # does not actually do a reachability check on layer 3 or so.
+            # See also the commit message where this was introduced as to
+            # why we don't use the cidrs matcher here.
+            canReach = lib.head (lib.match "^(${types.yk8s.networking._regexes.rfc952.ipv4AddrRE})${types.yk8s.networking._regexes.cidr.ipv4SuffixRE}$" config.yk8s.infra.subnet_cidr);
+          };
+          nodeAddressAutodetectionV6 = lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
+            # This works because calico only uses the routing table and
+            # does not actually do a reachability check on layer 3 or so.
+            # See also the commit message where this was introduced as to
+            # why we don't use the cidrs matcher here.
+            canReach = lib.head (lib.match "^(${types.yk8s.networking._regexes.rfc3513.ipv6AddressRE})${types.yk8s.networking._regexes.cidr.ipv6SuffixRE}$" config.yk8s.infra.subnet_v6_cidr);
+          };
+        };
+      };
+      apiServer.enabled = true;
+      nodeSelector = {
+        "kubernetes.io/os" = "linux";
+        "node-role.kubernetes.io/control-plane" = "";
+      };
+    }
+    // lib.optionalAttrs (lib.versionAtLeast cfg.helm.chart_version "3.30") {
+      # https://www.tigera.io/blog/calico-whisker-your-new-ally-in-network-observability/
+      # goldmane configures the Calico Goldmane flow aggregator.
+      goldmane.enabled = false;
+      # whisker configures the Calico Whisker observability UI.
+      whisker.enabled = false;
+    };
+  config.yk8s.warnings =
+    lib.optional (options.yk8s.kubernetes.network.calico.values_file_path.highestPrio < 1500) # priority of option defaults
+    
+    "config.yk8s.kubernetes.network.calico.values_file_path: is deprecated. Please use config.yk8s.kubernetes.network.calico.helm.values instead.";
 }

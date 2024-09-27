@@ -186,8 +186,11 @@ in {
       ansible_prefix = "k8s_";
       inventory_path = "all/kubernetes.yaml";
       transformations = [
-        # `apiserver.audit_logs.policy` is removed because it is proxied by `apiserver.audit_logs.policy_file`
-        (cfg: yk8s-lib.transform.removeAttrByPath cfg ["apiserver" "audit_logs" "policy"])
+        (cfg:
+          yk8s-lib.transform.removeAttrsByPath cfg [
+            ["apiserver" "audit_logs" "policy"] # proxied by apiserver.audit_logs.policy_file
+            ["network" "calico" "helm" "values"] # proxied by network.calico.values_file_path
+          ])
       ];
     })
   ];

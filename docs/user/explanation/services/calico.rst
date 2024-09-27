@@ -29,16 +29,12 @@ nodes.
 Versioning
 ----------
 
+It is possible to configure a custom version with
+the :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.chart_version` config option.
+When using a custom version, make sure it stays compatible with the Kubernetes version.
 For each release, Calico published the Kubernetes versions the release
 has been tested on. E.g., for Calico v3.25 this section can be found
 `here <https://docs.tigera.io/calico/3.25/getting-started/kubernetes/requirements#supported-versions>`__.
-
-If not manually adjusted, the Calico version to be deployed is the one
-mapped to the Kubernetes version in
-`version-map <https://gitlab.com/alasca.cloud/tarook/tarook/-/blob/devel/k8s-supplements/ansible/roles/config/version-map/defaults/main.yaml>`__.
-
-However, it is possible to configure a custom version with
-the :ref:`configuration-options.yk8s.kubernetes.network.calico.custom_version` config option.
 
 Manually Upgrade Calico
 ~~~~~~~~~~~~~~~~~~~~~~~
