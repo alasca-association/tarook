@@ -71,7 +71,9 @@ in {
         '';
         type = types.nullOr k8sSize;
         default = null;
-        example = "1Gi";
+        example = ''
+          "1Gi"
+        '';
       };
     };
     controller_manager.large_cluster_size_threshold = mkOption {

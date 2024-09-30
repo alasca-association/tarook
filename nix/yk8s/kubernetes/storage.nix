@@ -38,7 +38,9 @@ in {
       '';
       type = types.bool;
       default = false;
-      example = "true";
+      example = ''
+        true
+      '';
     };
   };
 }
