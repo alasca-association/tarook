@@ -10,6 +10,8 @@
   ansible.builtin.command: "{{ item.path }}"
   args:
     chdir: "{{ playbook_dir }}/../../../"
+  environment:
+    ANSIBLE_PYTHON_INTERPRETER: "{{ ansible_playbook_python }}"
   loop: "{{ script_list.files }}"
   loop_control:
     label: "{{ item.path }}"

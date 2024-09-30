@@ -32,5 +32,6 @@ pushd "$ansible_k8s_supplements_dir"
 ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles" \
   ansible_playbook -i "$ansible_inventory_host_file" \
   -e "k8s_skip_upgrade_checks=${k8s_skip_upgrade_checks:-false}" \
+  -e "ansible_python_interpreter=${ANSIBLE_PYTHON_INTERPRETER:-"$(command -v python)"}" \
   verify-cluster-health.yaml "$@"
 popd
