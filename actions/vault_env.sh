@@ -2,7 +2,7 @@
 flags=$(shopt -po)
 set -euo pipefail
 
-actions_dir="$(pwd)/managed-k8s/"
+actions_dir="$(dirname "$0")"
 
 # shellcheck source=actions/lib.sh
 . "$actions_dir/actions/lib.sh"
