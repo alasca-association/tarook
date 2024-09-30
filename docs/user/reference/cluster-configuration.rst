@@ -8,6 +8,43 @@ affect how the user interact with the cluster via the
 and can be adjusted to customize the yk8s cluster to fit your needs. It also
 contains operational flags which can trigger operational tasks.
 
+
+The cluster repository layout
+-----------------------------
+
+::
+
+   your_cluster_repo
+   ├── config/                           # All user configuration now resides in this directory
+   │   ├── config.toml                   # Legacy cluster configuration, referenced in default.nix
+   │   ├── default.nix                   # Nix-based cluster configuration
+   │   └── hosts                         # Manual Ansible hosts file for bare-metal, referenced in default.nix
+   ├── inventory/yaook-k8s/              # Ansible inventory is now completely generated and MAY be excluded from version control
+   │   ├── group-vars/                   # Variables passed to Ansible
+   │   └── hosts                         # Ansible hosts file, generated from config even for bare-metal
+   ├── state/                            # Auto-generated files that need to be preserved. MUST be checked into version control
+   │   ├── wireguard/
+   │   │   └── ipam.toml                 # WireGuard IP address management
+   │   ├── terraform/                    # Terraform specific state files
+   ┊   ┊
+
+The ./config directory is completely handled by the user.
+The ./inventory directory is completely generated and may be ignored from the VCS.
+The ./state directory both input and output of the inventory generation and has to be added to VCS.
+
+::
+
+                     +---------+
+                     | ./state |
+                     +--+---^--+
+                        |   |
+                  +------v---+---------+
+   +----------+   |                    |   +-------------+
+   | ./config +--->     Nix module     +---> ./inventory |
+   +----------+   |                    |   +-------------+
+                  +--------------------+
+
+
 The ``config/default.nix`` configuration file
 ---------------------------------------------
 
