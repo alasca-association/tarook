@@ -115,7 +115,7 @@ in {
 
     mon_volume_size = mkOption {
       type = k8sSize;
-      default = "10 Gi";
+      default = "10Gi";
     };
 
     mon_volume_storage_class = mkOption {
