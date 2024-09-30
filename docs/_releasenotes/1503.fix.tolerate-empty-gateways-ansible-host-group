@@ -1,0 +1,1 @@
+Fixed Ansible to never assume any host in the ``gateways`` host group.

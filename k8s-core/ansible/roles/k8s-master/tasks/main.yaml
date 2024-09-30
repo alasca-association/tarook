@@ -178,8 +178,6 @@
     ansible.builtin.command: kubeadm config images pull --kubernetes-version {{ k8s_version }}
 
   - name: Create kubeadm-init-config.yaml
-    vars:
-      gateway: "{{ groups['gateways'] | first }}"
     ansible.builtin.template:
       src: kubeadm-init-config.yaml.j2
       dest: /tmp/kubeadm-init-config.yaml
