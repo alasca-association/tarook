@@ -330,14 +330,14 @@ in {
 
     use_all_available_devices = mkOption {
       description = ''
-        See docs/user/guide/custom-storage.rst
+        See :doc:`/user/guide/custom-storage`
       '';
       type = types.bool;
       default = true;
     };
     use_all_available_nodes = mkOption {
       description = ''
-        See docs/user/guide/custom-storage.rst
+        See :doc:`/user/guide/custom-storage`
       '';
       type = types.bool;
       default = true;
@@ -351,7 +351,7 @@ in {
         one must set ``use_all_available_nodes`` and
         ``use_all_available_devices`` to ``false``.
 
-        See docs/user/guide/custom-storage.rst
+        See :doc:`/user/guide/custom-storage`
       '';
       default = [];
       apply = v:
