@@ -6,13 +6,15 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.etcd-backup;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule;
+  inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkHelmValuesModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
 in {
   imports = [
     (mkRemovedOptionModule "k8s-service-layer.etcd-backup" "s3_config_name" "")
+    (mkHelmValuesModule "k8s-service-layer.etcd-backup" "")
   ];
+
   options.yk8s.k8s-service-layer.etcd-backup = mkTopSection {
     _docs.preface = ''
       Automated etcd backups can be configured in this section. When enabled
@@ -161,6 +163,28 @@ in {
       default = 19100;
     };
   };
+
+  config.yk8s.k8s-service-layer.etcd-backup.default_values = {
+    inherit (cfg) schedule namespace metrics_port;
+
+    priorityClassName = "system-cluster-critical";
+
+    targets.s3 = {
+      endpoint = "{{ etcd_backup_config.endpoint_url }}"; # TODO must be filled by Ansible
+      bucket = cfg.bucket_name;
+      addressingStyle = "path";
+      filePrefix = cfg.file_prefix;
+      credentialRef.name = cfg.secret_name;
+    };
+
+    certRef = "{{ etcd_backup_config.certRef | to_yaml }}"; # TODO must be filled by Ansible
+
+    serviceMonitor = {
+      enabled = config.yk8s.kubernetes.monitoring.enabled;
+      additionalLabels = config.yk8s.k8s-service-layer.prometheus.common_labels;
+    };
+  };
+
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
