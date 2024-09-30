@@ -34,7 +34,7 @@ in {
       default = null;
       # we can also add an example text
       example = ''
-        Some value
+        "Some value"
       '';
     };
 
