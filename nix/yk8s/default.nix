@@ -49,12 +49,14 @@
           state_directory = mkOption {
             description = ''
               The path to the cluster's state directory relative to the Nix file
-              in which it is defined. Must be set to ./state or _state_base_path
-              has to be adapted as well.
+              in which it is defined. Must be set to the same directory as _state_base_path,
+              which is ./state by default.
             '';
             type = with types; nullOr pathInStore;
             default = null;
-            example = "state_directory = ./state; # from flake.nix";
+            example = ''
+              ./state
+            '';
           };
           _inventory_base_path = mkOption {
             description = ''
@@ -65,7 +67,7 @@
           };
           _state_base_path = mkOption {
             description = ''
-              Base path to the state directory. Files will get written here.
+              Base path to the state directory relative to the root of the cluster repository. Files will get written here.
             '';
             type = types.str;
             default = "state";

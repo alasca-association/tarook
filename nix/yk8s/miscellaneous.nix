@@ -61,7 +61,9 @@ in {
       '';
       type = with types; nullOr str;
       default = null;
-      example = "http://proxy.example.com:8889";
+      example = ''
+        "http://proxy.example.com:8889"
+      '';
     };
     https_proxy = mkOption {
       description = ''
@@ -72,7 +74,9 @@ in {
       '';
       type = with types; nullOr str;
       default = null;
-      example = "https://proxy.example.com:8889";
+      example = ''
+        "https://proxy.example.com:8889"
+      '';
     };
     no_proxy = mkOption {
       description = ''
@@ -83,7 +87,9 @@ in {
       '';
       type = with types; nullOr str;
       default = null;
-      example = "localhost,127.0.0.0/8";
+      example = ''
+        "localhost,127.0.0.0/8"
+      '';
     };
     openstack_network_name = mkOption {
       description = ''
@@ -96,7 +102,9 @@ in {
       '';
       type = with types; nullOr str;
       default = null;
-      example = "\${config.yk8s.terraform.cluster_name}-network";
+      example = ''
+        "''${config.yk8s.terraform.cluster_name}-network"
+      '';
     };
     openstack_connect_use_helm = mkOption {
       description = ''
@@ -251,7 +259,9 @@ in {
       '';
       type = with types; nullOr pathInStore;
       default = null;
-      example = "./hosts";
+      example = ''
+        ./hosts
+      '';
       apply = v:
         if v == null && config.yk8s.terraform.enabled == false
         then throw "miscellaneous.hosts_file must be set if terraform is disabled"

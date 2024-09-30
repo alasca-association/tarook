@@ -32,7 +32,10 @@ in {
     optional_option = mkOption {
       type = with types; nullOr str;
       default = null;
-      example = "Some value"; # we can also add an example text
+      # we can also add an example text
+      example = ''
+        Some value
+      '';
     };
 
     list_option = mkOption {

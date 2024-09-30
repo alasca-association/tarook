@@ -60,7 +60,9 @@ in {
       '';
       type = types.nullOr types.str;
       default = null;
-      example = "path-to-a-custom/values.yaml";
+      example = ''
+        "path-to-a-custom/values.yaml"
+      '';
     };
     custom_version = mkOption {
       description = ''
@@ -76,7 +78,9 @@ in {
       '';
       type = types.nullOr types.str;
       default = null;
-      example = "3.25.1";
+      example = ''
+        "3.25.1"
+      '';
     };
   };
 }

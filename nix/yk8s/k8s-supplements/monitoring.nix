@@ -52,7 +52,9 @@ in {
 
           grafana.memory.limit = "512Mi";
           grafana.cpu.request = "100m";
-          grafana.cpu.example = "500m";
+          grafana.cpu.example = ''
+            "500m"
+          '';
 
           kube_state_metrics.memory.limit = "128Mi";
           kube_state_metrics.cpu.request = "50m";
@@ -62,14 +64,18 @@ in {
 
           thanos_query.memory.limit = "786Mi";
           thanos_query.cpu.request = "100m";
-          thanos_query.cpu.example = "1";
+          thanos_query.cpu.example = ''
+            "1"
+          '';
 
           thanos_compact.memory.limit = "200Mi";
           thanos_compact.cpu.request = "100m";
 
           thanos_store.memory.limit = "2Gi";
           thanos_store.cpu.request = "100m";
-          thanos_store.cpu.example = "500m";
+          thanos_store.cpu.example = ''
+            "500m"
+          '';
         };
       })
     ]
@@ -314,7 +320,9 @@ in {
       '';
       type = with types; nullOr str;
       default = null;
-      example = "\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring";
+      example = ''
+        "\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring"
+      '';
     };
     thanos_store_in_memory_max_size = mkOption {
       description = ''
@@ -376,7 +384,9 @@ in {
               The URL that blackbox will scrape
             '';
             type = types.str;
-            example = "http://example.com/healthz";
+            example = ''
+              "http://example.com/healthz"
+            '';
           };
           interval = mkOption {
             description = ''

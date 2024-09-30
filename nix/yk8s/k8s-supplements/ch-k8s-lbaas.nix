@@ -36,7 +36,9 @@ in {
         $ dd if=/dev/urandom bs=16 count=1 status=none | base64
       '';
       type = types.str;
-      example = "RuDXD7CcNZHrRAV9AAN83T7Hc6wVk9IGzPou6UjwWhL+4hu1I4XPj+YG/AgKiFIc1a1EzmQKax9VAj6P/oA45w==";
+      example = ''
+        "RuDXD7CcNZHrRAV9AAN83T7Hc6wVk9IGzPou6UjwWhL+4hu1I4XPj+YG/AgKiFIc1a1EzmQKax9VAj6P/oA45w=="
+      '';
     };
     version = mkOption {
       type = types.str;

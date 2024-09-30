@@ -103,7 +103,9 @@ in {
       '';
       type = types.str;
       default = "https://acme-v02.api.letsencrypt.org/directory";
-      example = "https://acme-staging-v02.api.letsencrypt.org/directory";
+      example = ''
+        "https://acme-staging-v02.api.letsencrypt.org/directory"
+      '';
     };
   };
   config.yk8s._inventory_packages = [

@@ -287,7 +287,9 @@ in {
       '';
       type = with types; nullOr str;
       default = null;
-      example = "https://gitlab.com";
+      example = ''
+        "https://gitlab.com"
+      '';
     };
 
     gitlab_project_id = mkOption {
@@ -311,7 +313,9 @@ in {
         The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'      '';
       type = with types; nullOr str;
       default = null;
-      example = "tf-state";
+      example = ''
+        "tf-state"
+      '';
     };
 
     gateway_count = mkOption {

@@ -57,7 +57,7 @@ in {
       type = with types; nullOr port;
       default = null;
       example = ''
-        port = 7777;
+        7777;
       '';
     };
     ip_cidr = mkOption {
@@ -72,7 +72,9 @@ in {
       '';
       type = types.nullOr ipv4Cidr;
       default = null;
-      example = "172.30.153.64/26";
+      example = ''
+        "172.30.153.64/26"
+      '';
     };
     ip_gw = mkOption {
       description = ''
@@ -86,7 +88,9 @@ in {
       '';
       type = types.nullOr ipv4Cidr;
       default = null;
-      example = "172.30.153.65/26";
+      example = ''
+        "172.30.153.65/26"
+      '';
     };
 
     ipv6_cidr = mkOption {
@@ -101,7 +105,9 @@ in {
       '';
       type = types.nullOr types.str;
       default = null;
-      example = "fd01::/120";
+      example = ''
+        "fd01::/120"
+      '';
     };
     ipv6_gw = mkOption {
       description = ''
@@ -115,7 +121,9 @@ in {
       '';
       type = types.nullOr types.str;
       default = null;
-      example = "fd01::1/120";
+      example = ''
+        "fd01::1/120"
+      '';
     };
     endpoints = mkOption {
       description = ''
@@ -140,7 +148,7 @@ in {
             type = with types; either ints.unsigned str;
             apply = toString; # JSON/YAML/TOML only allow strings as keys
             example = ''
-              id = "0";
+              "0"
             '';
           };
           port = mkOption {
@@ -180,7 +188,9 @@ in {
             '';
             type = types.nullOr types.str;
             default = null;
-            example = "fd01::/120";
+            example = ''
+              "fd01::/120"
+            '';
           };
           ipv6_gw = mkOption {
             description = ''
@@ -192,7 +202,9 @@ in {
             '';
             type = types.nullOr types.str;
             default = null;
-            example = "fd01::1/120";
+            example = ''
+              "fd01::1/120"
+            '';
           };
         };
       });
@@ -218,7 +230,9 @@ in {
               An identifier for the public key
             '';
             type = types.str;
-            example = "name.lastname";
+            example = ''
+              "name.lastname"
+            '';
           };
           ip = mkOption {
             type = with types; nullOr (either ipv4Cidr ipv4Addr);

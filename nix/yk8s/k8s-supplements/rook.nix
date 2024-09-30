@@ -161,7 +161,9 @@ in {
       '';
       type = with types; nullOr str;
       default = null;
-      example = "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage";
+      example = ''
+        "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage"
+      '';
     };
 
     mon_scheduling_key = mkOption {
@@ -172,7 +174,9 @@ in {
       '';
       type = with types; nullOr str;
       default = null;
-      example = "\${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mon";
+      example = ''
+        "\${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mon"
+      '';
     };
 
     mgr_scheduling_key = mkOption {
@@ -184,7 +188,9 @@ in {
       # TODO: but we could do the merging here if we wanted to
       type = with types; nullOr str;
       default = null;
-      example = "\${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mgr";
+      example = ''
+        "\${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mgr"
+      '';
     };
 
     csi_plugins = mkOption {
@@ -220,7 +226,9 @@ in {
       '';
       type = types.ints.between 1 2;
       default = 2;
-      example = "1";
+      example = ''
+        1
+      '';
     };
 
     nosds = mkOption {
@@ -275,7 +283,9 @@ in {
         options = {
           name = mkOption {
             type = types.str;
-            example = "data";
+            example = ''
+              "data"
+            '';
           };
           create_storage_class = mkOption {
             type = types.bool;
