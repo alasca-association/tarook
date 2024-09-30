@@ -25,13 +25,13 @@ v10.1.0 (2025-08-27)
 New Features
 ~~~~~~~~~~~~
 
-- Added :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.addressing_style` to configure the addressing style of the etcd-backup bucket. (`!1931 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1931>`_)
+- Added ``config.yk8s.k8s-service-layer.etcd-backup.addressing_style`` to configure the addressing style of the etcd-backup bucket. (`!1931 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1931>`_)
 - Added :ref:`configuration-options.yk8s.k8s-service-layer.vault.backup_s3_addressing_style` to configure the addressing style of the vault-backup bucket. (`!1938 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1938>`_)
 - The options to configure helm chart versions have been streamlined.
   From now on, ``null`` can be supplied to unpin a helm chart and rollout the latest available version.
 
   * :ref:`configuration-options.yk8s.k8s-service-layer.cert-manager.chart_version`
-  * :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.chart_version`
+  * ``config.yk8s.k8s-service-layer.etcd-backup.chart_version``
   * :ref:`configuration-options.yk8s.k8s-service-layer.ingress.chart_version`
   * :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.blackbox_version`
   * :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.nvidia_dcgm_exporter_helm_version`
@@ -119,7 +119,7 @@ Bugfixes
   Although these modules have been introduced in v9.1.0, they could not be configured until now. (`!2053 <https://gitlab.com/yaook/k8s/-/merge_requests/2053>`_)
 - Fixed the type of :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_objectstorage_container_name`
   (regression of v10.0.0) (`!2053 <https://gitlab.com/yaook/k8s/-/merge_requests/2053>`_)
-- Fixed the type of :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.file_prefix`
+- Fixed the type of ``config.yk8s.k8s-service-layer.etcd-backup.file_prefix``
   (regression of v10.0.0) (`!2053 <https://gitlab.com/yaook/k8s/-/merge_requests/2053>`_)
 - Fixed the type of :ref:`configuration-options.yk8s.infra.cluster_name`
   (regression of v10.0.0) (`!2053 <https://gitlab.com/yaook/k8s/-/merge_requests/2053>`_)

@@ -49,8 +49,8 @@
       apiVersion: v1
       kind: Secret
       metadata:
-        name: "{{ etcd_backup_secret_name }}"
-        namespace: "{{ etcd_backup_namespace }}"
+        name: "{{ etcd_backup_helm_values.targets.s3.credentialRef.name }}"
+        namespace: "{{ etcd_backup_helm_release_namespace }}"
       data:
         access: "{{ etcd_backup_config.access_key | b64encode }}"
         secret: "{{ etcd_backup_config.secret_key | b64encode }}"
@@ -70,12 +70,12 @@
   block:
     - name: Check if bucket exists
       community.aws.s3_bucket_info:
-        name: "{{ etcd_backup_bucket_name }}"
+        name: "{{ etcd_backup_helm_values.targets.s3.bucket }}"
       register: bucket_info
 
     - name: Create bucket if it does not exist
       amazon.aws.s3_bucket:
-        name: "{{ etcd_backup_bucket_name }}"
+        name: "{{ etcd_backup_helm_values.targets.s3.bucket }}"
         # Even if the etcd-backup role is disabled afterwards we will not delete the bucket automatically
         state: present
         # By default, we're using RGW so only use a subset of the S3 API
@@ -89,20 +89,26 @@
 
     - name: "Configure a lifecycle rule on the bucket to expire (delete) items after {{ etcd_backup_days_of_retention }}"
       community.aws.s3_lifecycle:
-        name: "{{ etcd_backup_bucket_name }}"
+        name: "{{ etcd_backup_helm_values.targets.s3.bucket }}"
         expiration_days: "{{ etcd_backup_days_of_retention }}"
-        prefix: "{{ etcd_backup_file_prefix }}"
+        prefix: "{{ etcd_backup_helm_values.targets.s3.filePrefix }}"
         status: enabled
         state: present
 
 - name: Deploy yaook operator etcd backup chart
   kubernetes.core.helm:
-    chart_repo_url: "{{ etcd_backup_helm_repo_url }}"
-    chart_ref: etcdbackup
-    chart_version: "{{ etcd_backup_chart_version }}"
-    release_namespace: "{{ etcd_backup_namespace }}"
-    release_name: "{{ etcd_backup_name }}"
+    chart_repo_url: "{{ etcd_backup_helm_chart_repo_url }}"
+    chart_ref: "{{ etcd_backup_helm_chart_ref }}"
+    chart_version: "{{ etcd_backup_helm_chart_version }}"
+    release_namespace: "{{ etcd_backup_helm_release_namespace }}"
+    release_name: "{{ etcd_backup_helm_release_name }}"
     release_state: present
-    values: "{{ lookup('template', 'etcd_backup.yaml.j2') | from_yaml }}"
+    values: |
+      {{ etcd_backup_helm_values | ansible.builtin.combine(
+        {
+          'targets': {'s3': {'endpoint': etcd_backup_config.endpoint_url}},
+          'certRef': etcd_backup_config.certRef
+        }, recursive=true
+      ) }}
     force: "{{ old_etcd_backup_service_info.resources | length > 0 }}"
 ...
