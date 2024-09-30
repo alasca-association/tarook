@@ -22,4 +22,8 @@ Keep this at hand when *developing* with Yaook/k8s.
 :link: /developer/guide/simulate-bm
 :link-type: doc
 :::
+:::{grid-item-card} Using configuration variables in scripts
+:link: /developer/guide/read-config
+:link-type: doc
+:::
 ::::
