@@ -5,9 +5,15 @@
   ...
 }: let
   cfg = config.yk8s.k8s-service-layer.cert-manager;
+  modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkAffinity mkTolerations;
+  inherit (modules-lib) mkHelmValuesModule;
 in {
+  imports = [
+    (mkHelmValuesModule "k8s-service-layer.cert-manager" "")
+  ];
+
   options.yk8s.k8s-service-layer.cert-manager = mkTopSection {
     _docs.preface = ''
       The used Cert-Manager controller setup will be explained in more detail
@@ -101,6 +107,24 @@ in {
       example = "https://acme-staging-v02.api.letsencrypt.org/directory";
     };
   };
+  config.yk8s.k8s-service-layer.cert-manager.default_values = let
+    affinity = mkAffinity {inherit (cfg) scheduling_key;};
+    tolerations = mkTolerations cfg.scheduling_key;
+  in
+    {
+      installCRDs = true;
+      global.priorityClassName = "system-cluster-critical";
+      inherit affinity tolerations;
+      cainjector = {inherit affinity tolerations;};
+      webhook = {inherit affinity tolerations;};
+    }
+    // lib.optionalAttrs config.yk8s.kubernetes.monitoring.enabled {
+      prometheus = {
+        enabled = true;
+        servicemonitor.enabled = true;
+        servicemonitor.labels = config.yk8s.k8s-service-layer.prometheus.common_labels;
+      };
+    };
   config.yk8s._inventory_packages = [
     (
       mkGroupVarsFile {

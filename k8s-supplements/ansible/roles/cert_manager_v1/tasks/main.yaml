@@ -28,8 +28,6 @@
   delay: "{{ network_error_delay }}"
 
 - name: "{{ k8s_cert_manager_install | ternary('I', 'Uni') }}nstall Cert Manager"
-  vars:
-    scheduling_key: "{{ k8s_cert_manager_scheduling_key | default(None) }}"
   kubernetes.core.helm:
     chart_ref: "{{ k8s_cert_manager_chart_ref }}"
     release_namespace: "{{ k8s_cert_manager_namespace }}"
@@ -37,7 +35,7 @@
     release_state: "{{ k8s_cert_manager_install | ternary('present', 'absent') }}"
     update_repo_cache: true
     chart_version: "{{ k8s_cert_manager_chart_version }}"
-    values: "{{ lookup('template', 'cert_manager_values.yaml.j2') | from_yaml }}"
+    values: "{{ k8s_cert_manager_values | to_json }}"
 
 - name: "{{ (k8s_cert_manager_install and (k8s_cert_manager_letsencrypt_email is defined)) | ternary('I', 'Uni') }}nstall Let's Encrypt cluster issuer"
   kubernetes.core.k8s:
