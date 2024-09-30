@@ -19,4 +19,8 @@ if [[ -d terraform ]]; then
     mkdir -p state
     git mv terraform state/terraform
 fi
+if [[ -d vault ]]; then
+    mkdir -p state
+    git mv vault state/vault
+fi
 popd >/dev/null || exit 1
