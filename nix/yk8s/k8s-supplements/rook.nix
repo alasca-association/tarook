@@ -330,6 +330,8 @@ in {
 
     use_all_available_devices = mkOption {
       description = ''
+        .. _cluster-configuration.rook-configuration.use_all_available_devices:
+
         See :doc:`/user/guide/custom-storage`
       '';
       type = types.bool;
@@ -337,6 +339,8 @@ in {
     };
     use_all_available_nodes = mkOption {
       description = ''
+        .. _cluster-configuration.rook-configuration.use_all_available_nodes:
+
         See :doc:`/user/guide/custom-storage`
       '';
       type = types.bool;
@@ -348,8 +352,8 @@ in {
         You do also have the option to manually define the nodes to be used,
         their configuration and devices of the configured nodes as well as
         device-specific configurations. For these configurations to take effect
-        one must set ``use_all_available_nodes`` and
-        ``use_all_available_devices`` to ``false``.
+        one must set :ref:`cluster-configuration.rook-configuration.use_all_available_devices` and
+        :ref:`cluster-configuration.rook-configuration.use_all_available_nodes` to ``false``.
 
         See :doc:`/user/guide/custom-storage`
       '';
