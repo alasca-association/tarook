@@ -113,6 +113,11 @@ in {
       default = true;
     };
 
+    mon_volume_size = mkOption {
+      type = k8sSize;
+      default = "10 Gi";
+    };
+
     mon_volume_storage_class = mkOption {
       description = ''
         Storage class name to be used by the ceph mons. SHOULD be compliant with one

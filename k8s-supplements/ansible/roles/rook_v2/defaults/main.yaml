@@ -1,6 +1,5 @@
 ---
 rook_mon_volume: true
-rook_mon_volume_size: 10Gi
 rook_mon_allow_multiple_per_node: false
 rook_mgr_use_pg_autoscaler: true
 rook_osd_anti_affinity: true
