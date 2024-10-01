@@ -1,1 +1,0 @@
-Wireguard client templates now set ``PersistentKeepalive`` to 25 seconds. Existing configurations do not have to be exchanged.

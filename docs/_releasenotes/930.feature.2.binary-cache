@@ -1,8 +1,0 @@
-We now have a binary cache for Nix build artifacts, so users won't have to build anything from source. To use it, configure
-
-.. code:: ini
-
-   extra-substituters = https://yaook.cachix.org
-   extra-trusted-public-keys = yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
-
-in ``/etc/nix/nix.conf``
