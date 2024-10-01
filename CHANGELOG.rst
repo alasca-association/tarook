@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.0.3 (2024-10-01)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- A missing call to install_prerequisites has been added to upgrade.sh (`!1481 <https://gitlab.com/yaook/k8s/-/merge_requests/1481>`_)
+
+
 v8.0.2 (2024-09-20)
 -------------------
 
