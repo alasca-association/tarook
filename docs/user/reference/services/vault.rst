@@ -27,14 +27,33 @@ Backups have become opt-out instead of opt-in because of their
 importance. The role deploys the
 `backup-creator and -shifter tandem <https://gitlab.com/yaook/images/backup-creator>`__
 which pushes an encrypted snapshot to an S3 bucket.
+
 If you want to use this built-in
 backup mechanism (which you should unless you have an alternative),
 create a copy of
 ``managed-k8s/templates/vault_backup_s3_config.template.yaml``, place it
-as ``config/vault_backup_s3_config.yaml`` and fill in the gaps. Disable
-backups by setting ``enable_backups = false``. Consider the
+as ``config/vault_backup_s3_config.yaml`` and fill in the gaps.
+
+Enable backups by setting ``enable_backups = true``.
+
+This configuration must be stored in your cluster key-value secrets engine
+under ``kv/data/vault-backup-s3-config``.
+
+Inserting the Vault backup S3 config into Vault can be automated by storing the
+configuration at ``config/vault_backup_s3_config.yaml`` and then triggering
+the Vault update script:
+
+.. code:: console
+
+   $ ./managed-k8s/tools/vault/update.sh
+
+Alternatively, you can also manually insert your configuration into vault.
+
+Consider the
 `official docs <https://developer.hashicorp.com/vault/tutorials/standard-procedures/sop-restore>`__
 for restore instructions.
+
+If no backups are required, disable backups by setting ``enable_backups = false``.
 
 Credential management
 ---------------------

@@ -1,17 +1,17 @@
 ---
-- name: Check if Vault S3 backup config file exists
-  ansible.builtin.stat:
-    path: "{{ config_dir }}/{{ yaook_vault_s3_config_file }}"
-  register: check_yaook_vault_s3_config_file_info
-
-- ansible.builtin.fail:
-    msg: |
-      The Vault S3 backup configuration file is missing.
-      Please ensure the file is created at config/{{ yaook_vault_s3_config_file }}
-      with the necessary S3 bucket details for automated Vault backups.
-      For more information on configuring Vault backups, please refer to the documentation:
-      https://yaook.gitlab.io/k8s/release/v8.0/user/reference/services/vault.html#backups
-  when: not check_yaook_vault_s3_config_file_info.stat.exists
+- name: Read Vault S3 backup config from Vault
+  environment:
+    ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+    ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+  vars:
+    vault_auth_mount_point: "{{ lookup('env', 'VAULT_AUTH_PATH') }}"
+    vault_auth_method: "{{ lookup('env', 'VAULT_AUTH_METHOD') or (lookup('env', 'VAULT_TOKEN') | ternary('token', 'approle')) }}"
+    vault_token: "{{ lookup('env', 'VAULT_TOKEN') }}"
+    vault_role_id: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
+    vault_secret_id: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
+    vault_backup_s3_config_vault_mount_point: "yaook/{{ vault_cluster_name }}/kv"
+  ansible.builtin.set_fact:
+    yaook_vault_backup_s3: "{{ lookup('community.hashi_vault.vault_kv2_get', 'vault-backup-s3-config', engine_mount_point=vault_backup_s3_config_vault_mount_point, mount_point=vault_auth_mount_point, auth_method=vault_auth_method, token=vault_token, role_id=vault_role_id, secret_id=vault_secret_id).data.data }}"
 
 - name: Declare a policy which allows to save raft snapshots
   vars:
@@ -82,11 +82,6 @@
     - name: Save the secret_id
       ansible.builtin.set_fact:
         yaook_vault_backup_approle_secret_id: "{{ (vault_out.stdout | from_json).data.secret_id }}"
-
-- name: Load the S3 endpoint credentials
-  ansible.builtin.include_vars:
-    file: "{{ config_dir }}/{{ yaook_vault_s3_config_file }}"
-    name: yaook_vault_backup_s3
 
 - name: Deploy the vault-backup
   kubernetes.core.k8s:

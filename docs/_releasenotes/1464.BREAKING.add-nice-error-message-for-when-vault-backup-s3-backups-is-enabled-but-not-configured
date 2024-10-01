@@ -1,0 +1,19 @@
+The Vault S3 backup configuration must be moved to Vault.
+
+Inserting the Vault S3 backup config into Vault can be automated by
+storing the configuration at ``config/vault_backup_s3_config.yaml``.
+Please check the documentation on how to create a configuration.
+
+**You must update your Vault policies to import the configuration
+and then triggering the ``apply-k8s-supplements.sh`` script to apply
+the change**
+
+** A root token must be sourced**
+
+.. code:: console
+
+    $ bash managed-k8s/tools/vault/init.sh
+    $ bash managed-k8s/tools/vault/update.sh $CLUSTER_NAME
+    $ AFLAGS="--diff -t vault" bash managed-k8s/actions/apply-k8s-supplements.sh
+
+.
