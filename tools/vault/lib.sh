@@ -527,6 +527,36 @@ function import_thanos_config() {
     rm "config/$thanos_config_file"
 }
 
+function import_vault_backup_s3_config() {
+    vault_backup_s3_enabled="$(tomlq '."k8s-service-layer".vault.enable_backups | if (.|type)=="boolean" then . else false end' "${config_file}")"
+    vault_backup_s3_config_file=vault_backup_s3_config.yaml
+
+    if ! "$vault_backup_s3_enabled"; then
+        echo "Vault S3 backup is disabled."
+        return;
+    fi
+    if vault kv get "$cluster_path"/kv/vault-backup-s3-config> /dev/null && [ ! -f "config/$vault_backup_s3_config_file" ]; then
+        echo "A Vault S3 backup configuration already has been stored in Vault."
+        echo "There is no file found at config/$vault_backup_s3_config_file"
+        echo "So it is assumed that configuration should not get updated."
+        return
+    fi
+    if ! vault kv get "$cluster_path"/kv/vault-backup-s3-config > /dev/null && [ ! -f "config/$vault_backup_s3_config_file" ]; then
+        echo "The Vault S3 backup configuration file is missing." >&2
+        echo "And there is also nothing stored in Vault yet." >&2
+        echo "Please ensure the file is created at config/$vault_backup_s3_config_file" >&2
+        echo "with the necessary S3 bucket details for automated Vault backups." >&2
+        echo "For more information, please refer to the documentation:" >&2
+        echo "https://yaook.gitlab.io/k8s/release/v8.0/user/reference/services/vault.html#backups" >&2
+        exit 1
+    fi
+    vault_backup_s3_config="$(yq --compact-output . config/"$vault_backup_s3_config_file")"
+    vault kv put "$cluster_path/kv/vault-backup-s3-config" - <<<"$vault_backup_s3_config"
+    echo "Successfully imported Vault S3 object storage configuration into Vault."
+    echo "Removing Vault S3 backup config/$vault_backup_s3_config_file"
+    rm "config/$vault_backup_s3_config_file"
+}
+
 function check_for_obsolescences() {
     if [ "$(vault pki health-check -non-interactive -format=json "$cluster_path"/calico-pki/ 2> /dev/null | jq -r '.ca_validity_period[] | .status')" == 'ok' ]; then
         echo "--- WARNING ---"

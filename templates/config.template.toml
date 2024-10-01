@@ -963,13 +963,10 @@ enabled = false
 # to use for externally facing certificates.
 #external_ingress_issuer_kind = "ClusterIssuer"
 
-# If `true`, then an additional backup service will be deployed which creates snapshots and stores
-# them in an S3 bucket.
+# When set to `true`, an additional backup service will deploy, creating snapshots stored in an S3 bucket.
+# A configuration template for storing S3 credentials is available at:
+# `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
 #enable_backups = true
-
-# Credentials to access an S3 bucket to which the backups will be written. Required if `enable_backups = true`.
-# You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
-#s3_config_file = "vault_backup_s3_config.yaml"
 
 # Type of the Kubernetes Service of the Vault
 # NOTE: You may set this to LoadBalancer, but note that this will still use the internal certificate.

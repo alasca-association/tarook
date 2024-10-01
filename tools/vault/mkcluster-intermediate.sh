@@ -44,5 +44,9 @@ echo "Trying to import Thanos S3 config ..."
 import_thanos_config
 
 echo "-----------------------------------------------"
+echo "Trying to import Vault backup config ..."
+import_vault_backup_s3_config
+
+echo "-----------------------------------------------"
 echo "Checking for obsolescences"
 check_for_obsolescences

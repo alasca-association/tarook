@@ -316,6 +316,10 @@ path "$common_path_prefix/+/kv/data/wireguard/*" {
 path "$common_path_prefix/+/kv/data/thanos-config" {
     capabilities = ["read"]
 }
+
+path "$common_path_prefix/+/kv/data/vault-backup-s3-config" {
+    capabilities = ["read"]
+}
 EOF
 
 write_policy orchestrator <<EOF
