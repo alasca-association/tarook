@@ -27,6 +27,8 @@ monitoring_remote_writes: []
 
 monitoring_grafana_admin_secret_name: "cah-grafana-admin"
 
+monitoring_grafana_dashboard_enable_multicluster_support: false
+
 monitoring_prometheus_stack_version: "59.1.0"
 monitoring_prometheus_adapter_version: "4.10.0"
 
