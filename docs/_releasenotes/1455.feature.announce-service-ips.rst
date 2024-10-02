@@ -1,3 +1,0 @@
-Add option to let calico announce the service cluster IP range to
-external peers. This is necessary in setups where external entities
-want to send traffic to cluster IPs instead of pods or node ports.

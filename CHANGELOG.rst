@@ -19,6 +19,78 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.1.0 (2024-10-01)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+
+- We now have a binary cache for Nix build artifacts, so users won't have to build anything from source. To use it, configure
+
+  .. code:: ini
+
+     extra-substituters = https://yaook.cachix.org
+     extra-trusted-public-keys = yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
+
+  in ``/etc/nix/nix.conf`` (`!930 <https://gitlab.com/yaook/k8s/-/merge_requests/930>`_)
+- Poetry dependencies are now packaged within the Nix devShell (`!930 <https://gitlab.com/yaook/k8s/-/merge_requests/930>`_)
+- Add option to let calico announce the service cluster IP range to
+  external peers. This is necessary in setups where external entities
+  want to send traffic to cluster IPs instead of pods or node ports. (`!1455 <https://gitlab.com/yaook/k8s/-/merge_requests/1455>`_)
+- The devShell can now be selected with the env var ``YAOOK_K8S_DEVSHELL`` (defaulting to ``'default'``) (`!1457 <https://gitlab.com/yaook/k8s/-/merge_requests/1457>`_)
+- Support for a separate inventory for the custom stage was added.
+  It is used in addition to the main inventory.
+
+  Previously, the custom stage inventory was silently dropped with release v4.0.0.
+  This is now noted in the v4.0.0 release notes. (`!1472 <https://gitlab.com/yaook/k8s/-/merge_requests/1472>`_)
+
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- Some internal rework has been done to improve runtime performance. (`!1450 <https://gitlab.com/yaook/k8s/-/merge_requests/1450>`_)
+- Wireguard client templates now set ``PersistentKeepalive`` to 25 seconds. Existing configurations do not have to be exchanged. (`!1452 <https://gitlab.com/yaook/k8s/-/merge_requests/1452>`_)
+- Supported Kubernetes versions have been bumped. (`!1476 <https://gitlab.com/yaook/k8s/-/merge_requests/1476>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- A missing call to install_prerequisites has been added to upgrade.sh (`!1481 <https://gitlab.com/yaook/k8s/-/merge_requests/1481>`_)
+- Spawning clusters on Openstack with apply-all.sh has been fixed (`!1488 <https://gitlab.com/yaook/k8s/-/merge_requests/1488>`_)
+- Cluster-health-verification in combination with poetry2nix has been fixed (`!1495 <https://gitlab.com/yaook/k8s/-/merge_requests/1495>`_)
+- Devshell reloading in combination with poetry2nix has been fixed (`!1495 <https://gitlab.com/yaook/k8s/-/merge_requests/1495>`_)
+
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- `!1454 <https://gitlab.com/yaook/k8s/-/merge_requests/1454>`_
+- A hint to set ``USE_VAULT_IN_DOCKER`` for development setups has been added to :doc:`Initialization documentation </user/guide/initialization>` (`!1461 <https://gitlab.com/yaook/k8s/-/merge_requests/1461>`_)
+- The documentation has been updated to ensure compliance with the Kubernetes trademarks and
+  streamline to consistently use "YAOOK/K8s for the LCM. (`!1465 <https://gitlab.com/yaook/k8s/-/merge_requests/1465>`_)
+
+
+Deprecations and Removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``tools/patch_config.py`` was removed
+  completing its deprecation cycle
+  since release 6.1.0. (`!1468 <https://gitlab.com/yaook/k8s/-/merge_requests/1468>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- `!1459 <https://gitlab.com/yaook/k8s/-/merge_requests/1459>`_, `!1462 <https://gitlab.com/yaook/k8s/-/merge_requests/1462>`_, `!1467 <https://gitlab.com/yaook/k8s/-/merge_requests/1467>`_, `!1473 <https://gitlab.com/yaook/k8s/-/merge_requests/1473>`_, `!1474 <https://gitlab.com/yaook/k8s/-/merge_requests/1474>`_, `!1475 <https://gitlab.com/yaook/k8s/-/merge_requests/1475>`_, `!1477 <https://gitlab.com/yaook/k8s/-/merge_requests/1477>`_, `!1478 <https://gitlab.com/yaook/k8s/-/merge_requests/1478>`_, `!1479 <https://gitlab.com/yaook/k8s/-/merge_requests/1479>`_, `!1480 <https://gitlab.com/yaook/k8s/-/merge_requests/1480>`_, `!1485 <https://gitlab.com/yaook/k8s/-/merge_requests/1485>`_, `!1486 <https://gitlab.com/yaook/k8s/-/merge_requests/1486>`_, `!1487 <https://gitlab.com/yaook/k8s/-/merge_requests/1487>`_, `!1494 <https://gitlab.com/yaook/k8s/-/merge_requests/1494>`_, `!1499 <https://gitlab.com/yaook/k8s/-/merge_requests/1499>`_
+
+
+Misc
+~~~~
+
+- `!1458 <https://gitlab.com/yaook/k8s/-/merge_requests/1458>`_, `!1460 <https://gitlab.com/yaook/k8s/-/merge_requests/1460>`_
+
+
 v8.0.2 (2024-09-20)
 -------------------
 
