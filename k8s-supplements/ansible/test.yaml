@@ -216,8 +216,6 @@
   gather_facts: false
   vars_files:
   - vars/retries.yaml
-  vars:
-    gateway: "{{ groups['gateways'] | first }}"
   tasks:
   - name: Check configured rook ceph pools having a storage class
     include_role:
