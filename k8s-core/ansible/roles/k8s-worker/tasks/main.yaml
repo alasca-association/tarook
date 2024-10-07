@@ -28,6 +28,37 @@
 - name: Obtain kubeconfigs
   include_tasks: obtain-kubeconfigs.yaml
 
+# Drop this block when deprecating support for release v8
+# It is only needed to migrate existing clusters for !1450
+- name: Validate if Kubernetes is installed
+  when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
+  become: true
+  block:
+  - name: Check if kubelet service is up and running
+    ansible.builtin.service:
+      name: kubelet
+      state: started
+      enabled: true
+    check_mode: true
+    register: kubelet_service
+
+  - name: Set static fact that kubernetes is initialized  # noqa no-handler
+    when: kubelet_service.changed
+    block:
+    - name: Set static fact that kubernetes is initialized
+      vars:
+        content:
+          k8s_install_status: "initialized"
+      copy:
+        dest: /etc/ansible/facts.d/kubernetes-initialized.fact
+        owner: root
+        group: root
+        mode: 0644
+        content: "{{ content | to_json }}"
+
+    - name: Update cached facts
+      setup:
+
 - name: Join the k8s cluster steps
   when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
   become: true
