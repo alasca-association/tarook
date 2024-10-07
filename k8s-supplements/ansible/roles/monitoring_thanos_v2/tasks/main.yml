@@ -102,15 +102,13 @@
   - thanos
 
 - name: "{{ monitoring_use_thanos | ternary('I', 'Uni') }}nstall Thanos helm chart"
-  vars:
-    scheduling_key: "{{ monitoring_scheduling_key }}"
   kubernetes.core.helm:
     chart_ref: "{{ monitoring_thanos_chart_ref }}"
     chart_version: "{{ monitoring_thanos_chart_version }}"
     release_namespace: "{{ monitoring_namespace }}"
     release_name: "{{ monitoring_thanos_release_name }}"
     release_state: "{{ monitoring_use_thanos | ternary('present', 'absent') }}"
-    values: "{{ lookup('template', 'thanos_values.yaml.j2') | from_yaml }}"
+    values: "{{ monitoring_thanos_values | to_json }}"
     wait: true
     update_repo_cache: true
   tags:

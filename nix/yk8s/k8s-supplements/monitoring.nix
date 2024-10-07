@@ -6,10 +6,24 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.prometheus;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule;
+  inherit
+    (modules-lib)
+    mkRenamedOptionModule
+    mkRemovedOptionModule
+    mkRenamedResourceOptionModules
+    mkMultiResourceOptionsModule
+    mkHelmValuesModule
+    ;
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) foldlAttrs;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkMultiResourceOptions;
+  inherit
+    (yk8s-lib)
+    mkTopSection
+    mkGroupVarsFile
+    mkMultiResourceOptions
+    mkAffinity
+    mkTolerations
+    ;
   inherit (yk8s-lib.types) k8sSize;
 in {
   imports =
@@ -72,6 +86,7 @@ in {
           thanos_store.cpu.example = "500m";
         };
       })
+      (mkHelmValuesModule "k8s-service-layer.prometheus" "thanos")
     ]
     ++ (mkRenamedResourceOptionModules "k8s-service-layer.prometheus" [
       "operator"
@@ -369,6 +384,25 @@ in {
       default = null;
       example = "\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring";
     };
+
+    thanos_config_secret_name = mkOption {
+      type = types.str;
+      default = "thanos-bucket-config";
+    };
+
+    thanos_retention_resolution_raw = mkOption {
+      type = types.str;
+      default = "30d";
+    };
+    thanos_retention_resolution_5m = mkOption {
+      type = types.str;
+      default = "60d";
+    };
+    thanos_retention_resolution_1h = mkOption {
+      type = types.str;
+      default = "180d";
+    };
+
     thanos_store_in_memory_max_size = mkOption {
       description = ''
         https://thanos.io/tip/components/store.md/#in-memory-index-cache
@@ -467,6 +501,70 @@ in {
       type = with types; attrsOf nonEmptyStr;
       default = {
         managed-by = "yaook-k8s";
+      };
+    };
+  };
+  config.yk8s.k8s-service-layer.prometheus.thanos_default_values = let
+    affinity = mkAffinity {inherit (cfg) scheduling_key;};
+    tolerations = mkTolerations cfg.scheduling_key;
+  in {
+    global = lib.optionalAttrs (cfg.thanos_storage_class != null) {
+      storageClass = cfg.thanos_storage_class;
+    };
+    existingObjstoreSecret = cfg.thanos_config_secret_name;
+    compactor = {
+      enabled = true;
+      retentionResolutionRaw = cfg.thanos_retention_resolution_raw;
+      retentionResolution5m = cfg.thanos_retention_resolution_5m;
+      retentionResolution1h = cfg.thanos_retention_resolution_1h;
+      resources = cfg.thanos_compact_resources;
+      inherit affinity tolerations;
+      persistence =
+        {
+          enabled = cfg.thanos_storage_class != null;
+        }
+        // lib.optionalAttrs (cfg.thanos_compactor_size != null) {
+          size = cfg.thanos_compactor_size;
+        };
+    };
+
+    storegateway =
+      {
+        enabled = true;
+        extraFlags =
+          lib.optional (cfg.thanos_store_in_memory_max_size != null)
+          "--index-cache-size=${cfg.thanos_store_in_memory_max_size}";
+        resources = cfg.thanos_store_resources;
+        inherit affinity tolerations;
+        persistence.enabled = cfg.thanos_storage_class != null;
+      }
+      // lib.optionalAttrs (cfg.thanos_storegateway_size != null) {
+        size = cfg.thanos_storegateway_size;
+      };
+
+    query = {
+      enabled = true;
+      resources = cfg.thanos_query_resources;
+      dnsDiscovery = {
+        enabled = true;
+        sidecarsService = "prometheus-operated";
+        sidecarsNamespace = cfg.namespace;
+      };
+      inherit affinity tolerations;
+      extraFlags = [
+        "--query.auto-downsampling"
+        "--query.timeout=1m"
+      ];
+    };
+    queryFrontend = {
+      enabled = false;
+    };
+
+    metrics = {
+      enabled = true;
+      serviceMonitor = {
+        enabled = true;
+        labels = cfg.common_labels;
       };
     };
   };
