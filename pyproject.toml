@@ -50,6 +50,7 @@ sphinx-copybutton = "^0.5.2"
 [tool.poetry.group.minimal-access.dependencies]
 yq = "^3.4.1"
 ansible = "^9.0.0"
+paramiko = "^3.5.0" # undeclared dependency of Ansible
 
 [build-system]
 requires = ["poetry-core"]

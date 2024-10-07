@@ -15,7 +15,6 @@
         (builtins.mapAttrs (name: modified prev."${name}") {
           pynacl = [
             (rm.lists {nativeBuildInputs = with final; [sphinxHook];})
-            (rm.lists {outputs = ["doc"];})
           ];
           pyjwt = [
             (rm.lists {nativeBuildInputs = with final; [sphinxHook sphinx-rtd-theme];})
