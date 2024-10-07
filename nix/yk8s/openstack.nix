@@ -329,6 +329,17 @@ in {
       default = null;
     };
 
+    cloud_controller_manager.helm = mkHelmReleaseOptions {
+      descriptionName = "Openstack Cloud Controller Manager";
+      defaultRepoUrl = "https://kubernetes.github.io/cloud-provider-openstack";
+      defaultChartRef = "openstack-cloud-controller-manager";
+      # renovate: datasource=helm depName=openstack-cloud-controller-manager registryUrl=https://kubernetes.github.io/cloud-provider-openstack
+      defaultChartVersion = "2.34.1";
+      defaultReleaseNamespace = "kube-system";
+      defaultReleaseName = "openstack-cloud-controller-manager";
+      valuesDocUrl = "https://github.com/kubernetes/cloud-provider-openstack/blob/master/charts/openstack-cloud-controller-manager/values.yaml";
+    };
+
     check_credentials = mkDisableOption ''
       OpenStack credential checks
       Terrible things will happen when certain tasks are run and OpenStack credentials are not sourced.
@@ -340,12 +351,33 @@ in {
   };
   config.yk8s = lib.mkMerge [
     {
+      openstack.cloud_controller_manager.helm.values = {
+        cloudConfig = {
+          loadBalancer = {
+            enabled = false;
+          };
+        };
+        cluster = {
+          name = config.yk8s.infra.cluster_name;
+        };
+        secret = {
+          enabled = true;
+          create = false;
+          name = "cloud-config";
+        };
+        dnsPolicy = "Default"; # https://github.com/kubernetes/cloud-provider-openstack/issues/2611
+        priorityClassName = "system-node-critical";
+      };
+
       _targets.ansible.inventory_packages = [
         (mkGroupVarsFile {
           inherit cfg;
           inventory_path = "all/openstack.yaml";
           ansible_prefix = "openstack_";
           only_if_enabled = true;
+          unflat = [
+            ["cloud_controller_manager" "helm" "values"]
+          ];
           transformations = [(c: builtins.removeAttrs c nonAnsibleOptions)];
         })
       ];

@@ -9,6 +9,7 @@
   inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule;
   inherit (lib) mkOption mkEnableOption;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkYaml types;
+  inherit (yk8s-lib.options) mkHelmReleaseOptions;
   inherit
     (yk8s-lib.transform)
     warnIfZero
