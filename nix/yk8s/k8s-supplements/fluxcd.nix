@@ -5,9 +5,14 @@
   ...
 }: let
   cfg = config.yk8s.k8s-service-layer.fluxcd;
+  modules-lib = import ../lib/modules.nix {inherit lib;};
+  inherit (modules-lib) mkHelmValuesModule;
   inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkAffinity mkTolerations;
 in {
+  imports = [
+    (mkHelmValuesModule "k8s-service-layer.fluxcd" "")
+  ];
   options.yk8s.k8s-service-layer.fluxcd = mkTopSection {
     _docs.preface = ''
       More details about our FluxCD2 implementation can be found
@@ -55,6 +60,39 @@ in {
       '';
       type = with types; nullOr nonEmptyStr;
       default = null;
+    };
+  };
+  config.yk8s.k8s-service-layer.fluxcd.default_values = let
+    affinity = mkAffinity {inherit (cfg) scheduling_key;};
+    tolerations = mkTolerations cfg.scheduling_key;
+    priorityClassName = "system-cluster-critical";
+  in {
+    helmController = {
+      inherit affinity tolerations priorityClassName;
+    };
+    imageAutomationController = {
+      inherit affinity tolerations priorityClassName;
+    };
+    imageReflectionController = {
+      inherit affinity tolerations priorityClassName;
+    };
+    kustomizeController = {
+      inherit affinity tolerations priorityClassName;
+    };
+    notificationController = {
+      inherit affinity tolerations priorityClassName;
+    };
+    sourceController = {
+      inherit affinity tolerations priorityClassName;
+    };
+    prometheus = {
+      podMonitor = {
+        create = config.yk8s.kubernetes.monitoring.enabled;
+        additionalLabels = {
+          "app.kubernetes.io/component" = "monitoring";
+          release = "prometheus-stack";
+        };
+      };
     };
   };
   config.yk8s._inventory_packages = [
