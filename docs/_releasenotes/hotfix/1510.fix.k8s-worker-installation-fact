@@ -1,1 +1,0 @@
-A bug has been fixed which affected existing clusters setup before release v8.1 and caused Kubernetes workers to try to re-join the cluster.
