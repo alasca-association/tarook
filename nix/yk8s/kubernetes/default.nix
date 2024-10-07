@@ -74,21 +74,23 @@ in {
         example = "1Gi";
       };
     };
-    controller_manager.large_cluster_size_threshold = mkOption {
-      type = types.int;
-      default = 50;
-    };
-    controller_manager.enable_signing_requests = mkEnableOption ''
-      signing requests.
+    controller_manager = {
+      large_cluster_size_threshold = mkOption {
+        type = types.int;
+        default = 50;
+      };
+      enable_signing_requests = mkEnableOption ''
+        signing requests.
 
-      Note: This currently means that the cluster CA key is copied to the control
-      plane nodes which decreases security compared to storing the CA only in the Vault.
-      IMPORTANT: Manual steps required when enabled after cluster creation
-      The CA key is made available through Vault's kv store and fetched by Ansible.
-      Due to Vault's security architecture this means
-      you must run the CA rotation script
-      (or manually upload the CA key from your backup to Vault's kv store).
-    '';
+        Note: This currently means that the cluster CA key is copied to the control
+        plane nodes which decreases security compared to storing the CA only in the Vault.
+        IMPORTANT: Manual steps required when enabled after cluster creation
+        The CA key is made available through Vault's kv store and fetched by Ansible.
+        Due to Vault's security architecture this means
+        you must run the CA rotation script
+        (or manually upload the CA key from your backup to Vault's kv store).
+      '';
+    };
   };
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
