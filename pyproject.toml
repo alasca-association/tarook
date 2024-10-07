@@ -8,7 +8,7 @@ readme = "README.md"
 
 [tool.poetry.group.main.dependencies]
 python = "^3.10"
-kubernetes = "^30.0.0"
+kubernetes = "^31.0.0"
 openshift = "^0.13.1"
 python-openstackclient = "^7.0.0"
 python-neutronclient = "^11.3.1"
