@@ -27,12 +27,9 @@ dependencies locked to specific versions so everybody can produce the same ident
 
       extra-substituters = https://yaook.cachix.org
       extra-trusted-public-keys = yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
-4. Run ``nix shell`` in this directory to enter an environment with all requirements available
-   If you use direnv, it will automatically load all requirements once you enter the directory.
-
-We also strongly recommend installing and using:
-
--  `direnv <https://direnv.net/>`__
+4. Install `direnv <https://direnv.net>` and configure its Hook for your shell. This is not strictly necessary,
+  but the rest of the guide assumes that direnv is available. You can enter the virtual environments and set
+  all necessary environment variables manually instead, but then you're on your own.
 
 .. _initialization.required-system-resources:
 
