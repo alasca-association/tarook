@@ -6,9 +6,9 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.ingress;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule;
+  inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule mkHelmValuesModule;
   inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkAffinity mkTolerations;
   inherit (yk8s-lib.types) k8sServiceType k8sSize k8sCpus;
 in {
   imports = [
@@ -22,6 +22,8 @@ in {
       cpu.request = "100m";
       memory.limit = "128Mi";
     })
+
+    (mkHelmValuesModule "k8s-service-layer.ingress" "")
   ];
 
   options.yk8s.k8s-service-layer.ingress = mkTopSection {
@@ -113,6 +115,47 @@ in {
       default = 1;
     };
     allow_snippet_annotations = mkEnableOption "snippet annotations";
+  };
+  config.yk8s.k8s-service-layer.ingress.default_values = let
+    inherit (config.yk8s.terraform) ipv4_enabled ipv6_enabled;
+    affinity = mkAffinity {inherit (cfg) scheduling_key;};
+    tolerations = mkTolerations cfg.scheduling_key;
+  in {
+    defaultBackend = {inherit affinity tolerations;};
+    controller =
+      {
+        inherit affinity tolerations;
+        service = {
+          ipFamilyPolicy =
+            if ipv4_enabled && ipv6_enabled
+            then "PreferDualStack"
+            else "SingleStack";
+          ipFamilies =
+            (lib.optional ipv4_enabled "IPv4")
+            ++ (lib.optional ipv6_enabled "IPv6");
+          type = cfg.service_type;
+          nodePorts = {
+            http = cfg.nodeport_http;
+            https = cfg.nodeport_https;
+          };
+        };
+        extraArgs.enable-ssl-passthrough = cfg.enable_ssl_passthrough;
+        priorityClassName = "system-cluster-critical";
+        replicaCount = cfg.replica_count;
+        allowSnippetAnnotations = cfg.allow_snippet_annotations;
+        image.allowPrivilegeEscalation = false;
+        resources = cfg.resources;
+      }
+      // lib.optionalAttrs config.yk8s.kubernetes.monitoring.enabled {
+        metrics = {
+          enabled = true;
+          serviceMonitor = {
+            enabled = true;
+            namespace = cfg.namespace;
+            additionalLabels = config.yk8s.k8s-service-layer.prometheus.common_labels;
+          };
+        };
+      };
   };
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {

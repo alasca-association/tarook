@@ -24,8 +24,6 @@
     repo_state: "{{ k8s_ingress_install | ternary('present', 'absent') }}"
 
 - name: Install NGINX ingress
-  vars:
-    scheduling_key: "{{ k8s_ingress_scheduling_key | default(None) }}"
   kubernetes.core.helm:
     chart_ref: "{{ k8s_ingress_chart_ref }}"
     release_namespace: "{{ k8s_ingress_namespace }}"
@@ -33,5 +31,5 @@
     release_state: "{{ k8s_ingress_install | ternary('present', 'absent') }}"
     update_repo_cache: true
     chart_version: "{{ k8s_ingress_chart_version }}"
-    values: "{{ lookup('template', 'nginx_ingress_values.yaml.j2') | from_yaml }}"
+    values: "{{ k8s_ingress_values | to_json }}"
 ...
