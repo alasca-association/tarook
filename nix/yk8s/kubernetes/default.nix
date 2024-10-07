@@ -10,6 +10,7 @@
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
   inherit (yk8s-lib.types) k8sQuantity;
+  inherit (yk8s-lib.options) mkHelmValuesOption;
 in {
   imports = [
     ./storage.nix
@@ -20,6 +21,7 @@ in {
     (mkRemovedOptionModule "kubernetes" "continuous_join_key" "")
     (mkRenamedOptionModuleWithNewSection "kubernetes" "monitoring.alertmanager_config_secret" "k8s-service-layer.prometheus" "alertmanager_config_secret")
     (mkRemovedOptionModule "kubernetes" "global_monitoring" "This section has been moved to a custom role")
+    (mkHelmValuesModule "kubernetes" "controller_manager.")
   ];
   options.yk8s.kubernetes = mkTopSection {
     _docs.order = 3;
@@ -73,6 +75,10 @@ in {
       };
     };
     controller_manager = {
+      helm_values = mkHelmValuesOption {
+        name = "controller-manager";
+        valuesDocUrl = "https://artifacthub.io/packages/helm/cloud-provider-openstack/openstack-cloud-controller-manager";
+      };
       large_cluster_size_threshold = mkOption {
         type = types.int;
         default = 50;
@@ -89,6 +95,23 @@ in {
         (or manually upload the CA key from your backup to Vault's kv store).
       '';
     };
+  };
+  config.yk8s.kubernetes.controller_manager.helm_values = {
+    cloudConfig = {
+      loadBalancer = {
+        enabled = false;
+      };
+    };
+    cluster = {
+      name = config.yk8s.infra.cluster_name;
+    };
+    secret = {
+      enabled = true;
+      create = false;
+      name = "cloud-config";
+    };
+    dnsPolicy = "Default";
+    priorityClassName = "system-node-critical";
   };
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
