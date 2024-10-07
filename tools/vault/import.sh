@@ -29,7 +29,6 @@ fi
 "$actions_dir/update-inventory.sh"
 
 cluster="$(get_clustername)"
-check_clustername "$cluster"
 mode="$1"
 
 import_roots=1

@@ -16,7 +16,6 @@ fi
 "$actions_dir/update-inventory.sh"
 
 cluster="$(get_clustername)"
-check_clustername "$cluster"
 # reload the lib to update the vars after initializing the clustername
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"

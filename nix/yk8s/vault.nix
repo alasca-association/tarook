@@ -23,7 +23,6 @@ in {
         reasonably changed after a cluster has been spawned.
       '';
       type = types.str;
-      default = "devcluster";
     };
     policy_prefix = mkOption {
       type = types.str;

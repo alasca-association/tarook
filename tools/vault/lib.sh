@@ -70,21 +70,6 @@ function get_clustername() {
     yq --raw-output '.vault_cluster_name // error("unset")' "${group_vars_dir}/all/vault-backend.yaml"
 }
 
-function check_clustername() {
-    clustername="$1"
-    if [ -z "$clustername" ]; then
-        echo "ERROR: vault.cluster_name must be defined in the config" >&2
-        exit 1
-    elif [ "$clustername" == "devcluster" ]; then
-        echo "WARNING: vault.cluster_name is still the default value 'devcluster'. You may want to change it." >&2
-        read -rp "Continue (y/n)" choice
-        if [ "$choice" != "y" ]; then
-            echo "Aborting." >&2
-            exit 2
-        fi
-    fi
-}
-
 function init_cluster_secrets_engines() {
     local pki_root_ttl="$1"
     local allow_existing="${2:-true}"

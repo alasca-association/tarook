@@ -33,7 +33,6 @@ fi
 "$actions_dir/update-inventory.sh"
 
 cluster="$(get_clustername)"
-check_clustername "$cluster"
 kubernetes_server="$1"
 username="vault:$(vault token lookup -format=json | jq -r .data.path)"
 kubernetes_version="$(yq --raw-output '.k8s_version // error("unset")' inventory/yaook-k8s/group_vars/all/kubernetes.yaml)"
