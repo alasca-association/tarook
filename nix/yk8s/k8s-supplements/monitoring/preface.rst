@@ -22,9 +22,9 @@ if a lot of metrics are requested.
 
 This can be prevented by tuning the following config options:
 
-- :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_store_in_memory_max_size`
-- :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_store_resources.limits.memory`
-- :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_store_resources.requests.memory`
+- :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_storegateway_in_memory_max_size`
+- :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_storegateway_resources.limits.memory`
+- :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_storegateway_resources.requests.memory`
 
 Note that the value must be a decimal unit!
 Please also note that
