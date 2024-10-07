@@ -46,57 +46,12 @@ You can find the actual requirements
 
 .. code:: console
 
-    $ sudo apt install direnv \
-        jq \
-        moreutils \
-        openssl \
-        python3-pip \
-        python3-poetry \
-        python3-toml \
-        python3-venv \
-        uuid-runtime \
-        wireguard
-
-Install Terraform
------------------
-
-Terraform allows infrastructure to be expressed as code
-in a simple, human-readable language called HCL (HashiCorp Configuration Language).
-It reads configuration files and provides an execution plan of changes,
-which can be reviewed for safety and then applied and provisioned.
-
-To `install Terraform <https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli#install-terraform>`__,
-we run these commands:
-
-.. code:: console
-
-    $ wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-    $ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-    $ sudo apt update
-    $ sudo apt install terraform
-
-    $ # Check your installation
-    $ terraform version
-
-Install Helm
-------------
-
-Helm is the package manager for Kubernetes.
-It is used to build Helm charts,
-which are packages of Kubernetes resources
-that are used to deploy apps to a cluster.
-Please follow this `install instructions <https://helm.sh/docs/intro/install/>`__:
-
-.. code:: console
-
-    $ curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
-    $ sudo apt-get install apt-transport-https --yes
-    $ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-    $ sudo apt-get update
-    $ sudo apt-get install helm
-
-    $ # Check your installation
-    $ helm version
+    $ sh <(curl -L https://nixos.org/nix/install) --daemon
+    $ cat <<EOF >> /etc/nix/nix.conf
+    experimental-features = nix-command flakes
+    extra-substituters = https://yaook.cachix.org
+    extra-trusted-public-keys = yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
+    EOF
 
 Configure WireGuard
 -------------------
