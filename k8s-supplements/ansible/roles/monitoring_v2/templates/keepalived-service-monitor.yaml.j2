@@ -3,7 +3,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: keepalived-service-monitor
-  namespace: "{{ monitoring_namespace }}"
+  namespace: "{{ monitoring_helm_release_namespace }}"
 {% if monitoring_common_labels %}
   labels:
 {% for label_key, label_value in monitoring_common_labels.items() %}
@@ -13,7 +13,7 @@ metadata:
 spec:
   namespaceSelector:
     matchNames:
-      - {{ monitoring_namespace }}
+      - {{ monitoring_helm_release_namespace }}
   selector:
     matchLabels:
       app: prometheus-keepalived
@@ -28,7 +28,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: prometheus-keepalived
-  namespace: "{{ monitoring_namespace }}"
+  namespace: "{{ monitoring_helm_release_namespace }}"
   labels:
     app: prometheus-keepalived
 spec:
@@ -44,7 +44,7 @@ kind: Endpoints
 apiVersion: v1
 metadata:
   name: prometheus-keepalived
-  namespace: "{{ monitoring_namespace }}"
+  namespace: "{{ monitoring_helm_release_namespace }}"
 subsets:
   - addresses:
 {% for node in groups['frontend'] %}

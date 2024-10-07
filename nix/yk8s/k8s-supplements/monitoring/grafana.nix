@@ -35,11 +35,6 @@ in {
   ];
 
   options.yk8s.k8s-service-layer.prometheus = {
-    grafana_admin_secret_name = mkOption {
-      type = types.yk8s.k8s.secretName;
-      default = "cah-grafana-admin";
-    };
-
     grafana_dashboard_enable_multicluster_support = mkEnableOption ''
       referencing multiple K8s clusters by a single Grafana datasource.
     '';

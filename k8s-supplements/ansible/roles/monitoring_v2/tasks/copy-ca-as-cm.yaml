@@ -7,7 +7,7 @@
       kind: ConfigMap
       metadata:
         name: front-proxy-ca
-        namespace: "{{ monitoring_namespace }}"
+        namespace: "{{ monitoring_helm_release_namespace }}"
       data:
         front-proxy-ca.crt: "{{ lookup('kubernetes.core.k8s', api_version='v1', kind='ConfigMap', namespace='kube-system', resource_name='cluster-ca-certs').data['front-proxy-ca.crt'] }}"
   register: k8s_apply

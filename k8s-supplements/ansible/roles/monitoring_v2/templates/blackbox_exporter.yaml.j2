@@ -153,7 +153,7 @@ prometheusRule:
     app.kubernetes.io/name: blackbox-exporter
     app.kubernetes.io/instance: blackbox-exporter
     role: alert-rules
-  namespace: {{ monitoring_namespace | to_json }}
+  namespace: {{ monitoring_helm_release_namespace | to_json }}
   rules:
     - alert: mk8s:internet-probe:target-unreachable
       expr: probe_success < 1

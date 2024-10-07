@@ -9,11 +9,12 @@
   inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkRenamedResourceOptionModule mkMultiResourceOptionsModule;
   inherit (lib) mkEnableOption mkOption;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile types isValidSemver2;
-  inherit (yk8s-lib.options) mkHelmChartVersionOption;
+  inherit (yk8s-lib.options) mkHelmChartVersionOption mkHelmReleaseOptions;
 in {
   imports = [
     ./grafana.nix
     ./thanos.nix
+    ./helm_prometheus_stack
 
     (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "use_jsonnet_setup"] "")
     (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "migrate_from_v1"] "")
@@ -23,10 +24,14 @@ in {
     (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "prometheus_monitor_all_namespaces"] "")
     (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "monitor_all_namespaces"] "")
 
-    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_cpu_request"] ["k8s-service-layer" "prometheus" "operator_resources" "cpu" "request"])
-    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_cpu_limit"] ["k8s-service-layer" "prometheus" "operator_resources" "cpu" "limit"])
-    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_memory_request"] ["k8s-service-layer" "prometheus" "operator_resources" "memory" "request"])
-    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_memory_limit"] ["k8s-service-layer" "prometheus" "operator_resources" "memory" "limit"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "namespace"] ["k8s-service-layer" "prometheus" "helm" "release_namespace"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "helm_repo_url"] ["k8s-service-layer" "prometheus" "helm" "chart_repo_url"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_stack_release_name"] ["k8s-service-layer" "prometheus" "helm" "release_name"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_stack_version"] ["k8s-service-layer" "prometheus" "helm" "chart_version"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "nvidia_dcgm_exporter_helm_repo_url"] ["k8s-service-layer" "prometheus" "nvidia_dcgm_exporter" "helm" "chart_repo_url"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "nvidia_dcgm_exporter_helm_version"] ["k8s-service-layer" "prometheus" "nvidia_dcgm_exporter" "helm" "chart_version"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_adapter_version"] ["k8s-service-layer" "prometheus" "prometheus_adapter" "helm" "chart_version"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_adapter_release_name"] ["k8s-service-layer" "prometheus" "prometheus_adapter" "helm" "chart_version"])
 
     (mkMultiResourceOptionsModule ["k8s-service-layer" "prometheus"] {
       description = ''
@@ -73,24 +78,16 @@ in {
       default = true;
     };
 
-    prometheus_helm_repo_url = mkOption {
-      type = types.yk8s.helm.chartRepoUrl;
-      default = "https://prometheus-community.github.io/helm-charts";
-    };
-
-    prometheus_stack_chart_name = mkOption {
-      type = types.yk8s.helm.chartRef;
-      default = "kube-prometheus-stack";
-    };
-
-    prometheus_stack_release_name = mkOption {
-      type = types.yk8s.helm.chartReleaseName;
-      default = "prometheus-stack";
-    };
-
-    prometheus_adapter_release_name = mkOption {
-      type = types.yk8s.helm.chartReleaseName;
-      default = "prometheus-adapter";
+    helm = mkHelmReleaseOptions {
+      descriptionName = "kube-prometheus-stack";
+      defaultRepoUrl = "https://prometheus-community.github.io/helm-charts";
+      defaultChartRef = "kube-prometheus-stack";
+      # renovate: datasource=helm depName=kube-prometheus-stack registryUrl=https://prometheus-community.github.io/helm-charts
+      defaultChartVersion = "84.5.0";
+      defaultReleaseNamespace = "monitoring";
+      defaultReleaseName = "prometheus-stack";
+      valuesDocUrl = "https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml";
+      chartOptions = {};
     };
 
     remote_writes = mkOption {
@@ -104,13 +101,15 @@ in {
                 example = "http://remote-write-receiver:9090/api/v1/write";
               };
               basic_auth_secret_name = mkOption {
+                default = null;
                 description = ''
                   Name of the secret containing htpasswd for basic authentication of Prometheus remote write.
                   The secret must contain the following keys:
                   - username: FOO
                   - password: BAR
+                  If not set, no basic auth will be configured for this remote write target.
                 '';
-                type = types.yk8s.k8s.secretName;
+                type = types.nullOr types.yk8s.k8s.secretName;
               };
               write_relabel_configs = mkOption {
                 description = ''
@@ -164,16 +163,39 @@ in {
             };
           }
         );
+      apply = map (
+        v:
+          v
+          // lib.optionalAttrs (v ? write_relabel_configs) (builtins.trace
+            "WARNING: yk8s.k8s-service-layer.prometheus.remote_writes.[].write_label_configs is deprecated. Please use writeRelabelConfigs instead."
+            {
+              writeRelabelConfigs = v.write_relabel_configs;
+            })
+      );
     };
 
-    nvidia_dcgm_exporter_helm_repo_url = mkOption {
-      type = types.yk8s.helm.chartRepoUrl;
-      default = "https://nvidia.github.io/dcgm-exporter/helm-charts";
-    };
-
-    nvidia_dcgm_exporter_helm_version = mkHelmChartVersionOption {
+    nvidia_dcgm_exporter.helm = mkHelmReleaseOptions {
+      descriptionName = "nvidia-dcgm-exporter";
+      defaultRepoUrl = "https://nvidia.github.io/dcgm-exporter/helm-charts";
+      defaultChartRef = "dcgm-exporter";
       # renovate: datasource=helm depName=dcgm-exporter registryUrl=https://nvidia.github.io/dcgm-exporter/helm-charts
-      default = "4.8.3";
+      defaultChartVersion = "4.8.3";
+      defaultReleaseNamespace = "monitoring";
+      defaultReleaseName = "nvidia-dcgm-exporter";
+      valuesDocUrl = "https://github.com/NVIDIA/dcgm-exporter/blob/main/deployment/values.yaml";
+      chartOptions = {};
+    };
+
+    prometheus_adapter.helm = mkHelmReleaseOptions {
+      descriptionName = "prometheus-adapter";
+      defaultRepoUrl = "https://prometheus-community.github.io/helm-charts";
+      defaultChartRef = "prometheus-adapter";
+      # renovate: datasource=helm depName=prometheus-adapter registryUrl=https://prometheus-community.github.io/helm-charts
+      defaultChartVersion = "5.3.0";
+      defaultReleaseNamespace = "monitoring";
+      defaultReleaseName = "prometheus-adapter";
+      valuesDocUrl = "https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-adapter/values.yaml";
+      chartOptions = {};
     };
 
     monitoring_internet_probe = mkEnableOption ''
@@ -183,27 +205,15 @@ in {
       type = types.yk8s.posix.absolutePath;
       default = "/var/lib/node_exporter/textfile_collector";
     };
-    prometheus_stack_version = mkHelmChartVersionOption {
-      # renovate: datasource=helm depName=kube-prometheus-stack registryUrl=https://prometheus-community.github.io/helm-charts
-      default = "84.5.0";
-    };
-    prometheus_adapter_version = mkHelmChartVersionOption {
-      # renovate: datasource=helm depName=prometheus-adapter registryUrl=https://prometheus-community.github.io/helm-charts
-      default = "5.3.0";
-    };
-
-    namespace = mkOption {
-      description = ''
-        Namespace to deploy the monitoring in (will be created if it does not exist, but
-        never deleted).
-      '';
-      type = types.yk8s.k8s.namespaceName;
-      default = "monitoring";
-    };
 
     prometheus_service_name = mkOption {
       type = types.yk8s.k8s.serviceName;
       default = "prometheus-operated";
+    };
+
+    grafana_admin_secret_name = mkOption {
+      type = types.str;
+      default = "cah-grafana-admin";
     };
 
     prometheus_persistent_storage_class = mkOption {
@@ -347,6 +357,7 @@ in {
         };
       });
     };
+
     common_labels = mkOption {
       description = ''
         If at least one common_label is defined, Prometheus will be created with selectors
@@ -363,11 +374,103 @@ in {
       };
     };
   };
+
+  config.yk8s.k8s-service-layer.prometheus.nvidia_dcgm_exporter.helm = let
+    inherit (yk8s-lib.k8s) mkAffinity;
+    affinity = mkAffinity {scheduling_key = "k8s.yaook.cloud/gpu-node";};
+  in {
+    values = {
+      inherit affinity;
+      tolerations = [
+        {
+          key = "";
+          operator = "Exists";
+        }
+      ];
+      serviceMonitor = {
+        interval = "30s";
+        additionalLabels = cfg.common_labels;
+      };
+      nodeSelector = {
+        "k8s.yaook.cloud/gpu-node" = "true";
+      };
+    };
+  };
+
+  config.yk8s.k8s-service-layer.prometheus.prometheus_adapter.helm = let
+    inherit (yk8s-lib.k8s) mkAffinity mkTolerations;
+    affinity = mkAffinity {inherit (cfg) scheduling_key;};
+    tolerations = mkTolerations {inherit (cfg) scheduling_key;};
+  in {
+    values = {
+      inherit affinity tolerations;
+      priorityClassName = "system-cluster-critical";
+      replicas = 1;
+      podLabels = cfg.common_labels;
+      # The queries below are go templates. `<< >>` is used to not interfere with prometheus' string substitution.
+      # The values of `GroupBy` and `LabelMatchers` are explained here [0].
+      # Note: We're excluding metrics without a container label (`container!=""`) because they contain the sum of all containers in a pod; otherwise we'd count them twice.
+      #       We're not using the summary value because someone might be interested in the values per container.
+      # [0]  https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/config.md#querying
+      rules = {
+        default = false; # I couldn't understand the default rules so I disabled them
+        resource = {
+          cpu = {
+            containerQuery = ''sum by (<<.GroupBy>>) (rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>, container!=""}[3m]))'';
+            nodeQuery = ''sum by (<<.GroupBy>>) (rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>, container!=""}[3m]))'';
+            resources = {
+              overrides = {
+                node.resource = "node";
+                namespace.resource = "namespace";
+                pod.resource = "pod";
+              };
+            };
+            containerLabel = "container";
+          };
+          memory = {
+            containerQuery = ''sum by (<<.GroupBy>>) (container_memory_working_set_bytes{<<.LabelMatchers>>, container!=""})'';
+            nodeQuery = ''sum by (<<.GroupBy>>) (container_memory_working_set_bytes{<<.LabelMatchers>>, container!=""})'';
+            resources = {
+              overrides = {
+                node.resource = "node";
+                namespace.resource = "namespace";
+                pod.resource = "pod";
+              };
+            };
+            containerLabel = "container";
+          };
+          window = "3m";
+        };
+      };
+      extraArguments = [
+        ''--requestheader-client-ca-file=/mnt/certs/front-proxy-ca.crt''
+      ];
+      prometheus = {
+        path = "";
+        port = 9090;
+        url = "http://prometheus-stack-kube-prom-prometheus.${cfg.helm.release_namespace}.svc";
+      };
+      extraVolumes = [
+        {
+          name = "front-proxy-ca";
+          configMap.name = "front-proxy-ca";
+        }
+      ];
+
+      extraVolumeMounts = [
+        {
+          name = "front-proxy-ca";
+          mountPath = "/mnt/certs/";
+        }
+      ];
+    };
+  };
+
   config.yk8s._targets.ansible.assertions =
     [
       {
-        assertion = isValidSemver2 cfg.prometheus_stack_version -> lib.versionAtLeast cfg.prometheus_stack_version "68.4.0";
-        message = "config.yk8s.k8s-service-layer.prometheus.prometheus_stack_version: '${cfg.prometheus_stack_version}' must be at least 68.4.0";
+        assertion = isValidSemver2 cfg.helm.chart_version -> lib.versionAtLeast cfg.helm.chart_version "68.4.0";
+        message = "config.yk8s.k8s-service-layer.prometheus.helm.chart_version: '${cfg.helm.chart_version}' must be at least 68.4.0";
       }
     ]
     # check that no IPv6 module is configured in any probe if yk8s.infra.ipv6_enabled is disabled
@@ -381,9 +484,9 @@ in {
     cfg.internet_probe_targets;
   config.yk8s._targets.ansible.warnings =
     []
-    ++ lib.optional (!(isValidSemver2 cfg.prometheus_stack_version)) ''
-      config.yk8s.k8s-service-layer.prometheus.prometheus_stack_version: '${cfg.prometheus_stack_version}' not in semver2 format
-      Please make sure that '${cfg.prometheus_stack_version}' has a version level of at least 68.4.0.
+    ++ lib.optional (!(isValidSemver2 cfg.helm.chart_version)) ''
+      config.yk8s.k8s-service-layer.prometheus.helm.chart_version: '${cfg.helm.chart_version}' not in semver2 format
+      Please make sure that '${cfg.helm.chart_version}' has a version level of at least 68.4.0.
     '';
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
@@ -392,6 +495,10 @@ in {
       inventory_path = "all/prometheus.yaml";
       unflat = [
         ["common_labels"]
+        ["helm" "values"]
+        ["thanos" "helm" "values"]
+        ["prometheus_adapter" "helm" "values"]
+        ["nvidia_dcgm_exporter" "helm" "values"]
       ];
     })
   ];

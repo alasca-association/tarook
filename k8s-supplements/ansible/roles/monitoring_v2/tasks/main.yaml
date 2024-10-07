@@ -12,7 +12,7 @@
       apiVersion: v1
       kind: Namespace
       metadata:
-        name: "{{ monitoring_namespace }}"
+        name: "{{ monitoring_helm_release_namespace }}"
     validate:
       fail_on_error: true
       strict: true
@@ -31,7 +31,7 @@
     api_version: v1
     kind: Secret
     name: "{{ monitoring_grafana_admin_secret_name }}"
-    namespace: "{{ monitoring_namespace }}"
+    namespace: "{{ monitoring_helm_release_namespace }}"
   register: grafana_admin
   until: grafana_admin is not failed
   retries: "{{ error_retries }}"
@@ -47,7 +47,7 @@
       kind: Secret
       metadata:
         name: "{{ monitoring_grafana_admin_secret_name }}"
-        namespace: "{{ monitoring_namespace }}"
+        namespace: "{{ monitoring_helm_release_namespace }}"
       data:
         # admin:prom-operator, default credentials
         admin-user: YWRtaW4=
@@ -66,31 +66,27 @@
 
 # Install the prometheus stack
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall KSL monitoring stack"
-  vars:
-    scheduling_key: "{{ monitoring_scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_repo_url: "{{ monitoring_prometheus_helm_repo_url }}"
-    chart_ref: "{{ monitoring_prometheus_stack_chart_name }}"
-    chart_version: "{{ monitoring_prometheus_stack_version }}"
-    release_namespace: "{{ monitoring_namespace }}"
-    release_name: "{{ monitoring_prometheus_stack_release_name }}"
+    chart_repo_url: "{{ monitoring_helm_chart_repo_url }}"
+    chart_ref: "{{ monitoring_helm_chart_ref }}"
+    chart_version: "{{ monitoring_helm_chart_version }}"
+    release_namespace: "{{ monitoring_helm_release_namespace }}"
+    release_name: "{{ monitoring_helm_release_name }}"
     release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
-    values: "{{ lookup('template', 'prometheus_stack.yaml.j2') | from_yaml }}"
+    values: "{{ monitoring_helm_values | to_json }}"
     wait: false
 
 # Install prometheus-adapter, a metrics-server implementation
 # It enables commands like `k top nodes`
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall Prometheus adapter"
-  vars:
-    scheduling_key: "{{ monitoring_scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_repo_url: "{{ monitoring_prometheus_helm_repo_url }}"
-    chart_ref: prometheus-adapter
-    chart_version: "{{ monitoring_prometheus_adapter_version }}"
-    release_namespace: "{{ monitoring_namespace }}"
-    release_name: "{{ monitoring_prometheus_adapter_release_name }}"
+    chart_repo_url: "{{ monitoring_prometheus_adapter_helm_chart_repo_url }}"
+    chart_ref: "{{ monitoring_prometheus_adapter_helm_chart_ref }}"
+    chart_version: "{{ monitoring_prometheus_adapter_helm_chart_version }}"
+    release_namespace: "{{ monitoring_prometheus_adapter_helm_release_namespace }}"
+    release_name: "{{ monitoring_prometheus_adapter_helm_release_name }}"
     release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
-    values: "{{ lookup('template', 'prometheus_adapter.yaml.j2') | from_yaml }}"
+    values: "{{ monitoring_prometheus_adapter_helm_values | to_json }}"
     wait: false
 
 - name: Do we have any gpu nodes?
@@ -118,10 +114,10 @@
   vars:
     scheduling_key: "{{ monitoring_scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_repo_url: "{{ monitoring_prometheus_helm_repo_url }}"
+    chart_repo_url: "{{ monitoring_helm_chart_repo_url }}"
     chart_ref: prometheus-blackbox-exporter
     chart_version: "{{ monitoring_blackbox_version }}"
-    release_namespace: "{{ monitoring_namespace }}"
+    release_namespace: "{{ monitoring_helm_release_namespace }}"
     release_name: "kms-blackbox"
     release_state: "{{ monitoring_internet_probe | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'blackbox_exporter.yaml.j2') | from_yaml }}"
