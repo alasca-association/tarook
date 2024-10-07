@@ -7,7 +7,7 @@
       apiVersion: v1
       kind: Namespace
       metadata:
-        name: "{{ k8s_ingress_namespace }}"
+        name: "{{ k8s_ingress_helm_release_namespace }}"
     validate:
       fail_on_error: true
       strict: true
@@ -18,14 +18,12 @@
   delay: "{{ error_delay }}"
 
 - name: Install NGINX ingress
-  vars:
-    scheduling_key: "{{ k8s_ingress_scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_repo_url: "{{ k8s_ingress_helm_repo_url }}"
-    chart_ref: "{{ k8s_ingress_chart_ref }}"
-    release_namespace: "{{ k8s_ingress_namespace }}"
-    release_name: "{{ k8s_ingress_release_name }}"
+    chart_repo_url: "{{ k8s_ingress_helm_chart_repo_url }}"
+    chart_ref: "{{ k8s_ingress_helm_chart_ref }}"
+    release_namespace: "{{ k8s_ingress_helm_release_namespace }}"
+    release_name: "{{ k8s_ingress_helm_release_name }}"
     release_state: "{{ k8s_ingress_install | ternary('present', 'absent') }}"
-    chart_version: "{{ k8s_ingress_chart_version }}"
-    values: "{{ lookup('template', 'nginx_ingress_values.yaml.j2') | from_yaml }}"
+    chart_version: "{{ k8s_ingress_helm_chart_version }}"
+    values: "{{ k8s_ingress_helm_values | to_json }}"
 ...
