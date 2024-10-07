@@ -97,15 +97,13 @@
 
 # Install the prometheus stack
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall KSL monitoring stack"
-  vars:
-    scheduling_key: "{{ monitoring_scheduling_key | default(None) }}"
   kubernetes.core.helm:
     chart_ref: "{{ monitoring_prometheus_stack_chart_name }}"
     chart_version: "{{ monitoring_prometheus_stack_version }}"
     release_namespace: "{{ monitoring_namespace }}"
     release_name: "{{ monitoring_prometheus_stack_release_name }}"
     release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
-    values: "{{ lookup('template', 'prometheus_stack.yaml.j2') | from_yaml }}"
+    values: "{{ monitoring_prometheus_stack_values | to_json }}"
     wait: false
     update_repo_cache: true
 

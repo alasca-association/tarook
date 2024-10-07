@@ -27,6 +27,7 @@ in {
   imports =
     [
       ./thanos.nix
+      ./helm_prometheus_stack
 
       (mkRemovedOptionModule "k8s-service-layer.prometheus" "use_jsonnet_setup" "")
       (mkRemovedOptionModule "k8s-service-layer.prometheus" "migrate_from_v1" "")
@@ -210,6 +211,11 @@ in {
       default = null;
     };
 
+    grafana_admin_secret_name = mkOption {
+      type = types.str;
+      default = "cah-grafana-admin";
+    };
+
     grafana_persistent_storage_class = mkOption {
       description = ''
         If this variable is defined, Grafana will store its data in a PersistentVolume
@@ -301,6 +307,21 @@ in {
         };
       });
     };
+
+    remote_writes = mkOption {
+      default = [];
+      type = with types; listOf attrs;
+      apply = builtins.map (
+        v:
+          v
+          // lib.optionalAttrs (v ? write_relabel_configs) (builtins.trace
+            "WARNING: yk8s.k8s-service-layer.prometheus.remote_writes.[].write_label_configs is deprecated. Please use writeRelabelConfigs instead."
+            {
+              writeRelabelConfigs = v.write_relabel_configs;
+            })
+      );
+    };
+
     common_labels = mkOption {
       description = ''
         If at least one common_label is defined, Prometheus will be created with selectors
