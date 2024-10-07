@@ -5,9 +5,14 @@
   ...
 }: let
   cfg = config.yk8s.kubernetes;
+  modules-lib = import ../lib/modules.nix {inherit lib;};
+  inherit (modules-lib) mkHelmValuesModule;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkSubSection logIf;
 in {
+  imports = [
+    (mkHelmValuesModule "kubernetes" "storage.cinder.")
+  ];
   options.yk8s.kubernetes.storage = mkSubSection {
     _docs.order = 5;
     rook_enabled = mkEnableOption ''
@@ -32,6 +37,28 @@ in {
       type = types.bool;
       default = false;
       example = true;
+    };
+  };
+
+  config.yk8s.kubernetes.storage.cinder.default_values = {
+    storageClass = {
+      enabled = false;
+    };
+    secret = {
+      enabled = true;
+      create = false;
+      name = "cloud-config";
+    };
+    csi = {
+      provisioner = {
+        topology = "false";
+      };
+      plugin = {
+        nodePlugin = {
+          dnsPolicy = "ClusterFirst";
+          priorityClassName = "system-node-critical";
+        };
+      };
     };
   };
 }

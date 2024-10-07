@@ -61,7 +61,7 @@
       release_namespace: kube-system
       release_name: openstack-cloud-controller-manager
       release_state: present
-      values: "{{ lookup('template', 'openstack-cloud-controller-manager-values.yaml.j2') | from_yaml }}"
+      values: "{{ k8s_controller_manager_values | to_json }}"
       wait: true
       update_repo_cache: true
     notify:
@@ -76,7 +76,7 @@
       release_namespace: kube-system
       release_name: cinder-csi
       release_state: present
-      values: "{{ lookup('template', 'csi-cinder-plugin-values.yaml.j2') | from_yaml }}"
+      values: "{{ k8s_storage_cinder_values | to_json }}"
       wait: false
       update_repo_cache: true
 
