@@ -205,8 +205,8 @@ in {
         By default an empty-dir is used.
         https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
       '';
-      type = types.str;
-      default = "";
+      type = with types; nullOr str;
+      default = null;
     };
 
     prometheus_persistent_storage_resource_request = mkOption {
@@ -228,8 +228,8 @@ in {
       description = ''
         The full public facing url you use in browser, used for redirects and emails
       '';
-      type = types.str;
-      default = "";
+      type = with types; nullOr str;
+      default = null;
     };
 
     grafana_persistent_storage_class = mkOption {
@@ -238,8 +238,8 @@ in {
         in the defined StorageClass. Otherwise, persistence is disabled for Grafana.
         The value has to be a valid StorageClass available in your cluster.
       '';
-      type = types.str;
-      default = "";
+      type = with types; nullOr str;
+      default = null;
     };
 
     use_thanos = mkEnableOption "use of Thanos";
@@ -331,8 +331,8 @@ in {
       defaultText = "\${config.yk8s.terraform.cluster_name}-monitoring-thanos-data";
     };
     thanos_objectstorage_config_file = mkOption {
-      type = types.str;
-      default = "";
+      type = with types; nullOr str;
+      default = null;
     };
     internet_probe = mkEnableOption ''
       scraping external targets via blackbox exporter

@@ -108,8 +108,8 @@ in {
         If `ingress=True` and `dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use
         for your ACME service.
       '';
-      type = types.str;
-      default = "";
+      type = with types; nullOr str;
+      default = null;
       apply = v:
         if
           cfg.ingress

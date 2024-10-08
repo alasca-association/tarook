@@ -85,17 +85,23 @@ in {
         address is used.
       '';
       type = with types; listOf str;
-      default = []; # TODO conflicting values: role has false
+      default = [];
     };
     remote_private_addrs = mkOption {
       description = ''
         Private address of remote endpoint.
         only used when test_enabled is True
       '';
-      type = types.str; # TODO: or listOf str ?
-      default = "";
+      type = with types; nullOr str;
+      default = null;
     };
   };
+  config.yk8s.assertions = [
+    {
+      assertion = cfg.test_enabled -> (remote_private_addrs != null);
+      message = "ipsec.remote_private_addrs has to be set if ipsec.test_enabled is true";
+    }
+  ];
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
