@@ -33,17 +33,17 @@ repos:
         types: [executable, text]
         entry: ci/lint/portable-shebangs.sh
         language: script
-        stages: [commit, push, manual]
+        stages: [pre-commit, pre-push, manual]
       - id: check-flake
         name: check flake
         files: "^flake.nix$"
         entry: ci/lint/check-flake.sh
         language: script
-        stages: [commit, push, manual]
+        stages: [pre-commit, pre-push, manual]
       - id: nix-fmt
         name: nix-fmt
         files: "^flake.nix$"
         entry: ci/lint/format-flake.sh
         language: script
-        stages: [commit, push, manual]
+        stages: [pre-commit, pre-push, manual]
 ...
