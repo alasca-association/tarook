@@ -208,7 +208,7 @@
         "log_level": "Info"
       }
   services:
-  - name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/hashicorp/vault:1.14.9"
+  - name: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/hashicorp/vault:1.18.0"
     alias: yaook-vault
     entrypoint: ["sh", "-c"]
     command:
