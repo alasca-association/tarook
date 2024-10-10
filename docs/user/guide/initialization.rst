@@ -79,21 +79,38 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
       $ git init my-cluster-repository
       $ cd my-cluster-repository
 
-2. Clone the ``yaook/k8s`` repository to a location **outside** of your
-   cluster repository:
+2. Initialize the cluster repository:
+
+   If you want to checkout a specific branch, do eg.
+
+   .. code:: console
+      $ export MANAGED_K8S_LATEST_RELEASE=false
+      $ export MANAGED_K8S_GIT_BRANCH=<branchname>
 
    .. code:: console
 
-      $ pushd $somewhere_else
-      $ git clone https://gitlab.com/yaook/k8s.git
-      $ popd
+      $ nix run "git+https://gitlab.com/yaook/k8s#init"
+
+   If you want to use the init script from a specific branch instead, use eg.
+
+   .. code:: console
+
+      $ nix run "git+https://gitlab.com/yaook/k8s?ref=<branchname>#init"
+
+   This init script will:
+
+   -  Add all necessary submodules.
+   -  Copy a configuration template to ``./config/`` if no
+      config exists in the cluster repository yet.
+   -  Update ``.gitignore`` to current standards.
+   -  Add a ``.envrc`` template
 
 3. Setup your environment variables:
 
    1. User specific variables (if not already exists):
 
       1. Copy the template located at
-         ``$somewhere_else/k8s/templates/yaook-k8s-env.template.sh``
+         ``managed-k8s/templates/yaook-k8s-env.template.sh``
          to ``~/.config/yaook-k8s/env``.
 
          .. code:: console
@@ -104,43 +121,11 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
          :ref:`minimal changes <environmental-variables.minimal-required-changes>`
          to ``~/.config/yaook-k8s/env``.
 
-   2. Cluster specific variables:
+   2. Make the **cluster specific**
+      :ref:`minimal changes <environmental-variables.minimal-required-changes>`
+      to ``./.envrc``.
 
-      1. Copy the template located at
-         :ref:`$somewhere_else/k8s/templates/envrc.template.sh <environmental-variables.template>`
-         to ``./.envrc``.
-
-         .. code:: console
-
-            $ cp $somewhere_else/k8s/templates/envrc.template.sh ./.envrc
-
-      2. Make the **cluster specific**
-         :ref:`minimal changes <environmental-variables.minimal-required-changes>`
-         to ``./.envrc``.
-   3. Make sure they have taken effect by running ``direnv allow``.
-
-4. Initialize the cluster repository:
-
-   .. code:: console
-
-      $ $somewhere_else/k8s/actions/init-cluster-repo.sh
-
-   This ``init-cluster-repo.sh`` script will:
-
-   -  Add all necessary submodules.
-   -  Copy a configuration template to ``./config/`` if no
-      config exists in the cluster repository yet.
-   -  Update ``.gitignore`` to current standards.
-
-5. Activate the virtual environment with all python dependencies
-
-   .. note::
-
-      This is handled automatically for you if you use the default ``.envrc``
-
-   .. code:: console
-
-      $ nix develop ./managed-k8s
+3. Make sure they have taken effect by running ``direnv allow``.
 
 .. _initialization.initialize-vault-for-a-development-setup:
 
