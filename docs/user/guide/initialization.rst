@@ -7,7 +7,7 @@ Initialization
 Install System Requirements
 ---------------------------
 
-Yaook/k8s only has a single primary dependency: Nix. Everything else is fetched or built automatically.
+YAOOK/K8s only has a single primary dependency: Nix. Everything else is fetched or built automatically.
 
 `Nix <https://nixos.org>`__ is a declarative package manager
 which powers NixOS but can also be installed as an additional separate package manager on any
