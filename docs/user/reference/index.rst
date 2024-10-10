@@ -2,10 +2,8 @@ User References
 ###############
 
 .. toctree::
-    ---
-    maxdepth: 2
-    hidden: true
-    ---
+    :maxdepth: 2
+    :hidden:
 
     services/index
     actions-references
