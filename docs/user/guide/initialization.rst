@@ -84,6 +84,7 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
    If you want to checkout a specific branch, do eg.
 
    .. code:: console
+
       $ export MANAGED_K8S_LATEST_RELEASE=false
       $ export MANAGED_K8S_GIT_BRANCH=<branchname>
 
