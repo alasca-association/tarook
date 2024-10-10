@@ -177,11 +177,11 @@ in {
         Note that upgrades require additional steps and maybe even LCM changes are needed:
         https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#upgrading-chart
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "59.1.0";
     };
     prometheus_adapter_version = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "4.10.0";
     };
 
@@ -190,12 +190,12 @@ in {
         Namespace to deploy the monitoring in (will be created if it does not exist, but
         never deleted).
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "monitoring";
     };
 
     prometheus_service_name = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "prometheus-operated";
     };
 
@@ -205,7 +205,7 @@ in {
         By default an empty-dir is used.
         https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
 
@@ -228,7 +228,7 @@ in {
       description = ''
         The full public facing url you use in browser, used for redirects and emails
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
 
@@ -238,7 +238,7 @@ in {
         in the defined StorageClass. Otherwise, persistence is disabled for Grafana.
         The value has to be a valid StorageClass available in your cluster.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
 
@@ -258,7 +258,7 @@ in {
       description = ''
         Set custom Bitnami/Thanos chart version
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "13.3.0";
     };
 
@@ -273,7 +273,7 @@ in {
         manual intervention and it may be necessary to reinstall
         the helm chart completely.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
 
@@ -311,7 +311,7 @@ in {
         If no scheduling key is defined for service, it will run on any untainted
         node.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       example = "\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring";
     };
@@ -326,12 +326,12 @@ in {
       default = "0";
     };
     thanos_objectstorage_container_name = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "${config.yk8s.terraform.cluster_name}-monitoring-thanos-data";
       defaultText = "\${config.yk8s.terraform.cluster_name}-monitoring-thanos-data";
     };
     thanos_objectstorage_config_file = mkOption {
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
     internet_probe = mkEnableOption ''
@@ -343,7 +343,7 @@ in {
         Provide a list of DNS endpoints for additional thanos store endpoints.
         The endpoint will be extended to `dnssrv+_grpc._tcp.{{ endpoint }}.monitoring.svc.cluster.local`.
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = [];
     };
     blackbox_version = mkOption {
@@ -351,7 +351,7 @@ in {
         Deploy a specific blackbox exporter version
         https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "7.0.0";
     };
     allow_external_rules = mkEnableOption ''
@@ -368,20 +368,20 @@ in {
             description = ''
               Human readable URL that will appear in Prometheus / AlertManager
             '';
-            type = types.str;
+            type = types.nonEmptyStr;
           };
           url = mkOption {
             description = ''
               The URL that blackbox will scrape
             '';
-            type = types.str;
+            type = types.nonEmptyStr;
             example = "http://example.com/healthz";
           };
           interval = mkOption {
             description = ''
               Scraping interval. Overrides value set in `defaults`
             '';
-            type = types.str;
+            type = types.nonEmptyStr;
             default = "60s";
           };
 
@@ -389,7 +389,7 @@ in {
             description = ''
               Scrape timeout. Overrides value set in `defaults`
             '';
-            type = types.str;
+            type = types.nonEmptyStr;
             default = "60s";
           };
           module = mkOption {
@@ -410,7 +410,7 @@ in {
         The LCM takes care that all ServiceMonitors created by itself are labeled accordingly.
         The key can not be "release" as that one is already used by the Prometheus helm chart.
       '';
-      type = with types; attrsOf str;
+      type = with types; attrsOf nonEmptyStr;
       default = {
         managed-by = "yaook-k8s";
       };
