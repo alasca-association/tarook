@@ -10,7 +10,7 @@ actions_dir="$(dirname "$0")/.."
 pushd "$cluster_repository" >/dev/null || exit 1
 
 nix flake init -t "${code_repository}#migration"
-git add flake.nix config/default.nix
+git add flake.nix
 if [[ -e "config/wireguard_ipam.toml" ]]; then
     mkdir -p state/wireguard
     git mv config/wireguard_ipam.toml state/wireguard/ipam.toml
@@ -30,8 +30,8 @@ if [[ -e "config/config.toml" ]]; then
     fi
 
     cat config/default.nix.tpl <(nix run github:cloudandheat/json2nix#toml2nix config/config.toml) > config/default.nix
-    rm -f config/config.toml
-    git add config
+    git rm config/config.toml
+    git add config/default.nix
 fi
 rm -f config/default.nix.tpl
 
