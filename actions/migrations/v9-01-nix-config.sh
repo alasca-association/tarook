@@ -23,4 +23,16 @@ if [[ -d vault ]]; then
     mkdir -p state
     git mv vault state/vault
 fi
+if [[ -e "config/config.toml" ]]; then
+    if git status -q | grep config.toml &>/dev/null; then
+        errorf "config.toml is not comitted. Refusing to continue."
+        exit 1
+    fi
+
+    cat config/default.nix.tpl <(nix run github:cloudandheat/json2nix#toml2nix config/config.toml) > config/default.nix
+    rm -f config/config.toml
+    git add config
+fi
+rm -f config/default.nix.tpl
+
 popd >/dev/null || exit 1
