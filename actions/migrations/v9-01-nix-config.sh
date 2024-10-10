@@ -33,6 +33,6 @@ if [[ -e "config/config.toml" ]]; then
     git rm config/config.toml
     git add config/default.nix
 fi
-rm -f config/default.nix.tpl
+git rm -f config/default.nix.tpl || true
 
 popd >/dev/null || exit 1
