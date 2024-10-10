@@ -161,10 +161,6 @@ Environment Variable                    Default                                 
 ``MANAGED_K8S_GIT_BRANCH``                                                                                      If set and ``MANAGED_K8S_LATEST_RELEASE`` set to
                                                                                                                 ``false``, the specified branch will be checked out by
                                                                                                                 ``init-cluster-repo.sh``.
-``MANAGED_K8S_WG_USER_GIT``             ``gitlab.cloudandheat.com:lcm/wg_user``                                 Git URL to a repository with wireguard
-                                                                                                                keys to provision. Can be enabled by
-                                                                                                                setting ``WG_COMPANY_USERS`` (see below).
-                                                                                                                (see below).
 ``TERRAFORM_MODULE_PATH``               ``../terraform``                                                        Path to the Terraform root module to
                                                                                                                 change the working directory for the
                                                                                                                 execution of the Terraform commands.
@@ -218,12 +214,6 @@ Environment Variable        Default                 Description
                                                     You **MUST** adjust this variable.
                                                     This variable is used by the
                                                     ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
-``WG_COMPANY_USERS``        ``false``               If set to true, ``init-cluster-repo.sh`` will
-                                                    clone the repository
-                                                    ``MANAGED_K8S_WG_USER_GIT``. The
-                                                    inventory updater will then
-                                                    configure the wireguard users from
-                                                    that repository.
 =========================== ======================= =======================
 
 .. _environmental-variables.ssh-configuration:
