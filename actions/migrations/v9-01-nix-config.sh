@@ -24,7 +24,7 @@ if [[ -d vault ]]; then
     git mv vault state/vault
 fi
 if [[ -e "config/config.toml" ]]; then
-    if git status -q | grep config.toml &>/dev/null; then
+    if git status -s | grep config.toml &>/dev/null; then
         errorf "config.toml is not comitted. Refusing to continue."
         exit 1
     fi
