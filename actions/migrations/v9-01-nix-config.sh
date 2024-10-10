@@ -29,7 +29,7 @@ if [[ -e "config/config.toml" ]]; then
         exit 1
     fi
 
-    cat config/default.nix.tpl <(nix run github:cloudandheat/json2nix#toml2nix config/config.toml) > config/default.nix
+    cat config/default.nix.tpl <(nix run github:cloudandheat/json2nix#toml2nix < config/config.toml) > config/default.nix
     git rm config/config.toml
     git add config/default.nix
 fi
