@@ -1,4 +1,4 @@
-The configuration has been reworked and is now based on Nix.
+The configuration has been reworked and is now based on Nix, which makes Nix a hard dependency.
 
 All configuration options are documented at :doc:`/user/reference/options/index`.
 
@@ -21,6 +21,10 @@ The cluster repository layout has changed:
    ┊   ┊
 
 
+
+.. attention:: Action required
+
+    Ensure you've installed and configured Nix according to :ref:`initialization.install-system-requirements`
 
 .. attention:: Action required
 
