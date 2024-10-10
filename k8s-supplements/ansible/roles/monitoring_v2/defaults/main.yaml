@@ -21,6 +21,4 @@ monitoring_internet_probe_targets: []
 monitoring_blackbox_version: "7.0.0"
 
 monitoring_common_labels: {}
-
-fluxcd_namespace: "k8s-svc-flux-system" # TODO why is this here? how will it be set by the user?
 ...
