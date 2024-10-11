@@ -263,7 +263,7 @@ in {
         Set custom Bitnami/Thanos chart version
       '';
       type = types.nonEmptyStr;
-      default = "13.3.0";
+      default = "15.5.0";
     };
 
     thanos_storage_class = mkOption {
