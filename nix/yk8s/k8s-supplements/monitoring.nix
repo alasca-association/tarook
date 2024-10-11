@@ -326,7 +326,7 @@ in {
         This value should be chosen in a sane matter based on
         thanos_store_memory_request and thanos_store_memory_limit
       '';
-      type = with types; nullOr strMatching "([0-9]+[MG]B)";
+      type = with types; nullOr (strMatching "([0-9]+[MG]B)");
       default = null;
     };
     thanos_objectstorage_container_name = mkOption {
