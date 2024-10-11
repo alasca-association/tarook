@@ -48,7 +48,7 @@ grafana:
   enabled: {{ monitoring_use_grafana | bool }}
   persistence:
     enabled: {{ monitoring_grafana_persistent_storage_class is defined }}
-    storageClassName: "{{ monitoring_grafana_persistent_storage_class }}"
+    storageClassName: "{{ monitoring_grafana_persistent_storage_class | default("") }}"
   admin:
     existingSecret: {{ monitoring_grafana_admin_secret_name }}
     userKey: admin-user
