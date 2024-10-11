@@ -1,4 +1,4 @@
-{% if (monitoring_thanos_objectstorage_config_file is defined %}
+{% if monitoring_thanos_objectstorage_config_file is defined %}
 {{ lookup('file',  monitoring_thanos_objectstorage_config_path + "/" + monitoring_thanos_objectstorage_config_file) }}
 {% else %}
 type: SWIFT
