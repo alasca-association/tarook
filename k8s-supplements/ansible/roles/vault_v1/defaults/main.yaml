@@ -1,8 +1,0 @@
----
-yaook_vault_helm_repo_url: "https://helm.releases.hashicorp.com"
-yaook_vault_ca_issuer_kind: Issuer
-yaook_vault_ca_issuer: selfsigned-issuer
-yaook_vault_backup_approle_path: "yaook/vault_v1/approle/"
-
-monitoring_common_labels: {}
-...

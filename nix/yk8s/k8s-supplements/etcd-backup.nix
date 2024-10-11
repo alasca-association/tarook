@@ -77,6 +77,22 @@ in {
     '';
 
     enabled = mkEnableOption "etcd-backups";
+    secret_name = mkOption {
+      type = types.nonEmptyStr;
+      default = "etcd-backup-s3-credentials";
+    };
+    namespace = mkOption {
+      type = types.nonEmptyStr;
+      default = "kube-system";
+    };
+    helm_repo_url = mkOption {
+      type = types.nonEmptyStr;
+      default = "https://charts.yaook.cloud/operator/stable/";
+    };
+    name = mkOption {
+      type = types.nonEmptyStr;
+      default = "etcd-backup";
+    };
     schedule = mkOption {
       description = ''
         Configure value for the cron job schedule for etcd backups.

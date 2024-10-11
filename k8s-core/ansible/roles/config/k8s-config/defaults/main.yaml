@@ -1,6 +1,4 @@
 ---
-k8s_network_bgp_gateway_as: 65000
-k8s_network_calico_ipipmode: "Never"
 k8s_cri_url: 'unix:///var/run/containerd/containerd.sock'
 
 k8s_version_minor: '{{ k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)?$", "\1") }}'

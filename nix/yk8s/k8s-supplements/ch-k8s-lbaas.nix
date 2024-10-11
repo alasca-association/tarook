@@ -82,6 +82,27 @@ in {
         then throw "[ch-k8s-lbaas] port_manager is 'static' but agent_urls is empty"
         else v;
     };
+    use_floating_ips = mkOption {
+      type = types.bool;
+      default = true;
+    };
+    controller_repo = mkOption {
+      type = types.nonEmptyStr;
+      default = "registry.gitlab.com/yaook/ch-k8s-lbaas/controller";
+    };
+    agent_user = mkOption {
+      type = types.nonEmptyStr;
+      default = "ch-k8s-lbaas-agent";
+    };
+    agent_source = mkOption {
+      type = types.nonEmptyStr;
+      default = "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download";
+    };
+    use_bgp = mkOption {
+      type = types.bool;
+      # TODO common practice is to set this from the calico section
+      default = config.yk8s.kubernetes.network.plugin == "calico";
+    };
   };
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {

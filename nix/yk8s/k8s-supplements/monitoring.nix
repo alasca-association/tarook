@@ -168,6 +168,61 @@ in {
       default = true;
     };
 
+    prometheus_helm_repo_url = mkOption {
+      type = types.nonEmptyStr;
+      default = "https://prometheus-community.github.io/helm-charts";
+    };
+
+    prometheus_stack_chart_name = mkOption {
+      type = types.nonEmptyStr;
+      default = "prometheus-community/kube-prometheus-stack";
+    };
+
+    prometheus_stack_release_name = mkOption {
+      type = types.nonEmptyStr;
+      default = "prometheus-stack";
+    };
+
+    prometheus_adapter_release_name = mkOption {
+      type = types.nonEmptyStr;
+      default = "prometheus-adapter";
+    };
+
+    remote_writes = mkOption {
+      type = with types; listOf nonEmptyStr;
+      default = [];
+    };
+
+    grafana_admin_secret_name = mkOption {
+      type = types.nonEmptyStr;
+      default = "cah-grafana-admin";
+    };
+
+    nvidia_dcgm_exporter_helm_repo_url = mkOption {
+      type = types.nonEmptyStr;
+      default = "https://nvidia.github.io/dcgm-exporter/helm-charts";
+    };
+
+    nvidia_dcgm_exporter_helm_version = mkOption {
+      description = ''
+        if not specified, latest
+      '';
+      type = types.str;
+      default = "";
+    };
+
+    thanos_objectstorage_config_path = mkOption {
+      type = types.nonEmptyStr;
+      default = "{{ playbook_dir }}/../../../config";
+    };
+
+    monitoring_internet_probe = mkEnableOption ''
+      adding blackbox-exporter to test basic internet connectivity
+    '';
+    node_exporter_textfile_collector_path = mkOption {
+      type = types.nonEmptyStr;
+      default = "/var/lib/node_exporter/textfile_collector";
+    };
     prometheus_stack_version = mkOption {
       description = ''
         helm chart version of the prometheus stack

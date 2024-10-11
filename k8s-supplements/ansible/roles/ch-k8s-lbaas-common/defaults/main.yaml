@@ -1,11 +1,6 @@
 ---
-ch_k8s_lbaas_use_floating_ips: true
-ch_k8s_lbaas_controller_image: "registry.gitlab.com/yaook/ch-k8s-lbaas/controller:{{ ch_k8s_lbaas_version }}"
-
-ch_k8s_lbaas_agent_user: ch-k8s-lbaas-agent
-ch_k8s_lbaas_agent_source: "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download"
+ch_k8s_lbaas_controller_image: "{{ ch_k8s_lbaas_controller_repo }}:{{ ch_k8s_lbaas_version }}"
 ch_k8s_lbaas_agent_binary_url: "{{ ch_k8s_lbaas_agent_source }}/v{{ ch_k8s_lbaas_version }}/ch-k8s-lbaas-agent"
-
 ch_k8s_lbaas_agent_binary_checksums:
   "0.1.0": "sha256:395da1f398c02941876597e8f0cd60128d682f01ed0e343063850392fee5f762"
   "0.1.1": "sha256:a1706d4caa969cb74185567e38a2d83ca54fd5349edf9c3ca61f10fbf82652af"
@@ -22,8 +17,5 @@ ch_k8s_lbaas_agent_binary_checksums:
   "0.7.0": "sha256:ce2f088b7829a3778f35a3f13bc7e5f48fb69cd3e899ceb5dfa3518a62d0f5b4"
   "0.8.0": "sha256:339605b3238066ad074522e893022ba94f09fc6b0a1623fafd1ad0f9c66e9a69"
   "0.9.0": "sha256:a9b6171078d41f415b11cf600700942ca714e2236fcac31460733fcb9a816cf9"
-
 ch_k8s_lbaas_agent_binary_checksum: "{{ ch_k8s_lbaas_agent_binary_checksums[ch_k8s_lbaas_version] | default('invalid checksum') }}"
-
-ch_k8s_lbaas_use_bgp: "{{ k8s_network_plugin in ['calico'] }}"
 ...

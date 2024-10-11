@@ -48,6 +48,21 @@ in {
       type = types.strMatching "Always|CrossSubnet|Never";
       default = "Never";
     };
+    bgp_router_id = mkOption {
+      description = ''
+        An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
+      '';
+      type = types.nonEmptyStr;
+      default = "244.0.0.1";
+    };
+    image_registry = mkOption {
+      description = ''
+        Specify the registry endpoint
+        Changing this value can be useful if one endpoint hosts outdated images or you're subject to rate limiting
+      '';
+      type = types.nonEmptyStr;
+      default = "quay.io";
+    };
     values_file_path = mkOption {
       description = ''
         For the operator-based installation,

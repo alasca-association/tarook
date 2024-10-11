@@ -19,6 +19,27 @@ in {
     ingress = mkEnableOption ''
       creation of a publically reachable ingress resource for the API endpoint of vault.
     '';
+
+    helm_repo_url = mkOption {
+      type = types.nonEmptyStr;
+      default = "https://helm.releases.hashicorp.com";
+    };
+
+    ca_issuer_kind = mkOption {
+      type = types.nonEmptyStr;
+      default = "Issuer";
+    };
+
+    ca_issuer = mkOption {
+      type = types.nonEmptyStr;
+      default = "selfsigned-issuer";
+    };
+
+    backup_approle_path = mkOption {
+      type = types.nonEmptyStr;
+      default = "yaook/vault_v1/approle/";
+    };
+
     chart_version = mkOption {
       description = ''
         Version of the Helm Chart to use

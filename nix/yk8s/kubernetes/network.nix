@@ -70,6 +70,11 @@ in {
       default = 64512;
     };
 
+    bgp_gateway_as = mkOption {
+      type = types.int;
+      default = 65000;
+    };
+
     # TODO deprecate in favor of calico.enabled which then
     # conflicts with all other plugins that may be added in the future
     plugin = mkOption {
@@ -82,6 +87,14 @@ in {
       '';
       default = "calico";
       type = types.strMatching "calico";
+    };
+    ipv4_nat_outgoing = mkOption {
+      type = types.bool;
+      default = true;
+    };
+    ipv6_nat_outgoing = mkOption {
+      type = types.bool;
+      default = false;
     };
   };
 }

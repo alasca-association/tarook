@@ -26,6 +26,10 @@ in {
       type = types.bool;
       default = true;
     };
+    helm_repo_url = mkOption {
+      type = types.nonEmptyStr;
+      default = "https://fluxcd-community.github.io/helm-charts";
+    };
     version = mkOption {
       description = ''
         Helm chart version of fluxcd to be deployed.

@@ -59,6 +59,36 @@ in {
         storage (or both) (see :ref:`storage configuration <configuration-options.yk8s.kubernetes.storage>`).
     '';
 
+    mon_allow_multiple_per_node = mkOption {
+      type = types.bool;
+      default = false;
+    };
+
+    mgr_use_pg_autoscaler = mkOption {
+      type = types.bool;
+      default = true;
+    };
+
+    osd_anti_affinity = mkOption {
+      type = types.bool;
+      default = true;
+    };
+
+    osd_autodestroy_safe = mkOption {
+      type = types.bool;
+      default = true;
+    };
+
+    helm_release_name_operator = mkOption {
+      type = types.nonEmptyStr;
+      default = "rook-ceph";
+    };
+
+    helm_release_name_cluster = mkOption {
+      type = types.nonEmptyStr;
+      default = "rook-ceph-cluster";
+    };
+
     # If kubernetes.storage.rook_enabled is enabled, rook will be installed.
     namespace = mkOption {
       description = ''
