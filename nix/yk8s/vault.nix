@@ -9,12 +9,6 @@
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
 in {
   options.yk8s.vault = mkTopSection {
-    _docs.preface = ''
-      .. _cluster-configuration.vault:
-
-      Vault Configuration
-      ^^^^^^^^^^^^^^^^^^^
-    '';
     cluster_name = mkOption {
       description = ''
         Name of the cluster inside Vault. The secrets engines are searched for

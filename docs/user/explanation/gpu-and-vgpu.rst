@@ -20,7 +20,7 @@ Internal usage means you want to run e.g. AI workload inside of your
 Kubernetes cluster.
 
 If you want to make use of GPUs inside of Kubernetes, set
-:ref:`the following <cluster-configuration.kubelet-configuration>`:
+:ref:`the following <configuration-options.yk8s.kubernetes.kubelet>`:
 
 .. code:: nix
 
@@ -86,7 +86,7 @@ us to make additional modifications in the future.
 
 To enable the vGPU support in YAOOK/K8s, the following variables must be
 set in the configuration. For a full reference see
-:ref:`cluster-configuration.nvidia-configuration`.
+:ref:`configuration-options.yk8s.nvidia`.
 The vGPU Manager software can be downloaded in the
 `NVIDIA Licensing portal <https://ui.licensing.nvidia.com/>`__.
 

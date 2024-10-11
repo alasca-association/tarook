@@ -11,11 +11,6 @@
 in {
   options.yk8s.node-scheduling = mkTopSection {
     _docs.preface = ''
-      .. _cluster-configuration.node-scheduling-labels-taints-configuration:
-
-      Node-Scheduling: Labels and Taints Configuration
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
       .. note::
         Nodes get their labels and taints during the Kubernetes
         cluster initialization and node-join process.

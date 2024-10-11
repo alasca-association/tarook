@@ -10,11 +10,6 @@
 in {
   options.yk8s.k8s-service-layer.fluxcd = mkTopSection {
     _docs.preface = ''
-      .. _cluster-configuration.flux:
-
-      Flux
-      ^^^^
-
       More details about our FluxCD2 implementation can be found
       :doc:`here </user/explanation/services/fluxcd>`.
 

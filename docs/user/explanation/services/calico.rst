@@ -11,7 +11,7 @@ is deployed. The Tigera operator is deployed via ``helm``.
 
 It is possible to customize the Calico setup to some extend. Please
 check out the
-:ref:`calico configuration section <cluster-configuration.calico-configuration>`
+:ref:`calico configuration section <configuration-options.yk8s.kubernetes.network.calico>`
 for options.
 
 In addition to the Tigera operator which rolls out and sets up the basic
@@ -39,7 +39,7 @@ mapped to the Kubernetes version in
 
 However, it is possible to configure a custom version via the
 ``kubernetes.network.calico.custom_version`` (see
-:ref:`here <cluster-configuration.network-configuration>`)
+:ref:`here <configuration-options.yk8s.kubernetes.network>`)
 variable in the ``kubernetes.network`` section of your
 cluster-specific configuration.
 

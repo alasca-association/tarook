@@ -11,11 +11,6 @@ in {
   options.yk8s.kubernetes.kubelet = mkSubSection {
     _docs.order = 9;
     _docs.preface = ''
-      .. _cluster-configuration.kubelet-configuration:
-
-      kubelet Configuration
-      ^^^^^^^^^^^^^^^^^^^^^
-
       The LCM supports the customization of certain variables of ``kubelet``
       for (meta-)worker nodes.
 

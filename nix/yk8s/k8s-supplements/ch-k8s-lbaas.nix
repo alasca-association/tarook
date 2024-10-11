@@ -22,12 +22,6 @@ in {
     ];
 
   options.yk8s.ch-k8s-lbaas = mkTopSection {
-    _docs.preface = ''
-      .. _cluster-configuration.ch-k8s-lbaas:
-
-      LBaaS Configuration
-      ^^^^^^^^^^^^^^^^^^^
-    '';
     enabled = mkEnableOption "our LBaas service";
     shared_secret = mkOption {
       description = ''

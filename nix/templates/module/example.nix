@@ -12,11 +12,6 @@
 in {
   options.yk8s.example = mkTopSection {
     _docs.preface = ''
-      .. _cluster-configuration.example-configuration:
-
-      Example Configuration
-      ^^^^^^^^^^^^^^^^^^^^^
-
       This text will appear before the listing of the  options in the documentation.
     '';
     enabled = mkEnableOption "example"; # Will be rendered to "Whether to enable example" in the docs

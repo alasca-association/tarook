@@ -13,7 +13,7 @@ that the number of backup instances is contained. One candidate for
 managing the backups is borg.
 
 Automated etcd backups can be configured in
-:ref:`cluster-configuration.etcd-backup-configuration`.
+:ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup`.
 To restore the cluster re-run kubeadm with an existing etcd database.
 The guide for restoration is also available at the official
 Kubernetes documentation of etcd

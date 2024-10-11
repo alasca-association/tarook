@@ -13,7 +13,7 @@ The installation can be activated by setting
    k8s-service-layer.fluxcd.enabled = true;
 
 For further configuration options please refer to
-:ref:`the Flux configuration section <cluster-configuration.flux>`.
+:ref:`the Flux configuration section <configuration-options.yk8s.k8s-service-layer.fluxcd>`.
 
 To learn more about fluxcd, please refer to the
 `official documentation <https://fluxcd.io/flux/concepts/>`__

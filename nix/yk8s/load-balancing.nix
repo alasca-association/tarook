@@ -45,11 +45,6 @@ in {
   options.yk8s.load-balancing = mkTopSection {
     _docs.order = 2;
     _docs.preface = ''
-      .. _cluster-configuration.configuring-load-balancing:
-
-      Configuring Load-Balancing
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
       By default, if you’re deploying on top of OpenStack, the self-developed
       load-balancing solution :doc:`ch-k8s-lbaas </user/explanation/services/ch-k8s-lbaas>`
       will be used to avoid the aches of using OpenStack Octavia. Nonetheless,

@@ -17,11 +17,6 @@ in {
   options.yk8s.kubernetes.network = mkSubSection {
     _docs.order = 8;
     _docs.preface = ''
-      .. _cluster-configuration.network-configuration:
-
-      Network Configuration
-      ^^^^^^^^^^^^^^^^^^^^^
-
       .. note::
 
         To enable the calico network plugin,

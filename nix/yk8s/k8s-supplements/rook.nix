@@ -45,11 +45,6 @@ in {
 
   options.yk8s.k8s-service-layer.rook = mkTopSection {
     _docs.preface = ''
-      .. _cluster-configuration.rook-configuration:
-
-      Rook Configuration
-      ^^^^^^^^^^^^^^^^^^
-
       The used rook setup is explained in more detail
       :doc:`here </user/explanation/services/rook-storage>`.
 
@@ -61,7 +56,7 @@ in {
         ``kubernetes.storage.rook_enabled`` and either
         ``kubernetes.local_storage.dynamic.enabled`` or
         ``kubernetes.local_storage.static.enabled`` local
-        storage (or both) (see :ref:`storage configuration <cluster-configuration.storage-configuration>`).
+        storage (or both) (see :ref:`storage configuration <configuration-options.yk8s.kubernetes.storage>`).
     '';
 
     # If kubernetes.storage.rook_enabled is enabled, rook will be installed.

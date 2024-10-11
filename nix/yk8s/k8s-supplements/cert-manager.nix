@@ -10,11 +10,6 @@
 in {
   options.yk8s.k8s-service-layer.cert-manager = mkTopSection {
     _docs.preface = ''
-      .. _cluster-configuration.cert-manager-configuration:
-
-      Cert-Manager Configuration
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
       The used Cert-Manager controller setup will be explained in more detail
       soon :)
 

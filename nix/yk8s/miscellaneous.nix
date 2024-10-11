@@ -20,11 +20,6 @@ in {
   ];
   options.yk8s.miscellaneous = mkTopSection {
     _docs.preface = ''
-      .. _cluster-configuration.miscellaneous-configuration:
-
-      Miscellaneous Configuration
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
       This section contains various configuration options for special use
       cases. You won’t need to enable and adjust any of these under normal
       circumstances.

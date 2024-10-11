@@ -15,11 +15,6 @@ in {
   ];
   options.yk8s.k8s-service-layer.etcd-backup = mkTopSection {
     _docs.preface = ''
-      .. _cluster-configuration.etcd-backup-configuration:
-
-      etcd-backup Configuration
-      ^^^^^^^^^^^^^^^^^^^^^^^^^
-
       Automated etcd backups can be configured in this section. When enabled
       it periodically creates snapshots of etcd database and store it in a
       object storage using s3. It uses the helm chart

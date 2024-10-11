@@ -21,11 +21,6 @@ in {
   options.yk8s.kubernetes.network.calico = mkSubSection {
     _docs.order = 4;
     _docs.preface = ''
-      .. _cluster-configuration.calico-configuration:
-
-      Calico Configuration
-      ^^^^^^^^^^^^^^^^^^^^
-
       The following configuration options are specific to calico, our CNI
       plugin in use.
     '';

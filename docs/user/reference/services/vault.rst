@@ -84,4 +84,4 @@ commands as our second-best option.
 Vault Configuraton
 ------------------
 
-See :ref:`cluster-configuration.vault`
+See :ref:`configuration-options.yk8s.vault`

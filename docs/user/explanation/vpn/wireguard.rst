@@ -11,7 +11,7 @@ Basic setup
 :ref:`as environment variable <environmental-variables.minimal-required-changes>`.
 
 3. Add your Wireguard user and public key as peer in
-:ref:`cluster-configuration.wireguard-configuration`.
+:ref:`configuration-options.yk8s.wireguard`.
 
 4. The Wireguard configuration on the frontend nodes is updated when executing
 :ref:`apply-prepare-gw.sh <actions-references.apply-prepare-gwsh>`.

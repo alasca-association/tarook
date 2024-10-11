@@ -209,7 +209,7 @@ Environment Variable        Default                 Description
                                                     prevent leakage. This variable is
                                                     used by the ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
 ``wg_user``                 ``"firstnamelastname"`` Your WireGuard user name as
-                                                    defined in the :ref:`wireguard configuration<cluster-configuration.wireguard-configuration>`
+                                                    defined in the :ref:`wireguard configuration<configuration-options.yk8s.wireguard>`
                                                     (or, if enabled, ``wg_user`` `repository <https://gitlab.cloudandheat.com/lcm/wg_user>`__).
                                                     You **MUST** adjust this variable.
                                                     This variable is used by the

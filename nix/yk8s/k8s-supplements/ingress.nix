@@ -26,11 +26,6 @@ in {
 
   options.yk8s.k8s-service-layer.ingress = mkTopSection {
     _docs.preface = ''
-      .. _cluster-configuration.nginx-ingress-configuration:
-
-      NGINX Ingress Controller Configuration
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
       The used NGINX ingress controller setup will be explained in more detail
       soon :)
 

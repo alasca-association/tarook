@@ -87,11 +87,6 @@ in {
 
   options.yk8s.k8s-service-layer.prometheus = mkTopSection {
     _docs.preface = ''
-      .. _cluster-configuration.prometheus-configuration:
-
-      Prometheus-based Monitoring Configuration
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
       The used prometheus-based monitoring setup will be explained in more
       detail soon :)
 

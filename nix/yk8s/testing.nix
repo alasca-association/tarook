@@ -11,9 +11,6 @@
 in {
   options.yk8s.testing = mkTopSection {
     _docs.preface = ''
-      Testing Nodes
-      ^^^^^^^^^^^^^
-
       The following configuration section can be used to ensure that smoke
       tests and checks are executed from different nodes. This is disabled by
       default as it requires some prethinking.

@@ -98,7 +98,7 @@ Detailed explanation:
    This file is managed by the
    :ref:`update_inventory.py <actions-references.update_inventorypy>` script.
    This script will automatically assign IP addresses to your
-   :ref:`configured peers <cluster-configuration.wireguard-configuration>`.
+   :ref:`configured peers <configuration-options.yk8s.wireguard>`.
 
 *Optional:*
 

@@ -16,7 +16,7 @@ We tested it both on bare metal and on OpenStack up to rook v1.13.
 
    If you're running on bare metal, prior to the upgrade to rook v1.8
    you must set a
-   :ref:`custom ceph version <cluster-configuration.rook-configuration>`
+   :ref:`custom ceph version <configuration-options.yk8s.k8s-service-layer.rook>`
    as the one used by default contains
    the following bug which will fry your cluster:
    `Ceph Bug #55970 <https://tracker.ceph.com/issues/55970>`_
@@ -92,7 +92,7 @@ Steps to perform an upgrade
    :ref:`the top of this document <upgrades.supported-rookceph-versions-in-mk8s>`.
 
 5. Set ``version`` in the
-   :ref:`rook configuration section <cluster-configuration.rook-configuration>`
+   :ref:`rook configuration section <configuration-options.yk8s.k8s-service-layer.rook>`
    to the **next** (supported) minor release of rook.
 
    .. code:: nix

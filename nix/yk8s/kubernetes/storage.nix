@@ -10,13 +10,6 @@
 in {
   options.yk8s.kubernetes.storage = mkSubSection {
     _docs.order = 5;
-    _docs.preface = ''
-      .. _cluster-configuration.storage-configuration:
-
-      Storage Configuration
-      ^^^^^^^^^^^^^^^^^^^^^
-    '';
-
     rook_enabled = mkEnableOption ''
       Rook.
       Many clusters will want to use rook, so you should enable

@@ -16,9 +16,6 @@ in {
 
   options.yk8s.ipsec = mkTopSection {
     _docs.preface = ''
-      IPsec Configuration
-      ^^^^^^^^^^^^^^^^^^^
-
       More details about the IPsec setup can be found
       :doc:`here </user/explanation/vpn/ipsec>`.
     '';

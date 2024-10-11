@@ -24,9 +24,6 @@ in {
   options.yk8s.kubernetes = mkTopSection {
     _docs.order = 3;
     _docs.preface = ''
-      Kubernetes Cluster Configuration
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
       This section contains generic information about the Kubernetes cluster
       configuration.
     '';

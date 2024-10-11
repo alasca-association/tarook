@@ -173,7 +173,7 @@ Breaking changes
   rather than across separate lists for each type of value.
 
   Furthermore you now have control over the whole name of Terraform nodes,
-  see :ref:`the documentation <cluster-configuration.configuring-terraform>`
+  see :ref:`the documentation <configuration-options.yk8s.terraform>`
   for further details.
 
   .. code:: diff

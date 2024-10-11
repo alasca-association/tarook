@@ -28,11 +28,6 @@ in {
 
   options.yk8s.wireguard = mkTopSection {
     _docs.preface = ''
-      .. _cluster-configuration.wireguard-configuration:
-
-      Wireguard Configuration
-      ^^^^^^^^^^^^^^^^^^^^^^^
-
       You **MUST** add yourself to the :doc:`wireguard </user/explanation/vpn/wireguard>`
       peers.
 

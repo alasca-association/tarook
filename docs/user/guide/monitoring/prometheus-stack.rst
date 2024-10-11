@@ -77,7 +77,7 @@ with the version that comes with the current kube-prometheus-stack helm
 chart version.
 Grafana is not enabled by default,
 you can enable it in the
-:ref:`Prometheus configuration<cluster-configuration.prometheus-configuration>`.
+:ref:`Prometheus configuration<configuration-options.yk8s.k8s-service-layer.prometheus>`.
 
 
 Custom dashboards and datasources
@@ -197,7 +197,7 @@ with adjusted values by default.
 Please refer to its documentation for further details.
 
 Thanos can be enabled and configured in the
-:ref:`Prometheus configuration<cluster-configuration.prometheus-configuration>`.
+:ref:`Prometheus configuration<configuration-options.yk8s.k8s-service-layer.prometheus>`.
 
 Object Storage Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

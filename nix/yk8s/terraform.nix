@@ -46,10 +46,6 @@ in {
   options.yk8s.terraform = mkTopSection {
     _docs.order = 1;
     _docs.preface = ''
-      .. _cluster-configuration.configuring-terraform:
-
-      Configuring Terraform
-      ^^^^^^^^^^^^^^^^^^^^^
       .. note::
 
          There is a variable ``nodes`` to configure

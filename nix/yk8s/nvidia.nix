@@ -9,12 +9,6 @@
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
 in {
   options.yk8s.nvidia = mkTopSection {
-    _docs.preface = ''
-      .. _cluster-configuration.nvidia-configuration:
-
-      Nvidia (v)GPU Configuration
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    '';
     vgpu = {
       driver_blob_url = mkOption {
         description = ''

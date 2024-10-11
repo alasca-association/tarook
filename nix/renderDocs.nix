@@ -147,16 +147,16 @@
               .optionsNix;
             filename = "${section}.rst";
           in (''
-              ${
-                if values.preface != null
-                then values.preface
-                else underline "^" section
-              }
+              .. _configuration-options.${section}:
+
+              ${underline "^" section}
 
             ''
+            + (lib.optionalString (values.preface != null) values.preface)
             + lib.strings.concatLines (lib.attrsets.mapAttrsToList (
                 n: v:
                   ''
+
                     .. _configuration-options.${n}:
 
                     ${underline "#" "``${n}``"}
