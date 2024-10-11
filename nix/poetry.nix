@@ -31,6 +31,7 @@
             }))
           {
             os-client-config = ["setuptools"];
+            durationpy = ["setuptools"];
             kubernetes-validate = ["setuptools"];
             sphinx-multiversion = ["setuptools"];
             urllib3 = ["hatch-vcs"];
