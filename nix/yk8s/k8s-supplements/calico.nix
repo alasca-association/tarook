@@ -9,6 +9,7 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkOption types;
   inherit (yk8s-lib) mkSubSection;
+  inherit (yk8s-lib.types) ipv4Addr;
 in {
   imports = [
     (mkRemovedOptionModule "kubernetes" "network.calico.use_tigera_operator" "")
@@ -52,7 +53,7 @@ in {
       description = ''
         An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
       '';
-      type = types.nonEmptyStr;
+      type = ipv4Addr;
       default = "244.0.0.1";
     };
     image_registry = mkOption {
