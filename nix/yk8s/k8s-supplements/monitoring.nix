@@ -157,6 +157,10 @@ in {
         k8s-service-layer.prometheus.thanos_storage_class = "SOME_STORAGE_CLASS";
         k8s-service-layer.prometheus.thanos_storegateway_size = "XGi";
         k8s-service-layer.prometheus.thanos_compactor_size = "YGi";
+
+      Options
+      *******
+
     '';
 
     install = mkOption {
