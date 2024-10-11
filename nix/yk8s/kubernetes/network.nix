@@ -49,7 +49,7 @@ in {
         automatically to each node.
       '';
       default = "fdff:2::/56";
-      type = types.str;
+      type = types.nonEmptyStr;
     };
     service_subnet_v6 = mkOption {
       description = ''
@@ -62,7 +62,7 @@ in {
 
       '';
       default = "fdff:3::/108";
-      type = types.str;
+      type = types.nonEmptyStr;
     };
 
     bgp_announce_service_ips = mkEnableOption ''

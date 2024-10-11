@@ -35,11 +35,11 @@ in {
         To generate such a secret, you can use the following command:
         $ dd if=/dev/urandom bs=16 count=1 status=none | base64
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       example = "RuDXD7CcNZHrRAV9AAN83T7Hc6wVk9IGzPou6UjwWhL+4hu1I4XPj+YG/AgKiFIc1a1EzmQKax9VAj6P/oA45w==";
     };
     version = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "0.9.0";
     };
     agent_port = mkOption {
@@ -82,7 +82,7 @@ in {
         set to `static`, and must be set if the port manager is `static`.
       '';
       default = [];
-      type = types.listOf types.str;
+      type = types.listOf types.nonEmptyStr;
       apply = v:
         if v == [] && cfg.port_manager == "static"
         then throw "[ch-k8s-lbaas] port_manager is 'static' but agent_urls is empty"

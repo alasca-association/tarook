@@ -262,7 +262,7 @@ in {
       description = ''
         Set custom Bitnami/Thanos chart version
       '';
-      type = types.nonEmptyStr;
+      type = types.str;
       default = "15.5.0";
     };
 

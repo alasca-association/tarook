@@ -60,14 +60,14 @@
             description = ''
               Base path to the Ansible inventory. Files will get written here.
             '';
-            type = types.str;
+            type = types.nonEmptyStr;
             default = "inventory/yaook-k8s";
           };
           _state_base_path = mkOption {
             description = ''
               Base path to the state directory. Files will get written here.
             '';
-            type = types.str;
+            type = types.nonEmptyStr;
             default = "state";
           };
           _inventory_packages = mkInternalOption {

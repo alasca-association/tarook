@@ -23,7 +23,7 @@ in {
         NOTE: the static and dynamic provisioner must have distinct storage class
         names if both are enabled!
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "local-storage";
     };
   };

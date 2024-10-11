@@ -39,7 +39,7 @@ in {
       description = ''
         Labels are assigned to a node during its initialization/join process only!
       '';
-      type = with types; attrsOf (listOf str);
+      type = with types; attrsOf (listOf nonEmptyStr);
       default = {};
       example = {
         managed-k8s-worker-0 = ["''${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"];
@@ -60,7 +60,7 @@ in {
       description = ''
         Taints are assigned to a node during its initialization/join process only!
       '';
-      type = with types; attrsOf (listOf str);
+      type = with types; attrsOf (listOf nonEmptyStr);
       default = {};
       example = {
         managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"];

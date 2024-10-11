@@ -70,12 +70,12 @@ in {
         Namespace to deploy the rook in (will be created if it does not exist, but
         never deleted).
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "rook-ceph";
     };
 
     cluster_name = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "rook-ceph";
     };
 
@@ -87,7 +87,7 @@ in {
         arbitrary Ceph version, but should stick to the
         rook-ceph-compatibility-matrix.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
 
@@ -125,7 +125,7 @@ in {
         you should know what your are doing). Note that this is not the storage class
         name that rook will provide.
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = config.yk8s.kubernetes.local_storage.dynamic.storageclass_name;
       defaultText = "\${kubernetes.local_storage.dynamic.storageclass_name}";
     };
@@ -164,7 +164,7 @@ in {
         If no scheduling key is defined for a service, it will run on any untainted
         node.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       example = "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage";
     };
@@ -175,7 +175,7 @@ in {
         NOTE: Rook does not merge scheduling rules set in 'all' and the ones in 'mon' and 'mgr',
         but will use the most specific one for scheduling.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       example = "\${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mon";
     };
@@ -187,7 +187,7 @@ in {
         but will use the most specific one for scheduling.
       '';
       # TODO: but we could do the merging here if we wanted to
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       example = "\${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mgr";
     };
@@ -238,7 +238,7 @@ in {
     };
 
     osd_storage_class = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "csi-sc-cinderplugin";
     };
 
@@ -262,7 +262,7 @@ in {
     ceph_fs = mkEnableOption "the CephFS shared filesystem";
 
     ceph_fs_name = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "ceph-fs";
     };
 
@@ -279,7 +279,7 @@ in {
       type = types.listOf (types.submodule {
         options = {
           name = mkOption {
-            type = types.str;
+            type = types.nonEmptyStr;
             example = "data";
           };
           create_storage_class = mkOption {
@@ -291,7 +291,7 @@ in {
             default = 1;
           };
           failure_domain = mkOption {
-            type = types.str;
+            type = types.nonEmptyStr;
             default = "host";
           };
           erasure_coded = mkOption {
@@ -310,7 +310,7 @@ in {
             });
           };
           device_class = mkOption {
-            type = types.str;
+            type = types.nonEmptyStr;
             default = "hdd";
           };
         };
@@ -353,7 +353,7 @@ in {
       type = types.listOf (types.submodule {
         options = {
           name = mkOption {
-            type = types.str;
+            type = types.nonEmptyStr;
           };
           config = mkOption {
             type = types.attrs;
@@ -365,7 +365,7 @@ in {
               listOf (submodule {
                 options = {
                   name = mkOption {
-                    type = types.str;
+                    type = types.nonEmptyStr;
                   };
                   config = mkOption {
                     type = types.attrs;

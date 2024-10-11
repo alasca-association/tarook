@@ -18,10 +18,10 @@
   tfvars_file_path = "terraform/config.tfvars.json";
   commonNodeDefaultOptions = {
     image = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
     };
     flavor = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
     };
     root_disk_size = mkOption {
       description = ''
@@ -181,7 +181,7 @@ in {
     };
 
     cluster_name = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
     };
 
     prevent_disruption = mkOption {
@@ -199,7 +199,7 @@ in {
     };
 
     subnet_v6_cidr = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "fd00::/120";
     };
 
@@ -214,7 +214,7 @@ in {
     };
 
     public_network = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "shared-public-IPv4";
     };
 
@@ -222,14 +222,14 @@ in {
       description = ''
         Will most of the time be set via the environment variable TF_VAR_keypair
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
 
     azs = mkOption {
       description = "Defines the availability zones of your cloud to use for the creation of servers.";
       default = ["AZ1" "AZ2" "AZ3"];
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
     };
 
     thanos_delete_container = mkOption {
@@ -251,7 +251,7 @@ in {
     '';
 
     timeout_time = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "30m";
     };
 
@@ -262,7 +262,7 @@ in {
     };
 
     dns_nameservers_v4 = mkOption {
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = [];
       description = "A list of IPv4 addresses which will be configured as DNS nameservers of the IPv4 subnet.";
     };
@@ -285,7 +285,7 @@ in {
       description = ''
         The base URL of your GitLab project.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       example = "https://gitlab.com";
     };
@@ -294,7 +294,7 @@ in {
       description = ''
         The unique ID of your GitLab project.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       apply = v:
         if
@@ -309,7 +309,7 @@ in {
     gitlab_state_name = mkOption {
       description = ''
         The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'      '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       example = "tf-state";
     };
@@ -348,7 +348,7 @@ in {
         description = ''
           Leaving this empty means to not join any anti affinity group
         '';
-        type = with types; nullOr str;
+        type = with types; nullOr nonEmptyStr;
         default = null;
       };
     };
@@ -365,15 +365,15 @@ in {
             type = types.strMatching "master|worker";
           };
           image = mkOption {
-            type = with types; nullOr str;
+            type = with types; nullOr nonEmptyStr;
             default = null;
           };
           flavor = mkOption {
-            type = with types; nullOr str;
+            type = with types; nullOr nonEmptyStr;
             default = null;
           };
           az = mkOption {
-            type = with types; nullOr str;
+            type = with types; nullOr nonEmptyStr;
             default = null;
           };
           root_disk_size = mkOption {
@@ -381,7 +381,7 @@ in {
             default = null;
           };
           root_disk_volume_type = mkOption {
-            type = with types; nullOr str;
+            type = with types; nullOr nonEmptyStr;
             default = null;
           };
           anti_affinity_group = mkOption {
@@ -389,7 +389,7 @@ in {
               'anti_affinity_group' must not be set when role!="worker"
               Leaving 'anti_affinity_group' empty means to not join any anti affinity group
             '';
-            type = with types; nullOr str;
+            type = with types; nullOr nonEmptyStr;
             default = null;
           };
         };

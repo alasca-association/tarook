@@ -31,7 +31,7 @@ in {
         Namespace to deploy the vault in (will be created if it does not exist, but
         ever deleted).
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "k8s-svc-vault";
     };
     dnsnames = mkOption {
@@ -40,7 +40,7 @@ in {
         NOTE: to work correctly, there must exist an ingress of class `nginx` and it
         must allow ssl passthrough.
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = [];
     };
     management_cluster_integration = mkEnableOption ''
@@ -80,14 +80,14 @@ in {
       description = ''
         Scheduling key for the vault instance and its resources. Has no default.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
     storage_class = mkOption {
       description = ''
         Storage class for the vault file storage backend.
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "csi-sc-cinderplugin";
     };
     storage_size = mkOption {
@@ -99,7 +99,7 @@ in {
     };
 
     external_ingress_class = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "nginx";
     };
 
@@ -108,7 +108,7 @@ in {
         If `ingress=True` and `dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use
         for your ACME service.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       apply = v:
         if
@@ -141,7 +141,7 @@ in {
         Credentials to access an S3 bucket to which the backups will be written. Required if `enable_backups = true`.
         You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "vault_backup_s3_config.yaml";
     };
     service_type = mkOption {

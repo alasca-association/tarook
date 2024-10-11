@@ -26,7 +26,7 @@ in {
     enabled = mkEnableOption "";
     purge_installation = mkEnableOption "purging the ipsec installation";
     remote_name = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "peerid";
     };
     test_enabled = mkEnableOption ''
@@ -37,13 +37,13 @@ in {
       description = ''
         A list of parent SA proposals to offer to the client.
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
     };
     esp_proposals = mkOption {
       description = ''
         A list of parent SA proposals to offer to the client.
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = cfg.proposals;
       defaultText = "\${cfg.proposals}";
     };
@@ -52,7 +52,7 @@ in {
         List of CIDRs to route to the peer. If not set, only dynamic IP
         assignments will be routed.
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = [];
     };
 
@@ -60,7 +60,7 @@ in {
       description = ''
         List of CIDRs to offer to the peer
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = [config.yk8s.terraform.subnet_cidr];
       example = ''
         Set the following for a working NAT-free setup
@@ -76,7 +76,7 @@ in {
         Pool to source virtual IP addresses from. Those are the IP addresses assigned
         to clients which do not have remote networks. (e.g.: "10.3.0.0/24")
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
     remote_addrs = mkOption {
@@ -84,7 +84,7 @@ in {
         List of addresses to accept as remote. When initiating, the first single IP
         address is used.
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = [];
     };
     remote_private_addrs = mkOption {
@@ -92,7 +92,7 @@ in {
         Private address of remote endpoint.
         only used when test_enabled is True
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
   };

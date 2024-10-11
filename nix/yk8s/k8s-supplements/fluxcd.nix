@@ -46,7 +46,7 @@ in {
         Namespace to deploy the flux-system in (will be created if it does not exist, but
         never deleted).
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "k8s-svc-flux-system";
     };
     scheduling_key = mkOption {
@@ -54,7 +54,7 @@ in {
         Scheduling key for the flux instance and its resources. Has no
         default.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
   };

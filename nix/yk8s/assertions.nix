@@ -22,7 +22,7 @@ with lib; {
     warnings = mkOption {
       internal = true;
       default = [];
-      type = types.listOf types.str;
+      type = types.listOf types.nonEmptyStr;
       example = ["The `foo' service is deprecated and will go away soon!"];
       description = ''
         This option allows modules to show warnings to users during

@@ -22,7 +22,7 @@ in {
         NOTE: the static and dynamic provisioner must have distinct storage class
         names if both are enabled!
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "local-storage";
       apply = with config.yk8s.kubernetes.local_storage;
         v:
@@ -39,14 +39,14 @@ in {
       description = ''
         Namespace to deploy the components in
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "kube-system";
     };
     data_directory = mkOption {
       description = ''
         Directory where the volumes will be placed on the worker node
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "/mnt/dynamic-data";
     };
     version = mkOption {

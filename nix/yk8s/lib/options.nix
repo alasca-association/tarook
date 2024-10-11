@@ -19,7 +19,7 @@ in rec {
           default = cfg.sectionType;
         };
         unflat = mkInternalOption {
-          type = with lib.types; listOf str;
+          type = with lib.types; listOf nonEmptyStr;
           default = [];
         };
         transformations = mkInternalOption {
@@ -27,7 +27,7 @@ in rec {
           default = [];
         };
         removedOptions = mkInternalOption {
-          type = with lib.types; listOf (listOf str);
+          type = with lib.types; listOf (listOf nonEmptyStr);
           default = [];
         };
         docs.preface = mkInternalOption {

@@ -51,7 +51,7 @@
       spec:
         acme:
           email: "{{ k8s_cert_manager_letsencrypt_email | default('') }}"
-          preferredChain: "{{ k8s_cert_manager_letsencrypt_preferred_chain }}"
+          preferredChain: "{{ k8s_cert_manager_letsencrypt_preferred_chain | default('') }}"
           privateKeySecretRef:
             name: letsencrypt-default-issuer-account-key
           server: "{{ k8s_cert_manager_letsencrypt_server }}"

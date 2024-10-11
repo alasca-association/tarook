@@ -86,14 +86,14 @@ in {
       description = ''
         Configure value for the cron job schedule for etcd backups.
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "21 */12 * * *";
     };
     bucket_name = mkOption {
       description = ''
         Name of the s3 bucket to store the backups.
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "etcd-backup";
     };
     file_prefix = mkOption {
@@ -109,7 +109,7 @@ in {
         be found. This location is the default location used by import.sh and is
         recommended.
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "yaook/${config.yk8s.vault.cluster_name}/kv";
       defaultText = "yaook/\${config.yk8s.vault.cluster_name}/kv";
     };
@@ -121,7 +121,7 @@ in {
         The role expects a JSON object with `access_key` and `secret_key` keys,
         containing the corresponding S3 credentials.
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "etcdbackup";
     };
     days_of_retention = mkOption {

@@ -39,7 +39,7 @@ in {
       description = ''
         This option is a list and is empty by default
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = [];
 
       # examples should be written such that the example text can be put verbatim behind the = sign

@@ -31,7 +31,7 @@ in {
         Configure in which namespace the cert-manager is run. The namespace is
         created automatically, but never deleted automatically.
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "k8s-svc-cert-manager";
     };
     install = mkOption {
@@ -43,11 +43,11 @@ in {
       default = true;
     };
     helm_repo_url = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "https://charts.jetstack.io";
     };
     chart_ref = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "jetstack/cert-manager";
     };
     chart_version = mkOption {
@@ -55,7 +55,7 @@ in {
       default = "1.15.2";
     };
     release_name = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "cert-manager";
     };
     scheduling_key = mkOption {
@@ -63,7 +63,7 @@ in {
         Scheduling key for the cert manager instance and its resources. Has no
         default.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
     letsencrypt_email = mkOption {
@@ -74,7 +74,7 @@ in {
         CERTIFICATES UNDER OUR NAME. Customers are supposed to deploy their own
         ACME/Let's Encrypt issuer.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
     letsencrypt_preferred_chain = mkOption {
@@ -82,8 +82,8 @@ in {
         By default, the ACME issuer will let the server choose the certificate chain
         to use for the certificate. This can be used to override it.
       '';
-      type = types.str;
-      default = "";
+      type = with types; nullOr nonEmptyStr;
+      default = null;
     };
     letsencrypt_ingress = mkOption {
       description = ''
@@ -92,7 +92,7 @@ in {
         configuration and may need to be adapted in case a different ingress is to be
         used.
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "nginx"; # TODO: get value from config.yk8s.k8s-service-layer.ingress once we have extraValues
     };
     letsencrypt_server = mkOption {
@@ -101,7 +101,7 @@ in {
         is to switch between staging and production.
         See https://letsencrypt.org/docs/staging-environment/
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "https://acme-v02.api.letsencrypt.org/directory";
       example = "https://acme-staging-v02.api.letsencrypt.org/directory";
     };

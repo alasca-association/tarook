@@ -20,13 +20,13 @@ in {
         description = ''
           Should point to a object store or otherwise web server, where the vGPU Manager installation file is available.
         '';
-        type = types.str;
+        type = types.nonEmptyStr;
       };
       manager_filename = mkOption {
         description = ''
           Should hold the name of the vGPU Manager installation file.
         '';
-        type = types.str;
+        type = types.nonEmptyStr;
       };
     };
   };

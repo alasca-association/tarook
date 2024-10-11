@@ -25,7 +25,7 @@ in {
         smoke tests. If you define these, you
         must specify at least two nodes.
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = [];
       apply = v:
         if length v == 1

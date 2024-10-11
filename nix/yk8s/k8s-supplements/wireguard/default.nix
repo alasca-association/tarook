@@ -97,7 +97,7 @@ in {
         so that they can use all of their clusters at the same time without having
         to tear down tunnels.
       '';
-      type = types.nullOr types.str;
+      type = types.nullOr types.nonEmptyStr;
       default = null;
       example = "fd01::/120";
     };
@@ -111,7 +111,7 @@ in {
         so that they can use all of their clusters at the same time without having
         to tear down tunnels.
       '';
-      type = types.nullOr types.str;
+      type = types.nullOr types.nonEmptyStr;
       default = null;
       example = "fd01::1/120";
     };
@@ -135,7 +135,7 @@ in {
             description = ''
               An ID unique to this endpoint
             '';
-            type = with types; either ints.unsigned str;
+            type = with types; either ints.unsigned nonEmptyStr;
             apply = toString; # JSON/YAML/TOML only allow strings as keys
             example = 0;
           };
@@ -174,7 +174,7 @@ in {
               so that they can use all of their clusters at the same time without having
               to tear down tunnels.
             '';
-            type = types.nullOr types.str;
+            type = types.nullOr types.nonEmptyStr;
             default = null;
             example = "fd01::/120";
           };
@@ -186,7 +186,7 @@ in {
               so that they can use all of their clusters at the same time without having
               to tear down tunnels.
             '';
-            type = types.nullOr types.str;
+            type = types.nullOr types.nonEmptyStr;
             default = null;
             example = "fd01::1/120";
           };
@@ -204,13 +204,13 @@ in {
             description = ''
               The public key of the peer created with `wg keygen`
             '';
-            type = types.str;
+            type = types.nonEmptyStr;
           };
           ident = mkOption {
             description = ''
               An identifier for the public key
             '';
-            type = types.str;
+            type = types.nonEmptyStr;
             example = "name.lastname";
           };
           ip = mkOption {
@@ -222,11 +222,11 @@ in {
             default = {};
           };
           ipv6 = mkOption {
-            type = types.nullOr types.str;
+            type = types.nullOr types.nonEmptyStr;
             default = null;
           };
           ipsv6 = mkOption {
-            type = types.attrsOf types.str;
+            type = types.attrsOf types.nonEmptyStr;
             default = {};
           };
         };

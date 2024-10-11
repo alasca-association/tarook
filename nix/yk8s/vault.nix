@@ -22,7 +22,7 @@ in {
         This name must be unique within a single vault instance and cannot be
         reasonably changed after a cluster has been spawned.
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
     };
     policy_prefix = mkOption {
       type = types.str;

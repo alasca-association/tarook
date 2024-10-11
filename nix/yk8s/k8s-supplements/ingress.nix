@@ -51,11 +51,11 @@ in {
       default = true;
     };
     helm_repo_url = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "https://kubernetes.github.io/ingress-nginx";
     };
     chart_ref = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "ingress-nginx/ingress-nginx";
     };
     chart_version = mkOption {
@@ -63,7 +63,7 @@ in {
       default = "4.11.1";
     };
     release_name = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "ingress";
     };
     namespace = mkOption {
@@ -71,7 +71,7 @@ in {
         Namespace to deploy the ingress in (will be created if it does not exist, but
         never deleted).
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "k8s-svc-ingress";
     };
     service_type = mkOption {
@@ -86,7 +86,7 @@ in {
         Scheduling key for the cert manager instance and its resources. Has no
         default.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
     nodeport_http = mkOption {

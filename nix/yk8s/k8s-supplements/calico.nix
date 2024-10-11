@@ -58,7 +58,7 @@ in {
         For the operator-based installation,
         it is possible to link to self-maintained values file for the helm chart
       '';
-      type = types.nullOr types.str;
+      type = types.nullOr types.nonEmptyStr;
       default = null;
       example = "path-to-a-custom/values.yaml";
     };
@@ -74,7 +74,7 @@ in {
         If not specified here, a predefined Calico version will be matched against
         the above specified Kubernetes version.
       '';
-      type = types.nullOr types.str;
+      type = types.nullOr types.nonEmptyStr;
       default = null;
       example = "3.25.1";
     };

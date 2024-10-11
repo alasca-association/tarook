@@ -59,7 +59,7 @@ in {
         Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       example = "http://proxy.example.com:8889";
     };
@@ -70,7 +70,7 @@ in {
         Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       example = "https://proxy.example.com:8889";
     };
@@ -81,7 +81,7 @@ in {
         Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       example = "localhost,127.0.0.0/8";
     };
@@ -94,7 +94,7 @@ in {
         Note: This network name isn't fetched automagically (by terraform) on purpose
         because there might be situations where the CCM should not pick the managed network.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       example = "\${config.yk8s.terraform.cluster_name}-network";
     };
@@ -124,7 +124,7 @@ in {
         A list of registry mirrors can be configured as a pull through cache to reduce
         external network traffic and the amount of docker pulls from dockerhub.
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = [];
       example = ["https://0.docker-mirror.example.org" "https://1.docker-mirror.example.org"];
     };
@@ -133,12 +133,12 @@ in {
         Custom Docker Configuration
         A list of insecure registries that can be accessed without TLS verification.
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = [];
       example = ["0.docker-registry.example.org" "1.docker-registry.example.org"];
     };
     container_mirror_default_host = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
       default = "install-node";
     };
     container_mirrors = mkOption {
@@ -146,17 +146,17 @@ in {
       type = types.listOf (types.submodule {
         options = {
           name = mkOption {
-            type = types.str;
+            type = types.nonEmptyStr;
           };
           upstream = mkOption {
-            type = types.str;
+            type = types.nonEmptyStr;
           };
           port = mkOption {
             type = with types; nullOr port;
             default = null;
           };
           mirrors = mkOption {
-            type = with types; listOf str;
+            type = with types; listOf nonEmptyStr;
             default = [];
           };
         };
@@ -185,7 +185,7 @@ in {
       description = ''
         A list of NTP pools.
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = [];
       example = ["0.pool.ntp.example.org" "1.pool.ntp.example.org"];
     };
@@ -193,7 +193,7 @@ in {
       description = ''
         A list of NTP servers.
       '';
-      type = with types; listOf str;
+      type = with types; listOf nonEmptyStr;
       default = [];
       example = ["0.server.ntp.example.org" "1.server.ntp.example.org"];
     };
@@ -217,7 +217,7 @@ in {
         As a secondary effect, https repositories are not used, since
         those don't work with caching proxies like apt-cacher-ng.
       '';
-      type = with types; nullOr str;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
 
