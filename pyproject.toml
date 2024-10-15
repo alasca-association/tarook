@@ -36,7 +36,7 @@ semver = "^3.0.1"
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-sphinx = "^7.0.0"
+sphinx = "^8.0.0"
 sphinx-rtd-theme = "^3.0.0"
 sphinx-tabs = "^3.4.1"
 furo = "^2024.0.0"
