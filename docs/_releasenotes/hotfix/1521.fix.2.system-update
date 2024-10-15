@@ -1,0 +1,1 @@
+A bug has been fixed which prevented freshly initialized nodes from getting a system update.

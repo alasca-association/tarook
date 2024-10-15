@@ -64,7 +64,10 @@
   gather_facts: true
   tags: update-kubernetes-nodes
   tasks:
-  - name: Group Kubernetes nodes by initialization status
+  - name: Group Kubernetes nodes by frontend initialization status
+    ansible.builtin.group_by:
+      key: "{{ ansible_local['frontend-initialized']['frontend_install_status'] | default('not_initialized') }}_frontend_nodes"
+  - name: Group Kubernetes nodes by Kubernetes initialization status
     ansible.builtin.group_by:
       key: "{{ ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') }}_kubernetes_nodes"
 
