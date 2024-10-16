@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.1.3 (2024-10-16)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug has been fixed which prevented Kubernetes workers from joining the cluster. (`!1524 <https://gitlab.com/yaook/k8s/-/merge_requests/1524>`_)
+
+
 v8.1.2 (2024-10-16)
 -------------------
 
