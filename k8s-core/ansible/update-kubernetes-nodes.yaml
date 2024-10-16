@@ -22,12 +22,52 @@
         This is automatically done if the install-all
         playbook of either k8s-core or k8s-supplements is executed.
 
+# Drop this play when deprecating support for release v8
+# It is only needed to migrate existing clusters for !1450
+- name: Prevent update on nodes setup before release v8
+  hosts: k8s_nodes
+  tasks:
+  - name: Validate if Kubernetes is installed
+    when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
+    become: true
+    block:
+    - name: Check if node already joined Kubernetes
+      delegate_to: "{{ groups['orchestrator'] | first }}"
+      become: false
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Node
+        name: "{{ inventory_hostname }}"
+
+    - name: Set static fact that kubernetes is initialized  # noqa no-handler
+      block:
+      - name: Set static fact that kubernetes is initialized
+        vars:
+          content:
+            k8s_install_status: "initialized"
+        copy:
+          dest: /etc/ansible/facts.d/kubernetes-initialized.fact
+          owner: root
+          group: root
+          mode: 0644
+          content: "{{ content | to_json }}"
+
+      - name: Update cached facts
+        setup:
+    rescue:
+    - name: Inform that node did not join, yet
+      ansible.builtin.debug:
+        msg: "Node did not join Kubernetes, yet"
+
 - name: Group Kubernetes nodes by initialization status
   hosts: k8s_nodes
   gather_facts: true
   tags: update-kubernetes-nodes
   tasks:
-  - name: Group Kubernetes nodes by initialization status
+  - name: Group Kubernetes nodes by frontend initialization status
+    ansible.builtin.group_by:
+      key: "{{ ansible_local['frontend-initialized']['frontend_install_status'] | default('not_initialized') }}_frontend_nodes"
+  - name: Group Kubernetes nodes by Kubernetes initialization status
     ansible.builtin.group_by:
       key: "{{ ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') }}_kubernetes_nodes"
 
