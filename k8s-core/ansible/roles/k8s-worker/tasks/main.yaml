@@ -41,6 +41,11 @@
       api_version: v1
       kind: Node
       name: "{{ inventory_hostname }}"
+    register: node_info
+    until: node_info is not failed
+    retries: "{{ k8s_error_retries }}"
+    delay: "{{ k8s_error_delay }}"
+    failed_when: node_info.resources | length == 0
 
   - name: Set static fact that kubernetes is initialized  # noqa no-handler
     block:
