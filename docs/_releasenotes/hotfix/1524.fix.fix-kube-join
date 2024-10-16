@@ -1,1 +1,0 @@
-A bug has been fixed which prevented Kubernetes workers from joining the cluster.
