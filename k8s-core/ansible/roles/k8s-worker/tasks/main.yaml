@@ -34,16 +34,15 @@
   when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
   become: true
   block:
-  - name: Check if kubelet service is up and running
-    ansible.builtin.service:
-      name: kubelet
-      state: started
-      enabled: true
-    check_mode: true
-    register: kubelet_service
+  - name: Check if node already joined Kubernetes
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    become: false
+    kubernetes.core.k8s_info:
+      api_version: v1
+      kind: Node
+      name: "{{ inventory_hostname }}"
 
   - name: Set static fact that kubernetes is initialized  # noqa no-handler
-    when: kubelet_service.changed
     block:
     - name: Set static fact that kubernetes is initialized
       vars:
@@ -58,6 +57,10 @@
 
     - name: Update cached facts
       setup:
+  rescue:
+  - name: Inform that node did not join, yet
+    ansible.builtin.debug:
+      msg: "Node did not join Kubernetes, yet"
 
 - name: Join the k8s cluster steps
   when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
