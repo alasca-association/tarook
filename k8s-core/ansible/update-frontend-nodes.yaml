@@ -22,6 +22,43 @@
         This is automatically done if the install-all
         playbook of either k8s-core or k8s-supplements is executed.
 
+# Drop this play when deprecating support for release v8
+# It is only needed to migrate existing clusters for !1450
+- name: Prevent update on nodes setup before release v8
+  hosts: frontend
+  tasks:
+  - name: Validate if frontend services are installed
+    when: ansible_local['frontend-initialized']['frontend_install_status'] | default('not_initialized') != 'initialized'
+    become: true
+    block:
+    - name: Check if frontend services are running
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      check_mode: true
+      loop:
+      - keepalived
+      - haproxy
+
+    - name: Set static fact that frontend node is initialized
+      vars:
+        content:
+          frontend_install_status: "initialized"
+      copy:
+        dest: /etc/ansible/facts.d/frontend-initialized.fact
+        owner: root
+        group: root
+        mode: 0644
+        content: "{{ content | to_json }}"
+
+    - name: Update cached facts
+      setup:
+    rescue:
+    - name: Inform that node has no frontend services running, yet
+      ansible.builtin.debug:
+        msg: "Node has no frontend services running, yet"
+
 - name: Group frontend nodes by initialization status
   hosts: frontend
   gather_facts: true
