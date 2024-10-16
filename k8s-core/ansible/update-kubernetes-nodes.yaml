@@ -26,6 +26,8 @@
 # It is only needed to migrate existing clusters for !1450
 - name: Prevent update on nodes setup before release v8
   hosts: k8s_nodes
+  vars_files:
+  - vars/retries.yaml
   tasks:
   - name: Validate if Kubernetes is installed
     when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
@@ -38,6 +40,11 @@
         api_version: v1
         kind: Node
         name: "{{ inventory_hostname }}"
+      register: node_info
+      until: node_info is not failed
+      retries: "{{ k8s_error_retries }}"
+      delay: "{{ k8s_error_delay }}"
+      failed_when: node_info.resources | length == 0
 
     - name: Set static fact that kubernetes is initialized  # noqa no-handler
       block:
