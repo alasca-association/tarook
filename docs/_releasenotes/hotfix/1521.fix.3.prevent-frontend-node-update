@@ -1,1 +1,0 @@
-A bug has been fixed which caused frontend nodes which were setup before release v8.1 to potentially do a system update and reboot.
