@@ -41,4 +41,5 @@ The cluster repository layout has changed:
         miscellaneous.hosts_file = ./hosts
 
     to ``config/default.nix``
+
 _
