@@ -37,6 +37,7 @@ The cluster repository layout has changed:
     For all bare-metal clusters, make sure to add
 
     .. code:: nix
+
         miscellaneous.hosts_file = ./hosts
 
     to ``config/default.nix``
