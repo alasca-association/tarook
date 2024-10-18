@@ -177,7 +177,7 @@
   kubernetes.core.k8s:
     state: present
     apply: true
-    definition: "{{ lookup('template', 'proxy.yaml') }}"
+    definition: "{{ lookup('template', 'proxy.yaml.j2') }}"
     validate:
       fail_on_error: true
       strict: true
