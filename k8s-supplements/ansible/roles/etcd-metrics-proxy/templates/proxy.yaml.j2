@@ -27,7 +27,7 @@ spec:
           image: "alpine/socat"
           args:
             - openssl-listen:12381,fork,reuseaddr,cert=/certs/server.crt,key=/certs/server.key,cafile=/certs/client.crt
-            - TCP4:127.0.0.1:2381
+            - "TCP:{% if ipv6_enabled %}[::1]{% elif ipv4_enabled %}127.0.0.1{% endif %}:2381"
           imagePullPolicy: "IfNotPresent"
           ports: []
           volumeMounts:
