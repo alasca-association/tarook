@@ -25,6 +25,7 @@
         strict: true
     # Retry this task on failures
     register: k8s_apply
+    when: gateways | length > 0
     until: k8s_apply is not failed
     retries: "{{ k8s_error_retries }}"
     delay: "{{ k8s_error_delay }}"
