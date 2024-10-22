@@ -49,7 +49,7 @@ then
     echo "to config/default.nix"
 fi
 
-git rm -r --ignore-unmatch inventory
+rm -rf inventory
 
 echo ""
 echo "Migration done!"
