@@ -1,0 +1,1 @@
+Only deploy Bird ServiceMonitor when the Bird exporter is actually deployed
