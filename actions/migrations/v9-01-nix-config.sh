@@ -39,7 +39,7 @@ if [[ -d vault ]]; then
 fi
 
 if [[ -f "inventory/yaook-k8s/hosts" ]] && \
-    tomlq --exit-status '.terraform | if has ("enabled") then .enabled else true end' "config/config.toml" >/dev/null;
+    ! tomlq --exit-status '.terraform | if has ("enabled") then .enabled else true end' "config/config.toml" >/dev/null;
 then
     git mv inventory/yaook-k8s/hosts config/hosts
     echo ""
