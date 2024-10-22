@@ -30,9 +30,9 @@ The cluster repository layout has changed:
 
     In order to migrate to the new cluster repository layout, run
 
-    .. code:: shell
+    .. code:: console
 
-       ./managed-k8s/actions/migrate-cluster-repo.sh
+       $ ./managed-k8s/actions/migrate-cluster-repo.sh
 
     For all bare-metal clusters, make sure to add
 

@@ -33,7 +33,7 @@ Enabling the fix
 
 1. Enable signing requests in the config
 
-   Set ``kubernetes.controller_manager..enable_signing_requests = true`` in the config
+   Set ``kubernetes.controller_manager.enable_signing_requests = true`` in the config
 
 2. Configure k8s_control_plane Vault policy
 
