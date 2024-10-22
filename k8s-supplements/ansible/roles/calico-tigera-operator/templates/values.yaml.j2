@@ -26,11 +26,15 @@ installation:
     nodeAddressAutodetectionV4:
       cidrs:
         - "{{ subnet_cidr }}"
+{% else %}
+    nodeAddressAutodetectionV4: "none"
 {% endif %}
 {% if ipv6_enabled %}
     nodeAddressAutodetectionV6:
       cidrs:
         - "{{ subnet_v6_cidr }}"
+{% else %}
+    nodeAddressAutodetectionV6: "none"
 {% endif %}
     ipPools:
 {% if ipv4_enabled %}
