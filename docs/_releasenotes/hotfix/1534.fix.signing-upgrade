@@ -1,1 +1,0 @@
-A bug has been fixed which caused Kubernetes updates to fail during PKI renewal if ``kubernetes.controller_manager.enable_signing_requests`` is enabled.
