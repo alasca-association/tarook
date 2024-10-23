@@ -96,6 +96,9 @@
     block:
     - name: Fetch Kubernetes cluster root CA key from Vault
       delegate_to: "{{ groups['orchestrator'] | first }}"
+      vars:
+        vault_role_id: "{{ vault_node_role_id }}"
+        vault_secret_id: "{{ vault_node_secret_id }}"
       community.hashi_vault.vault_kv2_get:
         auth_method: approle
         mount_point: "{{ vault_nodes_approle }}"
