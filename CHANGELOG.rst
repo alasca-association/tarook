@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v7.0.4 (2024-10-23)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug has been fixed which caused Kubernetes updates to fail during PKI renewal if ``kubernetes.controller_manager.enable_signing_requests`` is enabled. (`!1533 <https://gitlab.com/yaook/k8s/-/merge_requests/1533>`_)
+
+
 v7.0.3 (2024-09-20)
 -------------------
 
