@@ -108,6 +108,10 @@
             name = "init-cluster-repo";
             runtimeInputs = dependencies.yk8s;
             text = ''
+              if [[ -n "$1"]]; then
+                export MANAGED_K8S_LATEST_RELEASE=false
+                export MANAGED_K8S_GIT_BRANCH="$1"
+              fi
               ${./.}/actions/init-cluster-repo.sh
             '';
           };
