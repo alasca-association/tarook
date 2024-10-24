@@ -178,7 +178,7 @@ in {
 
       default = "ClusterIP";
     };
-    active_node_port = mkOption {
+    service_active_node_port = mkOption {
       description = ''
         Node port to use for the Service which exposes the active Vault instance
         See NOTE above regarding exposure of the Vault.
