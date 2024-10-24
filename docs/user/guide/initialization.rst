@@ -87,11 +87,16 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
    .. hint::
 
-      If you want to initialize YAOOK/K8s from a specific branch, do:
+      If you want to initialize YAOOK/K8s from a specific branch or tag, do:
 
       .. code:: console
 
-         $ nix run "git+https://gitlab.com/yaook/k8s?ref=<branchname>#init" <branchname>
+         $ nix run "git+https://gitlab.com/yaook/k8s?ref=<branch1>#init" <branch2>
+
+      where ``<branch1>`` selects the branch or tag from which the init script is to be run (defaults to ``devel``)
+      and ``<branch2>`` selects the branch or tag that will be checked out in the submodule (defaults to the latest version known to ``branch1``).
+
+      Typically, you'll want to set both to the same value.
 
    This init script will:
 
