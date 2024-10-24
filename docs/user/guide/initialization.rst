@@ -91,7 +91,7 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
       .. code:: console
 
-         $ nix run "git+https://gitlab.com/yaook/k8s?ref=<branchname>#init <branchname>"
+         $ nix run "git+https://gitlab.com/yaook/k8s?ref=<branchname>#init" <branchname>
 
    This init script will:
 
