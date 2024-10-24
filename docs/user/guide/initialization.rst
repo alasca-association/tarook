@@ -81,22 +81,26 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
 2. Initialize the cluster repository:
 
-   If you want to checkout a specific branch, do eg.
+   .. hint::
 
-   .. code:: console
+      If you want to checkout a specific branch, do eg.
 
-      $ export MANAGED_K8S_LATEST_RELEASE=false
-      $ export MANAGED_K8S_GIT_BRANCH=<branchname>
+      .. code:: console
+
+         $ export MANAGED_K8S_LATEST_RELEASE=false
+         $ export MANAGED_K8S_GIT_BRANCH=<branchname>
 
    .. code:: console
 
       $ nix run "git+https://gitlab.com/yaook/k8s#init"
 
-   If you want to use the init script from a specific branch instead, use eg.
+   .. hint::
 
-   .. code:: console
+      If you want to use the init script from a specific branch instead, use eg.
 
-      $ nix run "git+https://gitlab.com/yaook/k8s?ref=<branchname>#init"
+      .. code:: console
+
+         $ nix run "git+https://gitlab.com/yaook/k8s?ref=<branchname>#init"
 
    This init script will:
 
