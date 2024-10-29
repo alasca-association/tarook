@@ -25,18 +25,17 @@ execute_playbook() {
   local playbook="$1"
   notef "Executing playbook $playbook\n"
 
+  # Ensure that the latest config is deployed to the inventory
+  "$actions_dir/update-inventory.sh"
+
   load_conf_vars
   check_venv
   check_conf_sanity
   require_vault_token
   install_prerequisites
 
-  # Ensure that the latest config is deployed to the inventory
-  python3 "$actions_dir/update_inventory.py"
   # Bring the wireguard interface up if configured so
   "$actions_dir/wg-up.sh"
-
-  set_kubeconfig
 
   pushd "$ansible_k8s_core_dir"
   # Include k8s-core roles

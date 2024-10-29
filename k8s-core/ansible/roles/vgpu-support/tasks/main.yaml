@@ -4,7 +4,7 @@
 - name: Install GPU drivers
   become: true
   when:
-    - k8s_virtualize_gpu | default(False)
+    - k8s_virtualize_gpu
     - ansible_local['gpu-node']['node_has_gpu'] | bool
     - _allow_disruption or ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
     - ansible_facts['pkg_mgr'] == "apt"

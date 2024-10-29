@@ -4,6 +4,10 @@ actions_dir="$(dirname "$0")"
 
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
+
+# Ensure that the latest config is deployed to the inventory
+"$actions_dir/update-inventory.sh"
+
 load_conf_vars
 
 check_conf_sanity
@@ -13,9 +17,6 @@ check_venv
 require_vault_token
 
 install_prerequisites
-
-# Ensure that the latest config is deployed to the inventory
-python3 "$actions_dir/update_inventory.py"
 
 while getopts s flag
 do

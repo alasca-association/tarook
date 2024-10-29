@@ -26,52 +26,47 @@ will most certainly have more files than these.
 
    your_cluster_repo
    ├── config/
-   │   ├── config.toml               # Cluster configuration
-   │   └── wireguard_ipam.toml       # WireGuard IPAM
-   ├── etc/                          # Cluster-specific files
-   ├── inventory/                    # Ansible inventory
-   │   └── yaook-k8s/                # Variables passed to Ansible
-   │   └── hosts                     # Ansible hosts file
-   ├── k8s-custom/                   # Custom Stage
-   │   ├── roles/                    # Place to dump in personal Ansible roles
-   │   └── main.yaml                 # Customization playbook
-   ├── managed-k8s/                  # Submodule with the LCM code
-   ├── submodules/                   # Place for additional git submodules
-   ├── terraform/                    # Place for Terraform specific files
-   │   ├── .terraform/
-   │   │   └── plugins/
-   │   │       └── linux_amd64/
-   │   │           └── lock.json     # Terraform plugin version lock
-   │   ├── terraform.tfstate         # Terraform state
-   │   └── terraform.tfstate.backup  # Terraform state backup
-   ├── vault/                        # Local vault data
-   ├── .envrc                        # direnv (environment variables) configuration
+   │   ├── config.toml                   # Legacy cluster configuration
+   │   └── default.nix                   # Cluster configuration
+   ├── etc/                              # Cluster-specific files
+   ├── inventory/                        # Ansible inventory
+   │   ├── yaook-k8s/                    # Variables passed to Ansible
+   │   └── hosts                         # Ansible hosts file
+   ├── k8s-custom/                       # Custom Stage
+   │   ├── roles/                        # Place to dump in personal Ansible roles
+   │   └── main.yaml                     # Customization playbook
+   ├── managed-k8s/                      # Submodule with the LCM code
+   ├── submodules/                       # Place for additional git submodules
+   ├── state/                            # Place for state files
+   │   ├── wireguard/
+   │   |   └── ipam.toml                 # WireGuard IPAM
+   │   ├── terraform/                    # Terraform specific state files
+   │   |   ├── .terraform/
+   │   |   │   └── plugins/
+   │   |   │       └── linux_amd64/
+   │   |   │           └── lock.json     # Terraform plugin version lock
+   │   |   ├── terraform.tfstate         # Terraform state
+   │   |   └── terraform.tfstate.backup  # Terraform state backup
+   ├── vault/                            # Local vault data
+   ├── .envrc                            # direnv (environment variables) configuration
    ├── .gitattributes
    ├── .gitignore
    └── .gitattributes
 
 Detailed explanation:
 
--  ``config/config.toml`` holds the
+-  ``config/`` holds the
    :doc:`configuration </user/reference/cluster-configuration>` variables of
-   the cluster. A template for this file can be found in the
-   ``templates/`` directory.
+   the cluster.
 
    Note that the :doc:`initialization </user/guide/initialization>`
    script ``init.sh`` will bootstrap your configuration from that
    template.
 
--  ``config/wirguard_ipam.toml`` contains the
-   :doc:`Wireguard </user/explanation/vpn/wireguard>` IP address management.
-   This file is only of interest if you want to protect your cluster with gateway nodes.
-   This file is managed by the
-   :ref:`update_inventory.py <actions-references.update_inventorypy>` script.
-   This script will automatically assign IP addresses to your
-   :ref:`configured peers <cluster-configuration.wireguard-configuration>`.
-
 -  The ``inventory/`` directory holds your
-   :doc:`layer-specific </user/explanation/abstraction-layers>` Ansible variables. These
-   variables are managed by the
+   :doc:`layer-specific </user/explanation/abstraction-layers>` Ansible variables.
+   It is completely ephemeral and can be re-generated from the config and the state.
+   It is managed by the
    :ref:`update_inventory.py <actions-references.update_inventorypy>` script.
 
 -  ``etc/`` holds credentials and cluster-specific files
@@ -91,10 +86,19 @@ Detailed explanation:
    the same state without changes again, even if the branch of
    ``managed-k8s`` has advanced in the meantime.
 
--  ``terraform/`` is a state-only directory for Terraform. You should
-   not need to manually operate in that directory at all. The terraform
-   state is managed by the
+-  ``state/`` is a state-only directory. You should
+   not need to manually operate in that directory at all.
+
+-  ``state/terraform/`` The terraform state which is managed by the
    :ref:`apply-terraform.sh <actions-references.apply-terraformsh>` script.
+
+-  ``state/wireguard/ipam.toml`` contains the
+   :doc:`Wireguard </user/explanation/vpn/wireguard>` IP address management.
+   This file is only of interest if you want to protect your cluster with gateway nodes.
+   This file is managed by the
+   :ref:`update_inventory.py <actions-references.update_inventorypy>` script.
+   This script will automatically assign IP addresses to your
+   :ref:`configured peers <configuration-options.yk8s.wireguard>`.
 
 *Optional:*
 

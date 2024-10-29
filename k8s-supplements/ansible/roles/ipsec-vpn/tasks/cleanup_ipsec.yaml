@@ -33,7 +33,7 @@
 
 - name: Purge the IPsec setup
   become: true
-  when: ipsec_purge_installation | default(false)
+  when: ipsec_purge_installation
   ansible.builtin.apt:
     name: "charon-systemd"
     state: absent

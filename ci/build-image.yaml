@@ -26,14 +26,7 @@ build_image:
     when: always
   - when: never
   before_script:
-    - |
-      cat > /etc/nix/nix.conf <<EOF
-      build-users-group = nixbld
-      sandbox = false
-      extra-experimental-features = nix-command flakes
-      substituters = https://cache.nixos.org/ https://yaook.cachix.org
-      trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
-      EOF
+  - cp ci/container-image/nix.conf /etc/nix/nix.conf
   script:
   - export IMAGE_TAG="${CI_COMMIT_SHA:0:8}"
   - export IMAGE_REF="${YAOOK_K8S_CI_IMAGE_NAME}:${IMAGE_TAG}"

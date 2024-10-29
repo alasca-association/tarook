@@ -128,15 +128,6 @@
     content: "{{ container_mirror_ca }}"
   when: "container_mirror_ca"
 
-- name: Configure container mirrors
-  # NOTE: containerd need not be reloaded for changes to the mirrors
-  # to take effect.
-  ansible.builtin.include_tasks:
-    file: configure_mirror.yaml
-    apply:
-      become: true
-  loop: "{{ container_mirrors }}"
-
 - name: Restart containerd  # noqa no-handler
   become: true
   # Only restart if something changed AND we're allowed to do the restart
