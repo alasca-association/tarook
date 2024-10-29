@@ -5,6 +5,8 @@ pages:
     - direnv allow
     - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
     - poetry install --with docs --sync
+    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null)
+    - export PATH="$VIRTUAL_ENV/bin:$PATH"
   script:
     - git fetch && git remote prune origin
     - nix build .#docsRST -o docs/user/reference/options
