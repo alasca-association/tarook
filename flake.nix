@@ -100,7 +100,8 @@
           renderDocs = pkgs.writeShellApplication {
             name = "render-docs";
             text = ''
-              nix build .#docsRST -o docs/user/reference/options
+              out=$(nix build --print-out-paths --no-link .#docsRST)
+              rsync -rL --delete --chmod 664 "$out/" docs/user/reference/options
               python3 -m sphinx docs _build/html -E
             '';
           };

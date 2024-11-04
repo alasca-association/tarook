@@ -9,7 +9,6 @@ pages:
     - export PATH="$VIRTUAL_ENV/bin:$PATH"
   script:
     - git fetch && git remote prune origin
-    - nix build .#docsRST -o docs/user/reference/options
     - sphinx-multiversion -W docs _build/html
     - echo "<meta http-equiv=\"Refresh\" content=\"0; url='${CI_PAGES_URL}/devel/'\" />" > _build/html/index.html
     - mv _build/html public
