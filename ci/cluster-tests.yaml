@@ -267,6 +267,7 @@
     - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-frontend-nodes.sh
     - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-kubernetes-nodes.sh
     - ./managed-k8s/actions/apply-custom.sh
+    - ./managed-k8s/ci/test.sh
     - ./managed-k8s/actions/test.sh
   after_script:
     # artifacts are overridden by later stages, so we need to re-export the variable here
@@ -311,6 +312,7 @@
 
     # Shuffle once more
   - ./managed-k8s/actions/apply-custom.sh
+  - ./managed-k8s/ci/test.sh
   - ./managed-k8s/actions/test.sh
   after_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, after_script]
