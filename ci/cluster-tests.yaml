@@ -298,19 +298,19 @@
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
   script:
     # Spawn and test cluster
-  - tomlq --in-place --toml-output '.kubernetes.version = "1.29.13"' config/config.toml
+  - tomlq --in-place --toml-output '.kubernetes.version = "1.29.13"' config/overrides.toml
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
 
     # Upgrade cluster to k8s v1.30
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.30.8
     # Update k8s version
-  - tomlq --in-place --toml-output '.kubernetes.version = "1.30.8"' config/config.toml
+  - tomlq --in-place --toml-output '.kubernetes.version = "1.30.8"' config/overrides.toml
   - ./managed-k8s/actions/k8s-login.sh
 
     # Upgrade cluster to k8s v1.31
   - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.31.5
     # Update k8s version
-  - tomlq --in-place --toml-output '.kubernetes.version = "1.31.5"' config/config.toml
+  - tomlq --in-place --toml-output '.kubernetes.version = "1.31.5"' config/overrides.toml
   - ./managed-k8s/actions/k8s-login.sh
 
     # Shuffle once more
@@ -348,7 +348,7 @@ containerd-ds:
   extends: .prepare_spawn_test_cleanup_k8s_cluster
   stage: cluster-tests
   script:
-  - tomlq --in-place --toml-output '.terraform.ipv6_enabled = true' config/config.toml
+  - tomlq --in-place --toml-output '.terraform.ipv6_enabled = true' config/overrides.toml
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   retry: 2
   variables:
@@ -385,7 +385,7 @@ containerd-ds-k8s-upgrade:
   extends: .test_upgrade_path_k8s_cluster
   stage: cluster-tests
   script:
-  - tomlq --in-place --toml-output '.terraform.ipv6_enabled = true' config/config.toml
+  - tomlq --in-place --toml-output '.terraform.ipv6_enabled = true' config/overrides.toml
   - !reference [.test_upgrade_path_k8s_cluster, script]
   retry: 2
   variables:
