@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.1.5 (2024-11-05)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- A PATH issue in the hotfixing pipeline is fixed. (`!1552 <https://gitlab.com/yaook/k8s/-/merge_requests/1552>`_)
+
+
 v8.1.4 (2024-10-23)
 -------------------
 
