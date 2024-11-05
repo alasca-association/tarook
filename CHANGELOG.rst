@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v7.0.5 (2024-11-05)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- The Kubernetes apt key expired and is now up-to-date again. (`!1549 <https://gitlab.com/yaook/k8s/-/merge_requests/1549>`_)
+
+
 v7.0.4 (2024-10-23)
 -------------------
 
