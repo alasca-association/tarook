@@ -223,6 +223,26 @@ build-docs-check:
   tags:
     - docker
 
+check-key-expiry:
+  stage: lint
+  image: "nixery.dev/shell/coreutils/findutils/gnupg/gnugrep/file"
+  script:
+  - ci/lint/check-key-expiry.sh
+
+  rules:
+    - !reference [.default_lint_rules, rules]
+    # run only on MR when changes were made
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+      changes:
+      - '**/*.gpg'
+      when: on_success
+    # always run on devel branch
+    - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+      when: on_success
+    - when: never
+  tags:
+    - docker
+
 release-note-file-check:
   stage: housekeeping
   image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
