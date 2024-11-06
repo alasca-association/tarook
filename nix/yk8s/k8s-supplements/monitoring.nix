@@ -198,6 +198,14 @@ in {
       default = "cah-grafana-admin";
     };
 
+    grafana_dashboard_enable_multicluster_support = mkOption {
+      description = ''
+        Enable referencing multiple K8s clusters by a single Grafana datasource.
+      '';
+      type = types.bool;
+      default = false;
+    };
+
     nvidia_dcgm_exporter_helm_repo_url = mkOption {
       type = types.nonEmptyStr;
       default = "https://nvidia.github.io/dcgm-exporter/helm-charts";
