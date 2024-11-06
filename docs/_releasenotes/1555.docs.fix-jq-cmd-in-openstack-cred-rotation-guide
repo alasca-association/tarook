@@ -1,0 +1,2 @@
+A `jq` command was fixed in
+:doc:`the Openstack credentials rotation guide </user/guide/rotate-openstack-credentials>`.
