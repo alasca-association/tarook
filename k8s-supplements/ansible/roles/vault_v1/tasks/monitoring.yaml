@@ -38,7 +38,7 @@
   block:
     - name: Initially create a Vault periodic token for Prometheus to fetch the metrics
       vars:
-        vault_expression: vault token create -format=json -policy=sys/policies/acl/yaook/prometheus -period=504h
+        vault_expression: vault token create -format=json -policy=sys/policies/acl/yaook/prometheus -period=504h -orphan
       ansible.builtin.include_tasks: vault_command.yaml
 
     - name: Create the secret
