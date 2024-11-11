@@ -304,7 +304,8 @@ in {
 
     gitlab_state_name = mkOption {
       description = ''
-        The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'      '';
+        The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'
+      '';
       type = with types; nullOr nonEmptyStr;
       default = null;
       example = "tf-state";

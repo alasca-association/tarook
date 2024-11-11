@@ -210,9 +210,6 @@
 
               ''
               + indent (lib.strings.concatLines sectionList)
-              + ''
-
-              ''
               + lib.strings.concatLines (map (n: ''
                   :doc:`${lib.strings.removePrefix "yk8s." n} <${n}>`
                 '')
