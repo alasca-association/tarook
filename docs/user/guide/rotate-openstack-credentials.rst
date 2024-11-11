@@ -36,14 +36,19 @@ that must be taken LCM-wise after an OpenStack credential rotation.
 3. Verify that everything is able to come up after it has been restarted.
 4. Check which Pods besides the above mentioned have mounted the ``kube-system/cloud-config`` secret:
 
-   .. code:: console
+   .. code:: shell
 
-      $ kubectl get pod -A -o json | jq '.items[] | select(.spec.volumes[].secret.secretName=="cloud-config") | "\(.metadata.namespace)/\(.metadata.name)\n"'
+      kubectl get pods --all-namespaces -o json | jq --raw-output '.items[]
+          | select(.spec | has("volumes"))
+          | select(.spec.volumes[].secret.secretName=="cloud-config")
+          | "\(.metadata.namespace)/\(.metadata.name)"'
 
 5. Check which Pods are referencing the ``kube-system/cloud-config`` secret in their env:
 
-   .. code:: console
+   .. code:: shell
 
-      $ kubectl get pod -A -o json | jq '.items[] | select(.spec.containers[].env[]?.valueFrom.secretKeyRef.name=="cloud-config") | "\(.metadata.namespace)/\(.metadata.name)\n"'
+      kubectl get pods--all-namespaces -o json | jq --raw-output '.items[]
+          | select(.spec.containers[].env[]?.valueFrom.secretKeyRef.name=="cloud-config")
+          | "\(.metadata.namespace)/\(.metadata.name)\n"'
 
 6. Figure out how these Pods are controlled and (rollout) restart them.
