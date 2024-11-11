@@ -158,8 +158,8 @@ poetry-lock:
     - git config --global user.email "$GITLAB_USER_EMAIL"
     - git config --global user.name "$GITLAB_USER_NAME"
   script:
-    - bash ./ci/lint/poetry-lock.sh
-  stage: lint
+    - bash ./ci/housekeeping/poetry-lock.sh
+  stage: housekeeping
   tags:
     - docker
   rules:
