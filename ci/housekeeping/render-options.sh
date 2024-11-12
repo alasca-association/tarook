@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
+actions_dir="$(dirname "$0")/../../actions"
+
+# shellcheck source=actions/lib.sh
+. "$actions_dir/lib.sh"
+
 
 out="$(nix build --print-out-paths --no-link .#docsRST)"
 rsync -rL --delete --chmod 664 "$out/" docs/user/reference/options
