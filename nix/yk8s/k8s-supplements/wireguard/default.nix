@@ -11,7 +11,7 @@
   inherit (lib) mkOption types;
   inherit (lib.attrsets) filterAttrs;
   inherit (yk8s-lib) mkTopSection;
-  inherit (yk8s-lib.types) ipv4Addr ipv4Cidr;
+  inherit (yk8s-lib.types) ipv4Addr ipv4Cidr ipv6Cidr;
   # inherit (yk8s-lib.transform) filterNull addPrefix;
   inherit (yk8s-lib) linkToPath;
   inherit (yk8s-lib.transform) removeObsoleteOptions filterNull filterInternal;
@@ -92,7 +92,7 @@ in {
         so that they can use all of their clusters at the same time without having
         to tear down tunnels.
       '';
-      type = types.nullOr types.nonEmptyStr;
+      type = types.nullOr ipv6Cidr;
       default = null;
       example = "fd01::/120";
     };
@@ -106,7 +106,7 @@ in {
         so that they can use all of their clusters at the same time without having
         to tear down tunnels.
       '';
-      type = types.nullOr types.nonEmptyStr;
+      type = types.nullOr ipv6Cidr;
       default = null;
       example = "fd01::1/120";
     };
@@ -169,7 +169,7 @@ in {
               so that they can use all of their clusters at the same time without having
               to tear down tunnels.
             '';
-            type = types.nullOr types.nonEmptyStr;
+            type = types.nullOr ipv6Cidr;
             default = null;
             example = "fd01::/120";
           };
@@ -181,7 +181,7 @@ in {
               so that they can use all of their clusters at the same time without having
               to tear down tunnels.
             '';
-            type = types.nullOr types.nonEmptyStr;
+            type = types.nullOr ipv6Cidr;
             default = null;
             example = "fd01::1/120";
           };
