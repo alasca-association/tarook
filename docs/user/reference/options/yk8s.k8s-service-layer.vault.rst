@@ -1,0 +1,528 @@
+.. _configuration-options.yk8s.k8s-service-layer.vault:
+
+yk8s.k8s-service-layer.vault
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.backup_approle_path:
+
+``yk8s.k8s-service-layer.vault.backup_approle_path``
+####################################################
+
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "yaook/vault_v1/approle/"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.ca_issuer:
+
+``yk8s.k8s-service-layer.vault.ca_issuer``
+##########################################
+
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "selfsigned-issuer"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.ca_issuer_kind:
+
+``yk8s.k8s-service-layer.vault.ca_issuer_kind``
+###############################################
+
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "Issuer"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.chart_version:
+
+``yk8s.k8s-service-layer.vault.chart_version``
+##############################################
+
+Version of the Helm Chart to use
+
+
+**Type:**::
+
+  string
+
+
+**Default:**::
+
+  "0.23.0"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.dnsnames:
+
+``yk8s.k8s-service-layer.vault.dnsnames``
+#########################################
+
+Extra DNS names for which certificates should be prepared.
+NOTE: to work correctly, there must exist an ingress of class `nginx` and it
+must allow ssl passthrough.
+
+
+**Type:**::
+
+  list of non-empty string
+
+
+**Default:**::
+
+  [ ]
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.enable_backups:
+
+``yk8s.k8s-service-layer.vault.enable_backups``
+###############################################
+
+If `true`, then an additional backup service will be deployed which creates snapshots and stores
+them in an S3 bucket.
+
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.enabled:
+
+``yk8s.k8s-service-layer.vault.enabled``
+########################################
+
+Whether to enable HashiCorp Vault management.
+NOTE: On the first run, the unseal keys and the root token will be printed IN
+PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
+LOCATION to use the Vault instance in the future!
+.
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  false
+
+
+**Example:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.external_ingress_class:
+
+``yk8s.k8s-service-layer.vault.external_ingress_class``
+#######################################################
+
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "nginx"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.external_ingress_issuer_kind:
+
+``yk8s.k8s-service-layer.vault.external_ingress_issuer_kind``
+#############################################################
+
+Can be `Issuer` or `ClusterIssuer`, depending on the kind of issuer you would like
+to use for externally facing certificates.
+
+
+**Type:**::
+
+  string matching the pattern (Cluster)?Issuer
+
+
+**Default:**::
+
+  "ClusterIssuer"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.external_ingress_issuer_name:
+
+``yk8s.k8s-service-layer.vault.external_ingress_issuer_name``
+#############################################################
+
+If `ingress=True` and `dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use
+for your ACME service.
+
+
+**Type:**::
+
+  null or non-empty string
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.helm_repo_url:
+
+``yk8s.k8s-service-layer.vault.helm_repo_url``
+##############################################
+
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "https://helm.releases.hashicorp.com"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.ingress:
+
+``yk8s.k8s-service-layer.vault.ingress``
+########################################
+
+Whether to enable creation of a publically reachable ingress resource for the API endpoint of vault.
+.
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  false
+
+
+**Example:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.init_key_shares:
+
+``yk8s.k8s-service-layer.vault.init_key_shares``
+################################################
+
+Number of unseal key shares to generate upon vault initialization.
+NOTE: On the first run, the unseal keys and the root token will be printed IN
+PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
+LOCATION to use the Vault instance in the future!
+
+
+**Type:**::
+
+  signed integer
+
+
+**Default:**::
+
+  5
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.init_key_threshold:
+
+``yk8s.k8s-service-layer.vault.init_key_threshold``
+###################################################
+
+Threshold for the Shamir's Secret Sharing Scheme used for unsealing, i.e. the
+number of shares required to unseal the vault after a restart
+NOTE: On the first run, the unseal keys and the root token will be printed IN
+PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
+LOCATION to use the Vault instance in the future!
+
+
+**Type:**::
+
+  signed integer
+
+
+**Default:**::
+
+  2
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.management_cluster_integration:
+
+``yk8s.k8s-service-layer.vault.management_cluster_integration``
+###############################################################
+
+Whether to enable management cluster integration.
+If set to true, the Vault is configured to be exposed via yaook/operator
+infra-ironic, that is, via the integrated DNSmasq to all nodes associated.
+The default is false. This can be enabled in non-infra-ironic clusters,
+without significant damage.
+NOTE: To work in infra-ironic clusters, this requires the vault to be in the
+same namespace as the infra-ironic instance.
+NOTE: if you enable this, you MUST NOT set the service_type to ClusterIP; it
+will default to NodePort and it must be at least NodePort or LoadBalancer for
+the integration to work correctly.
+.
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  false
+
+
+**Example:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.namespace:
+
+``yk8s.k8s-service-layer.vault.namespace``
+##########################################
+
+Namespace to deploy the vault in (will be created if it does not exist, but
+ever deleted).
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "k8s-svc-vault"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.s3_config_file:
+
+``yk8s.k8s-service-layer.vault.s3_config_file``
+###############################################
+
+Credentials to access an S3 bucket to which the backups will be written. Required if `enable_backups = true`.
+You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "vault_backup_s3_config.yaml"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.scheduling_key:
+
+``yk8s.k8s-service-layer.vault.scheduling_key``
+###############################################
+
+Scheduling key for the vault instance and its resources. Has no default.
+
+
+**Type:**::
+
+  null or non-empty string
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.service_active_node_port:
+
+``yk8s.k8s-service-layer.vault.service_active_node_port``
+#########################################################
+
+Node port to use for the Service which exposes the active Vault instance
+See NOTE above regarding exposure of the Vault.
+
+
+**Type:**::
+
+  16 bit unsigned integer; between 0 and 65535 (both inclusive)
+
+
+**Default:**::
+
+  32048
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.service_type:
+
+``yk8s.k8s-service-layer.vault.service_type``
+#############################################
+
+Type of the Kubernetes Service of the Vault
+NOTE: You may set this to LoadBalancer, but note that this will still use the internal certificate.
+If you want to expose the Vault to the outside world, use the ingress config above.
+
+
+**Type:**::
+
+  string matching the pattern ClusterIP|NodeIP|LoadBalancer
+
+
+**Default:**::
+
+  "ClusterIP"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.storage_class:
+
+``yk8s.k8s-service-layer.vault.storage_class``
+##############################################
+
+Storage class for the vault file storage backend.
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "csi-sc-cinderplugin"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.vault.storage_size:
+
+``yk8s.k8s-service-layer.vault.storage_size``
+#############################################
+
+Storage size for the vault file storage backend.
+
+
+**Type:**::
+
+  string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+
+
+**Default:**::
+
+  "8Gi"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
