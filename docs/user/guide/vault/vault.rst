@@ -22,7 +22,7 @@ for additional environment variables accepted by these tools.
    exchanged) control over the Kubernetes cluster.
 
 -  ``tools/vault/import.sh``: Prepare a new cluster inside
-   Vault by importing existing secrets from ``inventory/.etc``.
+   Vault by importing existing secrets from ``etc/``.
    Conceptually, this setup is identical to the setup provided by
    ``mkcluster-root.sh``. Please see
    :ref:`Migrating an existing cluster to Vault <vault.migrating-an-existing-cluster-to-vault>`
@@ -332,7 +332,7 @@ Procedure
 
       4. Obtain a root token for the *target Vault* instance. As you have
          just freshly installed it with YAOOK/K8s, the root token will be in
-         ``inventory/.etc/vault_root_token``.
+         ``etc/vault_root_token``.
 
       5. Scale the vault down to one replica.
 
@@ -443,7 +443,7 @@ Procedure
 
             export VAULT_ADDR=https://$nodeip:32048
             export VAULT_CACERT="$(pwd)/vault-ca.crt"
-            export VAULT_TOKEN=$(cat inventory/.etc/vault_root_token)
+            export VAULT_TOKEN=$(cat etc/vault_root_token)
 
          Verify connectivity using: ``vault status``.
 
