@@ -13,7 +13,7 @@ function diff_options() {
     run git fetch origin
     run git checkout "${branch}"
     run git add ./docs/user/reference/options
-    run pre-commit run
+    run pre-commit run || true
     run git add ./docs/user/reference/options
     run git status
     CHANGES=$(git diff "${branch}" --staged --name-only -- ./docs/user/reference/options | wc -l)
