@@ -78,7 +78,7 @@ With that in mind, the Wireguard server key can be rotated by doing the followin
    and check for correct IP address and subnet).
 
 5. Notify users about the new endpoint, distribute new Wireguard public key and
-   generated config files (``inventory/.etc/wireguard/wg1/*.conf``), set a deadline for
+   generated config files (``etc/wireguard/wg1/*.conf``), set a deadline for
    switching to the new endpoint.
 
 6. Wait until deadline is reached.
@@ -86,7 +86,7 @@ With that in mind, the Wireguard server key can be rotated by doing the followin
 7. Set ``enabled = false`` on the old Wireguard endpoint and run
    :ref:`apply-prepare-gw.sh <actions-references.apply-prepare-gwsh>`. The old endpoint is now disabled.
 
-8. Remove old config files at ``inventory/.etc/wireguard/wg0/``, the old private key
+8. Remove old config files at ``etc/wireguard/wg0/``, the old private key
    (``wireguard/wg0-key`` in the vault) and the old endpoint section in your config.
 
 IPAM
@@ -98,7 +98,7 @@ The IP-address assignment is then saved in ``state/wireguard/ipam.toml``.
 Peer Config Files
 -----------------
 Wireguard configurations files for all peers are generated at
-``inventory/.etc/wireguard/wgX``. The files can be given out to the corresponsing peers
+``etc/wireguard/wgX``. The files can be given out to the corresponsing peers
 to enable them to connect to the cluster.
 
 Legacy Configuration
