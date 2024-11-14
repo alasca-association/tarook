@@ -10,7 +10,6 @@ _poetry_common() {
 
 layout_poetry() {
   _poetry_common "$1"
-  if [[ "${NIX_FLAKE_ACTIVE:-""}" == *"$poetry_dir"* ]]; then echo "Flake containing poetry env alreay active. Skipping poetry layout."; return; fi
   poetry_hash="$(sha256sum "$poetry_lock" | cut -d' ' -f1)"
   if [[ "${POETRY_ACTIVE:-""}" == "$poetry_hash" ]]; then echo "Poetry already active. Skipping..."; return; fi
   poetry_extra_args=()
@@ -66,8 +65,6 @@ use_flake_if_nix() {
       if ! has nix_direnv_version || ! nix_direnv_version 2.3.0; then
         source_url "https://raw.githubusercontent.com/nix-community/nix-direnv/2.3.0/direnvrc" "sha256-Dmd+j63L84wuzgyjITIfSxSD57Tx7v51DMxVZOsiUD8="
       fi
-      _poetry_common "${flake_dir}"
-      watch_file "${flake_dir}/nix/poetry.nix"
       if [ "${MINIMAL_ACCESS_VENV:-false}" == "true" ]; then
         use flake "${flake_dir}#minimal"
       else
