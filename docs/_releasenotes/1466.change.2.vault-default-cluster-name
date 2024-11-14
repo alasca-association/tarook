@@ -1,0 +1,1 @@
+``vault.cluster_name`` now defaults to ``infra.cluster_name``

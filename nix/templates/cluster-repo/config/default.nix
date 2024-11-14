@@ -69,7 +69,6 @@ in {
           }
         ];
       };
-      vault.cluster_name = cfg.infra.cluster_name;
     };
   ###
   ### Importing from legacy config.toml
