@@ -136,6 +136,8 @@ flake8:
 
 render-options:
   stage: housekeeping
+  needs:
+    - release-note-file-check
   image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   before_script:
     - git config --global user.email "$GITLAB_USER_EMAIL"
@@ -160,6 +162,8 @@ poetry-lock:
   script:
     - bash ./ci/housekeeping/poetry-lock.sh
   stage: housekeeping
+  needs:
+    - release-note-file-check
   tags:
     - docker
   rules:
@@ -218,7 +222,7 @@ build-docs-check:
     - docker
 
 release-note-file-check:
-  stage: lint
+  stage: housekeeping
   image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   variables:
     CONFIG_FILE: towncrier.toml
@@ -243,7 +247,7 @@ release-note-file-check:
   script:
     # we need to catch the exit-code from python as it otherwise will not be transmitted correctly
     - exit_code=0
-    - python3 ci/lint/check-releasenote-file.py "${CI_PROJECT_DIR}" "${TARGET_BRANCH}" "${CONFIG_FILE}" "${CI_MERGE_REQUEST_IID}" "${COMMIT_FILES}" "${FORK}" "${HOTFIX}" || exit_code=$?
+    - python3 ci/housekeeping/check-releasenote-file.py "${CI_PROJECT_DIR}" "${TARGET_BRANCH}" "${CONFIG_FILE}" "${CI_MERGE_REQUEST_IID}" "${COMMIT_FILES}" "${FORK}" "${HOTFIX}" || exit_code=$?
     - echo $exit_code
     - towncrier build --version x.x.x --config "${CONFIG_FILE}" --draft
     - |
