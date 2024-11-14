@@ -1,0 +1,401 @@
+.. _configuration-options.yk8s.ch-k8s-lbaas:
+
+yk8s.ch-k8s-lbaas
+^^^^^^^^^^^^^^^^^
+
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.agent_port:
+
+``yk8s.ch-k8s-lbaas.agent_port``
+################################
+
+The TCP port on which the LBaaS agent should listen on the frontend nodes.
+
+
+**Type:**::
+
+  16 bit unsigned integer; between 0 and 65535 (both inclusive)
+
+
+**Default:**::
+
+  15203
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.agent_source:
+
+``yk8s.ch-k8s-lbaas.agent_source``
+##################################
+
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.agent_urls:
+
+``yk8s.ch-k8s-lbaas.agent_urls``
+################################
+
+Customize URLs for the agents. This will typically be a list of HTTP URLs
+like http://agent_ip:15203. This option is only used if the port manager is
+set to `static`, and must be set if the port manager is `static`.
+
+
+**Type:**::
+
+  list of non-empty string
+
+
+**Default:**::
+
+  [ ]
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.agent_user:
+
+``yk8s.ch-k8s-lbaas.agent_user``
+################################
+
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "ch-k8s-lbaas-agent"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.controller_repo:
+
+``yk8s.ch-k8s-lbaas.controller_repo``
+#####################################
+
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "registry.gitlab.com/yaook/ch-k8s-lbaas/controller"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.controller_resources:
+
+``yk8s.ch-k8s-lbaas.controller_resources``
+##########################################
+
+
+
+**Type:**::
+
+  submodule
+
+
+**Default:**::
+
+  { }
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.controller_resources.limits.cpu:
+
+``yk8s.ch-k8s-lbaas.controller_resources.limits.cpu``
+#####################################################
+
+CPU limits should never be set.
+
+Thus, this option is deprecated.
+
+
+**Type:**::
+
+  null or string matching the pattern [1-9][0-9]*m?
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.controller_resources.limits.memory:
+
+``yk8s.ch-k8s-lbaas.controller_resources.limits.memory``
+########################################################
+
+Request and limit for the LBaaS controller
+
+**Type:**::
+
+  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+
+
+**Default:**::
+
+  "256Mi"
+
+
+**Example:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.controller_resources.requests.cpu:
+
+``yk8s.ch-k8s-lbaas.controller_resources.requests.cpu``
+#######################################################
+
+Request and limit for the LBaaS controller
+
+**Type:**::
+
+  null or string matching the pattern [1-9][0-9]*m?
+
+
+**Default:**::
+
+  "100m"
+
+
+**Example:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.controller_resources.requests.memory:
+
+``yk8s.ch-k8s-lbaas.controller_resources.requests.memory``
+##########################################################
+
+Memory requests should always be equal to the limits.
+
+Thus, this option is deprecated.
+
+
+**Type:**::
+
+  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+
+
+**Default:**::
+
+  "\${config.yk8s.ch-k8s-lbaas.controller_resources.limits.memory}"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.enabled:
+
+``yk8s.ch-k8s-lbaas.enabled``
+#############################
+
+Whether to enable our LBaas service.
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  false
+
+
+**Example:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.port_manager:
+
+``yk8s.ch-k8s-lbaas.port_manager``
+##################################
+
+Configure which IP address ("port") manager to use. Two options are available:
+
+* openstack: Uses OpenStack and the yaook/k8s gateway nodes to provision
+  LBaaS IP addresses ports.
+* static: Uses a fixed set of IP addresses to use for load balancing. When the
+  static port manager is used, the ``agent_urls`` and ``static_ipv4_addresses``
+  options must also be configured.
+
+
+**Type:**::
+
+  string matching the pattern openstack|static
+
+
+**Default:**::
+
+  "openstack"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.shared_secret:
+
+``yk8s.ch-k8s-lbaas.shared_secret``
+###################################
+
+A unique, random, base64-encoded secret.
+To generate such a secret, you can use the following command:
+$ dd if=/dev/urandom bs=16 count=1 status=none | base64
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Example:**::
+
+  "RuDXD7CcNZHrRAV9AAN83T7Hc6wVk9IGzPou6UjwWhL+4hu1I4XPj+YG/AgKiFIc1a1EzmQKax9VAj6P/oA45w=="
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.static_ipv4_addresses:
+
+``yk8s.ch-k8s-lbaas.static_ipv4_addresses``
+###########################################
+
+List of IPv4 addresses which are usable for the static port manager. It is
+your responsibility to ensure that the node(s) which run the agent(s) receive
+traffic for these IPv4 addresses.
+
+
+**Type:**::
+
+  list of string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])$
+
+
+**Default:**::
+
+  [ ]
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.use_bgp:
+
+``yk8s.ch-k8s-lbaas.use_bgp``
+#############################
+
+
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.use_floating_ips:
+
+``yk8s.ch-k8s-lbaas.use_floating_ips``
+######################################
+
+
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
+.. _configuration-options.yk8s.ch-k8s-lbaas.version:
+
+``yk8s.ch-k8s-lbaas.version``
+#############################
+
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "0.9.0"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
