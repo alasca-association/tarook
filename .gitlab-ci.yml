@@ -137,7 +137,8 @@ flake8:
 render-options:
   stage: housekeeping
   needs:
-    - release-note-file-check
+    - job: release-note-file-check
+      optional: true
   image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   before_script:
     - git config --global user.email "$GITLAB_USER_EMAIL"
@@ -163,7 +164,8 @@ poetry-lock:
     - bash ./ci/housekeeping/poetry-lock.sh
   stage: housekeeping
   needs:
-    - release-note-file-check
+    - job: release-note-file-check
+      optional: true
   tags:
     - docker
   rules:
