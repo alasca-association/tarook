@@ -7,16 +7,11 @@ add-hotfix-information:
     RELEASENOTE_PATH: docs/_releasenotes/hotfix
     TOWNCRIER_CONFIG: towncrier-hotfix.toml
   before_script:
-    - direnv allow
-    - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
-    - poetry install --with docs --sync
     - git fetch origin "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
     - git config --global user.name "${GITLAB_USER_NAME}"
     - git config --global user.email "${GITLAB_USER_EMAIL}"
     - git fetch origin "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
     - git checkout "${SOURCE_BRANCH}"
-    - export VIRTUAL_ENV=$(poetry env info --path 2>/dev/null)
-    - export PATH="$VIRTUAL_ENV/bin:$PATH"
   script:
     # add version number (fix-release)
     - IFS=. read -ra CURRENT_VERSION < ./version
