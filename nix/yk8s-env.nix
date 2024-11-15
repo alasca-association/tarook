@@ -26,9 +26,19 @@
             type = listOf package;
             default = [];
           };
+          pythonPackages = lib.mkOption {
+            description = ''
+              Python dependencies of the group
+            '';
+            type = functionTo (listOf package);
+            default = ps: [];
+          };
         };
       in {
         options.yk8s-env = {
+          python = lib.mkOption {
+            type = lib.types.package;
+          };
           dependencies = {
             groups = lib.mkOption {
               description = ''
@@ -83,9 +93,17 @@
                 group.packages
                 group.includes
               );
+            mergedPythonPackages = group: ps:
+              lib.unique (
+                builtins.foldl' (
+                  acc: dep: acc ++ (mergedPythonPackages (builtins.getAttr dep cfg.dependencies.groups) ps)
+                ) (group.pythonPackages ps)
+                group.includes
+              );
           in
             lib.mapAttrs (_: group: {
               packages = mergedPackages group;
+              pythonPackages = mergedPythonPackages group;
             })
             cfg.dependencies.groups;
 
@@ -95,7 +113,7 @@
                 pkgs.buildEnv
                 {
                   name = "yk8s-env-${name}";
-                  paths = group.packages;
+                  paths = (group.packages) ++ [(cfg.python.withPackages (group.pythonPackages))];
                 }
             )
             cfg.dependencies.finalGroups;
