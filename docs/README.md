@@ -8,14 +8,15 @@ See [index.rst](index.rst).
 
 ## How to render
 
-Install sphinx by executing:
+It is required that the docs package group is available in the environment, eg. by setting
 
 ```shell
-# Install dependencies via poetry
-poetry install --with docs --sync
+export YAOOK_K8S_DEVSHELL="dev"
 ```
 
-To build the documentation use:
+in `.envrc.local`.
+
+To build the documentation use, in the root directory:
 
 ```shell
 # Build documentation
