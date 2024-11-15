@@ -3,11 +3,11 @@ Minimal Access Venv
 
 For users requiring access to given cluster repositories
 but not frequently operating on these via the LCM,
-poetry will probably have to update and download a lot of Python packages.
+Nix will probably have to update and download a lot of packages.
 
-The option to just source a minimal virtual Python environment
+The option to just source a minimal environment
 is given via ``MINIMAL_ACCESS_VENV`` (:ref:`Miscellaneous <environmental-variables.miscellaneous>`).
-If enabled, the bare minimum of Python packages to be able
+If enabled, the bare minimum of packages to be able
 to establish a connection to the Kubernetes API is installed.
 
 This is in especially useful for quick incident resolutions

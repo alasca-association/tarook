@@ -4,6 +4,7 @@
   ...
 }: {
   yk8s-env = {
+    python = pkgs.python311;
     dependencies.groups = with pkgs; {
       # Will be used by direnv when MINIMAL_ACCESS_VENV=true
       minimal.packages = [
@@ -15,6 +16,10 @@
         wireguard-tools
         yq
       ];
+      minimal.pythonPackages = ps:
+        with ps; [
+          ansible-core
+        ];
 
       # Will be used by direnv by default
       default.depends = ["minimal"];
@@ -30,12 +35,44 @@
         inputs'.nixpkgs-terraform157.legacyPackages.terraform
         util-linux # for uuidgen
       ];
+      default.pythonPackages = ps:
+        assert !ps ? "kubernetes-validate"; # This will fail as soon as kubernetes-validate is inside nixpkgs; reminding us to remove our own copy of the package
+        
+        with ps; [
+          kubernetes
+          (callPackage ./pkgs/kubernetes-validate.nix {})
+          openshift
+          openstackclient
+          python-neutronclient
+          loguru
+          packaging
+          jsonschema
+          hvac
+          boto3
+        ];
+
+      docs.pythonPackages = ps:
+        with ps; [
+          sphinx
+          sphinx-rtd-theme
+          sphinx-tabs
+          furo
+          towncrier
+          sphinx-multiversion
+          myst-parser
+          sphinx-design
+          sphinx-copybutton
+        ];
 
       dev.depends = ["default" "docs"];
       dev.packages = [
         ansible-lint
         pre-commit
       ];
+      dev.pythonPackages = ps:
+        with ps; [
+          flake8
+        ];
 
       ci.depends = ["default" "dev" "docs"];
       ci.packages = [
@@ -47,6 +84,10 @@
         nix
         sonobuoy
       ];
+      ci.pythonPackages = ps:
+        with ps; [
+          GitPython
+        ];
 
       interactive.depends = ["default" "dev"];
       interactive.packages = [

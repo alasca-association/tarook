@@ -10,12 +10,7 @@ See [index.rst](index.rst).
 
 Install sphinx by executing:
 
-```shell
-# Install dependencies via poetry
-poetry install --with docs --sync
-```
-
-To build the documentation use:
+To build the documentation use, in the root directory:
 
 ```shell
 # Build documentation
