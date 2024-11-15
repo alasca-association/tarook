@@ -12,6 +12,9 @@
         cfg = config.yk8s-env;
       in {
         options.yk8s-env = {
+          python = lib.mkOption {
+            type = lib.types.package;
+          };
           dependencies = let
             dependencyGroupModule = with lib.types;
               submodule {
@@ -19,6 +22,10 @@
                   packages = lib.mkOption {
                     type = listOf package;
                     default = [];
+                  };
+                  pythonPackages = lib.mkOption {
+                    type = functionTo (listOf package);
+                    default = ps: [];
                   };
                   includes = lib.mkOption {
                     type = listOf str;
@@ -54,9 +61,16 @@
                   acc: dep: acc ++ (mergedPackages (builtins.getAttr dep cfg.dependencies.groups))
                 ) (group.packages or []) (group.includes or [])
               );
+            mergedPythonPackages = group: ps:
+              lib.unique (
+                builtins.foldl' (
+                  acc: dep: acc ++ (mergedPythonPackages (builtins.getAttr dep cfg.dependencies.groups) ps)
+                ) ((group.pythonPackages or (p: [])) ps) (group.includes or [])
+              );
           in
             lib.mapAttrs (_: group: {
               packages = mergedPackages group;
+              pythonPackages = mergedPythonPackages group;
             })
             cfg.dependencies.groups;
 
@@ -66,7 +80,7 @@
                 pkgs.buildEnv
                 {
                   name = "yk8s-env-${name}";
-                  paths = group.packages;
+                  paths = (group.packages) ++ [(cfg.python.withPackages (group.pythonPackages))];
                 }
             )
             cfg.dependencies.final;

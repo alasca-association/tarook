@@ -8,9 +8,6 @@ build_image:
     changes:
     - flake.nix
     - flake.lock
-    - pyproject.toml
-    - poetry.lock
-    - nix/poetry.nix
     - nix/dependencies.nix
     - nix/yk8s-env.nix
     - ci/build-image.yaml
@@ -20,9 +17,6 @@ build_image:
     changes:
     - flake.nix
     - flake.lock
-    - pyproject.toml
-    - poetry.lock
-    - nix/poetry.nix
     - nix/dependencies.nix
     - nix/yk8s-env.nix
     - ci/build-image.yaml

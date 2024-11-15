@@ -45,13 +45,5 @@ export TF_VAR_keypair='firstnamelastname-hostname-gendate'
 # Recommended if you're on NixOS. Not recommended on Debian et al.
 # export YAOOK_K8S_DEVSHELL="withInteractive"
 
-# There is a bug in poetry that makes it access the user's key ring
-# even if not necessary. It should only do that (1) when publishing
-# or (2) when using dependencies from private repositories.
-# This can lead to problems when the key ring is not available or
-# is password protected. Setting the following variable avoids that.
-# See https://github.com/python-poetry/poetry/issues/1917
-export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
-
 # Set locale for Ansible if not yet present
 #[[ -z ${LC_ALL} ]] && { export LC_ALL=C.UTF-8 ; }
