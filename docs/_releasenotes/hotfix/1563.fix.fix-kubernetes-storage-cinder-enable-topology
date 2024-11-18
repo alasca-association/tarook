@@ -1,1 +1,0 @@
-The ``kubernetes.storage.cinder_enable_topology`` config option is now applied when using Kubernetes v1.29 or a higher supported version.
