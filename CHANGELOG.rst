@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.1.6 (2024-11-18)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- The ``kubernetes.storage.cinder_enable_topology`` config option is now applied when using Kubernetes v1.29 or a higher supported version. (`!1563 <https://gitlab.com/yaook/k8s/-/merge_requests/1563>`_)
+
+
 v8.1.5 (2024-11-05)
 -------------------
 
