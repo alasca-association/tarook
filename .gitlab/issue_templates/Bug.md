@@ -4,6 +4,8 @@
 
 <!-- Summarize the bug encountered concisely -->
 
+Affected version(s):
+
 ## Steps to reproduce
 
 <!-- How one can reproduce the issue - this is very important -->
