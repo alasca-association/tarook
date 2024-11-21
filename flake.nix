@@ -17,6 +17,7 @@
         ./nix/renderDocs.nix
         ./nix/yk8s-env.nix
         ./nix/templates
+        ./ci/container-image
       ];
       perSystem = {
         pkgs,
@@ -29,14 +30,7 @@
         _module.args.pkgs = import nixpkgs {
           inherit system;
         };
-        packages = let
-          container-image = import ./ci/container-image {
-            inherit lib pkgs;
-            inherit (config.packages) yk8s-env-ci;
-          };
-        in {
-          ciImage = pkgs.dockerTools.buildLayeredImage container-image;
-          streamCiImage = pkgs.writeShellScriptBin "stream-ci" (pkgs.dockerTools.streamLayeredImage container-image);
+        packages = {
           init = pkgs.writeShellApplication {
             name = "init-cluster-repo";
             runtimeInputs = [config.yk8s-env.environments.default];
