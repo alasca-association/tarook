@@ -6,22 +6,12 @@ This documentation is generated using sphinx.
 
 See [index.rst](index.rst).
 
-## How to render
-
-It is required that the docs package group is available in the environment, eg. by setting
-
-```shell
-export YAOOK_K8S_DEVSHELL="dev"
-```
-
-in `.envrc.local`.
-
-To build the documentation use, in the root directory:
+Build the documentation by running the below from the repository's root.
 
 ```shell
 # Build documentation
-nix run .#renderDocs
+nix build .#docs
 
 # Open in Firefox
-firefox _build/html/index.html
+firefox result/index.html
 ```
