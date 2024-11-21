@@ -589,6 +589,14 @@ cluster_name = "rook-ceph" # •ᴗ•
 # https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#monitoring.coreos.com/v1.RemoteWriteSpec
 #[[k8s-service-layer.prometheus.remote_writes]]
 #url = "http://remote-write-receiver:9090/api/v1/write"
+# Optional:
+# Name of the secret containing .htpasswd for basic authentication of Prometheus remote write.
+# The secret must contain the following keys:
+#  username: FOO
+#  password: BAR
+# The secret must be manually created in advance.
+# By default, no secret is used.
+#basic_auth_secret_name description = ""
 #
 #[[k8s-service-layer.prometheus.remote_writes.write_relabel_configs]]
 #targetLabel = "prometheus"
