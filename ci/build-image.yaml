@@ -11,6 +11,8 @@ build_image:
     - pyproject.toml
     - poetry.lock
     - nix/poetry.nix
+    - nix/dependencies.nix
+    - nix/yk8s-env.nix
     - ci/build-image.yaml
     - ci/container-image/*
     when: always
@@ -21,6 +23,8 @@ build_image:
     - pyproject.toml
     - poetry.lock
     - nix/poetry.nix
+    - nix/dependencies.nix
+    - nix/yk8s-env.nix
     - ci/build-image.yaml
     - ci/container-image/*
     when: always
