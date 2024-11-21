@@ -16,6 +16,7 @@
       imports = [
         ./nix/renderDocs.nix
         ./nix/yk8s-env.nix
+        ./nix/templates
       ];
       perSystem = {
         pkgs,
@@ -53,18 +54,6 @@
       flake = {lib, ...}: {
         flakeModules.yk8s = import ./nix/yk8s;
         lib = import ./nix/lib.nix {inherit lib;};
-        templates.cluster-repo = {
-          description = ''
-            Template containing all the Nix parts of the cluster repo
-          '';
-          path = ./nix/templates/cluster-repo;
-        };
-        templates.migration = {
-          description = ''
-            Template to migrate from before vX.0.0
-          '';
-          path = ./nix/templates/migration;
-        };
       };
     };
 }
