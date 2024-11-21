@@ -8,14 +8,12 @@ See [index.rst](index.rst).
 
 ## How to render
 
-Install sphinx by executing:
-
 To build the documentation use, in the root directory:
 
 ```shell
 # Build documentation
-nix run .#renderDocs
+nix build .#docs
 
 # Open in Firefox
-firefox _build/html/index.html
+firefox result/index.html
 ```
