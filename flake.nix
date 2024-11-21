@@ -15,6 +15,7 @@
       debug = true;
       imports = [
         ./nix/renderDocs.nix
+        ./nix/yk8s-env.nix
       ];
       perSystem = {
         pkgs,
@@ -23,68 +24,15 @@
         inputs',
         config,
         ...
-      }: let
-        dependencies = with pkgs; let
-          yk8s-minimal = [
-            jq
-            kubectl
-            rsync
-            inputs'.nixpkgs-vault1148.legacyPackages.vault
-          ];
-        in {
-          inherit yk8s-minimal;
-          yk8s =
-            yk8s-minimal
-            ++ [
-              coreutils
-              gcc # so poetry can build netifaces
-              gnugrep
-              gnused
-              gzip
-              iproute2 # for wg-up
-              kubernetes-helm
-              moreutils
-              openssh
-              openssl
-              poetry
-              inputs'.nixpkgs-terraform157.legacyPackages.terraform
-              util-linux # for uuidgen
-              wireguard-tools
-            ];
-          ci = [
-            direnv
-            git
-            gnupg
-            gnutar
-            netcat
-            nix
-            sonobuoy
-          ];
-          interactive = [
-            bashInteractive
-            curl
-            vim
-            dnsutils
-            iputils
-            k9s
-          ];
-        };
-      in {
+      }: {
         _module.args.pkgs = import nixpkgs {
           inherit system;
         };
-        devShells.default = pkgs.mkShell {
-          buildInputs = dependencies.yk8s;
-        };
-        devShells.minimal = pkgs.mkShell {
-          buildInputs = dependencies.yk8s-minimal;
-        };
-        devShells.withInteractive = pkgs.mkShell {
-          nativeBuildInputs = dependencies.interactive;
-          buildInputs = dependencies.yk8s;
-        };
         packages = let
-          container-image = import ./ci/container-image {inherit pkgs dependencies;};
+          container-image = import ./ci/container-image {
+            inherit lib pkgs;
+            inherit (config.packages) yk8s-env-ci;
+          };
         in {
           ciImage = pkgs.dockerTools.buildLayeredImage container-image;
           streamCiImage = pkgs.writeShellScriptBin "stream-ci" (pkgs.dockerTools.streamLayeredImage container-image);
@@ -98,7 +46,7 @@
           };
           init = pkgs.writeShellApplication {
             name = "init-cluster-repo";
-            runtimeInputs = dependencies.yk8s;
+            runtimeInputs = config.packages.yk8s-env-main;
             text = ''
               if [[ -n "''${1:-""}" ]]; then
                 export MANAGED_K8S_LATEST_RELEASE=false

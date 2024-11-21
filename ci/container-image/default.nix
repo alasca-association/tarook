@@ -1,6 +1,7 @@
 {
   pkgs,
-  dependencies,
+  yk8s-env-ci,
+  ...
 }: let
   ciFiles = pkgs.stdenv.mkDerivation {
     name = "ci-files";
@@ -33,18 +34,16 @@ in {
   name = "registry.gitlab.com/yaook/k8s/ci";
   contents = pkgs.buildEnv {
     name = "image-root";
-    paths =
-      dependencies.yk8s
-      ++ dependencies.ci
-      ++ (with pkgs; [
-        bashInteractive
-        dockerTools.usrBinEnv
-        dockerTools.caCertificates
-        ciFiles
-        tmpdir
-        userSetup
-        nixConfig
-      ]);
+    paths = with pkgs; [
+      yk8s-env-ci
+      bashInteractive
+      dockerTools.usrBinEnv
+      dockerTools.caCertificates
+      ciFiles
+      tmpdir
+      userSetup
+      nixConfig
+    ];
   };
   fakeRootCommands = ''
     chmod 777 ${tmpdir}
