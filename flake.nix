@@ -36,14 +36,6 @@
         in {
           ciImage = pkgs.dockerTools.buildLayeredImage container-image;
           streamCiImage = pkgs.writeShellScriptBin "stream-ci" (pkgs.dockerTools.streamLayeredImage container-image);
-          renderDocs = pkgs.writeShellApplication {
-            name = "render-docs";
-            text = ''
-              out=$(nix build --print-out-paths --no-link .#docsRST)
-              rsync -rL --delete --chmod 664 "$out/" docs/user/reference/options
-              python3 -m sphinx docs _build/html -E
-            '';
-          };
           init = pkgs.writeShellApplication {
             name = "init-cluster-repo";
             runtimeInputs = config.packages.yk8s-env-main;
