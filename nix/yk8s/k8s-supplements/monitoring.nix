@@ -274,11 +274,11 @@ in {
         https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#upgrading-chart
       '';
       type = types.nonEmptyStr;
-      default = "59.1.0";
+      default = "66.2.2";
     };
     prometheus_adapter_version = mkOption {
       type = types.nonEmptyStr;
-      default = "4.10.0";
+      default = "4.11.0";
     };
 
     namespace = mkOption {
@@ -452,7 +452,7 @@ in {
         https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
       '';
       type = types.nonEmptyStr;
-      default = "7.0.0";
+      default = "9.1.0";
     };
     allow_external_rules = mkEnableOption ''
       external rules.
