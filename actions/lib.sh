@@ -24,9 +24,6 @@ ansible_k8s_custom_playbook_dir="$cluster_repository/k8s-custom"
 ansible_k8s_custom_playbook="$ansible_k8s_custom_playbook_dir/main.yaml"
 ansible_k8s_custom_inventory="$cluster_repository/k8s-custom/inventory"
 
-ansible_k8s_sl_vars_base="$ansible_inventory_base/04_k8s_service_layer"
-ansible_k8s_ms_vars_base="$ansible_inventory_base/05_k8s_managed_service"
-
 vault_dir="${VAULT_DIR:-$cluster_repository/state/vault}"
 
 if [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'true' ]; then

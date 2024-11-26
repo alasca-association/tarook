@@ -40,17 +40,17 @@ Credential management
 ---------------------
 
 Unseal key(s) and an initial root token are cached in the cluster
-repository (``inventory/.etc/vault_unseal.key`` and
-``inventory/.etc/vault_root_token``). It is up to you to rotate and
+repository (``etc/vault_unseal.key`` and
+``etc/vault_root_token``). It is up to you to rotate and
 store them securely. The role requires privileges to create certain
 policies and approles so for now we rely on using a root token (which is
 kind of ugly).
 
 -  The root token is either read from the file system
-   (``inventory/.etc/vault_root_token``) or from the environment
+   (``etc/vault_root_token``) or from the environment
    variable ``VAULT_TOKEN``.
 -  If vault is sealed, then the role will attempt to read the unseal
-   keys from the file system (``inventory/.etc/vault_unseal.key``). If
+   keys from the file system (``etc/vault_unseal.key``). If
    they cannot be found, ask the (human) operators to unlock vault for
    you.
 
