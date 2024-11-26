@@ -142,11 +142,7 @@ Defines the availability zones of your cloud to use for the creation of servers.
 
 **Default:**::
 
-  [
-    "AZ1"
-    "AZ2"
-    "AZ3"
-  ]
+  [ ]
 
 
 **Declared by**
@@ -254,7 +250,7 @@ Amount of gateway nodes to create. (default: 0 --> one for each availability zon
 
 **Default:**::
 
-  3
+  0
 
 
 **Declared by**
@@ -294,11 +290,6 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
   non-empty string
 
 
-**Default:**::
-
-  "XS"
-
-
 **Declared by**
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
 
@@ -313,11 +304,6 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
 **Type:**::
 
   non-empty string
-
-
-**Default:**::
-
-  "Debian 12 (bookworm)"
 
 
 **Declared by**
@@ -557,11 +543,6 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
   non-empty string
 
 
-**Default:**::
-
-  "M"
-
-
 **Declared by**
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
 
@@ -576,11 +557,6 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
 **Type:**::
 
   non-empty string
-
-
-**Default:**::
-
-  "Ubuntu 22.04 LTS x64"
 
 
 **Declared by**
@@ -856,11 +832,6 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
   non-empty string
 
 
-**Default:**::
-
-  "shared-public-IPv4"
-
-
 **Declared by**
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
 
@@ -1004,11 +975,6 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
   non-empty string
 
 
-**Default:**::
-
-  "M"
-
-
 **Declared by**
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
 
@@ -1023,11 +989,6 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
 **Type:**::
 
   non-empty string
-
-
-**Default:**::
-
-  "Ubuntu 22.04 LTS x64"
 
 
 **Declared by**
