@@ -47,7 +47,7 @@ include:
 
 tflint:
   image:
-    name: "ghcr.io/terraform-linters/tflint:v0.53.0"
+    name: "ghcr.io/terraform-linters/tflint:v0.54.0"
     entrypoint: ["/bin/sh", "-c"]
   stage: lint
   script:
