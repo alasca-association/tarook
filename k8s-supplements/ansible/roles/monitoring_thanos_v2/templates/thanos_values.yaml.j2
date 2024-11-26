@@ -28,6 +28,9 @@ storegateway:
   resources: {{ monitoring_thanos_store_resources | to_json }}
   tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
   affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json') | to_json }}
+  pdb:
+    create: false
+  replicaCount: 1
   persistence:
     enabled: {{ monitoring_thanos_storage_class is defined }}
 {% if monitoring_thanos_storegateway_size is defined %}
@@ -43,6 +46,9 @@ query:
     sidecarsNamespace: "{{ monitoring_namespace }}"
   affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json') | to_json }}
   tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json') | to_json }}
+  pdb:
+    create: false
+  replicaCount: 1
   extraFlags:
   - "--query.auto-downsampling"
   - "--query.timeout=1m"

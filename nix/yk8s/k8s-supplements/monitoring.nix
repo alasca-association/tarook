@@ -355,7 +355,7 @@ in {
         Set custom Bitnami/Thanos chart version
       '';
       type = types.str;
-      default = "15.5.0";
+      default = "15.8.2";
     };
 
     thanos_storage_class = mkOption {
