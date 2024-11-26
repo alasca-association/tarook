@@ -70,9 +70,16 @@ size for each component like in the following.
   k8s-service-layer.prometheus.thanos_storegateway_size = "XGi";
   k8s-service-layer.prometheus.thanos_compactor_size = "YGi";
 
-Options
-*******
+.. _cluster-configuration.prometheus-configuration.updating-immutable-options:
 
+Updating immutable options
+**************************
+
+Some options are immutable when deployed.
+If you want to change them nonetheless, follow these manual steps:
+1. Increase the size of the corresponding PVC
+2. Delete the stateful set: ``kubectl delete -n monitoring sts --cascade=false thanos-<storegateway|compactor>``
+3. Re-deploy it with the LCM: ``AFLAGS="--diff --tags thanos" bash managed-k8s/actions/apply-k8s-supplements.sh``
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.alertmanager_replicas:
 
@@ -1465,12 +1472,65 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 **Type:**::
 
-  list of non-empty string
+  list of (submodule)
 
 
 **Default:**::
 
   [ ]
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.url:
+
+``yk8s.k8s-service-layer.prometheus.remote_writes.*.url``
+#########################################################
+
+
+
+**Type:**::
+
+  string
+
+
+**Example:**::
+
+  "http://remote-write-receiver:9090/api/v1/write"
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs:
+
+``yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs``
+###########################################################################
+
+A list of RelabelConfigs, see
+https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#monitoring.coreos.com/v1.RelabelConfig
+
+
+**Type:**::
+
+  list of (attribute set)
+
+
+**Example:**::
+
+  [
+    {
+      replacement = "my-cluster";
+      targetLabel = "prometheus";
+    }
+    {
+      replacement = "my-cluster";
+      targetLabel = "cluster";
+    }
+  ]
 
 
 **Declared by**
@@ -1672,6 +1732,8 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 You can explicitly set the PV size for each component.
 If left undefined, the helm chart defaults will be used
+
+Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-configuration.updating-immutable-options`)
 
 
 **Type:**::
@@ -2240,6 +2302,8 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 You can explicitly set the PV size for each component.
 If left undefined, the helm chart defaults will be used
+
+Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-configuration.updating-immutable-options`)
 
 
 **Type:**::

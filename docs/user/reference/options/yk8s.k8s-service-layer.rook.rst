@@ -17,6 +17,17 @@ The used rook setup is explained in more detail
   ``kubernetes.local_storage.static.enabled`` local
   storage (or both) (see :ref:`storage configuration <configuration-options.yk8s.kubernetes.storage>`).
 
+.. _cluster-configuration.rook-configuration.updating-immutable-options:
+
+Updating immutable options
+**************************
+
+Some options are immutable when deployed.
+If you want to change them nonetheless, follow these manual steps:
+1. Increase the size of the corresponding PVC
+2. Delete the stateful set: ``kubectl delete -n monitoring sts --cascade=false <statefulset_name>``
+3. Re-deploy it with the LCM: ``AFLAGS="--diff --tags rook --tags rook_v2" bash managed-k8s/actions/apply-k8s-supplements.sh``
+
 .. _configuration-options.yk8s.k8s-service-layer.rook.ceph_fs:
 
 ``yk8s.k8s-service-layer.rook.ceph_fs``
@@ -818,6 +829,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 ``yk8s.k8s-service-layer.rook.mon_volume_size``
 ###############################################
 
+Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuration.updating-immutable-options`)
 
 
 **Type:**::
@@ -843,6 +855,8 @@ Storage class name to be used by the ceph mons. SHOULD be compliant with one
 storage class you have configured in the kubernetes.local_storage section (or
 you should know what your are doing). Note that this is not the storage class
 name that rook will provide.
+
+Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuration.updating-immutable-options`)
 
 
 **Type:**::
@@ -1411,6 +1425,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 ``yk8s.k8s-service-layer.rook.osd_storage_class``
 #################################################
 
+Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuration.updating-immutable-options`)
 
 
 **Type:**::
@@ -1433,6 +1448,8 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 ###############################################
 
 The size of the storage backing each OSD.
+
+Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuration.updating-immutable-options`)
 
 
 **Type:**::
