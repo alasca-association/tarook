@@ -196,8 +196,35 @@ in {
     };
 
     remote_writes = mkOption {
-      type = with types; listOf nonEmptyStr;
       default = [];
+      type = with types;
+        listOf (
+          submodule {
+            options = {
+              url = mkOption {
+                type = types.str;
+                example = "http://remote-write-receiver:9090/api/v1/write";
+              };
+              write_relabel_configs = mkOption {
+                description = ''
+                  A list of RelabelConfigs, see
+                  https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#monitoring.coreos.com/v1.RelabelConfig
+                '';
+                type = with types; listOf attrs;
+                example = [
+                  {
+                    targetLabel = "prometheus";
+                    replacement = "my-cluster";
+                  }
+                  {
+                    targetLabel = "cluster";
+                    replacement = "my-cluster";
+                  }
+                ];
+              };
+            };
+          }
+        );
     };
 
     grafana_admin_secret_name = mkOption {
