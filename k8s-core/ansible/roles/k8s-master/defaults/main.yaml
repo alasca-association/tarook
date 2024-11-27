@@ -1,4 +1,9 @@
 ---
+# Default labels for master nodes
+#  These labels are YAOOK/k8s-internal hence essential for the cluster's
+#  stability and or provided as a feature users can rely on.
+default_master_labels:
+- node-role.kubernetes.io/control-plane=
 terminated_pod_gc_threshold: 10
 extra_ca: false
 ...

@@ -18,7 +18,7 @@ nodeRegistration:
 {% endif %}
 {% set labels = k8s_node_labels[inventory_hostname] | default([]) %}
 {% if labels %}
-    node-labels: {{ labels | join(",") | to_json }}
+    node-labels: {{ default_master_labels + labels | join(",") | to_json }}
 {% endif %}
   name: {{ inventory_hostname }}
 {% set taints = k8s_node_taints[inventory_hostname] | default(false) %}
