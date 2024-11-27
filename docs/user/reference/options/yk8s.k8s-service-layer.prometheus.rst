@@ -284,7 +284,7 @@ https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-
 
 **Default:**::
 
-  "7.0.0"
+  "9.1.0"
 
 
 **Declared by**
@@ -1164,7 +1164,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 **Default:**::
 
-  "4.10.0"
+  "4.11.0"
 
 
 **Declared by**
@@ -1456,7 +1456,7 @@ https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-promet
 
 **Default:**::
 
-  "59.1.0"
+  "66.2.2"
 
 
 **Declared by**
@@ -1583,7 +1583,7 @@ Set custom Bitnami/Thanos chart version
 
 **Default:**::
 
-  "15.5.0"
+  "15.8.2"
 
 
 **Declared by**
