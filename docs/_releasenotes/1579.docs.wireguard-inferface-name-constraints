@@ -1,0 +1,2 @@
+The exact format of the `wg_conf_name` environment variable
+is mentioned in the :ref:`documentation <environmental-variables.vpn-configuration>`.

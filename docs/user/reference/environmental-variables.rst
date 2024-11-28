@@ -177,6 +177,8 @@ Environment Variable    Default     Description
 ``VAULT_TOKEN``         (unset)     Vault authentication token.
 ======================= =========== ================
 
+.. _environmental-variables.vpn-configuration:
+
 VPN Configuration
 -----------------
 
@@ -185,10 +187,11 @@ Environment Variable        Default                 Description
 =========================== ======================= =======================
 ``wg_conf_name``            ``"wg0"``               This variable defines the name
                                                     of the WireGuard interface to
-                                                    create. Interface name length is
-                                                    restricted to 15 bytes and should
-                                                    start with ``wg``. Examples:
-                                                    ``wg0``, ``wg-k8s-dev``.
+                                                    create. The interface name
+                                                    must match wg-quick's regex
+                                                    ``[a-zA-Z0-9_=+.-]{1,15}``
+                                                    and should start with ``wg``.
+                                                    Examples: ``wg0``, ``wg-k8s-dev``.
                                                     This variable is used by the
                                                     ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
 ``wg_endpoint``             ``0``                   The ID of the wireguard endpoint to use when connecting
