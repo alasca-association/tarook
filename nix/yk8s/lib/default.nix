@@ -74,4 +74,16 @@
     if failedAssertions != []
     then throw "\nFailed assertions:\n${concatStringsSep "\n" (map (x: "- ${x}") failedAssertions)}"
     else showWarnings warnings "";
+
+  importTOML = file: fromTOML (builtins.readFile file);
+  importYAML = file: let
+    jsonFile = pkgs.runCommandLocal "converted-yaml.json" {} ''
+      ${pkgs.yj}/bin/yj < "${file}" > "$out"
+    '';
+  in
+    builtins.fromJSON (builtins.readFile jsonFile);
+  importYAMLTree = dir: (lib.attrsets.mapAttrs' (file: _: {
+    name = lib.strings.removeSuffix ".yaml" file;
+    value = importYAML "${dir}/${file}";
+  }) (builtins.readDir dir));
 }

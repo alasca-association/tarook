@@ -1,13 +1,14 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   inputs.yk8s.url = "git+file:managed-k8s?shallow=1";
+  inputs.nixpkgs.follows = "yk8s/nixpkgs";
+  inputs.flake-parts.follows = "yk8s/flake-parts";
 
   outputs = inputs @ {
     self,
-    yk8s,
+    flake-parts,
     ...
   }:
-    yk8s.inputs.flake-parts.lib.mkFlake {inherit inputs;} {
+    flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
         inputs.yk8s.flakeModules.yk8s
       ];
@@ -20,18 +21,13 @@
         ...
       }: {
         formatter = pkgs.alejandra;
-        yk8s =
-          import ./config {
-            inherit pkgs lib config;
-            yk8s-lib = inputs.yk8s.lib;
-          }
-          // {
-            # Don't change this except you know what you're doing
-            state_directory =
-              if builtins.pathExists ./state
-              then ./state
-              else null;
-          };
+        imports = [./config];
+
+        # Don't change this except you know what you're doing
+        yk8s.state_directory =
+          if builtins.pathExists ./state
+          then ./state
+          else null;
       };
     };
 }

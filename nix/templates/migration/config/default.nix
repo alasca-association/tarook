@@ -6,8 +6,8 @@
   ...
 }: let
   cfg = config.yk8s;
-in
-  lib.mkMerge [
+in {
+  yk8s = lib.mkMerge [
     {
       terraform = lib.mkDefault {
         cluster_name = "managed-k8s";
@@ -40,6 +40,7 @@ in
       ##
       ## In order to append the converted config.toml to this file while keeping the curly
       ## braces intact, you may use this oneliner (needs sponge from moreutils):
-      ## cat <(head -n -2 default.nix) <(nix run github:cloudandheat/json2nix#toml2nix < config.toml | tail -n +2) <(echo "]") | sponge default.nix; nix run "nixpkgs#alejandra" default.nix
+      ## cat <(head -n -3 default.nix) <(nix run github:cloudandheat/json2nix#toml2nix < config.toml | tail -n +2) <(echo "];}") | sponge default.nix; nix run "nixpkgs#alejandra" default.nix
     }
-  ]
+  ];
+}

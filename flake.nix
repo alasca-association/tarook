@@ -121,7 +121,6 @@
       };
       flake = {lib, ...}: {
         flakeModules.yk8s = import ./nix/yk8s;
-        lib = import ./nix/lib.nix {inherit lib;};
         templates.cluster-repo = {
           description = ''
             Template containing all the Nix parts of the cluster repo
