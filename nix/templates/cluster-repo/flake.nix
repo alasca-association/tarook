@@ -14,25 +14,15 @@
       ];
       systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
       debug = true;
-      perSystem = {
-        pkgs,
-        lib,
-        config,
-        ...
-      }: {
+      perSystem = {pkgs, ...}: {
         formatter = pkgs.alejandra;
-        yk8s =
-          import ./config {
-            inherit pkgs lib config;
-            yk8s-lib = inputs.yk8s.lib;
-          }
-          // {
-            # Don't change this except you know what you're doing
-            state_directory =
-              if builtins.pathExists ./state
-              then ./state
-              else null;
-          };
+        imports = [./config];
+
+        # Don't change this except you know what you're doing
+        yk8s.state_directory =
+          if builtins.pathExists ./state
+          then ./state
+          else null;
       };
     };
 }

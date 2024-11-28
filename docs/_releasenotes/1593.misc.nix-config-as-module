@@ -1,0 +1,1 @@
+Clusters running on devel need to adapt their config. All options need to be moved below the new top-level attribute "yk8s". This message is not shown in the changelog as it doesn't affect released versions.
