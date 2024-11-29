@@ -122,6 +122,9 @@ evictionhard_nodefs_inodesfree = "7%"
 [kubernetes.apiserver]
 frontend_port = 8888
 
+[kubernetes.controller_manager]
+enable_signing_requests = true
+
 [kubernetes.storage]
 rook_enabled          = true
 nodeplugin_toleration = true
