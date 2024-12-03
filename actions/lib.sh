@@ -75,12 +75,10 @@ function load_conf_vars() {
     fi
     wg_usage=${wg_usage:-"$(yq '. | if has("wg_enabled") then .wg_enabled else true end' "$group_vars_dir/gateways/wireguard.yaml")"}
 
-    if [ "${wg_usage:-true}" == "true" ]; then
-        wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
-        wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
-        wg_endpoint="${wg_endpoint:-0}"
-        ansible_wg_template="$etc_directory/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}.conf"
-    fi
+    wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
+    wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
+    wg_endpoint="${wg_endpoint:-0}"
+    ansible_wg_template="$etc_directory/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}.conf"
 }
 
 function check_conf_sanity() {

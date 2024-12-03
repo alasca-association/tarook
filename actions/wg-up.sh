@@ -11,7 +11,7 @@ actions_dir="$(dirname "$0")"
 
 load_conf_vars
 
-if [ "${wg_usage:-true}" == "true" ]; then
+if [ -f "${ansible_wg_template}" ]; then
     validate_wireguard
 
     wg_subnet="$(jq -r .subnet_cidr "$terraform_state_dir/config.tfvars.json")"
@@ -35,7 +35,7 @@ if [ "${wg_usage:-true}" == "true" ]; then
     fi
 
     ipam_path="$cluster_repository/state/wireguard/ipam.toml"
-    if ! tomlq '(.wg_users[] | select(.ident=="'"${wg_user}"'")) // error("not-found")' "$ipam_path" &>/dev/null ; then
+    if [ "${tf_usage:-true}" == "true" ] && ! tomlq '(.wg_users[] | select(.ident=="'"${wg_user}"'")) // error("not-found")' "$ipam_path" &>/dev/null ; then
         warningf 'failed to find wireguard user %s in trampoline configuration' "$wg_user" >&2
     fi
 
@@ -45,6 +45,7 @@ if [ "${wg_usage:-true}" == "true" ]; then
     fi
     # Creating the conf file with a dummy key. The actual private key is going to be injected via `wg set`
     sed "s#REPLACEME#$(wg genkey | sed 's/^.\{10\}/dummy+key+/')#" "$ansible_wg_template" > "$wg_conf"
+    chmod 600 "$wg_conf"
     if ip link show "$wg_interface" 2>/dev/null >/dev/null; then
         if [ "$(id -u)" = '0' ]; then
             run ip link delete "$wg_interface" || true
