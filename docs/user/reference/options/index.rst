@@ -7,6 +7,7 @@ Configuration Options
   :hidden:
 
   yk8s.ch-k8s-lbaas
+  yk8s.infra
   yk8s.ipsec
   yk8s.k8s-service-layer.cert-manager
   yk8s.k8s-service-layer.etcd-backup
@@ -26,12 +27,15 @@ Configuration Options
   yk8s.miscellaneous
   yk8s.node-scheduling
   yk8s.nvidia
+  yk8s.openstack
   yk8s.terraform
   yk8s.testing
   yk8s.vault
   yk8s.wireguard
   
 :doc:`ch-k8s-lbaas <yk8s.ch-k8s-lbaas>`
+
+:doc:`infra <yk8s.infra>`
 
 :doc:`ipsec <yk8s.ipsec>`
 
@@ -70,6 +74,8 @@ Configuration Options
 :doc:`node-scheduling <yk8s.node-scheduling>`
 
 :doc:`nvidia <yk8s.nvidia>`
+
+:doc:`openstack <yk8s.openstack>`
 
 :doc:`terraform <yk8s.terraform>`
 

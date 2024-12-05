@@ -80,7 +80,7 @@ List of CIDRs to offer to the peer
   ''
     Set the following for a working NAT-free setup
     [
-      config.yk8s.terraform.subnet_cidr
+      config.yk8s.infra.subnet_cidr
       config.yk8s.kubernetes.network.pod_subnet
       config.yk8s.kubernetes.network.service_subnet
     ]

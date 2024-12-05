@@ -140,7 +140,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 ``yk8s.kubernetes.network.calico.mtu``
 ######################################
 
-for OpenStack at most 1450
+
 
 **Type:**::
 
@@ -149,7 +149,7 @@ for OpenStack at most 1450
 
 **Default:**::
 
-  "\${config.yk8s.terraform.network_mtu}"
+  "\${if config.yk8s.openstack.enabled then config.yk8s.openstack.network_mtu else 1500}"
 
 
 **Declared by**

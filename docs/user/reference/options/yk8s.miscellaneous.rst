@@ -418,33 +418,6 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
-.. _configuration-options.yk8s.miscellaneous.hosts_file:
-
-``yk8s.miscellaneous.hosts_file``
-#################################
-
-A custom hosts file in case terraform is disabled
-
-
-**Type:**::
-
-  null or path in the Nix store
-
-
-**Default:**::
-
-  null
-
-
-**Example:**::
-
-  "hosts_file = ./hosts;"
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
-
-
 .. _configuration-options.yk8s.miscellaneous.http_proxy:
 
 ``yk8s.miscellaneous.http_proxy``
@@ -610,29 +583,7 @@ because there might be situations where the CCM should not pick the managed netw
 
 **Example:**::
 
-  "\${config.yk8s.terraform.cluster_name}-network"
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
-
-
-.. _configuration-options.yk8s.miscellaneous.subnet_cidr:
-
-``yk8s.miscellaneous.subnet_cidr``
-##################################
-
-In case it is not set via terraform
-
-
-**Type:**::
-
-  null or string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])/([0-9]|[12][0-9]|3[0-2])$
-
-
-**Default:**::
-
-  null
+  "\${config.yk8s.infra.cluster_name}-network"
 
 
 **Declared by**
