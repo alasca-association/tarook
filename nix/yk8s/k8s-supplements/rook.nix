@@ -9,7 +9,7 @@
   inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection logIf mkGroupVarsFile mkMultiResourceOptions;
-  inherit (yk8s-lib.types) k8sSize k8sCpus;
+  inherit (yk8s-lib.types) k8sQuantity;
 in {
   imports =
     [
@@ -153,7 +153,7 @@ in {
       description = ''
         Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuration.updating-immutable-options`)
       '';
-      type = k8sSize;
+      type = k8sQuantity;
       default = "10Gi";
     };
 
@@ -292,7 +292,7 @@ in {
 
         Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuration.updating-immutable-options`)
       '';
-      type = k8sSize;
+      type = k8sQuantity;
       default = "90Gi";
     };
 

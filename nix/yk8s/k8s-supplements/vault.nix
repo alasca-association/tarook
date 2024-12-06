@@ -7,7 +7,7 @@
   cfg = config.yk8s.k8s-service-layer.vault;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.types) k8sSize k8sServiceType;
+  inherit (yk8s-lib.types) k8sQuantity k8sServiceType;
 in {
   options.yk8s.k8s-service-layer.vault = mkTopSection {
     enabled = mkEnableOption ''
@@ -115,7 +115,7 @@ in {
       description = ''
         Storage size for the vault file storage backend.
       '';
-      type = k8sSize;
+      type = k8sQuantity;
       default = "8Gi";
     };
 
