@@ -131,7 +131,7 @@ in {
       description = ''
         Version of rook to deploy
       '';
-      type = types.strMatching "v1\\.[0-9]+\\.[0-9]+";
+      type = types.strMatching "^v1\\.[0-9]+\\.[0-9]+$";
       default = "v1.15.4";
     };
 

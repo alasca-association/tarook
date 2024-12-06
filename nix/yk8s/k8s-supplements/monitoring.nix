@@ -496,7 +496,7 @@ in {
             description = ''
               module to be used. Can be "http_2xx" (default), "http_api" (allow status codes 200, 300, 401), "http_api_insecure", "icmp" or "tcp_connect".
             '';
-            type = types.strMatching "http_2xx|http_api(_insecure)?|icmp|tcp_connect";
+            type = types.strMatching "^(http_2xx|http_api(_insecure)?|icmp|tcp_connect)$";
             default = "http_2xx";
           };
         };
