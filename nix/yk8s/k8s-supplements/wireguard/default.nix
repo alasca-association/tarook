@@ -11,7 +11,15 @@
   inherit (lib) mkOption types;
   inherit (lib.attrsets) filterAttrs;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkJson;
-  inherit (yk8s-lib.types) ipv4Addr ipv4Cidr;
+  inherit
+    (yk8s-lib.types)
+    ipv4Addr
+    ipv6Addr
+    ipv4Cidr
+    ipv6Cidr
+    posixFilename
+    wireguardKey
+    ;
   inherit (yk8s-lib) linkToPath;
   inherit (yk8s-lib.transform) removeObsoleteOptions filterInternal;
   inherit (pkgs.stdenv) mkDerivation;
@@ -67,7 +75,7 @@ in {
             description = ''
               An ID unique to this endpoint
             '';
-            type = with types; either ints.unsigned nonEmptyStr;
+            type = types.ints.unsigned;
             apply = toString; # JSON/YAML/TOML only allow strings as keys
             example = 0;
           };
@@ -106,7 +114,7 @@ in {
               so that they can use all of their clusters at the same time without having
               to tear down tunnels.
             '';
-            type = types.nullOr types.nonEmptyStr;
+            type = types.nullOr ipv6Cidr;
             default = null;
             example = "fd01::/120";
           };
@@ -118,7 +126,7 @@ in {
               so that they can use all of their clusters at the same time without having
               to tear down tunnels.
             '';
-            type = types.nullOr types.nonEmptyStr;
+            type = types.nullOr ipv6Cidr;
             default = null;
             example = "fd01::1/120";
           };
@@ -136,17 +144,18 @@ in {
             description = ''
               The public key of the peer created with `wg keygen`
             '';
-            type = types.nonEmptyStr;
+            type = wireguardKey;
           };
           ident = mkOption {
             description = ''
               An identifier for the public key
             '';
-            type = types.nonEmptyStr;
+            # NOTE: ident is used as part of a filename
+            type = posixFilename;
             example = "name.lastname";
           };
           ip = mkOption {
-            type = with types; nullOr (either ipv4Cidr ipv4Addr);
+            type = with types; nullOr ipv4Addr;
             default = null;
           };
           ips = mkOption {
@@ -154,11 +163,11 @@ in {
             default = {};
           };
           ipv6 = mkOption {
-            type = types.nullOr types.nonEmptyStr;
+            type = with types; nullOr ipv6Addr;
             default = null;
           };
           ipsv6 = mkOption {
-            type = types.attrsOf types.nonEmptyStr;
+            type = with types; attrsOf (either ipv6Cidr ipv6Addr);
             default = {};
           };
         };

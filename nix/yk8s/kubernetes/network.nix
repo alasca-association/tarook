@@ -9,7 +9,12 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkSubSection;
-  inherit (yk8s-lib.types) ipv4Cidr;
+  inherit
+    (yk8s-lib.types)
+    ipv4Cidr
+    ipv6Cidr
+    privateUseAutonomousSystemNumber
+    ;
 in {
   imports = [
     (mkRemovedOptionModule "kubernetes" "network.plugin_switch_restart_all_namespaces" "")
@@ -39,7 +44,7 @@ in {
         automatically to each node.
       '';
       default = "fdff:2::/56";
-      type = types.nonEmptyStr;
+      type = ipv6Cidr;
     };
     service_subnet_v6 = mkOption {
       description = ''
@@ -52,7 +57,7 @@ in {
 
       '';
       default = "fdff:3::/108";
-      type = types.nonEmptyStr;
+      type = ipv6Cidr;
     };
 
     bgp_announce_service_ips = mkEnableOption ''
@@ -61,20 +66,26 @@ in {
     '';
 
     bgp_worker_as = mkOption {
-      type = types.ints.positive;
+      type = privateUseAutonomousSystemNumber;
       default = 64512;
     };
 
     bgp_gateway_as = mkOption {
-      type = types.int;
+      type = privateUseAutonomousSystemNumber;
       default = 65000;
     };
 
     ipv4_nat_outgoing = mkOption {
+      description = ''
+        Enable outgoing IPv4 network address translation
+      '';
       type = types.bool;
       default = true;
     };
     ipv6_nat_outgoing = mkOption {
+      description = ''
+        Enable outgoing IPv6 network address translation
+      '';
       type = types.bool;
       default = false;
     };

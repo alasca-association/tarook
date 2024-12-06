@@ -9,6 +9,11 @@
   inherit (modules-lib) mkRenamedOptionModule;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkSubSection;
+  inherit
+    (yk8s-lib.types)
+    k8sDurationStr
+    k8sThreshold
+    ;
 in {
   imports = [
     (mkRenamedOptionModule "kubernetes" "kubelet.pod_limit" "kubelet.pod_limit_worker")
@@ -43,7 +48,7 @@ in {
         as more Pods can be packed into a single node.
         Therefore it's especially helpful for nodes which have much resources.
       '';
-      type = types.int;
+      type = types.ints.unsigned;
       default = 110;
     };
     evictionsoft_memory_period = mkOption {
@@ -51,6 +56,7 @@ in {
         Config for soft eviction values.
         Note: To change this value you have to release the Kraken
       '';
+      type = k8sDurationStr;
       default = "1m30s";
     };
     evictionhard_nodefs_available = mkOption {
@@ -58,6 +64,7 @@ in {
         Config for hard eviction values.
         Note: To change this value you have to release the Kraken
       '';
+      type = k8sThreshold;
       default = "10%";
     };
     evictionhard_nodefs_inodesfree = mkOption {
@@ -65,6 +72,7 @@ in {
         Config for hard eviction values.
         Note: To change this value you have to release the Kraken
       '';
+      type = k8sThreshold;
       default = "5%";
     };
   };

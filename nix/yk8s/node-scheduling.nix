@@ -9,6 +9,11 @@
   inherit (lib) mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
   nodeNames = map (n: "${config.yk8s.infra.cluster_name}-${n}") (builtins.attrNames config.yk8s.openstack.nodes);
+  inherit
+    (yk8s-lib.types)
+    k8sLabelStr
+    k8sTaintStr
+    ;
 in {
   options.yk8s.node-scheduling = mkTopSection {
     _docs.preface = ''
@@ -43,7 +48,7 @@ in {
       description = ''
         Labels are assigned to a node during LCM rollout only!
       '';
-      type = with types; attrsOf (listOf nonEmptyStr);
+      type = with types; attrsOf (listOf k8sLabelStr);
       default = {};
       example = lib.options.literalExpression ''
         {
@@ -77,7 +82,7 @@ in {
       description = ''
         Taints are assigned to a node during LCM rollout only!
       '';
-      type = with types; attrsOf (listOf nonEmptyStr);
+      type = with types; attrsOf (listOf k8sTaintStr);
       default = {};
       example = lib.options.literalExpression ''
         {

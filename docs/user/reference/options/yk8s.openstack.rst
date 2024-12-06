@@ -134,7 +134,8 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.cinder_enable_topology``
 #########################################
 
-Whether to enable the topology feature gate of the cinder controller plugin.
+Whether to enable cinder topology.
+This flag enables the topology feature gate of the cinder controller plugin.
 Its purpose is to allocate volumes from cinder which are in the same AZ as
 the worker node to which the volume should be attached.
 Important: Cinder must support AZs and the AZs must match the AZs used by nova!
@@ -221,7 +222,7 @@ A list of IPv4 addresses which will be configured as DNS nameservers of the IPv4
 
 **Type:**::
 
-  list of non-empty string
+  list of IPv4 address in four-octets decimal notation
 
 
 **Default:**::
@@ -363,17 +364,17 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 #########################################################
 
 Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
-If left empty, the default of the IaaS environment will be used.
+If null, the default of the IaaS environment will be used.
 
 
 **Type:**::
 
-  string
+  null or non-empty string
 
 
 **Default:**::
 
-  ""
+  null
 
 
 **Declared by**
@@ -384,6 +385,8 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 
 ``yk8s.openstack.keypair``
 ##########################
+
+Name of the SSH public key in your cloud environment
 
 Will most of the time be set via the environment variable TF_VAR_keypair
 
@@ -462,17 +465,17 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ########################################################
 
 Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
-If left empty, the default of the IaaS environment will be used.
+If null, the default of the IaaS environment will be used.
 
 
 **Type:**::
 
-  string
+  null or non-empty string
 
 
 **Default:**::
 
-  ""
+  null
 
 
 **Declared by**
@@ -651,7 +654,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 
 **Type:**::
 
-  string matching the pattern master|worker
+  one of "master", "worker"
 
 
 **Declared by**
@@ -705,6 +708,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.public_network``
 #################################
 
+Name of the Openstack provider network to use
 
 
 **Type:**::
@@ -742,6 +746,11 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.thanos_delete_container``
 ##########################################
 
+Enable deletion of the Thanos object storage container
+in case
+:ref:`configuration-options.yk8s.k8s-service-layer.prometheus.use_thanos`
+AND :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.manage_thanos_bucket`
+are switched off
 
 
 **Type:**::
@@ -840,17 +849,17 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ########################################################
 
 Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
-If left empty, the default of the IaaS environment will be used.
+If null, the default of the IaaS environment will be used.
 
 
 **Type:**::
 
-  string
+  null or non-empty string
 
 
 **Default:**::
 
-  ""
+  null
 
 
 **Declared by**

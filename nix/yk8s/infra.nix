@@ -11,7 +11,14 @@
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath;
-  inherit (yk8s-lib.types) ipv4Cidr ipv4Addr;
+  inherit
+    (yk8s-lib.types)
+    ipv4Addr
+    ipv6Addr
+    ipv4Cidr
+    ipv6Cidr
+    k8sClusterName
+    ;
 in {
   options.yk8s.infra = mkTopSection {
     _docs.preface = ''
@@ -20,7 +27,8 @@ in {
     '';
 
     cluster_name = mkOption {
-      type = types.nonEmptyStr;
+      # NOTE: empty or spaced strings must never by accepted here
+      type = k8sClusterName;
     };
 
     ipv4_enabled = mkOption {
@@ -45,7 +53,7 @@ in {
     };
 
     subnet_v6_cidr = mkOption {
-      type = types.nonEmptyStr;
+      type = ipv6Cidr;
       default = "fd00::/120";
     };
 
@@ -61,7 +69,7 @@ in {
     };
 
     networking_fixed_ip_v6 = mkOption {
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr ipv6Addr;
       default = null;
       apply = v:
         if v == null && cfg.ipv6_enabled && config.yk8s.openstack.enabled == false

@@ -11,6 +11,15 @@
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath;
+  inherit
+    (yk8s-lib.types)
+    httpHostPathUrl
+    httpsHostPathUrl
+    ipv4Addr
+    ipv4Cidr
+    ipv6Addr
+    subdomainName
+    ;
 in {
   imports = [
     (mkRemovedOptionModule "miscellaneous" "ingress_whitelisting" "")
@@ -58,7 +67,7 @@ in {
         Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr httpHostPathUrl;
       default = null;
       example = "http://proxy.example.com:8889";
     };
@@ -69,7 +78,7 @@ in {
         Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr httpsHostPathUrl;
       default = null;
       example = "https://proxy.example.com:8889";
     };
@@ -80,7 +89,7 @@ in {
         Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
-      type = with types; nullOr (listOf nonEmptyStr);
+      type = with types; nullOr (listOf (oneOf [ipv4Addr ipv4Cidr subdomainName]));
       default = [];
       example = ["localhost" "127.0.0.0/8"];
     };
@@ -103,7 +112,7 @@ in {
       description = ''
         A list of NTP pools.
       '';
-      type = with types; listOf nonEmptyStr;
+      type = with types; listOf (oneOf [ipv4Addr ipv6Addr subdomainName]);
       default = [];
       example = ["0.pool.ntp.example.org" "1.pool.ntp.example.org"];
     };
@@ -111,7 +120,7 @@ in {
       description = ''
         A list of NTP servers.
       '';
-      type = with types; listOf nonEmptyStr;
+      type = with types; listOf (oneOf [ipv4Addr ipv6Addr subdomainName]);
       default = [];
       example = ["0.server.ntp.example.org" "1.server.ntp.example.org"];
     };
@@ -122,7 +131,7 @@ in {
         As a secondary effect, https repositories are not used, since
         those don't work with caching proxies like apt-cacher-ng.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr httpHostPathUrl;
       default = null;
     };
   };

@@ -21,6 +21,10 @@
         inherit (modules-lib) mkRemovedSectionModule;
         inherit (lib) types mkOption;
         inherit (yk8s-lib) mkInternalOption linkToPath baseSystemAssertWarn;
+        inherit
+          (yk8s-lib.types)
+          relativePosixPath
+          ;
         cfg = config.yk8s;
       in {
         config._module.args = {
@@ -63,14 +67,14 @@
             description = ''
               Base path to the Ansible inventory. Files will get written here.
             '';
-            type = types.nonEmptyStr;
+            type = relativePosixPath;
             default = "inventory/yaook-k8s";
           };
           _state_base_path = mkOption {
             description = ''
               Base path to the state directory. Files will get written here.
             '';
-            type = types.nonEmptyStr;
+            type = relativePosixPath;
             default = "state";
           };
           _inventory_packages = mkInternalOption {

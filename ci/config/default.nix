@@ -157,8 +157,8 @@ in {
       peers = [
         {
           pub_key = "MQL6dL0DSOnXTLrScCseY7Fs8S5Hb4yHc6SZ+/ucNx0=";
-          ip = "172.30.153.14/32";
-          ipv6 = "fd01::14/128";
+          ip = "172.30.153.14";
+          ipv6 = "fd01::14";
           ident = "gitlab-ci-runner";
         }
       ];
@@ -347,7 +347,7 @@ in {
         "185.128.117.230"
       ];
       remote_name = "185.128.117.230";
-      remote_private_addrs = "172.20.150.154";
+      remote_private_addrs = ["172.20.150.154"];
     };
     miscellaneous = {
       custom_chrony_configuration = true;

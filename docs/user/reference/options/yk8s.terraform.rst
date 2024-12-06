@@ -117,12 +117,12 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
 ``yk8s.terraform.gitlab_base_url``
 ##################################
 
-The base URL of your GitLab project.
+The base HTTP(s) URL of your GitLab instance.
 
 
 **Type:**::
 
-  null or non-empty string
+  null or RFC3986 HTTP(S) URL (scheme, authority and path only)
 
 
 **Default:**::
@@ -149,7 +149,7 @@ The unique ID of your GitLab project.
 
 **Type:**::
 
-  null or non-empty string
+  null or signed integer or RFC3986 URL path segment (pchar)
 
 
 **Default:**::
@@ -171,7 +171,7 @@ The name of the Gitlab state object in which to store the Terraform state, e.g. 
 
 **Type:**::
 
-  null or non-empty string
+  null or RFC3986 URL path segment (pchar)
 
 
 **Default:**::
@@ -193,11 +193,11 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
 ``yk8s.terraform.timeout_time``
 ###############################
 
-
+Timeout duration for Terraform operations
 
 **Type:**::
 
-  non-empty string
+  Terraform duration string
 
 
 **Default:**::

@@ -15,7 +15,7 @@ Directory where the volumes will be placed on the worker node
 
 **Type:**::
 
-  non-empty string
+  Absolute POSIX path (without special '.' and '..')
 
 
 **Default:**::
@@ -65,7 +65,7 @@ Namespace to deploy the components in
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -114,7 +114,7 @@ names if both are enabled!
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -136,7 +136,7 @@ Version of the local path controller to deploy
 
 **Type:**::
 
-  string
+  OCI image tag
 
 
 **Default:**::

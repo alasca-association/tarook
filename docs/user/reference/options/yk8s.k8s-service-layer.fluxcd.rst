@@ -44,7 +44,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
 
 **Type:**::
 
-  non-empty string
+  RFC3986 HTTP(S) URL
 
 
 **Default:**::
@@ -90,7 +90,7 @@ never deleted).
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -113,7 +113,7 @@ default.
 
 **Type:**::
 
-  null or non-empty string
+  null or Kubernetes label
 
 
 **Default:**::
@@ -135,7 +135,7 @@ Helm chart version of FluxCD to be deployed.
 
 **Type:**::
 
-  non-empty string
+  OCI image tag
 
 
 **Default:**::

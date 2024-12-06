@@ -36,7 +36,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 
 **Type:**::
 
-  non-empty string
+  RFC3986 HTTP(S) URL (scheme, authority and path only)
 
 
 **Default:**::
@@ -60,7 +60,7 @@ set to ``static`` and is ignored otherwise.
 
 **Type:**::
 
-  list of non-empty string
+  list of RFC3986 HTTP URL (scheme and authority only)
 
 
 **Default:**::
@@ -81,7 +81,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 
 **Type:**::
 
-  non-empty string
+  POSIX user name
 
 
 **Default:**::
@@ -102,7 +102,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 
 **Type:**::
 
-  non-empty string
+  Kubernetes container image reference
 
 
 **Default:**::
@@ -147,7 +147,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -168,7 +168,7 @@ Request and limit for the LBaaS controller
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -194,7 +194,7 @@ Request and limit for the LBaaS controller
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -223,7 +223,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -304,12 +304,12 @@ $ dd if=/dev/urandom bs=16 count=1 status=none | base64
 
 **Type:**::
 
-  non-empty string
+  Base64 encoded string
 
 
 **Example:**::
 
-  "RuDXD7CcNZHrRAV9AAN83T7Hc6wVk9IGzPou6UjwWhL+4hu1I4XPj+YG/AgKiFIc1a1EzmQKax9VAj6P/oA45w=="
+  "Example+NZHrRAV9AAN83T7Hc6wVk9IGzPou6UjwWhL+4hu1I4XPj+YG/AgKiFIc1a1EzmQKax9VAj6P/oA45w=="
 
 
 **Declared by**
@@ -328,7 +328,7 @@ traffic for these IPv4 addresses.
 
 **Type:**::
 
-  list of string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])$
+  list of IPv4 address in four-octets decimal notation
 
 
 **Default:**::
@@ -366,7 +366,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 ``yk8s.ch-k8s-lbaas.use_floating_ips``
 ######################################
 
-
+Enable the use of floating IPs
 
 **Type:**::
 
@@ -391,7 +391,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 
 **Type:**::
 
-  non-empty string
+  OCI image tag
 
 
 **Default:**::

@@ -87,7 +87,7 @@ Name of the s3 bucket to store the backups.
 
 **Type:**::
 
-  non-empty string
+  S3 bucket name
 
 
 **Default:**::
@@ -109,7 +109,7 @@ etcdbackup chart version to install.
 
 **Type:**::
 
-  non-empty string
+  Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::
@@ -132,7 +132,7 @@ are also implemented by Ceph's RGW.
 
 **Type:**::
 
-  signed integer
+  unsigned integer, meaning >=0
 
 
 **Default:**::
@@ -180,7 +180,7 @@ Name of the folder to keep the backup files.
 
 **Type:**::
 
-  string
+  POSIX path segment (without special '.' and '..')
 
 
 **Default:**::
@@ -201,7 +201,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.n
 
 **Type:**::
 
-  non-empty string
+  RFC3986 HTTP(S) URL
 
 
 **Default:**::
@@ -246,7 +246,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.n
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -267,7 +267,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.n
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -310,7 +310,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.n
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -334,7 +334,7 @@ recommended.
 
 **Type:**::
 
-  non-empty string
+  Name of a Hashicorp Vault namespace
 
 
 **Default:**::
@@ -360,7 +360,7 @@ containing the corresponding S3 credentials.
 
 **Type:**::
 
-  non-empty string
+  RFC3986 relative URL path
 
 
 **Default:**::

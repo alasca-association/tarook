@@ -135,4 +135,17 @@
       name = "${prefix}${name}";
       inherit value;
     });
+
+  /*
+  Return whether a regular expression is matched by a given string
+
+  Arguments:
+  - regex: The regular expression
+  - str: A string
+
+  Example:
+    matchesRegex "foo.*" "foobar" -> true
+    matchesRegex "[0-9]+" "foobar" -> false
+  */
+  matchesRegex = regex: str: (builtins.match regex str) != null;
 }

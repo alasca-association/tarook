@@ -38,7 +38,7 @@ Memory resources limit for the apiserver
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -99,7 +99,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
 
 **Type:**::
 
-  signed integer
+  32 bit unsigned integer; between 0 and 4294967295 (both inclusive)
 
 
 **Default:**::
@@ -203,7 +203,7 @@ Kubernetes version
 
 **Type:**::
 
-  string matching the pattern ^1.(30|31|32).[0-9]+$
+  Kubernetes version (one of: 1.30.x, 1.31.x, 1.32.x)
 
 
 **Default:**::

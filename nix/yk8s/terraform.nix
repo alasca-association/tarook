@@ -12,7 +12,13 @@
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath mkJson;
-  inherit (yk8s-lib.types) ipv4Cidr;
+  inherit
+    (yk8s-lib.types)
+    gitlabProjectId
+    gitlabTerraformStateName
+    httpxHostPathUrl
+    terraformDurationStr
+    ;
   inherit (yk8s-lib.transform) filterNull removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
   tfvars_file_path = "terraform/config.tfvars.json";
@@ -124,7 +130,8 @@ in {
     '';
 
     timeout_time = mkOption {
-      type = types.nonEmptyStr;
+      description = "Timeout duration for Terraform operations";
+      type = terraformDurationStr;
       default = "30m";
     };
 
@@ -137,9 +144,9 @@ in {
 
     gitlab_base_url = mkOption {
       description = ''
-        The base URL of your GitLab project.
+        The base HTTP(s) URL of your GitLab instance.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr httpxHostPathUrl;
       default = null;
       example = "https://gitlab.com";
     };
@@ -148,7 +155,7 @@ in {
       description = ''
         The unique ID of your GitLab project.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr gitlabProjectId;
       default = null;
       apply = v:
         if
@@ -164,7 +171,7 @@ in {
       description = ''
         The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr gitlabTerraformStateName;
       default = null;
       example = "tf-state";
     };

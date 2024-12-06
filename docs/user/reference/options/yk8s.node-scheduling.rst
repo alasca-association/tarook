@@ -23,7 +23,7 @@ Labels are assigned to a node during LCM rollout only!
 
 **Type:**::
 
-  attribute set of list of non-empty string
+  attribute set of list of Kubernetes label string
 
 
 **Default:**::
@@ -97,7 +97,7 @@ Taints are assigned to a node during LCM rollout only!
 
 **Type:**::
 
-  attribute set of list of non-empty string
+  attribute set of list of Kubernetes taint string
 
 
 **Default:**::

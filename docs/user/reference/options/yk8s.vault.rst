@@ -18,7 +18,7 @@ reasonably changed after a cluster has been spawned.
 
 **Type:**::
 
-  non-empty string
+  Segment of a Hashicorp Vault namespace with up to 32 characters
 
 
 **Default:**::
@@ -39,7 +39,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/vault.nix
 
 **Type:**::
 
-  string
+  Name of a Hashicorp Vault namespace
 
 
 **Default:**::
@@ -60,7 +60,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/vault.nix
 
 **Type:**::
 
-  string
+  Name of a Hashicorp Vault namespace
 
 
 **Default:**::
@@ -81,7 +81,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/vault.nix
 
 **Type:**::
 
-  string
+  Name of a Hashicorp Vault namespace
 
 
 **Default:**::

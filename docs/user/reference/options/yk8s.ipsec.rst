@@ -12,7 +12,7 @@ More details about the IPsec setup can be found
 ``yk8s.ipsec.enabled``
 ######################
 
-Whether to enable .
+Whether to enable IPsec.
 
 **Type:**::
 
@@ -43,7 +43,7 @@ A list of parent SA proposals to offer to the client.
 
 **Type:**::
 
-  list of non-empty string
+  list of IPsec proposal string
 
 
 **Default:**::
@@ -65,7 +65,7 @@ List of CIDRs to offer to the peer
 
 **Type:**::
 
-  list of non-empty string
+  list of (IPv4 address in four-octets decimal notation plus subnet in CIDR notation or IPv6 address in colon-hexadecimal notation plus subnet in CIDR notation)
 
 
 **Default:**::
@@ -102,7 +102,7 @@ assignments will be routed.
 
 **Type:**::
 
-  list of non-empty string
+  list of (IPv4 address in four-octets decimal notation plus subnet in CIDR notation or IPv6 address in colon-hexadecimal notation plus subnet in CIDR notation)
 
 
 **Default:**::
@@ -124,7 +124,7 @@ A list of parent SA proposals to offer to the client.
 
 **Type:**::
 
-  list of non-empty string
+  list of IPsec proposal string
 
 
 **Declared by**
@@ -136,7 +136,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 ``yk8s.ipsec.purge_installation``
 #################################
 
-Whether to enable purging the ipsec installation.
+Whether to enable purging the IPsec installation.
 
 **Type:**::
 
@@ -168,7 +168,7 @@ address is used.
 
 **Type:**::
 
-  list of non-empty string
+  list of (IPv4 address in four-octets decimal notation or IPv6 address in colon-hexadecimal notation)
 
 
 **Default:**::
@@ -212,7 +212,7 @@ only used when :ref:`configuration-options.yk8s.ipsec.test_enabled` is ``true``
 
 **Type:**::
 
-  null or (list of non-empty string)
+  null or (list of (IPv4 address in four-octets decimal notation or IPv6 address in colon-hexadecimal notation))
 
 
 **Default:**::
@@ -263,7 +263,7 @@ to clients which do not have remote networks. (e.g.: "10.3.0.0/24")
 
 **Type:**::
 
-  null or non-empty string
+  null or (list of (IPv4 address in four-octets decimal notation plus subnet in CIDR notation or IPv6 address in colon-hexadecimal notation plus subnet in CIDR notation))
 
 
 **Default:**::

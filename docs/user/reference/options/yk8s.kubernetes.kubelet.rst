@@ -23,7 +23,7 @@ Note: To change this value you have to release the Kraken
 
 **Type:**::
 
-  unspecified value
+  Kubernetes threshold
 
 
 **Default:**::
@@ -46,7 +46,7 @@ Note: To change this value you have to release the Kraken
 
 **Type:**::
 
-  unspecified value
+  Kubernetes threshold
 
 
 **Default:**::
@@ -69,7 +69,7 @@ Note: To change this value you have to release the Kraken
 
 **Type:**::
 
-  unspecified value
+  Kubernetes duration string
 
 
 **Default:**::
@@ -119,7 +119,7 @@ Therefore it's especially helpful for nodes which have much resources.
 
 **Type:**::
 
-  signed integer
+  unsigned integer, meaning >=0
 
 
 **Default:**::

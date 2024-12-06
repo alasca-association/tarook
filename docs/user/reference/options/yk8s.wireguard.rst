@@ -90,7 +90,7 @@ An ID unique to this endpoint
 
 **Type:**::
 
-  unsigned integer, meaning >=0, or non-empty string
+  unsigned integer, meaning >=0
 
 
 **Example:**::
@@ -116,7 +116,7 @@ to tear down tunnels.
 
 **Type:**::
 
-  string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])/([0-9]|[12][0-9]|3[0-2])$
+  IPv4 address in four-octets decimal notation plus subnet in CIDR notation
 
 
 **Declared by**
@@ -137,7 +137,7 @@ to tear down tunnels.
 
 **Type:**::
 
-  string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])/([0-9]|[12][0-9]|3[0-2])$
+  IPv4 address in four-octets decimal notation plus subnet in CIDR notation
 
 
 **Declared by**
@@ -158,7 +158,7 @@ to tear down tunnels.
 
 **Type:**::
 
-  null or non-empty string
+  null or IPv6 address in colon-hexadecimal notation plus subnet in CIDR notation
 
 
 **Default:**::
@@ -189,7 +189,7 @@ to tear down tunnels.
 
 **Type:**::
 
-  null or non-empty string
+  null or IPv6 address in colon-hexadecimal notation plus subnet in CIDR notation
 
 
 **Default:**::
@@ -260,7 +260,7 @@ An identifier for the public key
 
 **Type:**::
 
-  non-empty string
+  POSIX file name
 
 
 **Example:**::
@@ -281,7 +281,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 **Type:**::
 
-  null or string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])/([0-9]|[12][0-9]|3[0-2])$ or string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])$
+  null or IPv4 address in four-octets decimal notation
 
 
 **Default:**::
@@ -302,7 +302,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 **Type:**::
 
-  attribute set of (string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])/([0-9]|[12][0-9]|3[0-2])$ or string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])$)
+  attribute set of (IPv4 address in four-octets decimal notation plus subnet in CIDR notation or IPv4 address in four-octets decimal notation)
 
 
 **Default:**::
@@ -323,7 +323,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 **Type:**::
 
-  attribute set of non-empty string
+  attribute set of (IPv6 address in colon-hexadecimal notation plus subnet in CIDR notation or IPv6 address in colon-hexadecimal notation)
 
 
 **Default:**::
@@ -344,7 +344,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 **Type:**::
 
-  null or non-empty string
+  null or IPv6 address in colon-hexadecimal notation
 
 
 **Default:**::
@@ -366,7 +366,7 @@ The public key of the peer created with `wg keygen`
 
 **Type:**::
 
-  non-empty string
+  Wireguard key
 
 
 **Declared by**

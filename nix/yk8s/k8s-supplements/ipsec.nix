@@ -9,6 +9,14 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit
+    (yk8s-lib.types)
+    ipv4Addr
+    ipv4Cidr
+    ipv6Addr
+    ipv6Cidr
+    ipsecProposalStr
+    ;
 in {
   imports = [
     (mkRemovedOptionModule "ipsec" "eap_psk" "")
@@ -20,9 +28,10 @@ in {
       :doc:`here </user/explanation/vpn/ipsec>`.
     '';
 
-    enabled = mkEnableOption "";
-    purge_installation = mkEnableOption "purging the ipsec installation";
+    enabled = mkEnableOption "IPsec";
+    purge_installation = mkEnableOption "purging the IPsec installation";
     remote_name = mkOption {
+      # TODO: type as per https://docs.strongswan.org/docs/latest/swanctl/swanctlConf.html#_connections_conn_local field 'id'
       type = types.nonEmptyStr;
       default = "peerid";
     };
@@ -34,13 +43,13 @@ in {
       description = ''
         A list of parent SA proposals to offer to the client.
       '';
-      type = with types; listOf nonEmptyStr;
+      type = with types; listOf ipsecProposalStr;
     };
     esp_proposals = mkOption {
       description = ''
         A list of parent SA proposals to offer to the client.
       '';
-      type = with types; listOf nonEmptyStr;
+      type = with types; listOf ipsecProposalStr;
       default = cfg.proposals;
       defaultText = "\${cfg.proposals}";
     };
@@ -49,7 +58,7 @@ in {
         List of CIDRs to route to the peer. If not set, only dynamic IP
         assignments will be routed.
       '';
-      type = with types; listOf nonEmptyStr;
+      type = with types; listOf (either ipv4Cidr ipv6Cidr);
       default = [];
     };
 
@@ -57,7 +66,7 @@ in {
       description = ''
         List of CIDRs to offer to the peer
       '';
-      type = with types; listOf nonEmptyStr;
+      type = with types; listOf (either ipv4Cidr ipv6Cidr);
       default = [config.yk8s.infra.subnet_cidr];
       example = ''
         Set the following for a working NAT-free setup
@@ -73,7 +82,7 @@ in {
         Pool to source virtual IP addresses from. Those are the IP addresses assigned
         to clients which do not have remote networks. (e.g.: "10.3.0.0/24")
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr (listOf (either ipv4Cidr ipv6Cidr));
       default = null;
     };
     remote_addrs = mkOption {
@@ -81,7 +90,7 @@ in {
         List of addresses to accept as remote. When initiating, the first single IP
         address is used.
       '';
-      type = with types; listOf nonEmptyStr;
+      type = with types; listOf (either ipv4Addr ipv6Addr);
       default = [];
     };
     remote_private_addrs = mkOption {
@@ -89,7 +98,7 @@ in {
         Private address of remote endpoints.
         only used when :ref:`configuration-options.yk8s.ipsec.test_enabled` is ``true``
       '';
-      type = with types; nullOr (listOf nonEmptyStr);
+      type = with types; nullOr (listOf (either ipv4Addr ipv6Addr));
       default = null;
     };
   };

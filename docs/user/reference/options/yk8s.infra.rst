@@ -16,7 +16,7 @@ cluster types, Terraform and bare-metal based.
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain label (lowercase)
 
 
 **Declared by**
@@ -103,7 +103,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 
 **Type:**::
 
-  null or string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])$
+  null or IPv4 address in four-octets decimal notation
 
 
 **Default:**::
@@ -124,7 +124,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 
 **Type:**::
 
-  null or non-empty string
+  null or IPv6 address in colon-hexadecimal notation
 
 
 **Default:**::
@@ -145,7 +145,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 
 **Type:**::
 
-  string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])/([0-9]|[12][0-9]|3[0-2])$
+  IPv4 address in four-octets decimal notation plus subnet in CIDR notation
 
 
 **Default:**::
@@ -166,7 +166,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 
 **Type:**::
 
-  non-empty string
+  IPv6 address in colon-hexadecimal notation plus subnet in CIDR notation
 
 
 **Default:**::

@@ -80,8 +80,8 @@ in {
     };
 
     deprecated_nodeport_lb_test_port = mkOption {
-      type = types.port;
-      default = 0; # TODO or null?
+      type = with types; nullOr port;
+      default = null;
     };
 
     vrrp_priorities = mkOption {
@@ -103,7 +103,7 @@ in {
       description = ''
         Port for HAProxy statistics
       '';
-      type = types.int;
+      type = types.port;
       default = 48981;
     };
     haproxy_frontend_k8s_api_maxconn = mkOption {

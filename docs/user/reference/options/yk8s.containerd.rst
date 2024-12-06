@@ -66,7 +66,7 @@ Optionally specify a port.
 
 **Type:**::
 
-  list of non-empty string
+  list of RFC3986 HTTPS URL (scheme, authority and path only)
 
 
 **Example:**::
@@ -94,7 +94,7 @@ Set to null if the mirrors should be used as default.
 
 **Type:**::
 
-  null or non-empty string
+  null or RFC1123 subdomain name
 
 
 **Example:**::

@@ -7,6 +7,13 @@
   cfg = config.yk8s.kubernetes.local_storage.dynamic;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkSubSection;
+  inherit
+    (yk8s-lib.types)
+    absolutePosixPath
+    k8sNamespaceName
+    k8sStorageClassName
+    ociImageTag
+    ;
 in {
   options.yk8s.kubernetes.local_storage.dynamic = mkSubSection {
     _docs.order = 7;
@@ -22,7 +29,7 @@ in {
         NOTE: the static and dynamic provisioner must have distinct storage class
         names if both are enabled!
       '';
-      type = types.nonEmptyStr;
+      type = k8sStorageClassName;
       default = "local-storage";
       apply = with config.yk8s.kubernetes.local_storage;
         v:
@@ -39,22 +46,22 @@ in {
       description = ''
         Namespace to deploy the components in
       '';
-      type = types.nonEmptyStr;
+      type = k8sNamespaceName;
       default = "kube-system";
     };
     data_directory = mkOption {
       description = ''
         Directory where the volumes will be placed on the worker node
       '';
-      type = types.nonEmptyStr;
+      type = absolutePosixPath;
       default = "/mnt/dynamic-data";
     };
     version = mkOption {
       description = ''
         Version of the local path controller to deploy
       '';
-      type = types.str;
-      default = "v0.0.20"; # TODO either ensure leading "v" or add it?
+      type = ociImageTag;
+      default = "v0.0.20";
     };
 
     nodeplugin_toleration = mkOption {

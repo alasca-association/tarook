@@ -9,7 +9,11 @@
   inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModuleWithNewSection;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.types) k8sQuantity;
+  inherit
+    (yk8s-lib.types)
+    k8sQuantity
+    k8sVersion
+    ;
 in {
   imports = [
     ./monitoring.nix
@@ -33,8 +37,11 @@ in {
       description = ''
         Kubernetes version
       '';
-      # v1.30 v1.31 v1.32
-      type = types.strMatching "^1\.(30|31|32)\.[0-9]+$";
+      type = k8sVersion [
+        [1 30]
+        [1 31]
+        [1 32]
+      ];
       default = "1.32.5";
     };
     is_gpu_cluster = mkOption {
@@ -75,7 +82,7 @@ in {
     };
     controller_manager = {
       large_cluster_size_threshold = mkOption {
-        type = types.int;
+        type = types.ints.u32; # as per https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/#options
         default = 50;
       };
       enable_signing_requests = mkEnableOption ''

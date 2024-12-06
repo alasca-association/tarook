@@ -15,7 +15,7 @@ Should point to a object store or otherwise web server, where the vGPU Manager i
 
 **Type:**::
 
-  non-empty string
+  RFC3986 HTTP(S) URL or RFC3986 (S)FTP URL
 
 
 **Declared by**
@@ -32,7 +32,7 @@ Should hold the name of the vGPU Manager installation file.
 
 **Type:**::
 
-  non-empty string
+  POSIX file name
 
 
 **Declared by**

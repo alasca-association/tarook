@@ -9,7 +9,13 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkOption types;
   inherit (yk8s-lib) mkSubSection;
-  inherit (yk8s-lib.types) ipv4Addr;
+  inherit
+    (yk8s-lib.types)
+    helmChartVersion
+    ipv4Addr
+    relativePosixPath
+    subdomainName
+    ;
 in {
   imports = [
     (mkRemovedOptionModule "kubernetes" "network.calico.use_tigera_operator" "")
@@ -36,7 +42,7 @@ in {
     };
 
     mtu = mkOption {
-      type = types.int;
+      type = types.ints.positive;
       default =
         if config.yk8s.openstack.enabled
         then config.yk8s.openstack.network_mtu
@@ -75,6 +81,7 @@ in {
       description = ''
         An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
       '';
+      # as per https://docs.tigera.io/calico/latest/reference/resources/node#bgp#:~:text=routeReflectorClusterID
       type = ipv4Addr;
       default = "244.0.0.1";
     };
@@ -83,7 +90,7 @@ in {
         Specify the registry endpoint
         Changing this value can be useful if one endpoint hosts outdated images or you're subject to rate limiting
       '';
-      type = types.nonEmptyStr;
+      type = subdomainName;
       default = "quay.io";
     };
     values_file_path = mkOption {
@@ -91,7 +98,7 @@ in {
         For the operator-based installation,
         it is possible to link to self-maintained values file for the helm chart
       '';
-      type = types.nullOr types.nonEmptyStr;
+      type = types.nullOr relativePosixPath;
       default = null;
       example = "path-to-a-custom/values.yaml";
     };
@@ -107,7 +114,7 @@ in {
         If not specified here, a predefined Calico version will be matched against
         the above specified Kubernetes version.
       '';
-      type = types.nullOr types.nonEmptyStr;
+      type = types.nullOr helmChartVersion;
       default = null;
       example = "3.25.1";
     };

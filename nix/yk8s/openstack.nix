@@ -12,16 +12,26 @@
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath;
-  inherit (yk8s-lib.types) ipv4Cidr;
+  inherit
+    (yk8s-lib.types)
+    ipv4Addr
+    openstackAvailabilityZoneName
+    openstackFlavorName
+    openstackImageName
+    openstackKeypairName
+    openstackNetworkName
+    openstackServerGroupName
+    openstackVolumeTypeName
+    ;
   inherit (yk8s-lib.transform) removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
   tfvars_file_path = "terraform/config.tfvars.json";
   commonNodeDefaultOptions = {
     image = mkOption {
-      type = types.nonEmptyStr;
+      type = openstackImageName;
     };
     flavor = mkOption {
-      type = types.nonEmptyStr;
+      type = openstackFlavorName;
     };
     root_disk_size = mkOption {
       description = ''
@@ -32,10 +42,10 @@
     root_disk_volume_type = mkOption {
       description = ''
         Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
-        If left empty, the default of the IaaS environment will be used.
+        If null, the default of the IaaS environment will be used.
       '';
-      type = types.str;
-      default = "";
+      type = types.nullOr openstackVolumeTypeName;
+      default = null;
     };
   };
   # NOTE: Some options are not used by Ansible but other parts of the LCM,
@@ -143,24 +153,36 @@ in {
     };
 
     public_network = mkOption {
-      type = types.nonEmptyStr;
+      description = ''
+        Name of the Openstack provider network to use
+      '';
+      type = openstackNetworkName;
     };
 
     keypair = mkOption {
       description = ''
+        Name of the SSH public key in your cloud environment
+
         Will most of the time be set via the environment variable TF_VAR_keypair
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr openstackKeypairName;
       default = null;
     };
 
     azs = mkOption {
       description = "Defines the availability zones of your cloud to use for the creation of servers.";
       default = [];
-      type = with types; listOf nonEmptyStr;
+      type = with types; listOf openstackAvailabilityZoneName;
     };
 
     thanos_delete_container = mkOption {
+      description = ''
+        Enable deletion of the Thanos object storage container
+        in case
+        :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.use_thanos`
+        AND :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.manage_thanos_bucket`
+        are switched off
+      '';
       type = types.bool;
       default = false;
     };
@@ -185,7 +207,7 @@ in {
     };
 
     dns_nameservers_v4 = mkOption {
-      type = with types; listOf nonEmptyStr;
+      type = with types; listOf ipv4Addr;
       default = [];
       description = "A list of IPv4 addresses which will be configured as DNS nameservers of the IPv4 subnet.";
     };
@@ -232,7 +254,7 @@ in {
         description = ''
           Leaving this empty means to not join any anti affinity group
         '';
-        type = with types; nullOr nonEmptyStr;
+        type = with types; nullOr openstackServerGroupName;
         default = null;
       };
     };
@@ -246,18 +268,21 @@ in {
       type = types.attrsOf (types.submodule {
         options = {
           role = mkOption {
-            type = types.strMatching "master|worker";
+            type = types.enum [
+              "master"
+              "worker"
+            ];
           };
           image = mkOption {
-            type = with types; nullOr nonEmptyStr;
+            type = with types; nullOr openstackImageName;
             default = null;
           };
           flavor = mkOption {
-            type = with types; nullOr nonEmptyStr;
+            type = with types; nullOr openstackFlavorName;
             default = null;
           };
           az = mkOption {
-            type = with types; nullOr nonEmptyStr;
+            type = with types; nullOr openstackAvailabilityZoneName;
             default = null;
           };
           root_disk_size = mkOption {
@@ -265,7 +290,7 @@ in {
             default = null;
           };
           root_disk_volume_type = mkOption {
-            type = with types; nullOr nonEmptyStr;
+            type = with types; nullOr openstackVolumeTypeName;
             default = null;
           };
           anti_affinity_group = mkOption {
@@ -273,7 +298,7 @@ in {
               Must not be set when role!="worker".
               If left empty no anti affinity group will be joined.
             '';
-            type = with types; nullOr nonEmptyStr;
+            type = with types; nullOr openstackServerGroupName;
             default = null;
           };
         };
@@ -290,13 +315,14 @@ in {
         Note: This network name isn't fetched automagically (by terraform) on purpose
         because there might be situations where the CCM should not pick the managed network.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr openstackNetworkName;
       default = null;
       example = lib.options.literalExpression "\"\${config.yk8s.infra.cluster_name}-network\"";
     };
 
     cinder_enable_topology = mkEnableOption ''
-      the topology feature gate of the cinder controller plugin.
+      cinder topology.
+      This flag enables the topology feature gate of the cinder controller plugin.
       Its purpose is to allocate volumes from cinder which are in the same AZ as
       the worker node to which the volume should be attached.
       Important: Cinder must support AZs and the AZs must match the AZs used by nova!
@@ -308,7 +334,7 @@ in {
         If unset, no volume type is explicitly set and the default volume type
         of the IaaS-layer is used.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr openstackVolumeTypeName;
       default = null;
     };
 

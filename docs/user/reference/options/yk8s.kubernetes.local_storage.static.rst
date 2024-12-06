@@ -14,7 +14,7 @@ yk8s.kubernetes.local_storage.static
 
 **Type:**::
 
-  non-empty string
+  Absolute POSIX path (without special '.' and '..')
 
 
 **Default:**::
@@ -35,7 +35,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-sto
 
 **Type:**::
 
-  non-empty string
+  Absolute POSIX path (without special '.' and '..')
 
 
 **Default:**::
@@ -86,7 +86,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-sto
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -132,7 +132,7 @@ names if both are enabled!
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -154,7 +154,7 @@ See https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/rele
 
 **Type:**::
 
-  non-empty string
+  OCI image tag
 
 
 **Default:**::

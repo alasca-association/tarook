@@ -9,7 +9,17 @@
   inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection logIf mkGroupVarsFile mkMultiResourceOptions;
-  inherit (yk8s-lib.types) k8sQuantity;
+  inherit
+    (yk8s-lib.types)
+    helmChartReleaseName
+    helmChartVersion
+    k8sLabel
+    k8sNamespaceName
+    k8sObjectName
+    k8sQuantity
+    k8sStorageClassName
+    ociImageTag
+    ;
 in {
   imports =
     [
@@ -93,12 +103,12 @@ in {
     };
 
     helm_release_name_operator = mkOption {
-      type = types.nonEmptyStr;
+      type = helmChartReleaseName;
       default = "rook-ceph";
     };
 
     helm_release_name_cluster = mkOption {
-      type = types.nonEmptyStr;
+      type = helmChartReleaseName;
       default = "rook-ceph-cluster";
     };
 
@@ -108,12 +118,12 @@ in {
         Namespace to deploy the rook in (will be created if it does not exist, but
         never deleted).
       '';
-      type = types.nonEmptyStr;
+      type = k8sNamespaceName;
       default = "rook-ceph";
     };
 
     cluster_name = mkOption {
-      type = types.nonEmptyStr;
+      type = k8sObjectName;
       default = "rook-ceph";
     };
 
@@ -125,7 +135,7 @@ in {
         arbitrary Ceph version, but should stick to the
         rook-ceph-compatibility-matrix.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr ociImageTag;
       default = null;
     };
 
@@ -133,7 +143,7 @@ in {
       description = ''
         Version of rook to deploy
       '';
-      type = types.strMatching "^v1\\.[0-9]+\\.[0-9]+$";
+      type = helmChartVersion;
       # renovate: datasource=helm depName=rook-ceph registryUrl=https://charts.rook.io/release
       default = "v1.16.6";
     };
@@ -169,7 +179,7 @@ in {
 
         Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuration.updating-immutable-options`)
       '';
-      type = types.nonEmptyStr;
+      type = k8sStorageClassName;
       default = config.yk8s.kubernetes.local_storage.dynamic.storageclass_name;
       defaultText = "\${kubernetes.local_storage.dynamic.storageclass_name}";
     };
@@ -208,7 +218,7 @@ in {
         If no scheduling key is defined for a service, it will run on any untainted
         node.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr k8sLabel;
       default = null;
       example = lib.options.literalExpression "\"\${scheduling_key_prefix}/storage\"";
     };
@@ -219,7 +229,7 @@ in {
         NOTE: Rook does not merge scheduling rules set in 'all' and the ones in 'mon' and 'mgr',
         but will use the most specific one for scheduling.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr k8sLabel;
       default = null;
       example = lib.options.literalExpression "\"\${scheduling_key_prefix}/rook-mon\"";
     };
@@ -231,7 +241,7 @@ in {
         but will use the most specific one for scheduling.
       '';
       # TODO: but we could do the merging here if we wanted to
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr k8sLabel;
       default = null;
       example = lib.options.literalExpression "\"\${scheduling_key_prefix}/rook-mgr\"";
     };
@@ -251,7 +261,7 @@ in {
         Default is 3 and is the minimum to ensure high-availability!
         The number of mons has to be uneven.
       '';
-      type = types.int;
+      type = types.ints.positive;
       default = 3;
       apply = v: let
         isEven = num: (num - 2 * (num / 2)) == 0;
@@ -282,7 +292,7 @@ in {
     };
 
     osd_storage_class = mkOption {
-      type = types.nonEmptyStr;
+      type = k8sStorageClassName;
       description = ''
         Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuration.updating-immutable-options`)
       '';
@@ -311,7 +321,7 @@ in {
     ceph_fs = mkEnableOption "the CephFS shared filesystem";
 
     ceph_fs_name = mkOption {
-      type = types.nonEmptyStr;
+      type = k8sObjectName;
       default = "ceph-fs";
     };
 
@@ -328,7 +338,7 @@ in {
       type = types.listOf (types.submodule {
         options = {
           name = mkOption {
-            type = types.nonEmptyStr;
+            type = k8sObjectName;
             example = "data";
           };
           create_storage_class = mkOption {
@@ -402,7 +412,7 @@ in {
       type = types.listOf (types.submodule {
         options = {
           name = mkOption {
-            type = types.nonEmptyStr;
+            type = k8sObjectName;
           };
           config = mkOption {
             type = types.attrs;

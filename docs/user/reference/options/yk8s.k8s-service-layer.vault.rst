@@ -14,12 +14,12 @@ yk8s.k8s-service-layer.vault
 
 **Type:**::
 
-  non-empty string
+  Name of a Hashicorp Vault namespace
 
 
 **Default:**::
 
-  "yaook/vault_v1/approle/"
+  "yaook/vault_v1/approle"
 
 
 **Declared by**
@@ -35,7 +35,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -56,7 +56,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 **Type:**::
 
-  non-empty string
+  one of "Issuer", "ClusterIssuer"
 
 
 **Default:**::
@@ -78,7 +78,7 @@ Version of the Helm Chart to use
 
 **Type:**::
 
-  non-empty string
+  Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::
@@ -102,7 +102,7 @@ must allow ssl passthrough.
 
 **Type:**::
 
-  list of non-empty string
+  list of RFC1123 subdomain name
 
 
 **Default:**::
@@ -176,7 +176,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -222,7 +222,7 @@ for your ACME service.
 
 **Type:**::
 
-  null or non-empty string
+  null or RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -243,7 +243,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 **Type:**::
 
-  non-empty string
+  RFC3986 HTTP(S) URL
 
 
 **Default:**::
@@ -380,7 +380,7 @@ ever deleted).
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -403,7 +403,7 @@ You can find a template in `managed-k8s/templates/vault_backup_s3_config.templat
 
 **Type:**::
 
-  non-empty string
+  POSIX file name
 
 
 **Default:**::
@@ -425,7 +425,7 @@ Scheduling key for the vault instance and its resources. Has no default.
 
 **Type:**::
 
-  null or non-empty string
+  null or Kubernetes label
 
 
 **Default:**::
@@ -494,7 +494,7 @@ Storage class for the vault file storage backend.
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -516,7 +516,7 @@ Storage size for the vault file storage backend.
 
 **Type:**::
 
-  string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  Kubernetes quantity
 
 
 **Default:**::

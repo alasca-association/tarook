@@ -9,7 +9,13 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-
+  inherit
+    (yk8s-lib.types)
+    helmChartRepoUrl
+    k8sLabel
+    k8sNamespaceName
+    ociImageTag
+    ;
 in {
   imports = [
     (mkRemovedOptionModule "k8s-service-layer.fluxcd" "legacy" "Support for the legacy FluxCD installation has been dropped.\nYou must switch to an older release and migrate if you have not yet.")
@@ -32,14 +38,14 @@ in {
       default = true;
     };
     helm_repo_url = mkOption {
-      type = types.nonEmptyStr;
+      type = helmChartRepoUrl;
       default = "https://fluxcd-community.github.io/helm-charts";
     };
     version = mkOption {
       description = ''
         Helm chart version of FluxCD to be deployed.
       '';
-      type = types.nonEmptyStr;
+      type = ociImageTag;
       # renovate: datasource=helm depName=flux2 registryUrl=https://fluxcd-community.github.io/helm-charts
       default = "2.9.2";
     };
@@ -48,7 +54,7 @@ in {
         Namespace to deploy the flux-system in (will be created if it does not exist, but
         never deleted).
       '';
-      type = types.nonEmptyStr;
+      type = k8sNamespaceName;
       default = "k8s-svc-flux-system";
     };
     scheduling_key = mkOption {
@@ -56,7 +62,7 @@ in {
         Scheduling key for the flux instance and its resources. Has no
         default.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr k8sLabel;
       default = null;
     };
   };

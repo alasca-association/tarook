@@ -22,7 +22,7 @@ soon :)
 
 **Type:**::
 
-  non-empty string
+  RFC3986 relative URL path
 
 
 **Default:**::
@@ -43,7 +43,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.
 
 **Type:**::
 
-  non-empty string
+  Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::
@@ -90,7 +90,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.
 
 **Type:**::
 
-  non-empty string
+  RFC3986 HTTP(S) URL
 
 
 **Default:**::
@@ -139,7 +139,7 @@ ACME/Let's Encrypt issuer.
 
 **Type:**::
 
-  null or non-empty string
+  null or RFC5322 email address
 
 
 **Default:**::
@@ -211,7 +211,7 @@ See https://letsencrypt.org/docs/staging-environment/
 
 **Type:**::
 
-  non-empty string
+  RFC3986 HTTP(S) URL (scheme, authority and path only)
 
 
 **Default:**::
@@ -239,7 +239,7 @@ created automatically, but never deleted automatically.
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -260,7 +260,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.
 
 **Type:**::
 
-  non-empty string
+  Helm chart release name
 
 
 **Default:**::
@@ -283,7 +283,7 @@ default.
 
 **Type:**::
 
-  null or non-empty string
+  null or Kubernetes label
 
 
 **Default:**::
