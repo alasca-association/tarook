@@ -127,11 +127,11 @@ resource "openstack_networking_floatingip_v2" "gateway" {
   pool        = var.public_network
 }
 
-resource "openstack_compute_floatingip_associate_v2" "gateway" {
+resource "openstack_networking_floatingip_associate_v2" "gateway" {
   for_each = openstack_compute_instance_v2.gateway
 
   floating_ip = openstack_networking_floatingip_v2.gateway[each.key].address
-  instance_id = each.value.id
+  port_id = openstack_networking_port_v2.gateway[each.key].id
 
   depends_on = [
     openstack_networking_router_interface_v2.cluster_router_iface[0]
