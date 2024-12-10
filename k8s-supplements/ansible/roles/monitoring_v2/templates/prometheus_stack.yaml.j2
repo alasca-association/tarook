@@ -324,6 +324,16 @@ prometheus-node-exporter:
           targetLabel: nodename
           replacement: $1
           action: replace
+        - sourceLabels: [__meta_kubernetes_node_labelpresent_node_role_kubernetes_io_control_plane]
+          targetLabel: role
+          regex: "^true$"
+          replacement: control-plane
+        - sourceLabels: [__meta_kubernetes_node_labelpresent_node_role_kubernetes_io_worker]
+          targetLabel: role
+          regex: "^true$"
+          replacement: worker
+      attachMetadata:
+        node: true
 
 ##
 prometheusOperator:
