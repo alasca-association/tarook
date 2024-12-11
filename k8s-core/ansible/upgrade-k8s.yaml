@@ -146,8 +146,8 @@
       delegate_to: "{{ groups['orchestrator'] | first }}"
       when: not (k8s_skip_upgrade_checks | bool)
     - role: kubeadm-drain-node
-    - role: update-system
     - role: kubeadm-upgrade-kubeadm
+    - role: update-system
     - role: kubeadm-upgrade-node
     - role: kubeadm-upgrade-kubelet
   # The nvidia-device-plugin marks a GPU as unhealthy
