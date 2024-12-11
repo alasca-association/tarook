@@ -58,8 +58,16 @@ Monitoring
 ----------
 
 Vault offers metrics and the role deploys a corresponding service
-monitor including required means of authentication and authorization. No
-alerting rules have been defined yet but one probably wants to keep an
+monitor including required means of authentication and authorization.
+
+The Prometheus-Vault integration leverages a long-lived periodic token to
+access the Vault metrics endpoint. This token is automatically generated
+and managed by a Kubernetes CronJob and Pod. The CronJob is scheduled to
+run every Thursday at 1:00 PM, creating a new Pod to renew the token.
+This automated process eliminates the need for manual renewal and reduces
+the risk of misconfiguration.
+
+No alerting rules have been defined yet but one probably wants to keep an
 eye on vault’s performance, response error rate and seal status.
 
 API endpoints and certificates

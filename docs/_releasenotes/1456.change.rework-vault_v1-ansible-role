@@ -1,0 +1,14 @@
+The Prometheus integration with Vault has been updated to use a long-lived periodic token.
+
+To activate this change, the Vault policy must be updated.
+
+Follow these steps:
+- Retrieve the root token from the Vault instance running within Kubernetes.
+- Write the root token to the file etc/vault_root_token in the cluster repository.
+- Execute the following command to complete the process:
+
+.. code::
+
+    ./managed-k8s/actions/apply-k8s-supplements.sh install-vault.yaml
+
+_
