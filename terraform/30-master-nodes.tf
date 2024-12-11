@@ -44,7 +44,7 @@ data "openstack_compute_flavor_v2" "master" {
 data "openstack_images_image_v2" "master" {
   for_each = local.master_nodes
   name     = each.value.image
-
+  most_recent = true
 }
 
 resource "openstack_blockstorage_volume_v3" "master-volume" {
