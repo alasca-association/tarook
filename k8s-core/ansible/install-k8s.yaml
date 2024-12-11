@@ -80,6 +80,7 @@
   - vars/etc.yaml
   - vars/retries.yaml
   - vars/vault-config.yaml
+  - vars/node-labels.yaml
   serial:
   - 1
   - "100%"
@@ -96,6 +97,7 @@
   - vars/etc.yaml
   - vars/retries.yaml
   - vars/vault-config.yaml
+  - vars/node-labels.yaml
   roles:
   - role: k8s-worker
     tags: k8s-worker

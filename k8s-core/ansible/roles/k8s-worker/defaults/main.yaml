@@ -1,7 +1,0 @@
----
-# Default labels for worker nodes
-#  These labels are YAOOK/k8s-internal hence essential for the cluster's
-#  stability and or provided as a feature users can rely on.
-default_worker_labels:
-- node-role.kubernetes.io/worker=
-...

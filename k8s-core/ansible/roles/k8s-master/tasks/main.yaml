@@ -374,26 +374,30 @@
 - name: Provide CA certificates as ConfigMap
   include_tasks: provide-ca-as-cm.yaml
 
-- name: "Set K8s node label {{ item }}"
-  loop: "{{ node_labels }}"
+# See docs ref:cluster.node-labeling
+- name: "Ensure K8s node labels"
   delegate_to: "{{ groups['orchestrator'] | first }}"
   vars:
+    # Dict of configured + managed node labels to apply after join
+    # managed labels take precedence
     node_labels: >
       {{
         (
-          (k8s_node_labels[inventory_hostname] | default([]))
-          + default_master_labels
+          dict(
+              k8s_node_labels[inventory_hostname] | default([])
+              | map('split', '=', 1)
+          )
+          | combine(_managed_node_labels['masters'])
         )
       }}
   when:
   - node_labels | length > 0
-  command:
-    argv:
-    - kubectl
-    - label
-    - node
-    - "{{ inventory_hostname }}"
-    - --overwrite
-    - "{{ item }}"
-  changed_when: false
+  kubernetes.core.k8s:
+    state: patched
+    api_version: v1
+    kind: Node
+    name: "{{ inventory_hostname }}"
+    definition:
+      metadata:
+        labels: "{{ node_labels }}"
 ...

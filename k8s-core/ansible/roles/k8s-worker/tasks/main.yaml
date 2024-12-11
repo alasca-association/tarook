@@ -108,29 +108,33 @@
       mode: 0644
       content: "{{ content | to_json }}"
 
-- name: "Set K8s worker label {{ item }}"
-  loop: "{{ node_labels }}"
+# See docs ref:cluster.node-labeling
+- name: "Ensure managed K8s node labels"
   delegate_to: "{{ groups['orchestrator'] | first }}"
   vars:
+    # Dict of configured + gpu related + managed node labels to apply after join
+    # managed labels take precedence
     node_labels: >
       {{
         (
-          (k8s_node_labels[inventory_hostname] | default([]))
-          + (
-            (k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool)
-            | ternary(["k8s.yaook.cloud/gpu-node=true"], [])
+          dict(
+              k8s_node_labels[inventory_hostname] | default([])
+              | map('split', '=', 1)
           )
-          + default_worker_labels
+          | combine(
+            (k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool)
+            | ternary({"k8s.yaook.cloud/gpu-node": "true"}, {})
+          )
+          | combine(_managed_node_labels['workers'])
         )
       }}
   when: node_labels | length > 0
-  command:
-    argv:
-    - kubectl
-    - label
-    - node
-    - "{{ inventory_hostname }}"
-    - --overwrite
-    - "{{ item }}"
-  changed_when: false
+  kubernetes.core.k8s:
+    state: patched
+    api_version: v1
+    kind: Node
+    name: "{{ inventory_hostname }}"
+    definition:
+      metadata:
+        labels: "{{ node_labels }}"
 ...
