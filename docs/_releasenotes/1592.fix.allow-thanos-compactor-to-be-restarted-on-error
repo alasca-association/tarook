@@ -1,0 +1,3 @@
+Thanos compactor is now restarted on failure.
+Previously it just stopped operation but never exited
+(see `issue #724 <https://gitlab.com/yaook/k8s/-/issues/724>`_).
