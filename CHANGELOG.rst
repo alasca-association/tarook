@@ -19,6 +19,17 @@ earlier changes.
 
 .. towncrier release notes start
 
+v6.0.8 (2024-12-11)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- The Kubernetes upgrade procedure has been fixed and adjusted such that it more strictly follows the `official documentation <https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/>`_.
+
+  This fixes a regression which prevented control plane components to properly update to the next Kubernetes version. (`!1583 <https://gitlab.com/yaook/k8s/-/merge_requests/1583>`_)
+
+
 v6.0.7 (2024-10-23)
 -------------------
 
