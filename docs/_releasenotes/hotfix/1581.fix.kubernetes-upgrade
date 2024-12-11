@@ -1,3 +1,0 @@
-The Kubernetes upgrade procedure has been fixed and adjusted such that it more strictly follows the `official documentation <https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/>`_.
-
-This fixes a regression which prevented control plane components to properly update to the next Kubernetes version.
