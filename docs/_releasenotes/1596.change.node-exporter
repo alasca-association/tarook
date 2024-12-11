@@ -1,0 +1,3 @@
+The Prometheus node exporter metrics now additionally contain a ``role`` label which reflects the Kubernetes role of the node.
+Based upon if a node is labeled with ``node-role.kubernetes.io/worker`` or ``node-role.kubernetes.io/control-plane``,
+the value is either ``worker`` or ``control-plane``.
