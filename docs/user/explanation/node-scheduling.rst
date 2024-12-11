@@ -29,6 +29,13 @@ See also:
 Assigning labels and taints
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+   Some node labels are managed by YAOOK/k8s.
+   Expect your changes to such labels to be overwritten.
+   Please refer to
+   :ref:`the respective documentation <cluster.node-labeling>` for details.
+
 Labels and taints of a node are parsed, processed and passed
 to its `kubeadm InitConfiguration <https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta3/#kubeadm-k8s-io-v1beta3-InitConfiguration>`__
 if it is the first control-plane node which initializes the cluster

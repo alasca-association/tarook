@@ -107,4 +107,18 @@
       group: root
       mode: 0644
       content: "{{ content | to_json }}"
+
+- name: "Set default k8s worker labels {{ item }}"
+  loop: "{{ default_worker_labels }}"
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  when: default_worker_labels | length > 0
+  command:
+    argv:
+    - kubectl
+    - label
+    - node
+    - "{{ inventory_hostname }}"
+    - --overwrite
+    - "{{ item }}"
+  changed_when: false
 ...

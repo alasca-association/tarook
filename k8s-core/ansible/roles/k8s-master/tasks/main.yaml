@@ -373,4 +373,20 @@
 
 - name: Provide CA certificates as ConfigMap
   include_tasks: provide-ca-as-cm.yaml
+
+- name: "Set default k8s master labels {{ item }}"
+  loop: "{{ default_master_labels }}"
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  when:
+  - ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') == 'initialized'
+  - default_master_labels | length > 0
+  command:
+    argv:
+    - kubectl
+    - label
+    - node
+    - "{{ inventory_hostname }}"
+    - --overwrite
+    - "{{ item }}"
+  changed_when: false
 ...
