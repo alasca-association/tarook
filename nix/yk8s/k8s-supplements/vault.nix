@@ -146,7 +146,10 @@ in {
         Can be `Issuer` or `ClusterIssuer`, depending on the kind of issuer you would like
         to use for externally facing certificates.
       '';
-      type = types.strMatching "^(Cluster)?Issuer$";
+      type = types.enum [
+        "Issuer"
+        "ClusterIssuer"
+      ];
       default = "ClusterIssuer";
     };
     enable_backups = mkOption {

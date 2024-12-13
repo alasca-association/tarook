@@ -18,5 +18,9 @@ in {
     decimalExponent = "e(${signedNumber})|E(${signedNumber})";
   in
     lib.types.strMatching "^(${quantity})$";
-  k8sServiceType = lib.types.strMatching "^ClusterIP|NodeIP|LoadBalancer$";
+  k8sServiceType = lib.types.enum [
+    "ClusterIP"
+    "NodeIP"
+    "LoadBalancer"
+  ];
 }

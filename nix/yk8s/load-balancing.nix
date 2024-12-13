@@ -27,7 +27,10 @@
           The `layer` attribute can either be `tcp` (L4) or `http` (L7). For `http`, `option forwardfor`
           is added implicitly to the backend servers in the haproxy configuration.
         '';
-        type = types.strMatching "^(tcp|http)$";
+        type = types.enum [
+          "tcp"
+          "http"
+        ];
         default = "tcp";
       };
       use_proxy_protocol = mkOption {

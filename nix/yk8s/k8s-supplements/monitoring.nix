@@ -494,9 +494,17 @@ in {
           };
           module = mkOption {
             description = ''
-              module to be used. Can be "http_2xx" (default), "http_api" (allow status codes 200, 300, 401), "http_api_insecure", "icmp" or "tcp_connect".
+              module to be used.
+
+              "http_api" allows status codes 200, 300 and 401
             '';
-            type = types.strMatching "^(http_2xx|http_api(_insecure)?|icmp|tcp_connect)$";
+            type = types.enum [
+              "http_2xx"
+              "http_api"
+              "http_api_insecure"
+              "icmp"
+              "tcp_connect"
+            ];
             default = "http_2xx";
           };
         };
