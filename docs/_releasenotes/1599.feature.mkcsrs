@@ -1,0 +1,2 @@
+A script has been added which can be used to create new CSRs for clusters using intermediate CAs.
+A procedure description has been added to the documentation: :ref:`vault.importing-new-intermediates`.
