@@ -1,0 +1,7 @@
+Kubernetes node labels are now applied on LCM rollout instead on node join.
+This allows additions and changes of node labels through the
+:ref:`config <configuration-options.yk8s.node-scheduling.labels>`
+*after the respective node joined the cluster*.
+Removal is still unsupported.
+
+related documentation: :doc:`Scheduling (Taints and Labels) </user/explanation/node-scheduling>`

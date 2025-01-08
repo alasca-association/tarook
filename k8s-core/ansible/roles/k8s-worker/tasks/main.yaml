@@ -108,10 +108,22 @@
       mode: 0644
       content: "{{ content | to_json }}"
 
-- name: "Set default k8s worker labels {{ item }}"
-  loop: "{{ default_worker_labels }}"
+- name: "Set K8s worker label {{ item }}"
+  loop: "{{ node_labels }}"
   delegate_to: "{{ groups['orchestrator'] | first }}"
-  when: default_worker_labels | length > 0
+  vars:
+    node_labels: >
+      {{
+        (
+          (k8s_node_labels[inventory_hostname] | default([]))
+          + (
+            (k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool)
+            | ternary(["k8s.yaook.cloud/gpu-node=true"], [])
+          )
+          + default_worker_labels
+        )
+      }}
+  when: node_labels | length > 0
   command:
     argv:
     - kubectl
