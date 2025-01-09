@@ -1,0 +1,1 @@
+In all clusters that are currently on the devel branch, the file `flake.lock` needs to be deleted. As it does not affect any released version, it will not be written to the changelog.
