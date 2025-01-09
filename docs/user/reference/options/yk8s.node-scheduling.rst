@@ -5,12 +5,10 @@ yk8s.node-scheduling
 
 
 .. note::
-  Nodes get their labels during LCM rollout
-  and their taints during the Kubernetes
-  cluster initialization and node-join process.
+  Nodes get their labels and taints during LCM rollout.
   Once a node has joined the cluster,
-  its labels can be changed or new ones added but not be removed,
-  taints will be immutable.
+  its labels and taints can only be changed or new ones be added.
+  Removal is currently not supported.
 
 More details about the labels and taints configuration can be found
 :doc:`here </user/explanation/node-scheduling>`.
@@ -90,7 +88,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/node-scheduling.nix
 ``yk8s.node-scheduling.taints``
 ###############################
 
-Taints are assigned to a node during its initialization/join process only!
+Taints are assigned to a node during LCM rollout only!
 
 
 **Type:**::

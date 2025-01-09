@@ -36,15 +36,10 @@ Assigning labels and taints
    Please refer to
    :ref:`the respective documentation <cluster.node-labeling>` for details.
 
-Labels of a node are attached
+Labels and taints of a node are parsed, processed and assigned
 during LCM rollout after the node joined the cluster.
-Taints of a node are passed
-to its `kubeadm InitConfiguration <https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta3/#kubeadm-k8s-io-v1beta3-InitConfiguration>`__
-if it is the first control-plane node which initializes the cluster
-or to its `kubeadm JoinConfiguration <https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta3/#kubeadm-k8s-io-v1beta3-JoinConfiguration>`__
-if it is a subsequent node which joins the Kubernetes cluster.
 
-The LCM does not support label removal and updates to taints
+The LCM does not support removal of labels/taints
 for nodes that already joined the cluster.
 Changing node labels/taints can lead to disruption if the workload
 is not immediately reconfigured as well.
