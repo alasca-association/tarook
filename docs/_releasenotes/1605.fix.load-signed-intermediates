@@ -1,0 +1,1 @@
+Fix load-signed-intermediates.sh script, which was accidentally broken during the implementation of root CA rotation support.
