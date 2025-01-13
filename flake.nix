@@ -33,7 +33,7 @@
         packages = {
           init = pkgs.writeShellApplication {
             name = "init-cluster-repo";
-            runtimeInputs = config.packages.yk8s-env-main;
+            runtimeInputs = [config.yk8s-env.environments.default];
             text = ''
               if [[ -n "''${1:-""}" ]]; then
                 export MANAGED_K8S_LATEST_RELEASE=false
