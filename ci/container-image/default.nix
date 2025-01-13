@@ -37,7 +37,11 @@
         yk8sEnv = pkgs.stdenv.mkDerivation {
           name = "yk8s-env";
           src = ./.;
-          buildInputs = with config.yk8s-env.environments; [default dev docs];
+          postInstall = ''
+            mkdir $out
+            touch $out/.empty
+          '';
+          propagatedBuildInputs = with config.yk8s-env.environments; [default dev docs];
         };
         tmpdir = pkgs.runCommand "tmp-dir" {} "mkdir -p $out/tmp;";
         container-image = {

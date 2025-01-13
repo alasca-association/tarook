@@ -79,6 +79,7 @@
         ];
 
       ci.packages = [
+        coreutils
         direnv
         git
         gnupg
