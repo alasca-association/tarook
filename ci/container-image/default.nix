@@ -34,22 +34,38 @@
             install -D nix.conf $out/etc/nix/nix.conf
           '';
         };
+        yk8sEnv = pkgs.stdenv.mkDerivation {
+          # This is an empty derivation that pulls the runtime dependencies of YAOOK/K8s into the container
+          # image without adding them to PATH. This way, our direnv is tested within the CI
+          name = "yk8s-env";
+          src = ./.;
+          postInstall = ''
+            mkdir $out
+            # we need some file. otherwise, Nix will optimize away the empty derivation
+            touch $out/.empty
+          '';
+          propagatedBuildInputs = with config.yk8s-env.environments; [default dev docs];
+        };
         tmpdir = pkgs.runCommand "tmp-dir" {} "mkdir -p $out/tmp;";
         container-image = {
           name = "registry.gitlab.com/yaook/k8s/ci";
-          contents = pkgs.buildEnv {
-            name = "image-root";
-            paths = with pkgs; [
-              config.yk8s-env.environments.ci
-              bashInteractive
-              dockerTools.usrBinEnv
-              dockerTools.caCertificates
-              ciFiles
-              tmpdir
-              userSetup
-              nixConfig
-            ];
-          };
+          contents = [
+            yk8sEnv
+            (pkgs.buildEnv {
+              name = "image-root";
+              paths = with pkgs; [
+                config.yk8s-env.environments.ci
+                bashInteractive
+                dockerTools.usrBinEnv
+                dockerTools.caCertificates
+                ciFiles
+                tmpdir
+                userSetup
+                nixConfig
+              ];
+            })
+          ];
+          includeNixDB = true;
           fakeRootCommands = ''
             chmod 777 ${tmpdir}
           '';
