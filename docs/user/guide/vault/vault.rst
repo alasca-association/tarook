@@ -66,6 +66,12 @@ for additional environment variables accepted by these tools.
    with the cluster from Vault. EXCEPTIONALLY DANGEROUS, so it always
    requires manual confirmation.
 
+- ``tools/vault/update.sh``: Reinitializes the PKI engines, checks for
+  leftovers inside vault and tries to reimport configurations for
+  :ref:`etcd-backup <configuration-options.yk8s.k8s-service-layer.etcd-backup>`,
+  :ref:`Thanos <thanos.custom-bucket-management>`
+  and the :ref:`IPSec PSK <ipsec.upload-psk-to-vault>`.
+
 Using Vault to replace a long-lived admin.conf
 ----------------------------------------------
 

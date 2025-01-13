@@ -249,6 +249,8 @@ Additional info on the usage in the LCM
 -  One example of that is the authentication means. We only support PSK
    here
 
+.. _ipsec.upload-psk-to-vault:
+
 Upload an IPSec EAP PSK to Vault
 --------------------------------
 
