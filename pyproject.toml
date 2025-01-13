@@ -30,9 +30,6 @@ ansible-lint = { version = "^24.0.0", markers = "platform_system != 'Windows'" }
 flake8 = "^7.0.0"
 GitPython = "^3.1.32"
 
-[tool.poetry.group.offline-installation.dependencies]
-semver = "^3.0.1"
-
 [tool.poetry.group.docs]
 optional = true
 
