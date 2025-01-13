@@ -80,6 +80,7 @@
 
       ci.packages = [
         coreutils
+        gnugrep
         direnv
         git
         gnupg

@@ -38,8 +38,7 @@
           name = "yk8s-env";
           src = ./.;
           postInstall = ''
-            mkdir $out
-            touch $out/.empty
+            touch $out
           '';
           propagatedBuildInputs = with config.yk8s-env.environments; [default dev docs];
         };
