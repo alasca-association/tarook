@@ -8,10 +8,12 @@
     dependencies.groups = with pkgs; {
       minimal.description = "Will be used by direnv when MINIMAL_ACCESS_VENV=true";
       minimal.packages = [
+        iproute2 # for wg-up
         jq
         kubectl
         rsync
         inputs'.nixpkgs-vault1148.legacyPackages.vault
+        wireguard-tools
         yq
       ];
       minimal.pythonPackages = ps:
@@ -31,8 +33,6 @@
         openssh
         openssl
         inputs'.nixpkgs-terraform157.legacyPackages.terraform
-        iproute2 # for wg-up
-        wireguard-tools
         util-linux # for uuidgen
       ];
       default.pythonPackages = ps:
