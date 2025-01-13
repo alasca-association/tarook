@@ -72,6 +72,14 @@ for additional environment variables accepted by these tools.
   :ref:`Thanos <thanos.custom-bucket-management>`
   and the :ref:`IPSec PSK <ipsec.upload-psk-to-vault>`.
 
+- ``rotate-root-ca-intermediate.sh``: Needed for Root CA rotation by clusters
+  which have been bootstrapped using ``mkcluster-intermediate.sh``, or equivalent.
+  See :doc:`vault-ca-rotation` for more information.
+
+- ``rotate-root-ca-root.sh``: Needed for Root CA rotation by clusters
+  which have their root CA managed inside Vault.
+  See :doc:`vault-ca-rotation` for more information.
+
 Using Vault to replace a long-lived admin.conf
 ----------------------------------------------
 
