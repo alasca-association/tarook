@@ -64,9 +64,8 @@
           sphinx-copybutton
         ];
 
-      dev.description = "This is the recommended group for development work on YAOOK/K8s";
-      dev.includes = ["default" "docs"];
-      dev.packages = [
+      lint.description = "Dependencies needed by the linting stage and for the pre-commit hook";
+      lint.packages = [
         (ansible-lint.overrideAttrs (
           {propagatedBuildInputs ? [], ...}: {
             propagatedBuildInputs =
@@ -75,14 +74,24 @@
         ))
         pre-commit
       ];
-      dev.pythonPackages = ps:
+      lint.pythonPackages = ps:
         with ps; [
+          ansible-core
           flake8
         ];
 
-      ci.description = "Dependencies directly needed by the CI jobs.";
-      ci.includes = ["default" "dev" "docs"];
+      dev.description = "This is the recommended group for development work on YAOOK/K8s";
+      dev.includes = ["default" "docs" "lint"];
+
+      ci.description = ''
+        Dependencies directly needed by the CI jobs.
+        Note that this does not include "default" because the runtime dependencies are
+        enabled through direnv during the run.
+      '';
+      ci.includes = ["docs" "lint"];
       ci.packages = [
+        coreutils
+        gnugrep
         direnv
         git
         gnupg
