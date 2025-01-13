@@ -78,7 +78,6 @@
           flake8
         ];
 
-      ci.includes = ["default" "dev" "docs"];
       ci.packages = [
         direnv
         git

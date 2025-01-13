@@ -34,12 +34,18 @@
             install -D nix.conf $out/etc/nix/nix.conf
           '';
         };
+        yk8sEnv = pkgs.stdenv.mkDerivation {
+          name = "yk8s-env";
+          src = ./.;
+          buildInputs = with config.yk8s-env.environments; [default dev docs];
+        };
         tmpdir = pkgs.runCommand "tmp-dir" {} "mkdir -p $out/tmp;";
         container-image = {
           name = "registry.gitlab.com/yaook/k8s/ci";
           contents = pkgs.buildEnv {
             name = "image-root";
             paths = with pkgs; [
+              yk8sEnv
               config.yk8s-env.environments.ci
               bashInteractive
               dockerTools.usrBinEnv
