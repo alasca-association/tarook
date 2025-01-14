@@ -34,6 +34,9 @@
                     default = [];
                   };
                   pythonPackages = lib.mkOption {
+                    description = ''
+                      Python dependencies of the group
+                    '';
                     type = functionTo (listOf package);
                     default = ps: [];
                   };
@@ -52,7 +55,8 @@
             groups = lib.mkOption {
               description = ''
                 Dependencies for yk8s are organized in groups, so for each purpse, only the
-                minimal amount of dependencies has to be loaded. Groups can include other groups in a DAG.
+                minimal amount of dependencies has to be loaded. Groups can contain Python
+                dependencies, non-Python dependencies and they can include other groups in a DAG.
               '';
               default = {};
               type = with lib.types;
