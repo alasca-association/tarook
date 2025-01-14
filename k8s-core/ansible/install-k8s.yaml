@@ -101,6 +101,13 @@
   roles:
   - role: k8s-worker
     tags: k8s-worker
+
+- name: Configure Kubelet of K8s nodes
+  hosts: workers,masters
+  gather_facts: true
+  vars_files:
+  - vars/disruption.yaml
+  roles:
   - role: kubelet-configuration
     tags: kubelet-configuration
 
