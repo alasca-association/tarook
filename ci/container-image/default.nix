@@ -38,27 +38,26 @@
           name = "yk8s-env";
           src = ./.;
           postInstall = ''
-            touch $out
+            mkdir $out
+            touch $out/.empty
           '';
           propagatedBuildInputs = with config.yk8s-env.environments; [default dev docs];
         };
         tmpdir = pkgs.runCommand "tmp-dir" {} "mkdir -p $out/tmp;";
         container-image = {
           name = "registry.gitlab.com/yaook/k8s/ci";
-          contents = pkgs.buildEnv {
-            name = "image-root";
-            paths = with pkgs; [
-              yk8sEnv
-              config.yk8s-env.environments.ci
-              bashInteractive
-              dockerTools.usrBinEnv
-              dockerTools.caCertificates
-              ciFiles
-              tmpdir
-              userSetup
-              nixConfig
-            ];
-          };
+          contents = with pkgs; [
+            yk8sEnv
+            config.yk8s-env.environments.ci
+            bashInteractive
+            dockerTools.usrBinEnv
+            dockerTools.caCertificates
+            ciFiles
+            tmpdir
+            userSetup
+            nixConfig
+          ];
+          includeNixDB = true;
           fakeRootCommands = ''
             chmod 777 ${tmpdir}
           '';
