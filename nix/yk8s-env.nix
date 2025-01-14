@@ -59,7 +59,9 @@
               lib.unique (
                 builtins.foldl' (
                   acc: dep: acc ++ (mergedPackages (builtins.getAttr dep cfg.dependencies.groups))
-                ) (group.packages or []) (group.includes or [])
+                )
+                group.packages
+                group.includes
               );
             mergedPythonPackages = group: ps:
               lib.unique (
