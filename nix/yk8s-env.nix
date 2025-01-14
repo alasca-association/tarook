@@ -39,8 +39,8 @@
               type = with lib.types;
                 attrsOf dependencyGroupModule;
             };
-            final = lib.mkOption {
-              default = {};
+            finalGroups = lib.mkOption {
+              readOnly = true;
               type = with lib.types;
                 attrsOf dependencyGroupModule;
             };
@@ -54,7 +54,7 @@
         imports = [./dependencies.nix];
 
         config = {
-          yk8s-env.dependencies.final = let
+          yk8s-env.dependencies.finalGroups = let
             mergedPackages = group:
               lib.unique (
                 builtins.foldl' (
@@ -83,7 +83,7 @@
                   paths = (group.packages) ++ [(cfg.python.withPackages (group.pythonPackages))];
                 }
             )
-            cfg.dependencies.final;
+            cfg.dependencies.finalGroups;
 
           packages =
             lib.mapAttrs' (_: value: {
