@@ -19,7 +19,17 @@
             dependencyGroupModule = with lib.types;
               submodule {
                 options = {
+                  description = lib.mkOption {
+                    description = ''
+                      The description of the dependency group
+                    '';
+                    type = lib.nullOr lib.str;
+                    default = null;
+                  };
                   packages = lib.mkOption {
+                    description = ''
+                      Non-python dependencies of the group
+                    '';
                     type = listOf package;
                     default = [];
                   };
@@ -28,6 +38,11 @@
                     default = ps: [];
                   };
                   includes = lib.mkOption {
+                    description = ''
+                      A list of group names that should be included by this group.
+                      Dependencies of all included groups will be merged into the
+                      dependencies of this group.
+                    '';
                     type = listOf str;
                     default = [];
                   };
@@ -35,11 +50,18 @@
               };
           in {
             groups = lib.mkOption {
+              description = ''
+                Dependencies for yk8s are organized in groups, so for each purpse, only the
+                minimal amount of dependencies has to be loaded. Groups can include other groups in a DAG.
+              '';
               default = {};
               type = with lib.types;
                 attrsOf dependencyGroupModule;
             };
             finalGroups = lib.mkOption {
+              description = ''
+                Read-only option that can be used to get the final lists of packages that are available in a given group.
+              '';
               readOnly = true;
               type = with lib.types;
                 attrsOf dependencyGroupModule;
