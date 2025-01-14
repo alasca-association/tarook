@@ -67,7 +67,8 @@
               lib.unique (
                 builtins.foldl' (
                   acc: dep: acc ++ (mergedPythonPackages (builtins.getAttr dep cfg.dependencies.groups) ps)
-                ) ((group.pythonPackages or (p: [])) ps) (group.includes or [])
+                ) (group.pythonPackages ps)
+                group.includes
               );
           in
             lib.mapAttrs (_: group: {
