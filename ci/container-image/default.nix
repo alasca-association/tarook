@@ -46,16 +46,21 @@
         tmpdir = pkgs.runCommand "tmp-dir" {} "mkdir -p $out/tmp;";
         container-image = {
           name = "registry.gitlab.com/yaook/k8s/ci";
-          contents = with pkgs; [
+          contents = [
             yk8sEnv
-            config.yk8s-env.environments.ci
-            bashInteractive
-            dockerTools.usrBinEnv
-            dockerTools.caCertificates
-            ciFiles
-            tmpdir
-            userSetup
-            nixConfig
+            (pkgs.buildEnv {
+              name = "image-root";
+              paths = with pkgs; [
+                config.yk8s-env.environments.ci
+                bashInteractive
+                dockerTools.usrBinEnv
+                dockerTools.caCertificates
+                ciFiles
+                tmpdir
+                userSetup
+                nixConfig
+              ];
+            })
           ];
           includeNixDB = true;
           fakeRootCommands = ''
