@@ -12,10 +12,10 @@ in {
   options.yk8s.node-scheduling = mkTopSection {
     _docs.preface = ''
       .. note::
-        Nodes get their labels and taints during the Kubernetes
-        cluster initialization and node-join process.
+        Nodes get their labels and taints during LCM rollout.
         Once a node has joined the cluster,
-        its labels and taints will **not** get updated anymore.
+        its labels and taints can only be changed or new ones be added.
+        Removal is currently not supported.
 
       More details about the labels and taints configuration can be found
       :doc:`here </user/explanation/node-scheduling>`.
@@ -32,7 +32,7 @@ in {
     };
     labels = mkOption {
       description = ''
-        Labels are assigned to a node during its initialization/join process only!
+        Labels are assigned to a node during LCM rollout only!
       '';
       type = with types; attrsOf (listOf nonEmptyStr);
       default = {};
@@ -53,7 +53,7 @@ in {
     };
     taints = mkOption {
       description = ''
-        Taints are assigned to a node during its initialization/join process only!
+        Taints are assigned to a node during LCM rollout only!
       '';
       type = with types; attrsOf (listOf nonEmptyStr);
       default = {};

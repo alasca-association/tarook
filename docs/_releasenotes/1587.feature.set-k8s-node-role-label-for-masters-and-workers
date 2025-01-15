@@ -1,11 +1,16 @@
-The LCM ensures that
+The LCM continuously ensures that
 all Kubernetes control plane and worker nodes are labeled with
 ``node-role.kubernetes.io/control-plane=``
-and ``node-role.kubernetes.io/worker=``
-respectively. (see the :ref:`documentation <cluster.node-labeling>`)
+xor ``node-role.kubernetes.io/worker=``
+respectively.
+
+This is part of the concept of LCM managed labels
+which is introduced at the same time.
+Refer to the :ref:`documentation <cluster.node-labeling>` for details.
 
 Amongst other things,
-this allows monitoring and alerting solutions to target nodes by their role.
+this allows monitoring and alerting solutions
+to reliably target nodes by their role.
 For instance,
 the :doc:`monitoring stack </user/guide/monitoring/prometheus-stack>`
 that can optionally be installed with YAOOK/k8s,
