@@ -40,7 +40,10 @@ if [ "${wg_usage:-true}" == "true" ]; then
     fi
 
     #set up wireguard
-    if [ -z ${wg_private_key+x} ]; then
+    if [[ -v wg_private_key_command ]]; then
+        # shellcheck disable=SC2086
+        wg_private_key=$(env --ignore-environment PATH="$PATH" $wg_private_key_command)
+    elif [[ -v wg_private_key_file ]]; then
         wg_private_key=$(cat "$wg_private_key_file")
     fi
     # Creating the conf file with a dummy key. The actual private key is going to be injected via `wg set`

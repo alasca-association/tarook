@@ -1,0 +1,5 @@
+A new env var `wg_private_key_command` has been introduced.
+This env var lets the user specify a command that retrieves their
+WireGuard private key from a (safe) place, e.g. from a password
+safe, rather than having it stored in a plain text file or worse,
+stored in an env var directly.
