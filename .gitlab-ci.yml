@@ -151,7 +151,7 @@ render-options:
   rules:
     - !reference [.default_lint_rules, rules]
     - changes:
-      - nix/yk8s/*
+      - nix/yk8s/**/*
       when: on_success
     - when: never
 
