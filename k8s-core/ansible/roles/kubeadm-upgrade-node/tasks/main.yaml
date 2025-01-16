@@ -4,16 +4,54 @@
     - do_upgrade
     - "'masters' in group_names"
   become: true
-  ansible.builtin.command:
-    argv:
-      - "kubeadm"
-      - "upgrade"
-      - "node"
-      - "--patches"
-      - "/etc/kubernetes/kubeadm-patches"
-      - --certificate-renewal=false
-  async: 180
-  poll: 5
+  block:
+    # WORKAROUND: As of kubeadm 1.28.1 only RSA and ECDSA are supported as
+    #             algorithms for the Kubernetes cluster root CA key.
+    #             Because we are using ED25519 CA keys, we prevent ca.key from
+    #             feeding into kubeadm by temporarily renaming it.
+    - name: Hide Kubernetes cluster root CA key before kubeadm upgrade
+      # NOTE: Ansible does not support renaming files
+      block:
+        - ansible.builtin.stat:
+            path: /etc/kubernetes/pki/ca.key
+          register: k8s_ca_key_file
+        - when: k8s_ca_key_file.stat.exists
+          block:
+            - ansible.builtin.copy:
+                remote_src: true
+                src: "{{ k8s_ca_key_file.stat.path }}"
+                dest: "{{ k8s_ca_key_file.stat.path }}.bak~"
+                mode: preserve
+              register: k8s_ca_key_file_backup
+            - ansible.builtin.file:
+                path: "{{ k8s_ca_key_file.stat.path }}"
+                state: absent
+              register: k8s_ca_key_file_hidden
+
+    - name: Execute kubeadm upgrade node on CP node  # noqa no-changed-when
+      ansible.builtin.command:
+        argv:
+          - "kubeadm"
+          - "upgrade"
+          - "node"
+          - "--patches"
+          - "/etc/kubernetes/kubeadm-patches"
+          - --certificate-renewal=false
+      async: 180
+      poll: 5
+
+    - name: Unhide Kubernetes cluster root CA key after kubeadm upgrade
+      when: k8s_ca_key_file_hidden is not skipped
+      # NOTE: Ansible does not support renaming files
+      block:
+        - ansible.builtin.copy:
+            remote_src: true
+            src: "{{ k8s_ca_key_file_backup.dest }}"
+            dest: "{{ k8s_ca_key_file_backup.src }}"
+            mode: preserve
+        - ansible.builtin.file:
+            path: "{{ k8s_ca_key_file_backup.dest }}"
+            state: absent
 
 - name: Run kubeadm upgrade node on worker node  # noqa no-changed-when
   when:
