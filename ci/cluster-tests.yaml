@@ -20,13 +20,12 @@
 
 .cluster-rules-k8s-upgrade:
   rules:
-    # run on merge.merge_train only if files outside docs have changed
-    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
-      <<: *test-rules-changes
-      needs: ["containerd"]
-      when: on_success
     # run always on release-prepare
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      needs: ["containerd"]
+      when: on_success
+    # run on scheduled jobs on default branch
+    - if: $CI_PIPELINE_SOURCE == "schedule" &&  $CI_COMMIT_BRANCH == $YAOOK_K8S_DEFAULT_BRANCH
       needs: ["containerd"]
       when: on_success
     # otherwise create manual job
