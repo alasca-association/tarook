@@ -1,7 +1,4 @@
 {% for mirror in item.mirrors %}
 [host.{{ mirror | to_json }}]
   capabilities = ["pull", "resolve"]
-{% if container_mirror_ca %}
-  ca = "/etc/containerd/mirror-ca.pem"
-{% endif %}
 {% endfor %}

@@ -106,16 +106,6 @@
     group: root
     mode: 0400
 
-- name: Store the container mirror CA
-  become: true
-  ansible.builtin.copy:
-    dest: /etc/containerd/mirror-ca.pem
-    mode: 0755
-    owner: root
-    group: root
-    content: "{{ container_mirror_ca }}"
-  when: "container_mirror_ca"
-
 - name: Mirror management
   become: true
   block:

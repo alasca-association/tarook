@@ -3,5 +3,6 @@ aren't documented well and it is currently not intended to support the use cases
 
 * ``miscellaneous.docker_insecure_registries``
 * ``miscellaneous.container_mirror_default_host``
+* ``miscellaneous.configure_mirror_ca``
 
 Mirrors can be configured via :ref:`configuration-options.yk8s.containerd.mirrors` now.
