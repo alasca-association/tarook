@@ -6,115 +6,129 @@
   yk8s-env = {
     python = pkgs.python311;
     dependencies.groups = with pkgs; {
-      minimal.description = "Will be used by direnv when MINIMAL_ACCESS_VENV=true";
-      minimal.packages = [
-        iproute2 # for wg-up
-        jq
-        kubectl
-        rsync
-        inputs'.nixpkgs-vault1148.legacyPackages.vault
-        wireguard-tools
-        yq
-      ];
-      minimal.pythonPackages = ps:
-        with ps; [
-          ansible-core
+      minimal = {
+        description = "Will be used by direnv when MINIMAL_ACCESS_VENV=true";
+        packages = [
+          iproute2 # for wg-up
+          jq
+          kubectl
+          rsync
+          inputs'.nixpkgs-vault1148.legacyPackages.vault
+          wireguard-tools
+          yq
         ];
+        pythonPackages = ps:
+          with ps; [
+            ansible-core
+          ];
+      };
 
-      default.description = "Will be used by direnv by default";
-      default.includes = ["minimal"];
-      default.packages = [
-        coreutils
-        gnugrep
-        gnused
-        gzip
-        kubernetes-helm
-        moreutils
-        openssh
-        openssl
-        inputs'.nixpkgs-terraform157.legacyPackages.terraform
-        util-linux # for uuidgen
-      ];
-      default.pythonPackages = ps:
-        assert !ps ? "kubernetes-validate"; # This will fail as soon as kubernetes-validate is inside nixpkgs; reminding us to remove our own copy of the package
-        
-        with ps; [
-          kubernetes
-          (callPackage ./pkgs/kubernetes-validate.nix {})
-          openshift
-          openstackclient-full
-          loguru
-          packaging
-          jsonschema
-          hvac
-          boto3
+      default = {
+        description = "Will be used by direnv by default";
+        includes = ["minimal"];
+        packages = [
+          coreutils
+          gnugrep
+          gnused
+          gzip
+          kubernetes-helm
+          moreutils
+          openssh
+          openssl
+          inputs'.nixpkgs-terraform157.legacyPackages.terraform
+          util-linux # for uuidgen
         ];
+        pythonPackages = ps:
+          assert !ps ? "kubernetes-validate"; # This will fail as soon as kubernetes-validate is inside nixpkgs; reminding us to remove our own copy of the package
+          
+          with ps; [
+            kubernetes
+            (callPackage ./pkgs/kubernetes-validate.nix {})
+            openshift
+            openstackclient-full
+            loguru
+            packaging
+            jsonschema
+            hvac
+            boto3
+          ];
+      };
 
-      docs.description = "Dependencies needed to built the documentation";
-      docs.pythonPackages = ps:
-        with ps; [
-          sphinx
-          sphinx-rtd-theme
-          sphinx-tabs
-          furo
-          towncrier
-          sphinx-multiversion
-          myst-parser
-          sphinx-design
-          sphinx-copybutton
+      docs = {
+        description = "Dependencies needed to built the documentation";
+        pythonPackages = ps:
+          with ps; [
+            sphinx
+            sphinx-rtd-theme
+            sphinx-tabs
+            furo
+            towncrier
+            sphinx-multiversion
+            myst-parser
+            sphinx-design
+            sphinx-copybutton
+          ];
+      };
+
+      lint = {
+        description = "Dependencies needed by the linting stage and for the pre-commit hook";
+        packages = [
+          (ansible-lint.overrideAttrs (
+            {propagatedBuildInputs ? [], ...}: {
+              propagatedBuildInputs =
+                propagatedBuildInputs ++ [pkgs.python3.pkgs.jmespath];
+            }
+          ))
+          pre-commit
         ];
+        pythonPackages = ps:
+          with ps; [
+            ansible-core
+            flake8
+          ];
+      };
 
-      lint.description = "Dependencies needed by the linting stage and for the pre-commit hook";
-      lint.packages = [
-        (ansible-lint.overrideAttrs (
-          {propagatedBuildInputs ? [], ...}: {
-            propagatedBuildInputs =
-              propagatedBuildInputs ++ [pkgs.python3.pkgs.jmespath];
-          }
-        ))
-        pre-commit
-      ];
-      lint.pythonPackages = ps:
-        with ps; [
-          ansible-core
-          flake8
+      dev = {
+        description = "This is the recommended group for development work on YAOOK/K8s";
+        includes = ["default" "docs" "lint"];
+      };
+
+      ci = {
+        description = ''
+          Dependencies directly needed by the CI jobs.
+          Note that this does not include "default" because the runtime dependencies are
+          enabled through direnv during the run.
+        '';
+        includes = ["docs" "lint"];
+        packages = [
+          coreutils
+          gnugrep
+          direnv
+          git
+          gnupg
+          gnutar
+          netcat
+          nix
+          sonobuoy
         ];
+        pythonPackages = ps:
+          with ps; [
+            GitPython
+          ];
+      };
 
-      dev.description = "This is the recommended group for development work on YAOOK/K8s";
-      dev.includes = ["default" "docs" "lint"];
-
-      ci.description = ''
-        Dependencies directly needed by the CI jobs.
-        Note that this does not include "default" because the runtime dependencies are
-        enabled through direnv during the run.
-      '';
-      ci.includes = ["docs" "lint"];
-      ci.packages = [
-        coreutils
-        gnugrep
-        direnv
-        git
-        gnupg
-        gnutar
-        netcat
-        nix
-        sonobuoy
-      ];
-      ci.pythonPackages = ps:
-        with ps; [
-          GitPython
+      interactive = {
+        description = "This group contains additional packages that may be useful in an interactive session";
+        includes = ["default" "dev"];
+        packages = [
+          bashInteractive
+          curl
+          vim
+          dnsutils
+          iputils
+          k9s
         ];
-
-      interactive.description = "This group contains additional packages that may be useful in an interactive session";
-      interactive.includes = ["default" "dev"];
-      interactive.packages = [
-        bashInteractive
-        curl
-        vim
-        dnsutils
-        iputils
-        k9s
-      ];
+      };
     };
   };
 }
