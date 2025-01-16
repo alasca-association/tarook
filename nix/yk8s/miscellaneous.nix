@@ -25,6 +25,8 @@ in {
     (mkRenamedOptionModuleWithNewSection "miscellaneous" "haproxy_frontend_nodeport_maxconn" "load-balancing" "haproxy_frontend_nodeport_maxconn")
     (mkRenamedOptionModuleWithNewSection "miscellaneous" "haproxy_frontend_k8s_api_maxconn" "load-balancing" "haproxy_frontend_k8s_api_maxconn")
     (mkRemovedOptionModule "miscellaneous" "docker_registry_mirrors" "Use containerd.mirrors instead")
+    (mkRemovedOptionModule "miscellaneous" "docker_insecure_registries" "Use containerd.mirrors instead")
+    (mkRemovedOptionModule "miscellaneous" "container_mirror_default_host" "Use containerd.mirrors instead")
     (mkRemovedOptionModule "miscellaneous" "container_mirrors" "Use containerd.mirrors instead")
   ];
   options.yk8s.miscellaneous = mkTopSection {
@@ -87,19 +89,6 @@ in {
       '';
       type = types.int;
       default = 262144;
-    };
-    docker_insecure_registries = mkOption {
-      description = ''
-        Custom Docker Configuration
-        A list of insecure registries that can be accessed without TLS verification.
-      '';
-      type = with types; listOf nonEmptyStr;
-      default = [];
-      example = ["0.docker-registry.example.org" "1.docker-registry.example.org"];
-    };
-    container_mirror_default_host = mkOption {
-      type = types.nonEmptyStr;
-      default = "install-node";
     };
     custom_chrony_configuration = mkEnableOption ''
       custom Chrony configration
