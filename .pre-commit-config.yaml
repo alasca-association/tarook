@@ -46,4 +46,10 @@ repos:
         entry: ci/lint/format-flake.sh
         language: script
         stages: [pre-commit, pre-push, manual]
+      - id: restricted-yml-filenames
+        name: check commits for yml file extensions
+        entry: The .yml file extension is obsolete and should be renamed to .yaml
+        language: fail
+        files: '.*\.(yml)'
+        exclude: '\.gitlab-ci\.yml'
 ...
