@@ -469,7 +469,7 @@ Changes in the Documentation
   in the :doc:`Release and Versioning Policy </developer/explanation/release-and-versioning-policy>` (`!1376 <https://gitlab.com/yaook/k8s/-/merge_requests/1376>`_)
 - The documentation now links to the latest version of the Calico docs
   instead of a specific version (where possible). (`!1408 <https://gitlab.com/yaook/k8s/-/merge_requests/1408>`_)
-- The :doc:`generated Terraform docs </developer/reference/terraform-docs>` was updated. (`!1434 <https://gitlab.com/yaook/k8s/-/merge_requests/1434>`_)
+- The generated Terraform docs was updated. (`!1434 <https://gitlab.com/yaook/k8s/-/merge_requests/1434>`_)
 
 
 Deprecations and Removals
