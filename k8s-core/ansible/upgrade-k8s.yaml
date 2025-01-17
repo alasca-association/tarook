@@ -94,9 +94,7 @@
     - vars/auto_generated_preamble.yaml
   roles:
     - role: kubeadm-upgrade-kubeadm
-      when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-patches
-      when: "not (k8s_upgrade_done | default(False))"
 
 - name: Run kubeadm upgrade apply on the first control plane node
   hosts: masters[0]
@@ -104,7 +102,6 @@
   any_errors_fatal: true
   roles:
     - role: kubeadm-upgrade-apply
-      when: "not (k8s_upgrade_done | default(False))"
 
 - name: Run kubeadm upgrade node on remaining control plane nodes
   hosts: masters[1:]
@@ -113,7 +110,6 @@
   any_errors_fatal: true
   roles:
     - role: kubeadm-upgrade-node
-      when: "not (k8s_upgrade_done | default(False))"
 
 - name: Complete control plane upgrade
   hosts: masters
@@ -127,18 +123,14 @@
   roles:
     - role: cluster-health-verification
       delegate_to: "{{ groups['orchestrator'] | first }}"
-      when: not (k8s_skip_upgrade_checks | bool) and not (k8s_upgrade_done | default(False))
+      when: not (k8s_skip_upgrade_checks | bool)
     - role: kubeadm-drain-node
-      when: "not (k8s_upgrade_done | default(False))"
     - role: update-system
-      when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-upgrade-kubelet
-      when: "not (k8s_upgrade_done | default(False))"
       # we do not want to customize kubelet on control-plane nodes
       vars:
         k8s_kubelet_disable_customizations: true
     - role: kubeadm-uncordon-node
-      when: "not (k8s_upgrade_done | default(False))"
 
 - name: Upgrade the worker nodes
   hosts: workers
@@ -152,31 +144,23 @@
   roles:
     - role: cluster-health-verification
       delegate_to: "{{ groups['orchestrator'] | first }}"
-      when: not (k8s_skip_upgrade_checks | bool) and not (k8s_upgrade_done | default(False))
+      when: not (k8s_skip_upgrade_checks | bool)
     - role: kubeadm-drain-node
-      when: "not (k8s_upgrade_done | default(False))"
-    - role: update-system
-      when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-upgrade-kubeadm
-      when: "not (k8s_upgrade_done | default(False))"
+    - role: update-system
     - role: kubeadm-upgrade-node
-      when: "not (k8s_upgrade_done | default(False))"
     - role: kubeadm-upgrade-kubelet
-      when: "not (k8s_upgrade_done | default(False))"
   # The nvidia-device-plugin marks a GPU as unhealthy
   # on systemctl daemon-reloads + kubelet restarts,
   # but the Pod does not fail. We have to manually restart the Pod.
   tasks:
     - name: Restart nvidia-device-plugin Pod on node
-      when:
-        - "not (k8s_upgrade_done | default(False))"
       ansible.builtin.include_role:
         name: nvidia-device-plugin
         tasks_from: restart_ndp_pod.yaml
     - name: Uncordon the node
       ansible.builtin.include_role:
         name: kubeadm-uncordon-node
-      when: "not (k8s_upgrade_done | default(False))"
 
 # Drop me with Kubernetes v1.28
 # This is needed to replace the existing with a non super admin kubeconfig
