@@ -233,6 +233,7 @@
     - export MANAGED_K8S_GIT="$(realpath .)"
     - cd ci
     - git init
+    - cp ../nix/templates/cluster-repo/flake.nix .
     - git add flake.nix config
     - direnv allow
     - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
