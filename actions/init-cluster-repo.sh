@@ -68,6 +68,8 @@ if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 	run git add flake.nix .gitignore config .envrc
 fi
 
+nix flake lock
+
 # custom stage
 mkdir -p "$ansible_k8s_custom_inventory"
 mkdir -p "$ansible_k8s_custom_playbook_dir"
