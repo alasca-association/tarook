@@ -173,13 +173,13 @@ To initialize a **local** Vault instance for **development purposes**, do the fo
       This is not suited for productive deployments or production use,
       for many reasons!
 
-5. Run the init command for vault
+5. Run the init command for Vault
 
    .. code:: console
 
       $  ./managed-k8s/tools/vault/init.sh
 
-6. If you are starting with a new created cluster run:
+6. If you are creating a new cluster, run:
 
    .. code:: console
 

@@ -18,7 +18,7 @@ If you are having problems, please visit our :doc:`FAQ </user/guide/faq>`.
 4. Configure cluster in ``./config/default.nix``.
 
    .. note::
-      If you plan on deploying OpenStack using `yaook/operator <https://gitlab.com/yaook/operator>`_
+      If you plan on deploying OpenStack using `YAOOK/Operator <https://gitlab.com/yaook/operator>`_
       on top of your YAOOK/K8s cluster, please refer to the
       `cluster requirements of yaook/operator <https://docs.yaook.cloud/requirements/k8s-cluster.html>`__
       to see which features are recommended and required to be present in
@@ -39,9 +39,9 @@ If you are having problems, please visit our :doc:`FAQ </user/guide/faq>`.
          If you want to do so, you also need to create the
          ``ch-k8s-lbaas.shared_secret`` secret.
 
-      - Check for
+      - Check
         :ref:`configuration-options.yk8s.terraform`
-        that can be set, you need to change some of them to fit to your
+        for options that can be set, you need to change some of them to fit to your
         OpenStack cluster, e.g.
         the flavors, images, ... of the gateway, master and worker nodes.
 

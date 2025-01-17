@@ -101,7 +101,7 @@ Verify the status of submodules by running the following command:
 
 4. Performing the Upgrade on the Cluster
 ----------------------------------------
-Establish the WireGuard connection on none baremetal systems:
+Establish the WireGuard connection on non-baremetal systems:
 
 .. code:: console
 
