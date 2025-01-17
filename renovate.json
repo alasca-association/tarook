@@ -1,12 +1,9 @@
 {
   "enabledManagers": [
     "nix",
-    "pip_setup",
     "dockerfile",
     "gitlabci",
-    "pip_requirements",
     "regex",
-    "poetry",
     "terraform",
     "ansible",
     "ansible-galaxy"
