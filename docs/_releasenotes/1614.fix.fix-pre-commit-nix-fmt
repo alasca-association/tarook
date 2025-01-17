@@ -1,0 +1,1 @@
+A bug has been fixed that made the ``nix-fmt`` pre-commit check always fail.
