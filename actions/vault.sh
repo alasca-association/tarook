@@ -8,7 +8,6 @@ actions_dir="$(dirname "$0")"
 # Ensure that the latest config is deployed to the inventory
 "$actions_dir/update-inventory.sh"
 
-load_conf_vars
 load_vault_container_name
 
 vault_image="$(bash "$actions_dir/detect-vault-image.sh")"
