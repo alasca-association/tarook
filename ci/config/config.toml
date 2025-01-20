@@ -110,7 +110,7 @@ shared_secret = "IYeOlEFO1h3uc9x1bdw9thNNgmn1gm8dmzos3f04PLmFjt3d"
 agent_port    = 15203
 
 [kubernetes]
-version = "1.30.5"
+version = "1.30.8"
 is_gpu_cluster = true
 virtualize_gpu = false
 

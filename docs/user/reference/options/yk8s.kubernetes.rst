@@ -179,7 +179,7 @@ Kubernetes version
 
 **Default:**::
 
-  "1.30.5"
+  "1.30.8"
 
 
 **Declared by**
