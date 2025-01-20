@@ -2,11 +2,9 @@
 set -euo pipefail
 actions_dir="$(dirname "$0")"
 
-if [ "$("$actions_dir/helpers/semver2.sh" "$(nix --version | grep -Eo '[0-9]+\.[0-9]+.[0-9]+')" "2.23")" -gt 0 ]; then
-    nix flake update yk8s
-else
-    nix flake lock --update-input yk8s
-fi
+# shellcheck source=actions/lib.sh
+. "$actions_dir/lib.sh"
+
 if [[ -e "inventory/yaook-k8s/hosts" ]] && [[ ! -L "inventory/yaook-k8s/hosts" ]]; then
     echo ""
     echo "ERROR: Found legacy inventory. Aborting."
@@ -16,7 +14,7 @@ if [[ -e "inventory/yaook-k8s/hosts" ]] && [[ ! -L "inventory/yaook-k8s/hosts" ]
     exit 1
 fi
 if [[ -e "state" ]]; then git add state; fi
-out=$(nix build --print-out-paths --no-link .#yk8s-outputs)
+out=$(nix build --override-input yk8s "$code_repository" --print-out-paths --no-link .#yk8s-outputs)
 rsync -rL --chmod 664 "$out/state" .
 rm -rf inventory
 mkdir -p inventory/yaook-k8s/
