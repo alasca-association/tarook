@@ -6,7 +6,7 @@ affect how the user interact with the cluster via the
 :doc:`action scripts </user/reference/actions-references>`. The directory
 ``config/`` however holds the configuration of the cluster itself
 and can be adjusted to customize the YAOOK/K8s cluster to fit your needs. It also
-contains operational flags which can trigger operational tasks.
+contains certain flags which can trigger operational tasks.
 
 
 The cluster repository layout
