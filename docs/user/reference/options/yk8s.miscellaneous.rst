@@ -535,6 +535,30 @@ will be set automagically and do not have to set manually here.
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
+.. _configuration-options.yk8s.miscellaneous.openstack_cinder_volume_type:
+
+``yk8s.miscellaneous.openstack_cinder_volume_type``
+###################################################
+
+Use a specific volume type for the csi-sc-cinderplugin StorageClass.
+If unset, no volume type is explicitly set and the default volume type
+of the IaaS-layer is used.
+
+
+**Type:**::
+
+  null or non-empty string
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
+
+
 .. _configuration-options.yk8s.miscellaneous.openstack_connect_use_helm:
 
 ``yk8s.miscellaneous.openstack_connect_use_helm``
