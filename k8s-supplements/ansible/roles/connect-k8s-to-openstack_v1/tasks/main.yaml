@@ -81,7 +81,7 @@
       kubernetes.core.k8s:
         state: present
         apply: true
-        definition: "{{ lookup('file', 'cinder/cinder_storage_class.yaml') }}"
+        definition: "{{ lookup('template', 'cinder/cinder_storage_class.yaml.j2') }}"
         validate:
           fail_on_error: true
           strict: true
