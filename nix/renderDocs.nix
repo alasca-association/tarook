@@ -220,10 +220,20 @@
               name = "yaook-k8s-docs";
               paths = [docs indexFile];
             };
-        in {
-          docsJSON = nixosOptionsDoc.optionsJSON;
-          docsRST = rstDocWithIndex allSections;
-          docsAll = rstDocCombined allSections;
+        in rec {
+          referenceOptionsJSON = nixosOptionsDoc.optionsJSON;
+          referenceOptionsRST = rstDocWithIndex allSections;
+          referenceOptionsAll = rstDocCombined allSections;
+
+          docs =
+            pkgs.runCommandLocal "yk8s-docs" {
+              nativeBuildInputs = [pkgs.rsync config.yk8s-env.environments.docs];
+            } ''
+              mkdir $out
+              rsync -rl --chmod 664 ${self}/ .
+              rsync -rL --chmod 664 --delete ${referenceOptionsRST} docs/user/reference/options
+              python3 -m sphinx docs $out -E
+            '';
         };
       });
   };

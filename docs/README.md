@@ -6,21 +6,12 @@ This documentation is generated using sphinx.
 
 See [index.rst](index.rst).
 
-## How to render
-
-Install sphinx by executing:
-
-```shell
-# Install dependencies via poetry
-poetry install --with docs --sync
-```
-
-To build the documentation use:
+Build the documentation by running the below from the repository's root.
 
 ```shell
 # Build documentation
-nix run .#renderDocs
+nix build .#docs
 
 # Open in Firefox
-firefox _build/html/index.html
+firefox result/index.html
 ```

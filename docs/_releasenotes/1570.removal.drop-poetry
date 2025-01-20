@@ -1,0 +1,1 @@
+YAOOK/K8s switched from Poetry to Nix for managing Python dependencies. Please remove all occurences of 'layout poetry' in your .envrc
