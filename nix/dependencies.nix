@@ -99,7 +99,7 @@
           Note that this does not include "default" because the runtime dependencies are
           enabled through direnv during the run.
         '';
-        includes = ["docs" "lint"];
+        includes = ["docs" "lint" "minimal"];
         packages = [
           coreutils
           gnugrep
