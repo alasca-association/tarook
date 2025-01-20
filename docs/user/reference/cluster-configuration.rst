@@ -2,11 +2,11 @@ Cluster Configuration
 =====================
 
 The :doc:`environment variables </user/reference/environmental-variables>`
-affect how the user interact with the cluster via the
+affect how the user interacts with the cluster via the
 :doc:`action scripts </user/reference/actions-references>`. The directory
 ``config/`` however holds the configuration of the cluster itself
 and can be adjusted to customize the YAOOK/K8s cluster to fit your needs. It also
-contains operational flags which can trigger operational tasks.
+contains certain flags which can trigger operational tasks.
 
 
 The cluster repository layout
@@ -28,9 +28,9 @@ The cluster repository layout
    │   ├── terraform/                    # Terraform specific state files
    ┊   ┊
 
-The ./config directory is completely handled by the user.
-The ./inventory directory is completely generated and may be ignored from the VCS.
-The ./state directory both input and output of the inventory generation and has to be added to VCS.
+The ``./config`` directory is completely handled by the user.
+The ``./inventory`` directory is completely generated and may be ignored from the VCS.
+The ``./state`` directory both input and output of the inventory generation and has to be added to VCS.
 
 ::
 
@@ -72,7 +72,7 @@ Custom Configuration
 --------------------
 
 Since YAOOK/K8s allows to
-:ref:`execute custom playbook(s) <abstraction-layers.customization>`, the
+:ref:`execute custom playbooks <abstraction-layers.customization>`, the
 custom section allows you to specify your own custom variables to be
 used in these.
 

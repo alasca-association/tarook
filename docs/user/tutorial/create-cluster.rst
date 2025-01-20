@@ -181,7 +181,7 @@ You should be asked whether you want to unblock the ``.envrc``:
 
 It should ask you for your OpenStack account password every time you go into that directory.
 
-Initialising the Cluster Repository
+Initialize the Cluster Repository
 -----------------------------------
 
 .. code:: console
@@ -327,7 +327,7 @@ for what to execute in which order.
 
         terraform.prevent_disruption = false;
 
-    Than run
+    Then run
 
     .. code:: console
 

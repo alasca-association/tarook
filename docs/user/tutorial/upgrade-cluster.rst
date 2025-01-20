@@ -56,7 +56,7 @@ Use the following command to synchronize your local copy with the remote reposit
 ------------------------------
 
 When using the LCM tool YAOOK/K8s, updates and upgrades follow the semantic versioning system (major, minor and patch).
-However, you should always consult the release notes for any exceptions.
+However, it is recommended to consult the release notes in any case.
 
 Patch Versions:
 Skipping patch versions is generally safe because they typically contain backward-compatible fixes and improvements.
@@ -101,7 +101,7 @@ Verify the status of submodules by running the following command:
 
 4. Performing the Upgrade on the Cluster
 ----------------------------------------
-Establish the WireGuard connection on none baremetal systems:
+Establish the WireGuard connection on non-baremetal systems:
 
 .. code:: console
 
@@ -117,7 +117,7 @@ Run the YAOOK/K8s Lifecycle Manager (LCM):
     Generally, a single run of the LCM ensures all components are updated properly.
 
 Verify the upgrade:
-Confirm that the Kubernetes cluster is functioning as expected after the update or upgrade.
+Confirm that the Kubernetes cluster is functioning as expected after the upgrade.
 
 .. code:: console
 
