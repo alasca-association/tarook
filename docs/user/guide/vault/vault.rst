@@ -36,6 +36,15 @@ for additional environment variables accepted by these tools.
    separate root CA infrastructure. The certificate sign requests are
    provided as ``*.csr`` files in the working directory.
 
+-  ``tools/vault/mkcsrs.sh``: Create new CSR files for intermediate CAs.
+   This script should only be used with clusters which have been bootstrapped using
+   ``mkcluster-intermediate.sh``, or equivalent.
+   The CSRs created by this script must be signed with the (externally managed) root CA.
+   The signed intermediates then can be imported into vault with the script below.
+   The procedure is described further below: :ref:`vault.importing-new-intermediates`.
+
+.. _vault.tools.load-signed-intermediates:
+
 -  ``tools/vault/load-signed-intermediates.sh``: Load the
    signed intermediate CA files into the cluster. This script should
    only be used with clusters which have been bootstrapped using
@@ -56,6 +65,20 @@ for additional environment variables accepted by these tools.
 -  ``tools/vault/rmcluster.sh``: Deletes all data associated
    with the cluster from Vault. EXCEPTIONALLY DANGEROUS, so it always
    requires manual confirmation.
+
+- ``tools/vault/update.sh``: Reinitializes the PKI engines, checks for
+  leftovers inside vault and tries to reimport configurations for
+  :ref:`etcd-backup <configuration-options.yk8s.k8s-service-layer.etcd-backup>`,
+  :ref:`Thanos <thanos.custom-bucket-management>`
+  and the :ref:`IPSec PSK <ipsec.upload-psk-to-vault>`.
+
+- ``rotate-root-ca-intermediate.sh``: Needed for Root CA rotation by clusters
+  which have been bootstrapped using ``mkcluster-intermediate.sh``, or equivalent.
+  See :doc:`vault-ca-rotation` for more information.
+
+- ``rotate-root-ca-root.sh``: Needed for Root CA rotation by clusters
+  which have their root CA managed inside Vault.
+  See :doc:`vault-ca-rotation` for more information.
 
 Using Vault to replace a long-lived admin.conf
 ----------------------------------------------
@@ -476,3 +499,85 @@ Procedure
          parameters.
 
       5. Done.
+
+.. _vault.importing-new-intermediates:
+
+Importing new Intermediates
+---------------------------
+
+.. note::
+
+   This section is relevant only for clusters which have been bootstrapped
+   using ``mkcluster-intermediate.sh``, or equivalent.
+
+Imported intermediates are valid for 1,5 years by default.
+Usually, the (externally managed) root CA is valid for a longer period of time.
+When the intermediates are about to expire,
+they must be regenerated.
+In the following the procedure for that is described:
+
+.. note::
+
+   A root token is required.
+
+1. Create new CSRs
+
+   .. code:: console
+
+      $ bash managed-k8s/tools/vault/mkcsrs.sh
+
+2. Optionally, you may also figure out the currently configured CA chains
+   for comparison.
+   These can be manually read from vault.
+   You need to figure out the ID of the current issuer for each PKI engine for that.
+
+   .. code:: console
+
+      # k8s-pki
+      $ vault list -detailed yaook/<CLUSTER_NAME>/k8s-pki/issuers
+      $ vault read yaook/<CLUSTER_NAME>/k8s-pki/issuer/<ISSUER_ID>/ -format=json | jq -jr ".data.ca_chain[]" > k8s-pki.pem
+
+      # etcd-pki
+      $ vault list -detailed yaook/<CLUSTER_NAME>/etcd-pki/issuers
+      $ vault read yaook/<CLUSTER_NAME>/etcd-pki/issuer/<ISSUER_ID>/ -format=json | jq -jr ".data.ca_chain[]" > etcd-pki.pem
+
+      # k8s-front-proxy-pki
+      $ vault list -detailed yaook/<CLUSTER_NAME>/k8s-front-proxy-pki/issuers
+      $ vault read yaook/<CLUSTER_NAME>/k8s-front-proxy-pki/issuer/<ISSUER_ID>/ -format=json | jq -jr ".data.ca_chain[]" > k8s-front-proxy-pki.pem
+
+3. Archive the files:
+
+   .. code:: console
+
+      $ tar -czvf "<CLUSTER_NAME>-intermediate-renewal-$(date --iso-8601=date).tar.gz" etcd-pki.pem k8s-front-proxy-pki.pem k8s-pki.pem etcd-pki.csr k8s-front-proxy-pki.csr k8s-pki.csr
+
+   .. note::
+
+      There is no need to check these into version control.
+
+4. Get the CSRs signed by the externally managed root CA (out of scope of LCM).
+
+5. Import the new signed intermediates:
+
+   .. note::
+
+      The script assumes that the full chains are present as the following files
+      in your cluster repository:
+
+      * ``$CLUSTER_REPOSITORY/k8s-cluster.fullchain.pem``
+      * ``$CLUSTER_REPOSITORY/k8s-front-proxy.fullchain.pem``
+      * ``$CLUSTER_REPOSITORY/k8s-etcd.fullchain.pem``
+
+      Also refer to the :ref:`script's description further above<vault.tools.load-signed-intermediates>`.
+
+   .. code:: console
+
+      $ managed-k8s/tools/vault/load-signed-intermediates.sh
+
+6. Do a full rollout:
+
+   .. code:: console
+
+      $ managed-k8s/actions/apply-all.sh
+
+7. The temporary files (CSRs and CA chains) can be removed.

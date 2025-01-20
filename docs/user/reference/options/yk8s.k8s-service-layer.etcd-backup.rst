@@ -35,6 +35,19 @@ Variable           Description
 ``endpoint_cacrt`` Certificate bundle of the endpoint.
 ================== =======================================
 
+These must be put into a YAML file located at ``config/etcd_backup_s3_config.yaml``.
+The configuration then can be imported to Vault by executing:
+
+.. note::
+
+  A root token is required.
+
+.. code:: console
+
+  $ ./managed-k8s/tools/vault/update.sh
+
+Alternatively, you can also manually insert your configuration into vault.
+
 .. raw:: html
 
   <details>

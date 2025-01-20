@@ -222,6 +222,8 @@ inside your OpenStack project and automatically configures
 Thanos to use that container as primary storage.
 
 
+.. _thanos.custom-bucket-management:
+
 Custom bucket management
 """"""""""""""""""""""""
 
