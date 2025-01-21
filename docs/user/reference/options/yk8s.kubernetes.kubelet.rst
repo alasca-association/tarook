@@ -81,14 +81,40 @@ Note: To change this value you have to release the Kraken
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
 
 
-.. _configuration-options.yk8s.kubernetes.kubelet.pod_limit:
+.. _configuration-options.yk8s.kubernetes.kubelet.pod_limit_master:
 
-``yk8s.kubernetes.kubelet.pod_limit``
-#####################################
+``yk8s.kubernetes.kubelet.pod_limit_master``
+############################################
 
-Maximum number of Pods per worker
+Maximum number of Pods per master node
 Increasing this value may also decrease performance,
 as more Pods can be packed into a single node.
+Therefore it's especially helpful for nodes which have much resources.
+
+
+**Type:**::
+
+  signed integer
+
+
+**Default:**::
+
+  110
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.pod_limit_worker:
+
+``yk8s.kubernetes.kubelet.pod_limit_worker``
+############################################
+
+Maximum number of Pods per worker node
+Increasing this value may also decrease performance,
+as more Pods can be packed into a single node.
+Therefore it's especially helpful for nodes which have much resources.
 
 
 **Type:**::
