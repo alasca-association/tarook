@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.1.8 (2025-01-27)
+-------------------
+
+Misc
+~~~~
+
+- `!1627 <https://gitlab.com/yaook/k8s/-/merge_requests/1627>`_
+
+
 v8.1.7 (2024-12-11)
 -------------------
 
