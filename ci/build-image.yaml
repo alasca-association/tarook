@@ -3,22 +3,6 @@ build_image:
     - docker
   image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.24.4"
   stage: build-image
-  rules:
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    changes:
-    - flake.nix
-    - flake.lock
-    - ci/build-image.yaml
-    - ci/container-image/*
-    when: always
-  - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
-    changes:
-    - flake.nix
-    - flake.lock
-    - ci/build-image.yaml
-    - ci/container-image/*
-    when: always
-  - when: never
   before_script:
     - |
       cat > /etc/nix/nix.conf <<EOF
@@ -29,12 +13,27 @@ build_image:
       trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
       EOF
   script:
-  - export IMAGE_TAG="${CI_COMMIT_SHA:0:8}"
-  - export IMAGE_REF="${YAOOK_K8S_CI_IMAGE_NAME}:${IMAGE_TAG}"
-  - nix run nixpkgs#skopeo -- login -u gitlab-ci-token -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
-  - nix run ".#streamCiImage" | nix run nixpkgs#gzip -- --fast | nix run nixpkgs#skopeo -- --insecure-policy copy docker-archive:/dev/stdin "docker://${IMAGE_REF}"
-  - echo "YAOOK_K8S_CI_IMAGE_TAG=$IMAGE_TAG" > image.env
+  - export YAOOK_K8S_CI_IMAGE_TAG="$(nix eval .#ciImage --read-only --raw | grep -Po '^/nix/store/\K[a-z0-9]{32}')"
+  - export IMAGE_REF="${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
+  # Manually talking to the registry API, because downloading skopeo only for the lookup would cost ~1min per run
+  # Also jq is not available in the Nixos container image
+  - token="$(curl "https://gitlab.com/jwt/auth?scope=repository:yaook/k8s/ci:pull&service=container_registry" | tr -d '\n\t\r ' | grep -oP '"token"\s*:\s*"\K.*?(?=")')"
+  - |
+    registry_response="$( \
+        curl --head --silent --output /dev/null --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${token}" \
+            "https://${YAOOK_K8S_CI_IMAGE_NAME%%/*}/v2/${YAOOK_K8S_CI_IMAGE_NAME#*/}/manifests/${YAOOK_K8S_CI_IMAGE_TAG}" \
+    )"
 
+    if [ "${registry_response}" -eq 200 ]; then
+      echo "Image \"${IMAGE_REF}\" already present in the registry. Skipping build."
+    else
+      echo "Image \"${IMAGE_REF}\" not yet present in the registry. Building..."
+      nix run nixpkgs#skopeo -- login -u gitlab-ci-token -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
+      nix run ".#streamCiImage" | nix run nixpkgs#gzip -- --fast | nix run nixpkgs#skopeo -- --insecure-policy copy docker-archive:/dev/stdin "docker://${IMAGE_REF}"
+      nix path-info --all | nix run nixpkgs#cachix -- push yaook # Push builds to binary cache at yaook.cachix.org
+    fi
+  - echo "YAOOK_K8S_CI_IMAGE_TAG=$YAOOK_K8S_CI_IMAGE_TAG" | tee image.env
   artifacts:
     reports:
       dotenv: image.env
@@ -60,7 +59,6 @@ deploy_image_default_branch:
       when: on_success
   script:
   - nix run nixpkgs#skopeo -- login -u gitlab-ci-token -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
-  - nix run nixpkgs#skopeo -- --insecure-policy copy "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}" "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${CI_COMMIT_REF_NAME}"
   - nix run nixpkgs#skopeo -- --insecure-policy copy "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}" "docker://${YAOOK_K8S_CI_IMAGE_NAME}:latest";
   tags:
   - docker
@@ -75,5 +73,6 @@ deploy_image_release:
   script:
   - nix run nixpkgs#skopeo -- login -u gitlab-ci-token -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
   - nix run nixpkgs#skopeo -- --insecure-policy copy "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}" "docker://${YAOOK_K8S_CI_IMAGE_NAME}:$(cat ./version)"
+  - nix run nixpkgs#skopeo -- --insecure-policy copy "docker://${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}" "docker://${YAOOK_K8S_CI_IMAGE_NAME}:$(cat ./version | cut -d'.' -f"1 2")"
   tags:
   - docker
