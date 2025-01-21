@@ -54,6 +54,7 @@ data "openstack_compute_flavor_v2" "worker" {
 data "openstack_images_image_v2" "worker" {
   for_each = local.worker_nodes
   name     = each.value.image
+  most_recent = true
 }
 
 resource "openstack_blockstorage_volume_v3" "worker-volume" {

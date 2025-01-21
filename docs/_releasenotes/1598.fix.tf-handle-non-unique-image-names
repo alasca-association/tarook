@@ -1,0 +1,3 @@
+The YAOOK/K8s Terraform module does not fail anymore
+if there are multiple Openstack images with the same name
+but simply selects the most recent one.
