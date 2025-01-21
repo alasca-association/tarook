@@ -18,6 +18,7 @@ in {
     (mkRemovedOptionModule "miscellaneous" "pip_mirror_url" "")
     (mkRenamedOptionModuleWithNewSection "miscellaneous" "subnet_cidr" "infra" "subnet_cidr")
     (mkRenamedOptionModuleWithNewSection "miscellaneous" "hosts_file" "infra" "hosts_file")
+    (mkRemovedOptionModule "miscellaneous" "openstack_connect_use_helm" "Helm is now always used to deploy the CCM and the cinder CSI plugin")
   ];
   options.yk8s.miscellaneous = mkTopSection {
     _docs.preface = ''
@@ -102,17 +103,6 @@ in {
       '';
       type = with types; nullOr nonEmptyStr;
       default = null;
-    };
-    openstack_connect_use_helm = mkOption {
-      description = ''
-        Use the helm chart to deploy the CCM and the cinder csi plugin.
-        If openstack_connect_use_helm is false the deployment will be done with the help
-        of the deprecated manifest code.
-        This will be enforced for clusters with Kubernetes >= v1.29 and
-        the deprecated manifest code will be dropped along with Kubernetes v1.28
-      '';
-      type = types.bool;
-      default = true;
     };
     vm_max_map_count = mkOption {
       description = ''
