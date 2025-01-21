@@ -36,6 +36,8 @@ for additional environment variables accepted by these tools.
    separate root CA infrastructure. The certificate sign requests are
    provided as ``*.csr`` files in the working directory.
 
+.. _vault.tools.load-signed-intermediates:
+
 -  ``tools/vault/load-signed-intermediates.sh``: Load the
    signed intermediate CA files into the cluster. This script should
    only be used with clusters which have been bootstrapped using
