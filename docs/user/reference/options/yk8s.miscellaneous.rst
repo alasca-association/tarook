@@ -532,32 +532,6 @@ of the IaaS-layer is used.
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
-.. _configuration-options.yk8s.miscellaneous.openstack_connect_use_helm:
-
-``yk8s.miscellaneous.openstack_connect_use_helm``
-#################################################
-
-Use the helm chart to deploy the CCM and the cinder csi plugin.
-If openstack_connect_use_helm is false the deployment will be done with the help
-of the deprecated manifest code.
-This will be enforced for clusters with Kubernetes >= v1.29 and
-the deprecated manifest code will be dropped along with Kubernetes v1.28
-
-
-**Type:**::
-
-  boolean
-
-
-**Default:**::
-
-  true
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
-
-
 .. _configuration-options.yk8s.miscellaneous.openstack_network_name:
 
 ``yk8s.miscellaneous.openstack_network_name``
