@@ -283,6 +283,7 @@ remote_private_addrs = "172.20.150.154"
 
 [miscellaneous]
 wireguard_on_workers = false
+openstack_cinder_volume_type = "three_times_replicated-sitewide"
 
 custom_chrony_configuration = true
 custom_ntp_servers = [ "0.de.pool.ntp.org", "1.de.pool.ntp.org", "2.de.pool.ntp.org", "3.de.pool.ntp.org"]

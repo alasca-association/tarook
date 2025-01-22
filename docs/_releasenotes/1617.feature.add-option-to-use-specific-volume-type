@@ -1,0 +1,1 @@
+A new option has been added which allows to configure a specific volume type for the ``csi-sc-cinderplugin`` StorageClass: :ref:`configuration-options.yk8s.miscellaneous.openstack_cinder_volume_type`.

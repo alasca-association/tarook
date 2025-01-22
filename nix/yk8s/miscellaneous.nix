@@ -93,6 +93,15 @@ in {
       default = null;
       example = "\${config.yk8s.terraform.cluster_name}-network";
     };
+    openstack_cinder_volume_type = mkOption {
+      description = ''
+        Use a specific volume type for the csi-sc-cinderplugin StorageClass.
+        If unset, no volume type is explicitly set and the default volume type
+        of the IaaS-layer is used.
+      '';
+      type = with types; nullOr nonEmptyStr;
+      default = null;
+    };
     openstack_connect_use_helm = mkOption {
       description = ''
         Use the helm chart to deploy the CCM and the cinder csi plugin.
