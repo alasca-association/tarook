@@ -26,11 +26,11 @@ in
 
       master_defaults = {
         flavor = "M";
-        image = "Ubuntu 22.04 LTS x64";
+        image = "Ubuntu 24.04 LTS x64";
       };
       worker_defaults = {
         flavor = "M";
-        image = "Ubuntu 22.04 LTS x64";
+        image = "Ubuntu 24.04 LTS x64";
       };
       gateway_defaults = {
         image = "Debian 12 (bookworm)";
