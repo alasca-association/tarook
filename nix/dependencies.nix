@@ -127,6 +127,7 @@
           dnsutils
           iputils
           k9s
+          nushell
         ];
       };
     };
