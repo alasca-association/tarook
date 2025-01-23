@@ -1,0 +1,39 @@
+The etcd-metrics-proxy has been adjusted to work on dual stack as well as IPv6 only clusters.
+
+For dual stack clusters which have been setup prior to release v9.0.0,
+etcd-metrics can be scraped by IPv4 only as etcd must be patched to supply
+metrics on ``[::1]:2381`` as well. Out of the box it supplies metrics only on
+``127.0.0.1`` even if Kubernetes has been set up to use dual stack.
+This release introduces an automated patch which basically does the following things:
+
+1. Adjust the ``ClusterConfiguration`` in the ``kubeadm-config`` ConfigMap to reflect the following
+
+  .. code:: yaml
+
+    # [...]
+    etcd:
+      local:
+        extraArgs:
+          listen-metrics-urls: "http://127.0.0.1:2381,http://[::1]:2381"
+    # [...]
+
+2. Regenerate the static Pod manifests of etcd on each control plane node with the patched ``ClusterConfiguration``
+
+  .. code:: shell
+
+    $ kubectl get cm kubeadm-config -n kube-system -o json | jq -r .data.ClusterConfiguration > /tmp/cluster-configuration.yaml
+    $ kubeadm init phase etcd local --config /tmp/cluster-configuration.yaml
+
+3. Regenerate the certificates used for TLS encryption between Prometheus and the etcd-metrics-proxy Pods
+4. Restart Prometheus and the etcd-metrics-proxy DaemonSet
+5. Adjust the etcd-metrics-proxy DaemonSet to supply metrics over both IPv4 and IPv6
+
+The necessary changes are automatically applied on a full rollout.
+To trigger them in a more controlled way, run:
+
+.. code:: shell
+
+  $ bash managed-k8s/actions/apply-k8s-core.sh install-k8s.yaml
+  $ bash managed-k8s/actions/apply-k8s-supplements.sh install-monitoring.yaml
+
+The above patch is not needed for newly initialized dual stack clusters.

@@ -47,6 +47,13 @@ apiServer:
     service-account-signing-key-file: /etc/kubernetes/pki/sa.key
     enable-admission-plugins: NodeRestriction
 
+etcd:
+  local:
+    extraArgs:
+{% if ipv4_enabled and ipv6_enabled %}
+      listen-metrics-urls: "http://127.0.0.1:2381,http://[::1]:2381"
+{% endif %}
+
 controllerManager:
   extraArgs:
 {% if ipv4_enabled %}
