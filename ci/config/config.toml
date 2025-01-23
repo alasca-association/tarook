@@ -195,7 +195,7 @@ replicated = 1
 [k8s-service-layer.prometheus]
 use_thanos                          = true
 use_grafana                         = true
-grafana_persistent_storage_class    = "rook-ceph-cephfs"
+grafana_persistent_storage_class    = "csi-sc-cinderplugin"
 prometheus_persistent_storage_class = "csi-sc-cinderplugin"
 thanos_objectstorage_container_name = "ci-monitoring-thanos-data"
 scheduling_key                      = "{{ scheduling_key_prefix }}/monitoring"
