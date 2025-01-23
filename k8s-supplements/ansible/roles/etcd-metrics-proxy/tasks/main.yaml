@@ -33,6 +33,9 @@
     namespace: kube-system
     name: etcd-metrics-proxy
   register: server_cert_state
+  until: server_cert_state is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Check if the etcd-metrics-proxy cert secret already exists (monitoring)
   kubernetes.core.k8s_info:
@@ -41,6 +44,9 @@
     namespace: monitoring
     name: etcd-metrics-proxy
   register: client_cert_state
+  until: client_cert_state is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 # We need a "server" certificate for the etcd-metrics-proxy endpoint
 # and a "client" certificate for the prometheus scraper.
@@ -55,10 +61,15 @@
         label_selectors:
           - node-role.kubernetes.io/control-plane
       register: controller_nodes
+      until: controller_nodes is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
     - name: Create the x509 key of the server
       community.crypto.openssl_privatekey_pipe:
       no_log: true  # prevent private key from being exposed
       register: server_key
+
     - name: Generate the CSR of the server
       no_log: true  # prevent private key from being exposed
       community.crypto.openssl_csr_pipe:
@@ -70,6 +81,7 @@
         # Maybe someone knows a shorter way? :)
         subject_alt_name: "{{ (controller_nodes.resources | map(attribute='status') | map(attribute='addresses') | flatten(levels=1) | selectattr('type', 'eq', 'InternalIP') | map(attribute='address')) | map('regex_replace', '^(.*)$', 'IP:\\1') | list }}"
       register: server_csr
+
     - name: Create the x509 certificate of the server
       no_log: true  # prevent private key from being exposed
       community.crypto.x509_certificate_pipe:
@@ -83,6 +95,7 @@
       community.crypto.openssl_privatekey_pipe:
       no_log: true  # prevent private key from being exposed
       register: client_key
+
     - name: Generate the CSR of the client
       no_log: true  # prevent private key from being exposed
       community.crypto.openssl_csr_pipe:
@@ -91,6 +104,7 @@
         subject:
           CN: 127.0.0.1
       register: client_csr
+
     - name: Create the x509 certificate of the client
       no_log: true  # prevent private key from being exposed
       community.crypto.x509_certificate_pipe:
@@ -118,6 +132,10 @@
         validate:
           fail_on_error: true
           strict: true
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
     - name: Create the secret for the prometheus scraper
       no_log: true  # prevent private key from being exposed
@@ -137,6 +155,10 @@
         validate:
           fail_on_error: true
           strict: true
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
     # Restarting pods after configuration changes is messy business.
     # Note: I'd love to use handlers here but as the operation is split in two [0]
@@ -155,6 +177,9 @@
             namespace: monitoring
             name: prometheus-prometheus-stack-kube-prom-prometheus
           register: prometheus
+          until: prometheus is not failed
+          retries: "{{ error_retries }}"
+          delay: "{{ error_delay }}"
 
         - name: Restart prometheus  # noqa no-changed-when
           when: prometheus.resources
@@ -168,6 +193,9 @@
             namespace: kube-system
             name: etcd-metrics-proxy
           register: etcd_metrics_proxy
+          until: etcd_metrics_proxy is not failed
+          retries: "{{ error_retries }}"
+          delay: "{{ error_delay }}"
 
         - name: Restart etcd-metrics-proxy  # noqa no-changed-when
           when: etcd_metrics_proxy.resources
