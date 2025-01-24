@@ -1806,7 +1806,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 **Default:**::
 
-  "\${config.yk8s.terraform.cluster_name}-monitoring-thanos-data"
+  "\${config.yk8s.infra.cluster_name}-monitoring-thanos-data"
 
 
 **Declared by**

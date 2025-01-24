@@ -7,7 +7,7 @@
   cfg = config.yk8s.node-scheduling;
   inherit (lib) mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  nodeNames = map (n: "${config.yk8s.terraform.cluster_name}-${n}") (builtins.attrNames config.yk8s.terraform.nodes);
+  nodeNames = map (n: "${config.yk8s.infra.cluster_name}-${n}") (builtins.attrNames config.yk8s.terraform.nodes);
 in {
   options.yk8s.node-scheduling = mkTopSection {
     _docs.preface = ''

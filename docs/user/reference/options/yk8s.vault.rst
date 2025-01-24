@@ -21,6 +21,11 @@ reasonably changed after a cluster has been spawned.
   non-empty string
 
 
+**Default:**::
+
+  "\${config.infra.cluster_name}"
+
+
 **Declared by**
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/vault.nix
 
