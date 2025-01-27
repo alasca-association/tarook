@@ -16,6 +16,16 @@ pages:
     # run only on devel branch
     - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
       when: on_success
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
+      when: on_success
+    - changes:
+      #  sphinx-multiversion may be updated
+      - nix/dependencies.nix
+      - flake.lock
+
+      # sphinx-multiversion always uses this file from the current branch, so changes may break other versions
+      - docs/conf.py
+      when: on_success
     - when: never
   tags:
     - docker
