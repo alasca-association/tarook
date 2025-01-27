@@ -8,6 +8,8 @@ state_dir="$cluster_repository/state"
 
 migration_lock="$state_dir/migration-in-progress"
 
+version_major_minor=$(grep -Po '^[0-9]+\.[0-9]+' "$code_repository/version")
+
 submodule_managed_k8s_name="managed-k8s"
 
 terraform_min_version="1.3.0"

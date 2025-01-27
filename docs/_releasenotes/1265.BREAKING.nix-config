@@ -34,12 +34,12 @@ The cluster repository layout has changed:
 
        $ ./managed-k8s/actions/migrate-cluster-repo.sh
 
-    For all bare-metal clusters, make sure to add
+    The first run may fail, because manual adjustments to the config are required.
+    These cases require manual action:
 
-    .. code:: nix
+    * Jinja templates in values need to be replaced with the equivalent Nix expressions
+    * Options that no longer exist need to be removed
 
-        miscellaneous.hosts_file = ./hosts
-
-    to ``config/default.nix``
+    The migration script will point out these cases.
 
 _

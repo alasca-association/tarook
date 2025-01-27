@@ -12,11 +12,5 @@
       '';
       path = ./cluster-repo;
     };
-    templates.migration = {
-      description = ''
-        Template to migrate from before vX.0.0
-      '';
-      path = ./migration;
-    };
   };
 }
