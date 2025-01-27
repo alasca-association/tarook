@@ -19,7 +19,8 @@ pages:
     - when: never
   tags:
     - docker
-  dependencies: []  # to not fetch any artifacts from previous jobs
+  dependencies:
+    - build_image  # only fetch CI image tag and ensure that the public/ directory is empty
 
 tag-release:
   stage: release
