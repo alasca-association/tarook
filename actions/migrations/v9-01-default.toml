@@ -1,0 +1,20 @@
+[terraform]
+cluster_name = "managed-k8s"
+azs = [
+    "AZ1",
+    "AZ2",
+    "AZ3",
+]
+public_network = "shared-public-IPv4"
+
+[terraform.master_defaults]
+flavor = "M"
+image = "Ubuntu 24.04 LTS x64"
+
+[terraform.worker_defaults]
+flavor = "M"
+image = "Ubuntu 24.04 LTS x64"
+
+[terraform.gateway_defaults]
+flavor = "XS"
+image = "Debian 12 (bookworm)"
