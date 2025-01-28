@@ -4,7 +4,7 @@
   ...
 }: {
   yk8s-env = {
-    python = pkgs.python311;
+    python = pkgs.python3;
     dependencies.groups = with pkgs; {
       minimal = {
         description = "Will be used by direnv when MINIMAL_ACCESS_VENV=true";
