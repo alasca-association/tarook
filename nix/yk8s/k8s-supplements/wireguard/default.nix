@@ -10,7 +10,7 @@
   inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule;
   inherit (lib) mkOption types;
   inherit (lib.attrsets) filterAttrs;
-  inherit (yk8s-lib) mkTopSection;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
   inherit (yk8s-lib.types) ipv4Addr ipv4Cidr;
   # inherit (yk8s-lib.transform) filterNull addPrefix;
   inherit (yk8s-lib) linkToPath;
@@ -276,8 +276,16 @@ in {
         ${wireguard_helper}/bin/wireguard_helper ${varsFile} $out/${inventory_path}
       '';
   in {
-    _inventory_packages = [(linkToPath "${wireguard_helper_output}/${inventory_path}" "group_vars/${inventory_path}")];
-    _state_packages = [(linkToPath "${wireguard_helper_output}/${ipam_path}" ipam_path)];
+    _inventory_packages =
+      if cfg.enabled
+      then [(linkToPath "${wireguard_helper_output}/${inventory_path}" "group_vars/${inventory_path}")]
+      else [
+        (mkGroupVarsFile {
+          cfg = {enabled = false;};
+          inherit inventory_path;
+        })
+      ];
+    _state_packages = lib.lists.optional cfg.enabled (linkToPath "${wireguard_helper_output}/${ipam_path}" ipam_path);
     wireguard.endpoints =
       if cfg.port != null
       then [
