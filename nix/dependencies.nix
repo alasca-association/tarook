@@ -45,7 +45,7 @@
             kubernetes
             (callPackage ./pkgs/kubernetes-validate.nix {})
             openshift
-            openstackclient-full
+            python-openstackclient
             loguru
             packaging
             jsonschema
@@ -109,11 +109,13 @@
           gnutar
           netcat
           nix
+          rsync
           sonobuoy
         ];
         pythonPackages = ps:
           with ps; [
             GitPython
+            python-openstackclient
           ];
       };
 
