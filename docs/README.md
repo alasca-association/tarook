@@ -4,7 +4,7 @@ This documentation is generated using sphinx.
 
 ## Table of Contents
 
-See [index.rst](index.rst).
+See [index.md](index.md).
 
 Build the documentation by running the below from the repository's root.
 
