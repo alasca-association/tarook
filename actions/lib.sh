@@ -62,7 +62,7 @@ function load_vault_container_name() {
 }
 
 function load_conf_vars() {
-    # All the things with side-effects should got here
+    # All the things with side-effects should go here
 
     terraform_prevent_disruption="$(
         yq '.prevent_disruption | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
