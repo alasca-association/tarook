@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'yaook/k8s'
-copyright = '2020-2024, Yaook Authors'
+copyright = '2020-2025, Yaook Authors'
 author = 'YAOOK Authors'
 
 # -- General configuration ---------------------------------------------------
