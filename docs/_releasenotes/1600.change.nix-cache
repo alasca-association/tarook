@@ -1,0 +1,9 @@
+
+The Nix binary cache has been moved to a new location. Please remove all occurences of "tarook.cachix.org" and, if desired, configure
+
+  .. code:: ini
+
+     extra-substituters = https://nix-cache.tarook.cloud
+     extra-trusted-public-keys = nix-cache.tarook.cloud-2:2X2yPTrpwmakhSgS83FVB2fKkG6IzfOJ1AGIIcvNyM0=
+
+  in ``/etc/nix/nix.conf``. Then do `systemctl restart nix-daemon.service` for the change to take effect immediately.

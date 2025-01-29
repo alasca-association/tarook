@@ -49,8 +49,8 @@ You can find the actual requirements
     $ sh <(curl -L https://nixos.org/nix/install) --daemon
     $ cat <<EOF >> /etc/nix/nix.conf
     experimental-features = nix-command flakes
-    extra-substituters = https://yaook.cachix.org
-    extra-trusted-public-keys = yaook.cachix.org-1:m85JtxgDjaNa7hcNUB6Vc/BTxpK5qRCqF4yHoAniwjQ=
+    extra-substituters = https://nix-cache.tarook.cloud
+    extra-trusted-public-keys = nix-cache.tarook.cloud-2:2X2yPTrpwmakhSgS83FVB2fKkG6IzfOJ1AGIIcvNyM0=
     EOF
 
 Configure WireGuard
