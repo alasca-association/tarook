@@ -174,7 +174,7 @@ Kubernetes version
 
 **Type:**::
 
-  string matching the pattern 1.(28|29|30).[0-9]+
+  string matching the pattern 1.(29|30).[0-9]+
 
 
 **Default:**::

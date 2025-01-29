@@ -1,24 +1,4 @@
 ---
-- name: Migrate K8s resource for the openstack v1 deployment if needed
-  block:
-  - name: Check if a resource already exists
-    kubernetes.core.k8s_info:
-      kind: DaemonSet
-      name: csi-cinder-nodeplugin
-      namespace: kube-system
-    register: os_ns_info
-    failed_when: not os_ns_info.api_found
-    # Retry this task on failures
-    until: os_ns_info is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
-
-  - name: Trigger migration
-    include_tasks: migrate-from-openstack-v1.yaml
-    when:
-    - os_ns_info.resources | length > 0
-    - os_ns_info.resources[0].metadata.labels is not defined
-
 - name: Create cloud-config secret
   kubernetes.core.k8s:
     apply: true
@@ -37,7 +17,7 @@
   notify:
   - restart CCM
   - restart csi-cinder-controllerplugin
-  - restart csi-cinder-nodeplugin
+  - restart openstack-cinder-csi-nodeplugin
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
