@@ -45,7 +45,7 @@
             kubernetes
             (callPackage ./pkgs/kubernetes-validate.nix {})
             openshift
-            openstackclient-full
+            python-openstackclient
             loguru
             packaging
             jsonschema
@@ -99,7 +99,7 @@
           Note that this does not include "default" because the runtime dependencies are
           enabled through direnv during the run.
         '';
-        includes = ["docs" "lint" "minimal"];
+        includes = ["docs" "lint"];
         packages = [
           coreutils
           gnugrep
@@ -109,11 +109,13 @@
           gnutar
           netcat
           nix
+          rsync
           sonobuoy
         ];
         pythonPackages = ps:
           with ps; [
             GitPython
+            python-openstackclient
           ];
       };
 
