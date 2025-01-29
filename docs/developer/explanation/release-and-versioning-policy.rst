@@ -47,7 +47,7 @@ The repository is structured in four branch-types:
     This version should already be stable enough that it is usable for non-prod use cases.
 
 ``release/v$Major.$Minor``
-    For every major and minor release we have a separate branch. The ``release-prepare/v$Major.$Minor``-branch is merged into
+    For every major and minor release we have a separate branch. The ``release-prepare/v$Major.$Minor.$Patch``-branch is merged into
     or generates a new branch.
 
 
@@ -61,11 +61,11 @@ The repository is structured in four branch-types:
 Versioning specification
 ************************
 
-We define the following versioning scheme following the SemVer concept (https://semver.org/) $Major.$Minor.$Patch:
+We define the following versioning scheme following the SemVer concept (https://semver.org/) ``$Major.$Minor.$Patch``:
 
-* We increment Major by 1 if we have an incompatible change.
-* We increment Minor by 1 every time we added at least one new feature in the release. It starts from 0 for each major release.
-* We increment Patch by 1 for every release not introducing a new feature. It starts from 0 for each normal release.
+* We increment ``$Major`` by 1 if we have an incompatible change.
+* We increment ``$Minor`` by 1 every time we added at least one new feature in the release. It starts from 0 for each major release.
+* We increment ``$Patch`` by 1 for every release not introducing a new feature. It starts from 0 for each normal release.
 
 
 .. _release-and-versioning-policy.yaook-k8s-implementation:
@@ -87,7 +87,6 @@ The release pipeline of the YAOOK/K8s repository is following these steps:
 
 The pipeline for the ``release-prepare/v$Major.$Minor.$Patch``-branch does the following:
     - run all tests (linting (depending on changes), cluster-tests, diagnostics)
-    - tag the commit with ``v$Major.$Minor.$Patch-rc-<build-nr>`` if it's a major or minor release
     - create a delayed job (one week) which
         - merges to (or creates the new branch) ``release/v$Major.$Minor``
         - triggers a MR back to ``devel``
