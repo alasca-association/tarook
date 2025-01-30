@@ -265,6 +265,12 @@
       value: 1
       state: present
 
+  - name: Configure kubelet
+    ansible.builtin.include_role:
+      name: kubelet-configuration
+    vars:
+      _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
+
 - name: Join the K8s control plane
   when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed"
   become: true
@@ -330,6 +336,15 @@
     ansible.builtin.file:
       path: /tmp/kubeadm-join-config.yaml
       state: absent
+
+  # Workaround because it is currently not possible
+  # to pass a kubelet config file for kubeadm join
+  # https://stackoverflow.com/questions/60378117/limit-the-number-of-pods-per-node
+  - name: Configure kubelet
+    ansible.builtin.include_role:
+      name: kubelet-configuration
+    vars:
+      _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
 
   - name: Set static fact that kubernetes is initialized
     vars:

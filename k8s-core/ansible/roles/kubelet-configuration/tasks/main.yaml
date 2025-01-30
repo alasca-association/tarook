@@ -1,18 +1,27 @@
 ---
+- name: Determine pod limit to use for master nodes
+  set_fact:
+    kubelet_pod_limit: "{{ k8s_kubelet_pod_limit_master }}"
+  when: "'masters' in group_names"
+
+- name: Determine pod limit to use for worker nodes
+  set_fact:
+    kubelet_pod_limit: "{{ k8s_kubelet_pod_limit_worker }}"
+  when: "'workers' in group_names"
+
 - name: Configure and restart kubelet
   when: >
     ( _allow_disruption | default(False)
         or do_upgrade | default(False)
         or _init_cluster | default(False))
-    and not k8s_kubelet_disable_customizations | default(False)
   become: true
   block:
   - name: Set the maximum number of Pods
-    when: k8s_kubelet_pod_limit is defined
+    when: kubelet_pod_limit is defined
     ansible.builtin.lineinfile:
       path: /var/lib/kubelet/config.yaml
       regexp: 'maxPods:(\s+)([0-9]+)(\s*)\n?$'
-      line: "maxPods: {{ k8s_kubelet_pod_limit }}"
+      line: "maxPods: {{ kubelet_pod_limit }}"
       state: present
       owner: root
       group: root
@@ -44,6 +53,7 @@
         group: root
         mode: 0600
       notify: restart kubelet
+      when: "'workers' in group_names"
 
 - name: Force restart of kubelet if requested
   ansible.builtin.debug:

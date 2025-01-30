@@ -1,0 +1,6 @@
+Add support for specifying the maximum number of pods allowed to be scheduled on master nodes (maxPods).
+The former configuration option ``pod_limit`` only allowed modifying maxPods for worker nodes.
+We now support setting maxPods for both master nodes and worker nodes introducing two different configuration options
+:ref:`configuration-options.yk8s.kubernetes.kubelet.pod_limit_master`
+and
+:ref:`configuration-options.yk8s.kubernetes.kubelet.pod_limit_worker`

@@ -127,9 +127,6 @@
     - role: kubeadm-drain-node
     - role: update-system
     - role: kubeadm-upgrade-kubelet
-      # we do not want to customize kubelet on control-plane nodes
-      vars:
-        k8s_kubelet_disable_customizations: true
     - role: kubeadm-uncordon-node
 
 - name: Upgrade the worker nodes

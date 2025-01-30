@@ -5,9 +5,15 @@
   ...
 }: let
   cfg = config.yk8s.kubernetes.kubelet;
+  modules-lib = import ../lib/modules.nix {inherit lib;};
+  inherit (modules-lib) mkRenamedOptionModule;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkSubSection;
 in {
+  imports = [
+    (mkRenamedOptionModule "kubernetes.kubelet" "pod_limit" "pod_limit_worker")
+  ];
+
   options.yk8s.kubernetes.kubelet = mkSubSection {
     _docs.order = 9;
     _docs.preface = ''
@@ -20,11 +26,22 @@ in {
         :ref:`disruptive actions <environmental-variables.behavior-altering-variables>`.
     '';
 
-    pod_limit = mkOption {
+    pod_limit_master = mkOption {
       description = ''
-        Maximum number of Pods per worker
+        Maximum number of Pods per master node
         Increasing this value may also decrease performance,
         as more Pods can be packed into a single node.
+        Therefore it's especially helpful for nodes which have much resources.
+      '';
+      type = types.int;
+      default = 110;
+    };
+    pod_limit_worker = mkOption {
+      description = ''
+        Maximum number of Pods per worker node
+        Increasing this value may also decrease performance,
+        as more Pods can be packed into a single node.
+        Therefore it's especially helpful for nodes which have much resources.
       '';
       type = types.int;
       default = 110;
