@@ -334,6 +334,39 @@ containerd:
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
     MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]
 
+# Spawn a cluster with the previous release version, then upgrade it to the current
+upgrade-major-release:
+  environment:
+    name: spawn-cluster
+  rules:
+    # only run on release-prepare
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      when: on_success
+    # otherwise create manual job
+    - when: manual
+      allow_failure: true
+  extends: .prepare_spawn_test_cleanup_k8s_cluster
+  stage: cluster-tests
+  before_script:
+  - git fetch --unshallow
+  - git checkout release/v8.1
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, before_script]
+  script:
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
+  - git -C managed-k8s checkout "${CI_COMMIT_SHA}"
+  - ./managed-k8s/actions/migrate-cluster-repo.sh
+  - ./managed-k8s/actions/apply-all.sh
+  - ./managed-k8s/ci/test.sh
+  - ./managed-k8s/actions/test.sh
+  retry: 2
+  variables:
+    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
+    # so we need to reference the default vars here (only one level of nesting is allowed)
+    WG_COMPANY_USERS: "false" # removed in v9
+    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
+    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+    MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]
+
 # with dual stack
 containerd-ds:
   environment:
