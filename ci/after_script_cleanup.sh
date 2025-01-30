@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
+actions_dir="$(dirname "$0")"
+
+# shellcheck source=actions/lib.sh
+. "$actions_dir/lib.sh"
 
 # No idea why I have to configure the wg tunnel again. Is the after-script executed in a different container?
 # We're accepting a failure here because I'm too lazy to check whether wireguard was already configured. Since
@@ -16,5 +19,5 @@ fi
 # The openrc file is not available in the shellcheck image
 # shellcheck disable=SC1091
 . /root/openrc.sh
-tomlq --in-place --toml-output '.terraform.prevent_disruption = false' config/config.toml
+rm "$harbour_disruption_lock"
 MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_DISRUPT_THE_HARBOUR=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh

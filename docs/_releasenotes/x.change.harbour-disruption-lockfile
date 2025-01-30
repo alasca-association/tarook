@@ -1,0 +1,4 @@
+
+The config setting terraform.prevent_disruption has been replaced by a lockfile at state/harbour-disruption.lock. This change further improves the separation of cluster configuration and cluster interaction.
+
+In order to execute disruptive actions on the harbour layer, this lock file needs to be deleted first.

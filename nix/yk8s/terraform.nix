@@ -19,6 +19,8 @@
 in {
   imports = [
     (mkRemovedOptionModule "terraform" "haproxy_ports" "")
+    # TODO: add deprecation period for prevent_disruption
+    (mkRemovedOptionModule "terraform" "prevent_disruption" "Preventing disruption is now handled by a lock file in the state directory. See <TODO: LINK TO CHANGELOG>")
     (mkRenamedOptionModuleWithNewSection "terraform" "subnet_cidr" "infra" "subnet_cidr")
     (mkRenamedOptionModuleWithNewSection "terraform" "subnet_v6_cidr" "infra" "subnet_v6_cidr")
     (mkRenamedOptionModuleWithNewSection "terraform" "ipv4_enabled" "infra" "ipv4_enabled")
@@ -42,15 +44,6 @@ in {
 
   options.yk8s.terraform = mkTopSection {
     enabled = mkOption {
-      type = types.bool;
-      default = true;
-    };
-
-    prevent_disruption = mkOption {
-      description = ''
-        If true, prevent Terraform from performing disruptive action
-        defaults to true if unset
-      '';
       type = types.bool;
       default = true;
     };
@@ -104,7 +97,7 @@ in {
   config.yk8s = lib.mkIf cfg.enabled {
     _inventory_packages = [
       (mkGroupVarsFile {
-        cfg = lib.attrsets.getAttrs ["enabled" "prevent_disruption"] cfg;
+        cfg = lib.attrsets.getAttrs ["enabled"] cfg;
         inventory_path = "all/terraform.yaml";
       })
     ];

@@ -163,14 +163,7 @@ set -e
 RC_DISRUPTION=47
 RC_NO_DISRUPTION=0
 if [ $rc == $RC_DISRUPTION ]; then
-    if ! harbour_disruption_allowed; then
-        # shellcheck disable=SC2016
-        errorf 'terraform would delete or recreate a resource, but not all of the following is set' >&2
-        errorf '  - MANAGED_K8S_DISRUPT_THE_HARBOUR=true' >&2
-        errorf "  - terraform.prevent_disruption = false in the config" >&2
-        errorf 'aborting due to destructive change without approval.' >&2
-        exit 3
-    fi
+    require_harbour_disruption
     warningf 'terraform will perform destructive actions' >&2
     # shellcheck disable=SC2016
     warningf 'approval was given by setting $MANAGED_K8S_DISRUPT_THE_HARBOUR' >&2

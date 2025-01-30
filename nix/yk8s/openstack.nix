@@ -374,7 +374,7 @@ in {
       (
         let
           filteredOpenstackCfg = yk8s-lib.removeAttrByPath cfg ["enabled"];
-          filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["prevent_disruption"]];
+          filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"]];
           infraCfg = lib.attrsets.getAttrs ["cluster_name" "ipv4_enabled" "ipv6_enabled" "subnet_cidr" "subnet_v6_cidr"] config.yk8s.infra;
           mergedCfg =
             builtins.foldl' (acc: e: lib.attrsets.recursiveUpdate acc (removeObsoleteOptions e)) {}

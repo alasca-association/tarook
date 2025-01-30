@@ -316,21 +316,16 @@ for what to execute in which order.
     after having the previous config already deployed,
     these changes will not be applied by default
     to avoid havoc.
-    For that case,
-    you need to use an additional environment variable.
+    For that case, you need to use an additional environment variable
+    and remove the lock file.
     You should not export that variable
     to avoid breaking things by accident.
 
-    In the config, set
-
-    .. code:: nix
-
-        terraform.prevent_disruption = false;
-
-    Then run
+    Run
 
     .. code:: console
 
+        rm state/harbour-disruption.lock
         $ MANAGED_K8S_DISRUPT_THE_HARBOUR=true bash managed-k8s/actions/apply-terraform.sh
 
 From this point on
@@ -361,11 +356,11 @@ and to establish the WireGuard connection:
 
     $ bash managed-k8s/actions/wg-up.sh
 
-To tear down your cluster, set the following in your config:
+To tear down your cluster, delete the lock file:
 
-.. code:: nix
+.. code:: console
 
-    terraform.prevent_disruption = false;
+    rm state/harbour-disruption.lock
 
 Than run:
 

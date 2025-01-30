@@ -5,11 +5,6 @@ actions_dir="$(realpath "$(dirname "$0")")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
-# Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
-
-load_conf_vars
-
 check_venv
 
 require_harbour_disruption

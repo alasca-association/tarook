@@ -3,12 +3,13 @@
 cluster_repository="$(realpath ".")"
 code_repository="$(realpath "$actions_dir/../")"
 etc_directory="$(realpath "etc")"
+state_directory="$cluster_repository/state"
 group_vars_dir="${cluster_repository}/inventory/yaook-k8s/group_vars"
 
 submodule_managed_k8s_name="managed-k8s"
 
 terraform_min_version="1.3.0"
-terraform_state_dir="$cluster_repository/state/terraform"
+terraform_state_dir="$state_directory/terraform"
 terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"
 terraform_plan="$terraform_state_dir/plan.tfplan"
 
@@ -25,6 +26,7 @@ ansible_k8s_custom_playbook="$ansible_k8s_custom_playbook_dir/main.yaml"
 ansible_k8s_custom_inventory="$cluster_repository/k8s-custom/inventory"
 
 vault_dir="${VAULT_DIR:-$cluster_repository/state/vault}"
+harbour_disruption_lock="$state_directory/harbour-disruption.lock"
 
 if [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'true' ]; then
     use_color='true'
@@ -64,10 +66,6 @@ function load_vault_container_name() {
 function load_conf_vars() {
     # All the things with side-effects should got here
 
-    terraform_prevent_disruption="$(
-        yq '.prevent_disruption | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
-            "$group_vars_dir/all/terraform.yaml" 2>/dev/null
-    )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
     tf_usage=${tf_usage:-"$(yq '. | if has ("enabled") then .enabled else true end' "$group_vars_dir/all/terraform.yaml")"}
     wg_usage=${wg_usage:-"$(yq '. | if has("wg_enabled") then .wg_enabled else true end' "$group_vars_dir/gateways/wireguard.yaml")"}
 
@@ -97,9 +95,8 @@ function ansible_disruption_allowed() {
 }
 
 function harbour_disruption_allowed() {
-    load_conf_vars
     [ "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" = 'true' ] \
- && [ "${tf_usage:-true}+${terraform_prevent_disruption:-true}" != 'true+true' ]
+ && ! [ -e "$harbour_disruption_lock" ]
     # when Terraform is used also factor in its config
 }
 
@@ -113,21 +110,18 @@ function require_ansible_disruption() {
 }
 
 function require_harbour_disruption() {
-    load_conf_vars
     if ! harbour_disruption_allowed; then
         # shellcheck disable=SC2016
-        errorf '$MANAGED_K8S_DISRUPT_THE_HARBOUR is set to %q' "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" >&2
-        if [ "${tf_usage:-true}" == 'true' ]; then
-            if [ -z ${terraform_prevent_disruption+x} ]; then
-                errorf "and terraform.prevent_disruption in the config is unset or invalid" >&2
-            else
-                errorf "and terraform.prevent_disruption in the config is set to %q" \
-                       "${terraform_prevent_disruption}" >&2
-            fi
+        if [ "$MANAGED_K8S_DISRUPT_THE_HARBOUR" == "true" ]; then
+            errorf '$MANAGED_K8S_DISRUPT_THE_HARBOUR is set to %q' "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" >&2
+        fi
+        if [ -e "${harbour_disruption_lock}" ]; then
+            errorf "The lock file $harbour_disruption_lock exists" >&2
         fi
         errorf 'aborting since disruptive operations on the harbour infra are not allowed' >&2
         exit 3
     fi
+    touch "$harbour_disruption_lock"
 }
 
 function require_vault_token() {
