@@ -40,11 +40,21 @@ EOF
     kubectl certificate approve managed-k8s-test-csr
 
     # Check if the CSR is issued and approved
-    (
-        kubectl get csr managed-k8s-test-csr \
-        -o jsonpath='{.status.certificate}' | base64 -d \
-        | openssl x509 -in /dev/stdin -text
-    ); rc_get_cert=$?
+    retries=20;delay=3;rc_get_cert=-1;
+    for i in $(seq 1 $retries);
+    do
+      echo "Retry: $i"
+      (
+          kubectl get csr managed-k8s-test-csr \
+          -o jsonpath='{.status.certificate}' | base64 -d \
+          | openssl x509 -in /dev/stdin -text
+      ); rc_get_cert=$?
+      if [ $rc_get_cert -eq 0 ]; then
+        break
+      else
+        sleep $delay
+      fi
+    done
 
     # Remove the CSR from Kubernetes
     kubectl delete csr managed-k8s-test-csr
