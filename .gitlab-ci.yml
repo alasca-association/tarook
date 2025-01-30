@@ -269,3 +269,22 @@ release-note-file-check:
     - if:  $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $YAOOK_K8S_DEFAULT_BRANCH
       when: on_success
     - when: never
+
+pages-dry-run:
+  stage: lint
+  image: !reference [.pages, image]
+  before_script: !reference [.pages, before_script]
+  script: !reference [.pages, script]
+  tags: !reference [.pages, tags]
+  dependencies: !reference [.pages, dependencies]
+  rules:
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
+      when: on_success
+    - changes:
+      #  sphinx-multiversion may be updated
+      - nix/dependencies.nix
+      - flake.lock
+      # sphinx-multiversion always uses this file from the current branch, so changes may break other versions
+      - docs/conf.py
+      when: on_success
+    - when: never
