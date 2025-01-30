@@ -334,6 +334,126 @@ containerd:
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
     MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]
 
+# Spawn a cluster with the previous release version, then upgrade it to the current
+upgrade-major-release:
+  environment:
+    name: spawn-cluster
+  rules:
+    # only run on release-prepare
+    - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_PREPARE_BRANCH_PREFIX'
+      when: on_success
+    # otherwise create manual job
+    - when: manual
+      allow_failure: true
+  extends: .prepare_spawn_test_cleanup_k8s_cluster
+  stage: cluster-tests
+  before_script:
+  - git fetch --unshallow
+  - git checkout release/v8.1
+  # begin before_script from v8.1
+  - "export wg_conf_name=wg0"
+  # id_rsa must be set as `File` input in the GitLab CI/CD variables of the
+  # repository.
+  - 'cp "$id_rsa" /root/.ssh/id_rsa && chmod go-rwx -R /root/.ssh'
+  # OS_PASSWORD must be set as `Variable` input in the GitLab CI/CD variables of
+  # the repository.
+  - . /root/openrc.sh
+  - git clean -f .
+  - "chmod o-w *"
+  - rm -rf ci # make sure we're operating on a clean directory
+  - git checkout -- ci
+  - export MANAGED_K8S_GIT="$(realpath .)"
+  - cd ci
+  - git init
+  - direnv allow
+  - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
+  - ../actions/init-cluster-repo.sh
+  - ../actions/init-cluster-repo.sh # A second run to check idempotency
+  - cp res/custom-play.yaml k8s-custom/main.yaml
+    # Note that this is basically a dummy keypair that is not used to protect any significant data
+  - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
+    # Ensure that the project is clean
+  - python3 clean-up-os-project.py
+  # end before_script from v8.1
+
+  script:
+  # begin script from v8.1
+  - export VAULT_ADDR=https://yaook-vault:8200
+  - mkdir -p $CI_PROJECT_DIR/tls/ca
+  - printf "%s" "$ci_cert_vaultca_crt" > $CI_PROJECT_DIR/tls/ca/vaultca.crt
+  - export VAULT_CACERT="$CI_PROJECT_DIR/tls/ca/vaultca.crt"
+  - vault operator init -key-shares=1 -key-threshold=1 -format=json > $CI_PROJECT_DIR/vault_init.out
+  - jq .root_token -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/root.key
+  - jq .unseal_keys_b64[0] -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/unseal.key
+  - vault operator unseal $(cat $CI_PROJECT_DIR/unseal.key)
+  - vault login $(cat $CI_PROJECT_DIR/root.key)
+  - bash ./managed-k8s/tools/vault/init.sh
+  - bash ./managed-k8s/tools/vault/mkcluster-root.sh
+  - export VAULT_TOKEN=$(cat $CI_PROJECT_DIR/root.key)
+    # Insert IPSec PSK
+  - vault kv put yaook/k8s.ci.yaook.cloud/kv/ipsec-eap-psk ipsec_eap_psk="$IPSEC_EAP_PSK"
+    # Create custom play
+  - cp custom-play.yaml k8s-custom/main.yaml
+  - ./managed-k8s/actions/apply-terraform.sh
+  # - ./reachability-or-recreate.sh
+  # - export AFLAGS="-e ansible_ssh_private_key_file=/root/.ssh/id_rsa"
+  # - ./managed-k8s/actions/apply-all.sh
+  # - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-frontend-nodes.sh
+  # - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-kubernetes-nodes.sh
+  # - ./managed-k8s/actions/apply-custom.sh
+  # - ./managed-k8s/actions/test.sh
+  # end script from v8.1
+  - git -C managed-k8s checkout "${CI_COMMIT_SHA}"
+  - tomlq --in-place --toml-output '.terraform.prevent_disruption = false' config/config.toml # migration needs disruption
+  - git add .
+  - git config --global user.email "k8s-ci@yaook.cloud"
+  - git config --global user.name "YAOOK/K8s CI"
+  - git commit -m "before migration to v8.1"
+  - ./managed-k8s/actions/migrate-cluster-repo.sh || true # the first run will always fail
+  - |
+    nix run nixpkgs#patch ./config/default.nix <<EOF
+    34,36d33
+    <       haproxy_ports = [
+    <         30060
+    <       ];
+    87c84
+    <     load-balancing = {
+    ---
+    >     load-balancing = rec {
+    90c87
+    <         "{{ deprecated_nodeport_lb_test_port }}"
+    ---
+    >         deprecated_nodeport_lb_test_port
+    162c159
+    <       rook = {
+    ---
+    >       rook = rec {
+    165d161
+    <         use_helm = true;
+    181c177
+    <         mds_memory_request = "{{ rook_mds_memory_limit }}";
+    ---
+    >         mds_memory_request = mds_memory_limit;
+    183c179
+    <         mds_cpu_request = "{{ rook_mds_cpu_limit }}";
+    ---
+    >         mds_cpu_request = mds_cpu_limit;
+    EOF
+  - git add .
+  - git commit -m "fix config for migration to v8.1"
+  - MANAGED_K8S_DISRUPT_THE_HARBOUR=true ./managed-k8s/actions/migrate-cluster-repo.sh # second run to finish migration
+  - ./managed-k8s/actions/apply-all.sh
+  - ./managed-k8s/ci/test.sh
+  - ./managed-k8s/actions/test.sh
+  retry: 2
+  variables:
+    # the variables defined in .test_upgrade_path_k8s_cluster get overwritten,
+    # so we need to reference the default vars here (only one level of nesting is allowed)
+    WG_COMPANY_USERS: "false" # removed in v9
+    ANSIBLE_ANY_ERRORS_FATAL: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_ANY_ERRORS_FATAL]
+    ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
+    MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]
+
 # with dual stack
 containerd-ds:
   environment:
@@ -370,6 +490,25 @@ containerd-k8s-upgrade:
     ci_cert_vaultchain_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultchain_crt]
     ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
     ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
+
+
+  after_script:
+    # artifacts are overridden by later stages, so we need to re-export the variable here
+    # for context see https://gitlab.com/yaook/k8s/-/merge_requests/1175#note_1959887865
+    - echo "YAOOK_K8S_CI_IMAGE_TAG=$YAOOK_K8S_CI_IMAGE_TAG" > ci/image.env
+    - cd ci/
+    - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
+    - ./after_script_cleanup.sh
+
+  artifacts:
+    reports:
+      dotenv: ci/image.env
+    paths:
+      - ci/podlogs/
+    when: always
+  tags:
+    - docker
+    - wireguard-ready
 
 # with dual stack
 containerd-ds-k8s-upgrade:
