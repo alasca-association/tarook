@@ -38,7 +38,7 @@ Memory resources limit for the apiserver
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::

@@ -316,7 +316,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -337,7 +337,7 @@ Request and limit for the Nginx Ingress controller
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -363,7 +363,7 @@ Request and limit for the Nginx Ingress controller
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -392,7 +392,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -437,7 +437,7 @@ Service type for the frontend Kubernetes service.
 
 **Type:**::
 
-  string matching the pattern ClusterIP|NodeIP|LoadBalancer
+  non-empty string
 
 
 **Default:**::

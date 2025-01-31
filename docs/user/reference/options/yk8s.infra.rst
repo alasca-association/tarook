@@ -108,7 +108,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 
 **Type:**::
 
-  string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])/([0-9]|[12][0-9]|3[0-2])$
+  non-empty string
 
 
 **Default:**::

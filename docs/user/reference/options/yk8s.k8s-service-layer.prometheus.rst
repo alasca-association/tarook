@@ -136,7 +136,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -164,7 +164,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -197,7 +197,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -226,7 +226,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -419,7 +419,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -447,7 +447,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -480,7 +480,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -509,7 +509,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -754,7 +754,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -782,7 +782,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -815,7 +815,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -844,7 +844,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -1027,7 +1027,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -1055,7 +1055,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -1088,7 +1088,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -1117,7 +1117,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -1227,7 +1227,7 @@ https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentati
 
 **Type:**::
 
-  string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  non-empty string
 
 
 **Default:**::
@@ -1272,7 +1272,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -1300,7 +1300,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -1333,7 +1333,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -1362,7 +1362,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -1623,7 +1623,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -1651,7 +1651,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -1684,7 +1684,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -1713,7 +1713,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -1738,7 +1738,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-config
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -1869,7 +1869,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -1897,7 +1897,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -1930,7 +1930,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -1959,7 +1959,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -2004,7 +2004,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -2032,7 +2032,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -2065,7 +2065,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -2094,7 +2094,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -2193,7 +2193,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -2221,7 +2221,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -2254,7 +2254,7 @@ same value).
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -2283,7 +2283,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -2308,7 +2308,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-config
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::

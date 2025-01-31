@@ -17,7 +17,7 @@ An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
 
 **Type:**::
 
-  string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])$
+  non-empty string
 
 
 **Default:**::

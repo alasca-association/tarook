@@ -472,7 +472,7 @@ If you want to expose the Vault to the outside world, use the ingress config abo
 
 **Type:**::
 
-  string matching the pattern ClusterIP|NodeIP|LoadBalancer
+  non-empty string
 
 
 **Default:**::
@@ -516,7 +516,7 @@ Storage size for the vault file storage backend.
 
 **Type:**::
 
-  string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  non-empty string
 
 
 **Default:**::

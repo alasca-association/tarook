@@ -147,7 +147,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -168,7 +168,7 @@ Request and limit for the LBaaS controller
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -194,7 +194,7 @@ Request and limit for the LBaaS controller
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*m?
+  null or non-empty string
 
 
 **Default:**::
@@ -223,7 +223,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  null or non-empty string
 
 
 **Default:**::
@@ -325,7 +325,7 @@ traffic for these IPv4 addresses.
 
 **Type:**::
 
-  list of string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])$
+  list of non-empty string
 
 
 **Default:**::
