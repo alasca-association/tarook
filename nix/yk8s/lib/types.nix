@@ -18,9 +18,11 @@ in {
     decimalExponent = "e(${signedNumber})|E(${signedNumber})";
   in
     lib.types.strMatching "^(${quantity})$";
+  # as per https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
   k8sServiceType = lib.types.enum [
     "ClusterIP"
-    "NodeIP"
+    "NodePort"
     "LoadBalancer"
+    "ExternalName"
   ];
 }
