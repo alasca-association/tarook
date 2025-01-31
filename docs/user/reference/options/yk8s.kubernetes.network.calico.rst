@@ -76,7 +76,7 @@ https://docs.tigera.io/calico/latest/reference/installation/api#operator.tigera.
 
 **Type:**::
 
-  string matching the pattern IPIP|VXLAN|IPIPCrossSubnet|VXLANCrossSubnet|None
+  one of "IPIP", "VXLAN", "IPIPCrossSubnet", "VXLANCrossSubnet", "None"
 
 
 **Default:**::
@@ -123,7 +123,7 @@ https://docs.tigera.io/calico/latest/reference/resources/ippool#spec
 
 **Type:**::
 
-  string matching the pattern Always|CrossSubnet|Never
+  one of "Always", "CrossSubnet", "Never"
 
 
 **Default:**::
