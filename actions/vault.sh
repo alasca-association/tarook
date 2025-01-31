@@ -20,7 +20,7 @@ mkdir -p "$vault_dir/data"
 cd "$vault_dir"
 
 # Copy Vault config template
-cp --no-clobber "$code_repository/templates/config.template.hcl" "$vault_dir/config/config.hcl"
+cp --update=none "$code_repository/templates/config.template.hcl" "$vault_dir/config/config.hcl"
 
 # TLS certificate creation
 if [ ! -f "$vault_dir/tls/vault.crt" ]; then

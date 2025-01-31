@@ -107,7 +107,7 @@ function upgrade_ca() {
     crt="$1"
     key="$2"
     bak="$crt.bak"
-    mv --no-clobber "$crt" "$bak"
+    mv --update=none "$crt" "$bak"
     bash "$scriptdir/reshape-ca.sh" "$bak" "$key" "$crt"
 }
 
