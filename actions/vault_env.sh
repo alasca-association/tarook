@@ -7,10 +7,6 @@ actions_dir="$(pwd)/managed-k8s/actions"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
-# Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
-
-load_conf_vars
 load_vault_container_name
 
 # attempt to start vault right away
