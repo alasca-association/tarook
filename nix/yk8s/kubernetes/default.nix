@@ -9,7 +9,6 @@
   inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModuleWithNewSection;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.types) k8sSize;
 in {
   imports = [
     ./storage.nix
@@ -67,7 +66,7 @@ in {
         description = ''
           Memory resources limit for the apiserver
         '';
-        type = types.nullOr k8sSize;
+        type = with types; nullOr nonEmptyStr;
         default = null;
         example = "1Gi";
       };

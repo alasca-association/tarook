@@ -12,7 +12,6 @@
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath;
-  inherit (yk8s-lib.types) ipv4Cidr;
   inherit (yk8s-lib.transform) filterNull removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
   tfvars_file_path = "terraform/config.tfvars.json";

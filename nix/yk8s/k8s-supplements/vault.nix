@@ -7,7 +7,6 @@
   cfg = config.yk8s.k8s-service-layer.vault;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.types) k8sSize k8sServiceType;
 in {
   options.yk8s.k8s-service-layer.vault = mkTopSection {
     enabled = mkEnableOption ''
@@ -115,7 +114,7 @@ in {
       description = ''
         Storage size for the vault file storage backend.
       '';
-      type = k8sSize;
+      type = types.nonEmptyStr;
       default = "8Gi";
     };
 
@@ -171,7 +170,7 @@ in {
         NOTE: You may set this to LoadBalancer, but note that this will still use the internal certificate.
         If you want to expose the Vault to the outside world, use the ingress config above.
       '';
-      type = k8sServiceType;
+      type = types.nonEmptyStr;
       # TODO confliction values: role had
       # "{{ yaook_vault_management_cluster_integration | ternary('NodePort', 'ClusterIP') }}"
       # which is a setting that doesn't exist

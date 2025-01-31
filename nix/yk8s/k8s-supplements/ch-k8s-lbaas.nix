@@ -9,7 +9,6 @@
   inherit (modules-lib) mkRenamedResourceOptionModules mkResourceOptionModule;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkResourceOption;
-  inherit (yk8s-lib.types) ipv4Addr;
 in {
   imports =
     mkRenamedResourceOptionModules "ch-k8s-lbaas" ["controller"]
@@ -63,7 +62,7 @@ in {
         traffic for these IPv4 addresses.
       '';
       default = [];
-      type = types.listOf ipv4Addr;
+      type = with types; listOf nonEmptyStr;
       apply = v:
         if v == [] && cfg.port_manager == "static"
         then throw "[ch-k8s-lbaas] port_manager is 'static' but static_ipv4_addresses is empty"

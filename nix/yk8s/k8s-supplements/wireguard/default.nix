@@ -11,7 +11,6 @@
   inherit (lib) mkOption types;
   inherit (lib.attrsets) filterAttrs;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.types) ipv4Addr ipv4Cidr;
   # inherit (yk8s-lib.transform) filterNull addPrefix;
   inherit (yk8s-lib) linkToPath;
   inherit (yk8s-lib.transform) removeObsoleteOptions filterNull filterInternal;
@@ -63,7 +62,7 @@ in {
         so that they can use all of their clusters at the same time without having
         to tear down tunnels.
       '';
-      type = types.nullOr ipv4Cidr;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       example = "172.30.153.64/26";
     };
@@ -77,7 +76,7 @@ in {
         so that they can use all of their clusters at the same time without having
         to tear down tunnels.
       '';
-      type = types.nullOr ipv4Cidr;
+      type = with types; nullOr nonEmptyStr;
       default = null;
       example = "172.30.153.65/26";
     };
@@ -149,7 +148,7 @@ in {
               so that they can use all of their clusters at the same time without having
               to tear down tunnels.
             '';
-            type = ipv4Cidr;
+            type = types.nonEmptyStr;
           };
           ip_gw = mkOption {
             description = ''
@@ -159,7 +158,7 @@ in {
               so that they can use all of their clusters at the same time without having
               to tear down tunnels.
             '';
-            type = ipv4Cidr;
+            type = types.nonEmptyStr;
           };
           ipv6_cidr = mkOption {
             description = ''
@@ -209,11 +208,11 @@ in {
             example = "name.lastname";
           };
           ip = mkOption {
-            type = with types; nullOr (either ipv4Cidr ipv4Addr);
+            type = with types; nullOr nonEmptyStr;
             default = null;
           };
           ips = mkOption {
-            type = with types; attrsOf (either ipv4Cidr ipv4Addr);
+            type = with types; attrsOf nonEmptyStr;
             default = {};
           };
           ipv6 = mkOption {

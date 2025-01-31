@@ -10,7 +10,6 @@
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) foldlAttrs;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkMultiResourceOptions;
-  inherit (yk8s-lib.types) k8sSize;
 in {
   imports =
     [
@@ -310,7 +309,7 @@ in {
         Configure persistent storage for Prometheus
         https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
       '';
-      type = k8sSize;
+      type = types.nonEmptyStr;
       default = "50Gi";
     };
 
@@ -380,7 +379,7 @@ in {
 
         Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-configuration.updating-immutable-options`)
       '';
-      type = with types; nullOr k8sSize;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
 
@@ -391,7 +390,7 @@ in {
 
         Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-configuration.updating-immutable-options`)
       '';
-      type = with types; nullOr k8sSize;
+      type = with types; nullOr nonEmptyStr;
       default = null;
     };
 

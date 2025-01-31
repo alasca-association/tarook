@@ -9,7 +9,6 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkSubSection;
-  inherit (yk8s-lib.types) ipv4Cidr;
 in {
   imports = [
     (mkRemovedOptionModule "kubernetes" "network.plugin_switch_restart_all_namespaces" "")
@@ -29,14 +28,14 @@ in {
         automatically to each node.
       '';
       default = "10.244.0.0/16";
-      type = ipv4Cidr;
+      type = types.nonEmptyStr;
     };
     service_subnet = mkOption {
       description = ''
         This is the IPv4 subnet used by Kubernetes for Services.
       '';
       default = "10.96.0.0/12";
-      type = ipv4Cidr;
+      type = types.nonEmptyStr;
     };
     pod_subnet_v6 = mkOption {
       description = ''

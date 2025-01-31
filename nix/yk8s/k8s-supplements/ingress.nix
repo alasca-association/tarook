@@ -9,7 +9,6 @@
   inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.types) k8sServiceType k8sSize k8sCpus;
 in {
   imports = [
     (mkRenamedOptionModule "k8s-service-layer.ingress" "cpu_request" "resources.cpu.request")
@@ -73,7 +72,7 @@ in {
       description = ''
         Service type for the frontend Kubernetes service.
       '';
-      type = k8sServiceType;
+      type = types.nonEmptyStr;
       default = "LoadBalancer";
     };
     scheduling_key = mkOption {

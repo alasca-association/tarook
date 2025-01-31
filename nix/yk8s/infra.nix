@@ -11,7 +11,6 @@
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath;
-  inherit (yk8s-lib.types) ipv4Cidr;
 in {
   options.yk8s.infra = mkTopSection {
     _docs.preface = ''
@@ -45,7 +44,7 @@ in {
     };
 
     subnet_cidr = mkOption {
-      type = ipv4Cidr;
+      type = types.nonEmptyStr;
       default = "172.30.154.0/24";
     };
 
