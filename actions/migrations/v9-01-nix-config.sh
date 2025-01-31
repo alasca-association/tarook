@@ -71,7 +71,11 @@ fi
 if [[ -d terraform ]]; then
     echo "Migrating terraform state..."
     run mkdir -p state
-    run git mv terraform state/terraform
+    if (git ls-files --error-unmatch terraform/ &> /dev/null); then
+      run git mv terraform state/terraform
+    else
+      run mv terraform state/terraform
+    fi
     echo "Done."
     echo
 fi
