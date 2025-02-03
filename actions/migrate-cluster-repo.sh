@@ -10,4 +10,6 @@ if [[ "$(git status --short | grep --count --invert-match --extended-regexp 'man
     exit 1
 fi
 
-find "${actions_dir}/migrations" -type f -executable | sort | xargs -I {} sh -c '{}'
+find "${actions_dir}/migrations" -type f -executable | sort | while read -r script; do
+  bash -euo pipefail "$script" || exit 1
+done
