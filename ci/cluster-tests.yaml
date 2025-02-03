@@ -405,6 +405,36 @@ upgrade-major-release:
   # end script from v8.1
   - git -C managed-k8s checkout "${CI_COMMIT_SHA}"
   - ./managed-k8s/actions/migrate-cluster-repo.sh
+  - |
+    patch ./config/default.nix <<EOF
+    34,36d33
+    <       haproxy_ports = [
+    <         30060
+    <       ];
+    87c84
+    <     load-balancing = {
+    ---
+    >     load-balancing = rec {
+    90c87
+    <         "{{ deprecated_nodeport_lb_test_port }}"
+    ---
+    >         deprecated_nodeport_lb_test_port
+    162c159
+    <       rook = {
+    ---
+    >       rook = rec {
+    165d161
+    <         use_helm = true;
+    181c177
+    <         mds_memory_request = "{{ rook_mds_memory_limit }}";
+    ---
+    >         mds_memory_request = mds_memory_limit;
+    183c179
+    <         mds_cpu_request = "{{ rook_mds_cpu_limit }}";
+    ---
+    >         mds_cpu_request = mds_cpu_limit;
+    EOF
+  - ./managed-k8s/actions/migrate-cluster-repo.sh # second run to finish migration
   - ./managed-k8s/actions/apply-all.sh
   - ./managed-k8s/ci/test.sh
   - ./managed-k8s/actions/test.sh
