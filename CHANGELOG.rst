@@ -19,6 +19,19 @@ earlier changes.
 
 .. towncrier release notes start
 
+v7.0.9 (2025-02-04)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- :ref:`The script to import signed intermediates into Vault
+  <vault.tools.load-signed-intermediates>`
+  got fixed for real now
+  after it was accidentally broken
+  during the implementation of root CA rotation support. (`!1658 <https://gitlab.com/yaook/k8s/-/merge_requests/1658>`_)
+
+
 v7.0.8 (2025-01-27)
 -------------------
 
