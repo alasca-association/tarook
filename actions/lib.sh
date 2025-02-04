@@ -26,6 +26,9 @@ ansible_k8s_custom_inventory="$cluster_repository/k8s-custom/inventory"
 
 vault_dir="${VAULT_DIR:-$cluster_repository/state/vault}"
 
+TERRAFORM_OVERRIDE_FILE="$terraform_module/backend_override.tf"
+all_gitlab_vars=("gitlab_base_url" "gitlab_project_id" "gitlab_state_name")
+
 if [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'true' ]; then
     use_color='true'
 elif [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'false' ]; then
@@ -277,4 +280,54 @@ function tf_init_http () {
 function tf_init_local () {
     run terraform -chdir="$terraform_module" init \
                   -upgrade
+}
+
+function tf_init_http_migrate () {
+    run terraform -chdir="$terraform_module" init \
+                  -migrate-state \
+                  -force-copy \
+                  -upgrade \
+                  -backend-config="address=$backend_address" \
+                  -backend-config="lock_address=$backend_address/lock" \
+                  -backend-config="unlock_address=$backend_address/lock" \
+                  -backend-config="lock_method=POST" \
+                  -backend-config="unlock_method=DELETE" \
+                  -backend-config="retry_wait_min=5"
+}
+
+function tf_init_local_migrate () {
+    run terraform -chdir="$terraform_module" init \
+                  -migrate-state \
+                  -force-copy \
+                  -upgrade
+    return $?
+}
+
+function all_gitlab_vars_are_set() {
+    for var in "${all_gitlab_vars[@]}"; do
+        [[ -z "${!var}" || "${!var}" == "null" ]] && return 1
+    done
+    return 0
+}
+
+function all_gitlab_vars_are_unset() {
+    for var in "${all_gitlab_vars[@]}"; do
+        [[ -n "${!var}" && "${!var}" != "null" ]] && return 1
+    done
+    return 0
+}
+
+function tf_state_present_on_gitlab () {
+    if [ -z "${TF_HTTP_PASSWORD:-}" ]; then
+        errorf "We want to check if there is a Gitlab state present,"
+        errorf "but no TF_HTTP_PASSWORD provided!"
+        errorf "If you're using local backend"
+        errorf "make sure that all the following GitLab variables are unset:"
+        for var in "${all_gitlab_vars[@]}"; do
+            errorf "- $var"
+        done
+        exit 2
+    fi
+    GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" "$backend_address")
+    check_return_code "$GITLAB_RESPONSE"
 }
