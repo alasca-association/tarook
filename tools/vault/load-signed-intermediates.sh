@@ -16,17 +16,20 @@ check_clustername "$cluster"
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 
-_k8s_cluster_cert=( "k8s-cluster.fullchain.pem" "$k8s_pki_path" )
-_k8s_front_proxy_cert=( "k8s-front-proxy.fullchain.pem" "$k8s_front_proxy_pki_path" )
-_k8s_etcd_cert=( "k8s-etcd.fullchain.pem" "$etcd_pki_path" )
+function import_signed_intermediate() {
+    local cert_file="$1"
+    local cert_path="$2"
 
-for _cert in _k8s_cluster_cert _k8s_front_proxy_cert _k8s_etcd_cert; do
     # Rotate if there is at least one pre-existing issuer
     # NOTE: 'issuer/default' always points to an issuer unless there are none
-    if (vault read ${_cert[1]}/issuer/default &>/dev/null); then
-        import_cert "${_cert[0]}" "${_cert[1]}" "next"
-        rotate_pki_issuer "${_cert[1]}"
+    if (vault read "${cert_path}/issuer/default" &>/dev/null); then
+        import_cert "${cert_file}" "${cert_path}" "next"
+        rotate_pki_issuer "${cert_path}"
     else
-        import_cert "${_cert[0]}" "${_cert[1]}" "current"
+        import_cert "${cert_file}" "${cert_path}" "current"
     fi
-done
+}
+
+import_signed_intermediate "k8s-cluster.fullchain.pem" "$k8s_pki_path"
+import_signed_intermediate "k8s-front-proxy.fullchain.pem" "$k8s_front_proxy_pki_path"
+import_signed_intermediate "k8s-etcd.fullchain.pem" "$etcd_pki_path"
