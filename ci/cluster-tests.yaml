@@ -405,6 +405,8 @@ upgrade-major-release:
   # end script from v8.1
   - git -C managed-k8s checkout "${CI_COMMIT_SHA}"
   - git add .
+  - git config --global user.email "k8s-ci@yaook.cloud"
+  - git config --global user.name "YAOOK/K8s CI"
   - git commit -m "before migration to v8.1"
   - ./managed-k8s/actions/migrate-cluster-repo.sh
   - |
