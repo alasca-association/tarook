@@ -406,7 +406,7 @@ upgrade-major-release:
   - git -C managed-k8s checkout "${CI_COMMIT_SHA}"
   - ./managed-k8s/actions/migrate-cluster-repo.sh
   - |
-    patch ./config/default.nix <<EOF
+    nix run nixpkgs#patch ./config/default.nix <<EOF
     34,36d33
     <       haproxy_ports = [
     <         30060
