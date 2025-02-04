@@ -404,6 +404,7 @@ upgrade-major-release:
   # - ./managed-k8s/actions/test.sh
   # end script from v8.1
   - git -C managed-k8s checkout "${CI_COMMIT_SHA}"
+  - tomlq --in-place --toml-output '.terraform.prevent_disruption = false' config/config.toml # migration needs disruption
   - git add .
   - git config --global user.email "k8s-ci@yaook.cloud"
   - git config --global user.name "YAOOK/K8s CI"
@@ -440,7 +441,7 @@ upgrade-major-release:
     EOF
   - git add .
   - git commit -m "fix config for migration to v8.1"
-  - ./managed-k8s/actions/migrate-cluster-repo.sh # second run to finish migration
+  - MANAGED_K8S_DISRUPT_THE_HARBOUR=true ./managed-k8s/actions/migrate-cluster-repo.sh # second run to finish migration
   - ./managed-k8s/actions/apply-all.sh
   - ./managed-k8s/ci/test.sh
   - ./managed-k8s/actions/test.sh
