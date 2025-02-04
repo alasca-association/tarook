@@ -4,11 +4,14 @@ cluster_repository="$(realpath ".")"
 code_repository="$(realpath "$actions_dir/../")"
 etc_directory="$(realpath "etc")"
 group_vars_dir="${cluster_repository}/inventory/yaook-k8s/group_vars"
+state_dir="$cluster_repository/state"
+
+migration_lock="$state_dir/migration-in-progress"
 
 submodule_managed_k8s_name="managed-k8s"
 
 terraform_min_version="1.3.0"
-terraform_state_dir="$cluster_repository/state/terraform"
+terraform_state_dir="$state_dir/terraform"
 terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"
 terraform_plan="$terraform_state_dir/plan.tfplan"
 
@@ -24,7 +27,7 @@ ansible_k8s_custom_playbook_dir="$cluster_repository/k8s-custom"
 ansible_k8s_custom_playbook="$ansible_k8s_custom_playbook_dir/main.yaml"
 ansible_k8s_custom_inventory="$cluster_repository/k8s-custom/inventory"
 
-vault_dir="${VAULT_DIR:-$cluster_repository/state/vault}"
+vault_dir="${VAULT_DIR:-$state_dir/vault}"
 
 if [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'true' ]; then
     use_color='true'
@@ -252,6 +255,14 @@ function check_return_code () {
 function install_prerequisites() {
     # Install ansible galaxy requirements
     ansible-galaxy install -r "$ansible_directory/requirements.yaml"
+}
+
+function check_migration_lock() {
+    if [[ -e "$migration_lock" ]] && [[ "${IGNORE_MIGRATION_LOCK:-false}" != "true" ]]; then
+        errorf "Ongoing cluster repository migration detected. Refusing to continue."
+        errorf "Please complete the migration process by running migrate-cluster-repo.sh"
+        exit 1
+    fi
 }
 
 function check_venv() {

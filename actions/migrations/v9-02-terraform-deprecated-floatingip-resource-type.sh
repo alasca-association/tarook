@@ -42,7 +42,7 @@ if [ "${tf_usage:-true}" == 'true' ]; then
     echo "Deprecated Terraform floating ip resources removed from state."
     echo "Running apply-terraform to create their replacements..."
 
-    run "$actions_dir/apply-terraform.sh"
+    IGNORE_MIGRATION_LOCK=true run "$actions_dir/apply-terraform.sh"
 
   else
       echo "Nothing to do."
