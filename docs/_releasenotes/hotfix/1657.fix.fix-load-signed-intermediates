@@ -1,5 +1,0 @@
-:ref:`The script to import signed intermediates into Vault
-<vault.tools.load-signed-intermediates>`
-got fixed for real now
-after it was accidentally broken
-during the implementation of root CA rotation support.
