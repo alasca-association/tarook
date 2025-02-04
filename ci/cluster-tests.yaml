@@ -404,6 +404,8 @@ upgrade-major-release:
   # - ./managed-k8s/actions/test.sh
   # end script from v8.1
   - git -C managed-k8s checkout "${CI_COMMIT_SHA}"
+  - git add .
+  - git commit -m "before migration to v8.1"
   - ./managed-k8s/actions/migrate-cluster-repo.sh
   - |
     nix run nixpkgs#patch ./config/default.nix <<EOF
@@ -434,6 +436,8 @@ upgrade-major-release:
     ---
     >         mds_cpu_request = mds_cpu_limit;
     EOF
+  - git add .
+  - git commit -m "fix config for migration to v8.1"
   - ./managed-k8s/actions/migrate-cluster-repo.sh # second run to finish migration
   - ./managed-k8s/actions/apply-all.sh
   - ./managed-k8s/ci/test.sh
