@@ -7,7 +7,7 @@ hidden: true
 ---
 
 create-cluster
-upgrade-cluster
+upgrade-release
 ```
 
 User facing tutorials on YAOOK/K8s.
@@ -20,12 +20,9 @@ User facing tutorials on YAOOK/K8s.
 :link-type: doc
 Tutorial on how to create a YAOOK/K8s cluster.
 :::
-::::
-
-::::{grid} 2
-:::{grid-item-card} Cluster Upgrade
-:link: /user/tutorial/upgrade-cluster
+:::{grid-item-card} Release upgrade
+:link: /user/tutorial/upgrade-release
 :link-type: doc
-Tutorial on how to upgrade a YAOOK/K8s cluster.
+Tutorial on how to upgrade to a new YAOOK/K8s release.
 :::
 ::::

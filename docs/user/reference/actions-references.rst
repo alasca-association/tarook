@@ -13,7 +13,7 @@ Overview
 **Main action scripts**:
 
 -  :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`
--  :ref: k8s-login.sh <actions-references.k8s-loginsh>
+-  :ref:`k8s-login.sh <actions-references.k8s-loginsh>`
 -  :ref:`apply-all.sh <actions-references.apply-allsh>`
 -  :ref:`apply-custom.sh <actions-references.apply-customsh>`
 -  :ref:`apply-k8s-core.sh <actions-references.apply-k8s-coresh>`
@@ -62,6 +62,10 @@ execute this script only once.
 ----------------
 
 ``k8s-login.sh`` generates a new kubeconfig valid for 8 days.
+
+.. note::
+
+   A valid Vault token with ``orchestrator`` or ``root`` policy must be sourced.
 
 YAOOK/K8s uses short-lived certificates for its kubeconfigs to enhance security.
 What that means is that the kubeconfig generated during a run of yaook/k8s-core

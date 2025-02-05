@@ -43,11 +43,16 @@ The quick start guide is meant to give you a kickstart in deploying your first Y
 :::
 ::::
 
-::::{grid} 1
+::::{grid} 2
 :::{grid-item-card}  Releasenotes
 :link: releasenotes
 :link-type: doc
 The releasenotes give you all essential information about recent changes.
+:::
+:::{grid-item-card} Release upgrade
+:link: /user/tutorial/upgrade-release
+:link-type: doc
+Tutorial on how to upgrade to a new YAOOK/K8s release.
 :::
 ::::
 
