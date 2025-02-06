@@ -295,5 +295,6 @@ pages-dry-run:
       - flake.lock
       # sphinx-multiversion always uses this file from the current branch, so changes may break other versions
       - docs/conf.py
+      if: $SKIP_LINT != "true"
       when: on_success
     - when: never
