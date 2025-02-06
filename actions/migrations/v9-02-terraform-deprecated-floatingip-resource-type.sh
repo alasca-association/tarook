@@ -24,7 +24,7 @@ load_conf_vars
 
 if [ "${tf_usage:-true}" == 'true' ]; then
 
-  echo "Removing deprecated Terraform floatingip resources from state..."
+  notef "Removing deprecated Terraform floatingip resources from state..."
 
   pushd "$cluster_repository" >/dev/null || exit 1
 
@@ -38,18 +38,17 @@ if [ "${tf_usage:-true}" == 'true' ]; then
     run terraform state rm -state="$terraform_state_dir/terraform.tfstate" \
       openstack_compute_floatingip_associate_v2.gateway
 
-    echo ""
-    echo "Deprecated Terraform floating ip resources removed from state."
-    echo "Running apply-terraform to create their replacements..."
+    notef "\nDeprecated Terraform floating ip resources removed from state."
+    notef "Running apply-terraform to create their replacements..."
 
     IGNORE_MIGRATION_LOCK=true run "$actions_dir/apply-terraform.sh"
 
   else
-      echo "Nothing to do."
+      notef "Nothing to do."
   fi
 
   popd >/dev/null || exit 1
 
 else
-  echo "Skipped Terraform related migration because it is disabled."
+  notef "Skipped Terraform related migration because it is disabled."
 fi
