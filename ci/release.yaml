@@ -1,5 +1,4 @@
-pages:
-  stage: release
+.pages:
   image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   before_script:
     - direnv allow
@@ -9,6 +8,18 @@ pages:
     - sphinx-multiversion -W docs _build/html
     - echo "<meta http-equiv=\"Refresh\" content=\"0; url='${CI_PAGES_URL}/devel/'\" />" > _build/html/index.html
     - mv _build/html public
+  tags:
+    - docker
+  dependencies:
+    - build_image  # only fetch CI image tag and ensure that the public/ directory is empty
+
+pages:
+  stage: release
+  image: !reference [.pages, image]
+  before_script: !reference [.pages, before_script]
+  script: !reference [.pages, script]
+  tags: !reference [.pages, tags]
+  dependencies: !reference [.pages, dependencies]
   artifacts:
     paths:
       - public/
@@ -16,21 +27,6 @@ pages:
     # run only on devel branch
     - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
       when: on_success
-    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
-      when: on_success
-    - changes:
-      #  sphinx-multiversion may be updated
-      - nix/dependencies.nix
-      - flake.lock
-
-      # sphinx-multiversion always uses this file from the current branch, so changes may break other versions
-      - docs/conf.py
-      when: on_success
-    - when: never
-  tags:
-    - docker
-  dependencies:
-    - build_image  # only fetch CI image tag and ensure that the public/ directory is empty
 
 tag-release:
   stage: release
