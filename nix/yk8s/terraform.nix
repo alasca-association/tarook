@@ -101,7 +101,7 @@ in {
       example = "tf-state";
     };
   };
-  config.yk8s = lib.mkIf cfg.enabled {
+  config.yk8s = {
     _inventory_packages = [
       (mkGroupVarsFile {
         cfg = lib.attrsets.getAttrs ["enabled" "prevent_disruption"] cfg;
