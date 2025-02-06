@@ -7,7 +7,7 @@ actions_dir="$(dirname "$0")"
 
 if [[ -e "$migration_lock" ]]; then
   notef "Detected ongoing migration. Re-trying..."
-elif [[ "$(git status --short | grep --count --invert-match --extended-regexp 'managed-k8s|submodules')" -ne 0 ]]; then
+elif [[ "$(git status --short --porcelain | grep --count --invert-match --extended-regexp '^[ ].*[ ]+(managed-k8s|submodules|.gitmodules)')" -ne 0 ]]; then
   errorf "Cluster repository not clean. Refusing to run migration"
   exit 1
 fi
