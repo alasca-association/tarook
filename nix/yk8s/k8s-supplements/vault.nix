@@ -5,10 +5,15 @@
   ...
 }: let
   cfg = config.yk8s.k8s-service-layer.vault;
+  modules-lib = import ../lib/modules.nix {inherit lib;};
+  inherit (modules-lib) mkRenamedOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
   inherit (yk8s-lib.types) k8sSize k8sServiceType;
 in {
+  imports = [
+    (mkRenamedOptionModule "k8s-service-layer.vault" "active_node_port" "service_active_node_port")
+  ];
   options.yk8s.k8s-service-layer.vault = mkTopSection {
     enabled = mkEnableOption ''
       HashiCorp Vault management.

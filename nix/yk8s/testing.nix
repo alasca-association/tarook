@@ -5,10 +5,15 @@
   ...
 }: let
   cfg = config.yk8s.testing;
+  modules-lib = import ./lib/modules.nix {inherit lib;};
+  inherit (modules-lib) mkRenamedOptionModule;
   inherit (builtins) length;
   inherit (lib) mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
 in {
+  imports = [
+    (mkRenamedOptionModule "testing" "nodes" "test-nodes")
+  ];
   options.yk8s.testing = mkTopSection {
     _docs.preface = ''
       The following configuration section can be used to ensure that smoke
