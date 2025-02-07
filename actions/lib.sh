@@ -74,7 +74,7 @@ function load_conf_vars() {
             "$group_vars_dir/all/terraform.yaml" 2>/dev/null
     )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
     tf_usage=${tf_usage:-"$(yq '. | if has ("enabled") then .enabled else true end' "$group_vars_dir/all/terraform.yaml")"}
-    wg_usage=${wg_usage:-"$(yq '. | if has("wg_enabled") then .wg_enabled else true end' "$group_vars_dir/gateways/wireguard.yaml")"}
+    wg_usage=${wg_usage:-"$(yq '. | if has("enabled") then .enabled else true end' "$group_vars_dir/gateways/wireguard.yaml")"}
 
     if [ "${wg_usage:-true}" == "true" ]; then
         wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
