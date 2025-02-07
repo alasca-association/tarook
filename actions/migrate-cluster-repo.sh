@@ -20,6 +20,8 @@ EOF
 
 export IGNORE_MIGRATION_LOCK=true
 
+run git add .gitmodules managed-k8s
+
 find "${actions_dir}/migrations" -type f -executable | sort | while read -r script; do
   bash -euo pipefail "$script" || exit 1
 done
@@ -29,3 +31,7 @@ if (git ls-files --error-unmatch "$migration_lock" &> /dev/null); then
 else
   rm "$migration_lock"
 fi
+
+run git commit --author "YAOOK/K8s v${version_major_minor} release migration script <>" --message "Migrate cluster repository to v${version_major_minor}"
+
+notef "Migration successful. You may continue to use your cluster now."
