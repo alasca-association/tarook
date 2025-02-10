@@ -39,7 +39,13 @@ in {
         Only takes effect for operator-based installations
         https://docs.tigera.io/calico/latest/reference/installation/api#operator.tigera.io/v1.EncapsulationType
       '';
-      type = types.strMatching "IPIP|VXLAN|IPIPCrossSubnet|VXLANCrossSubnet|None";
+      type = types.enum [
+        "IPIP"
+        "VXLAN"
+        "IPIPCrossSubnet"
+        "VXLANCrossSubnet"
+        "None"
+      ];
       default = "None";
     };
     ipipmode = mkOption {
@@ -48,7 +54,11 @@ in {
         Define if the IP-in-IP encapsulation of calico should be activated
         https://docs.tigera.io/calico/latest/reference/resources/ippool#spec
       '';
-      type = types.strMatching "Always|CrossSubnet|Never";
+      type = types.enum [
+        "Always"
+        "CrossSubnet"
+        "Never"
+      ];
       default = "Never";
     };
     bgp_router_id = mkOption {

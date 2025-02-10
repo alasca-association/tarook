@@ -231,12 +231,12 @@ in rec {
 
                 Thus, this option is deprecated.
               '';
-              type = lib.types.nullOr yk8s-lib.types.k8sCpus;
+              type = lib.types.nullOr yk8s-lib.types.k8sQuantity;
               default = cpu.limit or null;
             };
             requests.cpu = lib.mkOption {
               inherit description;
-              type = lib.types.nullOr yk8s-lib.types.k8sCpus;
+              type = lib.types.nullOr yk8s-lib.types.k8sQuantity;
               default = cpu.request or null;
               example = cpu.example or null;
             };
@@ -247,13 +247,13 @@ in rec {
 
                 Thus, this option is deprecated.
               '';
-              type = lib.types.nullOr yk8s-lib.types.k8sSize;
+              type = lib.types.nullOr yk8s-lib.types.k8sQuantity;
               default = memory.request or (attrByPath (absOpt ++ ["limits" "memory"]) null config);
               defaultText = memory.request or "\${${lib.strings.concatStringsSep "." (["config"] ++ absOpt ++ ["limits" "memory"])}}";
             };
             limits.memory = lib.mkOption {
               inherit description;
-              type = lib.types.nullOr yk8s-lib.types.k8sSize;
+              type = lib.types.nullOr yk8s-lib.types.k8sQuantity;
               default = memory.limit or null;
               example = memory.example or null;
             };

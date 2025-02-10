@@ -35,22 +35,22 @@ Labels are assigned to a node during LCM rollout only!
 
   {
     managed-k8s-worker-0 = [
-      "''scheduling.mk8s.cloudandheat.com/storage=true"
+      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"
     ];
     managed-k8s-worker-1 = [
-      "''scheduling.mk8s.cloudandheat.com/monitoring=true"
+      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"
     ];
     managed-k8s-worker-2 = [
-      "''scheduling.mk8s.cloudandheat.com/storage=true"
+      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"
     ];
     managed-k8s-worker-3 = [
-      "''scheduling.mk8s.cloudandheat.com/monitoring=true"
+      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"
     ];
     managed-k8s-worker-4 = [
-      "''scheduling.mk8s.cloudandheat.com/storage=true"
+      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"
     ];
     managed-k8s-worker-5 = [
-      "''scheduling.mk8s.cloudandheat.com/monitoring=true"
+      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"
     ];
   }
 
@@ -105,13 +105,13 @@ Taints are assigned to a node during LCM rollout only!
 
   {
     managed-k8s-worker-0 = [
-      "{{ scheduling_key_prefix }}/storage=true:NoSchedule"
+      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
     ];
     managed-k8s-worker-2 = [
-      "{{ scheduling_key_prefix }}/storage=true:NoSchedule"
+      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
     ];
     managed-k8s-worker-4 = [
-      "{{ scheduling_key_prefix }}/storage=true:NoSchedule"
+      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
     ];
   }
 

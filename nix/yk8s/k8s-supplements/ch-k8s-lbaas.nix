@@ -53,7 +53,10 @@ in {
           static port manager is used, the ``agent_urls`` and ``static_ipv4_addresses``
           options must also be configured.
       '';
-      type = types.strMatching "openstack|static";
+      type = types.enum [
+        "openstack"
+        "static"
+      ];
       default = "openstack";
     };
     static_ipv4_addresses = mkOption {

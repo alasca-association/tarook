@@ -135,7 +135,7 @@ Allows the establishment of zone boundaries through BGP
 
 **Type:**::
 
-  string matching the pattern calico
+  value "calico" (singular enum)
 
 
 **Default:**::

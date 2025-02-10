@@ -17,8 +17,8 @@ in {
         reasonably changed after a cluster has been spawned.
       '';
       type = types.nonEmptyStr;
-      default = config.infra.cluster_name;
-      defaultText = "\${config.infra.cluster_name}";
+      default = config.yk8s.infra.cluster_name;
+      defaultText = "\${config.yk8s.infra.cluster_name}";
     };
     policy_prefix = mkOption {
       type = types.str;
