@@ -37,12 +37,12 @@ in {
       type = with types; attrsOf (listOf nonEmptyStr);
       default = {};
       example = {
-        managed-k8s-worker-0 = ["''${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"];
-        managed-k8s-worker-1 = ["''${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"];
-        managed-k8s-worker-2 = ["''${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"];
-        managed-k8s-worker-3 = ["''${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"];
-        managed-k8s-worker-4 = ["''${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"];
-        managed-k8s-worker-5 = ["''${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"];
+        managed-k8s-worker-0 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"];
+        managed-k8s-worker-1 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"];
+        managed-k8s-worker-2 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"];
+        managed-k8s-worker-3 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"];
+        managed-k8s-worker-4 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"];
+        managed-k8s-worker-5 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"];
       };
       apply = v:
         builtins.seq (builtins.all (e:
@@ -58,9 +58,9 @@ in {
       type = with types; attrsOf (listOf nonEmptyStr);
       default = {};
       example = {
-        managed-k8s-worker-0 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"];
-        managed-k8s-worker-2 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"];
-        managed-k8s-worker-4 = ["{{ scheduling_key_prefix }}/storage=true:NoSchedule"];
+        managed-k8s-worker-0 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"];
+        managed-k8s-worker-2 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"];
+        managed-k8s-worker-4 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"];
       };
       apply = v:
         builtins.seq (builtins.all (e:

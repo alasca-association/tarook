@@ -86,7 +86,9 @@ in {
         Allows the establishment of zone boundaries through BGP
       '';
       default = "calico";
-      type = types.strMatching "calico";
+      type = types.enum [
+        "calico"
+      ];
     };
     ipv4_nat_outgoing = mkOption {
       type = types.bool;

@@ -199,7 +199,7 @@ to use for externally facing certificates.
 
 **Type:**::
 
-  string matching the pattern (Cluster)?Issuer
+  one of "Issuer", "ClusterIssuer"
 
 
 **Default:**::
@@ -472,7 +472,7 @@ If you want to expose the Vault to the outside world, use the ingress config abo
 
 **Type:**::
 
-  string matching the pattern ClusterIP|NodeIP|LoadBalancer
+  one of "ClusterIP", "NodePort", "LoadBalancer", "ExternalName"
 
 
 **Default:**::
@@ -516,7 +516,7 @@ Storage size for the vault file storage backend.
 
 **Type:**::
 
-  string matching the pattern [1-9][0-9]*(\.[0-9]+)?([KMGT]i)?
+  string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
 
 
 **Default:**::

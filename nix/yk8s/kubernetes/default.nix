@@ -9,7 +9,7 @@
   inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModuleWithNewSection;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.types) k8sSize;
+  inherit (yk8s-lib.types) k8sQuantity;
 in {
   imports = [
     ./storage.nix
@@ -33,7 +33,7 @@ in {
         Kubernetes version
       '';
       # v1.29 v1.30
-      type = types.strMatching "1\.(29|30)\.[0-9]+";
+      type = types.strMatching "^1\.(29|30)\.[0-9]+$";
       default = "1.30.8";
     };
     is_gpu_cluster = mkOption {
@@ -67,7 +67,7 @@ in {
         description = ''
           Memory resources limit for the apiserver
         '';
-        type = types.nullOr k8sSize;
+        type = types.nullOr k8sQuantity;
         default = null;
         example = "1Gi";
       };

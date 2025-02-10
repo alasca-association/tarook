@@ -9,7 +9,7 @@
   inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.types) k8sServiceType k8sSize k8sCpus;
+  inherit (yk8s-lib.types) k8sServiceType k8sQuantity;
 in {
   imports = [
     (mkRenamedOptionModule "k8s-service-layer.ingress" "cpu_request" "resources.cpu.request")
