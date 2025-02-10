@@ -15,6 +15,7 @@ in {
   imports =
     [
       (mkRemovedOptionModule "k8s-service-layer.prometheus" "use_jsonnet_setup" "")
+      (mkRemovedOptionModule "k8s-service-layer.prometheus" "use_helm_thanos" "")
       (mkRemovedOptionModule "k8s-service-layer.prometheus" "migrate_from_v1" "")
       (mkRemovedOptionModule "k8s-service-layer.prometheus" "alertmanager_config_secret" "")
       (mkRemovedOptionModule "k8s-service-layer.prometheus" "alertmanager_configuration_name" "")

@@ -13,8 +13,6 @@ if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     if [ ! -d "$submodule_managed_k8s_name" ]; then
         if [ "${MANAGED_K8S_LATEST_RELEASE:-true}"  == "true" ]; then
             # Checkout latest release
-            version_major_minor=$(grep -Po '^[0-9]+\.[0-9]+' "$actions_dir/../version")
-
             echo ''
             notef "Adding $submodule_managed_k8s_name submodule on release v$version_major_minor..."
 
