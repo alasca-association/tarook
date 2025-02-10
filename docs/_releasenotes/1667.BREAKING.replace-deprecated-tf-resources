@@ -1,0 +1,16 @@
+The following Terraform resources are deprecated and have been updated:
+
+- ``openstack_compute_floatingip_associate_v2``
+  replaced by ``openstack_networking_floatingip_associate_v2``
+
+  .. attention:: Action required
+
+     For the replacement to be perfomed correctly (therefore non-disruptive)
+     you must run the migration script
+     *before* any apply-terraform action.
+
+     .. code::
+
+        ./managed-k8s/actions/migrate-cluster-repo.sh
+
+_
