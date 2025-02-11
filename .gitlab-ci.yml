@@ -274,9 +274,16 @@ pages-dry-run:
   stage: lint
   image: !reference [.pages, image]
   before_script: !reference [.pages, before_script]
-  script: !reference [.pages, script]
+  script:
+  - !reference [.pages, script]
+  - mv _build/html private
   tags: !reference [.pages, tags]
   dependencies: !reference [.pages, dependencies]
+  artifacts:
+    expose_as: "Rendered Multiversion Docs"
+    expire_in: "7 days"
+    paths:
+      - private/
   rules:
     - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
       when: on_success

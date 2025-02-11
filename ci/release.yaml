@@ -6,8 +6,6 @@
   script:
     - git fetch && git remote prune origin
     - sphinx-multiversion -W docs _build/html
-    - echo "<meta http-equiv=\"Refresh\" content=\"0; url='${CI_PAGES_URL}/devel/'\" />" > _build/html/index.html
-    - mv _build/html public
   tags:
     - docker
   dependencies:
@@ -17,7 +15,10 @@ pages:
   stage: release
   image: !reference [.pages, image]
   before_script: !reference [.pages, before_script]
-  script: !reference [.pages, script]
+  script:
+  - !reference [.pages, script]
+  - echo "<meta http-equiv=\"Refresh\" content=\"0; url='${CI_PAGES_URL}/devel/'\" />" > _build/html/index.html
+  - mv _build/html public
   tags: !reference [.pages, tags]
   dependencies: !reference [.pages, dependencies]
   artifacts:
