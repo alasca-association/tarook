@@ -80,7 +80,11 @@
         - reboot
         - now
       when: ansible_connection == 'local'
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
     - name: Reboot the system
       ansible.builtin.reboot:
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 ...

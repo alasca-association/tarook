@@ -104,12 +104,16 @@
               - reboot
               - now
           when: ansible_connection == 'local'
+          retries: "{{ error_retries }}"
+          delay: "{{ error_delay }}"
 
         # We do not need a "when" here. ansible is killed approximately immediately
         # anyway by the above command if it is executed; If the above command is
         # not executed, we want to execute this one.
         - name: Reboot the system
           ansible.builtin.reboot:
+          retries: "{{ error_retries }}"
+          delay: "{{ error_delay }}"
 
     - name: Basic sanity check with nvidia-smi
       # nvidia-smi -L lists all detected cards.
