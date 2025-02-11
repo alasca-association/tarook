@@ -288,10 +288,14 @@ pages-dry-run:
     - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
       when: on_success
     - changes:
+      - 'docs/**/*'
+      - 'docs/*'  # the above does not include files directly in docs/
+      - 'CHANGELOG.rst'
       #  sphinx-multiversion may be updated
       - nix/dependencies.nix
       - flake.lock
       # sphinx-multiversion always uses this file from the current branch, so changes may break other versions
       - docs/conf.py
       when: on_success
-    - when: never
+    - when: manual
+      allow_failure: true
