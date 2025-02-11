@@ -41,8 +41,8 @@
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
   tags:
   - monitoring
   - thanos
@@ -65,8 +65,8 @@
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
   when: monitoring_use_thanos
 
 - name: Create thanos secret
@@ -87,8 +87,8 @@
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
   tags:
   - thanos
 

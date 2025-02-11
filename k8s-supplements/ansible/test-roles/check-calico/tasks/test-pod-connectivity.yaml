@@ -19,8 +19,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Collect Information about number of Nodes
     kubernetes.core.k8s_info:
@@ -42,8 +42,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Collect (calico-)BusyBox Pod Resource Information
     kubernetes.core.k8s_info:
@@ -92,8 +92,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
     tags:
     - test-cleanup
 
@@ -110,8 +110,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
     tags:
     - test-cleanup
 ...

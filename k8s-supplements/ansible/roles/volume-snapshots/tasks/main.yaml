@@ -18,8 +18,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Check for old snapshot-controller
     when: image_versions.volume_snapshot_controller is version('v7.0.2', '>=')
@@ -32,8 +32,8 @@
         - app=snapshot-controller
       register: outdated_snapshot_controller
       until: outdated_snapshot_controller is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
     - name: Remove outdated snapshot-controllers
       when: (outdated_snapshot_controller.resources | length) > 0
@@ -45,8 +45,8 @@
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
   - name: Deploy the Snapshot Controller and its RBAC
     kubernetes.core.k8s:
@@ -62,6 +62,6 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 ...

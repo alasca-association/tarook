@@ -46,8 +46,8 @@
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
     - name: Create the prometheus test scraper Pod
       kubernetes.core.k8s:
@@ -61,8 +61,8 @@
       register: scraper_info
       # Retry this task on failures
       until: scraper_info is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
     - name: Scrape endpoints for prometheus stack itself
       ansible.builtin.include_tasks: scrape_prometheus_stack.yaml
@@ -83,8 +83,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
     tags:
     - test-cleanup
 ...

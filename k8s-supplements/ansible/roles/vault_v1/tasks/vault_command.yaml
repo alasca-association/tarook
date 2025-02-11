@@ -11,8 +11,8 @@
   # This operation ought to be idempotent but detecting if the policy already exists is imho unneccessary boilerplate
   changed_when: true
   until: vault_out is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
   args:
     stdin: "{{ yaook_vault_root_token }}"
 ...

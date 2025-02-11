@@ -46,8 +46,8 @@
           - manpages-dev
       register: task_result
       until: task_result is not failed
-      retries: "{{ network_error_retries }}"
-      delay: "{{ network_error_delay }}"
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
 
     - name: Install virtual gpu manager
@@ -59,16 +59,16 @@
             mode: '0755'
           register: task_result
           until: task_result is not failed
-          retries: "{{ network_error_retries }}"
-          delay: "{{ network_error_delay }}"
+          retries: "{{ error_retries }}"
+          delay: "{{ error_delay }}"
 
         - name: Install the virtual gpu manager
           ansible.builtin.apt:
             deb: '/tmp/{{ nvidia_vgpu_manager_filename }}'
           register: installed_vgpu_manager
           until: installed_vgpu_manager is not failed
-          retries: "{{ network_error_retries }}"
-          delay: "{{ network_error_delay }}"
+          retries: "{{ error_retries }}"
+          delay: "{{ error_delay }}"
 
     - name: Blacklist nouveau
       # The installation script lies! It says: """
@@ -104,12 +104,16 @@
               - reboot
               - now
           when: ansible_connection == 'local'
+          retries: "{{ error_retries }}"
+          delay: "{{ error_delay }}"
 
         # We do not need a "when" here. ansible is killed approximately immediately
         # anyway by the above command if it is executed; If the above command is
         # not executed, we want to execute this one.
         - name: Reboot the system
           ansible.builtin.reboot:
+          retries: "{{ error_retries }}"
+          delay: "{{ error_delay }}"
 
     - name: Basic sanity check with nvidia-smi
       # nvidia-smi -L lists all detected cards.

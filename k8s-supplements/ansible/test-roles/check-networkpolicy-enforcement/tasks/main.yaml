@@ -18,8 +18,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: create service
     kubernetes.core.k8s:
@@ -31,8 +31,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: get pod IPs
     kubernetes.core.k8s_info:
@@ -66,8 +66,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: fetch blocked-test pod completion state
     kubernetes.core.k8s_info:
@@ -95,8 +95,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: start unblocked-test
     vars:
@@ -110,8 +110,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: fetch unblocked-test pod completion state
     kubernetes.core.k8s_info:
@@ -153,8 +153,8 @@
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: check service is reachable from the node
   ansible.builtin.uri:
@@ -180,8 +180,8 @@
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
   tags:
   - test-cleanup
 ...

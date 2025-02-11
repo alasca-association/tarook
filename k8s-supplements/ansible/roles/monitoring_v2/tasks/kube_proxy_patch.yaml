@@ -25,8 +25,8 @@
     register: kube_proxy_configmap
     # Retry this task on failures
     until: kube_proxy_configmap is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Trigger rollout restart kube-proxy  # noqa no-changed-when no-handler
     when: kube_proxy_configmap.changed

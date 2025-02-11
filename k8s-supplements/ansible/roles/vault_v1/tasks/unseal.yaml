@@ -24,7 +24,7 @@
   register: vault_unseal
   until: vault_unseal.rc == 0
   timeout: 120
-  retries: "{{ k8s_error_retries }}"
+  retries: "{{ error_retries }}"
   loop: "{{ yaook_vault_unseal_keys[:yaook_vault_init_key_threshold] }}"
   loop_control:
     label: Redacted

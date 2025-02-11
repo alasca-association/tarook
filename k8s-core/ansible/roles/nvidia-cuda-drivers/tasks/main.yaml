@@ -23,8 +23,8 @@
       - "linux-headers-{{ ansible_kernel }}"
     register: task_result
     until: task_result is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Ensure keyrings directory exists
     # ftr: this is present by default on Debian...
@@ -50,8 +50,8 @@
       update_cache: true
     register: task_result
     until: task_result is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Install nvidia cuda drivers
     ansible.builtin.apt:
@@ -63,8 +63,8 @@
       - nvidia-utils-530
     register: installed_driver
     until: installed_driver is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Update initramfs  # noqa no-changed-when no-handler
     ansible.builtin.command: "update-initramfs -k {{ ansible_kernel }} -uv"
@@ -80,7 +80,11 @@
         - reboot
         - now
       when: ansible_connection == 'local'
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
     - name: Reboot the system
       ansible.builtin.reboot:
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 ...

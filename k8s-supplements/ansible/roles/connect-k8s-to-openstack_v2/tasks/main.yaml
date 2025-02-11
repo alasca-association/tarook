@@ -21,8 +21,8 @@
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Start the OpenStack Cloud Controller manager
   vars:
@@ -71,8 +71,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Create cinder storage class (nvme)
     when: openstack_cinder_nvme
@@ -86,8 +86,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Create volume snapshot class (hdd)
     kubernetes.core.k8s:
@@ -100,6 +100,6 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 ...

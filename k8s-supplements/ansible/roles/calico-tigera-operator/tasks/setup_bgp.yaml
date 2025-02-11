@@ -11,7 +11,7 @@
     register: calico_apiserver
     until: "(calico_apiserver.resources | default(False)) and (calico_apiserver.resources[0].status | default(False)) and (calico_apiserver.resources[0].status.state | default('') in ['Ready', 'Failed'] | default(False))"
     retries: 120
-    delay: "{{ k8s_error_delay }}"
+    delay: "{{ error_delay }}"
 
   - name: BGP - Apply default calico BGP configuration
     kubernetes.core.k8s:
@@ -23,8 +23,8 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: BGP - Label CP nodes as route reflectors
     kubernetes.core.k8s:
@@ -43,7 +43,7 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
     loop: "{{ groups['masters'] }}"
 ...

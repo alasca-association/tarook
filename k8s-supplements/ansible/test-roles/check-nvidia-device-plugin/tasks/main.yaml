@@ -11,8 +11,8 @@
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Get GPU nodes
   kubernetes.core.k8s_info:
@@ -23,8 +23,8 @@
   # Retry this task on failures
   register: gpu_nodes
   until: gpu_nodes is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Check if GPU nodes have GPU capacity
   fail:
@@ -54,8 +54,8 @@
   # Retry this task on failures
   register: k8s_apply_cuda_pod
   until: k8s_apply_cuda_pod is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
   ignore_errors: true
 
 - name: Clean-up
@@ -75,6 +75,6 @@
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 ...

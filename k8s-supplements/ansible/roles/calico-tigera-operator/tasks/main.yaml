@@ -33,8 +33,8 @@
       # Retry this task on failures
       register: k8s_apply
       until: k8s_apply is not failed
-      retries: "{{ k8s_error_retries }}"
-      delay: "{{ k8s_error_delay }}"
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
     - name: Add projectcalico helm repository
       kubernetes.core.helm_repository:
@@ -69,7 +69,7 @@
     timeout: 30
   register: task_result
   until: task_result is not failed
-  retries: "{{ network_error_retries }}"
+  retries: "{{ error_retries }}"
 
 - name: Setup BGP Routing Information Distribution via BIRD
   run_once: true

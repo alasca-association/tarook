@@ -18,8 +18,8 @@
       - --allow-releaseinfo-change
   register: task_result
   until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Upgrade the whole system (apt)  # noqa package-latest
   become: true
@@ -42,8 +42,8 @@
   poll: 5
   register: upgrade_apt
   until: upgrade_apt is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
   when:
     - ansible_pkg_mgr == 'apt'
     - |
@@ -62,10 +62,14 @@
           - reboot
           - now
       when: ansible_connection == 'local'
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
     # We do not need a "when" here. ansible is killed approximately immediately
     # anyway by the above command if it is executed; If the above command is
     # not executed, we want to execute this one.
     - name: Reboot the system
       ansible.builtin.reboot:
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 ...

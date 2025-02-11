@@ -18,8 +18,8 @@
     # Retry this task on failures
     register: k8s_info
     until: k8s_info is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   # We're deleting the Pod so a new one will be re-created by the DS.
   - name: "Delete Pod {{ pod_name }} running on {{ inventory_hostname }}"
@@ -37,6 +37,6 @@
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed
-    retries: "{{ k8s_error_retries }}"
-    delay: "{{ k8s_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 ...
