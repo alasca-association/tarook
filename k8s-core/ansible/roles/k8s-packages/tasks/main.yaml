@@ -10,8 +10,8 @@
       - gnupg
   register: task_result
   until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
   when: ansible_pkg_mgr == 'apt'
 
 - name: Expand NO_PROXY configuration on Ubuntu machines
@@ -60,8 +60,8 @@
           - "kubectl={{ k8s_version }}-*"
       register: task_result
       until: task_result is not failed
-      retries: "{{ network_error_retries }}"
-      delay: "{{ network_error_delay }}"
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
       notify: Restart kubelet
 
     - name: Prevent the k8s packages for being updated  # noqa no-changed-when

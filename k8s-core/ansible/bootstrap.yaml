@@ -134,8 +134,8 @@
       update_cache: true
     register: update_apt
     until: update_apt is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
 - name: Detect GPU
   hosts: "{{ target_hosts | default('all:!orchestrator') }}"

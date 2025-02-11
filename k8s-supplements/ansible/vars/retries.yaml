@@ -1,7 +1,4 @@
 ---
-network_error_retries: 5
-network_error_delay: 3
-
-k8s_error_retries: 5
-k8s_error_delay: 3
+error_retries: 5
+error_delay: 3
 ...

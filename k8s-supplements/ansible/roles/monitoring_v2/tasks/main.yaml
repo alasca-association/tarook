@@ -19,8 +19,8 @@
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Rollout the etcd-metrics-proxy
   ansible.builtin.include_role:
@@ -55,8 +55,8 @@
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
-  retries: "{{ k8s_error_retries }}"
-  delay: "{{ k8s_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Copy CA file from kube-system namespace
   include_tasks: copy-ca-as-cm.yaml
@@ -133,7 +133,7 @@
   # Retry this task on failures
   register: gpu_nodes
   until: gpu_nodes is not failed
-  retries: "{{ k8s_error_retries }}"
+  retries: "{{ error_retries }}"
 
 - name: NVIDIA DCGM Exporter
   when: (gpu_nodes.resources | length) > 0

@@ -6,8 +6,8 @@
     state: present
   register: task_result
   until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
   tags:
   - bird
 

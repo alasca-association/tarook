@@ -34,16 +34,16 @@
       state: present
     register: apt_action
     until: apt_action is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Update apt package cache
     ansible.builtin.apt:
       update_cache: true
     register: apt_action
     until: apt_action is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
 - name: Install containerd
   become: true
@@ -55,8 +55,8 @@
       - containerd
     register: containerd_remove
     until: containerd_remove is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Install 'containerd.io' package from docker repository
     ansible.builtin.apt:
@@ -65,8 +65,8 @@
       - containerd.io
     register: package_install
     until: package_install is not failed
-    retries: "{{ network_error_retries }}"
-    delay: "{{ network_error_delay }}"
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
 - name: Create containerd daemon configuration
   become: true

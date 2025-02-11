@@ -40,8 +40,8 @@
       - bc
       register: task_result
       until: task_result is not failed
-      retries: "{{ network_error_retries }}"
-      delay: "{{ network_error_delay }}"
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
 - name: Install wireguard
   become: true
@@ -51,8 +51,8 @@
     - wireguard
   register: task_result
   until: task_result is not failed
-  retries: "{{ network_error_retries }}"
-  delay: "{{ network_error_delay }}"
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Modprobe the wireguard module to ensure its existence
   become: true
