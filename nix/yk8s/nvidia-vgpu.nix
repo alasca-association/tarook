@@ -28,7 +28,7 @@ in {
     (mkGroupVarsFile {
       inherit cfg;
       ansible_prefix = "nvidia_";
-      inventory_path = "all/nvidia.yaml";
+      inventory_path = "all/nvidia-vgpu.yaml";
       transformations = [
         (cfg:
           if config.yk8s.kubernetes.virtualize_gpu

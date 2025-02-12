@@ -41,7 +41,8 @@
           ./node-scheduling.nix
           ./testing.nix
           ./custom.nix
-          ./nvidia.nix
+          ./nvidia-vgpu.nix
+          ./nvidia-device-plugin.nix
           ./miscellaneous.nix
           ./k8s-supplements
           (mkRemovedSectionModule "passwordstore" "Passwordstore has been replaced by Vault.")
