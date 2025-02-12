@@ -55,6 +55,7 @@ in {
     };
     chart_version = mkOption {
       type = types.str;
+      # renovate: datasource=helm depName=ingress-nginx registryUrl=https://kubernetes.github.io/ingress-nginx
       default = "4.11.1";
     };
     release_name = mkOption {

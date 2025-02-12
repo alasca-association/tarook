@@ -248,10 +248,11 @@ in {
 
     nvidia_dcgm_exporter_helm_version = mkOption {
       description = ''
-        if not specified, latest
+        Helm chart version of the NVIDIA DCGM exporter
       '';
       type = types.str;
-      default = "";
+      # renovate: datasource=helm depName=dcgm-exporter registryUrl=https://nvidia.github.io/dcgm-exporter/helm-charts
+      default = "4.0.1";
     };
 
     thanos_objectstorage_config_path = mkOption {
@@ -275,10 +276,12 @@ in {
         https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#upgrading-chart
       '';
       type = types.nonEmptyStr;
+      # renovate: datasource=helm depName=kube-prometheus-stack registryUrl=https://prometheus-community.github.io/helm-charts
       default = "66.2.2";
     };
     prometheus_adapter_version = mkOption {
       type = types.nonEmptyStr;
+      # renovate: datasource=helm depName=prometheus-adapter registryUrl=https://prometheus-community.github.io/helm-charts
       default = "4.11.0";
     };
 
@@ -356,6 +359,7 @@ in {
         Set custom Bitnami/Thanos chart version
       '';
       type = types.str;
+      # renovate: datasource=helm depName=thanos registryUrl=https://charts.bitnami.com/bitnami
       default = "15.8.2";
     };
 
@@ -453,6 +457,7 @@ in {
         https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
       '';
       type = types.nonEmptyStr;
+      # renovate: datasource=helm depName=prometheus-blackbox-exporter registryUrl=https://prometheus-community.github.io/helm-charts
       default = "9.1.0";
     };
     allow_external_rules = mkEnableOption ''

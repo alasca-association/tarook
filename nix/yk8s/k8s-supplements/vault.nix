@@ -50,6 +50,7 @@ in {
         Version of the Helm Chart to use
       '';
       type = types.str;
+      # renovate: datasource=helm depName=vault registryUrl=https://helm.releases.hashicorp.com
       default = "0.23.0";
     };
     namespace = mkOption {

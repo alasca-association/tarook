@@ -35,6 +35,8 @@ in {
         Helm chart version of fluxcd to be deployed.
       '';
       type = types.str;
+      # TODO: Drop legacy installation
+      # renovate: datasource=helm depName=flux2 registryUrl=https://fluxcd-community.github.io/helm-charts
       default =
         if cfg.legacy
         then "v0.36.0"
