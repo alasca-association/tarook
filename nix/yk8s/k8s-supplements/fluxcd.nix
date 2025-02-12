@@ -5,9 +5,15 @@
   ...
 }: let
   cfg = config.yk8s.k8s-service-layer.fluxcd;
+  modules-lib = import ../lib/modules.nix {inherit lib;};
+  inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+
 in {
+  imports = [
+    (mkRemovedOptionModule "k8s-service-layer.fluxcd" "legacy" "Support for the legacy FluxCD installation has been dropped.\nYou must switch to an older release and migrate if you have not yet.")
+  ];
   options.yk8s.k8s-service-layer.fluxcd = mkTopSection {
     _docs.preface = ''
       More details about our FluxCD2 implementation can be found
@@ -17,7 +23,6 @@ in {
     '';
 
     enabled = mkEnableOption "Flux management";
-    legacy = mkEnableOption "usage of the legacy version of flux";
     install = mkOption {
       description = ''
         If enabled, choose whether to install or uninstall fluxcd2. IF SET TO
@@ -32,15 +37,11 @@ in {
     };
     version = mkOption {
       description = ''
-        Helm chart version of fluxcd to be deployed.
+        Helm chart version of FluxCD to be deployed.
       '';
       type = types.nonEmptyStr;
-      # TODO: Drop legacy installation
       # renovate: datasource=helm depName=flux2 registryUrl=https://fluxcd-community.github.io/helm-charts
-      default =
-        if cfg.legacy
-        then "v0.36.0"
-        else "2.9.2";
+      default = "2.9.2";
     };
     namespace = mkOption {
       description = ''
