@@ -7,7 +7,7 @@
 # Unfortunately, the Terraform Openstack provider is not smart enough to take
 # into account the non-object nature of floating ip associations in Openstack.
 # Terraform first creates the new resources, then destroys the deprecated ones
-# which results the floating ips actuelly being disassociated in Openstack.
+# which results the floating ips actually being disassociated in Openstack.
 # Terraform cannot be made to perform both actions in reverse order.
 # Thus, first the deprecated resources have to be removed from the Terraform
 # state.
@@ -24,21 +24,24 @@ load_conf_vars
 
 if [ "${tf_usage:-true}" == 'true' ]; then
 
+  tf_init
+
   notef "Removing deprecated Terraform floatingip resources from state..."
 
-  pushd "$cluster_repository" >/dev/null || exit 1
-
-  tf_init_local
+  tf_statefile_temp="$terraform_state_dir/terraform.tfstate.yk8s-v9-migrated"
+  terraform -chdir="$terraform_module" state pull > "$tf_statefile_temp"
 
   if ( \
-    terraform state list -state="$terraform_state_dir/terraform.tfstate" \
+    terraform -chdir="$terraform_module" state list -state="$tf_statefile_temp" \
     | grep --quiet '^openstack_compute_floatingip_associate_v2\.gateway' \
   ); then
 
-    run terraform state rm -state="$terraform_state_dir/terraform.tfstate" \
+    run terraform -chdir="$terraform_module" state rm -state="$tf_statefile_temp" \
       openstack_compute_floatingip_associate_v2.gateway
 
-    notef "\nDeprecated Terraform floating ip resources removed from state."
+    run terraform -chdir="$terraform_module" state push "$tf_statefile_temp"
+
+    notef "Deprecated Terraform floating ip resources removed from state."
     notef "Running apply-terraform to create their replacements..."
 
     run "$actions_dir/apply-terraform.sh"
@@ -47,8 +50,9 @@ if [ "${tf_usage:-true}" == 'true' ]; then
       notef "Nothing to do."
   fi
 
-  popd >/dev/null || exit 1
+  rm "$tf_statefile_temp"
 
+  run git add "$terraform_state_dir"
 else
   notef "Skipped Terraform related migration because it is disabled."
 fi
