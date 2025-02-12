@@ -26,6 +26,7 @@ Configuration Options
   yk8s.load-balancing
   yk8s.miscellaneous
   yk8s.node-scheduling
+  yk8s.nvidia-device-plugin
   yk8s.nvidia
   yk8s.openstack
   yk8s.terraform
@@ -72,6 +73,8 @@ Configuration Options
 :doc:`miscellaneous <yk8s.miscellaneous>`
 
 :doc:`node-scheduling <yk8s.node-scheduling>`
+
+:doc:`nvidia-device-plugin <yk8s.nvidia-device-plugin>`
 
 :doc:`nvidia <yk8s.nvidia>`
 

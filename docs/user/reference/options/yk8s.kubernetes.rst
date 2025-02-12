@@ -118,7 +118,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
 
 Set this variable if this cluster contains worker with GPU access
 and you want to make use of these inside of the cluster,
-so that the driver and surrounding framework is deployed.
+so that the NVIDIA device plugin, drivers and surrounding framework is deployed.
 
 
 **Type:**::
