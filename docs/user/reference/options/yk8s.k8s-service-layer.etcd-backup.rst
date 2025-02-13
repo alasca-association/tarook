@@ -105,17 +105,16 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.n
 ####################################################
 
 etcdbackup chart version to install.
-If this is not specified, the latest version is installed.
 
 
 **Type:**::
 
-  string
+  non-empty string
 
 
 **Default:**::
 
-  ""
+  "0.20250127.0"
 
 
 **Declared by**
