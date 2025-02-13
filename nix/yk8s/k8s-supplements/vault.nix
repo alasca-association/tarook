@@ -49,7 +49,7 @@ in {
       description = ''
         Version of the Helm Chart to use
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       # renovate: datasource=helm depName=vault registryUrl=https://helm.releases.hashicorp.com
       default = "0.23.0";
     };

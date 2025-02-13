@@ -160,7 +160,7 @@ in {
       description = ''
         etcdbackup chart version to install.
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       # renovate: datasource=helm depName=etcdbackup registryUrl=https://charts.yaook.cloud/operator/stable/
       default = "0.20250127.0";
     };

@@ -250,7 +250,7 @@ in {
       description = ''
         Helm chart version of the NVIDIA DCGM exporter
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       # renovate: datasource=helm depName=dcgm-exporter registryUrl=https://nvidia.github.io/dcgm-exporter/helm-charts
       default = "4.0.1";
     };
@@ -358,7 +358,7 @@ in {
       description = ''
         Set custom Bitnami/Thanos chart version
       '';
-      type = types.str;
+      type = types.nonEmptyStr;
       # renovate: datasource=helm depName=thanos registryUrl=https://charts.bitnami.com/bitnami
       default = "15.8.2";
     };
