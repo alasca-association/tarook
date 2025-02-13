@@ -39,7 +39,7 @@
     - name: Obtain CAs (CP)
       include_role:
         name: k8s-master
-        tasks_from: obtain-cas.yaml
+        tasks_from: ensure-cas.yaml
       tags:
         - renew-pki
     - name: Obtain kubeconfigs (CP)
