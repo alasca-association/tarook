@@ -1,1 +1,0 @@
-Support for Kubernetes v1.28 has been dropped and along with it the deprecated manifest-based way to deploy the CCM and the cinder CSI plugin.
