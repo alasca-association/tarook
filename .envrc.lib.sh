@@ -87,4 +87,23 @@ use_flake_if_nix() {
     watch_file "$flake_dir/nix/dependencies.nix"
   fi
   export NIX_FLAKE_ACTIVE="${NIX_FLAKE_ACTIVE}:${flake_dir}"
+
+  use locale_archive_if_not_set "$flake_dir"
+}
+
+use_locale_archive_if_not_set() {
+  flake_dir="$(realpath "${1:-${PWD}}")"
+  if [ -z "$LOCALE_ARCHIVE" ]; then
+    echo "Setting locale-archive"
+    layout_dir=$(direnv_layout_dir)
+    export LOCALE_ARCHIVE="$layout_dir/lib/locale/locale-archive"
+    mkdir -p "$(dirname "$LOCALE_ARCHIVE")"
+
+    if ! [ -e "$LOCALE_ARCHIVE" ]; then
+      echo "Building locale-archive"
+      out_path="$(nix build --print-out-paths "$flake_dir#glibcLocales")"
+      rm -f "$LOCALE_ARCHIVE"
+      ln -s "$out_path/lib/locale/locale-archive" "$LOCALE_ARCHIVE"
+    fi
+  fi
 }
