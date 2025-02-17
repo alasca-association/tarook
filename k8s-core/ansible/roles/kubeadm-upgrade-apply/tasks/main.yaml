@@ -65,4 +65,18 @@
         - ansible.builtin.file:
             path: "{{ k8s_ca_key_file_backup.dest }}"
             state: absent
+
+    - name: Ensure kube-controller-manager client cert flags are (un)set
+      block:
+        - name: "Ensure cluster-signing-cert-file is {{ k8s_ca_key_file.stat.exists | ternary('set', 'unset') }}"
+          ansible.builtin.replace:
+            path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+            regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
+            replace: "{{ k8s_ca_key_file.stat.exists | ternary('\\1/etc/kubernetes/pki/ca.crt', '\\1') }}"
+
+        - name: "Ensure cluster-signing-key-file is {{ k8s_ca_key_file.stat.exists | ternary('set', 'unset') }}"
+          ansible.builtin.replace:
+            path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+            regexp: '^(\s*-\s*--cluster-signing-key-file=).*'
+            replace: "{{ k8s_ca_key_file.stat.exists | ternary('\\1/etc/kubernetes/pki/ca.key', '\\1') }}"
 ...

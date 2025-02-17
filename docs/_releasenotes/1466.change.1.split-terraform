@@ -1,1 +1,0 @@
-Most options from the terraform configuration section have moved into one of two new sections, either ``openstack`` for OpenStack specific options or ``infra`` for options used by all clusters. Have a look at the deprecation warnings during Nix evaluation.
