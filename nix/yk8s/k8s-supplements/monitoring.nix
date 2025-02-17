@@ -458,7 +458,7 @@ in {
       '';
       type = types.nonEmptyStr;
       # renovate: datasource=helm depName=prometheus-blackbox-exporter registryUrl=https://prometheus-community.github.io/helm-charts
-      default = "9.1.0";
+      default = "9.2.0";
     };
     allow_external_rules = mkEnableOption ''
       external rules.
