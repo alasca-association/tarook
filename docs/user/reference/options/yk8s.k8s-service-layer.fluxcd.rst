@@ -79,32 +79,6 @@ FALSE, FLUXCD2 WILL BE DELETED WITHOUT CHECKING FOR DISRUPTION.
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
 
 
-.. _configuration-options.yk8s.k8s-service-layer.fluxcd.legacy:
-
-``yk8s.k8s-service-layer.fluxcd.legacy``
-########################################
-
-Whether to enable usage of the legacy version of flux.
-
-**Type:**::
-
-  boolean
-
-
-**Default:**::
-
-  false
-
-
-**Example:**::
-
-  true
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
-
-
 .. _configuration-options.yk8s.k8s-service-layer.fluxcd.namespace:
 
 ``yk8s.k8s-service-layer.fluxcd.namespace``
@@ -156,7 +130,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
 ``yk8s.k8s-service-layer.fluxcd.version``
 #########################################
 
-Helm chart version of fluxcd to be deployed.
+Helm chart version of FluxCD to be deployed.
 
 
 **Type:**::
