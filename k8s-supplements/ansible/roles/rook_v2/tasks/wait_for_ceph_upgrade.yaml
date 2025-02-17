@@ -37,7 +37,7 @@
       fail_msg: "{{ item.metadata.name }} has not been updated, yet"
       that:
       - deployment_replicas == deployment_ready_replicas
-      - not rook_custom_ceph_version is defined or ceph_version_deployed is version(rook_custom_ceph_version, operator='eq')
+      - not rook_custom_ceph_version is not none or ceph_version_deployed is version(rook_custom_ceph_version, operator='eq')
     with_items: "{{ rook_deployments_info.resources }}"
     loop_control:
       label: "Deployment: {{ item.metadata.name }}"

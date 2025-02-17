@@ -17,7 +17,6 @@
   become: true
   block:
   - name: Set the maximum number of Pods
-    when: kubelet_pod_limit is defined
     ansible.builtin.lineinfile:
       path: /var/lib/kubelet/config.yaml
       regexp: 'maxPods:(\s+)([0-9]+)(\s*)\n?$'

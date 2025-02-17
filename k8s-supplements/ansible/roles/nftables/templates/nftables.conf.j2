@@ -58,7 +58,7 @@ table inet filter {
         elements = {
             {{ priv_ip_cidr }},
             {% for ep in wg_endpoints %}
-            {% if ep.enabled and ep.ip_cidr is defined %}
+            {% if ep.enabled and ep.ip_cidr is not none %}
             {{ ep.ip_cidr }},
             {% endif %}
             {% endfor %}
@@ -83,7 +83,7 @@ table inet filter {
         elements = {
             {{ subnet_v6_cidr }},
             {% for ep in wg_endpoints %}
-                {% if ep.enabled and ep.ipv6_cidr is defined %}
+                {% if ep.enabled and ep.ipv6_cidr is not none %}
                 {{ ep.ipv6_cidr }},
                 {% endif %}
             {% endfor %}
