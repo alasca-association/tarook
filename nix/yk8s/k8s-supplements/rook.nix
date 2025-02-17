@@ -132,6 +132,7 @@ in {
         Version of rook to deploy
       '';
       type = types.strMatching "^v1\\.[0-9]+\\.[0-9]+$";
+      # renovate: datasource=helm depName=rook-ceph registryUrl=https://charts.rook.io/release
       default = "v1.15.4";
     };
 

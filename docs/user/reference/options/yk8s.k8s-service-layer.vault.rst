@@ -78,7 +78,7 @@ Version of the Helm Chart to use
 
 **Type:**::
 
-  string
+  non-empty string
 
 
 **Default:**::

@@ -161,7 +161,7 @@ Helm chart version of fluxcd to be deployed.
 
 **Type:**::
 
-  string
+  non-empty string
 
 
 **Default:**::

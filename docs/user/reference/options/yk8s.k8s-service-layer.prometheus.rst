@@ -979,17 +979,17 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 ``yk8s.k8s-service-layer.prometheus.nvidia_dcgm_exporter_helm_version``
 #######################################################################
 
-if not specified, latest
+Helm chart version of the NVIDIA DCGM exporter
 
 
 **Type:**::
 
-  string
+  non-empty string
 
 
 **Default:**::
 
-  ""
+  "4.0.1"
 
 
 **Declared by**
@@ -1580,7 +1580,7 @@ Set custom Bitnami/Thanos chart version
 
 **Type:**::
 
-  string
+  non-empty string
 
 
 **Default:**::

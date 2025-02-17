@@ -159,10 +159,10 @@ in {
     chart_version = mkOption {
       description = ''
         etcdbackup chart version to install.
-        If this is not specified, the latest version is installed.
       '';
-      type = types.str;
-      default = "";
+      type = types.nonEmptyStr;
+      # renovate: datasource=helm depName=etcdbackup registryUrl=https://charts.yaook.cloud/operator/stable/
+      default = "0.20250127.0";
     };
     metrics_port = mkOption {
       description = ''

@@ -46,7 +46,8 @@ in {
       default = "jetstack/cert-manager";
     };
     chart_version = mkOption {
-      type = types.str;
+      type = types.nonEmptyStr;
+      # renovate: datasource=helm depName=cert-manager registryUrl=https://charts.jetstack.io
       default = "1.15.2";
     };
     release_name = mkOption {

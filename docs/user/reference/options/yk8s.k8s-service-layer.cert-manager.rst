@@ -43,7 +43,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.
 
 **Type:**::
 
-  string
+  non-empty string
 
 
 **Default:**::
