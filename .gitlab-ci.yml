@@ -1,4 +1,6 @@
 variables:
+  GIT_DEPTH: 1  # shallow clone for all jobs
+
   YAOOK_K8S_RELEASE_BRANCH_PREFIX: release/v
   YAOOK_K8S_RELEASE_PREPARE_BRANCH_PREFIX: release-prepare/v
   YAOOK_K8S_RELEASE_HOTFIX_BRANCH_PREFIX: hotfix/
