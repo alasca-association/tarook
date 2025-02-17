@@ -14,12 +14,35 @@ which powers NixOS but can also be installed as an additional separate package m
 other GNU/Linux distribution. This repository contains a flake.nix which references all necessary
 dependencies locked to specific versions so everybody can produce the same identical environment.
 
-1. `Install Nix <https://nixos.org/download.html#download-nix>`__
-2. `Enable flake support <https://nixos.wiki/wiki/Flakes#Permanent>`__ by adding the following line to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``.
+1. Install Nix on a non NixOS system
+
+   .. tabs::
+
+      .. tab:: Via the official installer
+
+         Follow the `Nix documentation <https://nixos.org/download.html#download-nix>`__ on how to install.
+
+      .. tab:: From Ubuntu repositories
+
+         Nix can also be installed from the Ubuntu repositories.
+         The following has been tested on an Ubuntu 24.04 LTS system:
+
+         .. code:: console
+
+            $ # Run installation for debian managed nix multi-user package
+            $ sudo apt update && sudo apt install nix-setup-systemd libpam-systemd -y
+
+            $ # Add current user to nix group
+            $ sudo adduser $(whoami) nix-users
+
+   Restart your terminal session or run the following command to use Nix right away: ``newgrp nix-users``
+
+2. `Enable Flake support <https://nixos.wiki/wiki/Flakes#Permanent>`__ by adding the following line to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``.
 
    .. code:: ini
 
       experimental-features = nix-command flakes
+
 3. (Optional) Add our binary cache in ``/etc/nix/nix.conf``
    so you won't have to build anything from source
 
@@ -27,7 +50,15 @@ dependencies locked to specific versions so everybody can produce the same ident
 
       extra-substituters = https://nix-cache.tarook.cloud
       extra-trusted-public-keys = nix-cache.tarook.cloud-2:2X2yPTrpwmakhSgS83FVB2fKkG6IzfOJ1AGIIcvNyM0=
-4. Install `direnv <https://direnv.net>` and configure its hook for your shell. This is not strictly necessary,
+
+4. Restart the systemd service in order for the changes in ``nix.conf`` to take effect.
+
+   .. code:: console
+
+      $ sudo systemctl daemon-reload
+      $ sudo systemctl restart nix-daemon
+
+5. Install `direnv <https://direnv.net>`__ and configure its hook for your shell. This is not strictly necessary,
    but the rest of the guide assumes that direnv is available. You can enter the virtual environments and set
    all necessary environment variables manually instead, but then you're on your own.
 
