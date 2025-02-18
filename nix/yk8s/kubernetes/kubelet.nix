@@ -11,7 +11,7 @@
   inherit (yk8s-lib) mkSubSection;
 in {
   imports = [
-    (mkRenamedOptionModule "kubernetes.kubelet" "pod_limit" "pod_limit_worker")
+    (mkRenamedOptionModule "kubernetes" "kubelet.pod_limit" "kubelet.pod_limit_worker")
   ];
 
   options.yk8s.kubernetes.kubelet = mkSubSection {
