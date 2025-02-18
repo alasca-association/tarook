@@ -119,11 +119,12 @@
             cfg.dependencies.finalGroups;
 
           packages =
-            lib.mapAttrs' (_: value: {
-              inherit (value) name;
-              inherit value;
-            })
-            cfg.environments;
+            (lib.mapAttrs' (_: value: {
+                inherit (value) name;
+                inherit value;
+              })
+              cfg.environments)
+            // {inherit (pkgs) glibcLocales;};
 
           devShells =
             lib.mapAttrs (
