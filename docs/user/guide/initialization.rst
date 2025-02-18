@@ -144,7 +144,7 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
          .. code:: console
 
-            $ cp $somewhere_else/k8s/templates/yaook-k8s-env.template.sh ~/.config/yaook-k8s/env
+            $ cp managed-k8s/k8s/templates/yaook-k8s-env.template.sh ~/.config/yaook-k8s/env
 
       2. Make the **user specific**
          :ref:`minimal changes <environmental-variables.minimal-required-changes>`
