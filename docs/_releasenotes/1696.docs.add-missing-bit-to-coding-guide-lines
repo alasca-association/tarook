@@ -1,0 +1,3 @@
+A new coding guide line has been added
+to specify that for Ansible builtins
+only the short names shall be used.

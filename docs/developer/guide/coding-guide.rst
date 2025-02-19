@@ -182,6 +182,29 @@ New-style module syntax
    use of Jinja2 templates without having to worry about quotation and
    spaces.
 
+No fully-qualified collection name for builtins
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Correct**
+
+.. code:: yaml
+
+   - name: Assert something
+     assert:
+      that: something is defined
+
+**Incorrect**
+
+.. code:: yaml
+
+   - name: Assert something
+     ansible.builtins.assert:
+      that: something is defined
+
+.. admonition:: Rationale
+
+   The first version is easier to read.
+
 Command module usage
 ~~~~~~~~~~~~~~~~~~~~
 
