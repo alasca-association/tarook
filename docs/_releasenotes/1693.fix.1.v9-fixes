@@ -1,0 +1,1 @@
+A bug regarding the renaming of ``pod_limit`` to ``pod_limit_worker`` has been fixed.

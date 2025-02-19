@@ -1,0 +1,1 @@
+The default value of :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.scheduling_key` for thanos_v2 has been fixed.

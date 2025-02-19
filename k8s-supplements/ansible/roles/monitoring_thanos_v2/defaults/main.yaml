@@ -6,8 +6,6 @@ monitoring_thanos_release_name: "thanos"
 
 monitoring_thanos_config_secret_name: "thanos-bucket-config"
 
-monitoring_scheduling_value: null
-
 monitoring_thanos_retention_resolution_raw: "30d"
 monitoring_thanos_retention_resolution_5m: "60d"
 monitoring_thanos_retention_resolution_1h: "180d"

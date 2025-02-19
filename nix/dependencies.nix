@@ -35,6 +35,7 @@
           moreutils
           openssh
           openssl
+          pre-commit
           inputs'.nixpkgs-terraform157.legacyPackages.terraform
           util-linux # for uuidgen
         ];
