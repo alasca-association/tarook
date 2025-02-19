@@ -19,7 +19,7 @@
   - name: "Running '{{ kubeadm_expression | map('quote') | join(' ') }}' on worker"  # noqa no-changed-when
     shell: "umask 077 && {{ kubeadm_expression | map('quote') | join(' ') }}"
     async: 1800
-    poll: 5
+    poll: 3
 
 - name: Run kubeadm command on control plane node
   become: true
@@ -75,7 +75,7 @@
   - name: "Running '{{ kubeadm_expression | map('quote') | join(' ') }}' on control plane node"  # noqa no-changed-when
     shell: "umask 077 && {{ kubeadm_expression | map('quote') | join(' ') }}"
     async: 1800
-    poll: 5
+    poll: 3
 
   - name: Reveal Kubernetes cluster root CA key after kubeadm
     when: k8s_ca_key_file_hidden is not skipped
