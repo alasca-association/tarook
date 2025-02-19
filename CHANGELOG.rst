@@ -19,6 +19,35 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.0.1 (2025-02-19)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug has been fixed that made the inventory updater erroneously output
+  ``error: Neither IPv4 nor IPv6 are enabled.`` to users with a broken locale
+  setup and swallowed any error output related to that. (`!1677 <https://gitlab.com/yaook/k8s/-/merge_requests/1677>`_)
+- An envrc function has been added to address common locale issues on non-NixOS systems. (`!1679 <https://gitlab.com/yaook/k8s/-/merge_requests/1679>`_)
+- A bug has been fixed that caused k8s-supplements to fail if :ref:`configuration-options.yk8s.miscellaneous.openstack_cinder_volume_type` was not set. (`!1688 <https://gitlab.com/yaook/k8s/-/merge_requests/1688>`_)
+- ``pre-commit`` has been added back to the default group. (`!1693 <https://gitlab.com/yaook/k8s/-/merge_requests/1693>`_)
+- The default value of :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.scheduling_key` for thanos_v2 has been fixed. (`!1693 <https://gitlab.com/yaook/k8s/-/merge_requests/1693>`_)
+- A bug regarding the renaming of ``pod_limit`` to ``pod_limit_worker`` has been fixed. (`!1693 <https://gitlab.com/yaook/k8s/-/merge_requests/1693>`_)
+
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Instructions on how to :ref:`Install system requirements. <initialization.install-system-requirements>` have been refined.
+  We additionally explain how to install on Ubuntu 24.04 from Ubuntu repositories now. (`!1689 <https://gitlab.com/yaook/k8s/-/merge_requests/1689>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- `!1671 <https://gitlab.com/yaook/k8s/-/merge_requests/1671>`_, `!1674 <https://gitlab.com/yaook/k8s/-/merge_requests/1674>`_, `!1681 <https://gitlab.com/yaook/k8s/-/merge_requests/1681>`_
+
+
 v9.0.0 (2025-02-14)
 -------------------
 
