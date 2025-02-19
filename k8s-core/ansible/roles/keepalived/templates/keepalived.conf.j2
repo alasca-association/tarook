@@ -1,6 +1,18 @@
 #jinja2: lstrip_blocks: True
 {{ _auto_generated_preamble }}
 
+global_defs {
+    # These settings are required to make things work on OVN-based
+    # clouds.
+    # Inspired by https://github.com/stackitcloud/yawol/pull/129/files
+    vrrp_garp_master_repeat 5
+    vrrp_garp_interval 1
+    vrrp_garp_lower_prio_repeat 1
+    vrrp_garp_master_refresh 300
+    vrrp_garp_master_refresh_repeat 1
+    vrrp_higher_prio_send_advert true
+}
+
 vrrp_script chk_haproxy {
     script "/etc/keepalived/chk_haproxy.sh"
     interval 2
