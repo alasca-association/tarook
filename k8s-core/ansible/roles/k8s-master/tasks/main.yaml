@@ -189,10 +189,8 @@
     block:
     - name: Generate super admin kubeconfig
       become: false
-      # Generate super-admin.conf file for Kubernetes 1.29 and later
-      # as kubeadm init requires it for initialization.
+      # Generate super-admin.conf as kubeadm init requires it for initialization.
       # Delete it afterwards
-      when: k8s_version_minor is version('1.29', '>=')
       # must use block to be able to set environment
       environment:
         ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
