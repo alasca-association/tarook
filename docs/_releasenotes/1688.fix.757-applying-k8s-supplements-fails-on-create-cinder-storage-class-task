@@ -1,1 +1,0 @@
-A bug has been fixed that caused k8s-supplements to fail if :ref:`configuration-options.yk8s.miscellaneous.openstack_cinder_volume_type` was not set.
