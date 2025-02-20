@@ -48,7 +48,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.
 
 **Default:**::
 
-  "1.15.2"
+  "1.17.1"
 
 
 **Declared by**
