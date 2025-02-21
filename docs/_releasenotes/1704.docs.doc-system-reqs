@@ -1,0 +1,1 @@
+Dropped ``libpam-systemd`` from necessary packages for Nix on Ubuntu 24.04.
