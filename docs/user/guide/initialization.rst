@@ -30,7 +30,7 @@ dependencies locked to specific versions so everybody can produce the same ident
          .. code:: console
 
             $ # Run installation for debian managed nix multi-user package
-            $ sudo apt update && sudo apt install nix-setup-systemd libpam-systemd -y
+            $ sudo apt update && sudo apt install nix-setup-systemd
 
             $ # Add current user to nix group
             $ sudo adduser $(whoami) nix-users
