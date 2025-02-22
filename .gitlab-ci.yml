@@ -10,6 +10,20 @@ variables:
   REGEX_RELEASE_HOTFIX_BASE_BRANCH_PREFIX: /^hotfix\/base\S+$/
 
   YAOOK_K8S_CI_IMAGE_NAME: ${CI_REGISTRY_IMAGE}/ci
+  YAOOK_K8S_CI_IMAGE_TAG:
+    description: "The container image tag that should be used for this pipeline"
+  SKIP_HOUSEKEEPING:
+    description: "Whether the housekeeping stage should be skipped in this pipeline"
+    value: "false"
+    options:
+    - "false"
+    - "true"
+  SKIP_LINT:
+    description: "Whether the lint stage should be skipped in this pipeline"
+    value: "false"
+    options:
+    - "false"
+    - "true"
 
 # Pipelines run on devel branch, release-(prepare)-branches and merge requests
 workflow:
@@ -19,6 +33,7 @@ workflow:
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
     - if: $CI_MERGE_REQUEST_EVENT_TYPE
     - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
 
 stages:
 - build-image  # needs to run first (see !1627)
@@ -57,6 +72,7 @@ tflint:
     - !reference [.default_lint_rules, rules]
     - changes:
       - 'terraform/**/*'
+      if: $SKIP_LINT != "true"
       when: on_success
     - when: never
 
@@ -71,6 +87,7 @@ shellcheck:
     - !reference [.default_lint_rules, rules]
     - changes:
       - '**/*.sh'
+      if: $SKIP_LINT != "true"
       when: on_success
     - when: never
 
@@ -85,6 +102,7 @@ yamllint:
     - !reference [.default_lint_rules, rules]
     - changes:
       - '**/*.{yaml,yml}'
+      if: $SKIP_LINT != "true"
       when: on_success
     - when: never
 
@@ -98,6 +116,7 @@ detect-vault-image:
   rules:
     - !reference [.default_lint_rules, rules]
     - when: on_success
+      if: $SKIP_LINT != "true"
 
 ansible-lint:
   image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
@@ -110,6 +129,7 @@ ansible-lint:
   rules:
     - !reference [.default_lint_rules, rules]
     - when: on_success
+      if: $SKIP_LINT != "true"
 
 flake8:
   image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
@@ -122,6 +142,7 @@ flake8:
     - !reference [.default_lint_rules, rules]
     - changes:
       - '**/*.py'
+      if: $SKIP_LINT != "true"
       when: on_success
     - when: never
 
@@ -129,6 +150,7 @@ render-options:
   stage: housekeeping
   needs:
     - job: build_image # otherwise it would be run at the same time as build_image (and then fail) if the optional job was skipped
+      optional: true
     - job: release-note-file-check
       optional: true
   image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
@@ -144,6 +166,7 @@ render-options:
     - !reference [.default_lint_rules, rules]
     - changes:
       - nix/yk8s/**/*
+      if: $SKIP_HOUSEKEEPING != "true"
       when: on_success
     - when: never
 
@@ -160,6 +183,7 @@ pre-commit-hooks:
   rules:
     - !reference [.default_lint_rules, rules]
     - when: on_success
+      if: $SKIP_LINT != "true"
 
 build-docs-check:
   stage: lint
@@ -175,7 +199,7 @@ build-docs-check:
       - public/
   rules:
     # run only on MR when changes were made
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+    - if: '($CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result") && ($SKIP_LINT != "true")'
       changes:
       - 'docs/**/*'
       - 'docs/*'  # the above does not include files directly in docs/
@@ -194,7 +218,7 @@ check-key-expiry:
   rules:
     - !reference [.default_lint_rules, rules]
     # run only on MR when changes were made
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result"'
+    - if: '($CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result") && ($SKIP_LINT != "true")'
       changes:
       - '**/*.gpg'
       when: on_success
@@ -255,7 +279,7 @@ release-note-file-check:
     exit_codes: 13 # if number in hotfix doesn't match MR-IID, exit with warning
   rules:
     # don't run when CHANGELOG.rst has been edited
-    - if:
+    - if: $SKIP_HOUSEKEEPING != "true"
       changes:
       - CHANGELOG.rst
       when: never
@@ -296,6 +320,7 @@ pages-dry-run:
       - flake.lock
       # sphinx-multiversion always uses this file from the current branch, so changes may break other versions
       - docs/conf.py
+      if: $SKIP_LINT != "true"
       when: on_success
     - when: manual
       allow_failure: true
