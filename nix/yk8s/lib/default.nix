@@ -48,6 +48,8 @@
     builtins.traceVerbose "Writing file: ${path}" (mkYamlAtPath path finalConfig);
   mkYaml = (pkgs.formats.yaml {}).generate;
   mkYamlAtPath = path: attrs: linkToPath (mkYaml path attrs) path;
+  mkJson = (pkgs.formats.json {}).generate;
+  mkJsonAtPath = path: attrs: linkToPath (mkJson path attrs) path;
   linkToPath = file: path:
     pkgs.runCommandLocal path {
       allowSubstitutes = false;

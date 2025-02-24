@@ -11,7 +11,7 @@
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath mkJson;
   inherit (yk8s-lib.types) ipv4Cidr;
   inherit (yk8s-lib.transform) filterNull removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
@@ -370,7 +370,7 @@ in {
             builtins.foldl' (acc: e: lib.attrsets.recursiveUpdate acc (removeObsoleteOptions e)) {}
             [filteredOpenstackCfg filteredTerraformCfg infraCfg];
           transformations = [filterInternal filterNull];
-          varsFile = (pkgs.formats.json {}).generate "tfvars.json" (pipe mergedCfg transformations);
+          varsFile = mkJson "tfvars.json" (pipe mergedCfg transformations);
         in (pkgs.runCommandLocal "tfvars.json" {} ''
           install -m 644 -D ${varsFile} $out/${tfvars_file_path}
         '')
