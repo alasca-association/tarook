@@ -35,7 +35,9 @@ dependencies locked to specific versions so everybody can produce the same ident
             $ # Add current user to nix group
             $ sudo adduser $(whoami) nix-users
 
-         Restart your terminal session or run the following command to use Nix right away: ``newgrp nix-users``
+         Re-login to your seat (desktop session) or run the following command to use Nix right away:
+         ``newgrp nix-users``. Note that the ``newgrp`` command starts a new shell and will only have
+         effect within that shell.
 
 2. `Enable Flake support <https://nixos.wiki/wiki/Flakes#Permanent>`__ by adding the following line to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``.
 
