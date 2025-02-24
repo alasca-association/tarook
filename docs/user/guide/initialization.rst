@@ -22,10 +22,10 @@ dependencies locked to specific versions so everybody can produce the same ident
 
          Follow the `Nix documentation <https://nixos.org/download.html#download-nix>`__ on how to install.
 
-      .. tab:: From Ubuntu repositories
+      .. tab:: From Debian/Ubuntu repositories
 
-         Nix can also be installed from the Ubuntu repositories.
-         The following has been tested on an Ubuntu 24.04 LTS system:
+         Nix can also be installed from the Debian/Ubuntu repositories.
+         The following has been tested on Debian Trixie and Ubuntu 24.04 LTS:
 
          .. code:: console
 
@@ -35,7 +35,10 @@ dependencies locked to specific versions so everybody can produce the same ident
             $ # Add current user to nix group
             $ sudo adduser $(whoami) nix-users
 
-         Restart your terminal session or run the following command to use Nix right away: ``newgrp nix-users``
+         Restart your terminal session or run the following command to use Nix right away:
+
+         .. code:: console
+            $ newgrp nix-users
 
 2. `Enable Flake support <https://nixos.wiki/wiki/Flakes#Permanent>`__ by adding the following line to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``.
 
