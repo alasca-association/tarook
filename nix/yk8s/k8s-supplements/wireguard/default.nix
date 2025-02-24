@@ -10,7 +10,7 @@
   inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule;
   inherit (lib) mkOption types;
   inherit (lib.attrsets) filterAttrs;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkJson;
   inherit (yk8s-lib.types) ipv4Addr ipv4Cidr;
   # inherit (yk8s-lib.transform) filterNull addPrefix;
   inherit (yk8s-lib) linkToPath;
@@ -258,7 +258,7 @@ in {
           --prefix PATH : ${lib.makeBinPath buildInputs}
       '';
     };
-    varsFile = (pkgs.formats.json {}).generate "wireguard.json" (pipe cfg transformations);
+    varsFile = mkJson "wireguard.json" (pipe cfg transformations);
     ipam_path = "wireguard/ipam.toml";
     wireguard_helper_output = let
       current_ipam_file =
