@@ -1,3 +1,0 @@
-A bug has been fixed that made the inventory updater erroneously output
-``error: Neither IPv4 nor IPv6 are enabled.`` to users with a broken locale
-setup and swallowed any error output related to that.
