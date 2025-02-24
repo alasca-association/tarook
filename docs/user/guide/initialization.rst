@@ -53,6 +53,12 @@ dependencies locked to specific versions so everybody can produce the same ident
       extra-substituters = https://nix-cache.tarook.cloud
       extra-trusted-public-keys = nix-cache.tarook.cloud-2:2X2yPTrpwmakhSgS83FVB2fKkG6IzfOJ1AGIIcvNyM0=
 
+   .. note::
+
+      The binary cache must be configured in ``/etc/nix/nix.conf``.
+      Adding it to ``~/.config/nix/nix.conf`` is only doable if the current user
+      is added as ``trusted-user`` in ``/etc/nix/nix.conf`` which would have security implications.
+
 4. Restart the systemd service in order for the changes in ``nix.conf`` to take effect.
 
    .. code:: console
