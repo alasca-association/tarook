@@ -19,6 +19,17 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.1.10 (2025-02-24)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug has been fixed that made the inventory updater erroneously output
+  ``error: Neither IPv4 nor IPv6 are enabled.`` to users with a broken locale
+  setup and swallowed any error output related to that. (`!1677 <https://gitlab.com/yaook/k8s/-/merge_requests/1677>`_)
+
+
 v8.1.9 (2025-02-04)
 -------------------
 
