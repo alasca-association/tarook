@@ -11,5 +11,5 @@
     tags:
     - connect-k8s-to-openstack_v2
     - connect-k8s-to-openstack
-    when: on_openstack | bool
+    when: openstack_enabled | bool
 ...

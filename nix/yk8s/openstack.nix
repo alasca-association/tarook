@@ -136,7 +136,6 @@ in {
           # - yk8s-worker-a
     '';
 
-    # TODO replace on_openstack with openstack.enabled
     enabled = mkOption {
       type = types.bool;
       default = true;

@@ -6,7 +6,7 @@ nodeRegistration:
   ignorePreflightErrors:
   - FileAvailable--etc-kubernetes-kubelet.conf
   kubeletExtraArgs:
-{% if on_openstack %}
+{% if openstack_enabled %}
     cloud-provider: "external"
 {% endif %}
 {% if ipv4_enabled and ipv6_enabled %}
