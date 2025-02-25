@@ -149,6 +149,57 @@ Defines the availability zones of your cloud to use for the creation of servers.
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 
 
+.. _configuration-options.yk8s.openstack.check_credentials:
+
+``yk8s.openstack.check_credentials``
+####################################
+
+OpenStack credential checks
+Terrible things will happen when certain tasks are run and OpenStack credentials are not sourced.
+Okay, maybe not so terrible after all, but the templates do not check if certain values exist.
+Hence config files with empty credentials are written. The LCM will execute a simple check to see
+if you provided valid credentials as a sanity check if you're on openstack and this option is set
+to true.
+
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cinder_volume_type:
+
+``yk8s.openstack.cinder_volume_type``
+#####################################
+
+Use a specific volume type for the csi-sc-cinderplugin StorageClass.
+If unset, no volume type is explicitly set and the default volume type
+of the IaaS-layer is used.
+
+
+**Type:**::
+
+  null or non-empty string
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
+
+
 .. _configuration-options.yk8s.openstack.create_root_disk_on_volume:
 
 ``yk8s.openstack.create_root_disk_on_volume``
@@ -453,6 +504,38 @@ MTU for the network used for the cluster.
 **Default:**::
 
   1450
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.network_name:
+
+``yk8s.openstack.network_name``
+###############################
+
+Name of the internal OpenStack network. This field becomes important if a VM is
+attached to two networks but the controller-manager should only pick up one. If
+you don't understand the purpose of this field, there's a very high chance you
+won't need to touch it.
+Note: This network name isn't fetched automagically (by terraform) on purpose
+because there might be situations where the CCM should not pick the managed network.
+
+
+**Type:**::
+
+  null or non-empty string
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  "\${config.yk8s.infra.cluster_name}-network"
 
 
 **Declared by**

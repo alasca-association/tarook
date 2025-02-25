@@ -33,6 +33,48 @@ probably be removed in the foreseeable future.
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
 
 
+.. _configuration-options.yk8s.load-balancing.haproxy_frontend_k8s_api_maxconn:
+
+``yk8s.load-balancing.haproxy_frontend_k8s_api_maxconn``
+########################################################
+
+
+
+**Type:**::
+
+  positive integer, meaning >0
+
+
+**Default:**::
+
+  2000
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
+
+
+.. _configuration-options.yk8s.load-balancing.haproxy_frontend_nodeport_maxconn:
+
+``yk8s.load-balancing.haproxy_frontend_nodeport_maxconn``
+#########################################################
+
+
+
+**Type:**::
+
+  positive integer, meaning >0
+
+
+**Default:**::
+
+  2000
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
+
+
 .. _configuration-options.yk8s.load-balancing.haproxy_stats_port:
 
 ``yk8s.load-balancing.haproxy_stats_port``

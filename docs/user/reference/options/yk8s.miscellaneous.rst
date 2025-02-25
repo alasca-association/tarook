@@ -32,33 +32,6 @@ those don't work with caching proxies like apt-cacher-ng.
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
-.. _configuration-options.yk8s.miscellaneous.check_openstack_credentials:
-
-``yk8s.miscellaneous.check_openstack_credentials``
-##################################################
-
-OpenStack credential checks
-Terrible things will happen when certain tasks are run and OpenStack credentials are not sourced.
-Okay, maybe not so terrible after all, but the templates do not check if certain values exist.
-Hence config files with empty credentials are written. The LCM will execute a simple check to see
-if you provided valid credentials as a sanity check iff you're on openstack and the flag below is set
-to True.
-
-
-**Type:**::
-
-  boolean
-
-
-**Default:**::
-
-  true
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
-
-
 .. _configuration-options.yk8s.miscellaneous.cluster_behind_proxy:
 
 ``yk8s.miscellaneous.cluster_behind_proxy``
@@ -376,48 +349,6 @@ external network traffic and the amount of docker pulls from dockerhub.
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
-.. _configuration-options.yk8s.miscellaneous.haproxy_frontend_k8s_api_maxconn:
-
-``yk8s.miscellaneous.haproxy_frontend_k8s_api_maxconn``
-#######################################################
-
-
-
-**Type:**::
-
-  positive integer, meaning >0
-
-
-**Default:**::
-
-  2000
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
-
-
-.. _configuration-options.yk8s.miscellaneous.haproxy_frontend_nodeport_maxconn:
-
-``yk8s.miscellaneous.haproxy_frontend_nodeport_maxconn``
-########################################################
-
-
-
-**Type:**::
-
-  positive integer, meaning >0
-
-
-**Default:**::
-
-  2000
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
-
-
 .. _configuration-options.yk8s.miscellaneous.http_proxy:
 
 ``yk8s.miscellaneous.http_proxy``
@@ -502,62 +433,6 @@ will be set automagically and do not have to set manually here.
 **Example:**::
 
   "localhost,127.0.0.0/8"
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
-
-
-.. _configuration-options.yk8s.miscellaneous.openstack_cinder_volume_type:
-
-``yk8s.miscellaneous.openstack_cinder_volume_type``
-###################################################
-
-Use a specific volume type for the csi-sc-cinderplugin StorageClass.
-If unset, no volume type is explicitly set and the default volume type
-of the IaaS-layer is used.
-
-
-**Type:**::
-
-  null or non-empty string
-
-
-**Default:**::
-
-  null
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
-
-
-.. _configuration-options.yk8s.miscellaneous.openstack_network_name:
-
-``yk8s.miscellaneous.openstack_network_name``
-#############################################
-
-Name of the internal OpenStack network. This field becomes important if a VM is
-attached to two networks but the controller-manager should only pick up one. If
-you don't understand the purpose of this field, there's a very high chance you
-won't need to touch it/uncomment it.
-Note: This network name isn't fetched automagically (by terraform) on purpose
-because there might be situations where the CCM should not pick the managed network.
-
-
-**Type:**::
-
-  null or non-empty string
-
-
-**Default:**::
-
-  null
-
-
-**Example:**::
-
-  "\${config.yk8s.infra.cluster_name}-network"
 
 
 **Declared by**
