@@ -19,6 +19,9 @@ in {
     (mkRenamedOptionModuleWithNewSection "miscellaneous" "subnet_cidr" "infra" "subnet_cidr")
     (mkRenamedOptionModuleWithNewSection "miscellaneous" "hosts_file" "infra" "hosts_file")
     (mkRemovedOptionModule "miscellaneous" "openstack_connect_use_helm" "Helm is now always used to deploy the CCM and the cinder CSI plugin")
+    (mkRenamedOptionModuleWithNewSection "miscellaneous" "openstack_network_name" "openstack" "network_name")
+    (mkRenamedOptionModuleWithNewSection "miscellaneous" "openstack_cinder_volume_type" "openstack" "cinder_volume_type")
+    (mkRenamedOptionModuleWithNewSection "miscellaneous" "check_openstack_credentials" "openstack" "check_credentials")
   ];
   options.yk8s.miscellaneous = mkTopSection {
     _docs.preface = ''
@@ -81,28 +84,6 @@ in {
       type = with types; nullOr nonEmptyStr;
       default = null;
       example = "localhost,127.0.0.0/8";
-    };
-    openstack_network_name = mkOption {
-      description = ''
-        Name of the internal OpenStack network. This field becomes important if a VM is
-        attached to two networks but the controller-manager should only pick up one. If
-        you don't understand the purpose of this field, there's a very high chance you
-        won't need to touch it/uncomment it.
-        Note: This network name isn't fetched automagically (by terraform) on purpose
-        because there might be situations where the CCM should not pick the managed network.
-      '';
-      type = with types; nullOr nonEmptyStr;
-      default = null;
-      example = "\${config.yk8s.infra.cluster_name}-network";
-    };
-    openstack_cinder_volume_type = mkOption {
-      description = ''
-        Use a specific volume type for the csi-sc-cinderplugin StorageClass.
-        If unset, no volume type is explicitly set and the default volume type
-        of the IaaS-layer is used.
-      '';
-      type = with types; nullOr nonEmptyStr;
-      default = null;
     };
     vm_max_map_count = mkOption {
       description = ''
@@ -191,19 +172,6 @@ in {
       type = with types; listOf nonEmptyStr;
       default = [];
       example = ["0.server.ntp.example.org" "1.server.ntp.example.org"];
-    };
-
-    check_openstack_credentials = mkOption {
-      description = ''
-        OpenStack credential checks
-        Terrible things will happen when certain tasks are run and OpenStack credentials are not sourced.
-        Okay, maybe not so terrible after all, but the templates do not check if certain values exist.
-        Hence config files with empty credentials are written. The LCM will execute a simple check to see
-        if you provided valid credentials as a sanity check iff you're on openstack and the flag below is set
-        to True.
-      '';
-      type = types.bool;
-      default = true;
     };
 
     apt_proxy_url = mkOption {
