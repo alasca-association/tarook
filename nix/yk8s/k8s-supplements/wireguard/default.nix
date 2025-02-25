@@ -23,6 +23,11 @@ in {
     (mkRenamedOptionModule "wireguard" "wg_ipv6_cidr" "ipv6_cidr")
     (mkRemovedOptionModule "wireguard" "rollout_company_users" "")
     (mkRemovedOptionModule "wireguard" "s2s_enabled" "")
+    (mkRemovedOptionModule "wireguard" "port" "Use endpoints instead")
+    (mkRemovedOptionModule "wireguard" "ip_cidr" "Use endpoints instead")
+    (mkRemovedOptionModule "wireguard" "ipv6_cidr" "Use endpoints instead")
+    (mkRemovedOptionModule "wireguard" "ip_gw" "Use endpoints instead")
+    (mkRemovedOptionModule "wireguard" "ipv6_gw" "Use endpoints instead")
   ];
 
   options.yk8s.wireguard = mkTopSection {
@@ -42,73 +47,6 @@ in {
       default = true;
     };
 
-    port = mkOption {
-      description = ''
-        DEPRECATED. Use endpoints instead
-
-        The port Wireguard should use on the frontend nodes
-      '';
-      type = with types; nullOr port;
-      default = null;
-      example = 7777;
-    };
-    ip_cidr = mkOption {
-      description = ''
-        DEPRECATED. Use endpoints instead
-
-        IP address range to use for WireGuard clients. Must be set to a CIDR and must
-        not conflict with the terraform.subnet_cidr.
-        Should be chosen uniquely for all clusters of a customer at the very least
-        so that they can use all of their clusters at the same time without having
-        to tear down tunnels.
-      '';
-      type = types.nullOr ipv4Cidr;
-      default = null;
-      example = "172.30.153.64/26";
-    };
-    ip_gw = mkOption {
-      description = ''
-        DEPRECATED. Use endpoints instead
-
-        IP address range to use for WireGuard servers. Must be set to a CIDR and must
-        not conflict with the terraform.subnet_cidr.
-        Should be chosen uniquely for all clusters of a customer at the very least
-        so that they can use all of their clusters at the same time without having
-        to tear down tunnels.
-      '';
-      type = types.nullOr ipv4Cidr;
-      default = null;
-      example = "172.30.153.65/26";
-    };
-
-    ipv6_cidr = mkOption {
-      description = ''
-        DEPRECATED. Use endpoints instead
-
-        IP address range to use for WireGuard clients. Must be set to a CIDR and must
-        not conflict with the terraform.subnet_cidr.
-        Should be chosen uniquely for all clusters of a customer at the very least
-        so that they can use all of their clusters at the same time without having
-        to tear down tunnels.
-      '';
-      type = types.nullOr types.nonEmptyStr;
-      default = null;
-      example = "fd01::/120";
-    };
-    ipv6_gw = mkOption {
-      description = ''
-        DEPRECATED. Use endpoints instead
-
-        IP address range to use for WireGuard servers. Must be set to a CIDR and must
-        not conflict with the terraform.subnet_cidr.
-        Should be chosen uniquely for all clusters of a customer at the very least
-        so that they can use all of their clusters at the same time without having
-        to tear down tunnels.
-      '';
-      type = types.nullOr types.nonEmptyStr;
-      default = null;
-      example = "fd01::1/120";
-    };
     endpoints = mkOption {
       description = ''
         Defines a WireGuard endpoint/server.
@@ -284,24 +222,7 @@ in {
         })
       ];
     _state_packages = lib.lists.optional cfg.enabled (linkToPath "${wireguard_helper_output}/${ipam_path}" ipam_path);
-    wireguard.endpoints =
-      if cfg.port != null
-      then [
-        {
-          id = 0;
-          inherit (cfg) port ip_cidr ip_gw ipv6_cidr ipv6_gw;
-        }
-      ]
-      else [];
-    warnings = let
-      inherit (builtins) foldl' length;
-    in
-      foldl' (
-        acc: opt: acc ++ lib.optional ((builtins.getAttr opt cfg) != null) "${opt} is deprecated. Use endpoints instead."
-      ) [] ["port" "ip_cidr" "ip_gw" "ipv6_cidr" "ipv6_gw"]
-      ++ lib.optional
-      (cfg.enabled -> (length cfg.peers) == 0)
-      "Wireguard is enabled but no peers are configured.";
+    warnings = lib.optional (cfg.enabled -> (builtins.length cfg.peers) == 0) "Wireguard is enabled but no peers are configured.";
     assertions = let
       inherit (builtins) length;
       inherit (lib.lists) unique;
