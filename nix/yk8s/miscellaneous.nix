@@ -22,6 +22,8 @@ in {
     (mkRenamedOptionModuleWithNewSection "miscellaneous" "openstack_network_name" "openstack" "network_name")
     (mkRenamedOptionModuleWithNewSection "miscellaneous" "openstack_cinder_volume_type" "openstack" "cinder_volume_type")
     (mkRenamedOptionModuleWithNewSection "miscellaneous" "check_openstack_credentials" "openstack" "check_credentials")
+    (mkRenamedOptionModuleWithNewSection "miscellaneous" "haproxy_frontend_nodeport_maxconn" "load-balancing" "haproxy_frontend_nodeport_maxconn")
+    (mkRenamedOptionModuleWithNewSection "miscellaneous" "haproxy_frontend_k8s_api_maxconn" "load-balancing" "haproxy_frontend_k8s_api_maxconn")
   ];
   options.yk8s.miscellaneous = mkTopSection {
     _docs.preface = ''
@@ -41,16 +43,6 @@ in {
       package sources, the download of docker images and the initial cluster setup will fail.
       NOTE: These chances are currently only tested for Debian-based operating systems and not for RHEL-based!
     '';
-
-    haproxy_frontend_k8s_api_maxconn = mkOption {
-      type = types.ints.positive;
-      default = 2000;
-    };
-
-    haproxy_frontend_nodeport_maxconn = mkOption {
-      type = types.ints.positive;
-      default = 2000;
-    };
 
     http_proxy = mkOption {
       description = ''
