@@ -206,21 +206,22 @@ Environment Variable        Default                 Description
                                                     Note that the command is called with an empty environment,
                                                     so any variables that it may need, have to be specified explicitly.
 
-                                                    You **MUST** adjust this variable or one of the next two.
+                                                    You **MUST** adjust this variable.
 
 ``wg_private_key_file``     ``"$(pwd)/../privkey"`` Path to your WireGuard private key
                                                     file. This is not copied to any
                                                     remote machine, but needed to
                                                     generate the local configuration
                                                     locally and to bring the VPN tunnel
-                                                    up. This variable is only used if
-                                                    ``wg_private_key_command`` is not set.
+                                                    up.
+                                                    (DEPRECATED. Use ``wg_private_key_command``
+                                                    instead.)
 ``wg_private_key``                                  Alternatively you can directly
                                                     export your WireGuard private key
                                                     if neither ``wg_private_key_command``
                                                     nor ``wg_private_key_file`` is set.
-                                                    However using ``wg_private_key`` is
-                                                    considered insecure.
+                                                    (DEPRECATED. Use ``wg_private_key_command``
+                                                    instead.)
 ``wg_user``                 ``"firstnamelastname"`` Your WireGuard user name as
                                                     defined in the :ref:`wireguard configuration<configuration-options.yk8s.wireguard>`
                                                     (or, if enabled, ``wg_user`` `repository <https://gitlab.cloudandheat.com/lcm/wg_user>`__).
