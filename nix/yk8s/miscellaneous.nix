@@ -28,17 +28,13 @@ in {
     (mkRemovedOptionModule "miscellaneous" "docker_insecure_registries" "Use containerd.mirrors instead")
     (mkRemovedOptionModule "miscellaneous" "container_mirror_default_host" "Use containerd.mirrors instead")
     (mkRemovedOptionModule "miscellaneous" "container_mirrors" "Use containerd.mirrors instead")
+    (mkRemovedOptionModule "miscellaneous" "wireguard_on_workers" "")
   ];
   options.yk8s.miscellaneous = mkTopSection {
     _docs.preface = ''
       This section contains various configuration options for special use
       cases. You won’t need to enable and adjust any of these under normal
       circumstances.
-    '';
-
-    wireguard_on_workers = mkEnableOption ''
-      to install wireguard on all workers (without setting up any server-side stuff)
-      so that it can be used from within Pods.
     '';
 
     cluster_behind_proxy = mkEnableOption ''

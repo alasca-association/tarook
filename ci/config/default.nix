@@ -304,7 +304,6 @@ in {
       remote_private_addrs = "172.20.150.154";
     };
     miscellaneous = {
-      wireguard_on_workers = false;
       openstack_cinder_volume_type = "three_times_replicated-sitewide";
       custom_chrony_configuration = true;
       custom_ntp_servers = [
