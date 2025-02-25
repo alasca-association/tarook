@@ -1,10 +1,5 @@
-{% if (item.port %}
-  {% set hosts = [container_mirror_default_host ~ ":" ~ item.port] %}
-{% else %}
-  {% set hosts = item.mirrors %}
-{% endif %}
-{% for host in hosts %}
-[host.{{ host | to_json}}]
+{% for mirror in item.mirrors %}
+[host.{{ mirror | to_json }}]
   capabilities = ["pull", "resolve"]
 {% if container_mirror_ca %}
   ca = "/etc/containerd/mirror-ca.pem"

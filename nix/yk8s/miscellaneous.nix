@@ -24,6 +24,8 @@ in {
     (mkRenamedOptionModuleWithNewSection "miscellaneous" "check_openstack_credentials" "openstack" "check_credentials")
     (mkRenamedOptionModuleWithNewSection "miscellaneous" "haproxy_frontend_nodeport_maxconn" "load-balancing" "haproxy_frontend_nodeport_maxconn")
     (mkRenamedOptionModuleWithNewSection "miscellaneous" "haproxy_frontend_k8s_api_maxconn" "load-balancing" "haproxy_frontend_k8s_api_maxconn")
+    (mkRemovedOptionModule "miscellaneous" "docker_registry_mirrors" "Use containerd.mirrors instead")
+    (mkRemovedOptionModule "miscellaneous" "container_mirrors" "Use containerd.mirrors instead")
   ];
   options.yk8s.miscellaneous = mkTopSection {
     _docs.preface = ''
@@ -86,16 +88,6 @@ in {
       type = types.int;
       default = 262144;
     };
-    docker_registry_mirrors = mkOption {
-      description = ''
-        Custom Docker Configuration
-        A list of registry mirrors can be configured as a pull through cache to reduce
-        external network traffic and the amount of docker pulls from dockerhub.
-      '';
-      type = with types; listOf nonEmptyStr;
-      default = [];
-      example = ["https://0.docker-mirror.example.org" "https://1.docker-mirror.example.org"];
-    };
     docker_insecure_registries = mkOption {
       description = ''
         Custom Docker Configuration
@@ -108,40 +100,6 @@ in {
     container_mirror_default_host = mkOption {
       type = types.nonEmptyStr;
       default = "install-node";
-    };
-    container_mirrors = mkOption {
-      # TODO: type could be just listOf attrs in case we dont want to typecheck the whole set
-      type = types.listOf (types.submodule {
-        options = {
-          name = mkOption {
-            type = types.nonEmptyStr;
-          };
-          upstream = mkOption {
-            type = types.nonEmptyStr;
-          };
-          port = mkOption {
-            type = with types; nullOr port;
-            default = null;
-          };
-          mirrors = mkOption {
-            type = with types; listOf nonEmptyStr;
-            default = [];
-          };
-        };
-      });
-      default = [];
-      example = [
-        {
-          name = "docker.io";
-          upstream = "https://registry-1.docker.io/";
-          port = 5000;
-        }
-        {
-          name = "gitlab.cloudandheat.com";
-          upstream = "https://registry.gitlab.cloudandheat.com/";
-          mirrors = ["https://install-node:8000"];
-        }
-      ];
     };
     custom_chrony_configuration = mkEnableOption ''
       custom Chrony configration

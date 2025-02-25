@@ -106,18 +106,6 @@
     group: root
     mode: 0400
 
-- name: Create the container mirror directory
-  become: true
-  ansible.builtin.file:
-    path: /etc/containerd/certs.d
-    state: directory
-    # WARNING: The certs.d directory is world readable.  It may
-    # contain private keys for client key authentication in the
-    # future. Make sure to set restrictive file permissions on those.
-    mode: 0755
-    owner: root
-    group: root
-
 - name: Store the container mirror CA
   become: true
   ansible.builtin.copy:
@@ -127,6 +115,43 @@
     group: root
     content: "{{ container_mirror_ca }}"
   when: "container_mirror_ca"
+
+- name: Mirror management
+  become: true
+  block:
+  - name: Create the containerd mirror directory
+    ansible.builtin.file:
+      path: /etc/containerd/certs.d
+      state: directory
+      # WARNING: The certs.d directory is world readable.  It may
+      # contain private keys for client key authentication in the
+      # future. Make sure to set restrictive file permissions on those.
+      mode: 0755
+      owner: root
+      group: root
+
+  - name: Configure containerd mirrors
+    # NOTE: containerd need not be reloaded for changes to the mirrors
+    # to take effect.
+    include_tasks:
+      file: configure-mirror.yaml
+    loop: "{{ containerd_mirrors }}"
+
+  - name: Remove containerd mirrors not configured
+    block:
+    - name: Get a list of configured registry mirrors
+      find:
+        paths: /etc/containerd/certs.d/
+        recurse: false
+        file_type: directory
+      register: configured_registry_mirrors
+
+    - name: "Deconfigure legacy registry mirrors"
+      when: (item | basename) not in (containerd_mirrors | map(attribute='registry'))
+      file:
+        state: absent
+        path: "{{ item }}"
+      loop: "{{ configured_registry_mirrors.files | selectattr('path', 'defined') | map(attribute='path') }}"
 
 - name: Restart containerd  # noqa no-handler
   become: true
