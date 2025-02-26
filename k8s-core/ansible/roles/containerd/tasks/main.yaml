@@ -45,28 +45,16 @@
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
 
-- name: Install containerd
+- name: Install 'containerd.io' package from docker repository
   become: true
-  block:
-  - name: Ensure 'containerd' package is absent
-    ansible.builtin.apt:
-      state: absent
-      name:
-      - containerd
-    register: containerd_remove
-    until: containerd_remove is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
-
-  - name: Install 'containerd.io' package from docker repository
-    ansible.builtin.apt:
-      state: present
-      name:
-      - containerd.io
-    register: package_install
-    until: package_install is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
+  apt:
+    state: present
+    name:
+    - containerd.io
+  register: package_install
+  until: package_install is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Create containerd daemon configuration
   become: true
