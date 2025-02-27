@@ -80,9 +80,9 @@ in {
         Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
-      type = with types; nullOr nonEmptyStr;
-      default = null;
-      example = "localhost,127.0.0.0/8";
+      type = with types; nullOr (listOf nonEmptyStr);
+      default = [];
+      example = ["localhost" "127.0.0.0/8"];
     };
     vm_max_map_count = mkOption {
       description = ''

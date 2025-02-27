@@ -225,17 +225,20 @@ will be set automagically and do not have to set manually here.
 
 **Type:**::
 
-  null or non-empty string
+  null or (list of non-empty string)
 
 
 **Default:**::
 
-  null
+  [ ]
 
 
 **Example:**::
 
-  "localhost,127.0.0.0/8"
+  [
+    "localhost"
+    "127.0.0.0/8"
+  ]
 
 
 **Declared by**

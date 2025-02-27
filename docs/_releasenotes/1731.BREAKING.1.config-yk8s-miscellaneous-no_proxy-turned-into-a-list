@@ -1,0 +1,9 @@
+The :ref:`configuration-options.yk8s.miscellaneous.no_proxy` config option
+expects a list now
+instead of a comma separated list (string) previously.
+
+.. attention:: Action required
+
+   If you use this option in your config, you must convert its value.
+
+_
