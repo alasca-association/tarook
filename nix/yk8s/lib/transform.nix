@@ -71,15 +71,27 @@
     )) {};
 
   /*
-  Return an attributeset where all nested attributes are flattened. The name of the path will be separated by "-"
-  It is possible to pass attribute names that should not be flattened. Example:
+  Return an attributeset where all nested attributes are flattened. The name of the path will be separated by "_"
+  Optionally pass a list of attribute names that should not be flattened.
 
   Example:
-  flatten {["d"]} {a.b.c = 1; a.d = 2; }
-  -> {a_b_c = 1; a.d = 2;}
+  flatten {except=["d"];} { a.b.c = 1; a.d = 2; }
+  -> { a_b_c = 1; a.d = 2; }
+
+  Optionally pass a depth until which the nesting should be flattened.
+  Attention: Nestings that do not exceed the specified depth and end with an empty attribute set will disappear
+
+  Example:
+  flatten {depth=1;} { a.b.c = 1; a.d = 2; }
+  -> { a_b = {c = 1;}; a_d = 2; }
+  flatten {depth=2;} { a.b.c = 1; a.d = {}; }
+  -> { a_b_c = 1; }
 
   */
-  flatten = {except}: let
+  flatten = {
+    except ? [],
+    depth ? null,
+  }: let
     inherit (builtins) isAttrs elem;
     inherit (lib.attrsets) foldlAttrs mapAttrs';
   in
@@ -87,12 +99,22 @@
       acc: outerName: outerValue:
         acc
         // (
-          if isAttrs outerValue && ! elem outerName except
+          if
+            (depth != null -> depth > 0)
+            && isAttrs outerValue
+            && ! elem outerName except
           then
             mapAttrs' (name: value: {
               name = "${outerName}_${name}";
               inherit value;
-            }) (flatten {inherit except;} outerValue)
+            }) (flatten {
+                inherit except;
+                depth =
+                  if depth == null
+                  then null
+                  else depth - 1;
+              }
+              outerValue)
           else {"${outerName}" = outerValue;}
         )
     ) {};
