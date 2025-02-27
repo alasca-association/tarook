@@ -82,6 +82,10 @@ in {
     deprecated_nodeport_lb_test_port = mkOption {
       type = with types; nullOr port;
       default = null;
+      apply = v:
+        if v == 0
+        then throw "[load-balancing.deprecated_nodeport_lb_test_port] cannot be zero"
+        else v;
     };
 
     vrrp_priorities = mkOption {
