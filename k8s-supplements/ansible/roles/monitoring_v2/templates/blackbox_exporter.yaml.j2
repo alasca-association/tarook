@@ -2,20 +2,65 @@ priorityClassName: "system-cluster-critical"
 
 config:
   modules:
+{% if ipv6_enabled%}
+#   IPv6 versions for each module
+    http_2xx_v6:
+      prober: http
+      timeout: 5s
+      http:
+        valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+        follow_redirects: true
+        preferred_ip_protocol: 'ip6'
+    http_api_v6:
+      prober: http
+      timeout: 5s
+      http:
+        valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+        follow_redirects: true
+        preferred_ip_protocol: 'ip6'
+        valid_status_codes:
+        - 200
+        - 300
+        - 401
+    http_api_insecure_v6:
+      prober: http
+      timeout: 5s
+      http:
+        valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+        follow_redirects: true
+        preferred_ip_protocol: 'ip6'
+        tls_config:
+          insecure_skip_verify: true
+        valid_status_codes:
+        - 200
+        - 300
+        - 401
+    icmp_v6:
+      prober: icmp
+      timeout: 5s
+      icmp:
+        preferred_ip_protocol: 'ip6'
+    tcp_connect_v6:
+      prober: tcp
+      timeout: 5s
+      tcp:
+        preferred_ip_protocol: 'ip6'
+{% endif %}
+#   IPv4 versions for each module (also needed in IPv6 or DualStack clusters e.g. for external targets in case when the internal communication utilizes IPv6)
     http_2xx:
       prober: http
       timeout: 5s
       http:
         valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
         follow_redirects: true
-        preferred_ip_protocol: {{ 'ip6' if ipv6_enabled else ('ip4' if ipv4_enabled) }}
+        preferred_ip_protocol: 'ip4'
     http_api:
       prober: http
       timeout: 5s
       http:
         valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
         follow_redirects: true
-        preferred_ip_protocol: {{ 'ip6' if ipv6_enabled else ('ip4' if ipv4_enabled) }}
+        preferred_ip_protocol: 'ip4'
         valid_status_codes:
         - 200
         - 300
@@ -26,7 +71,7 @@ config:
       http:
         valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
         follow_redirects: true
-        preferred_ip_protocol: {{ 'ip6' if ipv6_enabled else ('ip4' if ipv4_enabled) }}
+        preferred_ip_protocol: 'ip4'
         tls_config:
           insecure_skip_verify: true
         valid_status_codes:
@@ -37,50 +82,8 @@ config:
       prober: icmp
       timeout: 5s
       icmp:
-        preferred_ip_protocol: {{ 'ip6' if ipv6_enabled else ('ip4' if ipv4_enabled) }}
+        preferred_ip_protocol: 'ip4'
     tcp_connect:
-      prober: tcp
-      timeout: 5s
-      tcp:
-        preferred_ip_protocol: {{ 'ip6' if ipv6_enabled else ('ip4' if ipv4_enabled) }}
-#    IPv4 versions for each module (needed for example for external targets in case when the internal communication utilizes IPv6)
-    http_2xx_v4:
-      prober: http
-      timeout: 5s
-      http:
-        valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
-        follow_redirects: true
-        preferred_ip_protocol: 'ip4'
-    http_api_v4:
-      prober: http
-      timeout: 5s
-      http:
-        valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
-        follow_redirects: true
-        preferred_ip_protocol: 'ip4'
-        valid_status_codes:
-        - 200
-        - 300
-        - 401
-    http_api_insecure_v4:
-      prober: http
-      timeout: 5s
-      http:
-        valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
-        follow_redirects: true
-        preferred_ip_protocol: 'ip4'
-        tls_config:
-          insecure_skip_verify: true
-        valid_status_codes:
-        - 200
-        - 300
-        - 401
-    icmp_v4:
-      prober: icmp
-      timeout: 5s
-      icmp:
-        preferred_ip_protocol: 'ip4'
-    tcp_connect_v4:
       prober: tcp
       timeout: 5s
       tcp:
