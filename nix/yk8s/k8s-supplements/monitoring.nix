@@ -33,10 +33,10 @@
     k8sSecretName
     k8sServiceName
     k8sStorageClassName
-    posixFilename
     prometheusIntervalStr
     prometheusTimeoutStr
     prometheusRelabelConfig
+    relativePosixPath
     subdomainLabel
     ;
 in {
@@ -53,6 +53,7 @@ in {
       (mkRemovedOptionModule "k8s-service-layer.prometheus" "grafana_plugins" "")
       (mkRemovedOptionModule "k8s-service-layer.prometheus" "prometheus_monitor_all_namespaces" "")
       (mkRemovedOptionModule "k8s-service-layer.prometheus" "monitor_all_namespaces" "")
+      (mkRemovedOptionModule "k8s-service-layer.prometheus" "thanos_objectstorage_config_path" "Use `thanos_objectstorage_config_file` instead.")
 
       (mkRenamedOptionModule "k8s-service-layer.prometheus" "prometheus_operator_cpu_request" "operator_resources.cpu.request")
       (mkRenamedOptionModule "k8s-service-layer.prometheus" "prometheus_operator_cpu_limit" "operator_resources.cpu.limit")
@@ -277,12 +278,6 @@ in {
       default = "4.2.0";
     };
 
-    thanos_objectstorage_config_path = mkOption {
-      # TODO: Switch type to relativePosixPath after eliminating the Jinja templating
-      type = types.nonEmptyStr;
-      default = "{{ playbook_dir }}/../../../config";
-    };
-
     monitoring_internet_probe = mkEnableOption ''
       adding blackbox-exporter to test basic internet connectivity
     '';
@@ -459,8 +454,14 @@ in {
       defaultText = "\${config.yk8s.infra.cluster_name}-monitoring-thanos-data";
     };
     thanos_objectstorage_config_file = mkOption {
-      type = with types; nullOr posixFilename;
+      description = ''
+        Note: The given path is interpreted as being relative to the cluster repo's config directory.
+      '';
+      # NOTE: Not using `pathInStore` here because the expected file contains secrets
+      # TODO: Eliminate config option and store secrets solely in Vault
+      type = with types; nullOr relativePosixPath;
       default = null;
+      example = "./monitoring/thanos_objectstorage.config";
     };
     internet_probe = mkEnableOption ''
       scraping external targets via blackbox exporter

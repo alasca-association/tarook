@@ -98,9 +98,9 @@ in {
         For the operator-based installation,
         it is possible to link to self-maintained values file for the helm chart
       '';
-      type = types.nullOr relativePosixPath;
+      type = with types; nullOr pathInStore;
       default = null;
-      example = "path-to-a-custom/values.yaml";
+      example = "./vault/helm/values.yaml";
     };
     custom_version = mkOption {
       description = ''

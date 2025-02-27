@@ -41,9 +41,10 @@ Enable backups by setting :ref:`configuration-options.yk8s.k8s-service-layer.vau
 This configuration must be stored in your cluster key-value secrets engine
 under ``kv/data/vault-backup-s3-config``.
 
-Inserting the Vault backup S3 config into Vault can be automated by storing the
-configuration at ``config/vault_backup_s3_config.yaml`` and then triggering
-the Vault update script:
+Inserting the Vault backup S3 config into Vault can be automated by
+storing the configuration at ``config/vault/backup_s3_config.yaml``,
+setting :ref:`configuration-options.yk8s.k8s-service-layer.vault.s3_config_file` accordingly,
+then triggering the Vault update script:
 
 .. code:: console
 

@@ -21,7 +21,7 @@
     k8sServiceType
     k8sStorageClassName
     k8sObjectName
-    posixFilename
+    relativePosixPath
     subdomainName
     vaultNamespaceName
     ;
@@ -189,9 +189,18 @@ in {
       description = ''
         Credentials to access an S3 bucket to which the backups will be written. Required if :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable_backups` is set to ``true``
         You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
+
+        Note: The given path is interpreted as being relative to the cluster repo's config directory.
       '';
-      type = posixFilename;
-      default = "vault_backup_s3_config.yaml";
+      # NOTE: Not using `pathInStore` here because the expected file contains secrets
+      # TODO: Eliminate config option and store secrets solely in Vault
+      type = with types; nullOr relativePosixPath;
+      default = null;
+      example = "./vault/backup_s3_config.yaml";
+      apply = v:
+        if config.yk8s.k8s-service-layer.vault.enable_backups == true && v == null
+        then throw "[k8s-service-layer.vault.s3_config_file] must not be null when k8s-service-layer.vault.enable_backups == true"
+        else v;
     };
     service_type = mkOption {
       description = ''

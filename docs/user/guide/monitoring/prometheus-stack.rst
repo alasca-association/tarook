@@ -220,9 +220,9 @@ You must supply a valid configuration for a
 This configuration must be stored in your cluster key-value secrets engine
 under ``kv/data/thanos-config``.
 Inserting a Thanos client config into vault can be automated by storing the
-configuration at ``config/thanos.yaml``
-and referencing that file with
+configuration at ``config/thanos.yaml`` and setting
 :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_objectstorage_config_file`
+to ``./thanos.yaml``
 and then triggering the vault update script:
 
 .. code:: console

@@ -400,15 +400,22 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 Credentials to access an S3 bucket to which the backups will be written. Required if :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable_backups` is set to ``true``
 You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
 
+Note: The given path is interpreted as being relative to the cluster repo's config directory.
+
 
 **Type:**::
 
-  POSIX file name
+  null or Relative POSIX path (without special '.' and '..')
 
 
 **Default:**::
 
-  "vault_backup_s3_config.yaml"
+  null
+
+
+**Example:**::
+
+  "./vault/backup_s3_config.yaml"
 
 
 **Declared by**

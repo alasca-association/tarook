@@ -1783,11 +1783,12 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 ``yk8s.k8s-service-layer.prometheus.thanos_objectstorage_config_file``
 ######################################################################
 
+Note: The given path is interpreted as being relative to the cluster repo's config directory.
 
 
 **Type:**::
 
-  null or POSIX file name
+  null or Relative POSIX path (without special '.' and '..')
 
 
 **Default:**::
@@ -1795,25 +1796,9 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
   null
 
 
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+**Example:**::
 
-
-.. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_objectstorage_config_path:
-
-``yk8s.k8s-service-layer.prometheus.thanos_objectstorage_config_path``
-######################################################################
-
-
-
-**Type:**::
-
-  non-empty string
-
-
-**Default:**::
-
-  "{{ playbook_dir }}/../../../config"
+  "./monitoring/thanos_objectstorage.config"
 
 
 **Declared by**

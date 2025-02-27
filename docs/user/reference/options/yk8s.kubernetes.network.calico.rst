@@ -191,7 +191,7 @@ it is possible to link to self-maintained values file for the helm chart
 
 **Type:**::
 
-  null or Relative POSIX path (without special '.' and '..')
+  null or path in the Nix store
 
 
 **Default:**::
@@ -201,7 +201,7 @@ it is possible to link to self-maintained values file for the helm chart
 
 **Example:**::
 
-  "path-to-a-custom/values.yaml"
+  "./vault/helm/values.yaml"
 
 
 **Declared by**
