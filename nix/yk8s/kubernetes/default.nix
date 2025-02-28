@@ -32,9 +32,9 @@ in {
       description = ''
         Kubernetes version
       '';
-      # v1.29 v1.30
-      type = types.strMatching "^1\.(29|30)\.[0-9]+$";
-      default = "1.30.8";
+      # v1.29 v1.30 v1.31
+      type = types.strMatching "^1\.(29|30|31)\.[0-9]+$";
+      default = "1.31.5";
     };
     is_gpu_cluster = mkOption {
       description = ''
