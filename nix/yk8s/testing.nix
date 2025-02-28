@@ -7,12 +7,11 @@
   cfg = config.yk8s.testing;
   modules-lib = import ./lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule;
-  inherit (builtins) length;
   inherit (lib) mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
 in {
   imports = [
-    (mkRenamedOptionModule "testing" "nodes" "test-nodes")
+    (mkRenamedOptionModule "testing" "test-nodes" "nodes")
   ];
   options.yk8s.testing = mkTopSection {
     _docs.preface = ''
@@ -21,20 +20,14 @@ in {
       default as it requires some prethinking.
     '';
 
-    test-nodes = mkOption {
+    nodes = mkOption {
       description = ''
-        You can define specifc nodes for some
+        You can define specific nodes for some
         smoke tests. If you define these, you
         must specify at least two nodes.
       '';
       type = with types; listOf nonEmptyStr;
       default = [];
-      apply = v:
-        if length v == 1
-        then
-          throw
-          "[testing.test-nodes] If you define any node, then must specify at least two"
-        else v;
     };
     force_reboot_nodes = mkOption {
       description = ''
@@ -44,6 +37,21 @@ in {
       default = false;
     };
   };
+  config.yk8s.assertions = let
+    inherit (builtins) all attrNames elem filter length;
+    inherit (lib.strings) concatStringsSep;
+    openstackNodesWithPrefix = map (n: "${config.yk8s.infra.cluster_name}-${n}") (attrNames config.yk8s.openstack.nodes);
+    nonExistentNodes = filter (node: ! elem node openstackNodesWithPrefix) cfg.nodes;
+  in [
+    {
+      assertion = length cfg.nodes != 1;
+      message = "[testing.nodes] If you define any node, then you must specify at least two";
+    }
+    {
+      assertion = config.yk8s.openstack.enabled -> nonExistentNodes == [];
+      message = "[testing.nodes] Nodes [${concatStringsSep ", " nonExistentNodes}] don't exist. Note that full hostnames including the prefix '${config.yk8s.infra.cluster_name}-' must be supplied.";
+    }
+  ];
   config.yk8s._inventory_packages = [
     (
       mkGroupVarsFile {

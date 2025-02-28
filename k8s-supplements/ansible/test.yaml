@@ -134,18 +134,6 @@
   gather_facts: false
   tags:
   - label
-  pre_tasks:
-  - name: Fail if insufficient testing nodes specified
-    when:
-    - testing_nodes is defined
-    - testing_nodes | length < 2
-    fail:
-      msg: |
-        Insufficient number of testing nodes specified.
-        Please specify at least two testing nodes in
-        your config under "testing.nodes".
-    tags: always
-
   tasks:
   - name: Label testing nodes
     kubernetes.core.k8s:

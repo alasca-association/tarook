@@ -30,12 +30,12 @@ Enforce rebooting of nodes after every system update
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/testing.nix
 
 
-.. _configuration-options.yk8s.testing.test-nodes:
+.. _configuration-options.yk8s.testing.nodes:
 
-``yk8s.testing.test-nodes``
-###########################
+``yk8s.testing.nodes``
+######################
 
-You can define specifc nodes for some
+You can define specific nodes for some
 smoke tests. If you define these, you
 must specify at least two nodes.
 
