@@ -124,7 +124,6 @@ in {
       agent_port = 15203;
     };
     kubernetes = {
-      version = "1.31.5";
       is_gpu_cluster = true;
       virtualize_gpu = false;
       kubelet = {
