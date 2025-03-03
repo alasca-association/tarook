@@ -107,13 +107,13 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.check_credentials``
 ####################################
 
-OpenStack credential checks
+Whether to enable OpenStack credential checks
 Terrible things will happen when certain tasks are run and OpenStack credentials are not sourced.
 Okay, maybe not so terrible after all, but the templates do not check if certain values exist.
 Hence config files with empty credentials are written. The LCM will execute a simple check to see
 if you provided valid credentials as a sanity check if you're on openstack and this option is set
 to true.
-
+.
 
 **Type:**::
 
@@ -123,6 +123,11 @@ to true.
 **Default:**::
 
   true
+
+
+**Example:**::
+
+  false
 
 
 **Declared by**

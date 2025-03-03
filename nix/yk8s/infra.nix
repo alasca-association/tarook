@@ -10,7 +10,7 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkDisableOption linkToPath;
   inherit
     (yk8s-lib.types)
     ipv4Addr
@@ -31,13 +31,7 @@ in {
       type = k8sClusterName;
     };
 
-    ipv4_enabled = mkOption {
-      description = ''
-        If set to true, ipv4 will be used
-      '';
-      type = types.bool;
-      default = true;
-    };
+    ipv4_enabled = mkDisableOption "IPv4";
 
     ipv6_enabled = mkEnableOption "IPv6";
 

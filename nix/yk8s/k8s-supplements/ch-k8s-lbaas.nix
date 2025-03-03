@@ -8,7 +8,7 @@
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedResourceOptionModules mkResourceOptionModule;
   inherit (lib) mkOption mkEnableOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkResourceOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkResourceOption mkDisableOption;
   inherit
     (yk8s-lib.types)
     base64Str
@@ -101,11 +101,7 @@ in {
         then throw "config.yk8s.ch-k8s-lbaas.agent_urls: must not be empty when config.yk8s.ch-k8s-lbaas.port_manager='static'"
         else v;
     };
-    use_floating_ips = mkOption {
-      description = "Enable the use of floating IPs";
-      type = types.bool;
-      default = true;
-    };
+    use_floating_ips = mkDisableOption "the use of floating IPs";
     controller_repo = mkOption {
       type = k8sImageRef;
       default = "registry.gitlab.com/yaook/ch-k8s-lbaas/controller";

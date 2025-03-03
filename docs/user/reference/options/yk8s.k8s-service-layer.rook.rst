@@ -318,9 +318,10 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 ``yk8s.k8s-service-layer.rook.manage_pod_budgets``
 ##################################################
 
-If true, the rook operator will create and manage PodDisruptionBudgets
+Whether to enable management of pod disruption budgets.
+If false, the rook operator will not create and manage PodDisruptionBudgets
 for OSD, Mon, RGW, and MDS daemons.
-
+.
 
 **Type:**::
 
@@ -330,6 +331,11 @@ for OSD, Mon, RGW, and MDS daemons.
 **Default:**::
 
   true
+
+
+**Example:**::
+
+  false
 
 
 **Declared by**
@@ -1710,6 +1716,7 @@ Whether to enable Rook's upgrade checks on Ceph daemons during an upgrade.
 If OSDs are not replicated, the rook-ceph-operator will reject
 to perform upgrades, because OSDs will become unavailable.
 Set to True so rook will update even if OSDs would become unavailable.
+
 Use this at YOUR OWN RISK, only if you know what you’re doing.
 https://rook.github.io/docs/rook/v1.3/ceph-cluster-crd.html#cluster-settings
 .

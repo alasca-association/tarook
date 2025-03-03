@@ -55,8 +55,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 ``yk8s.infra.ipv4_enabled``
 ###########################
 
-If set to true, ipv4 will be used
-
+Whether to enable IPv4.
 
 **Type:**::
 
@@ -66,6 +65,11 @@ If set to true, ipv4 will be used
 **Default:**::
 
   true
+
+
+**Example:**::
+
+  false
 
 
 **Declared by**

@@ -11,7 +11,7 @@
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkDisableOption linkToPath;
   inherit
     (yk8s-lib.types)
     ipv4Addr
@@ -334,18 +334,14 @@ in {
       default = null;
     };
 
-    check_credentials = mkOption {
-      description = ''
-        OpenStack credential checks
-        Terrible things will happen when certain tasks are run and OpenStack credentials are not sourced.
-        Okay, maybe not so terrible after all, but the templates do not check if certain values exist.
-        Hence config files with empty credentials are written. The LCM will execute a simple check to see
-        if you provided valid credentials as a sanity check if you're on openstack and this option is set
-        to true.
-      '';
-      type = types.bool;
-      default = true;
-    };
+    check_credentials = mkDisableOption ''
+      OpenStack credential checks
+      Terrible things will happen when certain tasks are run and OpenStack credentials are not sourced.
+      Okay, maybe not so terrible after all, but the templates do not check if certain values exist.
+      Hence config files with empty credentials are written. The LCM will execute a simple check to see
+      if you provided valid credentials as a sanity check if you're on openstack and this option is set
+      to true.
+    '';
   };
   config.yk8s = lib.mkMerge [
     (lib.mkIf cfg.enabled {

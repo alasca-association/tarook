@@ -11,7 +11,7 @@
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath mkJson;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkDisableOption linkToPath mkJson;
   inherit
     (yk8s-lib.types)
     gitlabProjectId

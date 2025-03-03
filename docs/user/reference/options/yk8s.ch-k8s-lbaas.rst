@@ -366,7 +366,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 ``yk8s.ch-k8s-lbaas.use_floating_ips``
 ######################################
 
-Enable the use of floating IPs
+Whether to enable the use of floating IPs.
 
 **Type:**::
 
@@ -376,6 +376,11 @@ Enable the use of floating IPs
 **Default:**::
 
   true
+
+
+**Example:**::
+
+  false
 
 
 **Declared by**

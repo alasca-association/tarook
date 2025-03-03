@@ -9,6 +9,7 @@
   inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection logIf mkGroupVarsFile mkMultiResourceOptions;
+  inherit (yk8s-lib.options) mkDisableOption;
   inherit
     (yk8s-lib.types)
     helmChartReleaseName
@@ -192,18 +193,16 @@ in {
       If OSDs are not replicated, the rook-ceph-operator will reject
       to perform upgrades, because OSDs will become unavailable.
       Set to True so rook will update even if OSDs would become unavailable.
+
       Use this at YOUR OWN RISK, only if you know what you’re doing.
       https://rook.github.io/docs/rook/v1.3/ceph-cluster-crd.html#cluster-settings
     '';
 
-    manage_pod_budgets = mkOption {
-      description = ''
-        If true, the rook operator will create and manage PodDisruptionBudgets
-        for OSD, Mon, RGW, and MDS daemons.
-      '';
-      type = types.bool;
-      default = true;
-    };
+    manage_pod_budgets = mkDisableOption ''
+      management of pod disruption budgets.
+      If false, the rook operator will not create and manage PodDisruptionBudgets
+      for OSD, Mon, RGW, and MDS daemons.
+    '';
 
     scheduling_key = mkOption {
       description = ''
