@@ -63,10 +63,10 @@ in {
           }
         ];
         peers = [
-          {
-            ident = "example.name";
-            pub_key = "ExampleWgKeyLiKUsKjhSDY9u06pX68rbdg4V6dkHFo=";
-          }
+          # {
+          #   ident = "example.name";
+          #   pub_key = "ExampleWgKeyLiKUsKjhSDY9u06pX68rbdg4V6dkHFo=";
+          # }
         ];
       };
     };
