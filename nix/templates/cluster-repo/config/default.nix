@@ -51,7 +51,7 @@ in {
         };
       };
       kubernetes = {
-        version = "1.30.8";
+        version = "1.31.5";
       };
       wireguard = {
         enabled = true;
