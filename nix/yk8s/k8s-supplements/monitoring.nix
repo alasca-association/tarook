@@ -282,7 +282,7 @@ in {
     prometheus_adapter_version = mkOption {
       type = types.nonEmptyStr;
       # renovate: datasource=helm depName=prometheus-adapter registryUrl=https://prometheus-community.github.io/helm-charts
-      default = "4.11.0";
+      default = "4.12.0";
     };
 
     namespace = mkOption {
