@@ -36,7 +36,7 @@ Adjust the following config example to meet your needs:
 
   terraform.enabled = true;
   infra = {
-    cluster_name = "devcluster";
+    cluster_name = "managed-k8s";
     subnet_cidr = "192.168.67.0/24";
   };
   openstack = {
@@ -53,6 +53,9 @@ Adjust the following config example to meet your needs:
       image = "Debian 12 (bookworm)";
       flavor = "XS";
     };
+
+    gateway_count = 3;
+    spread_gateways_across_azs = false;  # we do not care about the gateway's azs
 
     nodes = {
       master-0.role = "master";
@@ -110,13 +113,14 @@ Creating security group for the jump host:
 .. code-block:: console
 
   $ openstack security group create ssh
-  $ openstack security group rule create --protocol tcp --dst-port 22 --ingress ssh --egress <security group name>
+  $ openstack security group rule create --protocol tcp --dst-port 22 --ingress ssh
+  $ openstack security group rule create --protocol tcp --dst-port 22 --egress ssh
 
 Creating the jump host itself:
 
 .. code:: console
 
-  $ openstack server create --flavor XS --image <image name> --key-name <openstack ssh keypair name> --network managed-k8s-network --security-group default --security-group <security group name> mk8s-jump-host
+  $ openstack server create --flavor XS --image <image name> --key-name <openstack ssh keypair name> --network managed-k8s-network --security-group default --security-group ssh mk8s-jump-host
 
 
 Creating and attaching a floating ip to the jump host:
@@ -155,7 +159,7 @@ Your hosts file should end up similar to this:
   ipv4_enabled=True
 
   [other]
-  mk8s-jump-host ansible_host=<floating ip> local_ipv4_address=172.30.154.104
+  mk8s-jump-host ansible_host=203.0.113.2 local_ipv4_address=172.30.154.104
 
   [orchestrator]
   localhost ansible_connection=local ansible_python_interpreter="{{ ansible_playbook_python }}"
