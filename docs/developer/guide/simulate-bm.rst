@@ -91,7 +91,16 @@ their ports and associated floating IPs:
       openstack port delete "$gateway"
   done
 
-Also remove the ``[gateways]`` section from the inventory ``inventory/yaook-k8s/hosts`` now
+Reconfigure the inventory ``inventory/yaook-k8s/hosts``:
+
+.. code:: nix
+
+  cp inventory/yaook-k8s/hosts config/hosts
+  chmod u+w config/hosts
+
+... and set ``infra.hosts_file = ./hosts;`` in the config.
+
+Also remove the ``[gateways]`` section from ``config/hosts``
 and replace ``gateways`` with ``masters`` in the ``[frontend:children]`` section.
 
 We can now disable Terraform:
@@ -134,7 +143,7 @@ The jump host should be accessible via the attached floating IP now.
 We still want to harden it though.
 For the LCM to work, we have to adjust the hosts file
 which has been created previously by Terraform
-``inventory/yaook-k8s/hosts``.
+``config/hosts``.
 
 * Set ``on_openstack`` to ``false``
 * Set ``networking_fixed_ip`` to the networking fixed ip created by Terraform
