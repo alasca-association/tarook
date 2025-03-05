@@ -20,16 +20,11 @@ Cluster repository initialization
 
 Follow the cluster :doc:`initialization documentation</user/guide/initialization>`.
 
-Disable Wireguard in your ``.envrc``,
+Disable Wireguard,
 but enable Terraform because we want to use it to create
-OpenStack resources:
+OpenStack resources,
+and configure the infrastructure layer.
 
-.. code-block:: console
-
-  $ export WG_USAGE=false
-  $ export TF_USAGE=true
-
-Configure the infrastructure layer.
 Adjust the following config example to meet your needs:
 
 .. code:: nix
@@ -67,6 +62,7 @@ Adjust the following config example to meet your needs:
       worker-3.role = "worker";
     };
   };
+  wireguard.enabled = false;
 
 Creation of the harbour infrastructure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
