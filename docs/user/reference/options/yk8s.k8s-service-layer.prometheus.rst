@@ -1585,7 +1585,7 @@ Set custom Bitnami/Thanos chart version
 
 **Default:**::
 
-  "15.13.0"
+  "15.13.1"
 
 
 **Declared by**
