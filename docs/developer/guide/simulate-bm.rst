@@ -29,16 +29,18 @@ OpenStack resources:
   $ export WG_USAGE=false
   $ export TF_USAGE=true
 
-Configure the ``terraform`` section. Adjust the following example to meet your needs:
+Configure the infrastructure layer.
+Adjust the following config example to meet your needs:
 
 .. code:: nix
 
-  terraform = {
+  terraform.enabled = true;
+  infra = {
     cluster_name = "devcluster";
-
-    public_network = "shared-public-IPv4";
     subnet_cidr = "192.168.67.0/24";
-
+  };
+  openstack = {
+    public_network = "shared-public-IPv4";
     master_defaults = {
       flavor = "M";
       image = "Ubuntu 22.04 LTS x64";
@@ -94,6 +96,7 @@ We can now disable Terraform:
 .. code:: nix
 
   terraform.enable = false;
+  openstack.enable = false;
 
 Create a jump host
 ~~~~~~~~~~~~~~~~~~
