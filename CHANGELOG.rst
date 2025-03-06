@@ -19,6 +19,16 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.0.2 (2025-03-04)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- The type of the ``yk8s.rook.nodes.devices`` config option was fixed.
+  (regression of release v9.0.0) (`!1725 <https://gitlab.com/yaook/k8s/-/merge_requests/1725>`_)
+
+
 v9.0.1 (2025-02-19)
 -------------------
 

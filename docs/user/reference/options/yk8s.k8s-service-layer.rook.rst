@@ -1028,7 +1028,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 **Type:**::
 
-  list of (submodule)
+  attribute set of (submodule)
 
 
 **Default:**::
@@ -1040,10 +1040,10 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
-.. _configuration-options.yk8s.k8s-service-layer.rook.nodes.*.devices.*.config:
+.. _configuration-options.yk8s.k8s-service-layer.rook.nodes.*.devices.<name>.config:
 
-``yk8s.k8s-service-layer.rook.nodes.*.devices.*.config``
-########################################################
+``yk8s.k8s-service-layer.rook.nodes.*.devices.<name>.config``
+#############################################################
 
 
 
@@ -1055,22 +1055,6 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 **Default:**::
 
   { }
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
-
-
-.. _configuration-options.yk8s.k8s-service-layer.rook.nodes.*.devices.*.name:
-
-``yk8s.k8s-service-layer.rook.nodes.*.devices.*.name``
-######################################################
-
-
-
-**Type:**::
-
-  non-empty string
 
 
 **Declared by**

@@ -409,11 +409,8 @@ in {
           devices = mkOption {
             default = [];
             type = with types;
-              listOf (submodule {
+              attrsOf (submodule {
                 options = {
-                  name = mkOption {
-                    type = types.nonEmptyStr;
-                  };
                   config = mkOption {
                     type = types.attrs;
                     default = {};
