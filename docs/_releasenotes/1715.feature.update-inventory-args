@@ -1,0 +1,1 @@
+update-inventory.sh now passes any arguments given to ``nix build``
