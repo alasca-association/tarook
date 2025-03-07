@@ -15,9 +15,9 @@
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
 
-  - name: Create bird service monitor (frontend)
+  - name: "{{ (groups['gateways'] | default([]) | length > 0) | ternary('Create', 'Delete') }} bird service monitor (frontend)"
     kubernetes.core.k8s:
-      state: present
+      state: "{{ (groups['gateways'] | default([]) | length > 0) | ternary('present', 'absent') }}"
       apply: true
       definition: "{{ lookup('template', 'bird-service-monitor.yaml.j2') }}"
       validate:
