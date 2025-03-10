@@ -19,6 +19,16 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.0.3 (2025-03-07)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- The :doc:`bare metal simulation guide <developer/guide/simulate-bm>` has been fixed.
+  (regression of release v9.0.0) (`!1728 <https://gitlab.com/yaook/k8s/-/merge_requests/1728>`_)
+
+
 v9.0.2 (2025-03-04)
 -------------------
 
