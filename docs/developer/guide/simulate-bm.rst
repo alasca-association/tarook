@@ -20,25 +20,22 @@ Cluster repository initialization
 
 Follow the cluster :doc:`initialization documentation</user/guide/initialization>`.
 
-Disable Wireguard in your ``.envrc``,
+Disable Wireguard,
 but enable Terraform because we want to use it to create
-OpenStack resources:
+OpenStack resources,
+and configure the infrastructure layer.
 
-.. code-block:: console
-
-  $ export WG_USAGE=false
-  $ export TF_USAGE=true
-
-Configure the ``terraform`` section. Adjust the following example to meet your needs:
+Adjust the following config example to meet your needs:
 
 .. code:: nix
 
-  terraform = {
-    cluster_name = "devcluster";
-
-    public_network = "shared-public-IPv4";
+  terraform.enabled = true;
+  infra = {
+    cluster_name = "managed-k8s";
     subnet_cidr = "192.168.67.0/24";
-
+  };
+  openstack = {
+    public_network = "shared-public-IPv4";
     master_defaults = {
       flavor = "M";
       image = "Ubuntu 22.04 LTS x64";
@@ -52,6 +49,9 @@ Configure the ``terraform`` section. Adjust the following example to meet your n
       flavor = "XS";
     };
 
+    gateway_count = 3;
+    spread_gateways_across_azs = false;  # we do not care about the gateway's azs
+
     nodes = {
       master-0.role = "master";
       master-1.role = "master";
@@ -62,6 +62,7 @@ Configure the ``terraform`` section. Adjust the following example to meet your n
       worker-3.role = "worker";
     };
   };
+  wireguard.enabled = false;
 
 Creation of the harbour infrastructure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,7 +87,16 @@ their ports and associated floating IPs:
       openstack port delete "$gateway"
   done
 
-Also remove the ``[gateways]`` section from the inventory ``inventory/yaook-k8s/hosts`` now
+Reconfigure the inventory ``inventory/yaook-k8s/hosts``:
+
+.. code:: nix
+
+  cp inventory/yaook-k8s/hosts config/hosts
+  chmod u+w config/hosts
+
+... and set ``infra.hosts_file = ./hosts;`` in the config.
+
+Also remove the ``[gateways]`` section from ``config/hosts``
 and replace ``gateways`` with ``masters`` in the ``[frontend:children]`` section.
 
 We can now disable Terraform:
@@ -94,6 +104,7 @@ We can now disable Terraform:
 .. code:: nix
 
   terraform.enable = false;
+  openstack.enable = false;
 
 Create a jump host
 ~~~~~~~~~~~~~~~~~~
@@ -107,13 +118,14 @@ Creating security group for the jump host:
 .. code-block:: console
 
   $ openstack security group create ssh
-  $ openstack security group rule create --protocol tcp --dst-port 22 --ingress ssh --egress <security group name>
+  $ openstack security group rule create --protocol tcp --dst-port 22 --ingress ssh
+  $ openstack security group rule create --protocol tcp --dst-port 22 --egress ssh
 
 Creating the jump host itself:
 
 .. code:: console
 
-  $ openstack server create --flavor XS --image <image name> --key-name <openstack ssh keypair name> --network managed-k8s-network --security-group default --security-group <security group name> mk8s-jump-host
+  $ openstack server create --flavor XS --image <image name> --key-name <openstack ssh keypair name> --network managed-k8s-network --security-group default --security-group ssh mk8s-jump-host
 
 
 Creating and attaching a floating ip to the jump host:
@@ -127,7 +139,7 @@ The jump host should be accessible via the attached floating IP now.
 We still want to harden it though.
 For the LCM to work, we have to adjust the hosts file
 which has been created previously by Terraform
-``inventory/yaook-k8s/hosts``.
+``config/hosts``.
 
 * Set ``on_openstack`` to ``false``
 * Set ``networking_fixed_ip`` to the networking fixed ip created by Terraform
@@ -152,7 +164,7 @@ Your hosts file should end up similar to this:
   ipv4_enabled=True
 
   [other]
-  mk8s-jump-host ansible_host=<floating ip> local_ipv4_address=172.30.154.104
+  mk8s-jump-host ansible_host=203.0.113.2 local_ipv4_address=172.30.154.104
 
   [orchestrator]
   localhost ansible_connection=local ansible_python_interpreter="{{ ansible_playbook_python }}"
