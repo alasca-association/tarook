@@ -130,8 +130,8 @@
 
     - name: Create udev rule for vfio devices
       become: true
-      ansible.builtin.template:
-        src: 50-vfio.rules.j2
+      ansible.builtin.file:
+        src: 50-vfio.rules
         dest: /etc/udev/rules.d/50-vfio.rules
         owner: root
         group: root
