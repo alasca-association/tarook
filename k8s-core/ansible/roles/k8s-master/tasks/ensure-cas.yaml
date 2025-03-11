@@ -1,5 +1,5 @@
 ---
-- name: Obtain CAs
+- name: Ensure CAs
   tags:
   - renew-pki
   # We do this step on each node, so we have to use node credentials
@@ -120,6 +120,21 @@
         group: "{{ kubeconfig_group | default(kubeconfig_owner | default('root')) }}"
         mode: u=r,go-rwx
         content: "{{ get_ca_key.data.data.private_key }}"
+      notify:
+      - Ensure cluster-signing-cert-file is set
+      - Ensure cluster-signing-key-file is set
+
+  - name: Removal of Kubernetes cluster root CA key
+    become: true
+    when: not k8s_controller_manager_enable_signing_requests
+    block:
+    - name: Ensure Kubernetes cluster root CA key file is absent
+      ansible.builtin.file:
+        state: absent
+        path: /etc/kubernetes/pki/ca.key
+      notify:
+      - Ensure cluster-signing-cert-file is unset
+      - Ensure cluster-signing-key-file is unset
 
   - name: Write k8s front proxy CA file
     become: true

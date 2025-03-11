@@ -292,31 +292,6 @@
       mode: 0644
       content: "{{ content | to_json }}"
 
-- name: Ensure presence of Kubernetes cluster root CA key on control plane
-  become: true
-  block:
-  - name: Ensure CA key file is present/absent
-    ansible.builtin.file:
-      state: "{{ k8s_controller_manager_enable_signing_requests | ternary('file', 'absent') }}"
-      path: /etc/kubernetes/pki/ca.key
-      mode: 0400
-
-  # NOTE: Must come after the node has joined the control plane
-  - name: Ensure kube-controller-manager client cert flags are (un)set
-    block:
-    - name: Ensure cluster-signing-cert-file is (un)set
-      ansible.builtin.replace:
-        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-        regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
-        replace: "{{ k8s_controller_manager_enable_signing_requests | ternary('\\1/etc/kubernetes/pki/ca.crt', '\\1') }}"
-
-    # NOTE: Must come after the node has joined the control plane
-    - name: Ensure --cluster-signing-key-file is (un)set
-      ansible.builtin.replace:
-        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-        regexp: '^(\s*-\s*--cluster-signing-key-file=).*'
-        replace: "{{ k8s_controller_manager_enable_signing_requests | ternary('\\1/etc/kubernetes/pki/ca.key', '\\1') }}"
-
 - name: Login to the Kubernetes cluster as orchestrator
   ansible.builtin.include_role:
     name: k8s-login
