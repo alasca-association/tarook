@@ -89,8 +89,8 @@
 
 - name: Require containerd to be started before kubelet
   become: true
-  ansible.builtin.template:
-    src: before-kubelet.conf.j2
+  ansible.builtin.copy:
+    src: before-kubelet.conf
     dest: /etc/systemd/system/containerd.service.d/before-kubelet.conf
     owner: root
     group: root
@@ -99,8 +99,8 @@
 
 - name: Configure crictl
   become: true
-  ansible.builtin.template:
-    src: crictl.yaml.j2
+  ansible.builtin.copy:
+    src: crictl.yaml
     dest: /etc/crictl.yaml
     owner: root
     group: root

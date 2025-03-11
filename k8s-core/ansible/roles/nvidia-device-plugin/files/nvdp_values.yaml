@@ -1,3 +1,4 @@
+---
 nodeSelector:
   k8s.yaook.cloud/gpu-node: "true"
 
@@ -18,3 +19,4 @@ nfd:
 # https://github.com/NVIDIA/gpu-feature-discovery
 gfd:
   enabled: true
+...
