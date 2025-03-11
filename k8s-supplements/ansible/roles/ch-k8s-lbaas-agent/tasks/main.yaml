@@ -23,7 +23,7 @@
   # re-download exactly when necessary.
   - name: Store id tag
     ansible.builtin.template:
-      src: binary_id_tag
+      src: binary_id_tag.j2
       dest: /etc/ch-k8s-lbaas-agent/version
       owner: root
       group: root
@@ -48,7 +48,7 @@
 
   - name: Configure service
     ansible.builtin.template:
-      src: agent-config.toml
+      src: agent-config.toml.j2
       dest: /etc/ch-k8s-lbaas-agent/config.toml
       owner: root
       group: "{{ ch_k8s_lbaas_agent_user }}"
@@ -58,7 +58,7 @@
 
   - name: Configure sudoers
     ansible.builtin.template:
-      src: sudoers
+      src: sudoers.j2
       dest: /etc/sudoers.d/lbaas
       owner: root
       group: root
@@ -67,7 +67,7 @@
 
   - name: Define service
     ansible.builtin.template:
-      src: ch-k8s-lbaas-agent.service
+      src: ch-k8s-lbaas-agent.service.j2
       dest: /etc/systemd/system/
       owner: root
       group: root
