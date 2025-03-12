@@ -12,11 +12,22 @@ import sys
 import os
 import json
 import yaml
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(levelname)s: %(message)s'
+)
 
 WG_IPAM_CONFIG_PATH = pathlib.Path(
     os.getenv("WG_IPAM_CONFIG_PATH", "config/wireguard_ipam.toml")
 )
 WG_PREFIX = os.getenv("WG_PREFIX", "")
+
+
+class DataError(ValueError):
+    def __init__(self, msg=None):
+        self.message = msg
 
 
 class WireGuardUser(collections.namedtuple(
@@ -42,7 +53,7 @@ class WireGuardUser(collections.namedtuple(
                 addressesv4_ips[endpoint] = addressv4_interface.ip
 
                 if addressv4_interface.network.prefixlen != 32:
-                    raise ValueError(
+                    raise DataError(
                         "incorrect prefix length in IP address config: {} "
                         "(from: {!r}".format(addressv4_interface, d)
                     )
@@ -57,14 +68,14 @@ class WireGuardUser(collections.namedtuple(
                 addressesv6_ips[endpoint] = addressv6_interface.ip
 
                 if addressv6_interface.network.prefixlen != 128:
-                    raise ValueError(
+                    raise DataError(
                         "incorrect prefix lenght in IP address config: {} "
                         "(from: {!r}".format(addressv6_interface, d)
                     )
 
             if addressesv4_ips is None and addressesv6_ips is None \
                 and not address_optional: # NOQA
-                raise ValueError(
+                raise DataError(
                     "ip address missing on user {!r}".format(d)
                 ) from None
 
@@ -110,16 +121,17 @@ def _merge_wg_users(
     """
     Deep merge wireguard users.
 
-    :raise ValueError: If two users share the same public key.
+    :raise DataError: If two users share the same public key.
     """
     result = {}
     for user in itertools.chain(*iterables):
         key = user.public_key
         if key in result:
-            raise ValueError(
-                "users {!r} and {!r} have the same public key",
-                user.name,
-                result[key].name,
+            raise DataError(
+                "users {!r} and {!r} have the same public key".format(
+                    user.name,
+                    result[key].name,
+                )
             )
         result[key] = user
     return result
@@ -131,7 +143,7 @@ def _require_unique_names(
     seen_names = {}
     for user in users:
         if user.name in seen_names:
-            raise ValueError(
+            raise DataError(
                 "duplicate wireguard user name ({!r}) in {!r} and {!r}".format(
                     user.name, user, seen_names[user.name],
                 )
@@ -183,8 +195,8 @@ def _assign_ipv4_addresses(
         to a client.
     :param endpoint_id: ID of the wireguard endpoint
     :raises RuntimeError: If the subnet is too large.
-    :raises ValueError: If an address conflict arises.
-    :raises ValueError: If there are not enough addresses in the subnet to
+    :raises DataError: If an address conflict arises.
+    :raises DataError: If there are not enough addresses in the subnet to
         serve all users.
 
     Users which already have an address assigned are preferred. Other users
@@ -214,7 +226,7 @@ def _assign_ipv4_addresses(
 
         if existing_address is not None:
             if existing_address in reserved_addresses or existing_address not in subnet:
-                raise ValueError(
+                raise DataError(
                     "user {!r} has the address {!s} assigned which is not "
                     "in the subnet {!s} or already in use by a different "
                     "user".format(
@@ -234,7 +246,7 @@ def _assign_ipv4_addresses(
                 address = _generate_ipaddress(subnet)
                 if address in reserved_addresses:
                     if len(reserved_addresses) == subnet.num_addresses:
-                        raise ValueError(
+                        raise DataError(
                             "failed to allocate address for {!r}: "
                             "no more addresses left".format(new_user.name)
                         )
@@ -268,8 +280,8 @@ def _assign_ipv6_addresses(
     :param reserved_addresses: A set of addresses which will never be assigned
         to a client.
     :raises RuntimeError: If the subnet is too large.
-    :raises ValueError: If an address conflict arises.
-    :raises ValueError: If there are not enough addresses in the subnet to
+    :raises DataError: If an address conflict arises.
+    :raises DataError: If there are not enough addresses in the subnet to
         serve all users.
 
     Users which already have an address assigned are preferred. Other users
@@ -300,7 +312,7 @@ def _assign_ipv6_addresses(
         if existing_address is not None:
             if (existing_address in reserved_addresses or
                     existing_address not in subnetv6):
-                raise ValueError(
+                raise DataError(
                     "user {!r} has the address {!s} assigned which is not "
                     "in the subnet {!s} or already in use by a different "
                     "user".format(
@@ -319,7 +331,7 @@ def _assign_ipv6_addresses(
                 address = _generate_ipaddress(subnetv6)
                 if address in reserved_addresses:
                     if len(reserved_addresses) == subnetv6.num_addresses:
-                        raise ValueError(
+                        raise DataError(
                             "failed to allocate address for {!r}: "
                             "no more addresses left".format(new_user.name)
                         )
@@ -446,7 +458,7 @@ def generate_wireguard_config(
     ])
 
     if not wireguard_users:
-        raise ValueError(
+        raise DataError(
             "You enabled wireguard, but did not configure any peers.")
 
     # Validate (all) wireguard users, require unique names
@@ -482,8 +494,8 @@ def is_ipnet_disjoint(
 ) -> bool:
     try:
         ipnet = ipaddress.ip_network(ipnet_string)
-    except ValueError:
-        raise ValueError("Invalid IP network string")
+    except ValueError as e:
+        raise DataError("Invalid IP network string") from e
 
     wg_nets = _get_endpoints_from_config(wireguard_config)
 
@@ -500,7 +512,7 @@ def is_ipnet_disjoint(
                         wg_net['ipv6_cidr'].subnet_of(ipnet)):
                     return False
             else:
-                raise ValueError("{} is of unsupported IP network type".format(ipnet))
+                raise DataError("{} is of unsupported IP network type".format(ipnet))
     return True
 
 
@@ -513,5 +525,9 @@ if __name__ == "__main__":
     dst = pathlib.Path(sys.argv[2])
     dst.parent.mkdir(exist_ok=True, parents=True)
     with (src.open("r") as sp, dst.open("w") as dp):
-        config = generate_wireguard_config(json.load(sp))
+        try:
+            config = generate_wireguard_config(json.load(sp))
+        except DataError as e:
+            logging.error(e.message)
+            exit(1)
         yaml.dump(_add_prefix(config, WG_PREFIX), dp)
