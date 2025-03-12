@@ -143,8 +143,8 @@
           upload of an externally available copy of the current CA key.
 
 # NOTE: Must come after the Vault CA key availability check
-- name: Obtain CAs
-  include_tasks: obtain-cas.yaml
+- name: Ensure CAs
+  include_tasks: ensure-cas.yaml
 
 - name: Obtain kubeconfigs
   include_tasks: obtain-kubeconfigs.yaml
@@ -187,35 +187,10 @@
 
   - name: Run kubeadm init
     block:
-    # WORKAROUND: As of kubeadm 1.28.1 only RSA and ECDSA are supported as
-    #             algorithms for the Kubernetes cluster root CA key.
-    #             Because we are using ED25519 CA keys, we prevent ca.key from
-    #             feeding into kubeadm by temporarily renaming it.
-    - name: Hide Kubernetes cluster root CA key before kubeadm init
-      # NOTE: Ansible does not support renaming files
-      block:
-      - ansible.builtin.stat:
-          path: /etc/kubernetes/pki/ca.key
-        register: k8s_ca_key_file
-      - when: k8s_ca_key_file.stat.exists
-        block:
-        - ansible.builtin.copy:
-            remote_src: true
-            src: "{{ k8s_ca_key_file.stat.path }}"
-            dest: "{{ k8s_ca_key_file.stat.path }}.bak~"
-            mode: preserve
-          register: k8s_ca_key_file_backup
-        - ansible.builtin.file:
-            path: "{{ k8s_ca_key_file.stat.path }}"
-            state: absent
-          register: k8s_ca_key_file_hidden
-
     - name: Generate super admin kubeconfig
       become: false
-      # Generate super-admin.conf file for Kubernetes 1.29 and later
-      # as kubeadm init requires it for initialization.
+      # Generate super-admin.conf as kubeadm init requires it for initialization.
       # Delete it afterwards
-      when: k8s_version_minor is version('1.29', '>=')
       # must use block to be able to set environment
       environment:
         ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
@@ -232,22 +207,15 @@
           kubeconfig_role: system-masters_admin
           kubeconfig_user: kubernetes-super-admin
 
-    - name: Run kubeadm init  # noqa no-changed-when
-      # XXX: ansible command module does not support setting the umask
-      ansible.builtin.shell: umask 077 && kubeadm init --node-name={{ inventory_hostname | quote }} --config=/tmp/kubeadm-init-config.yaml
-
-    - name: Unhide Kubernetes cluster root CA key after kubeadm init
-      when: k8s_ca_key_file_hidden is not skipped
-      # NOTE: Ansible does not support renaming files
-      block:
-      - ansible.builtin.copy:
-          remote_src: true
-          src: "{{ k8s_ca_key_file_backup.dest }}"
-          dest: "{{ k8s_ca_key_file_backup.src }}"
-          mode: preserve
-      - ansible.builtin.file:
-          path: "{{ k8s_ca_key_file_backup.dest }}"
-          state: absent
+    - name: Run kubeadm init
+      vars:
+        kubeadm_expression:
+        - "kubeadm"
+        - "init"
+        - "--node-name={{ inventory_hostname | quote }}"
+        - "--config=/tmp/kubeadm-init-config.yaml"
+      include_role:
+        name: helpers/kubeadm-command
 
   - name: Remove kubeadm-init-config.yaml
     ansible.builtin.file:
@@ -291,46 +259,13 @@
       mode: 0600
 
   - name: Join the existing cluster as another control plane node
-    block:
-    # WORKAROUND: As of kubeadm 1.28.1 only RSA and ECDSA are supported as
-    #             algorithms for the Kubernetes cluster root CA key.
-    #             Because we are using ED25519 CA keys, we prevent ca.key from
-    #             feeding into kubeadm by temporarily renaming it.
-    - name: Hide Kubernetes cluster root CA key before kubeadm join
-      # XXX: Ansible does not support renaming files
-      block:
-      - ansible.builtin.stat:
-          path: /etc/kubernetes/pki/ca.key
-        register: k8s_ca_key_file
-      - when: k8s_ca_key_file.stat.exists
-        block:
-        - ansible.builtin.copy:
-            remote_src: true
-            src: "{{ k8s_ca_key_file.stat.path }}"
-            dest: "{{ k8s_ca_key_file.stat.path }}.bak~"
-            mode: preserve
-          register: k8s_ca_key_file_backup
-        - ansible.builtin.file:
-            path: "{{ k8s_ca_key_file.stat.path }}"
-            state: absent
-          register: k8s_ca_key_file_hidden
-
-    - name: Join the existing cluster as another control plane node  # noqa no-changed-when
-      # XXX: ansible command module does not support setting the umask
-      ansible.builtin.shell: umask 077 && kubeadm join --config=/tmp/kubeadm-join-config.yaml
-
-    - name: Unhide Kubernetes cluster root CA key after kubeadm join
-      when: k8s_ca_key_file_hidden is not skipped
-      # XXX: Ansible does not support renaming files
-      block:
-      - ansible.builtin.copy:
-          remote_src: true
-          src: "{{ k8s_ca_key_file_backup.dest }}"
-          dest: "{{ k8s_ca_key_file_backup.src }}"
-          mode: preserve
-      - ansible.builtin.file:
-          path: "{{ k8s_ca_key_file_backup.dest }}"
-          state: absent
+    vars:
+      kubeadm_expression:
+      - "kubeadm"
+      - "join"
+      - "--config=/tmp/kubeadm-join-config.yaml"
+    include_role:
+      name: helpers/kubeadm-command
 
   - name: Remove kubeadm-join-config.yaml
     ansible.builtin.file:
@@ -356,31 +291,6 @@
       group: root
       mode: 0644
       content: "{{ content | to_json }}"
-
-- name: Ensure presence of Kubernetes cluster root CA key on control plane
-  become: true
-  block:
-  - name: Ensure CA key file is present/absent
-    ansible.builtin.file:
-      state: "{{ k8s_controller_manager_enable_signing_requests | ternary('file', 'absent') }}"
-      path: /etc/kubernetes/pki/ca.key
-      mode: 0400
-
-  # NOTE: Must come after the node has joined the control plane
-  - name: Ensure kube-controller-manager client cert flags are (un)set
-    block:
-    - name: Ensure cluster-signing-cert-file is (un)set
-      ansible.builtin.replace:
-        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-        regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
-        replace: "{{ k8s_controller_manager_enable_signing_requests | ternary('\\1/etc/kubernetes/pki/ca.crt', '\\1') }}"
-
-    # NOTE: Must come after the node has joined the control plane
-    - name: Ensure --cluster-signing-key-file is (un)set
-      ansible.builtin.replace:
-        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-        regexp: '^(\s*-\s*--cluster-signing-key-file=).*'
-        replace: "{{ k8s_controller_manager_enable_signing_requests | ternary('\\1/etc/kubernetes/pki/ca.key', '\\1') }}"
 
 - name: Login to the Kubernetes cluster as orchestrator
   ansible.builtin.include_role:

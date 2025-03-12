@@ -1,8 +1,8 @@
 ---
-- name: Obtain CAs
+- name: Ensure CAs
   ansible.builtin.include_role:
     name: k8s-master
-    tasks_from: obtain-cas.yaml
+    tasks_from: ensure-cas.yaml
   vars:
     extra_ca: "{{ append_next_issuer | bool }}"
 

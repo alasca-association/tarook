@@ -4,40 +4,19 @@
   when: do_upgrade
   block:
     - name: Run kubeadm upgrade plan  # noqa no-changed-when
-      ansible.builtin.command:
-        argv:
+      vars:
+        kubeadm_expression:
           - "kubeadm"
           - "upgrade"
           - "plan"
-
-    # WORKAROUND: As of kubeadm 1.28.1 only RSA and ECDSA are supported as
-    #             algorithms for the Kubernetes cluster root CA key.
-    #             Because we are using ED25519 CA keys, we prevent ca.key from
-    #             feeding into kubeadm by temporarily renaming it.
-    - name: Hide Kubernetes cluster root CA key before kubeadm upgrade
-      # NOTE: Ansible does not support renaming files
-      block:
-        - ansible.builtin.stat:
-            path: /etc/kubernetes/pki/ca.key
-          register: k8s_ca_key_file
-        - when: k8s_ca_key_file.stat.exists
-          block:
-            - ansible.builtin.copy:
-                remote_src: true
-                src: "{{ k8s_ca_key_file.stat.path }}"
-                dest: "{{ k8s_ca_key_file.stat.path }}.bak~"
-                mode: preserve
-              register: k8s_ca_key_file_backup
-            - ansible.builtin.file:
-                path: "{{ k8s_ca_key_file.stat.path }}"
-                state: absent
-              register: k8s_ca_key_file_hidden
+      include_role:
+        name: helpers/kubeadm-command
 
     # Do not renew certificates here because we rolled out our own chain
     # --yes auto-confirms and makes upgrade non-interactive
-    - name: Execute the upgrade  # noqa no-changed-when
-      ansible.builtin.command:
-        argv:
+    - name: Execute the upgrade
+      vars:
+        kubeadm_expression:
           - "kubeadm"
           - "upgrade"
           - "apply"
@@ -46,37 +25,6 @@
           - "--certificate-renewal=false"
           - "--patches"
           - "/etc/kubernetes/kubeadm-patches"
-      # Let’s also play this safe here -- the `upgrade apply` command can take a
-      # while and we want to be sure that we don’t run into any connection timeouts.
-      # Note that this imposes a run-time limit on the apply command (half an hour)
-      # which I suppose is OK.
-      async: 1800
-      poll: 5
-
-    - name: Unhide Kubernetes cluster root CA key after kubeadm upgrade
-      when: k8s_ca_key_file_hidden is not skipped
-      # NOTE: Ansible does not support renaming files
-      block:
-        - ansible.builtin.copy:
-            remote_src: true
-            src: "{{ k8s_ca_key_file_backup.dest }}"
-            dest: "{{ k8s_ca_key_file_backup.src }}"
-            mode: preserve
-        - ansible.builtin.file:
-            path: "{{ k8s_ca_key_file_backup.dest }}"
-            state: absent
-
-    - name: Ensure kube-controller-manager client cert flags are (un)set
-      block:
-        - name: "Ensure cluster-signing-cert-file is {{ k8s_ca_key_file.stat.exists | ternary('set', 'unset') }}"
-          ansible.builtin.replace:
-            path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-            regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
-            replace: "{{ k8s_ca_key_file.stat.exists | ternary('\\1/etc/kubernetes/pki/ca.crt', '\\1') }}"
-
-        - name: "Ensure cluster-signing-key-file is {{ k8s_ca_key_file.stat.exists | ternary('set', 'unset') }}"
-          ansible.builtin.replace:
-            path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-            regexp: '^(\s*-\s*--cluster-signing-key-file=).*'
-            replace: "{{ k8s_ca_key_file.stat.exists | ternary('\\1/etc/kubernetes/pki/ca.key', '\\1') }}"
+      include_role:
+        name: helpers/kubeadm-command
 ...

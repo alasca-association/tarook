@@ -54,6 +54,34 @@
   retries: "{{ error_retries }}"
   delay: "{{ error_delay }}"
 
+- name: Ensure cluster-signing-cert-file is set
+  become: true
+  replace:
+    path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+    regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
+    replace: "\\1/etc/kubernetes/pki/ca.crt"
+
+- name: Ensure cluster-signing-cert-file is unset
+  become: true
+  replace:
+    path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+    regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
+    replace: "\\1"
+
+- name: Ensure cluster-signing-key-file is set
+  become: true
+  replace:
+    path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+    regexp: '^(\s*-\s*--cluster-signing-key-file=).*'
+    replace: "\\1/etc/kubernetes/pki/ca.key"
+
+- name: Ensure cluster-signing-key-file is unset
+  become: true
+  replace:
+    path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+    regexp: '^(\s*-\s*--cluster-signing-key-file=).*'
+    replace: "\\1"
+
 - name: noop
   # this handler is used as default in mkkubeconfig, if the caller specified no handler to notify
   ansible.builtin.debug:
