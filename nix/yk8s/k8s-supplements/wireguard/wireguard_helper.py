@@ -458,7 +458,7 @@ def generate_wireguard_config(
     ])
 
     if not wireguard_users:
-        raise DataError(
+        logging.warning(
             "You enabled wireguard, but did not configure any peers.")
 
     # Validate (all) wireguard users, require unique names

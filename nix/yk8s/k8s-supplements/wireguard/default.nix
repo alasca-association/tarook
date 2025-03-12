@@ -295,9 +295,15 @@ in {
         }
       ]
       else [];
-    warnings = builtins.foldl' (
-      acc: opt: acc ++ lib.optional ((builtins.getAttr opt cfg) != null) "${opt} is deprecated. Use endpoints instead."
-    ) [] ["port" "ip_cidr" "ip_gw" "ipv6_cidr" "ipv6_gw"];
+    warnings = let
+      inherit (builtins) foldl' length;
+    in
+      foldl' (
+        acc: opt: acc ++ lib.optional ((builtins.getAttr opt cfg) != null) "${opt} is deprecated. Use endpoints instead."
+      ) [] ["port" "ip_cidr" "ip_gw" "ipv6_cidr" "ipv6_gw"]
+      ++ lib.optional
+      (cfg.enabled -> (length cfg.peers) == 0)
+      "Wireguard is enabled but no peers are configured.";
     assertions = let
       inherit (builtins) length;
       inherit (lib.lists) unique;
@@ -306,10 +312,6 @@ in {
       {
         assertion = cfg.enabled -> (length cfg.endpoints) != 0;
         message = "Wireguard is enabled but no endpoints are configured.";
-      }
-      {
-        assertion = cfg.enabled -> (length cfg.peers) != 0;
-        message = "Wireguard is enabled but no peers are configured.";
       }
       {
         assertion = cfg.enabled -> allUnique (map (p: p.ident) cfg.peers);
