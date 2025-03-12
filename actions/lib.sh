@@ -209,9 +209,9 @@ function validate_wireguard() {
         errorf '$wg_user must be set' >&2
         exit 2
     fi
-    if [ -z "${wg_private_key:-}" ] && [ -z "${wg_private_key_file:-}" ]; then
+    if [ -z "${wg_private_key_command:-}" ] && [ -z "${wg_private_key:-}" ] && [ -z "${wg_private_key_file:-}" ]; then
         # shellcheck disable=SC2016
-        errorf 'Either $wg_private_key or $wg_private_key_file must be set' >&2
+        errorf 'Either $wg_private_key_command or $wg_private_key or $wg_private_key_file must be set' >&2
         exit 2
     fi
 }

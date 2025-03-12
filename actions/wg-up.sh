@@ -40,8 +40,14 @@ if [ "${wg_usage:-true}" == "true" ]; then
     fi
 
     #set up wireguard
-    if [ -z ${wg_private_key+x} ]; then
+    if [[ -v wg_private_key_command ]]; then
+        # shellcheck disable=SC2086
+        wg_private_key=$(env --ignore-environment PATH="$PATH" $wg_private_key_command)
+    elif [[ -v wg_private_key_file ]]; then
+        warningf "\$wg_private_key_file is deprecated. Please use \$wg_private_key_command instead. See https://yaook.gitlab.io/k8s/devel/user/reference/environmental-variables.html#vpn-configuration"
         wg_private_key=$(cat "$wg_private_key_file")
+    elif [[ -v wg_private_key ]]; then
+        warningf "\$wg_private_key is deprecated. Please use \$wg_private_key_command instead. See https://yaook.gitlab.io/k8s/devel/user/reference/environmental-variables.html#vpn-configuration"
     fi
     # Creating the conf file with a dummy key. The actual private key is going to be injected via `wg set`
     sed "s#REPLACEME#$(wg genkey | sed 's/^.\{10\}/dummy+key+/')#" "$ansible_wg_template" > "$wg_conf"

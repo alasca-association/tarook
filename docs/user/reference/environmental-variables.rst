@@ -196,21 +196,32 @@ Environment Variable        Default                 Description
                                                     ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
 ``wg_endpoint``             ``0``                   The ID of the wireguard endpoint to use when connecting
                                                     to the VPN, as defined in the config at ``wireguard.endpoints``.
+``wg_private_key_command``                          Command to retrieve a WireGuard private key from
+                                                    a safe place, for example by using ``pass``.
+                                                    This variable is used by the
+                                                    ``wg-up.sh``-:ref:`script <actions-references.wg-upsh>`.
+                                                    The key is injected via ``wg set`` to
+                                                    prevent leakage.
+
+                                                    Note that the command is called with an empty environment,
+                                                    so any variables that it may need, have to be specified explicitly.
+
+                                                    You **MUST** adjust this variable.
+
 ``wg_private_key_file``     ``"$(pwd)/../privkey"`` Path to your WireGuard private key
                                                     file. This is not copied to any
                                                     remote machine, but needed to
                                                     generate the local configuration
                                                     locally and to bring the VPN tunnel
-                                                    up. You **MUST** adjust this
-                                                    variable or ``wg_private_key``.
-                                                    This variable is used by the
-                                                    ``wg-up.sh``-:ref:`script <actions-references.wg-upsh>`.
+                                                    up.
+                                                    (DEPRECATED. Use ``wg_private_key_command``
+                                                    instead.)
 ``wg_private_key``                                  Alternatively you can directly
                                                     export your WireGuard private key
-                                                    instead of a path to it. The key
-                                                    is injected via ``wg set`` to
-                                                    prevent leakage. This variable is
-                                                    used by the ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
+                                                    if neither ``wg_private_key_command``
+                                                    nor ``wg_private_key_file`` is set.
+                                                    (DEPRECATED. Use ``wg_private_key_command``
+                                                    instead.)
 ``wg_user``                 ``"firstnamelastname"`` Your WireGuard user name as
                                                     defined in the :ref:`wireguard configuration<configuration-options.yk8s.wireguard>`
                                                     (or, if enabled, ``wg_user`` `repository <https://gitlab.cloudandheat.com/lcm/wg_user>`__).

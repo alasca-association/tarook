@@ -13,10 +13,10 @@
 # Note that this can instead be set in ".envrc.local" for specific clusters.
 #export MINIMAL_ACCESS_VENV=true
 
-# Wireguard: Absolute path to your private wireguard key.
-export wg_private_key_file="path/to/your/private/key"
-# Alternatively you can directly export your wireguard key
-#export wg_private_key="$(pass PASS_PATH_TO_YOUR_WIREGUARD_KEY)"
+# Specify a command to retrieve the wireguard private key from a safe place
+# Note that the command is called with an empty environment, so any variables
+# that it may need, have to be specified explicitly.
+#export wg_private_key_command='PASSWORD_STORE_DIR="'"$PASSWORD_STORE_DIR"'" pass my-wg-key'
 
 # Wireguard: Your username in the wg-user repository
 export wg_user='firstnamelastname'
