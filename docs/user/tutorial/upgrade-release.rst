@@ -127,7 +127,7 @@ Performing the YAOOK/K8s Upgrade
 
          .. code:: console
 
-            $ ./managed-k8s/actions/migrate-cluster-repo.sh
+            $ ./managed-k8s/actions/migrate-to-release.sh
 
       .. tab:: Patch and Minor Release Upgrades
 

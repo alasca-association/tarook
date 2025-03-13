@@ -5,7 +5,7 @@ actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
-check_migration_lock
+check_release_migration_lock
 
 if [[ -e "inventory/yaook-k8s/hosts" ]] && [[ ! -L "inventory/yaook-k8s/hosts" ]]; then
     echo ""

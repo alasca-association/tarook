@@ -6,7 +6,7 @@ etc_directory="$(realpath "etc")"
 group_vars_dir="${cluster_repository}/inventory/yaook-k8s/group_vars"
 state_dir="$cluster_repository/state"
 
-migration_lock="$state_dir/migration-in-progress"
+release_migration_lock="$state_dir/release-migration-in-progress"
 
 version_major_minor=$(grep -Po '^[0-9]+\.[0-9]+' "$code_repository/version")
 
@@ -260,10 +260,10 @@ function install_prerequisites() {
     ansible-galaxy install -r "$ansible_directory/requirements.yaml"
 }
 
-function check_migration_lock() {
-    if [[ -e "$migration_lock" ]] && [[ "${IGNORE_MIGRATION_LOCK:-false}" != "true" ]]; then
-        errorf "Ongoing cluster repository migration detected. Refusing to continue."
-        errorf "Please complete the migration process by running migrate-cluster-repo.sh"
+function check_release_migration_lock() {
+    if [[ -e "$release_migration_lock" ]] && [[ "${IGNORE_MIGRATION_LOCK:-false}" != "true" ]]; then
+        errorf "Ongoing release migration detected. Refusing to continue."
+        errorf "Please complete the release migration process by running migrate-to-release.sh"
         exit 1
     fi
 }
