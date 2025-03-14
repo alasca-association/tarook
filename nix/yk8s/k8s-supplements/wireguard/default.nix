@@ -12,9 +12,8 @@
   inherit (lib.attrsets) filterAttrs;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
   inherit (yk8s-lib.types) ipv4Addr ipv4Cidr;
-  # inherit (yk8s-lib.transform) filterNull addPrefix;
   inherit (yk8s-lib) linkToPath;
-  inherit (yk8s-lib.transform) removeObsoleteOptions filterNull filterInternal;
+  inherit (yk8s-lib.transform) removeObsoleteOptions filterInternal;
   inherit (pkgs.stdenv) mkDerivation;
   inherit (builtins) foldl' elem fromJSON readFile toString;
   inherit (lib.trivial) pipe;
@@ -236,7 +235,6 @@ in {
       removeObsoleteOptions
       filterInternal
       (filterAttrs (name: _: ! elem name legacy_options))
-      filterNull
     ];
     wireguard_helper = mkDerivation rec {
       name = "yaook-k8s-wireguard-helper";

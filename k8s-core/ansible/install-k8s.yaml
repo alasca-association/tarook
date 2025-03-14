@@ -54,7 +54,6 @@
   gather_facts: false
   roles:
   - role: vm-max-map-count
-    when: "vm_max_map_count is defined"
     tags: vm-max-map-count
   - role: fs-inotify
     tags: fs-inotify

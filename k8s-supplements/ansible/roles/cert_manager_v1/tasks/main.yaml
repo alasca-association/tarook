@@ -39,10 +39,10 @@
     chart_version: "{{ k8s_cert_manager_chart_version }}"
     values: "{{ lookup('template', 'cert_manager_values.yaml.j2') | from_yaml }}"
 
-- name: "{{ (k8s_cert_manager_install and (k8s_cert_manager_letsencrypt_email is defined)) | ternary('I', 'Uni') }}nstall Let's Encrypt cluster issuer"
+- name: "{{ (k8s_cert_manager_install and (k8s_cert_manager_letsencrypt_email is not none)) | ternary('I', 'Uni') }}nstall Let's Encrypt cluster issuer"
   kubernetes.core.k8s:
     apply: true
-    state: "{{ (k8s_cert_manager_letsencrypt_email is defined) | ternary('present', 'absent') }}"
+    state: "{{ (k8s_cert_manager_letsencrypt_email is not none) | ternary('present', 'absent') }}"
     definition:
       apiVersion: v1
       kind: ClusterIssuer

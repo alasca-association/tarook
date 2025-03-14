@@ -26,7 +26,7 @@
     - cert_manager_v1_test
 
   - role: fluxcd2_v1_test
-    when: (fluxcd_enabled is defined) and (fluxcd_enabled | bool)
+    when: fluxcd_enabled | bool
     tags:
     - fluxcd2_v1_test
 

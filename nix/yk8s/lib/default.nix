@@ -35,7 +35,6 @@
         ++ [
           t.removeObsoleteOptions
           t.filterInternal
-          t.filterNull
         ]
         ++ cfg._internal.transformations or []
         ++ transformations

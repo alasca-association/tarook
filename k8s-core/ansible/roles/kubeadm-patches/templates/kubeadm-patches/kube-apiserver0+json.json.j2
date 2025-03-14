@@ -1,5 +1,5 @@
 [
-{% if k8s_apiserver_memory_limit is defined %}
+{% if k8s_apiserver_memory_limit is not none %}
 	{
 		"op":"add",
 		"path":"/spec/containers/0/resources/limits",
