@@ -11,7 +11,7 @@
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath mkJson;
   inherit (yk8s-lib.types) ipv4Cidr;
   inherit (yk8s-lib.transform) filterNull removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
@@ -38,6 +38,22 @@
       default = "";
     };
   };
+  terraformOptions = [
+    "public_network"
+    "keypair"
+    "azs"
+    "thanos_delete_container"
+    "spread_gateways_across_azs"
+    "create_root_disk_on_volume"
+    "network_mtu"
+    "dns_nameservers_v4"
+    "monitoring_manage_thanos_bucket"
+    "gateway_count"
+    "gateway_defaults"
+    "master_defaults"
+    "worker_defaults"
+    "nodes"
+  ];
 in {
   options.yk8s.openstack = mkTopSection {
     _docs.order = 1;
@@ -303,6 +319,42 @@ in {
       });
       default = {};
     };
+
+    network_name = mkOption {
+      description = ''
+        Name of the internal OpenStack network. This field becomes important if a VM is
+        attached to two networks but the controller-manager should only pick up one. If
+        you don't understand the purpose of this field, there's a very high chance you
+        won't need to touch it.
+        Note: This network name isn't fetched automagically (by terraform) on purpose
+        because there might be situations where the CCM should not pick the managed network.
+      '';
+      type = with types; nullOr nonEmptyStr;
+      default = null;
+      example = "\${config.yk8s.infra.cluster_name}-network";
+    };
+    cinder_volume_type = mkOption {
+      description = ''
+        Use a specific volume type for the csi-sc-cinderplugin StorageClass.
+        If unset, no volume type is explicitly set and the default volume type
+        of the IaaS-layer is used.
+      '';
+      type = with types; nullOr nonEmptyStr;
+      default = null;
+    };
+
+    check_credentials = mkOption {
+      description = ''
+        OpenStack credential checks
+        Terrible things will happen when certain tasks are run and OpenStack credentials are not sourced.
+        Okay, maybe not so terrible after all, but the templates do not check if certain values exist.
+        Hence config files with empty credentials are written. The LCM will execute a simple check to see
+        if you provided valid credentials as a sanity check if you're on openstack and this option is set
+        to true.
+      '';
+      type = types.bool;
+      default = true;
+    };
   };
   config.yk8s = lib.mkIf cfg.enabled {
     terraform.enabled = true;
@@ -353,8 +405,9 @@ in {
       [
         (mkGroupVarsFile {
           inherit cfg;
-          inventory_path = "all/cluster.yaml";
-          transformations = [(filterAttrs (name: _: name == "cluster_name"))];
+          inventory_path = "all/openstack.yaml";
+          ansible_prefix = "openstack_";
+          transformations = [(c: builtins.removeAttrs c terraformOptions)];
         })
       ]
       ++ (
@@ -373,14 +426,14 @@ in {
     _state_packages = [
       (
         let
-          filteredOpenstackCfg = yk8s-lib.removeAttrByPath cfg ["enabled"];
+          filteredOpenstackCfg = lib.attrsets.getAttrs terraformOptions cfg;
           filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["prevent_disruption"]];
           infraCfg = lib.attrsets.getAttrs ["cluster_name" "ipv4_enabled" "ipv6_enabled" "subnet_cidr" "subnet_v6_cidr"] config.yk8s.infra;
           mergedCfg =
             builtins.foldl' (acc: e: lib.attrsets.recursiveUpdate acc (removeObsoleteOptions e)) {}
             [filteredOpenstackCfg filteredTerraformCfg infraCfg];
           transformations = [filterInternal filterNull];
-          varsFile = (pkgs.formats.json {}).generate "tfvars.json" (pipe mergedCfg transformations);
+          varsFile = mkJson "tfvars.json" (pipe mergedCfg transformations);
         in (pkgs.runCommandLocal "tfvars.json" {} ''
           install -m 644 -D ${varsFile} $out/${tfvars_file_path}
         '')

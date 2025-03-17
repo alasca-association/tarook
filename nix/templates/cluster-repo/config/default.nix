@@ -51,7 +51,7 @@ in {
         };
       };
       kubernetes = {
-        version = "1.30.8";
+        version = "1.31.5";
       };
       wireguard = {
         enabled = true;
@@ -63,10 +63,10 @@ in {
           }
         ];
         peers = [
-          {
-            ident = "example.name";
-            pub_key = "ExampleWgKeyLiKUsKjhSDY9u06pX68rbdg4V6dkHFo=";
-          }
+          # {
+          #   ident = "example.name";
+          #   pub_key = "ExampleWgKeyLiKUsKjhSDY9u06pX68rbdg4V6dkHFo=";
+          # }
         ];
       };
     };

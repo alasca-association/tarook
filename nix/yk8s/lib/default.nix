@@ -44,16 +44,11 @@
         ]
       );
   in
-    mkDerivation {
-      name = "yaook-k8s-" + path;
-      src = ./.;
-      allowSubstitutes = false;
-      preferLocalBuild = true;
-      buildPhase = builtins.traceVerbose "Writing file: ${path}" ''
-        install -m 644 -D ${mkYaml path finalConfig} $out/${path}
-      '';
-    };
+    builtins.traceVerbose "Writing file: ${path}" (mkYamlAtPath path finalConfig);
   mkYaml = (pkgs.formats.yaml {}).generate;
+  mkYamlAtPath = path: attrs: linkToPath (mkYaml path attrs) path;
+  mkJson = (pkgs.formats.json {}).generate;
+  mkJsonAtPath = path: attrs: linkToPath (mkJson path attrs) path;
   linkToPath = file: path:
     pkgs.runCommandLocal path {
       allowSubstitutes = false;

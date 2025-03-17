@@ -100,6 +100,15 @@ in {
       type = types.int;
       default = 48981;
     };
+    haproxy_frontend_k8s_api_maxconn = mkOption {
+      type = types.ints.positive;
+      default = 2000;
+    };
+
+    haproxy_frontend_nodeport_maxconn = mkOption {
+      type = types.ints.positive;
+      default = 2000;
+    };
     priorities = mkOption {
       description = ''
         Deprecated

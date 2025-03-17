@@ -49,7 +49,7 @@ Bugfixes
   ``error: Neither IPv4 nor IPv6 are enabled.`` to users with a broken locale
   setup and swallowed any error output related to that. (`!1677 <https://gitlab.com/yaook/k8s/-/merge_requests/1677>`_)
 - An envrc function has been added to address common locale issues on non-NixOS systems. (`!1679 <https://gitlab.com/yaook/k8s/-/merge_requests/1679>`_)
-- A bug has been fixed that caused k8s-supplements to fail if :ref:`configuration-options.yk8s.miscellaneous.openstack_cinder_volume_type` was not set. (`!1688 <https://gitlab.com/yaook/k8s/-/merge_requests/1688>`_)
+- A bug has been fixed that caused k8s-supplements to fail if :ref:`configuration-options.yk8s.openstack.cinder_volume_type` was not set. (`!1688 <https://gitlab.com/yaook/k8s/-/merge_requests/1688>`_)
 - ``pre-commit`` has been added back to the default group. (`!1693 <https://gitlab.com/yaook/k8s/-/merge_requests/1693>`_)
 - The default value of :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.scheduling_key` for thanos_v2 has been fixed. (`!1693 <https://gitlab.com/yaook/k8s/-/merge_requests/1693>`_)
 - A bug regarding the renaming of ``pod_limit`` to ``pod_limit_worker`` has been fixed. (`!1693 <https://gitlab.com/yaook/k8s/-/merge_requests/1693>`_)
@@ -224,7 +224,7 @@ New Features
   :ref:`configuration-options.yk8s.kubernetes.kubelet.pod_limit_master`
   and
   :ref:`configuration-options.yk8s.kubernetes.kubelet.pod_limit_worker` (`!1606 <https://gitlab.com/yaook/k8s/-/merge_requests/1606>`_)
-- A new option has been added which allows to configure a specific volume type for the ``csi-sc-cinderplugin`` StorageClass: :ref:`configuration-options.yk8s.miscellaneous.openstack_cinder_volume_type`. (`!1617 <https://gitlab.com/yaook/k8s/-/merge_requests/1617>`_)
+- A new option has been added which allows to configure a specific volume type for the ``csi-sc-cinderplugin`` StorageClass: :ref:`configuration-options.yk8s.openstack.cinder_volume_type`. (`!1617 <https://gitlab.com/yaook/k8s/-/merge_requests/1617>`_)
 
 
 Changed functionality
