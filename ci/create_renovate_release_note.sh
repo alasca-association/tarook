@@ -26,9 +26,10 @@ fi
 while [ -f "$RELEASENOTE_PATH/+.$CATEGORY.${counter:=1}.$DATE_STRING" ]; do
   ((counter++))
 done
+news_fragment_file="$RELEASENOTE_PATH/+.$CATEGORY.${counter}.$DATE_STRING"
 
 if [[ $CATEGORY == 'feature' && $DATASOURCE == 'helm' ]]; then
-  echo "Updated default version of helm chart $DEP_NAME of $SOURCE_URL from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_PATH/x.$CATEGORY.${counter}.$DATE_STRING"
+  echo "Updated default version of helm chart $DEP_NAME of $SOURCE_URL from $CURRENT_VERSION to $NEW_VERSION" > "${news_fragment_file}"
 else
-  touch "$RELEASENOTE_PATH/+.$CATEGORY.${counter}.$DATE_STRING"
+  touch "${news_fragment_file}"
 fi
