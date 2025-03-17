@@ -21,12 +21,14 @@ else
   CATEGORY="chore"
 fi
 
-while [ -f "$RELEASENOTE_PATH/+.$CATEGORY.$DATE_STRING" ]; do
-  DATE_STRING="$(date --iso-8601=seconds -u)"
+# Prevent overwriting any existing news fragment
+#  by selecting a free counter number
+while [ -f "$RELEASENOTE_PATH/+.$CATEGORY.${counter:=1}.$DATE_STRING" ]; do
+  ((counter++))
 done
 
 if [[ $CATEGORY == 'feature' && $DATASOURCE == 'helm' ]]; then
-  echo "Updated default version of helm chart $DEP_NAME of $SOURCE_URL from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_PATH/x.$CATEGORY.$DATE_STRING"
+  echo "Updated default version of helm chart $DEP_NAME of $SOURCE_URL from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_PATH/x.$CATEGORY.${counter}.$DATE_STRING"
 else
-  touch "$RELEASENOTE_PATH/+.$CATEGORY.$DATE_STRING"
+  touch "$RELEASENOTE_PATH/+.$CATEGORY.${counter}.$DATE_STRING"
 fi
