@@ -73,8 +73,8 @@
       engine_mount_point: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv"
       auth_method: approle
       mount_point: "{{ vault_nodes_approle }}"
-      role_id: "{{ vault_role_id }}"
-      secret_id: "{{ vault_secret_id }}"
+      role_id: "{{ vault_node_role_id }}"
+      secret_id: "{{ vault_node_secret_id }}"
       token_validate: false
     register: get_ca_key
     ignore_errors: true

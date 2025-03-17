@@ -8,29 +8,6 @@
 
 - name: Onboard node to vault
   block:
-  - name: Read our token roles
-    delegate_to: "{{ groups['orchestrator'] | first }}"
-    environment:
-      ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
-      ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
-    community.hashi_vault.vault_read:
-      path: auth/token/lookup-self
-      mount_point: "{{ vault_caller_auth_mount_point }}"
-      auth_method: "{{ vault_caller_auth_method }}"
-      token: "{{ vault_caller_token }}"
-      role_id: "{{ vault_caller_role_id }}"
-      secret_id: "{{ vault_caller_secret_id }}"
-      token_validate: false
-    register: token_info
-
-  - name: Test approle
-    ansible.builtin.set_fact:
-      has_vault_orchestrator_role: "{{ (vault_policy_prefix + '/orchestrator') in token_info.data.data.policies or 'root' in token_info.data.data.policies }}"
-
-  - name: Report orchestrator role
-    ansible.builtin.debug:
-      msg: "I do {{ has_vault_orchestrator_role | ternary('', 'NOT ') }}have the orchestrator role!"
-
   - name: Set vault node name
     ansible.builtin.set_fact:
       vault_node_name: "{{ inventory_hostname }}.node.{{ vault_cluster_name }}"
