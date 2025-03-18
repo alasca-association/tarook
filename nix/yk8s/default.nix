@@ -1,4 +1,4 @@
-{
+{localFlake}: {
   inputs,
   lib,
   self,
@@ -25,9 +25,9 @@
       in {
         config._module.args = {
           inherit yk8s-lib;
-          terranix-lib = inputs.yk8s.inputs.terranix.lib;
+          terranix-lib = localFlake.inputs.terranix.lib;
           # Pin all packages used by this module to the version managed in the Tarook repo
-          pkgs = import inputs.yk8s.inputs.nixpkgs {
+          pkgs = import localFlake.inputs.nixpkgs {
             inherit system;
           };
         };
