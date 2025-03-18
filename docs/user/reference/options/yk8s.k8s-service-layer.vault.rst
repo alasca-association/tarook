@@ -83,7 +83,7 @@ Version of the Helm Chart to use
 
 **Default:**::
 
-  "0.23.0"
+  "0.29.1"
 
 
 **Declared by**
