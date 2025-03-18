@@ -133,7 +133,7 @@ in {
     gitlab_backend = mkEnableOption ''
       GitLab-managed Terraform backend
       If true, the Terraform state will be stored inside the provided gitlab project.
-      If set, the environment `TF_HTTP_USERNAME` and `TF_HTTP_PASSWO = mkOptionD`
+      If set, the environment `TF_HTTP_USERNAME` and `TF_HTTP_PASSWORD`
       must be configured in a separate file `~/.config/yaook-k8s/env`.
     '';
 
