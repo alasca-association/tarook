@@ -51,7 +51,7 @@ in {
       '';
       type = types.nonEmptyStr;
       # renovate: datasource=helm depName=vault registryUrl=https://helm.releases.hashicorp.com
-      default = "0.23.0";
+      default = "0.29.1";
     };
     namespace = mkOption {
       description = ''
