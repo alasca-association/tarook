@@ -339,13 +339,6 @@ function tf_init() {
         return 0
     }
 
-    function all_gitlab_vars_are_unset() {
-        for var in "${all_gitlab_vars[@]}"; do
-            [[ -n "${!var}" && "${!var}" != "null" ]] && return 1
-        done
-        return 0
-    }
-
     function tf_state_present_on_gitlab () {
         if [ -z "${TF_HTTP_PASSWORD:-}" ]; then
             errorf "We want to check if there is a Gitlab state present,"
@@ -372,10 +365,6 @@ function tf_init() {
 
     # gitlab_backend=true
     if [ "$(jq -r .gitlab_backend "$terraform_state_dir/config.tfvars.json")" = true ]; then
-        if ! all_gitlab_vars_are_set; then
-            errorf "'gitlab_backend=true' but GitLab variables are not (completely) provided."
-            exit 2
-        fi
 
         # Here we create an override_file which overrides the `local` terraform backend to http(gitlab) backend
         if [ ! -f "$OVERRIDE_FILE" ]; then
@@ -400,17 +389,6 @@ EOF
 
     # gitlab_backend=false
     else
-        if ! all_gitlab_vars_are_set && ! all_gitlab_vars_are_unset; then
-            errorf "'gitlab_backend=false' but some GitLab variables are provided."
-            errorf "(1) If you want to migrate the Terraform backend method from 'http' to 'local',"
-            errorf "you should provide all the GitLab variables"
-            errorf "(2) If you want to init a cluster with local backend,"
-            errorf "make sure that all the following GitLab variables are unset:"
-            for var in "${all_gitlab_vars[@]}"; do
-                errorf "- $var"
-            done
-            exit 2
-        fi
 
         if all_gitlab_vars_are_set; then
             if tf_state_present_on_gitlab; then
