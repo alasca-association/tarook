@@ -1,4 +1,4 @@
-{
+{localFlake}: {
   inputs,
   lib,
   self,
@@ -26,7 +26,7 @@
         config._module.args = {
           inherit yk8s-lib;
           # Pin all packages used by this module to the version managed in the yaook/k8s repo
-          pkgs = import inputs.yk8s.inputs.nixpkgs {
+          pkgs = import localFlake.inputs.nixpkgs {
             inherit system;
           };
         };

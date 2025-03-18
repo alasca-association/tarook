@@ -46,7 +46,7 @@
         formatter = pkgs.alejandra;
       };
       flake = {lib, ...}: {
-        flakeModules.yk8s = import ./nix/yk8s;
+        flakeModules.yk8s = flake-parts.lib.importApply ./nix/yk8s {localFlake = self;};
       };
     };
 }
