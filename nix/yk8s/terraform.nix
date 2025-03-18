@@ -152,14 +152,6 @@ in {
       '';
       type = with types; nullOr yk8s.gitlab.projectId;
       default = null;
-      apply = v:
-        if
-          cfg.gitlab_backend
-          && v == null
-        then
-          throw
-          "config.yk8s.terraform.gitlab_project_id: must be set because config.yk8s.terraform.gitlab_backend=true"
-        else v;
     };
 
     gitlab_state_name = mkOption {
@@ -180,22 +172,44 @@ in {
         else throw "${tfOutputsPath} does not exist yet. Terraform stage needs to be run first.";
     };
   };
-  config.yk8s = {
-    _targets.terraform.assertions = [];
+  config.yk8s = lib.mkIf cfg.enabled {
+    _targets.terraform.assertions = let
+      all_gitlab_vars = ["gitlab_base_url" "gitlab_project_id" "gitlab_state_name"];
+      all_gitlab_vars_are_set = lib.all (v: v != null) (builtins.attrValues (lib.getAttrs all_gitlab_vars cfg));
+      all_gitlab_vars_are_unset = lib.all (v: v == null) (builtins.attrValues (lib.getAttrs all_gitlab_vars cfg));
+    in [
+      {
+        assertion = cfg.gitlab_backend -> all_gitlab_vars_are_set;
+        message = "[yk8s.terraform] gitlab_backend=true' but GitLab variables are not (completely) provided. Please set all of ${lib.concatStringsSep " " all_gitlab_vars}";
+      }
+      {
+        assertion = all_gitlab_vars_are_set || all_gitlab_vars_are_unset;
+        message = ''
+          '[yk8s.terraform] gitlab_backend=false but some GitLab variables are provided.
+          (1) If you want to migrate the Terraform backend method from 'http' to 'local',
+          you should provide all the GitLab variables
+          (2) If you want to init a cluster with local backend,
+          make sure that all all of ${lib.concatStringsSep " " all_gitlab_vars} are unset.
+        '';
+      }
+    ];
     _targets.terraform.warnings = [];
-    _targets.terraform.state_packages = lib.optional cfg.enabled (
-      let
-        filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["outputs"]];
-        filteredInfraCfg = lib.attrsets.getAttrs infraTerraformOptions config.yk8s.infra;
-        filteredOpenstackCfg = lib.attrsets.getAttrs openstackTerraformOptions config.yk8s.openstack;
-        mergedCfg =
-          builtins.foldl' (acc: e: lib.attrsets.recursiveUpdate acc (removeObsoleteOptions e)) {}
-          [filteredTerraformCfg filteredInfraCfg filteredOpenstackCfg];
-        transformations = [filterInternal filterNull];
-        varsFile = mkJson "tfvars.json" (pipe mergedCfg transformations);
-      in (pkgs.runCommandLocal "tfvars.json" {} ''
-        install -m 644 -D ${varsFile} $out/${tfvars_file_path}
-      '')
-    );
+
+    _targets.terraform.state_packages = [
+      (
+        let
+          filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["outputs"]];
+          filteredInfraCfg = lib.attrsets.getAttrs infraTerraformOptions config.yk8s.infra;
+          filteredOpenstackCfg = lib.attrsets.getAttrs openstackTerraformOptions config.yk8s.openstack;
+          mergedCfg =
+            builtins.foldl' (acc: e: lib.attrsets.recursiveUpdate acc (removeObsoleteOptions e)) {}
+            [filteredTerraformCfg filteredInfraCfg filteredOpenstackCfg];
+          transformations = [filterInternal filterNull];
+          varsFile = mkJson "tfvars.json" (pipe mergedCfg transformations);
+        in (pkgs.runCommandLocal "tfvars.json" {} ''
+          install -m 644 -D ${varsFile} $out/${tfvars_file_path}
+        '')
+      )
+    ];
   };
 }
