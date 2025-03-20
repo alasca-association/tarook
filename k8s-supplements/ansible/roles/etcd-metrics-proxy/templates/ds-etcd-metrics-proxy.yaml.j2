@@ -26,8 +26,21 @@ spec:
             allowPrivilegeEscalation: false
           image: "alpine/socat"
           args:
-            - openssl-listen:12381,fork,reuseaddr,cert=/certs/server.crt,key=/certs/server.key,cafile=/certs/client.crt
+# socat is not able to bind to IPv4 and IPv6 at the same time
+# which is why we make use of the Linux feature that a socket
+# which is bound to :: can also accept IPv4 traffic (the v4 addresses
+# are mapped to ::/96). We do so by enforcing IPv6 (pf=ip6) and then
+# also allow IPv4 traffic (ipv6only=0)
+{% if ipv4_enabled and ipv6_enabled %}
+            - openssl-listen:12381,fork,reuseaddr,cert=/certs/server.crt,key=/certs/server.key,cafile=/certs/client.crt,ipv6only=0,pf=ip6
+            - TCP:[::]:2381
+{% elif ipv4_enabled %}
+            - openssl-listen:12381,fork,reuseaddr,cert=/certs/server.crt,key=/certs/server.key,cafile=/certs/client.crt,pf=ip4
             - TCP4:127.0.0.1:2381
+{% elif ipv6_enabled %}
+            - openssl-listen:12381,fork,reuseaddr,cert=/certs/server.crt,key=/certs/server.key,cafile=/certs/client.crt,pf=ip6
+            - TCP:[::1]:2381
+{% endif %}
           imagePullPolicy: "IfNotPresent"
           ports: []
           volumeMounts:

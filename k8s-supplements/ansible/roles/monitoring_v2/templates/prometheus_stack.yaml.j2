@@ -223,6 +223,16 @@ kubeEtcd:
     targetPort: 12381
     selector:
       app.kubernetes.io/name: etcd-proxy-metrics
+    ipDualStack:
+      enabled: {{ ipv4_enabled and ipv6_enabled  | ternary(true, false) }}
+      ipFamilies:
+{% if ipv4_enabled %}
+        - IPv4
+{% endif %}
+{% if ipv6_enabled %}
+        - IPv6
+{% endif %}
+      ipFamilyPolicy: {{ ipv4_enabled and ipv6_enabled  | ternary("PreferDualStack", "SingleStack") }}
   serviceMonitor:
     enabled: true
     scheme: https

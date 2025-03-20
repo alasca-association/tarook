@@ -26,6 +26,56 @@
 # CA on the server-side and vice versa.
 # Rotation: There's no need to expire a certificate because there's no common CA. Just delete either of the
 # secrets and the LCM will create a fresh pair.
+
+# Drop this block along with release v9.0.0
+# For dual stack clusters which have been setup before release v9,
+# the certificates use 127.0.0.1 as CN, but the metrics proxy will
+# bind to :: starting with release v9. Connection will therefore be
+# refused unless we regenerate the certificates.
+- name: Migration tasks for dual stack clusters setup before v9.0.0
+  when: ipv4_enabled and ipv6_enabled
+  block:
+    - name: check mode - Deploy etcd-metrics-proxy DaemonSet
+      kubernetes.core.k8s:
+        state: present
+        apply: true
+        definition: "{{ lookup('template', 'ds-etcd-metrics-proxy.yaml.j2') }}"
+        validate:
+          fail_on_error: true
+          strict: true
+      register: ds_etcd_metrics_proxy
+      until: ds_etcd_metrics_proxy is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+      check_mode: true
+
+    - name: Delete existing cert secrets  # noqa no-handler
+      when: ds_etcd_metrics_proxy.changed
+      block:
+        - name: Ensure etcd-metrics-proxy cert secret is absent (kube-system)
+          kubernetes.core.k8s:
+            api_version: v1
+            kind: Secret
+            namespace: kube-system
+            name: etcd-metrics-proxy
+            state: absent
+          register: k8s_apply
+          until: k8s_apply is not failed
+          retries: "{{ error_retries }}"
+          delay: "{{ error_delay }}"
+
+        - name: Ensure etcd-metrics-proxy cert secret is absent (monitoring)
+          kubernetes.core.k8s:
+            api_version: v1
+            kind: Secret
+            namespace: monitoring
+            name: etcd-metrics-proxy
+            state: absent
+          register: k8s_apply
+          until: k8s_apply is not failed
+          retries: "{{ error_retries }}"
+          delay: "{{ error_delay }}"
+
 - name: Check if the etcd-metrics-proxy cert secret already exists (kube-system)
   kubernetes.core.k8s_info:
     api_version: v1
@@ -33,6 +83,9 @@
     namespace: kube-system
     name: etcd-metrics-proxy
   register: server_cert_state
+  until: server_cert_state is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Check if the etcd-metrics-proxy cert secret already exists (monitoring)
   kubernetes.core.k8s_info:
@@ -41,6 +94,9 @@
     namespace: monitoring
     name: etcd-metrics-proxy
   register: client_cert_state
+  until: client_cert_state is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 # We need a "server" certificate for the etcd-metrics-proxy endpoint
 # and a "client" certificate for the prometheus scraper.
@@ -55,21 +111,27 @@
         label_selectors:
           - node-role.kubernetes.io/control-plane
       register: controller_nodes
+      until: controller_nodes is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
     - name: Create the x509 key of the server
       community.crypto.openssl_privatekey_pipe:
       no_log: true  # prevent private key from being exposed
       register: server_key
+
     - name: Generate the CSR of the server
       no_log: true  # prevent private key from being exposed
       community.crypto.openssl_csr_pipe:
         privatekey_content: "{{ server_key.privatekey }}"
-        common_name: 127.0.0.1
+        common_name: "{% if ipv6_enabled and ipv4_enabled %}[::],127.0.0.1{% elif ipv4_enabled %}127.0.0.1{% elif ipv6_enabled %}[::1]{% endif %}"
         subject:
-          CN: 127.0.0.1
+          CN: "{% if ipv6_enabled and ipv4_enabled %}[::],127.0.0.1{% elif ipv4_enabled %}127.0.0.1{% elif ipv6_enabled %}[::1]{% endif %}"
         # Some ansible foo to get the IPs of all controller nodes, prefixed by `IP:` as SANs
         # Maybe someone knows a shorter way? :)
         subject_alt_name: "{{ (controller_nodes.resources | map(attribute='status') | map(attribute='addresses') | flatten(levels=1) | selectattr('type', 'eq', 'InternalIP') | map(attribute='address')) | map('regex_replace', '^(.*)$', 'IP:\\1') | list }}"
       register: server_csr
+
     - name: Create the x509 certificate of the server
       no_log: true  # prevent private key from being exposed
       community.crypto.x509_certificate_pipe:
@@ -83,14 +145,16 @@
       community.crypto.openssl_privatekey_pipe:
       no_log: true  # prevent private key from being exposed
       register: client_key
+
     - name: Generate the CSR of the client
       no_log: true  # prevent private key from being exposed
       community.crypto.openssl_csr_pipe:
         privatekey_content: "{{ client_key.privatekey }}"
-        common_name: 127.0.0.1
+        common_name: "{% if ipv6_enabled and ipv4_enabled %}[::],127.0.0.1{% elif ipv4_enabled %}127.0.0.1{% elif ipv6_enabled %}[::1]{% endif %}"
         subject:
-          CN: 127.0.0.1
+          CN: "{% if ipv6_enabled and ipv4_enabled %}[::],127.0.0.1{% elif ipv4_enabled %}127.0.0.1{% elif ipv6_enabled %}[::1]{% endif %}"
       register: client_csr
+
     - name: Create the x509 certificate of the client
       no_log: true  # prevent private key from being exposed
       community.crypto.x509_certificate_pipe:
@@ -118,6 +182,10 @@
         validate:
           fail_on_error: true
           strict: true
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
     - name: Create the secret for the prometheus scraper
       no_log: true  # prevent private key from being exposed
@@ -137,6 +205,10 @@
         validate:
           fail_on_error: true
           strict: true
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
     # Restarting pods after configuration changes is messy business.
     # Note: I'd love to use handlers here but as the operation is split in two [0]
@@ -155,6 +227,9 @@
             namespace: monitoring
             name: prometheus-prometheus-stack-kube-prom-prometheus
           register: prometheus
+          until: prometheus is not failed
+          retries: "{{ error_retries }}"
+          delay: "{{ error_delay }}"
 
         - name: Restart prometheus  # noqa no-changed-when
           when: prometheus.resources
@@ -168,17 +243,24 @@
             namespace: kube-system
             name: etcd-metrics-proxy
           register: etcd_metrics_proxy
+          until: etcd_metrics_proxy is not failed
+          retries: "{{ error_retries }}"
+          delay: "{{ error_delay }}"
 
         - name: Restart etcd-metrics-proxy  # noqa no-changed-when
           when: etcd_metrics_proxy.resources
           command: "kubectl rollout restart daemonset -n kube-system etcd-metrics-proxy"
 
-- name: Deploy the proxy
+- name: Deploy etcd-metrics-proxy DaemonSet
   kubernetes.core.k8s:
     state: present
     apply: true
-    definition: "{{ lookup('template', 'proxy.yaml') }}"
+    definition: "{{ lookup('template', 'ds-etcd-metrics-proxy.yaml.j2') }}"
     validate:
       fail_on_error: true
       strict: true
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 ...

@@ -86,6 +86,10 @@
   roles:
   - role: k8s-master
     tags: k8s-master
+    # Drop this role along with release v9.0.0
+  - role: migrations/etcd-metrics-listen-patch
+    when: ipv4_enabled and ipv6_enabled
+    tags: migrations/etcd-metrics-listen-patch
 
 - name: Spawn and configure the K8s worker nodes
   hosts: workers
