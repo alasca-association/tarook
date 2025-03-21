@@ -19,6 +19,121 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.1.0 (2025-03-21)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+
+- Bump Keepalived exporter to version 0.7.1 which introduces IPv6 support
+  https://github.com/gen2brain/keepalived_exporter/releases/tag/v0.7.1 (`!1482 <https://gitlab.com/yaook/k8s/-/merge_requests/1482>`_)
+- Add IPv6 support for Blackbox exporter (`!1482 <https://gitlab.com/yaook/k8s/-/merge_requests/1482>`_)
+- The etcd-metrics-proxy has been adjusted to work on dual stack as well as IPv6 only clusters.
+
+  For dual stack clusters which have been setup prior to release v9.0.0,
+  etcd-metrics can be scraped by IPv4 only as etcd must be patched to supply
+  metrics on ``[::1]:2381`` as well. Out of the box it supplies metrics only on
+  ``127.0.0.1`` even if Kubernetes has been set up to use dual stack.
+  This release introduces an automated patch which basically does the following things:
+
+  1. Adjust the ``ClusterConfiguration`` in the ``kubeadm-config`` ConfigMap to reflect the following
+
+    .. code:: yaml
+
+      # [...]
+      etcd:
+        local:
+          extraArgs:
+            listen-metrics-urls: "http://127.0.0.1:2381,http://[::1]:2381"
+      # [...]
+
+  2. Regenerate the static Pod manifests of etcd on each control plane node with the patched ``ClusterConfiguration``
+
+    .. code:: shell
+
+      $ kubectl get cm kubeadm-config -n kube-system -o json | jq -r .data.ClusterConfiguration > /tmp/cluster-configuration.yaml
+      $ kubeadm init phase etcd local --config /tmp/cluster-configuration.yaml
+
+  3. Regenerate the certificates used for TLS encryption between Prometheus and the etcd-metrics-proxy Pods
+  4. Restart Prometheus and the etcd-metrics-proxy DaemonSet
+  5. Adjust the etcd-metrics-proxy DaemonSet to supply metrics over both IPv4 and IPv6
+
+  The necessary changes are automatically applied on a full rollout.
+  To trigger them in a more controlled way, run:
+
+  .. code:: shell
+
+    $ bash managed-k8s/actions/apply-k8s-core.sh install-k8s.yaml
+    $ bash managed-k8s/actions/apply-k8s-supplements.sh install-monitoring.yaml
+
+  The above patch is not needed for newly initialized dual stack clusters. (`!1631 <https://gitlab.com/yaook/k8s/-/merge_requests/1631>`_)
+- Added support for Kubernetes v1.31 (`!1662 <https://gitlab.com/yaook/k8s/-/merge_requests/1662>`_)
+- update-inventory.sh now passes any arguments given to ``nix build`` (`!1715 <https://gitlab.com/yaook/k8s/-/merge_requests/1715>`_)
+
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- A new env var ``wg_private_key_command``` has been introduced.
+  This env var lets the user specify a command that retrieves their
+  WireGuard private key from a (safe) place, e.g. from a password
+  safe, rather than having it stored in a plain text file or worse,
+  stored in an env var directly.
+
+  Both old variables ``wg_private_key`` and ``wg_private_key_file``
+  have been deprecated. (`!1609 <https://gitlab.com/yaook/k8s/-/merge_requests/1609>`_)
+- Unset options are now rendered to the inventory with an explicit ``null`` value. (`!1687 <https://gitlab.com/yaook/k8s/-/merge_requests/1687>`_)
+- Updated default version of helm chart rook-ceph of https://github.com/rook/rook from v1.15.4 to v1.16.5 (`!1700 <https://gitlab.com/yaook/k8s/-/merge_requests/1700>`_)
+- Some options have been moved to a better fitting place. (`!1716 <https://gitlab.com/yaook/k8s/-/merge_requests/1716>`_)
+- It is now allowed to have :ref:`configuration-options.yk8s.wireguard.enabled` set to ``true`` without any :ref:`configuration-options.yk8s.wireguard.peers` being configured.
+  The inventory updater will output a warning though. (`!1737 <https://gitlab.com/yaook/k8s/-/merge_requests/1737>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- Only deploy Bird ServiceMonitor when the Bird exporter is actually deployed (`!1482 <https://gitlab.com/yaook/k8s/-/merge_requests/1482>`_)
+- The ability to limit the test stage to certain nodes has been fixed (`!1690 <https://gitlab.com/yaook/k8s/-/merge_requests/1690>`_)
+- A bug has been fixed which prevented the ``install-k8s.yaml`` playbook to succeed if explicitly triggered.
+
+  It is now possible again to execute the following:
+
+  .. code:: console
+
+    ./managed-k8s/actions/apply-k8s-core.sh install-k8s.yaml
+
+  . (`!1741 <https://gitlab.com/yaook/k8s/-/merge_requests/1741>`_)
+
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- A new coding guide line has been added
+  to specify that for Ansible builtins
+  only the short names shall be used. (`!1696 <https://gitlab.com/yaook/k8s/-/merge_requests/1696>`_)
+- Dropped ``libpam-systemd`` from necessary packages for Nix on Ubuntu 24.04. (`!1704 <https://gitlab.com/yaook/k8s/-/merge_requests/1704>`_)
+- Advice about making the ``nix-users`` group effective on first setup has been improved. (`!1708 <https://gitlab.com/yaook/k8s/-/merge_requests/1708>`_)
+- A note why the binary cache must be configured in ``/etc/nix/nix.conf`` must be configured has been added. (`!1710 <https://gitlab.com/yaook/k8s/-/merge_requests/1710>`_)
+
+
+Deprecations and Removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- The legacy installation method to deploy FluxCD has been removed. (`!1673 <https://gitlab.com/yaook/k8s/-/merge_requests/1673>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- `!1676 <https://gitlab.com/yaook/k8s/-/merge_requests/1676>`_, `!1683 <https://gitlab.com/yaook/k8s/-/merge_requests/1683>`_, `!1684 <https://gitlab.com/yaook/k8s/-/merge_requests/1684>`_, `!1685 <https://gitlab.com/yaook/k8s/-/merge_requests/1685>`_, `!1686 <https://gitlab.com/yaook/k8s/-/merge_requests/1686>`_, `!1691 <https://gitlab.com/yaook/k8s/-/merge_requests/1691>`_, `!1697 <https://gitlab.com/yaook/k8s/-/merge_requests/1697>`_, `!1701 <https://gitlab.com/yaook/k8s/-/merge_requests/1701>`_, `!1702 <https://gitlab.com/yaook/k8s/-/merge_requests/1702>`_, `!1707 <https://gitlab.com/yaook/k8s/-/merge_requests/1707>`_, `!1713 <https://gitlab.com/yaook/k8s/-/merge_requests/1713>`_, `!1719 <https://gitlab.com/yaook/k8s/-/merge_requests/1719>`_, `!1721 <https://gitlab.com/yaook/k8s/-/merge_requests/1721>`_, `!1722 <https://gitlab.com/yaook/k8s/-/merge_requests/1722>`_, `!1723 <https://gitlab.com/yaook/k8s/-/merge_requests/1723>`_, `!1724 <https://gitlab.com/yaook/k8s/-/merge_requests/1724>`_, `!1727 <https://gitlab.com/yaook/k8s/-/merge_requests/1727>`_, `!1730 <https://gitlab.com/yaook/k8s/-/merge_requests/1730>`_, `!1732 <https://gitlab.com/yaook/k8s/-/merge_requests/1732>`_, `!1733 <https://gitlab.com/yaook/k8s/-/merge_requests/1733>`_, `!1734 <https://gitlab.com/yaook/k8s/-/merge_requests/1734>`_, `!1740 <https://gitlab.com/yaook/k8s/-/merge_requests/1740>`_
+
+
+Misc
+~~~~
+
+- `!1542 <https://gitlab.com/yaook/k8s/-/merge_requests/1542>`_, `!1640 <https://gitlab.com/yaook/k8s/-/merge_requests/1640>`_, `!1665 <https://gitlab.com/yaook/k8s/-/merge_requests/1665>`_, `!1705 <https://gitlab.com/yaook/k8s/-/merge_requests/1705>`_, `!1720 <https://gitlab.com/yaook/k8s/-/merge_requests/1720>`_
+
+
 v9.0.3 (2025-03-07)
 -------------------
 
