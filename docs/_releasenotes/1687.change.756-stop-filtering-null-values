@@ -1,1 +1,0 @@
-Unset options are now rendered to the inventory with an explicit ``null`` value.

@@ -1,2 +1,0 @@
-It is now allowed to have :ref:`configuration-options.yk8s.wireguard.enabled` set to ``true`` without any :ref:`configuration-options.yk8s.wireguard.peers` being configured.
-The inventory updater will output a warning though.

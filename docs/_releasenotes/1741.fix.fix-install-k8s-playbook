@@ -1,9 +1,0 @@
-A bug has been fixed which prevented the ``install-k8s.yaml`` playbook to succeed if explicitly triggered.
-
-It is now possible again to execute the following:
-
-.. code:: console
-
-  ./managed-k8s/actions/apply-k8s-core.sh install-k8s.yaml
-
-.
