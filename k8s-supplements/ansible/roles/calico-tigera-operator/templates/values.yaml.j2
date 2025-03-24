@@ -24,13 +24,11 @@ installation:
     mtu: {{ k8s_network_calico_mtu | to_json }}
 {% if ipv4_enabled %}
     nodeAddressAutodetectionV4:
-      cidrs:
-        - "{{ subnet_cidr }}"
+      canReach: "{{ subnet_cidr | ansible.utils.ipv4('network') }}"
 {% endif %}
 {% if ipv6_enabled %}
     nodeAddressAutodetectionV6:
-      cidrs:
-        - "{{ subnet_v6_cidr }}"
+      canReach: "{{ subnet_v6_cidr | ansible.utils.ipv6('network') }}"
 {% endif %}
     ipPools:
 {% if ipv4_enabled %}
