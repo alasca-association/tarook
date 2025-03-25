@@ -114,7 +114,7 @@ etcdbackup chart version to install.
 
 **Default:**::
 
-  "0.20250227.0"
+  "0.20250324.1"
 
 
 **Declared by**
