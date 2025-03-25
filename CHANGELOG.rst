@@ -19,6 +19,27 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.0.12 (2025-03-25)
+--------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- Depending on the IP version enabled, node address autodetection is explicitly set to ``{}``. (`!1755 <https://gitlab.com/yaook/k8s/-/merge_requests/1755>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- Fix IP address autodetection in Calico when used with VRRP on the hosts
+
+  If keepalived was installed on a host, Calico would sometimes incorrectly pick
+  the VRRP address as node address. While generally harmless, this could cause
+  calico-node to break during/after VRRP failovers because it would then see
+  the VRRP address on a different node all of a sudden, leading to a node IP
+  address conflict. (`!1755 <https://gitlab.com/yaook/k8s/-/merge_requests/1755>`_)
+
+
 v8.0.11 (2025-03-25)
 --------------------
 
