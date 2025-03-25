@@ -95,10 +95,14 @@ WireGuard Key
    $ mkdir ~/.wireguard/
 
    $ # Create wireguard key
-   $ (umask 0077 && wg genkey > ~/.wireguard/wg.key)
-
+   $ old_umask=$(umask)
+   $ umask 0077
+   $ wg genkey > ~/.wireguard/wg.key
+   
    $ # Generate the public key
-   $ wg pubkey < ~/.wireguard/wg.key
+   $ wg pubkey < ~/.wireguard/wg.key > ~/.wireguard/wg.pub
+   $ umask $old_umask 
+
 
 .. _initialization.create-and-initialize-cluster-repository:
 
