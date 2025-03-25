@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.1.11 (2025-03-25)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- Due to a vulnerability in the ingress-nginx admission controller, ingress-nginx has been updated. (`!1762 <https://gitlab.com/yaook/k8s/-/merge_requests/1762>`_)
+
+
 v8.1.10 (2025-02-24)
 --------------------
 
