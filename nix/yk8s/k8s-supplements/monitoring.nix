@@ -206,6 +206,15 @@ in {
                 type = types.str;
                 example = "http://remote-write-receiver:9090/api/v1/write";
               };
+              basic_auth_secret_name = mkOption {
+                description = ''
+                  Name of the secret containing htpasswd for basic authentication of Prometheus remote write.
+                  The secret must contain the following keys:
+                  - username: FOO
+                  - password: BAR
+                '';
+                type = types.nonEmptyStr;
+              };
               write_relabel_configs = mkOption {
                 description = ''
                   A list of RelabelConfigs, see

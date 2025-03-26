@@ -1,0 +1,1 @@
+The option :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.basic_auth_secret_name` has been added to documentation.
