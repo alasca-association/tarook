@@ -535,6 +535,8 @@ in {
       '';
       type = with types; attrsOf nonEmptyStr;
       default = {
+      };
+      example = {
         managed-by = "yaook-k8s";
       };
     };
