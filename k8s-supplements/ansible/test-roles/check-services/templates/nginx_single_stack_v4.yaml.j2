@@ -43,7 +43,7 @@ spec:
     resources: {}
   dnsPolicy: ClusterFirst
   restartPolicy: Never
-{% if testing_nodes is defined and testing_nodes | length > 0 %}
+{% if testing_nodes | length > 0 %}
   nodeSelector:
     kubernetes.io/hostname: {{ testing_nodes | first | to_json }}
 {% endif %}

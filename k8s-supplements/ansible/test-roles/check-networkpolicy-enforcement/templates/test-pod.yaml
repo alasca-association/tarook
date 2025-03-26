@@ -27,7 +27,7 @@ spec:
       curl -sS -o /dev/null --connect-timeout 20 {% for ip in service_pod_ips %} {{ "http://%s:8080" | format(ip) | quote }}{% endfor %}
 
   restartPolicy: Never
-{% if testing_nodes is defined and testing_nodes | length > 0 %}
+{% if testing_nodes | length > 0 %}
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
