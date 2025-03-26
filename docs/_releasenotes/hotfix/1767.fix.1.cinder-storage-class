@@ -1,1 +1,0 @@
-A bug has been fixed which caused an error when applying the Cinder StorageClass in existing clusters running on OpenStack if :ref:`configuration-options.yk8s.openstack.cinder_volume_type` was unset which it is by default.
