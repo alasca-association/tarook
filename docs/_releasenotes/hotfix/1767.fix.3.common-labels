@@ -1,0 +1,1 @@
+The default value of option :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.common_labels` has been set to an empty set again such that Prometheus collects all ServiceMonitors by default.
