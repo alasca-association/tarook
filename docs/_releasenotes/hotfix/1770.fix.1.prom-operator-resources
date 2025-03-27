@@ -1,1 +1,0 @@
-A bug has been fixed which accidentally applied the Prometheus resource requests and limits :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_resources` also to the operator :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.operator_resources`.
