@@ -11,7 +11,7 @@ metadata:
   name: echo-deployment
   namespace: "{{ check_networkpolicy_namespace }}"
 spec:
-{% if testing_nodes is defined and testing_nodes | length > 0 %}
+{% if testing_nodes | length > 0 %}
   replicas: {{ testing_nodes | length -1 | int }}
 {% else %}
   replicas: 2
@@ -25,7 +25,7 @@ spec:
         app: echo
     spec:
       affinity:
-{% if testing_nodes is defined and testing_nodes | length > 0 %}
+{% if testing_nodes | length > 0 %}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

@@ -34,7 +34,7 @@ spec:
         ports:
         - containerPort: 8080
       serviceAccountName: test
-{% if testing_nodes is defined and testing_nodes | length > 0 %}
+{% if testing_nodes | length > 0 %}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

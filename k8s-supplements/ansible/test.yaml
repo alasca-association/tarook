@@ -145,7 +145,7 @@
           labels:
             k8s.yaook.cloud/test-node: "true"
     loop: "{{ testing_nodes }}"
-    when: testing_nodes is defined
+    when: testing_nodes | length > 0
     tags:
     - test-services
     - check-services
@@ -264,7 +264,7 @@
   - name: Remove annotation of worker nodes  # noqa no-changed-when
     ansible.builtin.command: "kubectl label --overwrite nodes {{ item }} k8s.yaook.cloud/test-node-"
     loop: "{{ testing_nodes }}"
-    when: testing_nodes is defined
+    when: testing_nodes | length > 0
     tags:
     - test-services
     - check-services
