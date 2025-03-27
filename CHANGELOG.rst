@@ -19,6 +19,23 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.1.3 (2025-03-26)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- The default value of option :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.common_labels` has been set to an empty set again such that Prometheus collects all ServiceMonitors by default. (`!1767 <https://gitlab.com/yaook/k8s/-/merge_requests/1767>`_)
+- A bug has been fixed which caused an error when applying the Cinder StorageClass in existing clusters running on OpenStack if :ref:`configuration-options.yk8s.openstack.cinder_volume_type` was unset which it is by default. (`!1767 <https://gitlab.com/yaook/k8s/-/merge_requests/1767>`_)
+- If specified, :ref:`configuration-options.yk8s.testing.nodes` are now properly used in the test stage. (`!1767 <https://gitlab.com/yaook/k8s/-/merge_requests/1767>`_)
+
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- The option :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.basic_auth_secret_name` has been added to documentation. (`!1767 <https://gitlab.com/yaook/k8s/-/merge_requests/1767>`_)
+
+
 v9.1.2 (2025-03-25)
 -------------------
 
@@ -54,7 +71,7 @@ New Features
 - Add IPv6 support for Blackbox exporter (`!1482 <https://gitlab.com/yaook/k8s/-/merge_requests/1482>`_)
 - The etcd-metrics-proxy has been adjusted to work on dual stack as well as IPv6 only clusters.
 
-  For dual stack clusters which have been setup prior to release v9.0.0,
+  For dual stack clusters which have been setup prior to release v9.1.0,
   etcd-metrics can be scraped by IPv4 only as etcd must be patched to supply
   metrics on ``[::1]:2381`` as well. Out of the box it supplies metrics only on
   ``127.0.0.1`` even if Kubernetes has been set up to use dual stack.
@@ -92,13 +109,13 @@ New Features
 
   The above patch is not needed for newly initialized dual stack clusters. (`!1631 <https://gitlab.com/yaook/k8s/-/merge_requests/1631>`_)
 - Added support for Kubernetes v1.31 (`!1662 <https://gitlab.com/yaook/k8s/-/merge_requests/1662>`_)
-- update-inventory.sh now passes any arguments given to ``nix build`` (`!1715 <https://gitlab.com/yaook/k8s/-/merge_requests/1715>`_)
+- ``update-inventory.sh`` now passes any arguments given to ``nix build`` (`!1715 <https://gitlab.com/yaook/k8s/-/merge_requests/1715>`_)
 
 
 Changed functionality
 ~~~~~~~~~~~~~~~~~~~~~
 
-- A new env var ``wg_private_key_command``` has been introduced.
+- A new env var ``wg_private_key_command`` has been introduced.
   This env var lets the user specify a command that retrieves their
   WireGuard private key from a (safe) place, e.g. from a password
   safe, rather than having it stored in a plain text file or worse,

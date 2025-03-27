@@ -310,6 +310,11 @@ The key can not be "release" as that one is already used by the Prometheus helm 
 
 **Default:**::
 
+  { }
+
+
+**Example:**::
+
   {
     managed-by = "yaook-k8s";
   }
@@ -1480,6 +1485,26 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 **Default:**::
 
   [ ]
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.basic_auth_secret_name:
+
+``yk8s.k8s-service-layer.prometheus.remote_writes.*.basic_auth_secret_name``
+############################################################################
+
+Name of the secret containing htpasswd for basic authentication of Prometheus remote write.
+The secret must contain the following keys:
+- username: FOO
+- password: BAR
+
+
+**Type:**::
+
+  non-empty string
 
 
 **Declared by**

@@ -7,7 +7,7 @@ metadata:
   labels:
     k8s-app: ipsec-test-busybox
 spec:
-{% if testing_nodes is defined and testing_nodes | length > 0 %}
+{% if testing_nodes | length > 0 %}
   nodeSelector:
     kubernetes.io/hostname: {{ testing_nodes | first | to_json }}
 {% else %}
