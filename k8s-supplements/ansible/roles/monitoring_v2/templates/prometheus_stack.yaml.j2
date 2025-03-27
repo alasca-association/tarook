@@ -342,7 +342,7 @@ prometheusOperator:
   admissionWebhooks:
     patch:
       priorityClassName: "system-cluster-critical"
-  resources: {{ monitoring_prometheus_resources | to_json }}
+  resources: {{ monitoring_operator_resources | to_json }}
   serviceMonitor:
     relabelings:
       - sourceLabels: [__meta_kubernetes_pod_node_name]
