@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.1.4 (2025-03-27)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug has been fixed which accidentally applied the Prometheus resource requests and limits :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_resources` also to the operator :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.operator_resources`. (`!1770 <https://gitlab.com/yaook/k8s/-/merge_requests/1770>`_)
+
+
 v9.1.3 (2025-03-26)
 -------------------
 
