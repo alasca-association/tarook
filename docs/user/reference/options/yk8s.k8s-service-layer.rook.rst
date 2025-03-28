@@ -1811,7 +1811,7 @@ Version of rook to deploy
 
 **Default:**::
 
-  "v1.16.5"
+  "v1.16.6"
 
 
 **Declared by**
