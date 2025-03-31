@@ -106,11 +106,6 @@ provide.
    to a broken cluster; the configuration files inside the cluster are
    generated solely based on the variables listed above.
 
-.. warning::
-
-   Currently the combination of thanos and application
-   credentials :ref:`is not supported <prometheus-stack.thanos>`.
-
 Sample openrc for user name/password based authentication
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
