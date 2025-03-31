@@ -28,24 +28,35 @@ for the first time.
 Minimal Required Changes
 ------------------------
 
-When initializing your env vars from the template, you´ll need to
+When initializing your env vars from the templates, you´ll need to
 minimally (sic!) adjust the following ones:
 
--  If you’re deploying on top of OpenStack:
+1. User-specific changes to your personal environment in ``~/.config/yaook-k8s/env``:
 
-   -  :ref:`OpenStack Credentials <environmental-variables.openstack-credentials>`
-   -  SSH Configuration
+   -  If you’re deploying on top of OpenStack:
 
-      -  ``TF_VAR_keypair`` (user specific)
+      -  :ref:`SSH Configuration<environmental-variables.ssh-configuration>`
 
-   -  VPN Configuration
+         -  ``TF_VAR_keypair`` (user specific)
 
-      -  ``wg_private_key_file`` (user specific)
-      -  ``wg_user`` (user specific)
+      -  :ref:`VPN Configuration<environmental-variables.vpn-configuration>`
 
--  For potentially productive setups, setting
-   ``YAOOK_K8S_CA_*_OVERRIDE`` as described in the template is
-   **strongly encouraged**.
+         -  ``wg_private_key_command`` (user specific)
+         -  ``wg_user`` (user specific)
+
+2. Cluster-specific changes to the cluster environment ``.envrc``:
+
+   - :ref:`OpenStack Credentials <environmental-variables.openstack-credentials>`
+      if the cluster shall be run on top of OpenStack.
+
+     It is recommended to place these into a separate file ``.openrc`` which then
+     can be sourced in the ``.envrc``.
+     It is also highly recommended to not directly specify the ``OS_PASSWORD``,
+     but to dynamically retrieve it from a secure place.
+
+   -  For potentially productive setups, setting
+      ``YAOOK_K8S_CA_*_OVERRIDE`` as described in the template is
+      **strongly encouraged**.
 
 Details about these can be found below.
 
@@ -160,6 +171,8 @@ Environment Variable                    Default                                 
                                                                                                                 change the working directory for the
                                                                                                                 execution of the Terraform commands.
 ======================================= ======================================================================= ===================================================
+
+.. _environment-variables.secret-management:
 
 Secret Management
 -----------------

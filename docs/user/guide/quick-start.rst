@@ -45,7 +45,39 @@ If you are having problems, please visit our :doc:`FAQ </user/guide/faq>`.
         OpenStack cluster, e.g.
         the flavors, images, ... of the gateway, master and worker nodes.
 
-5. :ref:`Initialize the Vault secret store. <initialization.initialize-vault-for-a-development-setup>`
+5. Configure the Vault backend
+
+   .. tabs::
+
+      .. tab:: Use an existing Vault instance
+
+         :ref:`Configure access to the Vault backend <environment-variables.secret-management>`
+         by setting ``VAULT_ADDR`` in your cluster ``.envrc``.
+         More details about Vault as backend is provided at :doc:`/user/guide/vault/vault`.
+
+         After configuring the ``VAULT_ADDR``,
+         you then have to source a root token as ``VAULT_TOKEN``
+         and initialize and configure the Vault instance:
+
+         .. code:: console
+
+            $ # Create policies and initialize approles
+            $ ./managed-k8s/tools/vault/init.sh
+
+            $ # Prepare a new cluster inside Vault, putting the root CA keys inside Vault.
+            $ ./managed-k8s/tools/vault/mkcluster-root.sh
+
+      .. tab:: Use Vault development setup
+
+         An option is provided to automatically spawn and configure a local Vault instance
+         via docker for development setups.
+         Please refer to :ref:`initialization.initialize-vault-for-a-development-setup`.
+
+   After configuring the Vault backend,
+   ensure you have a token with at least policy ``orchestrator`` sourced
+   as ``VAULT_TOKEN``.
+   This is automatically the case if you are using the development setup.
+
 6. Deploy cluster by executing the :ref:`apply-all.sh <actions-references.apply-allsh>` script.
 
    .. code:: console

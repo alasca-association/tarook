@@ -146,23 +146,19 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
    1. User specific variables (if not already exists):
 
-      1. Copy the template located at
-         ``managed-k8s/templates/yaook-k8s-env.template.sh``
-         to ``~/.config/yaook-k8s/env``.
+      Copy the template located at
+      ``managed-k8s/templates/yaook-k8s-env.template.sh``
+      to ``~/.config/yaook-k8s/env``.
 
-         .. code:: console
+      .. code:: console
 
-            $ cp managed-k8s/k8s/templates/yaook-k8s-env.template.sh ~/.config/yaook-k8s/env
+         $ cp managed-k8s/templates/yaook-k8s-env.template.sh ~/.config/yaook-k8s/env
 
-      2. Make the **user specific**
-         :ref:`minimal changes <environmental-variables.minimal-required-changes>`
-         to ``~/.config/yaook-k8s/env``.
-
-   2. Make the **cluster specific**
+   2. Make the cluster- and user-specific
       :ref:`minimal changes <environmental-variables.minimal-required-changes>`
-      to ``./.envrc``.
+      to ``./.envrc`` and ``~/.config/yaook-k8s/env``.
 
-3. Make sure they have taken effect by running ``direnv allow``.
+   3. Make sure they have taken effect by running ``direnv allow``.
 
 .. _initialization.initialize-vault-for-a-development-setup:
 
