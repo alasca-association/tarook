@@ -18,7 +18,7 @@ fi
 # now vault should be running, but we cannot fully rely on it (hence some error
 # handling down below)
 
-VAULT_URL_ADDR="https://127.0.0.1"
+VAULT_URL_ADDR="${VAULT_URL_ADDR:-https://127.0.0.1}"
 # shellcheck disable=SC2154
 VAULT_CACERT="$vault_dir/tls/ca/vaultca.crt"
 export VAULT_CACERT
