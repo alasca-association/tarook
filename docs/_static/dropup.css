@@ -24,14 +24,17 @@
  color: var(--color-foreground-secondary);
  min-width: 160px;
  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
- z-index: 1;
+ z-index: 30;
  text-align: left;
  padding: 12px 12px;
  line-height: 30px;
 
  left: 50% !important;
  right: auto !important;
- transform: translate(-50%, 0) !important;
+ transform: translateX(-50%) !important;
+ overflow-y: scroll;
+ max-height: calc(100vh - 50px - 40px);
+ min-height: 30px;  /* equal to line-height */
 }
 
 /* Links inside the dropup */
