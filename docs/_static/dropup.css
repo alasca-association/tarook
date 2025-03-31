@@ -1,3 +1,11 @@
+.sidebar-sticky {
+ overflow-y: scroll;
+}
+
+.sidebar-scroll {
+ /* prevent full collapse making contents impossible to reach */
+ min-height: 50px;
+}
 
 /* Dropup Button */
 .dropbtn {
