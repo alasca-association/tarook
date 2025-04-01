@@ -1,0 +1,4 @@
+Running the release migration script
+now inserts and updates the LCM's gitignore rules
+in the cluster repo's gitignore file.
+You may override them if needed.
