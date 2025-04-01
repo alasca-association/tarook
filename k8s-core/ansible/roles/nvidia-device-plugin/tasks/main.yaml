@@ -3,15 +3,15 @@
   delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   block:
-  - name: "{{ k8s_nvidia_device_plugin_install | ternary('Create', 'Delete') }} namespace"
+  - name: "{{ nvidia_device_plugin_install | ternary('Create', 'Delete') }} namespace"
     kubernetes.core.k8s:
       apply: true
       definition:
         apiVersion: v1
         kind: Namespace
         metadata:
-          name: "{{ k8s_nvidia_device_plugin_namespace }}"
-      state: "{{ k8s_nvidia_device_plugin_install | ternary('present', 'absent') }}"
+          name: "{{ nvidia_device_plugin_helm_release_namespace }}"
+      state: "{{ nvidia_device_plugin_install | ternary('present', 'absent') }}"
       validate:
         fail_on_error: true
         strict: true
@@ -21,12 +21,13 @@
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
 
-  - name: "{{ k8s_nvidia_device_plugin_install | ternary('Install', 'Uninstall') }} nvidia-device-plugin"
+  - name: "{{ nvidia_device_plugin_install | ternary('Install', 'Uninstall') }} nvidia-device-plugin"
     kubernetes.core.helm:
-      chart_repo_url: "{{ k8s_nvidia_device_plugin_helm_repo_url }}"
-      chart_ref: nvidia-device-plugin
-      release_namespace: "{{ k8s_nvidia_device_plugin_namespace }}"
-      release_name: nvdp
-      release_state: "{{ k8s_nvidia_device_plugin_install | ternary('present', 'absent') }}"
-      values: "{{ lookup('file', 'nvdp_values.yaml') | from_yaml }}"
+      chart_repo_url: "{{ nvidia_device_plugin_helm_chart_repo_url }}"
+      chart_ref: "{{ nvidia_device_plugin_helm_chart_ref }}"
+      chart_version: "{{ nvidia_device_plugin_helm_chart_version }}"
+      release_namespace: "{{ nvidia_device_plugin_helm_release_namespace }}"
+      release_name: "{{ nvidia_device_plugin_helm_release_name }}"
+      release_state: "{{ nvidia_device_plugin_install | ternary('present', 'absent') }}"
+      values: "{{ nvidia_device_plugin_helm_values }}"
 ...
