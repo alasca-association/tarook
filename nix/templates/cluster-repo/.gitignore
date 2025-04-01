@@ -6,3 +6,4 @@ etc/manifests/
 .envrc.local
 /.direnv
 inventory
+result
