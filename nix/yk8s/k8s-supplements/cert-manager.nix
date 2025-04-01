@@ -43,7 +43,7 @@ in {
     };
     chart_ref = mkOption {
       type = types.nonEmptyStr;
-      default = "jetstack/cert-manager";
+      default = "cert-manager";
     };
     chart_version = mkOption {
       type = types.nonEmptyStr;

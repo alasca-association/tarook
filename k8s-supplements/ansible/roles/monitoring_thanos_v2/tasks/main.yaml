@@ -92,27 +92,19 @@
   tags:
   - thanos
 
-- name: "{{ monitoring_use_thanos | ternary('Add', 'Remove') }} bitnami Repo"
-  kubernetes.core.helm_repository:
-    name: bitnami
-    repo_url: "{{ monitoring_thanos_helm_repo_url }}"
-    repo_state: "{{ monitoring_use_thanos | ternary('present', 'absent') }}"
-    force_update: true
-  tags:
-  - thanos
-
+# For helm charts of Bitnami the OCI format must be used
+# https://community.broadcom.com/tanzu/blogs/carlos-rodriguez-hernandez/2025/01/14/bitnami-helm-charts-moving-to-oci
 - name: "{{ monitoring_use_thanos | ternary('I', 'Uni') }}nstall Thanos helm chart"
   vars:
     scheduling_key: "{{ monitoring_scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_ref: "{{ monitoring_thanos_chart_ref }}"
+    chart_ref: "{{ monitoring_thanos_helm_oci_url }}/{{ monitoring_thanos_chart_ref }}"
     chart_version: "{{ monitoring_thanos_chart_version }}"
     release_namespace: "{{ monitoring_namespace }}"
     release_name: "{{ monitoring_thanos_release_name }}"
     release_state: "{{ monitoring_use_thanos | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'thanos_values.yaml.j2') | from_yaml }}"
     wait: true
-    update_repo_cache: true
   tags:
   - thanos
 ...

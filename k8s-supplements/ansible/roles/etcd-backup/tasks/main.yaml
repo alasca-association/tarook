@@ -95,15 +95,10 @@
         status: enabled
         state: present
 
-- name: "{{ etcd_backup_enabled | ternary('Add', 'Remove') }} etcd-backup Repo"
-  kubernetes.core.helm_repository:
-    name: yaook.cloud
-    repo_url: "{{ etcd_backup_helm_repo_url }}"
-    repo_state: "{{ etcd_backup_enabled | ternary('present', 'absent') }}"
-
 - name: Deploy yaook operator etcd backup chart
   kubernetes.core.helm:
-    chart_ref: yaook.cloud/etcdbackup
+    chart_repo_url: "{{ etcd_backup_helm_repo_url }}"
+    chart_ref: etcdbackup
     chart_version: "{{ etcd_backup_chart_version }}"
     release_namespace: "{{ etcd_backup_namespace }}"
     release_name: "{{ etcd_backup_name }}"

@@ -17,16 +17,11 @@
   retries: "{{ error_retries }}"
   delay: "{{ error_delay }}"
 
-- name: "{{ k8s_ingress_install | ternary('Add', 'Remove') }} ingress-nginx Repo"
-  kubernetes.core.helm_repository:
-    name: ingress-nginx
-    repo_url: "{{ k8s_ingress_helm_repo_url }}"
-    repo_state: "{{ k8s_ingress_install | ternary('present', 'absent') }}"
-
 - name: Install NGINX ingress
   vars:
     scheduling_key: "{{ k8s_ingress_scheduling_key | default(None) }}"
   kubernetes.core.helm:
+    chart_repo_url: "{{ k8s_ingress_helm_repo_url }}"
     chart_ref: "{{ k8s_ingress_chart_ref }}"
     release_namespace: "{{ k8s_ingress_namespace }}"
     release_name: "{{ k8s_ingress_release_name }}"

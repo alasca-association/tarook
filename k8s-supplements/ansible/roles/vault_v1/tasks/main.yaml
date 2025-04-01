@@ -23,27 +23,22 @@
   when: yaook_vault_ingress
   import_tasks: external_pki.yaml
 
-- name: "{{ yaook_vault_enabled | ternary('Add', 'Remove') }} Hashicorp vault Repo"
-  kubernetes.core.helm_repository:
-    name: hashicorp
-    repo_url: "{{ yaook_vault_helm_repo_url }}"
-    repo_state: "{{ yaook_vault_enabled | ternary('present', 'absent') }}"
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ error_retries }}"
-  delay: "{{ error_delay }}"
-
 - name: Deploy Vault
   vars:
     scheduling_key: "{{ yaook_vault_scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_ref: hashicorp/vault
+    chart_repo_url: "{{ yaook_vault_helm_repo_url }}"
+    chart_ref: vault
     chart_version: "{{ yaook_vault_chart_version }}"
     release_namespace: "{{ yaook_vault_namespace }}"
     release_name: vault
     release_state: present
     update_repo_cache: true
     values: "{{ lookup('template', 'vault.yaml.j2') | from_yaml }}"
+  register: task_result
+  until: task_result is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Find vault pods
   kubernetes.core.k8s_info:

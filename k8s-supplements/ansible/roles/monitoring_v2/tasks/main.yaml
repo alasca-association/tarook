@@ -89,17 +89,12 @@
     when: not prom_stack_conf_version is version(prom_stack_depl_version, operator='eq')
     include_tasks: upgrade_kube_prom_stack.yaml
 
-- name: "{{ monitoring_install | ternary('Add', 'Remove') }} prometheus-community Repo"
-  kubernetes.core.helm_repository:
-    name: prometheus-community
-    repo_url: "{{ monitoring_prometheus_helm_repo_url }}"
-    repo_state: "{{ monitoring_install | ternary('present', 'absent') }}"
-
 # Install the prometheus stack
 - name: "{{ monitoring_install | ternary('I', 'Uni') }}nstall KSL monitoring stack"
   vars:
     scheduling_key: "{{ monitoring_scheduling_key | default(None) }}"
   kubernetes.core.helm:
+    chart_repo_url: "{{ monitoring_prometheus_helm_repo_url }}"
     chart_ref: "{{ monitoring_prometheus_stack_chart_name }}"
     chart_version: "{{ monitoring_prometheus_stack_version }}"
     release_namespace: "{{ monitoring_namespace }}"
@@ -107,7 +102,6 @@
     release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'prometheus_stack.yaml.j2') | from_yaml }}"
     wait: false
-    update_repo_cache: true
 
 # Install prometheus-adapter, a metrics-server implementation
 # It enables commands like `k top nodes`
@@ -115,7 +109,8 @@
   vars:
     scheduling_key: "{{ monitoring_scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_ref: prometheus-community/prometheus-adapter
+    chart_repo_url: "{{ monitoring_prometheus_helm_repo_url }}"
+    chart_ref: prometheus-adapter
     chart_version: "{{ monitoring_prometheus_adapter_version }}"
     release_namespace: "{{ monitoring_namespace }}"
     release_name: "{{ monitoring_prometheus_adapter_release_name }}"
@@ -148,7 +143,8 @@
   vars:
     scheduling_key: "{{ monitoring_scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_ref: prometheus-community/prometheus-blackbox-exporter
+    chart_repo_url: "{{ monitoring_prometheus_helm_repo_url }}"
+    chart_ref: prometheus-blackbox-exporter
     chart_version: "{{ monitoring_blackbox_version }}"
     release_namespace: "{{ monitoring_namespace }}"
     release_name: "kms-blackbox"
