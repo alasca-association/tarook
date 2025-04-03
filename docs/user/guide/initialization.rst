@@ -169,21 +169,31 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 Initialize Vault for a Development Setup
 ----------------------------------------
 
-As of Summer 2023, YAOOK/K8s exclusively supports `HashiCorp Vault <https://vaultproject.io>`__
+YAOOK/K8s exclusively supports `HashiCorp Vault <https://vaultproject.io>`__
 as backend for storing secrets.
-Previously, `pass <https://www.passwordstore.org/>`__ was used.
 For details on the use of Vault in YAOOK/K8s, please see the
 :doc:`Use of HashiCorp Vault in YAOOK/K8s </developer/explanation/vault>` section.
 
 To initialize a **local** Vault instance for **development purposes**, do the following:
 
-1. Ensure that sourcing (comment it in) ``vault_env.sh`` is part of your ``.envrc``.
+.. note::
+
+   You must have setup a container runtime like e.g. ``docker`` or ``podman``!
+
+1. Ensure that sourcing (comment it in) ``vault_env.sh`` is part of your cluster ``.envrc``.
 
    .. code:: console
 
       $ sed -i '/#source \"\$(pwd)\/managed-k8s\/actions\/vault_env.sh\"/s/^#//g' .envrc
 
-2. Ensure that setting ``USE_VAULT_IN_DOCKER`` to ``true`` is part of your ``.envrc``.
+2. Enable the :ref:`development environment<environmental-variables.miscellaneous>`:
+
+   .. code:: console
+
+      $ sed -i '/#[[:blank:]]*export YAOOK_K8S_DEVSHELL=/s/^#//g' ~/.config/yaook-k8s/env
+
+3. Ensure that setting ``USE_VAULT_IN_DOCKER`` to ``true`` is part of your cluster ``.envrc``.
+   This will activate the Vault development setup.
 
    .. code:: console
 
@@ -196,13 +206,13 @@ To initialize a **local** Vault instance for **development purposes**, do the fo
       additionally set ``VAULT_IN_DOCKER_USE_ROOTLESS=true``
       in ``~/.config/yaook-k8s/env``
 
-3. Don't forget to allow your changes:
+4. Don't forget to allow your changes:
 
    .. code:: console
 
       $ direnv allow .envrc
 
-4. Start the docker container:
+5. Start the docker container:
 
    .. code:: console
 
@@ -212,13 +222,13 @@ To initialize a **local** Vault instance for **development purposes**, do the fo
       This is not suited for productive deployments or production use,
       for many reasons!
 
-5. Run the init command for Vault
+6. Run the init command for Vault
 
    .. code:: console
 
       $  ./managed-k8s/tools/vault/init.sh
 
-6. If you are creating a new cluster, run:
+7. If you are creating a new cluster, run:
 
    .. code:: console
 
