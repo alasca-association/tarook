@@ -3,6 +3,7 @@ locals {
     for idx in range(var.gateway_count) :
       "${local.nodes_prefix}${var.gateway_defaults.common_name}${idx}" => {
         image                    = var.gateway_defaults.image
+        default_login            = var.gateway_defaults.default_login
         flavor                   = var.gateway_defaults.flavor
         az                       = var.spread_gateways_across_azs ? tolist(var.azs)[idx % length(var.azs)] : null
         volume_name              = "${local.nodes_prefix}${var.gateway_defaults.common_name}${idx}-volume"

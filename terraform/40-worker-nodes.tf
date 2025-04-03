@@ -4,6 +4,7 @@ locals {
     for name, values in var.nodes :
         "${local.nodes_prefix}${name}" => {
           image                    = coalesce(values.image, var.worker_defaults.image)
+          default_login            = coalesce(values.default_login, var.worker_defaults.default_login)
           flavor                   = coalesce(values.flavor, var.worker_defaults.flavor)
           az                       = values.az  # default: null
           volume_name              = "${var.cluster_name}-worker-volume-${name}"

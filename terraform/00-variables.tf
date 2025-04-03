@@ -93,6 +93,7 @@ variable "gateway_defaults" {
   type = object({              # --- template spec ---
     common_name                = string
     image                      = string
+    default_login              = string
     flavor                     = string
     root_disk_size             = number
     root_disk_volume_type      = string
@@ -102,6 +103,7 @@ variable "gateway_defaults" {
 variable "master_defaults" {
   type = object({              # --- template spec ---
     image                      = string
+    default_login              = string
     flavor                     = string
     root_disk_size             = number
     root_disk_volume_type      = string
@@ -111,6 +113,7 @@ variable "master_defaults" {
 variable "worker_defaults" {
   type = object({              # --- template spec ---
     image                      = string
+    default_login              = string
     flavor                     = string
     root_disk_size             = number
     root_disk_volume_type      = string
@@ -124,6 +127,7 @@ variable "nodes" {
     object({
       role                     = string            # one of: 'master', 'worker'
       image                    = optional(string)
+      default_login            = optional(string)
       flavor                   = optional(string)
       az                       = optional(string)
       root_disk_size           = optional(number)

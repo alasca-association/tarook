@@ -20,6 +20,9 @@
     image = mkOption {
       type = types.nonEmptyStr;
     };
+    default_login = mkOption {
+      type = with types; nullOr nonEmptyStr;
+    };
     flavor = mkOption {
       type = types.nonEmptyStr;
     };
@@ -288,6 +291,10 @@ in {
             type = types.strMatching "master|worker";
           };
           image = mkOption {
+            type = with types; nullOr nonEmptyStr;
+            default = null;
+          };
+          default_login = mkOption {
             type = with types; nullOr nonEmptyStr;
             default = null;
           };

@@ -22,50 +22,18 @@
   tags:
   - detect-user
 
-- name: test logins  # noqa risky-shell-pipe
-  delegate_to: "{{ groups['orchestrator'] | first }}"
-  become: false
-  # this is "slightly" ugly, but should take into account many possible ways
-  # to tweak how ansible does things
-  ansible.builtin.shell: |
-    ssh \
-      -o ConnectTimeout=10 \
-      -o PasswordAuthentication=no \
-      {% if ansible_ssh_private_key_file | default(False) %}-i {{ ansible_ssh_private_key_file | quote }}{% endif %} \
-      {% if ansible_port | default(False) %}-p {{ ansible_port }}{% endif %} \
-      -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile={{ ssh_known_hosts_file }} \
-      {{ ansible_ssh_extra_args | default("") }} \
-      {{ item | quote }}@{{ ansible_host | default(inventory_hostname) | quote }} \
-      true </dev/null
-  loop: "{{ detect_user_attempts }}"
-  failed_when: false
-  changed_when: false
-  register: login_results
-  check_mode: false
-  tags:
-  - detect-user
-  - always
-
-- name: login results
-  vars:
-    valid_login_info: "{{ login_results.results | reject('failed') | reject('unreachable') | selectattr('rc', 'equalto', 0) | first | default({}) }}"
-    valid_user: "{{ valid_login_info.item | default(False) }}"
-  ansible.builtin.set_fact:
-    ansible_user: "{{ valid_user }}"
-    cacheable: true
-  check_mode: false
-  tags:
-  - detect-user
-  - always
-
-- name: fail if login detection did not work
-  ansible.builtin.fail:
-    msg: "failed to detect a valid login! tried: {{ detect_user_attempts }}"
-  when: "not ansible_user"
-  check_mode: false
-  tags:
-  - detect-user
-  - always
+- block:
+  - include_tasks:
+      file: login.yaml
+    vars:
+      username: "{{ lookup('env', 'MANAGED_K8S_SSH_USER') or ansible_user | default(false) or lookup('env', 'USER') }}"
+      error_retries: "{{ k8s_error_retries }}"
+      error_delay: "{{ k8s_error_delay }}"
+  rescue:
+  - include_tasks:
+      file: login.yaml
+    vars:
+      username: hostvars[host]['default_login']
 
 - name: show login info
   ansible.builtin.debug:
