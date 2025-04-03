@@ -28,45 +28,6 @@
 - name: Obtain kubeconfigs
   include_tasks: obtain-kubeconfigs.yaml
 
-# Drop this block when deprecating support for release v8
-# It is only needed to migrate existing clusters for !1450
-- name: Validate if Kubernetes is installed
-  when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
-  become: true
-  block:
-  - name: Check if node already joined Kubernetes
-    delegate_to: "{{ groups['orchestrator'] | first }}"
-    become: false
-    kubernetes.core.k8s_info:
-      api_version: v1
-      kind: Node
-      name: "{{ inventory_hostname }}"
-    register: node_info
-    until: node_info is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
-    failed_when: node_info.resources | length == 0
-
-  - name: Set static fact that kubernetes is initialized  # noqa no-handler
-    block:
-    - name: Set static fact that kubernetes is initialized
-      vars:
-        content:
-          k8s_install_status: "initialized"
-      copy:
-        dest: /etc/ansible/facts.d/kubernetes-initialized.fact
-        owner: root
-        group: root
-        mode: 0644
-        content: "{{ content | to_json }}"
-
-    - name: Update cached facts
-      setup:
-  rescue:
-  - name: Inform that node did not join, yet
-    ansible.builtin.debug:
-      msg: "Node did not join Kubernetes, yet"
-
 - name: Join the k8s cluster steps
   when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
   become: true
