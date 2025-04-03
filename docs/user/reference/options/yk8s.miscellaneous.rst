@@ -265,31 +265,3 @@ If you leave the value commented out you're fine and the system's default will b
 **Declared by**
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 
-
-.. _configuration-options.yk8s.miscellaneous.wireguard_on_workers:
-
-``yk8s.miscellaneous.wireguard_on_workers``
-###########################################
-
-Whether to enable to install wireguard on all workers (without setting up any server-side stuff)
-so that it can be used from within Pods.
-.
-
-**Type:**::
-
-  boolean
-
-
-**Default:**::
-
-  false
-
-
-**Example:**::
-
-  true
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
-

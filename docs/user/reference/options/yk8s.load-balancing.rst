@@ -157,28 +157,6 @@ Whether to enable OpenStack-based load-balancing.
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
 
 
-.. _configuration-options.yk8s.load-balancing.priorities:
-
-``yk8s.load-balancing.priorities``
-##################################
-
-Deprecated
-
-
-**Type:**::
-
-  list of string
-
-
-**Default:**::
-
-  [ ]
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
-
-
 .. _configuration-options.yk8s.load-balancing.vrrp_priorities:
 
 ``yk8s.load-balancing.vrrp_priorities``
