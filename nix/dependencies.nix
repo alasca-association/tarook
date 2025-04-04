@@ -35,7 +35,6 @@
           moreutils
           openssh
           openssl
-          openstackclient-full
           pre-commit
           inputs'.nixpkgs-terraform157.legacyPackages.terraform
           util-linux # for uuidgen
@@ -49,6 +48,7 @@
             openshift
             loguru
             packaging
+            python-openstackclient
             jsonschema
             hvac
             boto3
