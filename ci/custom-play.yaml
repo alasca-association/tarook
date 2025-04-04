@@ -2,6 +2,8 @@
 - name: Restart everything
   hosts: orchestrator
   gather_facts: false
+  vars_files:
+  - k8s-core-vars/retries.yaml
   tasks:
   - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻
     run_once: true
@@ -25,6 +27,11 @@
         - "{{ item[1] }}"
         - --namespace
         - "{{ item[0].metadata.name }}"
+      register: rollout_restart
+      until: rollout_restart.rc == 0
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
   - name: Pause, let things settle for 3m
     pause:
       minutes: 3
