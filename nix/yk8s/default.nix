@@ -43,6 +43,7 @@
           ./custom.nix
           ./nvidia.nix
           ./miscellaneous.nix
+          ./containerd.nix
           ./k8s-supplements
           (mkRemovedSectionModule "passwordstore" "Passwordstore has been replaced by Vault.")
           (mkRemovedSectionModule "cah-users" "")

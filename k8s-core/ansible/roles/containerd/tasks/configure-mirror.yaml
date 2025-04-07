@@ -1,0 +1,20 @@
+---
+- name: Create mirror configuration
+  become: true
+  block:
+  - name: "Create the host namespace directory for {{ item.registry }}"
+    ansible.builtin.file:
+      path: "/etc/containerd/certs.d/{{ item.registry }}"
+      state: directory
+      mode: 0755
+      owner: root
+      group: root
+
+  - name: "Create the host config file for {{ item.registry }}"
+    ansible.builtin.template:
+      src: hosts.toml.j2
+      dest: "/etc/containerd/certs.d/{{ item.registry }}/hosts.toml"
+      mode: 0644
+      owner: root
+      group: root
+...
