@@ -1,4 +1,3 @@
 A part of documentation specific to the config options in ``yk8s.terraform``
 has been moved back from ``yk8s.openstack``.
-Also some remaining TOML specific vocabular has been replaced
-in the documentation for ``yk8s.openstack``.
+The documentation of both config sections have received minor corrections.

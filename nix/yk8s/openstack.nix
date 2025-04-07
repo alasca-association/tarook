@@ -127,13 +127,13 @@ in {
 
           gateway_defaults.common_name = "gateway-";
 
-          nodes.master-X.role = "master";
-          nodes.worker-A.role = "worker";
+          nodes.master-x.role = "master";
+          nodes.worker-a.role = "worker";
 
           # yields the following node names:
           # - yk8s-gateway-0
-          # - yk8s-master-X
-          # - yk8s-worker-A
+          # - yk8s-master-x
+          # - yk8s-worker-a
     '';
 
     # TODO replace on_openstack with openstack.enabled
