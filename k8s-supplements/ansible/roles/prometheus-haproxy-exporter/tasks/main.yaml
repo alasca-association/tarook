@@ -22,7 +22,7 @@
     - name: Configure the exporter
       become: true
       ansible.builtin.template:
-        src: prometheus-haproxy-exporter.default
+        src: prometheus-haproxy-exporter.default.j2
         dest: /etc/default/prometheus-haproxy-exporter
         owner: root
         group: root
@@ -56,7 +56,7 @@
 
     - name: Store version info
       ansible.builtin.template:
-        src: archive_id_tag
+        src: archive_id_tag.j2
         dest: /etc/prometheus-haproxy-exporter/version
         owner: root
         group: root
@@ -107,7 +107,7 @@
 
         - name: Create prometheus-haproxy-exporter service file
           ansible.builtin.template:
-            src: prometheus-haproxy-exporter.service
+            src: prometheus-haproxy-exporter.service.j2
             dest: /usr/lib/systemd/system/prometheus-haproxy-exporter.service
             mode: 0640
           register: phe_service

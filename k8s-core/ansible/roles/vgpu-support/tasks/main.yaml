@@ -130,8 +130,8 @@
 
     - name: Create udev rule for vfio devices
       become: true
-      ansible.builtin.template:
-        src: 50-vfio.rules.j2
+      ansible.builtin.copy:
+        src: 50-vfio.rules
         dest: /etc/udev/rules.d/50-vfio.rules
         owner: root
         group: root
@@ -154,16 +154,16 @@
       ansible.builtin.command: "/usr/lib/nvidia/sriov-manage -e ALL"
 
     - name: install nvidia-sriov-manage systemd unit file
-      ansible.builtin.template:
-        src: nvidia-sriov-manage.service.j2
+      ansible.builtin.copy:
+        src: nvidia-sriov-manage.service
         dest: /etc/systemd/system/nvidia-sriov-manage.service
         owner: root
         group: root
         mode: 0644
 
     - name: create sriov-loop script (used by nvidia-sriov-manage systemd unit)
-      ansible.builtin.template:
-        src: nvidia-sriov-startup-loop.sh.j2
+      ansible.builtin.copy:
+        src: nvidia-sriov-startup-loop.sh
         dest: /usr/local/bin/nvidia-sriov-startup-loop.sh
         owner: root
         group: root
