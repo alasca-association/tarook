@@ -58,7 +58,7 @@ Consider the following example:
 The name of an OpenStack node is composed from the following parts:
 
 - for master/worker nodes:
-  ``infra.cluster_name`` ``<the nodes' table name>``
+  ``infra.cluster_name`` ``<the nodes' key in openstack.nodes>``
 
 - for gateway nodes:
   ``infra.cluster_name`` ``openstack.gateway_defaults.common_name`` ``<numeric-index>``
