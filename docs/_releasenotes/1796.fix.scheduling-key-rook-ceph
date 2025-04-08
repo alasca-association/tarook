@@ -1,0 +1,1 @@
+We fixed a bug where the rook_scheduling_key wasn't properly used for nodeAffinity.
