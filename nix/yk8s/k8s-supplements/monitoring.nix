@@ -369,7 +369,7 @@ in {
       '';
       type = types.nonEmptyStr;
       # renovate: datasource=helm depName=thanos registryUrl=https://charts.bitnami.com/bitnami
-      default = "15.14.1";
+      default = "16.0.2";
     };
 
     thanos_storage_class = mkOption {
