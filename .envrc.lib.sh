@@ -107,3 +107,17 @@ use_locale_archive_if_not_set() {
     fi
   fi
 }
+
+layout_yaook-k8s() {
+  flake_dir="$(realpath "${1:-managed-k8s}")"
+  user_env="$HOME/.config/yaook-k8s/env"
+  if [ -e "$user_env" ]; then
+    source_env "$user_env"
+  else
+    echo "WARNING: $user_env was not found. It is likely that user-specific variables are not set."
+    echo "See https://yaook.gitlab.io/k8s/devel/user/reference/environmental-variables.html#minimal-required-changes"
+  fi
+  if [ -e .envrc.local ]; then source_env .envrc.local; fi
+  use flake_if_nix "$flake_dir"
+  use locale_archive_if_not_set "$flake_dir"
+}
