@@ -7,7 +7,7 @@
   cfg = config.yk8s.node-scheduling;
   inherit (lib) mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  nodeNames = map (n: "${config.yk8s.infra.cluster_name}-${n}") (builtins.attrNames config.yk8s.terraform.nodes);
+  nodeNames = map (n: "${config.yk8s.infra.cluster_name}-${n}") (builtins.attrNames config.yk8s.openstack.nodes);
 in {
   options.yk8s.node-scheduling = mkTopSection {
     _docs.preface = ''
@@ -48,7 +48,7 @@ in {
         builtins.seq (builtins.all (e:
           if config.yk8s.terraform.enabled -> builtins.elem e nodeNames
           then true
-          else throw "(node-scheduling) Label defined for ${e}, but node not found in Terraform config") (builtins.attrNames v))
+          else throw "(node-scheduling) Label defined for ${e}, but node not found in Openstack node config") (builtins.attrNames v))
         v;
     };
     taints = mkOption {
@@ -66,7 +66,7 @@ in {
         builtins.seq (builtins.all (e:
           if config.yk8s.terraform.enabled -> builtins.elem e nodeNames
           then true
-          else throw "(node-scheduling) Taint defined for ${e}, but node not found in Terraform config") (builtins.attrNames v))
+          else throw "(node-scheduling) Taint defined for ${e}, but node not found in Openstack node config") (builtins.attrNames v))
         v;
     };
   };

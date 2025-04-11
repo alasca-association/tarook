@@ -56,12 +56,12 @@ Adjust your config to meet the following statements:
    - these variables are used across all stages
      to adjust setups and resources
 
--  specify ``terraform.subnet_v6_cidr``
+-  specify ``infra.subnet_v6_cidr``
 
    -  this is the IPv6 subnet that will be created via Terraform
    -  e.g.:
 
-      -  ``terraform.subnet_v6_cidr = "fd00::/120"``
+      -  ``infra.subnet_v6_cidr = "fd00::/120"``
 
 -  specify ``wireguard.wg_ipv6_cidr`` as well as ``wireguard.wg_ipv6_gw``
 

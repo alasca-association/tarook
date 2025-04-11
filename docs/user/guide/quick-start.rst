@@ -40,7 +40,7 @@ If you are having problems, please visit our :doc:`FAQ </user/guide/faq>`.
          ``ch-k8s-lbaas.shared_secret`` secret.
 
       - Check
-        :ref:`configuration-options.yk8s.terraform`
+        :ref:`configuration-options.yk8s.openstack`
         for options that can be set, you need to change some of them to fit to your
         OpenStack cluster, e.g.
         the flavors, images, ... of the gateway, master and worker nodes.
