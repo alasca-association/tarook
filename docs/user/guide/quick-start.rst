@@ -33,11 +33,13 @@ If you are having problems, please visit our :doc:`FAQ </user/guide/faq>`.
          :ref:`wireguard peer configuration <configuration-options.yk8s.wireguard.peers>`.
 
       -  As your cluster runs on top of OpenStack, you can enable the
-         ``ch-k8s-lbaas`` :ref:`loadbalancing <configuration-options.yk8s.ch-k8s-lbaas>`
+         loadbalancing with ``ch-k8s-lbaas``
          to allow the creation of Kubernetes services of type
          `LoadBalancer <https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer>`_.
-         If you want to do so, you also need to create the
-         ``ch-k8s-lbaas.shared_secret`` secret.
+         If you want to do so,
+         set :ref:`configuration-options.yk8s.ch-k8s-lbaas`
+         in your configuration,
+         including a :ref:`shared secret <configuration-options.yk8s.ch-k8s-lbaas.shared_secret>`.
 
       - Check
         :ref:`configuration-options.yk8s.openstack`

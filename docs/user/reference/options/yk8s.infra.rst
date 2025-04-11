@@ -28,7 +28,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 ``yk8s.infra.hosts_file``
 #########################
 
-A custom hosts file in case openstack is disabled
+A custom hosts file in case :ref:`configuration-options.yk8s.openstack.enabled` is set to ``false``
 
 
 **Type:**::

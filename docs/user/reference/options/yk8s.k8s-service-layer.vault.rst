@@ -216,7 +216,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 ``yk8s.k8s-service-layer.vault.external_ingress_issuer_name``
 #############################################################
 
-If `ingress=True` and `dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use
+If :ref:`configuration-options.yk8s.k8s-service-layer.vault.ingress` is set to ``true`` and :ref:`configuration-options.yk8s.k8s-service-layer.vault.dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use
 for your ACME service.
 
 
@@ -397,7 +397,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 ``yk8s.k8s-service-layer.vault.s3_config_file``
 ###############################################
 
-Credentials to access an S3 bucket to which the backups will be written. Required if `enable_backups = true`.
+Credentials to access an S3 bucket to which the backups will be written. Required if :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable_backups` is set to ``true``
 You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
 
 

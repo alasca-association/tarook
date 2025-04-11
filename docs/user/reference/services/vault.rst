@@ -103,8 +103,10 @@ endpoint you can find the certificate in the secret
 you. Additionally, one can define external (or public) endpoints. Place
 the DNS names in the ``dnsnames`` list and ensure that the records and
 your ingress controller are properly configured. Furthermore you have to
-specify a ``(Cluster)Issuer`` in ``external_ingress_issuer_name`` and,
-if required, change the value of ``external_ingress_issuer_kind``.
+specify a ``(Cluster)Issuer`` in
+:ref:`configuration-options.yk8s.k8s-service-layer.vault.external_ingress_issuer_name`
+and, if required, change the value of
+:ref:`configuration-options.yk8s.k8s-service-layer.vault.external_ingress_issuer_kind`.
 
 Note: We cannot assume the existence of a publically available vault
 endpoint but must be able to interact with the vault cluster from the

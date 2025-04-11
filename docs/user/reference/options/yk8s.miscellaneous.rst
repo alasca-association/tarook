@@ -158,7 +158,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 #################################
 
 Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or
-internal docker repositories can be added to the no_proxy config entry
+internal docker repositories can be added to the :ref:`configuration-options.yk8s.miscellaneous.no_proxy` config entry
 Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
 will be set automagically and do not have to set manually here.
 
@@ -188,7 +188,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 ##################################
 
 Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or
-internal docker repositories can be added to the no_proxy config entry
+internal docker repositories can be added to the :ref:`configuration-options.yk8s.miscellaneous.no_proxy` config entry
 Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
 will be set automagically and do not have to set manually here.
 
@@ -218,7 +218,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 ###############################
 
 Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or
-internal docker repositories can be added to the no_proxy config entry
+internal docker repositories can be added to the :ref:`configuration-options.yk8s.miscellaneous.no_proxy` config entry
 Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
 will be set automagically and do not have to set manually here.
 

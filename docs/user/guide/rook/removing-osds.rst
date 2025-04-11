@@ -207,7 +207,8 @@ negative. In addition, the procedure was repeated three times.
 
 #. Reduce the number of OSDs in the Cluster CRD. Update the
    config of the cluster by decreasing
-   ``k8s-service-layer.rook.nosds`` by one.
+   :ref:`configuration-options.yk8s.k8s-service-layer.rook.nodes`
+   by one.
 
 #. Run `apply-k8s-supplements.sh` (possibly with ``AFLAGS="-t rook --diff"`` to only apply rook changes).
 

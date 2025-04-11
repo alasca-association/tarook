@@ -10,8 +10,8 @@ soon :)
   .. note::
 
       To enable cert-manager,
-      ``k8s-service-layer.cert-manager.enabled`` needs to be set to
-      ``true``.
+      :ref:`configuration-options.yk8s.k8s-service-layer.cert-manager.enabled`
+      needs to be set to ``true``.
 
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.chart_ref:
 

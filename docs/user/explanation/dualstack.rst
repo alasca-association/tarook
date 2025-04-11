@@ -51,19 +51,27 @@ Necessary changes in your config file
 
 Adjust your config to meet the following statements:
 
--  set ``terraform.ipv4_enabled = true`` and ``terraform.ipv6_enabled = true``
+-  set both
+   :ref:`configuration-options.yk8s.infra.ipv4_enabled`
+   and
+   :ref:`configuration-options.yk8s.infra.ipv6_enabled`
+   to ``true``
 
    - these variables are used across all stages
      to adjust setups and resources
 
--  specify ``infra.subnet_v6_cidr``
+-  specify
+   :ref:`configuration-options.yk8s.infra.subnet_v6_cidr`
 
    -  this is the IPv6 subnet that will be created via Terraform
    -  e.g.:
 
-      -  ``infra.subnet_v6_cidr = "fd00::/120"``
+      -  ``yk8s.infra.subnet_v6_cidr = "fd00::/120"``
 
--  specify ``wireguard.endpoints.*.ipv6_cidr`` as well as ``wireguard.endpoints.*.ipv6_gw``
+-  specify
+   :ref:`configuration-options.yk8s.wireguard.endpoints.*.ipv6_cidr`
+   and
+   :ref:`configuration-options.yk8s.wireguard.endpoints.*.ipv6_gw`
 
    -  this is the IPv6 CIDR for the allowed IP addresses of wireguard as
       well as the server/gateway IP address
@@ -80,7 +88,7 @@ Adjust your config to meet the following statements:
 
 -  you have to choose calico as CNI plugin
 
-   -  ``kubernetes.network.plugin = "calico"``
+   -  ``yk8s.kubernetes.network.plugin = "calico"``
 
 Design / Procedure considerations
 ---------------------------------

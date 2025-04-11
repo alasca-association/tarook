@@ -65,8 +65,8 @@ All secrets engines used by YAOOK/K8s are mounted below the ``yaook/``
 path prefix. (This prefix is configurable, but that is not well-tested.)
 Each cluster gets its own secrets engines, to improve the isolation
 between different clusters. The per-cluster secrets engines are mounted
-at ``yaook/$cluster_name/...``, where ``$cluster_name`` is configured in
-``vault.cluster_name`` of the cluster configuration.
+at ``yaook/$cluster_name/...``, where ``$cluster_name`` is configured with
+the :ref:`configuration-options.yk8s.vault.cluster_name` config option.
 
 The following six secrets engines are used:
 

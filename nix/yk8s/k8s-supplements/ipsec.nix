@@ -87,7 +87,7 @@ in {
     remote_private_addrs = mkOption {
       description = ''
         Private address of remote endpoint.
-        only used when test_enabled is True
+        only used when :ref:`configuration-options.yk8s.ipsec.test_enabled` is ``true``
       '';
       type = with types; nullOr nonEmptyStr;
       default = null;

@@ -21,8 +21,8 @@ form of a JSON object/dict with the keys ``access_key`` and
 .. note::
 
   To enable etcd-backup,
-  ``k8s-service-layer.etcd-backup.enabled`` needs to be set to
-  ``true``.
+  :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.enabled`
+  needs to be set to ``true``.
 
 The following values need to be set:
 

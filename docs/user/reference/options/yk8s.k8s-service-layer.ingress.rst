@@ -10,7 +10,7 @@ soon :)
 .. note::
 
   To enable an ingress controller,
-  ``k8s-service-layer.ingress.enabled`` needs to be set to ``true``.
+  :ref:`configuration-options.yk8s.k8s-service-layer.ingress.enabled` needs to be set to ``true``.
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.allow_snippet_annotations:
 

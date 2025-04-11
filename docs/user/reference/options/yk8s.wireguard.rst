@@ -108,7 +108,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 ######################################
 
 IP address range to use for WireGuard clients. Must be set to a CIDR and must
-not conflict with the infra.subnet_cidr.
+not conflict with the :ref:`configuration-options.yk8s.infra.subnet_cidr`.
 Should be chosen uniquely for all clusters of a customer at the very least
 so that they can use all of their clusters at the same time without having
 to tear down tunnels.
@@ -129,7 +129,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 ####################################
 
 IP address range to use for WireGuard servers. Must be set to a CIDR and must
-not conflict with the infra.subnet_cidr.
+not conflict with the :ref:`configuration-options.yk8s.infra.subnet_cidr`.
 Should be chosen uniquely for all clusters of a customer at the very least
 so that they can use all of their clusters at the same time without having
 to tear down tunnels.
@@ -150,7 +150,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 ########################################
 
 IP address range to use for WireGuard clients. Must be set to a CIDR and must
-not conflict with the infra.subnet_cidr.
+not conflict with the :ref:`configuration-options.yk8s.infra.subnet_cidr`.
 Should be chosen uniquely for all clusters of a customer at the very least
 so that they can use all of their clusters at the same time without having
 to tear down tunnels.
@@ -181,7 +181,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 ######################################
 
 IP address range to use for WireGuard servers. Must be set to a CIDR and must
-not conflict with the infra.subnet_cidr.
+not conflict with the :ref:`configuration-options.yk8s.infra.subnet_cidr`.
 Should be chosen uniquely for all clusters of a customer at the very least
 so that they can use all of their clusters at the same time without having
 to tear down tunnels.

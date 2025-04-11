@@ -37,11 +37,8 @@ If not manually adjusted, the Calico version to be deployed is the one
 mapped to the Kubernetes version in
 `k8s-config <https://gitlab.com/yaook/k8s/-/blob/devel/k8s-base/roles/k8s-config/defaults/main.yaml>`__.
 
-However, it is possible to configure a custom version via the
-``kubernetes.network.calico.custom_version`` (see
-:ref:`here <configuration-options.yk8s.kubernetes.network>`)
-variable in the ``kubernetes.network`` section of your
-cluster-specific configuration.
+However, it is possible to configure a custom version with
+the :ref:`configuration-options.yk8s.kubernetes.network.calico.custom_version` config option.
 
 Manually Upgrade Calico
 ~~~~~~~~~~~~~~~~~~~~~~~

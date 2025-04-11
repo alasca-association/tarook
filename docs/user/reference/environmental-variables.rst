@@ -203,7 +203,8 @@ Environment Variable        Default                 Description
                                                     This variable is used by the
                                                     ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
 ``wg_endpoint``             ``0``                   The ID of the wireguard endpoint to use when connecting
-                                                    to the VPN, as defined in the config at ``wireguard.endpoints``.
+                                                    to the VPN, as configured with
+                                                    :ref:`configuration-options.yk8s.wireguard.endpoints`.
 ``wg_private_key_command``                          Command to retrieve a WireGuard private key from
                                                     a safe place, for example by using ``pass``.
                                                     This variable is used by the

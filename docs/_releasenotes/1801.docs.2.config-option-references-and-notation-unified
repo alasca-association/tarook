@@ -1,0 +1,6 @@
+Any config option in the documentation is now mentioned
+with its fully qualified name in Nix dot notation.
+Additionally, those mentions link directly
+to the description of the particular config option.
+
+A few previously renamed or replaced config options were fixed as well.

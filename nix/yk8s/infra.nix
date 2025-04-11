@@ -51,7 +51,7 @@ in {
 
     hosts_file = mkOption {
       description = ''
-        A custom hosts file in case openstack is disabled
+        A custom hosts file in case :ref:`configuration-options.yk8s.openstack.enabled` is set to ``false``
       '';
       type = with types; nullOr pathInStore;
       default = null;
