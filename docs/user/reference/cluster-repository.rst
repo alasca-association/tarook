@@ -26,7 +26,6 @@ will most certainly have more files than these.
 
    your_cluster_repo
    ├── config/
-   │   ├── config.toml                   # Legacy cluster configuration
    │   └── default.nix                   # Cluster configuration
    ├── etc/                              # Cluster-specific files
    ├── inventory/                        # Ansible inventory

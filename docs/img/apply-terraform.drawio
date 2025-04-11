@@ -20,7 +20,7 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="2" value="&lt;font face=&quot;Courier New&quot;&gt;config.toml&lt;br&gt;[terraform]&lt;br&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                <mxCell id="2" value="&lt;font face=&quot;Courier New&quot;&gt;default.nix&lt;br&gt;[terraform]&lt;br&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="240" y="277.5" width="120" height="45" as="geometry"/>
                 </mxCell>
                 <mxCell id="17" style="edgeStyle=none;rounded=0;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;fontFamily=Courier New;fillColor=#0050ef;strokeColor=#001DBC;" parent="1" source="3" target="4" edge="1">

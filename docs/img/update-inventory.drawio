@@ -23,7 +23,7 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="13" value="&lt;font face=&quot;Courier New&quot;&gt;config.toml&lt;br&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                <mxCell id="13" value="&lt;font face=&quot;Courier New&quot;&gt;default.nix&lt;br&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="265" y="373" width="120" height="45" as="geometry"/>
                 </mxCell>
                 <mxCell id="18" value="03_k8s_base/" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=1 1;fontFamily=Courier New;verticalAlign=top;fillColor=#E3E3E3;opacity=75;fontSize=10;" parent="1" vertex="1">

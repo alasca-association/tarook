@@ -152,12 +152,6 @@ Disabling the fix
 
 1. Set ``kubernetes.controller_manager.enable_signing_requests = false``
 
-   .. code:: shell
-
-      # If you're using config.toml:
-      tomlq --in-place --toml-output '.kubernetes.controller_manager.enable_signing_requests=false' config/config.toml
-
-
 .. tabs::
 
    .. tab:: For a to be created cluster
