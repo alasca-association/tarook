@@ -13,8 +13,10 @@ if [ -f "$PWD/etc/admin.conf" ]; then
     ./managed-k8s/tools/dump-k8s.sh podlogs --all-namespaces '' pod deployment pvc statefulset daemonset configmap secrets || true
 fi
 
+# Use `openrc.sh` if present on the filesystem of the GitLab Runner
+# else it is expected that the openrc env vars are configured as CI/CD variables
 # The openrc file is not available in the shellcheck image
 # shellcheck disable=SC1091
-. /root/openrc.sh
+if [ -f /root/openrc.sh ] ; then source /root/openrc.sh; fi
 tomlq --in-place --toml-output '.terraform.prevent_disruption = false' config/overrides.toml
 MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_DISRUPT_THE_HARBOUR=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
