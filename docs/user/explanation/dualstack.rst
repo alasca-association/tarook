@@ -63,14 +63,20 @@ Adjust your config to meet the following statements:
 
       -  ``infra.subnet_v6_cidr = "fd00::/120"``
 
--  specify ``wireguard.wg_ipv6_cidr`` as well as ``wireguard.wg_ipv6_gw``
+-  specify ``wireguard.endpoints.*.ipv6_cidr`` as well as ``wireguard.endpoints.*.ipv6_gw``
 
    -  this is the IPv6 CIDR for the allowed IP addresses of wireguard as
       well as the server/gateway IP address
    -  e.g.:
 
-      -  ``wireguard.wg_ipv6_cidr = "fd01::/120";``
-      -  ``wireguard.wg_ipv6_gw = "fd01::1/120";``
+      .. code: nix
+
+         yk8s.wireguard.endpoints = [
+           {
+             ipv6_cidr = "fd01::/120";
+             ipv6_gw = "fd01::1/120";
+           }
+         ];
 
 -  you have to choose calico as CNI plugin
 
