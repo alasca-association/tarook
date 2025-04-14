@@ -15,7 +15,6 @@
             mkdir -p $out/root/.ssh
             cp known_hosts $out/root/.ssh/known_hosts
             cp gitconfig $out/root/.gitconfig
-            cp openrc_f1a.sh $out/root/openrc.sh
           '';
         };
         userSetup = pkgs.stdenv.mkDerivation {

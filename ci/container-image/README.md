@@ -9,9 +9,6 @@ Note that the features `nix-command` and `flakes` need to be enabled as describe
 For successful use, it is required that the following prerequisites
 are fulfilled:
 
-- The `OS_PASSWORD` environment variable is set to a password which is
-  valid for the user referenced in the `openrc.sh`.
-
 - A valid wireguard private key which also matches the public key
   provided in the cluster config is put to the path contained in the
   environment variable `wg_private_key_file`. This environment
