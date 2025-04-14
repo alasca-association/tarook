@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.1.5 (2025-04-14)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug has been fixed which caused the deployment of Vault on Kubernetes to incorrectly fail with an external Ingress issuer configured. (`!1803 <https://gitlab.com/yaook/k8s/-/merge_requests/1803>`_)
+
+
 v9.1.4 (2025-03-27)
 -------------------
 
