@@ -1,13 +1,13 @@
 ---
 - name: Ensure CAs
-  ansible.builtin.include_role:
+  include_role:
     name: k8s-master
     tasks_from: ensure-cas.yaml
   vars:
     extra_ca: "{{ append_next_issuer | bool }}"
 
 - name: Obtain certificates
-  ansible.builtin.include_role:
+  include_role:
     name: k8s-master
     tasks_from: obtain-certs.yaml
   vars:
@@ -32,7 +32,7 @@
   when: append_next_issuer | bool
   block:
   - name: Write new k8s CA file
-    ansible.builtin.copy:
+    copy:
       dest: /etc/kubernetes/pki/ca-new.crt
       owner: root
       group: root
@@ -40,7 +40,7 @@
       content: "{{ k8s_ca_cert }}"
 
   - name: Point kube-controller-manager to separate CA file
-    ansible.builtin.replace:
+    replace:
       path: /etc/kubernetes/manifests/kube-controller-manager.yaml
       regexp: '^(\s*-\s*--client-ca-file=).*'
       replace: '\1/etc/kubernetes/pki/ca-new.crt'
@@ -51,12 +51,12 @@
   when: not append_next_issuer | bool
   block:
   - name: Drop new k8s CA file
-    ansible.builtin.file:
+    file:
       path: /etc/kubernetes/pki/ca-new.crt
       state: absent
 
   - name: Point kube-controller-manager to default CA file
-    ansible.builtin.replace:
+    replace:
       path: /etc/kubernetes/manifests/kube-controller-manager.yaml
       regexp: '^(\s*-\s*--client-ca-file=).*'
       replace: '\1/etc/kubernetes/pki/ca.crt'
@@ -105,7 +105,7 @@
     seconds: 30
 
 - name: Obtain kubeconfigs
-  ansible.builtin.include_role:
+  include_role:
     name: k8s-master
     tasks_from: obtain-kubeconfigs.yaml
   vars:
@@ -160,7 +160,7 @@
   become: false
   block:
   - name: Get certificate authority data
-    ansible.builtin.include_role:
+    include_role:
       name: k8s-master
       tasks_from: get-certificate-authority-data.yaml
     vars:

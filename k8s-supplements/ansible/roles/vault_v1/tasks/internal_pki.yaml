@@ -76,11 +76,11 @@
   delay: "{{ error_delay }}"
 
 - name: Collect worker IPs
-  ansible.builtin.set_fact:
+  set_fact:
     yaook_vault_worker_ips: "{{ (nodes.resources | map(attribute='status') | map(attribute='addresses') | flatten(levels=1) | selectattr('type', 'eq', 'InternalIP') | map(attribute='address')) }}"
 
 - name: Set vault server DNS names
-  ansible.builtin.set_fact:
+  set_fact:
     yaook_vault_dnsnames_complete: |
       [
         {{ "vault.%s.svc.cluster.local" | format(yaook_vault_namespace) | to_json }},

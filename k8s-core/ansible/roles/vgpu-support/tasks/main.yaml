@@ -10,21 +10,21 @@
     - ansible_facts['pkg_mgr'] == "apt"
   block:
     - name: Get CPU information  # noqa no-changed-when
-      ansible.builtin.command: lscpu
+      command: lscpu
       register: cpu_info
 
     - name: look into CPU information
       when: '"Intel" is in cpu_info.stdout'
-      ansible.builtin.set_fact:
+      set_fact:
         cpu_type: "intel"
 
     - name: look into CPU information
       when: '"AMD" is in cpu_info.stdout'
-      ansible.builtin.set_fact:
+      set_fact:
         cpu_type: "amd"
 
     - name: Enable IOMMU
-      ansible.builtin.copy:
+      copy:
         dest: /etc/default/grub.d/enable_iommu.cfg
         content: |
           GRUB_CMDLINE_LINUX="{{ cpu_type }}_iommu=on iommu=pt .modeset=0 rd.driver.pre=vfio-pci video=vesafb:off"
@@ -35,10 +35,10 @@
 
     - name: Update GRUB  # noqa no-changed-when no-handler
       when: grub_config.changed
-      ansible.builtin.command: update-grub
+      command: update-grub
 
     - name: Install deps for the nvidia drivers
-      ansible.builtin.apt:
+      apt:
         state: present
         name:
           - "linux-headers-{{ ansible_kernel }}"
@@ -53,7 +53,7 @@
     - name: Install virtual gpu manager
       block:
         - name: Download the nvidia vgpu driver script on the host
-          ansible.builtin.get_url:
+          get_url:
             url: "{{ nvidia_vgpu_driver_blob_url }}/{{ nvidia_vgpu_manager_filename }}"
             dest: "/tmp/{{ nvidia_vgpu_manager_filename }}"
             mode: '0755'
@@ -63,7 +63,7 @@
           delay: "{{ error_delay }}"
 
         - name: Install the virtual gpu manager
-          ansible.builtin.apt:
+          apt:
             deb: '/tmp/{{ nvidia_vgpu_manager_filename }}'
           register: installed_vgpu_manager
           until: installed_vgpu_manager is not failed
@@ -77,7 +77,7 @@
       # from loading. This can be reverted by deleting the following file:
       # /etc/modprobe.d/nvidia-graphics-drivers.conf"""
       # And guess what? That configuration file doesn't exist!
-      ansible.builtin.copy:
+      copy:
         dest: /etc/modprobe.d/blacklist_nouveau.conf
         content: |
           {{ _auto_generated_preamble }}
@@ -89,7 +89,7 @@
       register: blacklisted_nouveau
 
     - name: Update initramfs  # noqa no-changed-when no-handler
-      ansible.builtin.command: "update-initramfs -k {{ ansible_kernel }} -uv"
+      command: "update-initramfs -k {{ ansible_kernel }} -uv"
       when: blacklisted_nouveau.changed or installed_vgpu_manager.changed
       register: ramfs
 
@@ -99,7 +99,7 @@
       block:
 
         - name: Reboot the system (cloud-init run)  # noqa no-changed-when no-handler
-          ansible.builtin.command:
+          command:
             argv:
               - reboot
               - now
@@ -111,7 +111,7 @@
         # anyway by the above command if it is executed; If the above command is
         # not executed, we want to execute this one.
         - name: Reboot the system
-          ansible.builtin.reboot:
+          reboot:
           retries: "{{ error_retries }}"
           delay: "{{ error_delay }}"
 
@@ -120,17 +120,17 @@
       # I installed the toolchain on a host with any nvidia cards and the rc was != 0.
       # It's therefore safe to assume that if the installation somehow failed, then this task would fail too.
       changed_when: false
-      ansible.builtin.command: nvidia-smi -L
+      command: nvidia-smi -L
 
     - name: Ensure group "libvirt" exists with correct gid
-      ansible.builtin.group:
+      group:
         name: libvirt
         state: present
         gid: 2500009
 
     - name: Create udev rule for vfio devices
       become: true
-      ansible.builtin.copy:
+      copy:
         src: 50-vfio.rules
         dest: /etc/udev/rules.d/50-vfio.rules
         owner: root
@@ -143,7 +143,7 @@
       # I installed the toolchain on a host with any nvidia cards and the rc was != 0.
       # It's therefore safe to assume that if the installation somehow failed, then this task would fail too.
       when: udev_vfio_rule.changed
-      ansible.builtin.command: "{{ item }}"
+      command: "{{ item }}"
       with_items:
         - udevadm control --reload-rules
         - udevadm trigger
@@ -151,10 +151,10 @@
     - name: run sriov-manage once to create VFs  # noqa no-changed-when
       # executing the variant of the reboot systemd service during installation does not work properly we
       # rather run the command once after installation and just enable the systemd service to run for consecutive reboots
-      ansible.builtin.command: "/usr/lib/nvidia/sriov-manage -e ALL"
+      command: "/usr/lib/nvidia/sriov-manage -e ALL"
 
     - name: install nvidia-sriov-manage systemd unit file
-      ansible.builtin.copy:
+      copy:
         src: nvidia-sriov-manage.service
         dest: /etc/systemd/system/nvidia-sriov-manage.service
         owner: root
@@ -162,7 +162,7 @@
         mode: 0644
 
     - name: create sriov-loop script (used by nvidia-sriov-manage systemd unit)
-      ansible.builtin.copy:
+      copy:
         src: nvidia-sriov-startup-loop.sh
         dest: /usr/local/bin/nvidia-sriov-startup-loop.sh
         owner: root
@@ -170,7 +170,7 @@
         mode: 0744
 
     - name: enable nvidia-sriov-manage
-      ansible.builtin.systemd:
+      systemd:
         enabled: true
         name: nvidia-sriov-manage.service
         daemon_reload: true

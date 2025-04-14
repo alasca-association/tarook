@@ -4,7 +4,7 @@
   block:
     - name: Ensure directory containerd service directory is present
       become: true
-      ansible.builtin.file:
+      file:
         path: /etc/systemd/system/containerd.service.d
         state: directory
         mode: 0755
@@ -13,7 +13,7 @@
 
     - name: Create containerd service extension
       become: true
-      ansible.builtin.template:
+      template:
         src: http-proxy.conf.j2
         dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
         owner: root
@@ -23,7 +23,7 @@
 
 - name: Expand NO_PROXY configuration
   become: true
-  ansible.builtin.lineinfile:
+  lineinfile:
     path: /etc/environment
     regexp: "^(.*{{ item }}.*)$"
     line: "{{ item }}={{ no_proxy }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
@@ -38,7 +38,7 @@
   block:
     - name: Ensure /etc/environment contains proxy configuration
       become: true
-      ansible.builtin.command: grep -Fq "no_proxy" /etc/environment
+      command: grep -Fq "no_proxy" /etc/environment
       register: proxy_conf
       check_mode: false
       ignore_errors: true
@@ -46,7 +46,7 @@
 
     - name: Expand /etc/environment with proxy configuration
       when: proxy_conf.failed
-      ansible.builtin.lineinfile:
+      lineinfile:
         path: /etc/environment
         insertafter: EOF
         line: "{{ item }}"

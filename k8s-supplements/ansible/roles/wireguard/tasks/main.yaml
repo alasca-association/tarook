@@ -4,11 +4,11 @@
   any_errors_fatal: true
   block:
     - name: Check for existence of private key in old location (LEGACY)
-      ansible.builtin.stat:
+      stat:
         path: /etc/wireguard/wg_gw.key
       register: wg_gw
     - name: Fail if the key exists (LEGACY)
-      ansible.builtin.fail:
+      fail:
         msg: |
           This task fails because we changed the handling of the wireguard key of the gateway.
           The key is now stored locally in the inventory and not on the gateways.
@@ -21,14 +21,14 @@
 
 - name: Remove old service
   become: true
-  ansible.builtin.file:
+  file:
     path: /etc/systemd/system/wireguard.service
     state: absent
   register: old_wg_service
 
 - name: Stop and disable old wireguard service  # noqa no-handler
   become: true
-  ansible.builtin.service:
+  service:
     name: wireguard.service
     state: stopped
     enabled: false
@@ -36,20 +36,20 @@
 
 - name: Reload systemd to drop old wireguard service  # noqa no-handler
   become: true
-  ansible.builtin.systemd:
+  systemd:
     daemon_reload: true
   when: old_wg_service is changed
 
 - name: Stop wg0 after removal of legacy service so that the new service can take over  # noqa no-handler no-changed-when
   become: true
-  ansible.builtin.command:
+  command:
   args:
     argv: ['wg-quick', 'down', 'wg0']
   when: old_wg_service is changed
 
 - name: Setup wireguard endpoints
   loop: "{{ wg_endpoints }}"
-  ansible.builtin.include_tasks: "wg_endpoint.yaml"
+  include_tasks: "wg_endpoint.yaml"
   loop_control:
     loop_var: endpoint
 
@@ -57,7 +57,7 @@
   become: true
   block:
     - name: Ensure that drop-in directory for bird configs exist (IPv4)
-      ansible.builtin.file:
+      file:
         path: /etc/bird.d/
         state: directory
         owner: root
@@ -66,7 +66,7 @@
       when: ipv4_enabled
 
     - name: Ensure that drop-in directory for bird configs exist (IPv6)
-      ansible.builtin.file:
+      file:
         path: /etc/birdv6.d/
         state: directory
         owner: root
@@ -75,7 +75,7 @@
       when: ipv6_enabled
 
     - name: Create bird config for IPv4 wireguard routes
-      ansible.builtin.template:
+      template:
         src: wg_bird.conf.j2
         dest: /etc/bird.d/00-wireguard.conf
         owner: bird
@@ -85,7 +85,7 @@
       when: ipv4_enabled
 
     - name: Create bird config for IPv6 wireguard routes
-      ansible.builtin.template:
+      template:
         src: wg_bird_v6.conf.j2
         dest: /etc/birdv6.d/00-wireguard.conf
         owner: bird

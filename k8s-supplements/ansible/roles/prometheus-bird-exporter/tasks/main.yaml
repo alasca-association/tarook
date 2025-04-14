@@ -1,7 +1,7 @@
 ---
 - name: create user
   become: true
-  ansible.builtin.user:
+  user:
     system: true
     name: "{{ prometheus_bird_exporter_user }}"
     home: /dev/null
@@ -9,7 +9,7 @@
 
 - name: Create configuration directory
   become: true
-  ansible.builtin.file:
+  file:
     state: directory
     path: /etc/prometheus-bird-exporter
     owner: root
@@ -18,7 +18,7 @@
 
 - name: Store id tag
   become: true
-  ansible.builtin.template:
+  template:
     src: archive_id_tag.j2
     dest: /etc/prometheus-bird-exporter/version
     owner: root
@@ -32,7 +32,7 @@
     pke_path: /var/cache/prometheus-bird-exporter
   block:
   - name: Create caching directory for the archive/binary
-    ansible.builtin.file:
+    file:
       state: directory
       path: "{{ pke_path }}"
       owner: root
@@ -40,7 +40,7 @@
       mode: u=rwx,g=rx,o-rwx
 
   - name: Download executable
-    ansible.builtin.get_url:
+    get_url:
       checksum: "{{ prometheus_bird_exporter_checksums[prometheus_bird_exporter_version] }}"
       dest: "{{ pke_path }}"
       url: "{{ prometheus_bird_exporter_url }}"
@@ -54,13 +54,13 @@
     delay: "{{ error_delay }}"
 
   - name: Extract binary
-    ansible.builtin.unarchive:
+    unarchive:
       src: "{{ pke_path }}/{{ prometheus_bird_exporter_archive_name }}"
       dest: "{{ pke_path }}"
       remote_src: true
 
   - name: Install binary to /usr/local/bin
-    ansible.builtin.copy:
+    copy:
       src: "{{ pke_path }}/bird_exporter"
       dest: /usr/local/bin/
       owner: bird-exporter
@@ -70,7 +70,7 @@
 
 - name: Create a systemd unit for bird_exporter
   become: true
-  ansible.builtin.copy:
+  copy:
     src: "{{ role_path }}/files/prometheus-bird-exporter.service"
     dest: /etc/systemd/system/prometheus-bird-exporter.service
     owner: root
@@ -80,7 +80,7 @@
 
 - name: Start & enable the systemd unit
   become: true
-  ansible.builtin.systemd:
+  systemd:
     name: prometheus-bird-exporter
     state: "{{ ((pke_binary is changed) or (pke_unit is changed)) | ternary('restarted', 'started') }}"
     enabled: true

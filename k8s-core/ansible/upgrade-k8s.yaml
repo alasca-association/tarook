@@ -165,10 +165,10 @@
   # but the Pod does not fail. We have to manually restart the Pod.
   tasks:
     - name: Restart nvidia-device-plugin Pod on node
-      ansible.builtin.include_role:
+      include_role:
         name: nvidia-device-plugin
         tasks_from: restart_ndp_pod.yaml
     - name: Uncordon the node
-      ansible.builtin.include_role:
+      include_role:
         name: kubeadm-uncordon-node
 ...

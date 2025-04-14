@@ -1,6 +1,6 @@
 ---
 - name: Patch kube-proxy
-  ansible.builtin.include_tasks:
+  include_tasks:
     file: kube_proxy_patch.yaml
   when: (k8s_monitoring_enabled | bool) and (k8s_network_plugin in ['calico'])
 
@@ -23,7 +23,7 @@
   delay: "{{ error_delay }}"
 
 - name: Rollout the etcd-metrics-proxy
-  ansible.builtin.include_role:
+  include_role:
     name: etcd-metrics-proxy
 
 - name: Check if admin secret for Grafana already exists
@@ -78,7 +78,7 @@
     prom_stack_conf_version: "{{ monitoring_prometheus_stack_version }}"
   block:
   - name: Check if configured and deployed KSL monitoring version do equal
-    ansible.builtin.debug:
+    debug:
       msg: |
         The configured KSL monitoring version matches the deployed one.
         Configured version: {{ prom_stack_conf_version }}
@@ -87,7 +87,7 @@
 
   - name: Trigger upgrade configured and deployed KSL monitoring version do not equal
     when: not prom_stack_conf_version is version(prom_stack_depl_version, operator='eq')
-    ansible.builtin.include_tasks: upgrade_kube_prom_stack.yaml
+    include_tasks: upgrade_kube_prom_stack.yaml
 
 - name: "{{ monitoring_install | ternary('Add', 'Remove') }} prometheus-community Repo"
   kubernetes.core.helm_repository:
@@ -137,10 +137,10 @@
 
 - name: NVIDIA DCGM Exporter
   when: (gpu_nodes.resources | length) > 0
-  ansible.builtin.include_tasks: nvidia_dcgm_exporter.yaml
+  include_tasks: nvidia_dcgm_exporter.yaml
 
 - name: Install thanos with helm
-  ansible.builtin.include_role:
+  include_role:
     name: monitoring_thanos_v2
   when: monitoring_use_thanos
 

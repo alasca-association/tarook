@@ -1,7 +1,7 @@
 ---
 - name: Install keepalived
   become: true
-  ansible.builtin.package:
+  package:
     state: present
     name:
       - keepalived
@@ -12,7 +12,7 @@
 
 - name: Create keepalived configuration
   become: true
-  ansible.builtin.template:
+  template:
     src: keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf
     owner: root
@@ -22,7 +22,7 @@
 
 - name: Create keepalived/scripts/ sub directory
   become: true
-  ansible.builtin.file:
+  file:
     path: "/etc/keepalived/scripts"
     state: directory
     owner: root
@@ -31,7 +31,7 @@
 
 - name: Copy chk_haproxy.sh
   become: true
-  ansible.builtin.template:
+  template:
     src: chk_haproxy.sh.j2
     dest: "/etc/keepalived/chk_haproxy.sh"
     owner: root
@@ -41,7 +41,7 @@
 
 - name: Copy notifier.sh
   become: true
-  ansible.builtin.template:
+  template:
     src: notifier.sh.j2
     dest: /etc/keepalived/notifier.sh
     owner: root
@@ -67,7 +67,7 @@
 
 - name: Start the keepalived service
   become: true
-  ansible.builtin.systemd:
+  systemd:
     state: started
     enabled: true
     daemon_reload: true

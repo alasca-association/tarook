@@ -1,7 +1,7 @@
 ---
 - name: Load admin credentials into interactive shells
   become: true
-  ansible.builtin.template:
+  template:
     src: kubernetes-admin.sh.j2
     dest: /etc/profile.d/kubernetes-admin.sh
     owner: root
@@ -9,7 +9,7 @@
     mode: u=rw,go=r
 
 - name: Check reachability of local kube-apiserver
-  ansible.builtin.wait_for:
+  wait_for:
     host: "{% if ipv4_enabled %}127.0.0.1{% elif ipv6_enabled %}::1{% endif %}"
     port: 6443
     timeout: 5
@@ -20,7 +20,7 @@
   when: local_kube_apiserver_status is failed
   vars:
     host: "{% if ipv4_enabled %}{{ networking_fixed_ip }}{% elif ipv6_enabled %}[{{ networking_fixed_ip_v6 }}]{% endif %}:{{ k8s_apiserver_frontend_port }}"
-  ansible.builtin.uri:
+  uri:
     url: "https://{{ host }}"
     status_code: 403
     validate_certs: false  # self-signed certificate
@@ -33,14 +33,14 @@
 - name: Make sure 'etc_dir' exists
   delegate_to: "{{ groups['orchestrator'] | first }}"
   become: false
-  ansible.builtin.file:
+  file:
     path: "{{ etc_dir }}"
     state: directory
     mode: 0755
 
 - name: Create parent directories for PKI directories
   become: true
-  ansible.builtin.file:
+  file:
     path: "{{ item }}"
     state: directory
     mode: u=rwx,go=rx
@@ -51,7 +51,7 @@
 # The focus of the following two tasks is on fixing the permissions.
 - name: Create PKI directories
   become: true
-  ansible.builtin.file:
+  file:
     path: "{{ item }}"
     state: directory
     mode: u=rwx,go-rwx
@@ -79,7 +79,7 @@
     register: get_ca_key
     ignore_errors: true
 
-  - ansible.builtin.set_fact:
+  - set_fact:
       k8s_ca_key_avail_in_vault: >
         {{ (get_ca_key is success)
            and ((get_ca_key.data.data.private_key | default("")) != "") }}
@@ -118,7 +118,7 @@
         token_validate: false
     rescue:
     - name: "Ensure CA key is unavailable in Vault: Hint failure reason"
-      ansible.builtin.fail:
+      fail:
         msg: |
           Vault root token required!
           Disabling Kubernetes signing requests entails the removal of the
@@ -129,12 +129,12 @@
     when: k8s_controller_manager_enable_signing_requests
     block:
     - name: "Require CA key to be available in Vault"
-      ansible.builtin.fail:  # noop task, lookup is already done above
+      fail:  # noop task, lookup is already done above
       # NOTE: ansible.builtin.meta: noop supports no conditionals
       failed_when: not k8s_ca_key_avail_in_vault
     rescue:
     - name: "Require CA key to be available in Vault: Hint failure reason"
-      ansible.builtin.fail:
+      fail:
         msg: |
           Manual intervention required!
           Enabling Kubernetes signing requests requires the CA key to be
@@ -154,7 +154,7 @@
 
 - name: Delete secret data which is now in Vault
   become: true
-  ansible.builtin.file:
+  file:
     state: absent
     path: /etc/kubernetes/pki/{{ item }}
   loop:
@@ -163,7 +163,7 @@
 
 - name: Ensure that /var/lib/etcd exists
   become: true
-  ansible.builtin.file:
+  file:
     path: /var/lib/etcd
     state: directory
     mode: u=rwx,go-rwx
@@ -175,10 +175,10 @@
   become: true
   block:
   - name: Pull config images used by kubeadm from registry.k8s.io  # noqa no-changed-when
-    ansible.builtin.command: kubeadm config images pull --kubernetes-version {{ k8s_version }}
+    command: kubeadm config images pull --kubernetes-version {{ k8s_version }}
 
   - name: Create kubeadm-init-config.yaml
-    ansible.builtin.template:
+    template:
       src: kubeadm-init-config.yaml.j2
       dest: /tmp/kubeadm-init-config.yaml
       owner: root
@@ -197,7 +197,7 @@
         ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
       block:
       - name: Generate super admin kubeconfig
-        ansible.builtin.include_tasks: mkkubeconfig.yaml
+        include_tasks: mkkubeconfig.yaml
         vars:
           kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
           vault_role_id: "{{ vault_node_role_id }}"
@@ -218,7 +218,7 @@
         name: helpers/kubeadm-command
 
   - name: Remove kubeadm-init-config.yaml
-    ansible.builtin.file:
+    file:
       path: /tmp/kubeadm-init-config.yaml
       state: absent
 
@@ -234,7 +234,7 @@
       state: present
 
   - name: Configure kubelet
-    ansible.builtin.include_role:
+    include_role:
       name: kubelet-configuration
     vars:
       _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
@@ -251,7 +251,7 @@
       path: "/etc/kubernetes/pki/ca.crt"
 
   - name: Create kubeadm-join-config.yaml
-    ansible.builtin.template:
+    template:
       src: kubeadm-join-config.yaml.j2
       dest: /tmp/kubeadm-join-config.yaml
       owner: root
@@ -268,7 +268,7 @@
       name: helpers/kubeadm-command
 
   - name: Remove kubeadm-join-config.yaml
-    ansible.builtin.file:
+    file:
       path: /tmp/kubeadm-join-config.yaml
       state: absent
 
@@ -276,7 +276,7 @@
   # to pass a kubelet config file for kubeadm join
   # https://stackoverflow.com/questions/60378117/limit-the-number-of-pods-per-node
   - name: Configure kubelet
-    ansible.builtin.include_role:
+    include_role:
       name: kubelet-configuration
     vars:
       _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
@@ -293,7 +293,7 @@
       content: "{{ content | to_json }}"
 
 - name: Login to the Kubernetes cluster as orchestrator
-  ansible.builtin.include_role:
+  include_role:
     name: k8s-login
 
 - name: Provide CA certificates as ConfigMap

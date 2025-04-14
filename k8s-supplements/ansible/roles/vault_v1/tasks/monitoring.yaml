@@ -19,7 +19,7 @@
         capabilities = ["update"]
       }
       EOF
-  ansible.builtin.include_tasks: vault_command.yaml
+  include_tasks: vault_command.yaml
 
 - name: Check if prometheus secret already exists
   kubernetes.core.k8s_info:
@@ -39,7 +39,7 @@
     - name: Initially create a Vault periodic token for Prometheus to fetch the metrics
       vars:
         vault_expression: vault token create -format=json -policy=sys/policies/acl/yaook/prometheus -period=504h -orphan
-      ansible.builtin.include_tasks: vault_command.yaml
+      include_tasks: vault_command.yaml
 
     - name: Create the secret
       vars:

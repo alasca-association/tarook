@@ -13,7 +13,7 @@
   - name: Load service account key from Vault # noqa ignore-errors
     ignore_errors: true
     no_log: true  # prevent private key from being exposed
-    ansible.builtin.set_fact:
+    set_fact:
       service_account_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'k8s/service-account-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key | b64decode }}"
 
   - name: Generate private key if necessary
@@ -30,7 +30,7 @@
   - name: Delete generated private key from disk
     delegate_to: "{{ groups['orchestrator'] | first }}"
     no_log: true  # prevent private key from being exposed
-    ansible.builtin.file:
+    file:
       state: absent
       path: "{{ etc_dir }}/sa.key"
 
@@ -51,7 +51,7 @@
   - name: Use generated service account key
     when: service_account_key is not defined
     no_log: true  # prevent private key from being exposed
-    ansible.builtin.set_fact:
+    set_fact:
       service_account_key: "{{ generated_service_account_key.privatekey }}"
 
   - name: Derive service account public key
@@ -62,7 +62,7 @@
   - name: Write service account private key
     become: true
     no_log: true  # prevent private key from being exposed
-    ansible.builtin.copy:
+    copy:
       dest: /etc/kubernetes/pki/sa.key
       content: "{{ service_account_key }}"
       owner: root
@@ -71,7 +71,7 @@
 
   - name: Write service account public key
     become: true
-    ansible.builtin.copy:
+    copy:
       dest: /etc/kubernetes/pki/sa.pub
       content: "{{ service_account_key_info.public_key }}"
       owner: root
@@ -83,7 +83,7 @@
 
   - name: Write k8s CA file
     become: true
-    ansible.builtin.copy:
+    copy:
       dest: /etc/kubernetes/pki/ca.crt
       owner: root
       group: root
@@ -114,7 +114,7 @@
 
     - name: Write Kubernetes cluster root CA key
       become: true
-      ansible.builtin.copy:
+      copy:
         dest: /etc/kubernetes/pki/ca.key
         owner: "{{ kubeconfig_owner | default('root') }}"
         group: "{{ kubeconfig_group | default(kubeconfig_owner | default('root')) }}"
@@ -129,7 +129,7 @@
     when: not k8s_controller_manager_enable_signing_requests
     block:
     - name: Ensure Kubernetes cluster root CA key file is absent
-      ansible.builtin.file:
+      file:
         state: absent
         path: /etc/kubernetes/pki/ca.key
       notify:
@@ -138,7 +138,7 @@
 
   - name: Write k8s front proxy CA file
     become: true
-    ansible.builtin.copy:
+    copy:
       dest: /etc/kubernetes/pki/front-proxy-ca.crt
       owner: root
       group: root
@@ -149,7 +149,7 @@
     become: true
     vars:
       ca_pki_name: etcd-pki
-    ansible.builtin.copy:
+    copy:
       dest: /etc/kubernetes/pki/etcd/ca.crt
       owner: root
       group: root

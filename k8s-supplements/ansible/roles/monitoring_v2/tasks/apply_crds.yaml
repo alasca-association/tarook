@@ -10,7 +10,7 @@
 # There is no equivalent of `helm show chart` in any Ansible Helm modules
 # therefore we have to use command instead of helm module
 - name: "Get AppVersion from Helm chart for major version: {{ item }}"
-  ansible.builtin.command:
+  command:
   args:
     argv:
     - helm
@@ -33,7 +33,7 @@
 - name: "Apply CRDs for appversion: {{ app_version }}"
   vars:
     app_version: "{{ (helm_chart.stdout | from_yaml).appVersion | replace('v', '') }}"
-  ansible.builtin.command:
+  command:
   args:
     argv:
     - kubectl
@@ -61,7 +61,7 @@
   when: app_version is version('0.65', '>=')
   vars:
     app_version: "{{ (helm_chart.stdout | from_yaml).appVersion | replace('v', '') }}"
-  ansible.builtin.command:
+  command:
   args:
     argv:
     - kubectl

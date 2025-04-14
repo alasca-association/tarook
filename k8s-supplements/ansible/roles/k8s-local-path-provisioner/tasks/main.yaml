@@ -1,6 +1,6 @@
 ---
 - name: Fail if duplicate storageclass name
-  ansible.builtin.fail:
+  fail:
     msg: "If local storage and local path provisioners are enabled they MUST use a different storage class name"
   when: "k8s_local_storage_static_enabled and
          k8s_local_storage_static_storageclass_name == k8s_local_storage_dynamic_storageclass_name"
@@ -9,7 +9,7 @@
   become: true
   block:
   - name: Create directory structure
-    ansible.builtin.file:
+    file:
       path: "{{ item }}"
       state: directory
       owner: root

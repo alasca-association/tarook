@@ -9,7 +9,7 @@
     set_fact:
       using_app_creds: "{{ (lookup('env', 'OS_AUTH_TYPE') | default('v3password', true)) == 'v3applicationcredential' }}"
   - name: Attempt to get a keystone token to validate the existence of credentials
-    ansible.builtin.uri:
+    uri:
       url: "{{ lookup('env', 'OS_AUTH_URL') }}/auth/tokens"
       validate_certs: true
       return_content: true

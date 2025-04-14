@@ -5,7 +5,7 @@
   # The inner expression reads and exports the VAULT_TOKEN from stdin. The value for stdin is provided directly to the command module.
   # We checked for leaks via the following probe:
   # `sudo bpftrace -e 'tracepoint:syscalls:sys_enter_exec*{ printf("pid: %d, comm: %s, args: ", pid, comm); join(args->argv); }'
-  ansible.builtin.command: |
+  command: |
     kubectl exec -i -n {{ yaook_vault_namespace | quote }} {{ vault_pods.resources[0].metadata.name | quote }} -c vault -- sh -xe -c 'read VAULT_TOKEN; export VAULT_TOKEN; {{ vault_expression }}'
   register: vault_out
   # This operation ought to be idempotent but detecting if the policy already exists is imho unneccessary boilerplate

@@ -3,7 +3,7 @@
   delegate_to: "{{ groups['orchestrator'] | first }}"
   block:
   - name: Set retry count
-    ansible.builtin.set_fact:
+    set_fact:
       retry_count: "{{ 0 if retry_count is undefined else (retry_count | int) + 1 }}"
 
   - name: Wait for restart of {{ pod_resource_name }}
@@ -25,14 +25,14 @@
 
   rescue:
   - name: Fail if Pod did not restart in expected time
-    ansible.builtin.fail:
+    fail:
       msg: "The Pod {{ pod_resource_name }} did not restart ({{ retry_count }} retries)"
     when: (retry_count | int) == 60
 
   - name: Pause for 10 seconds
-    ansible.builtin.pause:
+    pause:
       seconds: 10
 
   # Recheck if retry_count limit has not been reached, yet
-  - ansible.builtin.include_tasks: wait-for-restart.yaml
+  - include_tasks: wait-for-restart.yaml
 ...

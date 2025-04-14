@@ -10,7 +10,7 @@
     become: true
     vars:
       ca_pki_name: k8s-pki
-    ansible.builtin.template:
+    template:
       src: ca.crt.j2
       dest: /etc/kubernetes/pki/ca.crt
       owner: root
@@ -21,7 +21,7 @@
     become: true
     vars:
       ca_pki_name: k8s-front-proxy-pki
-    ansible.builtin.template:
+    template:
       src: ca.crt.j2
       dest: /etc/kubernetes/pki/front-proxy-ca.crt
       owner: root

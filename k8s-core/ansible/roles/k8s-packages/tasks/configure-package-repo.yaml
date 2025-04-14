@@ -4,7 +4,7 @@
   block:
     - name: Ensure keyrings directory exists
       # ftr: this is present by default on Debian...
-      ansible.builtin.file:
+      file:
         state: directory
         path: /etc/apt/keyrings
         owner: root
@@ -12,7 +12,7 @@
         mode: u=rwx,go=rx
 
     - name: Deploy Kubernetes community-owned repository key
-      ansible.builtin.copy:
+      copy:
         src: apt-key.gpg
         dest: /etc/apt/keyrings/kubeadm.gpg
         owner: root
@@ -27,7 +27,7 @@
       register: drop_google_repo
 
     - name: Add Kubernetes community-owned repository to sources.list
-      ansible.builtin.copy:
+      copy:
         dest: /etc/apt/sources.list.d/kubernetes-community.list
         content: |
           {{ _auto_generated_preamble }}
@@ -42,7 +42,7 @@
 
     - name: Update apt cache
       # Note: check available version with `apt-cache policy <package name>`
-      ansible.builtin.apt:
+      apt:
         update_cache: true
       register: task_result
       until: task_result is not failed

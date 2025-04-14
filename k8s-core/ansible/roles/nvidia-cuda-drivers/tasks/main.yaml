@@ -5,7 +5,7 @@
   block:
   # https://docs.nvidia.com/datacenter/cloud-native/kubernetes/k8s-containerd.html#disable-nouveau
   - name: Blacklist Nouveau driver
-    ansible.builtin.copy:
+    copy:
       dest: /etc/modprobe.d/blacklist_nouveau.conf
       content: |
         {{ _auto_generated_preamble }}
@@ -17,7 +17,7 @@
     register: blacklisted_nouveau
 
   - name: Install deps for the nvidia drivers
-    ansible.builtin.apt:
+    apt:
       state: present
       name:
       - "linux-headers-{{ ansible_kernel }}"
@@ -28,7 +28,7 @@
 
   - name: Ensure keyrings directory exists
     # ftr: this is present by default on Debian...
-    ansible.builtin.file:
+    file:
       state: directory
       path: /etc/apt/keyrings
       owner: root
@@ -36,7 +36,7 @@
       mode: u=rwx,go=rx
 
   - name: Deploy nvidia cuda driver repository key
-    ansible.builtin.copy:
+    copy:
       src: nvidia-cuda-driver.gpg
       dest: /etc/apt/keyrings/nvidia-cuda-driver.gpg
       owner: root
@@ -44,7 +44,7 @@
       mode: u=rw,go=r
 
   - name: Add nvidia cuda repository
-    ansible.builtin.apt_repository:
+    apt_repository:
       repo: deb [signed-by=/etc/apt/keyrings/nvidia-cuda-driver.gpg] https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /
       state: present
       update_cache: true
@@ -54,7 +54,7 @@
     delay: "{{ error_delay }}"
 
   - name: Install nvidia cuda drivers
-    ansible.builtin.apt:
+    apt:
       update_cache: false
       install_recommends: false
       autoremove: true
@@ -67,7 +67,7 @@
     delay: "{{ error_delay }}"
 
   - name: Update initramfs  # noqa no-changed-when no-handler
-    ansible.builtin.command: "update-initramfs -k {{ ansible_kernel }} -uv"
+    command: "update-initramfs -k {{ ansible_kernel }} -uv"
     when: blacklisted_nouveau.changed or installed_driver.changed
     register: ramfs
 
@@ -75,7 +75,7 @@
     when: ramfs.changed
     block:
     - name: Reboot the system  # noqa no-changed-when
-      ansible.builtin.command:
+      command:
         argv:
         - reboot
         - now
@@ -84,7 +84,7 @@
       delay: "{{ error_delay }}"
 
     - name: Reboot the system
-      ansible.builtin.reboot:
+      reboot:
       retries: "{{ error_retries }}"
       delay: "{{ error_delay }}"
 ...

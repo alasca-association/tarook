@@ -11,7 +11,7 @@
   when: rook_ns.resources is defined and rook_ns.resources | length != 0
   block:
   - name: Set retry count
-    ansible.builtin.set_fact:
+    set_fact:
       retry_count: "{{ 0 if retry_count is undefined else (retry_count | int) + 1 }}"
 
   - name: Determine the rook-ceph-tools pod
@@ -49,7 +49,7 @@
     - name: Verify ceph cluster health status (< v14.2.8)
       vars:
         ceph_health_status: "{{ ceph_cluster_status_json['health']['status'] }}"
-      ansible.builtin.debug:
+      debug:
         msg: "The health status of the ceph cluster is {{ ceph_health_status }}"
       failed_when: ceph_health_status != "HEALTH_OK"
       when:
@@ -59,7 +59,7 @@
     - name: Verify ceph cluster health status (>= v14.2.8)
       vars:
         ceph_health_status: "{{ ceph_cluster_status_json['health']['status'] }}"
-      ansible.builtin.debug:
+      debug:
         msg: "The health status of the ceph cluster is {{ ceph_health_status }}"
       failed_when: ceph_health_status == "HEALTH_ERR"
       when:
@@ -69,7 +69,7 @@
       vars:
         ceph_num_mons: "{{ ceph_cluster_status_json['monmap']['mons'] | length }}"
         ceph_num_mons_in_quorum: "{{ ceph_cluster_status_json['quorum'] | length }}"
-      ansible.builtin.debug:
+      debug:
         msg: "There are {{ ceph_num_mons }} mons out of which {{ ceph_num_mons_in_quorum }} are in the quorum list"
       failed_when: ceph_num_mons != ceph_num_mons_in_quorum
       when:
@@ -80,7 +80,7 @@
       vars:
         ceph_num_mons: "{{ ceph_cluster_status_json['monmap']['num_mons'] }}"
         ceph_num_mons_in_quorum: "{{ ceph_cluster_status_json['quorum'] | length }}"
-      ansible.builtin.debug:
+      debug:
         msg: "There are {{ ceph_num_mons }} mons out of which {{ ceph_num_mons_in_quorum }} are in the quorum list"
       failed_when: ceph_num_mons != ceph_num_mons_in_quorum
       when:
@@ -89,7 +89,7 @@
     - name: Verify that the manager is available
       vars:
         ceph_mgr_available: "{{ ceph_cluster_status_json['mgrmap']['available'] }}"
-      ansible.builtin.debug:
+      debug:
         msg: "The ceph manager is {{ ceph_mgr_available | ternary('available', 'unavailable') }}"
       failed_when: not ceph_mgr_available
 
@@ -98,7 +98,7 @@
         ceph_num_osds: "{{ ceph_cluster_status_json['osdmap']['osdmap']['num_osds'] }}"
         ceph_num_up_osds: "{{ ceph_cluster_status_json['osdmap']['osdmap']['num_up_osds'] }}"
         ceph_num_in_osds: "{{ ceph_cluster_status_json['osdmap']['osdmap']['num_in_osds'] }}"
-      ansible.builtin.debug:
+      debug:
         msg: "There are {{ ceph_num_osds }} OSDs; {{ ceph_num_up_osds }} are up; {{ ceph_num_in_osds }} are in"
       failed_when: ceph_num_up_osds != ceph_num_osds or ceph_num_in_osds != ceph_num_osds
       when:
@@ -110,30 +110,30 @@
         ceph_num_osds: "{{ ceph_cluster_status_json['osdmap']['num_osds'] }}"
         ceph_num_up_osds: "{{ ceph_cluster_status_json['osdmap']['num_up_osds'] }}"
         ceph_num_in_osds: "{{ ceph_cluster_status_json['osdmap']['num_in_osds'] }}"
-      ansible.builtin.debug:
+      debug:
         msg: "There are {{ ceph_num_osds }} OSDs; {{ ceph_num_up_osds }} are up; {{ ceph_num_in_osds }} are in"
       failed_when: ceph_num_up_osds != ceph_num_osds or ceph_num_in_osds != ceph_num_osds
       when:
       - ceph_cluster_version is version('v15.2.13', operator='ge')
 
     - name: Verify that all Placement Groups are active
-      ansible.builtin.debug:
+      debug:
         msg: "There are {{ item.count }} Placement Groups in state {{ item.state_name }}"
       failed_when: '"active" not in item.state_name'
       with_items: "{{ ceph_cluster_status_json['pgmap']['pgs_by_state'] }}"
   rescue:
   - name: Fail if ceph is not considered healthy
-    ansible.builtin.fail:
+    fail:
       msg: "Rook/Ceph is not considered healthy. Tried ({{ retry_count }} times.)"
     when: (retry_count | int) == 50
 
   - name: Log retry count
-    ansible.builtin.debug:
+    debug:
       msg: "The Ceph cluster is not healthy, yet. Retry count: {{ retry_count }}"
 
   - name: Pause for 5 seconds, give the cluster time to converge
-    ansible.builtin.pause:
+    pause:
       seconds: 5
 
-  - ansible.builtin.include_tasks: main.yaml
+  - include_tasks: main.yaml
 ...

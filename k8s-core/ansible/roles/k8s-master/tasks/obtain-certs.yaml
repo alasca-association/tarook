@@ -10,7 +10,7 @@
   # This is based on the k8s best practices
   # https://kubernetes.io/docs/setup/best-practices/certificates/
   - name: Obtain etcd server certificate
-    ansible.builtin.include_role:
+    include_role:
       name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
@@ -30,7 +30,7 @@
       force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain etcd peer certificate
-    ansible.builtin.include_role:
+    include_role:
       name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
@@ -50,7 +50,7 @@
       force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain etcd healthcheck certificate
-    ansible.builtin.include_role:
+    include_role:
       name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
@@ -69,7 +69,7 @@
       force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain apiserver etcd client certificate
-    ansible.builtin.include_role:
+    include_role:
       name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
@@ -87,7 +87,7 @@
       force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain apiserver frontend certificate
-    ansible.builtin.include_role:
+    include_role:
       name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
@@ -107,7 +107,7 @@
       force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain apiserver kubelet client certificate
-    ansible.builtin.include_role:
+    include_role:
       name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:
@@ -125,7 +125,7 @@
       force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain apiserver front proxy client certificate
-    ansible.builtin.include_role:
+    include_role:
       name: bootstrap/vault-onboarded
       tasks_from: get_cert
     vars:

@@ -3,7 +3,7 @@
   delegate_to: "{{ groups['orchestrator'] | first }}"
   become: false
   run_once: true
-  ansible.builtin.file:
+  file:
     path: "{{ etc_dir }}"
     state: directory
     mode: 0755
@@ -42,7 +42,7 @@
 
 - name: Test the connection
   become: false
-  ansible.builtin.raw: "/bin/true"
+  raw: "/bin/true"
   changed_when: false
 
 - name: Set fact that we're onboarded

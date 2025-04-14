@@ -1,6 +1,6 @@
 ---
 - name: Include version checks and updates
-  ansible.builtin.include_tasks: version_checks.yaml
+  include_tasks: version_checks.yaml
 - name: Configure k8s resources
   when: k8s_storage_rook_enabled | bool
   vars:
@@ -23,25 +23,25 @@
       failed_when: "not osd_storage_class.resources"
       when: on_openstack | bool
     - name: Apply operator chart
-      ansible.builtin.include_tasks: apply_operator.yaml
+      include_tasks: apply_operator.yaml
     - name: Wait for rook to become ready  # noqa no-handler
       when: operator_status.changed
       block:
         - name: Pause for 20 seconds, give the cluster time to converge
-          ansible.builtin.pause:
+          pause:
             seconds: 20
         - name: Include rook upgrade verification
-          ansible.builtin.include_tasks: wait_for_rook_upgrade.yaml
+          include_tasks: wait_for_rook_upgrade.yaml
     - name: Apply cluster chart
-      ansible.builtin.include_tasks: apply_cluster.yaml
+      include_tasks: apply_cluster.yaml
     - name: Wait for ceph to become ready  # noqa no-handler
       when: cluster_status.changed
       block:
         - name: Pause for 20 seconds, give the cluster time to converge
-          ansible.builtin.pause:
+          pause:
             seconds: 60
         - name: Include ceph upgrade verification
-          ansible.builtin.include_tasks: wait_for_ceph_upgrade.yaml
+          include_tasks: wait_for_ceph_upgrade.yaml
     - name: Wait for cluster to become ready
       kubernetes.core.k8s_info:
         kind: CephCluster
@@ -60,5 +60,5 @@
       delay: 10
       retries: 120
 - name: Include cluster health verification
-  ansible.builtin.include_tasks: cluster_health_verification.yaml
+  include_tasks: cluster_health_verification.yaml
 ...

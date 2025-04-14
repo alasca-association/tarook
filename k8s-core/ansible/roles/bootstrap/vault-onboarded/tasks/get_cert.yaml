@@ -14,13 +14,13 @@
   block:
   - name: "{{ get_cert_title }}: Check certificate existence"
     become: true
-    ansible.builtin.stat:
+    stat:
       path: "{{ get_cert_destination_crt }}"
     register: cert_existence
 
   - name: "{{ get_cert_title }}: Check key existence"
     become: true
-    ansible.builtin.stat:
+    stat:
       path: "{{ get_cert_destination_key }}"
     register: key_existence
 
@@ -35,7 +35,7 @@
     register: cert_info
 
   - name: "{{ get_cert_title }}: Dump cert information"
-    ansible.builtin.debug:
+    debug:
       msg: |
         Certificate {% if cert_existence.stat.exists %}exists,
         {% if cert_info.valid_at.point_1 %} is older than 4w{% else %}is not older than 4w{% endif %}
@@ -44,7 +44,7 @@
         Renewal was{% if not (force_renewal | default(false)) %} not{% endif %} enforced.
 
   - name: "{{ get_cert_title }}: Fail if cert exists but not the key Key, or vice versa"
-    ansible.builtin.fail:
+    fail:
       msg: Cert exists but key does not or vice versa
     when: cert_existence.stat.exists != key_existence.stat.exists
 
@@ -69,7 +69,7 @@
   - name: "{{ get_cert_title }}: Write certificate"  # noqa no-handler
     become: true
     when: get_cert is changed
-    ansible.builtin.copy:
+    copy:
       dest: "{{ get_cert_destination_crt }}"
       owner: "{{ get_cert_owner }}"
       group: "{{ get_cert_group | default(get_cert_owner) }}"
@@ -81,7 +81,7 @@
     become: true
     when: get_cert is changed
     no_log: true  # prevent private key from being exposed
-    ansible.builtin.copy:
+    copy:
       dest: "{{ get_cert_destination_key }}"
       owner: "{{ get_cert_owner }}"
       group: "{{ get_cert_group | default(get_cert_owner) }}"

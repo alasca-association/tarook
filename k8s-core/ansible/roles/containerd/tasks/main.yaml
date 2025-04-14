@@ -1,7 +1,7 @@
 ---
 - name: Ensure /etc/containerd directory is present
   become: true
-  ansible.builtin.file:
+  file:
     path: /etc/containerd
     state: directory
     mode: 0755
@@ -13,7 +13,7 @@
   block:
   - name: Ensure keyrings directory exists
     # ftr: this is present by default on Debian...
-    ansible.builtin.file:
+    file:
       state: directory
       path: /etc/apt/keyrings
       owner: root
@@ -21,7 +21,7 @@
       mode: u=rwx,go=rx
 
   - name: Add GPG apt key
-    ansible.builtin.copy:
+    copy:
       src: apt-key-{{ ansible_distribution | lower }}.gpg
       dest: /etc/apt/keyrings/docker.gpg
       owner: root
@@ -29,7 +29,7 @@
       mode: u=rw,go=r
 
   - name: Add docker repository
-    ansible.builtin.apt_repository:
+    apt_repository:
       repo: "deb [signed-by=/etc/apt/keyrings/docker.gpg] {% if apt_proxy_url is not none %}http{% else %}https{% endif %}://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
       state: present
     register: apt_action
@@ -38,7 +38,7 @@
     delay: "{{ error_delay }}"
 
   - name: Update apt package cache
-    ansible.builtin.apt:
+    apt:
       update_cache: true
     register: apt_action
     until: apt_action is not failed
@@ -58,7 +58,7 @@
 
 - name: Create containerd daemon configuration
   become: true
-  ansible.builtin.template:
+  template:
     src: config.toml.j2
     dest: /etc/containerd/config.toml
     owner: root
@@ -68,7 +68,7 @@
 
 - name: Ensure /etc/systemd/system/containerd.service.d/ is present
   become: true
-  ansible.builtin.file:
+  file:
     path: /etc/systemd/system/containerd.service.d
     state: directory
     mode: 0755
@@ -77,7 +77,7 @@
 
 - name: Require containerd to be started before kubelet
   become: true
-  ansible.builtin.copy:
+  copy:
     src: before-kubelet.conf
     dest: /etc/systemd/system/containerd.service.d/before-kubelet.conf
     owner: root
@@ -87,7 +87,7 @@
 
 - name: Configure crictl
   become: true
-  ansible.builtin.copy:
+  copy:
     src: crictl.yaml
     dest: /etc/crictl.yaml
     owner: root
@@ -98,7 +98,7 @@
   become: true
   block:
   - name: Create the containerd mirror directory
-    ansible.builtin.file:
+    file:
       path: /etc/containerd/certs.d
       state: directory
       # WARNING: The certs.d directory is world readable.  It may
@@ -139,7 +139,7 @@
   - |
     _allow_disruption
     or ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
-  ansible.builtin.systemd:
+  systemd:
     enabled: true
     state: restarted
     daemon_reload: true

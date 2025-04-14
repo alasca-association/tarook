@@ -30,7 +30,7 @@
 
   - name: Trigger rollout restart kube-proxy  # noqa no-changed-when no-handler
     when: kube_proxy_configmap.changed
-    ansible.builtin.command:
+    command:
       argv:
       - kubectl
       - rollout

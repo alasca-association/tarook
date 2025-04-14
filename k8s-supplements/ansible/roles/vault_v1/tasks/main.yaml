@@ -17,11 +17,11 @@
   delay: "{{ error_delay }}"
 
 - name: Create the internal PKI
-  ansible.builtin.import_tasks: internal_pki.yaml
+  import_tasks: internal_pki.yaml
 
 - name: Create the external PKI
   when: yaook_vault_ingress
-  ansible.builtin.import_tasks: external_pki.yaml
+  import_tasks: external_pki.yaml
 
 - name: "{{ yaook_vault_enabled | ternary('Add', 'Remove') }} Hashicorp vault Repo"
   kubernetes.core.helm_repository:
@@ -85,20 +85,20 @@
   # TODO: I'm caching those to facilitate development. We want to rotate these keys and token immediately after the cluster was spawned.
   - name: 'SENSITIVE: Write UNSEAL KEYS into cluster repo (./etc/vault_unseal.key)'
     delegate_to: "{{ groups['orchestrator'] | first }}"
-    ansible.builtin.copy:
+    copy:
       content: "{{ (vault_init.stdout | from_json).unseal_keys_b64 }}"
       dest: "{{ etc_dir }}/vault_unseal.key"
       mode: u=rw,og-rwx
 
   - name: 'SENSITIVE: Write ROOT TOKEN into cluster repo (./etc/vault_root_token)'
     delegate_to: "{{ groups['orchestrator'] | first }}"
-    ansible.builtin.copy:
+    copy:
       content: "{{ (vault_init.stdout | from_json).root_token }}"
       dest: "{{ etc_dir }}/vault_root_token"
       mode: u=rw,og-rwx
 
 - name: Load unseal key(s) and a root token
-  ansible.builtin.import_tasks: credentials.yaml
+  import_tasks: credentials.yaml
 
 # We have to unseal at least one vault before the raft cluster can be established
 - name: Unseal the initial Vault pod
@@ -107,7 +107,7 @@
   loop_control:
     label: "{{ pod.metadata.name }}"
     loop_var: pod
-  ansible.builtin.include_tasks: unseal.yaml
+  include_tasks: unseal.yaml
 
 - name: Wait until all vault instances have joined the cluster
   kubernetes.core.k8s_exec:
@@ -130,17 +130,17 @@
     label: "{{ pod.metadata.name }}"
     loop_var: pod
   # Note: We're using the loop + `include_tasks` dance to emulate looping over a block
-  ansible.builtin.include_tasks: unseal.yaml
+  include_tasks: unseal.yaml
 
 - name: Add monitoring
-  ansible.builtin.import_tasks: monitoring.yaml
+  import_tasks: monitoring.yaml
   when:
   - k8s_monitoring_enabled | bool
   - yaook_vault_root_token is defined
   - yaook_vault_root_token | length > 0
 
 - name: Add backups
-  ansible.builtin.include_tasks: backup.yaml
+  include_tasks: backup.yaml
   when:
   - yaook_vault_enable_backups | bool
   - yaook_vault_root_token is defined

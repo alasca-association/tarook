@@ -1,6 +1,6 @@
 ---
 - name: show test information
-  ansible.builtin.debug:
+  debug:
     msg: "This test is using the {{ block_storage_class }} storageClass"
 
 - name: Run the test
@@ -58,7 +58,7 @@
     retries: 240
 
   - name: check writer pod success
-    ansible.builtin.debug:
+    debug:
       msg: "Writer pod is in condition {{ writer_state.resources[0].status.phase }}"
     failed_when: 'writer_state.resources[0].status.phase == "Failed"'
 
@@ -89,7 +89,7 @@
     retries: 240
 
   - name: check reader pod success
-    ansible.builtin.debug:
+    debug:
       msg: "Reader pod is in condition {{ reader_state.resources[0].status.phase }}"
     failed_when: 'reader_state.resources[0].status.phase == "Failed"'
 
@@ -145,7 +145,7 @@
       retries: 240
 
     - name: check rehydration success
-      ansible.builtin.debug:
+      debug:
         msg: "Rehydration of snapshot is {{ rehydration_state.resources[0].status.phase }}"
       failed_when: 'rehydration_state.resources[0].status.phase != "Bound"'
       when: on_openstack

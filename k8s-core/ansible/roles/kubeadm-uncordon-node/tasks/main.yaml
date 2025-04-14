@@ -4,7 +4,7 @@
   retries: 5
   delay: 10
   when: _allow_disruption
-  ansible.builtin.command:
+  command:
   args:
     argv:
     - kubectl
