@@ -1,6 +1,6 @@
 ---
 - name: Ensure we have a (Cluster)Issuer set
-  when: yaook_vault_external_ingress_issuer_name not none
+  when: yaook_vault_external_ingress_issuer_name is none
   ansible.builtin.fail:
     msg: |
       `vault_v1` has been configured to create an external (a public) ingress.
