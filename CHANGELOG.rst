@@ -19,6 +19,17 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.0.8 (2025-04-15)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- A minor bug in the monitoring playbook got fixed
+  that caused it to fail
+  if no CRD update is needed. (`!1781 <https://gitlab.com/yaook/k8s/-/merge_requests/1781>`_)
+
+
 v9.0.7 (2025-03-27)
 -------------------
 
