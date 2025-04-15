@@ -25,7 +25,7 @@ Overview
 **Additional operating scripts**:
 
 - :ref:`destroy.sh<actions-references.destroysh>`
-- :ref:`migrate-cluster-repo.sh<actions-references.migrate-cluster-reposh>`
+- :ref:`migrate-to-release.sh<actions-references.migrate-to-releasesh>`
 - :ref:`update-frontend-nodes.sh<actions-references.update-frontend-nodessh>`
 - :ref:`update-kubernetes-nodes.sh<actions-references.update-kubernetes-nodessh>`
 - :ref:`upgrade.sh<actions-references.upgradesh>`
@@ -257,9 +257,9 @@ Destroy the entire cluster and all of its data.
 
 This is, obviously, destructive. Don’t run light-heartedly.
 
-.. _actions-references.migrate-cluster-reposh:
+.. _actions-references.migrate-to-releasesh:
 
-``migrate-cluster-repo.sh``
+``migrate-to-release.sh``
 ---------------------------
 
 Migrate an existing cluster repository which has been created
