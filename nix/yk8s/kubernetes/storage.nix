@@ -4,9 +4,11 @@
   yk8s-lib,
   ...
 }: let
-  cfg = config.yk8s.kubernetes;
+  cfg = config.yk8s.kubernetes.storage;
+  modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (lib) mkOption mkEnableOption types;
-  inherit (yk8s-lib) mkSubSection logIf;
+  inherit (yk8s-lib) mkSubSection;
+  inherit (yk8s-lib.options) mkHelmValuesOption;
 in {
   options.yk8s.kubernetes.storage = mkSubSection {
     _docs.order = 5;
@@ -32,6 +34,36 @@ in {
       type = types.bool;
       default = false;
       example = true;
+    };
+
+    helm_values = mkHelmValuesOption {
+      name = "cinder-csi";
+      valuesDocUrl = "https://artifacthub.io/packages/helm/cloud-provider-openstack/openstack-cinder-csi";
+    };
+  };
+
+  config.yk8s.kubernetes.storage.cinder.helm_values = {
+    storageClass = {
+      enabled = false;
+    };
+    secret = {
+      enabled = true;
+      create = false;
+      name = "cloud-config";
+    };
+    csi = {
+      provisioner = {
+        topology =
+          if cfg.cinder_enable_topology
+          then "true"
+          else "false";
+      };
+      plugin = {
+        nodePlugin = {
+          dnsPolicy = "ClusterFirst";
+          priorityClassName = "system-node-critical";
+        };
+      };
     };
   };
 }
