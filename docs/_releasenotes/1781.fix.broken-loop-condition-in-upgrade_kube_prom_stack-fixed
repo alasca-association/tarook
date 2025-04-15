@@ -1,3 +1,0 @@
-A minor bug in the monitoring playbook got fixed
-that caused it to fail
-if no CRD update is needed.
