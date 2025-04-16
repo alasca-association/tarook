@@ -1,7 +1,7 @@
 build_image:
   tags:
     - docker
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.26.2"
+  image: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/nixos/nix:2.26.2"
   stage: build-image
   before_script:
   - cp ci/container-image/nix.conf /etc/nix/nix.conf
@@ -32,7 +32,7 @@ build_image:
 
 
 .deploy_image:
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.26.2"
+  image: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/nixos/nix:2.26.2"
   stage: tag-image
   before_script:
     - |

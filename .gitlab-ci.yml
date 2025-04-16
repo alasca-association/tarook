@@ -61,7 +61,7 @@ tflint:
     - when: never
 
 shellcheck:
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/koalaman/shellcheck-alpine:v0.10.0"
+  image: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/koalaman/shellcheck-alpine:v0.10.0"
   stage: lint
   script:
     - "find -iname '*.sh' '!' -ipath './.git/**' -print0 | xargs -0 -- shellcheck -Calways"
