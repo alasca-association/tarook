@@ -226,9 +226,9 @@
     # id_rsa must be set as `File` input in the GitLab CI/CD variables of the
     # repository.
     - 'cp "$id_rsa" /root/.ssh/id_rsa && chmod go-rwx -R /root/.ssh'
-    # OS_PASSWORD must be set as `Variable` input in the GitLab CI/CD variables of
-    # the repository.
-    - . /root/openrc.sh
+    # Use `openrc.sh` if available on GitLab Docker Runner
+    # else expect env vars from GitLab Runners on Kubernetes
+    - if [ -f /root/openrc.sh ] ; then source /root/openrc.sh; fi
     - git clean -f .
     - "chmod o-w *"
     - rm -rf ci # make sure we're operating on a clean directory
