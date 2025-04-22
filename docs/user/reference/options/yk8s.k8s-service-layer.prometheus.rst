@@ -1463,7 +1463,7 @@ https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-promet
 
 **Default:**::
 
-  "70.5.0"
+  "70.7.0"
 
 
 **Declared by**
