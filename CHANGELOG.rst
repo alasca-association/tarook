@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.1.13 (2025-04-22)
+--------------------
+
+New Features
+~~~~~~~~~~~~
+
+- Backported support for basic auth in Prometheus remote write (`!1822 <https://gitlab.com/yaook/k8s/-/merge_requests/1822>`_)
+
+
 v8.1.12 (2025-03-25)
 --------------------
 
