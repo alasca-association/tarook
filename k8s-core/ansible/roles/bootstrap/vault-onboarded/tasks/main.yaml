@@ -9,14 +9,14 @@
 - name: Onboard node to vault
   block:
   - name: Set vault node name
-    ansible.builtin.set_fact:
+    set_fact:
       vault_node_name: "{{ inventory_hostname }}.node.{{ vault_cluster_name }}"
 
   - name: Prepare vault login
     become: true
     block:
     - name: Prepare login data directory
-      ansible.builtin.file:
+      file:
         state: directory
         path: /etc/vault
         owner: root
@@ -24,7 +24,7 @@
         mode: u=rwx,go-rwx
 
     - name: Write cluster name
-      ansible.builtin.copy:
+      copy:
         dest: /etc/vault/cluster-name
         owner: root
         group: root
@@ -32,7 +32,7 @@
         content: "{{ vault_cluster_name }}"
 
     - name: Write node name
-      ansible.builtin.copy:
+      copy:
         dest: /etc/vault/node-name
         owner: root
         group: root
@@ -79,26 +79,26 @@
     - name: Configure policies
       block:
       - name: Add base policy
-        ansible.builtin.set_fact:
+        set_fact:
           vault_node_policies: "{{ vault_policy_prefix }}/node"
 
       - name: Add gateway policy
-        ansible.builtin.set_fact:
+        set_fact:
           vault_node_policies: "{{ vault_policy_prefix }}/gateway,{{ vault_node_policies }}"
         when: "'frontend' in group_names"
 
       - name: Add k8s node policy
-        ansible.builtin.set_fact:
+        set_fact:
           vault_node_policies: "{{ vault_policy_prefix }}/k8s-node,{{ vault_node_policies }}"
         when: "'k8s_nodes' in group_names"
 
       - name: Add k8s control-plane policy
-        ansible.builtin.set_fact:
+        set_fact:
           vault_node_policies: "{{ vault_policy_prefix }}/k8s-control-plane,{{ vault_node_policies }}"
         when: "'masters' in group_names"
 
       - name: Discovered policies
-        ansible.builtin.debug:
+        debug:
           msg: "{{ vault_node_policies }}"
 
     - name: Configure approle
@@ -150,7 +150,7 @@
 
     - name: Read current secret ID  # noqa no-changed-when
       become: true
-      ansible.builtin.command:
+      command:
       args:
         argv:
         - cat
@@ -185,7 +185,7 @@
       register: approle_secret_id
 
     - name: Set vault credentials as facts
-      ansible.builtin.set_fact:
+      set_fact:
         vault_role_id: "{{ approle_role_id.data.data.role_id }}"
         vault_secret_id: "{{ approle_secret_id.data.data.secret_id }}"
 
@@ -206,13 +206,13 @@
       register: token_info
 
     - name: Check token information
-      ansible.builtin.debug:
+      debug:
         msg: "{{ token_info }}"
       failed_when: "token_info.data.data.policies | difference(vault_node_policies.split(',')) != ['default']"
 
     - name: Write vault role-id
       become: true
-      ansible.builtin.copy:
+      copy:
         dest: /etc/vault/role-id
         owner: root
         group: root
@@ -221,7 +221,7 @@
 
     - name: Write vault secret-id
       become: true
-      ansible.builtin.copy:
+      copy:
         dest: /etc/vault/secret-id
         owner: root
         group: root
@@ -246,7 +246,7 @@
   - name: Write role-id from env if not written
     become: true
     when: "not has_vault_orchestrator_role and vault_caller_role_id and vault_caller_secret_id"
-    ansible.builtin.copy:
+    copy:
       dest: /etc/vault/role-id
       owner: root
       group: root
@@ -256,7 +256,7 @@
   - name: Write secret-id from env if not written
     become: true
     when: "not has_vault_orchestrator_role and vault_caller_role_id and vault_caller_secret_id"
-    ansible.builtin.copy:
+    copy:
       dest: /etc/vault/secret-id
       owner: root
       group: root
@@ -265,7 +265,7 @@
 
   - name: Read role id
     become: true
-    ansible.builtin.command:
+    command:
     args:
       argv:
       - cat
@@ -275,7 +275,7 @@
 
   - name: Read secret id
     become: true
-    ansible.builtin.command:
+    command:
     args:
       argv:
       - cat
@@ -299,7 +299,7 @@
     failed_when: false
 
   - name: Fail if no vault credentials are available for this node
-    ansible.builtin.fail:
+    fail:
       msg: |
         The Vault token with which ansible runs does not have the orchestrator
         role (otherwise, we would've just generated valid credentials) and there

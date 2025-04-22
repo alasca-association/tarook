@@ -1,7 +1,7 @@
 ---
 - name: install bird
   become: true
-  ansible.builtin.apt:
+  apt:
     name: bird
     state: present
   register: task_result
@@ -13,7 +13,7 @@
 
 - name: configure bird
   become: true
-  ansible.builtin.template:
+  template:
     src: bird.conf.j2
     dest: /etc/bird/bird.conf
     owner: bird
@@ -25,7 +25,7 @@
 
 - name: drop-in directory for bird config
   become: true
-  ansible.builtin.file:
+  file:
     state: directory
     path: /etc/bird.d/
     owner: root
@@ -36,7 +36,7 @@
 
 - name: disable bird6
   become: true
-  ansible.builtin.service:
+  service:
     name: bird6
     enabled: false
     state: stopped
@@ -51,7 +51,7 @@
   - bird6
   block:
   - name: Create config for bird6 in /etc/bird/
-    ansible.builtin.template:
+    template:
       src: bird6.conf.j2
       dest: /etc/bird/bird6.conf
       owner: bird
@@ -60,7 +60,7 @@
     notify: restart bird6
 
   - name: Create drop-in directory for bird6 configs
-    ansible.builtin.file:
+    file:
       state: directory
       path: /etc/birdv6.d/
       owner: root
@@ -68,7 +68,7 @@
       mode: "u=rwx,g=rx,o-rwx"
 
   - name: enable bird6
-    ansible.builtin.service:
+    service:
       name: bird6
       enabled: true
       state: started
@@ -80,7 +80,7 @@
   - bird
   block:
   - name: Configure BIRD for calico (IPv4)
-    ansible.builtin.template:
+    template:
       src: bird-calico.conf.j2
       dest: /etc/bird.d/10-k8s-calico.conf
       owner: root
@@ -90,7 +90,7 @@
     when: ipv4_enabled
 
   - name: Configure BIRD for calico (IPv6)
-    ansible.builtin.template:
+    template:
       src: bird-calico-v6.conf.j2
       dest: /etc/birdv6.d/10-k8s-calico-ipv6.conf
       owner: root

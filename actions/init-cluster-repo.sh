@@ -79,7 +79,7 @@ if [ ! -f "$ansible_k8s_custom_playbook" ]; then
     playbook_text+="- hosts: orchestrator\n"
     playbook_text+="  gather_facts: false\n"
     playbook_text+="  tasks:\n"
-    playbook_text+="  - ansible.builtin.meta: noop"
+    playbook_text+="  - meta: noop"
     echo -e "$playbook_text" > "$ansible_k8s_custom_playbook"
 fi
 

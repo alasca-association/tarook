@@ -29,7 +29,7 @@
 - name: Sanity checks
   block:
   - name: Check for consistent rollout
-    ansible.builtin.assert:
+    assert:
       that: >
         rook_ceph_info.status is not defined and rook_operator_info.resources | length == 0
         or

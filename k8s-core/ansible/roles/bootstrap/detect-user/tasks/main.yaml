@@ -2,7 +2,7 @@
 - name: wait for ssh to become available
   delegate_to: "{{ groups['orchestrator'] | first }}"
   become: false
-  ansible.builtin.wait_for:
+  wait_for:
     host: "{{ ansible_host | default(inventory_hostname) }}"
     port: 22
     sleep: 5
@@ -14,7 +14,7 @@
 
 - name: Ensure etc_dir exists
   delegate_to: "{{ groups['orchestrator'] | first }}"
-  ansible.builtin.file:
+  file:
     path: "{{ etc_dir }}"
     state: directory
     mode: '0755'
@@ -27,7 +27,7 @@
   become: false
   # this is "slightly" ugly, but should take into account many possible ways
   # to tweak how ansible does things
-  ansible.builtin.shell: |
+  shell: |
     ssh \
       -o ConnectTimeout=10 \
       -o PasswordAuthentication=no \
@@ -50,7 +50,7 @@
   vars:
     valid_login_info: "{{ login_results.results | reject('failed') | reject('unreachable') | selectattr('rc', 'equalto', 0) | first | default({}) }}"
     valid_user: "{{ valid_login_info.item | default(False) }}"
-  ansible.builtin.set_fact:
+  set_fact:
     ansible_user: "{{ valid_user }}"
     cacheable: true
   check_mode: false
@@ -59,7 +59,7 @@
   - always
 
 - name: fail if login detection did not work
-  ansible.builtin.fail:
+  fail:
     msg: "failed to detect a valid login! tried: {{ detect_user_attempts }}"
   when: "not ansible_user"
   check_mode: false
@@ -68,7 +68,7 @@
   - always
 
 - name: show login info
-  ansible.builtin.debug:
+  debug:
     msg: "will henceforth use {{ ansible_user }} to connect to {{ inventory_hostname }}"
   check_mode: false
   tags:
@@ -76,7 +76,7 @@
 
 - name: test new login
   become: false
-  ansible.builtin.raw: whoami
+  raw: whoami
   changed_when: false
   register: whoami
   check_mode: false
@@ -86,7 +86,7 @@
   - always
 
 - name: warn if a generic user is being used
-  ansible.builtin.debug:
+  debug:
     msg: |
       WARNING: The login to
 

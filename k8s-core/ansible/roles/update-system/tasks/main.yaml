@@ -11,7 +11,7 @@
 - name: Update apt cache  # noqa command-instead-of-module no-changed-when
   when: ansible_pkg_mgr == 'apt'
   become: true
-  ansible.builtin.command:
+  command:
     argv:
       - apt-get
       - update
@@ -23,7 +23,7 @@
 
 - name: Upgrade the whole system (apt)  # noqa package-latest
   become: true
-  ansible.builtin.apt:
+  apt:
     upgrade: dist
     autoremove: true
   # We’ve been seeing timeouts during this operation. By nudging ssh using
@@ -57,7 +57,7 @@
   block:
 
     - name: Reboot the system (cloud-init run)  # noqa no-changed-when
-      ansible.builtin.command:
+      command:
         argv:
           - reboot
           - now
@@ -69,7 +69,7 @@
     # anyway by the above command if it is executed; If the above command is
     # not executed, we want to execute this one.
     - name: Reboot the system
-      ansible.builtin.reboot:
+      reboot:
       retries: "{{ error_retries }}"
       delay: "{{ error_delay }}"
 ...

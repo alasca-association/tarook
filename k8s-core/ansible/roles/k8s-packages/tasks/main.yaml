@@ -1,7 +1,7 @@
 ---
 - name: Install prerequisites
   become: true
-  ansible.builtin.apt:
+  apt:
     update_cache: true
     state: present
     name:
@@ -17,7 +17,7 @@
 - name: Expand NO_PROXY configuration on Ubuntu machines
   when: cluster_behind_proxy and ansible_distribution == 'Ubuntu'
   become: true
-  ansible.builtin.lineinfile:
+  lineinfile:
     path: /etc/environment
     regexp: "^(.*{{ item }}.*)$"
     line: "{{ item }}={{ no_proxy }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
@@ -29,7 +29,7 @@
 - name: Expand NO_PROXY configuration on RHEL machines
   when: cluster_behind_proxy and ansible_distribution == 'Red Hat Enterprise Linux'
   become: true
-  ansible.builtin.lineinfile:
+  lineinfile:
     path: /etc/profile.d/proxy.sh
     regexp: "^(.*{{ item }}.*)$"
     line: "{{ item }}={{ no_proxy }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
@@ -47,12 +47,12 @@
     - name: Remove hold of packages if migration needed  # noqa no-changed-when no-handler
       when: drop_google_repo.changed | default(False)
       become: true
-      ansible.builtin.command: apt-mark unhold kubelet kubeadm kubectl
+      command: apt-mark unhold kubelet kubeadm kubectl
 
     - name: Install kubelet, kubeadm and kubectl
       # Note: check available version with `apt-cache policy <package name>`
       become: true
-      ansible.builtin.package:
+      package:
         state: present
         name:
           - "kubelet={{ k8s_version }}-*"
@@ -66,9 +66,9 @@
 
     - name: Prevent the k8s packages for being updated  # noqa no-changed-when
       become: true
-      ansible.builtin.command: apt-mark hold kubelet kubeadm kubectl
+      command: apt-mark hold kubelet kubeadm kubectl
 
 # kubelet should be restarted immediately
 - name: Force restart of kubelet at this point
-  ansible.builtin.meta: flush_handlers
+  meta: flush_handlers
 ...

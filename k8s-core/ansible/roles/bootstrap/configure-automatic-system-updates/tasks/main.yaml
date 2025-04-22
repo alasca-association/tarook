@@ -3,7 +3,7 @@
 ---
 - name: Remove unattended-upgrades
   become: true
-  ansible.builtin.package:
+  package:
     name: unattended-upgrades
     state: absent
 ...

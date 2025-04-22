@@ -51,7 +51,7 @@
     delay: 1
 
   - name: store pod IPs
-    ansible.builtin.set_fact:
+    set_fact:
       service_pod_ips: "{{ service_pods.resources | map(attribute='status') | map(attribute='podIP') | list }}"
 
   - name: start blocked-test
@@ -81,7 +81,7 @@
     retries: 60
 
   - name: check blocked-test pod failure
-    ansible.builtin.debug:
+    debug:
       msg: "Blocked test pod is in condition {{ blocked_test_state.resources[0].status.phase }}"
     failed_when: 'blocked_test_state.resources[0].status.phase != "Failed"'
 
@@ -125,14 +125,14 @@
     retries: 60
 
   - name: check unblocked-test pod succeeded
-    ansible.builtin.debug:
+    debug:
       msg: "Blocked test pod is in condition {{ blocked_test_state.resources[0].status.phase }}"
     failed_when: 'blocked_test_state.resources[0].status.phase == "Failed"'
 
 - name: check service is unreachable from the node
   # In SingleNode setups, the node will be able to connect to the service
   when: inventory_hostname != groups['masters'] | first
-  ansible.builtin.uri:
+  uri:
     url: "http://{{ item }}:8080"
     timeout: 10
     status_code: -1
@@ -157,7 +157,7 @@
   delay: "{{ error_delay }}"
 
 - name: check service is reachable from the node
-  ansible.builtin.uri:
+  uri:
     url: "http://{{ item }}:8080"
     status_code: 200
   register: uri_result

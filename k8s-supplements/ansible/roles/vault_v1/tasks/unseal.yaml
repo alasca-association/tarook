@@ -10,7 +10,7 @@
 
 - name: Abort if vault is sealed and we don't have any keys ({{ pod.metadata.name }})
   when: (vault_status.stdout | from_json).sealed and not yaook_vault_unseal_keys
-  ansible.builtin.fail:
+  fail:
     msg: Dear user, the LCM would like to speak with our vault. Unfortuntely it's locked and you didn't hand us the key(s). Mind helping us out by unsealing the vault manually? Thanks!
 
 # We don't care that the unseal keys are exposed because they are supposed to be rotated anyway after the initial setup.

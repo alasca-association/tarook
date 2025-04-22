@@ -9,7 +9,7 @@
   changed_when: true
   delegate_to: "{{ groups['orchestrator'] | first }}"
   when: _allow_disruption
-  ansible.builtin.command:
+  command:
   args:
     argv:
     - kubectl

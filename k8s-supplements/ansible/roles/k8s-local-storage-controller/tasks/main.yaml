@@ -3,7 +3,7 @@
   become: true
   block:
   - name: Create directory structure
-    ansible.builtin.file:
+    file:
       path: "{{ item }}"
       state: directory
       owner: root
@@ -78,25 +78,25 @@
   - dump-k8s-manifests
   block:
   - name: Create manifest directory
-    ansible.builtin.file:
+    file:
       state: directory
       path: "{{ manifest_dir }}"
       mode: 0755
 
   - name: Create provisioner manifest
-    ansible.builtin.template:
+    template:
       src: 'provisioner.yaml.j2'
       dest: "{{ manifest_dir }}/provisioner.yaml"
       mode: 0664
 
   - name: Create storage class manifest
-    ansible.builtin.template:
+    template:
       src: 'sc.yaml.j2'
       dest: "{{ manifest_dir }}/sc.yaml"
       mode: 0664
 
   - name: Create service manifest
-    ansible.builtin.template:
+    template:
       src: 'service.yaml.j2'
       dest: "{{ manifest_dir }}/service.yaml"
       mode: 0664

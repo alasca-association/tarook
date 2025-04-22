@@ -1,7 +1,7 @@
 ---
 - name: Check that calico/node and typha Pods are running
-  ansible.builtin.include_tasks: test-pod-readiness.yaml
+  include_tasks: test-pod-readiness.yaml
 
 - name: Check Pod-to-Pod connectivity
-  ansible.builtin.include_tasks: test-pod-connectivity.yaml
+  include_tasks: test-pod-connectivity.yaml
 ...

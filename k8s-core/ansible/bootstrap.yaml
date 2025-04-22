@@ -130,7 +130,7 @@
   tasks:
   - name: Update apt cache
     become: true
-    ansible.builtin.apt:
+    apt:
       update_cache: true
     register: update_apt
     until: update_apt is not failed

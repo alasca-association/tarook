@@ -2,7 +2,7 @@
 # We don't want to assert mode here
 - name: Create parent directories for PKI directories
   become: true
-  ansible.builtin.file:
+  file:
     path: "{{ item }}"
     state: directory
     mode: u=rwx,go=rx
@@ -13,7 +13,7 @@
 # The focus of the following two tasks is on fixing the permissions.
 - name: Create PKI directories
   become: true
-  ansible.builtin.file:
+  file:
     path: "{{ item }}"
     state: directory
     mode: u=rwx,go-rwx
@@ -33,7 +33,7 @@
   become: true
   block:
   - name: Create kubeadm-join-config.yaml
-    ansible.builtin.template:
+    template:
       src: kubeadm-join-config.yaml.j2
       dest: /tmp/kubeadm-join-config.yaml
       owner: root
@@ -50,7 +50,7 @@
       name: helpers/kubeadm-command
 
   - name: Remove kubeadm-join-config.yaml
-    ansible.builtin.file:
+    file:
       path: /tmp/kubeadm-join-config.yaml
       state: absent
 
@@ -58,7 +58,7 @@
   # to pass a kubelet config file for kubeadm join
   # https://stackoverflow.com/questions/60378117/limit-the-number-of-pods-per-node
   - name: Configure kubelet
-    ansible.builtin.include_role:
+    include_role:
       name: kubelet-configuration
     vars:
       _init_cluster: true  # needs to be passed so that kubelet is configured & restarted

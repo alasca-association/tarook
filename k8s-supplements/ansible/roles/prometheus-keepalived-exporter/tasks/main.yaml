@@ -1,7 +1,7 @@
 ---
 - name: create user
   become: true
-  ansible.builtin.user:
+  user:
     system: true
     name: "{{ prometheus_keepalived_exporter_user }}"
     home: /dev/null
@@ -9,7 +9,7 @@
 
 - name: "[Legacy] Remove residual files from /tmp"
   become: true
-  ansible.builtin.file:
+  file:
     path: "{{ item }}"
     state: absent
   loop:
@@ -18,7 +18,7 @@
 
 - name: Create configuration directory
   become: true
-  ansible.builtin.file:
+  file:
     state: directory
     path: /etc/prometheus-keepalived-exporter
     owner: root
@@ -27,7 +27,7 @@
 
 - name: Store id tag
   become: true
-  ansible.builtin.template:
+  template:
     src: archive_id_tag.j2
     dest: /etc/prometheus-keepalived-exporter/version
     owner: root
@@ -41,7 +41,7 @@
     pke_path: /var/cache/prometheus-keepalived-exporter
   block:
   - name: Create caching directory for the archive/binary
-    ansible.builtin.file:
+    file:
       state: directory
       path: "{{ pke_path }}"
       owner: root
@@ -49,7 +49,7 @@
       mode: u=rwx,g=rx,o-rwx
 
   - name: Download executable
-    ansible.builtin.get_url:
+    get_url:
       checksum: "{{ prometheus_keepalived_exporter_checksums[prometheus_keepalived_exporter_version] }}"
       dest: "{{ pke_path }}"
       url: "{{ prometheus_keepalived_exporter_url }}"
@@ -63,13 +63,13 @@
     delay: "{{ error_delay }}"
 
   - name: Extract binary
-    ansible.builtin.unarchive:
+    unarchive:
       src: "{{ pke_path }}/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64.tar.gz"
       dest: "{{ pke_path }}"
       remote_src: true
 
   - name: Install binary to /usr/local/bin
-    ansible.builtin.copy:
+    copy:
       src: "{{ pke_path }}/keepalived_exporter-{{ prometheus_keepalived_exporter_version }}-amd64/keepalived_exporter"
       dest: /usr/local/bin
       owner: keepalived-exporter
@@ -95,7 +95,7 @@
 
 - name: Create a systemd unit for keepalived_exporter
   become: true
-  ansible.builtin.copy:
+  copy:
     src: "{{ role_path }}/files/prometheus-keepalived-exporter.service"
     dest: /etc/systemd/system/
     owner: root
@@ -105,7 +105,7 @@
 
 - name: Start & enable the systemd unit
   become: true
-  ansible.builtin.systemd:
+  systemd:
     name: prometheus-keepalived-exporter
     state: "{{ ((pke_binary is changed) or (pke_unit is changed)) | ternary('restarted', 'started') }}"
     enabled: true

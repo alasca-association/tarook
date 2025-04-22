@@ -1,13 +1,13 @@
 ---
 - name: Ensure we have a (Cluster)Issuer set
   when: yaook_vault_external_ingress_issuer_name is none
-  ansible.builtin.fail:
+  fail:
     msg: |
       `vault_v1` has been configured to create an external (a public) ingress.
       Please set `external_ingress_issuer_name` s.t. the role can fetch a TLS certificate for you.
 
 - name: Set vault server DNS names
-  ansible.builtin.set_fact:
+  set_fact:
     yaook_vault_dnsnames_complete: |
       [
         {% for name in yaook_vault_dnsnames %} {{ name | to_json }}, {% endfor %}

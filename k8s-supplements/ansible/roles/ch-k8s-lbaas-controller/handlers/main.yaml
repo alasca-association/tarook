@@ -1,6 +1,6 @@
 ---
 - name: restart ch-k8s-lbaas-controller  # noqa no-changed-when
-  ansible.builtin.command:
+  command:
   args:
     argv:
     - "kubectl"

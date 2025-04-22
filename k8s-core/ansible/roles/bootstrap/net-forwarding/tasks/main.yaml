@@ -3,7 +3,7 @@
   become: true
   block:
     - name: Create /etc/sysctl.d/forward.conf
-      ansible.builtin.template:
+      template:
         src: forward.conf.j2
         dest: /etc/sysctl.d/forward.conf
         owner: root
@@ -11,7 +11,7 @@
         mode: 0640
 
     - name: Load /etc/sysctl.d/forward.conf
-      ansible.builtin.command:
+      command:
         argv:
           - sysctl
           - -p

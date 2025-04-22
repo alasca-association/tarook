@@ -28,10 +28,10 @@
   tags: update-frontend-nodes
   tasks:
   - name: Group frontend nodes by frontend initialization status
-    ansible.builtin.group_by:
+    group_by:
       key: "{{ ansible_local['frontend-initialized']['frontend_install_status'] | default('not_initialized') }}_frontend_nodes"
   - name: Group frontend nodes by Kubernetes initialization status
-    ansible.builtin.group_by:
+    group_by:
       key: "{{ ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') }}_kubernetes_nodes"
 
 - name: Upgrade uninitialized frontend nodes

@@ -105,7 +105,7 @@
     # must use block to be able to set environment
     block:
     - name: Generate super admin kubeconfig
-      ansible.builtin.include_role:
+      include_role:
         name: k8s-master
         tasks_from: mkkubeconfig.yaml
       vars:

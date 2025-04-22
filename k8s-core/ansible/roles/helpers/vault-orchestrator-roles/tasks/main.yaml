@@ -15,10 +15,10 @@
   register: token_info
 
 - name: Test orchestrator token role
-  ansible.builtin.set_fact:
+  set_fact:
     has_vault_orchestrator_role: "{{ (vault_policy_prefix + '/orchestrator') in token_info.data.data.policies or 'root' in token_info.data.data.policies }}"
 
 - name: Report orchestrator role
-  ansible.builtin.debug:
+  debug:
     msg: "I do {{ has_vault_orchestrator_role | ternary('', 'NOT ') }}have the orchestrator role!"
 ...
