@@ -1610,7 +1610,7 @@ Set custom Bitnami/Thanos chart version
 
 **Default:**::
 
-  "16.0.3"
+  "16.0.4"
 
 
 **Declared by**
