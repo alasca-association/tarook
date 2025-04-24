@@ -7,3 +7,4 @@ etc/manifests/
 /.direnv
 inventory
 result
+etc/admin.conf
