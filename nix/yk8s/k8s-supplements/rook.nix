@@ -14,7 +14,7 @@ in {
   imports =
     [
       (mkRemovedOptionModule "k8s-service-layer.rook" "use_helm" "")
-      (mkRemovedOptionModule "k8s-service-layer.rook" "on_openstack" "Set on_openstack=False in your hosts file instead.")
+      (mkRemovedOptionModule "k8s-service-layer.rook" "on_openstack" "Set automatically if openstack.enabled is true.")
       (mkMultiResourceOptionsModule "k8s-service-layer.rook" {
         description = ''
           Requests and limits for rook/ceph

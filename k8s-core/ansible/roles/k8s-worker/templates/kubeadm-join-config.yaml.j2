@@ -5,7 +5,7 @@ nodeRegistration:
   - FileAvailable--etc-kubernetes-kubelet.conf
   - FileAvailable--etc-kubernetes-pki-ca.crt
   kubeletExtraArgs:
-{% if on_openstack %}
+{% if openstack_enabled %}
     cloud-provider: "external"
 {% endif %}
 {% if ipv4_enabled and ipv6_enabled %}

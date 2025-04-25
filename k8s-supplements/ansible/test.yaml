@@ -227,7 +227,7 @@
     vars:
       block_storage_class: csi-sc-cinderplugin
       volume_snapshot_class: csi-cinder-snapclass
-    when: on_openstack
+    when: openstack_enabled
     tags:
     - test-block-storage-cinder
     - check-block-storage-cinder

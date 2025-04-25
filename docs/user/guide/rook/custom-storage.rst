@@ -12,17 +12,11 @@ used to set up OSDs is not available if you’re not running on OpenStack.
 In such an environment, one wants to directly define fine-granular the
 nodes to used and their devices.
 
-If you’re not running on OpenStack you need to set the following
-variable to ``false`` in your hosts file:
-
-.. code:: ini
-
-   on_openstack = false
 
 .. note::
 
    All the subsequent described configuration does only take
-   effect if you disabled ``on_openstack``.
+   effect if :ref:`configuration-options.yk8s.openstack.enabled` is ``false``.
 
 You can configure to automatically use all available nodes and/or
 devices:

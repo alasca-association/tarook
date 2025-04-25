@@ -1,6 +1,5 @@
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
-on_openstack=True
 
 [orchestrator]
 localhost ansible_connection=local ansible_python_interpreter="{{ ansible_playbook_python }}"

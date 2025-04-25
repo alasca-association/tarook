@@ -141,13 +141,11 @@ For the LCM to work, we have to adjust the hosts file
 which has been created previously by Terraform
 ``config/hosts``.
 
-* Set ``on_openstack`` to ``false``
+* Set ``openstack.enabled`` to ``false``
 * Set ``networking_fixed_ip`` to the networking fixed ip created by Terraform
   * Check out the following vars-file: ``inventory/yaook-k8s/group_vars/all/terraform_networking-trampoline.yaml``
 * Set ``subnet_cidr`` to the subnet cidr created by Terraform (and configured above)
   * Check out the following vars-file: ``inventory/yaook-k8s/group_vars/all/terraform_networking-trampoline.yaml``
-* Set ``ipv4_enabled`` to ``true``
-* Set ``ipv6_enabled`` to ``false``
 * Add the jump host as target
 
 Your hosts file should end up similar to this:
@@ -157,7 +155,6 @@ Your hosts file should end up similar to this:
 
   [all:vars]
   ansible_python_interpreter=/usr/bin/python3
-  on_openstack=False
   networking_fixed_ip=172.30.154.75
   subnet_cidr=172.30.154.0/24
   ipv6_enabled=False
