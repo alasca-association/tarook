@@ -222,7 +222,7 @@ in {
         })
       ];
     _state_packages = lib.lists.optional cfg.enabled (linkToPath "${wireguard_helper_output}/${ipam_path}" ipam_path);
-    warnings = lib.optional (cfg.enabled -> (builtins.length cfg.peers) == 0) "Wireguard is enabled but no peers are configured.";
+    warnings = lib.optional (cfg.enabled && (builtins.length cfg.peers) == 0) "Wireguard is enabled but no peers are configured.";
     assertions = let
       inherit (builtins) length;
       inherit (lib.lists) unique;
