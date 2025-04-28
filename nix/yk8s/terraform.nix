@@ -116,10 +116,7 @@ in {
         export TF_HTTP_USERNAME="<gitlab-username>"
         export TF_HTTP_PASSWORD="<gitlab-access-token>"
     '';
-    enabled = mkOption {
-      type = types.bool;
-      default = true;
-    };
+    enabled = mkEnableOption "Terraform usage";
 
     prevent_disruption = mkOption {
       description = ''
