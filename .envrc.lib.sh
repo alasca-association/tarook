@@ -49,13 +49,22 @@ bash -c "$hash_command" > "$nix_hash_file"
 EOF
   chmod +x "$bin_dir/$reload_command"
 
-  if [ "$(cat "$nix_hash_file" 2>/dev/null)" != "$nix_hashes" ]; then
+  if ! [ -e "$out_path"  ]; then
+    if [ -L "$out_path" ]; then
+      echo "========"
+      echo "WARNING: Flake environment has been garbage collected. Rebuilding..."
+      echo "========"
+    else
+      echo "========"
+      echo "INFO: Initializing Flake environment. This can take a while..."
+      echo "========"
+    fi
+    rm -f "$out_path" 2>/dev/null
+    nix build "$flake_dir#yk8s-env-${YAOOK_K8S_DEVSHELL}" -o "$out_path"
+    bash -c "$hash_command" > "$nix_hash_file"
+  elif [ "$(cat "$nix_hash_file" 2>/dev/null)" != "$nix_hashes" ]; then
     echo "========"
     echo "WARNING: Flake changed. Update environment by running $reload_command"
-    echo "========"
-  elif [ -L "$out_path" ] && ! [ -e "$out_path"  ]; then
-    echo "========"
-    echo "WARNING: Flake environment has been garbage collected. Please rebuild by running $reload_command"
     echo "========"
   fi
 }
