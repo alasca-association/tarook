@@ -1,0 +1,1 @@
+Terraform is now disabled by default, which means that for bare-metal clusters it is now sufficient to disable Openstack. This change is non-breaking, because the OpenStack module automatically enabled Terraform.

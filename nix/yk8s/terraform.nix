@@ -41,10 +41,7 @@ in {
   ];
 
   options.yk8s.terraform = mkTopSection {
-    enabled = mkOption {
-      type = types.bool;
-      default = true;
-    };
+    enabled = mkEnableOption "Terraform usage";
 
     prevent_disruption = mkOption {
       description = ''
