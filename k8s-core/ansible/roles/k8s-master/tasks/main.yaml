@@ -302,21 +302,8 @@
 # See docs ref:cluster.node-labeling
 - name: "Ensure K8s node labels"
   delegate_to: "{{ groups['orchestrator'] | first }}"
-  vars:
-    # Dict of configured + managed node labels to apply after join
-    # managed labels take precedence
-    node_labels: >
-      {{
-        (
-          dict(
-              k8s_node_labels[inventory_hostname] | default([])
-              | map('split', '=', 1)
-          )
-          | combine(_managed_node_labels['masters'])
-        )
-      }}
   when:
-  - node_labels | length > 0
+  - k8s_node_labels[inventory_hostname] | length > 0
   kubernetes.core.k8s:
     state: patched
     api_version: v1
@@ -324,28 +311,23 @@
     name: "{{ inventory_hostname }}"
     definition:
       metadata:
-        labels: "{{ node_labels }}"
+        labels: "{{ k8s_node_labels[inventory_hostname] }}"
 
-- name: "Ensure K8s node taints"
+- name: "Ensure present K8s node taints"
   delegate_to: "{{ groups['orchestrator'] | first }}"
-  vars:
-    # List of configured node taints (as dicts) to apply after join
-    # (taint strings parsed to dict,
-    #  empty values are omitted, effect defaults to NoExecute)
-    node_taints: >
-      {{
-        (
-          k8s_node_taints[inventory_hostname] | default([])
-          | map('regex_replace', '^([^:=]+)([=]([^:]+))?([:](.+))?', '{"key": "\1", "value": "\3", "effect": "\5"}')
-          | map('regex_replace', ', "value": ""', '')
-          | map('regex_replace', '"effect": ""', '"effect": "NoExecute"')
-          | map('from_json')
-        )
-      }}
   when:
-  - node_taints | length > 0
+  - k8s_node_taints_present[inventory_hostname] | length > 0
   kubernetes.core.k8s_taint:
     state: present
     name: "{{ inventory_hostname }}"
-    taints: "{{ node_taints }}"
+    taints: "{{ k8s_node_taints_present[inventory_hostname] }}"
+
+- name: "Ensure absent K8s node taints"
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  when:
+  - k8s_node_taints_absent[inventory_hostname] | length > 0
+  kubernetes.core.k8s_taint:
+    state: absent
+    name: "{{ inventory_hostname }}"
+    taints: "{{ k8s_node_taints_absent[inventory_hostname] }}"
 ...

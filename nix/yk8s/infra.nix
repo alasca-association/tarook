@@ -119,6 +119,7 @@ in {
             };
             gateways = mkOption {
               type = groupSubmodule;
+              default = {};
             };
             masters = mkOption {
               type = groupSubmodule;
