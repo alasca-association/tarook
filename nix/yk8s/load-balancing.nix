@@ -5,6 +5,8 @@
   ...
 }: let
   cfg = config.yk8s.load-balancing;
+  modules-lib = import ./lib/modules.nix {inherit lib;};
+  inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
 
@@ -45,6 +47,10 @@
     };
   };
 in {
+  imports = [
+    (mkRemovedOptionModule "load-balancing" "priorities" "")
+  ];
+
   options.yk8s.load-balancing = mkTopSection {
     _docs.order = 2;
     _docs.preface = ''
@@ -108,14 +114,6 @@ in {
     haproxy_frontend_nodeport_maxconn = mkOption {
       type = types.ints.positive;
       default = 2000;
-    };
-    priorities = mkOption {
-      description = ''
-        Deprecated
-      '';
-      type = types.listOf types.str;
-      default = [];
-      apply = builtins.map (host: "[load-balancer.priority] ignoring deprecated host-based priority override for host ${host}"); # TODO why not simple remove that option?
     };
   };
   config.yk8s._inventory_packages = [
