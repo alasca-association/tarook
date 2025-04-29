@@ -2,3 +2,14 @@ Running the release migration script
 now inserts and updates the LCM's gitignore rules
 in the cluster repo's gitignore file.
 You may override them if needed.
+
+It is recommended to apply the cluster repo's gitignore rules to its git index
+with *every* major release.
+The following will remove any committed but gitignore file from version control:
+
+.. code: shell
+
+   git ls-files --ignored --cached --exclude-from=.gitignore -z \
+     | xargs --null git rm --cached -r
+
+_

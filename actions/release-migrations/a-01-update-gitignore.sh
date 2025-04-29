@@ -95,4 +95,9 @@ sed \
   " \
   "${cluster_repo_gitignore}"
 
-echo "Synced LCM defined gitignore rules to ${cluster_repo_gitignore}"
+notef "Synced LCM defined gitignore rules to ${cluster_repo_gitignore}"
+
+hintf "It is recommended to apply the gitignore rules to the git index \
+by running:
+
+git ls-files --ignored --cached --exclude-from=.gitignore -z | xargs --null git rm --cached -r"
