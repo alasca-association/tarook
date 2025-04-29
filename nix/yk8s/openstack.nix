@@ -11,9 +11,9 @@
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath mkJson;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath;
   inherit (yk8s-lib.types) ipv4Cidr;
-  inherit (yk8s-lib.transform) filterNull removeObsoleteOptions filterInternal;
+  inherit (yk8s-lib.transform) removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
   tfvars_file_path = "terraform/config.tfvars.json";
   commonNodeDefaultOptions = {
@@ -38,7 +38,9 @@
       default = "";
     };
   };
-  terraformOptions = [
+  # NOTE: Some options are not used by Ansible but other parts of the LCM,
+  #       such as Terraform. Therefore they are filtered out.
+  nonAnsibleOptions = [
     "public_network"
     "keypair"
     "azs"
@@ -353,43 +355,13 @@ in {
         '';
       })
     ];
-    _inventory_packages =
-      [
-        (mkGroupVarsFile {
-          inherit cfg;
-          inventory_path = "all/openstack.yaml";
-          ansible_prefix = "openstack_";
-          transformations = [(c: builtins.removeAttrs c terraformOptions)];
-        })
-      ]
-      ++ (
-        let
-          linkTfstateIfExists = source: target:
-            if config.yk8s.state_directory != null && builtins.pathExists "${config.yk8s.state_directory}/${source}"
-            then [(linkToPath "${config.yk8s.state_directory}/${source}" target)]
-            else
-              builtins.trace "INFO: ${config.yk8s._state_base_path}/${source} does not yet exist. Terraform stage needs to be run first."
-              [];
-        in
-          (linkTfstateIfExists "terraform/rendered/hosts" "hosts")
-          ++ (linkTfstateIfExists "terraform/rendered/terraform_networking-trampoline.yaml" "group_vars/all/terraform_networking-trampoline.yaml")
-          ++ (linkTfstateIfExists "terraform/rendered/terraform_networking.yaml" "group_vars/all/terraform_networking.yaml")
-      );
-    _state_packages = [
-      (
-        let
-          filteredOpenstackCfg = lib.attrsets.getAttrs terraformOptions cfg;
-          filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["prevent_disruption"]];
-          infraCfg = lib.attrsets.getAttrs ["cluster_name" "ipv4_enabled" "ipv6_enabled" "subnet_cidr" "subnet_v6_cidr"] config.yk8s.infra;
-          mergedCfg =
-            builtins.foldl' (acc: e: lib.attrsets.recursiveUpdate acc (removeObsoleteOptions e)) {}
-            [filteredOpenstackCfg filteredTerraformCfg infraCfg];
-          transformations = [filterInternal filterNull];
-          varsFile = mkJson "tfvars.json" (pipe mergedCfg transformations);
-        in (pkgs.runCommandLocal "tfvars.json" {} ''
-          install -m 644 -D ${varsFile} $out/${tfvars_file_path}
-        '')
-      )
+    _inventory_packages = [
+      (mkGroupVarsFile {
+        inherit cfg;
+        inventory_path = "all/openstack.yaml";
+        ansible_prefix = "openstack_";
+        transformations = [(c: builtins.removeAttrs c nonAnsibleOptions)];
+      })
     ];
   };
 }

@@ -11,11 +11,35 @@
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption linkToPath mkJson;
   inherit (yk8s-lib.types) ipv4Cidr;
-  inherit (yk8s-lib.transform) removeObsoleteOptions filterInternal;
+  inherit (yk8s-lib.transform) filterNull removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
   tfvars_file_path = "terraform/config.tfvars.json";
+
+  openstackTerraformOptions = [
+    "public_network"
+    "keypair"
+    "azs"
+    "thanos_delete_container"
+    "spread_gateways_across_azs"
+    "create_root_disk_on_volume"
+    "network_mtu"
+    "dns_nameservers_v4"
+    "monitoring_manage_thanos_bucket"
+    "gateway_count"
+    "gateway_defaults"
+    "master_defaults"
+    "worker_defaults"
+    "nodes"
+  ];
+  infraTerraformOptions = [
+    "cluster_name"
+    "ipv4_enabled"
+    "ipv6_enabled"
+    "subnet_cidr"
+    "subnet_v6_cidr"
+  ];
 in {
   imports = [
     (mkRemovedOptionModule "terraform" "haproxy_ports" "")
@@ -153,11 +177,41 @@ in {
     };
   };
   config.yk8s = {
-    _inventory_packages = [
-      (mkGroupVarsFile {
-        cfg = lib.attrsets.getAttrs ["enabled" "prevent_disruption"] cfg;
-        inventory_path = "all/terraform.yaml";
-      })
+    _inventory_packages =
+      [
+        (mkGroupVarsFile {
+          cfg = lib.attrsets.getAttrs ["enabled" "prevent_disruption"] cfg;
+          inventory_path = "all/terraform.yaml";
+        })
+      ]
+      ++ (
+        let
+          linkTfstateIfExists = source: target:
+            if config.yk8s.state_directory != null && builtins.pathExists "${config.yk8s.state_directory}/${source}"
+            then [(linkToPath "${config.yk8s.state_directory}/${source}" target)]
+            else
+              builtins.trace "INFO: ${config.yk8s._state_base_path}/${source} does not yet exist. Terraform stage needs to be run first."
+              [];
+        in
+          (linkTfstateIfExists "terraform/rendered/hosts" "hosts")
+          ++ (linkTfstateIfExists "terraform/rendered/terraform_networking-trampoline.yaml" "group_vars/all/terraform_networking-trampoline.yaml")
+          ++ (linkTfstateIfExists "terraform/rendered/terraform_networking.yaml" "group_vars/all/terraform_networking.yaml")
+      );
+    _state_packages = [
+      (
+        let
+          filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["prevent_disruption"]];
+          filteredInfraCfg = lib.attrsets.getAttrs infraTerraformOptions config.yk8s.infra;
+          filteredOpenstackCfg = lib.attrsets.getAttrs openstackTerraformOptions config.yk8s.openstack;
+          mergedCfg =
+            builtins.foldl' (acc: e: lib.attrsets.recursiveUpdate acc (removeObsoleteOptions e)) {}
+            [filteredTerraformCfg filteredInfraCfg filteredOpenstackCfg];
+          transformations = [filterInternal filterNull];
+          varsFile = mkJson "tfvars.json" (pipe mergedCfg transformations);
+        in (pkgs.runCommandLocal "tfvars.json" {} ''
+          install -m 644 -D ${varsFile} $out/${tfvars_file_path}
+        '')
+      )
     ];
   };
 }
