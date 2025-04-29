@@ -1,0 +1,1 @@
+Labels and taints are now fully configurable, see :ref:`configuration-options.yk8s.node-scheduling`
