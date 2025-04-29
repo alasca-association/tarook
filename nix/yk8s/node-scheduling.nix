@@ -60,11 +60,11 @@ in {
   config.yk8s.warnings =
     (builtins.foldl' (acc: e:
       acc
-      ++ lib.optional (config.yk8s.infra.final_hosts != null && ! builtins.hasAttr e config.yk8s.infra.final_hosts)
+      ++ lib.optional (! builtins.hasAttr e config.yk8s.infra.final_hosts)
       "(node-scheduling) Label defined for ${e}, but node not found in infra.ansible_hosts") [] (builtins.attrNames cfg.labels))
     ++ (builtins.foldl' (acc: e:
       acc
-      ++ lib.optional (config.yk8s.infra.final_hosts != null && ! builtins.hasAttr e config.yk8s.infra.final_hosts)
+      ++ lib.optional (! builtins.hasAttr e config.yk8s.infra.final_hosts)
       "(node-scheduling) Taint defined for ${e}, but node not found in infra.ansible_hosts") [] (builtins.attrNames cfg.taints));
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {

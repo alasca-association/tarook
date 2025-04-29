@@ -13,6 +13,9 @@
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath mkYamlAtPath removeAttrsByPath mkInternalOption;
   inherit (yk8s-lib.types) ipv4Cidr ipv4Addr;
 in {
+  imports = [
+    (mkRemovedOptionModule "infra" "hosts_file" "Use :ref:`configuration-options.yk8s.infra.ansible_hosts` instead.")
+  ];
   options.yk8s.infra = mkTopSection {
     _docs.preface = ''
       This section contains various configuration options necessary for all
@@ -80,15 +83,6 @@ in {
       default = null;
     };
 
-    hosts_file = mkOption {
-      description = ''
-        A custom hosts file. This option is deprecated. Use :ref:`configuration-options.yk8s.infra.ansible_hosts` instead.
-      '';
-      type = with types; nullOr pathInStore;
-      default = null;
-      example = "./hosts";
-    };
-
     ansible_hosts = let
       applyGroupSubmoduleAttrs = lib.mapAttrs (_: lib.filterAttrs (_: a: a != {}));
       groupSubmodule = types.submodule {
@@ -115,9 +109,8 @@ in {
 
           Check the parts regarding YAML in the Ansible documentation: https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html
         '';
-        default = null;
         apply = applyGroupSubmoduleAttrs;
-        type = types.nullOr (types.submodule {
+        type = types.submodule {
           freeformType = types.attrsOf groupSubmodule;
           options = {
             all.vars.ansible_python_interpreter = mkOption {
@@ -144,7 +137,7 @@ in {
               };
             };
           };
-        });
+        };
       };
 
     final_hosts = mkInternalOption {
@@ -153,22 +146,19 @@ in {
         Each host gets the additional attribute ``group_names`` which is a list of all Ansible groups to which the host belongs.
       '';
       readOnly = true;
-      type = with types; nullOr attrs;
-      default =
-        if cfg.ansible_hosts == null
-        then null
-        else let
-          getHostsFromGroupAttrs = lib.foldlAttrs (
-            acc: groupName: groupValues: let
-              hosts = lib.recursiveUpdate (getHostsFromGroupAttrs (groupValues.children or {})) (groupValues.hosts or {});
-            in
-              lib.recursiveUpdate acc (lib.mapAttrs (
-                  hostName: hostValues: hostValues // {group_names = (hostValues.group_names or []) ++ [groupName];}
-                )
-                hosts)
-          ) {};
-        in
-          getHostsFromGroupAttrs cfg.ansible_hosts;
+      type = types.attrs;
+      default = let
+        getHostsFromGroupAttrs = lib.foldlAttrs (
+          acc: groupName: groupValues: let
+            hosts = lib.recursiveUpdate (getHostsFromGroupAttrs (groupValues.children or {})) (groupValues.hosts or {});
+          in
+            lib.recursiveUpdate acc (lib.mapAttrs (
+                hostName: hostValues: hostValues // {group_names = (hostValues.group_names or []) ++ [groupName];}
+              )
+              hosts)
+        ) {};
+      in
+        getHostsFromGroupAttrs cfg.ansible_hosts;
     };
   };
 
@@ -188,25 +178,14 @@ in {
       assertion = (config.yk8s.wireguard.enabled || config.yk8s.ipsec.enabled) -> config.yk8s.terraform.enabled || cfg.networking_floating_ip != null;
       message = "infra.networking_floating_ip must be set if Wireguard or IPsec is used.";
     }
-    {
-      assertion = cfg.ansible_hosts != null -> cfg.hosts_file == null;
-      message = "infra.hosts_file must not be set if infra.ansible_hosts is used (which implicitly happens through Terraform).";
-    }
   ];
-  config.yk8s.warnings = lib.optional (cfg.hosts_file != null) "infra.hosts_file is deprecated. Use infra.ansible_hosts instead.";
   config.yk8s._targets.ansible.inventory_packages = [
     (
-      if (cfg.ansible_hosts != null)
-      then
-        (
-          mkYamlAtPath "hosts" cfg.ansible_hosts
-        )
-      else (linkToPath cfg.hosts_file "hosts")
+      mkYamlAtPath "hosts" cfg.ansible_hosts
     )
     (mkGroupVarsFile {
-      cfg = removeAttrsByPath cfg [["hosts_file"] ["ansible_hosts"]];
+      cfg = removeAttrsByPath cfg [["ansible_hosts"]];
       inventory_path = "all/infra.yaml";
-      transformations = [(lib.attrsets.filterAttrs (n: _: n != "hosts_file"))];
     })
   ];
 }
