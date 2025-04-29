@@ -155,7 +155,6 @@ in {
         enabled = true;
       };
       network = {
-        plugin = "calico";
         pod_subnet = "10.244.0.0/16";
         service_subnet = "10.96.0.0/12";
       };

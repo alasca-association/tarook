@@ -25,6 +25,16 @@ in {
       The following configuration options are specific to calico, our CNI
       plugin in use.
     '';
+    enabled = mkOption {
+      description = ''
+        Whether to enable Calico, a high-performance, pure IP networking, policy engine. Calico provides
+        layer 3 networking capabilities and associates a virtual router with each node.
+        Allows the establishment of zone boundaries through BGP
+      '';
+      type = types.bool;
+      default = true;
+    };
+
     mtu = mkOption {
       type = types.int;
       default =

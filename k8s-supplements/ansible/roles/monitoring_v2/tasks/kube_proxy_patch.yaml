@@ -1,6 +1,5 @@
 ---
 - name: Patch kube-proxy to enable metric scraping
-  when: (k8s_network_plugin in ['calico'])
   block:
   - name: Get current kube-proxy ConfigMap
     kubernetes.core.k8s_info:

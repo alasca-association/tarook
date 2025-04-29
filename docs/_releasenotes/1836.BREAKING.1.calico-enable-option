@@ -1,0 +1,1 @@
+The option ``kubernetes.network.plugin`` has been removed. Use :ref:`configuration-options.yk8s.kubernetes.network.calico.enabled` instead.

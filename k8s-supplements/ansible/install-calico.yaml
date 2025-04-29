@@ -32,6 +32,7 @@
   - vars/retries.yaml
   roles:
   - role: calico-tigera-operator
+    when: k8s_network_calico_enabled
     tags:
     - calico
     - calico-tigera-operator
