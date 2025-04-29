@@ -7,7 +7,6 @@
   cfg = config.yk8s.node-scheduling;
   inherit (lib) mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  nodeNames = map (n: "${config.yk8s.infra.cluster_name}-${n}") (builtins.attrNames config.yk8s.terraform.nodes);
 in {
   options.yk8s.node-scheduling = mkTopSection {
     _docs.preface = ''
@@ -44,12 +43,6 @@ in {
         managed-k8s-worker-4 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"];
         managed-k8s-worker-5 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"];
       };
-      apply = v:
-        builtins.seq (builtins.all (e:
-          if config.yk8s.terraform.enabled -> builtins.elem e nodeNames
-          then true
-          else throw "(node-scheduling) Label defined for ${e}, but node not found in Terraform config") (builtins.attrNames v))
-        v;
     };
     taints = mkOption {
       description = ''
@@ -62,14 +55,17 @@ in {
         managed-k8s-worker-2 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"];
         managed-k8s-worker-4 = ["\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"];
       };
-      apply = v:
-        builtins.seq (builtins.all (e:
-          if config.yk8s.terraform.enabled -> builtins.elem e nodeNames
-          then true
-          else throw "(node-scheduling) Taint defined for ${e}, but node not found in Terraform config") (builtins.attrNames v))
-        v;
     };
   };
+  config.yk8s.warnings =
+    (builtins.foldl' (acc: e:
+      acc
+      ++ lib.optional (config.yk8s.infra.final_hosts != null && ! builtins.hasAttr e config.yk8s.infra.final_hosts)
+      "(node-scheduling) Label defined for ${e}, but node not found in infra.ansible_hosts") [] (builtins.attrNames cfg.labels))
+    ++ (builtins.foldl' (acc: e:
+      acc
+      ++ lib.optional (config.yk8s.infra.final_hosts != null && ! builtins.hasAttr e config.yk8s.infra.final_hosts)
+      "(node-scheduling) Taint defined for ${e}, but node not found in infra.ansible_hosts") [] (builtins.attrNames cfg.taints));
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
