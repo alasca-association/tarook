@@ -8,7 +8,6 @@
   cfg = config.yk8s.node-scheduling;
   inherit (lib) mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  nodeNames = map (n: "${config.yk8s.infra.cluster_name}-${n}") (builtins.attrNames config.yk8s.openstack.nodes);
   inherit
     (yk8s-lib.types)
     k8sLabelStr
@@ -71,12 +70,6 @@ in {
             "''${scheduling_key_prefix}/monitoring=true"
           ];
         }'';
-      apply = v:
-        builtins.seq (builtins.all (e:
-          if config.yk8s.terraform.enabled -> builtins.elem e nodeNames
-          then true
-          else throw "config.yk8s.node-scheduling.labels: label defined for ${e}, but node not found in config.yk8s.openstack.nodes") (builtins.attrNames v))
-        v;
     };
     taints = mkOption {
       description = ''
@@ -96,14 +89,17 @@ in {
             "''${scheduling_key_prefix}/storage=true:NoSchedule"
           ];
         }'';
-      apply = v:
-        builtins.seq (builtins.all (e:
-          if config.yk8s.terraform.enabled -> builtins.elem e nodeNames
-          then true
-          else throw "config.yk8s.node-scheduling.taints: taint defined for ${e}, but node not found in config.yk8s.openstack.nodes") (builtins.attrNames v))
-        v;
     };
   };
+  config.yk8s.warnings =
+    (builtins.foldl' (acc: e:
+      acc
+      ++ lib.optional (config.yk8s.infra.final_hosts != null && ! builtins.hasAttr e (config.yk8s.infra.final_hosts.all.hosts or {}))
+      "config.yk8s.node-scheduling.labels: label defined for ${e}, but node not found in config.yk8s.infra.ansible_hosts") [] (builtins.attrNames cfg.labels))
+    ++ (builtins.foldl' (acc: e:
+      acc
+      ++ lib.optional (config.yk8s.infra.final_hosts != null && ! builtins.hasAttr e (config.yk8s.infra.final_hosts.all.hosts or {}))
+      "config.yk8s.node-scheduling.taints: taint defined for ${e}, but node not found in config.yk8s.infra.ansible_hosts") [] (builtins.attrNames cfg.taints));
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

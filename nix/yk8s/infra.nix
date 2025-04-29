@@ -299,7 +299,7 @@ in {
       (mkGroupVarsFile {
         inherit cfg;
         inventory_path = "all/infra.yaml";
-        transformations = [(c: removeAttrs c ["hosts_file" "ansible_hosts"])];
+        transformations = [(c: removeAttrs c ["hosts_file" "ansible_hosts" "final_hosts"])];
       })
     ];
 }
