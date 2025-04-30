@@ -29,7 +29,6 @@ execute_playbook() {
   "$actions_dir/update-inventory.sh"
 
   load_conf_vars
-  check_conf_sanity
   check_venv
   require_vault_token
   install_prerequisites

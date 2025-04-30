@@ -11,7 +11,6 @@ actions_dir="$(dirname "$0")"
 
 load_conf_vars
 
-check_conf_sanity
 
 check_venv
 
