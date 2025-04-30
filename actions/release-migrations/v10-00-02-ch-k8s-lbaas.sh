@@ -9,7 +9,7 @@ actions_dir="$(dirname "$0")/.."
 . "$actions_dir/lib.sh"
 
 # Let ch-k8s-lbaas version >= 0.8.0 be enforced by Nix
-run "$actions_dir/update-inventory.sh"
+run "$actions_dir/update-inventory.sh" ansible
 
 notef "Triggering install-ch-k8s-lbaas.yaml playbook to update ch-k8s-lbaas."
 run "$actions_dir/apply-k8s-supplements.sh" install-ch-k8s-lbaas.yaml

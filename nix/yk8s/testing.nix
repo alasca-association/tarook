@@ -52,7 +52,7 @@ in {
       message = "[testing.nodes] Nodes [${concatStringsSep ", " nonExistentNodes}] don't exist. Note that full hostnames including the prefix '${config.yk8s.infra.cluster_name}-' must be supplied.";
     }
   ];
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (
       mkGroupVarsFile {
         inherit cfg;

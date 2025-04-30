@@ -25,5 +25,5 @@ to unignore allowed_address_pairs..."
 
   notef "Triggering Terraform (1/2)"
   run "$actions_dir/apply-terraform.sh"
-  run "$actions_dir/update-inventory.sh"
+  run "$actions_dir/update-inventory.sh" ansible
 fi

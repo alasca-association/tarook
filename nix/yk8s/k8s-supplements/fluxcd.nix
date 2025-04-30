@@ -9,7 +9,6 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-
 in {
   imports = [
     (mkRemovedOptionModule "k8s-service-layer.fluxcd" "legacy" "Support for the legacy FluxCD installation has been dropped.\nYou must switch to an older release and migrate if you have not yet.")
@@ -60,7 +59,7 @@ in {
       default = null;
     };
   };
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       ansible_prefix = "fluxcd_";

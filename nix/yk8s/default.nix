@@ -32,6 +32,7 @@
         };
         imports = [
           ./assertions.nix
+          ./conf-vars.nix
           ./infra.nix
           ./terraform.nix
           ./openstack.nix
@@ -64,7 +65,7 @@
               Base path to the Ansible inventory. Files will get written here.
             '';
             type = types.nonEmptyStr;
-            default = "inventory/yaook-k8s";
+            default = "inventory";
           };
           _state_base_path = mkOption {
             description = ''
@@ -73,38 +74,76 @@
             type = types.nonEmptyStr;
             default = "state";
           };
-          _inventory_packages = mkInternalOption {
-            description = ''
-              Inventory packages from all sections that are then merged into the inventory directory
-            '';
-            type = with types; listOf package;
-            default = [];
-          };
-          _state_packages = mkInternalOption {
-            description = ''
-              State packages from all sections that are then merged into the state directory
-            '';
-            type = with types; listOf package;
-            default = [];
-          };
-        };
-        config.packages = rec {
-          yk8s-inventory = pkgs.buildEnv {
-            name = "yaook-k8s-inventory";
-            paths = cfg._inventory_packages;
-          };
-          yk8s-state-dir = pkgs.buildEnv {
-            name = "yaook-k8s-state-dir";
-            paths = cfg._state_packages;
-          };
-          yk8s-outputs = builtins.seq (baseSystemAssertWarn config.yk8s) pkgs.buildEnv {
-            name = "yaook-k8s-outputs";
-            paths = [
-              (linkToPath yk8s-inventory cfg._inventory_base_path)
-              (linkToPath yk8s-state-dir cfg._state_base_path)
-            ];
+          _targets = mkInternalOption {
+            type = with types;
+              attrsOf (submodule {
+                options = {
+                  inventory_subdir = mkInternalOption {
+                    description = ''
+                      The directory inside _inventory_base_path in which inventory packages are to be created.
+                    '';
+                    type = with types; nullOr nonEmptyStr;
+                  };
+                  inventory_packages = mkInternalOption {
+                    description = ''
+                      Inventory packages from all sections that are then merged into the inventory directory
+                    '';
+                    type = with types; listOf package;
+                    default = [];
+                  };
+                  state_packages = mkInternalOption {
+                    description = ''
+                      State packages from all sections that are then merged into the state directory
+                    '';
+                    type = with types; listOf package;
+                    default = [];
+                  };
+                };
+              });
           };
         };
+        config.yk8s._targets.ansible.inventory_subdir = "yaook-k8s";
+        config.yk8s.assertions =
+          lib.mapAttrsToList (targetName: targetOptions: {
+            assertion = (targetOptions.inventory_packages != []) -> targetOptions.inventory_subdir != null;
+            message = "Target ${targetName} has inventory_packages, but inventory_subdir is not defined.";
+          })
+          cfg._targets;
+        config.packages = lib.foldlAttrs (acc: targetName: targetOptions: let
+          hasInventory = targetOptions.inventory_packages != [];
+          inventory = pkgs.buildEnv {
+            name = "yk8s-outputs-${targetName}-inventory";
+            paths = targetOptions.inventory_packages;
+          };
+          state-dir = pkgs.buildEnv {
+            name = "yk8s-outputs-${targetName}-state-dir";
+            paths = targetOptions.state_packages;
+          };
+        in
+          acc
+          // {
+            "yk8s-outputs-${targetName}" = builtins.seq (baseSystemAssertWarn config.yk8s) pkgs.buildEnv {
+              name = "yk8s-outputs-${targetName}";
+              paths = let
+                inventoryPath = "${cfg._inventory_base_path}/${targetOptions.inventory_subdir}";
+              in
+                [
+                  (pkgs.writeTextDir ".path-info"
+                    ''
+                      inventory=${
+                        if hasInventory
+                        then inventoryPath
+                        else ""
+                      }
+                      state=${cfg._state_base_path}
+                    '')
+                  (linkToPath state-dir cfg._state_base_path)
+                ]
+                ++ lib.optional hasInventory
+                (linkToPath inventory inventoryPath);
+            };
+          }) {}
+        cfg._targets;
       });
   };
 }

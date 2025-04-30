@@ -111,17 +111,20 @@ in {
     subnet_id = mkOption {
       type = with types; nullOr nonEmptyStr;
       default = null;
+
       apply = v:
-        if v == null && config.yk8s.terraform.enabled
-        then builtins.trace "INFO: ch-k8s-lbaas.subnet_id is not yet set. Terraform stage needs to be run first." v
+        if config.yk8s.openstack.enabled && v == null
+        then throw "ch-k8s-lbaas.subnet_id must be set if openstack is enabled"
         else v;
     };
     floating_ip_network_id = mkOption {
       type = with types; nullOr nonEmptyStr;
       default = null;
       apply = v:
-        if v == null && config.yk8s.terraform.enabled
-        then builtins.trace "INFO: ch-k8s-lbaas.floating_ip_network_id is not yet set. Terraform stage needs to be run first." v
+        if config.yk8s.openstack.enabled && v == null
+        then
+          throw
+          "ch-k8s-lbaas.floating_ip_network_id must be set if openstack is enabled"
         else v;
     };
   };
@@ -170,7 +173,7 @@ in {
       }
     )
   ];
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       ansible_prefix = "ch_k8s_lbaas_";

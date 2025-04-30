@@ -53,8 +53,10 @@ in {
       type = types.nullOr ipv4Addr;
       default = null;
       apply = v:
-        if cfg.ipv4_enabled && v == null && config.yk8s.terraform.enabled
-        then builtins.trace "INFO: infra.networking_fixed_ip is not yet set. Terraform stage needs to be run first." v
+        if cfg.ipv4_enabled && v == null
+        then
+          throw
+          "infra.networking_fixed_ip must be set if ipv4 is enabled"
         else v;
     };
 
@@ -62,8 +64,10 @@ in {
       type = with types; nullOr nonEmptyStr;
       default = null;
       apply = v:
-        if cfg.ipv6_enabled && v == null && config.yk8s.terraform.enabled
-        then builtins.trace "INFO: infra.networking_fixed_ip_v6 is not yet set. Terraform stage needs to be run first." v
+        if cfg.ipv6_enabled && v == null
+        then
+          throw
+          "infra.networking_fixed_ip_v6 must be set if ipv6 is enabled"
         else v;
     };
 
@@ -74,10 +78,6 @@ in {
       '';
       type = types.nullOr ipv4Addr;
       default = null;
-      apply = v:
-        if v == null && config.yk8s.terraform.enabled
-        then builtins.trace "INFO: infra.networking_floating_ip is not yet set. Terraform stage needs to be run first." v
-        else v;
     };
 
     hosts_file = mkOption {
@@ -116,10 +116,7 @@ in {
           Check the parts regarding YAML in the Ansible documentation: https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html
         '';
         default = null;
-        apply = v:
-          if v == null && config.yk8s.terraform.enabled
-          then builtins.trace "INFO: infra.ansible_hosts is not yet set. Terraform stage needs to be run first." (applyGroupSubmoduleAttrs v)
-          else applyGroupSubmoduleAttrs v;
+        apply = applyGroupSubmoduleAttrs;
         type = types.nullOr (types.submodule {
           freeformType = types.attrsOf groupSubmodule;
           options = {
@@ -188,14 +185,6 @@ in {
 
   config.yk8s.assertions = [
     {
-      assertion = cfg.ipv4_enabled -> config.yk8s.terraform.enabled || cfg.networking_fixed_ip != null;
-      message = "infra.networking_fixed_ip must be set if Terraform is not used";
-    }
-    {
-      assertion = cfg.ipv6_enabled -> config.yk8s.terraform.enabled || cfg.networking_fixed_ip_v6 != null;
-      message = "infra.networking_fixed_ip_v6 must be set if Terraform is not used";
-    }
-    {
       assertion = (config.yk8s.wireguard.enabled || config.yk8s.ipsec.enabled) -> config.yk8s.terraform.enabled || cfg.networking_floating_ip != null;
       message = "infra.networking_floating_ip must be set if Wireguard or IPsec is used.";
     }
@@ -205,7 +194,7 @@ in {
     }
   ];
   config.yk8s.warnings = lib.optional (cfg.hosts_file != null) "infra.hosts_file is deprecated. Use infra.ansible_hosts instead.";
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (
       if (cfg.ansible_hosts != null)
       then

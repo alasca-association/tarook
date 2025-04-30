@@ -43,7 +43,7 @@ fi
 . "$actions_dir/lib.sh"
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" conf_vars
 
 load_conf_vars
 
@@ -64,6 +64,8 @@ set_kubeconfig
 
 # Get a new kubeconfig
 run "$actions_dir/k8s-login.sh"
+
+"$actions_dir/update-inventory.sh" ansible
 
 pushd "$ansible_k8s_core_dir"
 ansible_playbook -i "$ansible_inventory_host_file" \

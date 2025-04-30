@@ -16,7 +16,7 @@ if [ "${tf_usage:-true}" == 'true' ]; then
 
   notef "Triggering Terraform (2/2)"
   run "$actions_dir/apply-terraform.sh"
-  run "$actions_dir/update-inventory.sh"
+  run "$actions_dir/update-inventory.sh" ansible
 
   # After enabling port security with Terraform
   # the cluster nodes will be unreachable for a short period of time.

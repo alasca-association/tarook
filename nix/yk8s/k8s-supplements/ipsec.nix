@@ -99,7 +99,7 @@ in {
       message = "ipsec.remote_private_addrs has to be set if ipsec.test_enabled is true";
     }
   ];
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       ansible_prefix = "ipsec_";

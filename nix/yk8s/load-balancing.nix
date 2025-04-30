@@ -116,7 +116,7 @@ in {
       default = 2000;
     };
   };
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       inventory_path = "all/load-balancing.yaml";

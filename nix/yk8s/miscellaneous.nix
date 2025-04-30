@@ -133,7 +133,7 @@ in {
       message = "miscellaneous.no_proxy must be set if miscellaneous.cluster_behind_proxy is true";
     }
   ];
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       inventory_path = "all/miscellaneous.yaml";

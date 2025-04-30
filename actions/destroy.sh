@@ -6,7 +6,7 @@ actions_dir="$(realpath "$(dirname "$0")")"
 . "$actions_dir/lib.sh"
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" conf_vars
 
 load_conf_vars
 
@@ -65,6 +65,8 @@ IFS=$'\n' read -r -d '' -a port_ids < <( openstack port list --project "$OS_PROJ
 if [ "${#port_ids[@]}" != 0 ]; then
     run openstack port delete "${port_ids[@]}"
 fi
+
+"$actions_dir/update-inventory.sh" terraform
 
 cd "$terraform_state_dir"
 export TF_DATA_DIR="$terraform_state_dir/.terraform"

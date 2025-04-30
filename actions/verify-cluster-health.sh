@@ -6,7 +6,7 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" conf_vars
 
 load_conf_vars
 
@@ -29,6 +29,8 @@ shift $(( OPTIND - 1 ))
 check_venv
 
 set_kubeconfig
+
+"$actions_dir/update-inventory.sh" ansible
 
 pushd "$ansible_k8s_supplements_dir"
 # Include k8s-core roles

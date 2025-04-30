@@ -102,7 +102,7 @@ in {
       example = "https://acme-staging-v02.api.letsencrypt.org/directory";
     };
   };
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (
       mkGroupVarsFile {
         inherit cfg;

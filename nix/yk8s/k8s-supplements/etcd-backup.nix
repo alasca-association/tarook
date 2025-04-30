@@ -174,7 +174,7 @@ in {
       default = 19100;
     };
   };
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       ansible_prefix = "etcd_backup_";

@@ -4,6 +4,7 @@ cluster_repository="$(realpath ".")"
 code_repository="$(realpath "$actions_dir/../")"
 etc_directory="$(realpath "etc")"
 group_vars_dir="${cluster_repository}/inventory/yaook-k8s/group_vars"
+conf_vars_file="${cluster_repository}/inventory/conf_vars/main.yaml"
 state_dir="$cluster_repository/state"
 
 release_migration_lock="$state_dir/release-migration-in-progress"
@@ -70,18 +71,17 @@ function load_vault_container_name() {
 function load_conf_vars() {
     # All the things with side-effects should go here
 
-    terraform_prevent_disruption="$(
-        yq '.prevent_disruption | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
-            "$group_vars_dir/all/terraform.yaml" 2>/dev/null
-    )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
-    tf_usage=${tf_usage:-"$(yq '. | if has ("enabled") then .enabled else true end' "$group_vars_dir/all/terraform.yaml")"}
-    wg_usage=${wg_usage:-"$(yq '. | if has("enabled") then .enabled else true end' "$group_vars_dir/gateways/wireguard.yaml")"}
+    terraform_prevent_disruption="$(yq '.terraform_prevent_disruption' "$conf_vars_file")"
+    tf_usage="$(yq '.tf_usage' "$conf_vars_file")"
+    wg_usage="$(yq '.wg_usage' "$conf_vars_file")"
 
     if [ "${wg_usage:-true}" == "true" ]; then
         wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
         wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
         wg_endpoint="${wg_endpoint:-0}"
         ansible_wg_template="$etc_directory/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}.conf"
+        wg_subnet="$(yq -r .wg_subnet "$conf_vars_file")"
+        wg_subnet_v6="$(yq -r .wg_subnet_v6 "$conf_vars_file")"
     fi
 }
 

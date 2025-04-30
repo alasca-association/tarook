@@ -6,7 +6,7 @@ actions_dir="$(realpath "$(dirname "$0")")"
 . "$actions_dir/lib.sh"
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" terraform
 
 cd "$terraform_state_dir"
 export TF_DATA_DIR="$terraform_state_dir/.terraform"
