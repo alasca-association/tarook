@@ -42,10 +42,13 @@ Bugfixes
 v9.0.6 (2025-03-27)
 -------------------
 
+.. attention:: This release introduced a minor regression
+
+  The ``connect-k8s-to-openstack`` Ansible role fails if :ref:`configuration-options.yk8s.miscellaneous.openstack_cinder_volume_type` is unset.
+
 Bugfixes
 ~~~~~~~~
 
-- A bug has been fixed which caused an error when applying the Cinder StorageClass in existing clusters running on OpenStack if :ref:`configuration-options.yk8s.miscellaneous.openstack_cinder_volume_type` was unset which it is by default. (`!1768 <https://gitlab.com/yaook/k8s/-/merge_requests/1768>`_)
 - The default value of option :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.common_labels` has been set to an empty set again such that Prometheus collects all ServiceMonitors by default. (`!1768 <https://gitlab.com/yaook/k8s/-/merge_requests/1768>`_)
 
 
