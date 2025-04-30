@@ -7,15 +7,13 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" conf_vars
 
 load_conf_vars
 
 if [ "${wg_usage:-true}" == "true" ]; then
     validate_wireguard
 
-    wg_subnet="$(yq -r .subnet_cidr "$group_vars_dir/all/infra.yaml")"
-    wg_subnet_v6="$(yq -r .subnet_v6_cidr "$group_vars_dir/all/infra.yaml")"
     # the grep is there to ignore any routes going via the interface we're going to
     # take down later either way
     wg_existing_route="$(ip route show to "$wg_subnet" 2>/dev/null | grep -v "dev $wg_interface" || true)"

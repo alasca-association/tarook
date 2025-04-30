@@ -6,7 +6,7 @@ actions_dir="$(realpath "$(dirname "$0")")"
 . "$actions_dir/lib.sh"
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" conf_vars
 
 load_conf_vars
 
@@ -16,6 +16,8 @@ if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraf
     errorf 'Please upgrade Terraform to at least v'"$terraform_min_version"
     exit 5
 fi
+
+"$actions_dir/update-inventory.sh" terraform
 
 var_file="$terraform_state_dir/config.tfvars.json"
 cd "$terraform_state_dir"

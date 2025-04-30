@@ -95,7 +95,7 @@ in {
       acc
       ++ lib.optional (config.yk8s.infra.final_hosts != null && ! builtins.hasAttr e (config.yk8s.infra.final_hosts.all.hosts or {}))
       "config.yk8s.node-scheduling.taints: taint defined for ${e}, but node not found in config.yk8s.infra.ansible_hosts") [] (builtins.attrNames cfg.taints));
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       inventory_path = "all/node-scheduling.yaml";

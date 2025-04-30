@@ -6,7 +6,7 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" conf_vars
 
 load_conf_vars
 
@@ -24,6 +24,8 @@ set_kubeconfig
 # Make roles from all stages accessible
 ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles:$ansible_k8s_custom_playbook_dir/roles"
 export ANSIBLE_ROLES_PATH
+
+"$actions_dir/update-inventory.sh" ansible
 
 pushd "$ansible_k8s_custom_dispatch_dir"
 ansible_playbook \

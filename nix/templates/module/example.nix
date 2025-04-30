@@ -41,7 +41,7 @@ in {
       example = ["some value" "some other value"];
     };
   };
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       inventory_path = "all/example.yaml"; # this is where the values will end up under inventory/group_vars
