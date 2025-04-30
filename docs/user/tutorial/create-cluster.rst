@@ -321,11 +321,7 @@ for what to execute in which order.
     You should not export that variable
     to avoid breaking things by accident.
 
-    In the config, set
-
-    .. code:: nix
-
-        terraform.prevent_disruption = false;
+    Remove the lock file ``./state/terraform/prevent_disruption.lock``
 
     Then run
 
@@ -361,11 +357,7 @@ and to establish the WireGuard connection:
 
     $ bash managed-k8s/actions/wg-up.sh
 
-To tear down your cluster, set the following in your config:
-
-.. code:: nix
-
-    terraform.prevent_disruption = false;
+To tear down your cluster, remove the lock file ``./state/terraform/prevent_disruption.lock``.
 
 Than run:
 
