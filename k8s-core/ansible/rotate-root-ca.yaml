@@ -24,6 +24,21 @@
           This is automatically done if the install-all
           playbook of either k8s-core or k8s-supplements is executed.
 
+# NOTE: This task is needed to provision the secret ids related to the new Vault cluster name
+- name: Update Vault onboarding of Kubernetes nodes
+  hosts: k8s_nodes
+  gather_facts: true
+  vars_files:
+  - vars/auto_generated_preamble.yaml
+  - vars/retries.yaml
+  - vars/vault-config.yaml
+  roles:
+  - role: bootstrap/vault-onboarded
+    tags:
+    - vault-onboarded
+    - bootstrap
+    - always
+
 - name: Rotate CA
   hosts: masters
   gather_facts: true

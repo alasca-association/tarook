@@ -195,7 +195,7 @@
         tasks_from: mkkubeconfig.yaml
       vars:
         vault_role_id: "{{ vault_node_role_id }}"
-        vault_secret_id: "{{ vault_node_secret_id }}"
+        vault_secret_ids: "{{ vault_node_secret_ids }}"
         kubeconfig_title: admin
         kubeconfig_destination: /etc/kubernetes/admin.conf
         kubeconfig_role: cluster-admins_admin

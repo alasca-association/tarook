@@ -15,7 +15,7 @@
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
-      vault_secret_id: "{{ vault_node_secret_id }}"
+      vault_secret_id: "{{ vault_node_secret_ids[vault_cluster_name] }}"
       get_cert_title: etcd server certificate
       get_cert_destination_crt: /etc/kubernetes/pki/etcd/server.crt
       get_cert_destination_key: /etc/kubernetes/pki/etcd/server.key
@@ -34,7 +34,7 @@
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
-      vault_secret_id: "{{ vault_node_secret_id }}"
+      vault_secret_id: "{{ vault_node_secret_ids[vault_cluster_name] }}"
       get_cert_title: etcd peer certificate
       get_cert_destination_crt: /etc/kubernetes/pki/etcd/peer.crt
       get_cert_destination_key: /etc/kubernetes/pki/etcd/peer.key
@@ -53,7 +53,7 @@
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
-      vault_secret_id: "{{ vault_node_secret_id }}"
+      vault_secret_id: "{{ vault_node_secret_ids[vault_cluster_name] }}"
       get_cert_title: etcd healthcheck certificate
       get_cert_destination_crt: /etc/kubernetes/pki/etcd/healthcheck-client.crt
       get_cert_destination_key: /etc/kubernetes/pki/etcd/healthcheck-client.key
@@ -71,7 +71,7 @@
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
-      vault_secret_id: "{{ vault_node_secret_id }}"
+      vault_secret_id: "{{ vault_node_secret_ids[vault_cluster_name] }}"
       get_cert_title: apiserver etcd client certificate
       get_cert_destination_crt: /etc/kubernetes/pki/apiserver-etcd-client.crt
       get_cert_destination_key: /etc/kubernetes/pki/apiserver-etcd-client.key
@@ -88,7 +88,7 @@
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
-      vault_secret_id: "{{ vault_node_secret_id }}"
+      vault_secret_id: "{{ vault_node_secret_ids[vault_cluster_name] }}"
       get_cert_title: apiserver frontend certificate
       get_cert_destination_crt: /etc/kubernetes/pki/apiserver.crt
       get_cert_destination_key: /etc/kubernetes/pki/apiserver.key
@@ -107,7 +107,7 @@
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
-      vault_secret_id: "{{ vault_node_secret_id }}"
+      vault_secret_id: "{{ vault_node_secret_ids[vault_cluster_name] }}"
       get_cert_title: apiserver kubelet client certificate
       get_cert_destination_crt: /etc/kubernetes/pki/apiserver-kubelet-client.crt
       get_cert_destination_key: /etc/kubernetes/pki/apiserver-kubelet-client.key
@@ -124,7 +124,7 @@
       tasks_from: get_cert
     vars:
       vault_role_id: "{{ vault_node_role_id }}"
-      vault_secret_id: "{{ vault_node_secret_id }}"
+      vault_secret_id: "{{ vault_node_secret_ids[vault_cluster_name] }}"
       get_cert_title: apiserver front proxy client certificate
       get_cert_destination_crt: /etc/kubernetes/pki/front-proxy-client.crt
       get_cert_destination_key: /etc/kubernetes/pki/front-proxy-client.key

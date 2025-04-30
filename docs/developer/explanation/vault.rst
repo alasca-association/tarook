@@ -44,22 +44,24 @@ bootstrap scripts of metal-controller (in scenario 3).
 In order to ensure that code works in all three scenarios, the following
 things are true in particular:
 
--  All access to Vault should happen using the role-id and secret-id of
+-  All access to Vault should happen using the role-id and one of the secret-ids of
    the node. This ensures that there will be no surprises when code is
-   first run in scenario 3, where the role-id and secret-id of the node
+   first run in scenario 3, where the role-id and secret-ids of the node
    are the only option.
 
 -  All access to Vault should be either in lookups or explicitly
    delegated to localhost. This is required for scenario 1, where the
    Vault is not reachable from the nodes.
 
--  The role-id and secret-id should be read from the filesystem on the
+-  The role-id and any secret-id should be read from the filesystem on the
    remote node. By depending on ``vault-approle`` (only available in
    `k8s-core`), the credentials are made available in the
-   ``vault_node_role_id`` and ``vault_node_secret_id`` facts. The
-   role-id and secret-id are not otherwise known and it requires
+   ``vault_node_role_id`` and ``vault_node_secret_ids`` facts. The
+   role-id and secret-ids are not otherwise known and it requires
    orchestrator access to obtain or reset them (which is not available
    in scenario 3).
+   ``vault_node_secret_ids`` is a dictionary that contains a set of secret id
+   referenced by the value of their 'yaook_deployment' metadata field.
 
 The only exceptions are explicitly privileged (orchestrator) actions,
 which must be guarded by corresponding checks. For an example of this,

@@ -228,7 +228,7 @@
         vars:
           kubeconfig_api_server_url: "https://{{ networking_fixed_ip }}:{{ k8s_apiserver_frontend_port }}"
           vault_role_id: "{{ vault_node_role_id }}"
-          vault_secret_id: "{{ vault_node_secret_id }}"
+          vault_secret_ids: "{{ vault_node_secret_ids }}"
           kubeconfig_title: super-admin
           kubeconfig_destination: /etc/kubernetes/super-admin.conf
           kubeconfig_role: system-masters_admin

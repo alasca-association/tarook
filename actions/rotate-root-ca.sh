@@ -3,18 +3,19 @@ set -euo pipefail
 actions_dir="$(dirname "$0")"
 
 helpf() {
-  printf "Usage: %s [-n][-c]\n\n" "$0" 1>&2;
+  printf "Usage: %s [-n <vault_clustername>][-c]\n\n" "$0" 1>&2;
   printf "Either [-n] OR [-c] must be specified.\n";
-  printf "[-n] Start CA rotation by appending additional issuer 'next'.\n";
-  printf "[-c] Complete CA rotation and apply only the default issuer.\n\n";
+  printf "[-n <vault_clustername>] Start CA rotation by appending issuer 'default' of the given clustername.\n";
+  printf "[-c] Complete CA rotation and apply only the new configured issuer.\n\n";
   exit 2
 }
 
-while getopts "nc" flag
+while getopts "n:c" flag
 do
     case "${flag}" in
         n)
             next_issuer=true
+            next_vault_clustername="${OPTARG}"
             ;;
         c)
             complete_rotation=true
@@ -41,6 +42,11 @@ fi
 
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
+
+if "${next_issuer:-false}"; then
+  check_vault_clustername "$next_vault_clustername" cmdline
+fi
+
 load_conf_vars
 
 check_venv
@@ -70,6 +76,7 @@ fi
 pushd "$ansible_k8s_core_dir"
 ansible_playbook -i "$ansible_inventory_host_file" \
   -e "append_next_issuer=${next_issuer:-false}" \
+  -e "next_vault_cluster_name=${next_vault_clustername:-}" \
   -e "complete_rotation=${complete_rotation:-false}" \
   rotate-root-ca.yaml "$@"
 popd
@@ -78,10 +85,12 @@ pushd "$ansible_k8s_supplements_dir"
 # Include k8s-core roles
 ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles" \
   ansible_playbook -i "$ansible_inventory_host_file" \
+  -e "append_next_issuer=${next_issuer:-false}" \
+  -e "next_vault_cluster_name=${next_vault_clustername:-}" \
   -e "ansible_k8s_core_dir=$ansible_k8s_core_dir" \
   -e "k8s_skip_upgrade_checks=${k8s_skip_upgrade_checks:-false}" \
   rotate-root-ca.yaml "$@"
 popd
 
 # Get a new kubeconfig
-AFLAGS="-e append_next_issuer=${next_issuer:-false}" "$actions_dir/k8s-login.sh"
+AFLAGS="-e append_next_issuer=${next_issuer:-false} -e next_vault_cluster_name=${next_vault_clustername:-}" "$actions_dir/k8s-login.sh"

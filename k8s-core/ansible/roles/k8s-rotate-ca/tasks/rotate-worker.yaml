@@ -12,7 +12,6 @@
     tasks_from: obtain-kubeconfigs.yaml
   vars:
     force_renewal: true
-    k8s_issuer: "{{ append_next_issuer | bool | ternary('next', 'default') }}"
     extra_ca: "{{ append_next_issuer | bool }}"
 
 - name: Force restart kubelet

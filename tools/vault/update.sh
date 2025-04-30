@@ -4,15 +4,23 @@ set -euo pipefail
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 
-arg_num=0
-if [ "$#" -ne "$arg_num" ]; then
-    echo "ERROR: Expecting $arg_num argument(s), but $# were given" >&2
+arg_num=1
+if [ "$#" -gt "$arg_num" ]; then
+    echo "ERROR: Expecting at most $arg_num argument(s), but $# were given" >&2
     echo >&2
     exit 2
 fi
 
-cluster="$(get_clustername)"
-check_clustername "$cluster"
+if [ "${1:+x}" == "x" ]; then
+    # clustername given as argument
+    cluster="$1"
+    check_clustername "$cluster" cmdline
+else
+    # use configured clustername
+    cluster="$(get_clustername)"
+    check_clustername "$cluster" config
+fi
+
 # reload the lib to update the vars after initializing the clustername
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"

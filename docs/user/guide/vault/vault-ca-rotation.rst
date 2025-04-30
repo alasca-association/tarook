@@ -20,11 +20,12 @@ There are three Vault PKI engines configured for each cluster:
 - k8s-front-proxy-pki
 
 We must rotate the certificate authorities for each of them.
-To do so, a new issuer is added to each PKI engine.
+To do so, a you need to setup a new Vault namespace
+with PKI engines equivalen to the existing ones.
 Depending on your setup, you may use root CAs or intermediate CAs
 for that.
 
-After a new issuer has been added to each PKI engine,
+After the new namespace has been added including the new PKI engines,
 we start the transition process.
 This process consists of two phases.
 
@@ -58,13 +59,17 @@ we're still able to talk to the Kubernetes API during this phase.
 Executing a CA rotation
 -----------------------
 
-Please substitute your ``<clustername>`` in the following.
+Please substitute your current ``<clustername>`` in the following.
 To verify your configured clustername you can use the following:
 
 .. code:: console
 
   $ tomlq --raw-output '.vault.cluster_name' config/config.toml
   devcluster
+
+``<new_clustername>`` is the cluster name
+you intend to use after the CA rotation is finished
+and that will thereafter replace ``<clustername>``.
 
 Phase 1
 ^^^^^^^
@@ -83,7 +88,7 @@ Phase 1
     $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
     [...]
 
-2. Add a new issuer which will be called ``next`` to all PKIs
+2. Create new PKI engines in a new Vault namespace
 
    .. tabs::
 
@@ -91,12 +96,12 @@ Phase 1
 
         .. code:: console
 
-          $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh prepare
+          $ ./managed-k8s/tools/vault/mkcluster-root.sh <new_clustername>
 
           $ # Verify
-          $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
-          $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
-          $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
+          $ vault list -detailed yaook/<new_clustername>/k8s-pki/issuers
+          $ vault list -detailed yaook/<new_clustername>/etcd-pki/issuers
+          $ vault list -detailed yaook/<new_clustername>/k8s-front-proxy-pki/issuers
 
       .. tab:: With intermediates
 
@@ -104,20 +109,20 @@ Phase 1
 
           .. code:: console
 
-            $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh prepare
+            $ ./managed-k8s/tools/vault/mkcluster-intermediate.sh <new_clustername>
 
         2. Sign the generated CSRs
 
-        3. Import the signed certificates as new issuer "next"
+        3. Import the signed certificates
 
           .. code:: console
 
-            $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh load-signed-intermediates
+            $ ./managed-k8s/tools/vault/load-signed-intermediates.sh <new_clustername>
 
             $ # Verify
-            $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
-            $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
-            $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
+            $ vault list -detailed yaook/<new_clustername>/k8s-pki/issuers
+            $ vault list -detailed yaook/<new_clustername>/etcd-pki/issuers
+            $ vault list -detailed yaook/<new_clustername>/k8s-front-proxy-pki/issuers
 
 3. If you've created your cluster before 2024, you must additionally update your vault policies
 
@@ -131,11 +136,11 @@ Phase 1
 
 
 4. Run the rotation action to roll out both CAs in the cluster and create kubeconfigs
-   issued by the "next" CA but trusting both CAs.
+   issued by the CA of the new clustername but trusting both CAs.
 
    .. code:: console
 
-     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-root-ca.sh -n
+     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-root-ca.sh -n <new_clustername>
 
 5. Verify workload is able to come back up
 
@@ -155,42 +160,16 @@ Phase 2
 
 After you spread the kubeconfigs, do the following:
 
-1. Rotate the issuer and set the new one has default,
-   mark the old issuer as outdated.
+1. Update the config with the new clustername
 
-   .. tabs::
+   .. attention::
 
-      .. tab:: Without intermediates
+     Before performing this step,
+     make sure to copy all remaining secrets from the old to the new Vault namespace.
 
-        .. code:: console
+   .. console::
 
-          $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh apply
-
-          $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
-          Keys                                    is_default    issuer_name
-          ----                                    ----------    -----------
-          06a9511a-ffd2-2ce3-bd01-2cb2180a5e51    false         prev
-          3e836f42-047f-b078-3795-0386aaff30c0    true          n/a
-          $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
-          [...]
-          $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
-          [...]
-
-      .. tab:: With intermediates
-
-        .. code:: console
-
-          $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh apply
-
-          $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
-          Keys                                    is_default    issuer_name
-          ----                                    ----------    -----------
-          06a9511a-ffd2-2ce3-bd01-2cb2180a5e51    false         prev
-          3e836f42-047f-b078-3795-0386aaff30c0    true          n/a
-          $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
-          [...]
-          $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
-          [...]
+     $ edit config/config.toml  # set vault.cluster_name="<new_clustername>"
 
 2. Complete the rotation by removing the old CA from accepted bundles
    and renewing certificates for all components
@@ -208,3 +187,5 @@ After you spread the kubeconfigs, do the following:
    .. code:: console
 
      $ ./managed-k8s/actions/test.sh
+
+6. Optionally: Delete Vault namespace with old cluster name

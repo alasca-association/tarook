@@ -83,6 +83,68 @@ function load_conf_vars() {
         wg_endpoint="${wg_endpoint:-0}"
         ansible_wg_template="$etc_directory/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}.conf"
     fi
+
+    vault_clustername="$(get_vault_clustername)"
+}
+
+function get_vault_clustername() {
+    tomlq --raw-output '.vault.cluster_name // error("unset")' "${config_file}"
+}
+
+function confirm_vault_clustername() {
+    clustername="$1"
+    configured_clustername="$(get_vault_clustername)"
+
+    if [ "${clustername}" != "${configured_clustername}" ]; then
+        echo "Using the following Vault cluster name \
+that is different from the configured vault.cluster_name"
+        echo
+        echo "    configured: ${configured_clustername}"
+        echo "    using: ${clustername}"
+        echo
+    else
+        echo 'Using the following Vault cluster name'
+        echo
+        echo "    ${clustername}"
+        echo
+    fi
+    read -r -p "ARE YOU SURE? (type capital 'yes')" response
+    case "$response" in
+        YES)
+            ;;
+        *)
+            echo 'User consent not given, bailing out.' >&2
+            exit 2
+            ;;
+    esac
+}
+
+function check_vault_clustername() {
+    clustername="$1"
+    origin="${2:-config}"
+    if [ -z "$clustername" ]; then
+        if [ "$origin" == "config" ]; then
+          echo "ERROR: vault.cluster_name must be defined in config.toml" >&2
+        else
+          echo "ERROR: The given vault cluster name is empty" >&2
+        fi
+        exit 1
+    elif [ "$clustername" == "devcluster" ]; then
+        if [ "$origin" == "config" ]; then
+          echo "WARNING: vault.cluster_name is still the default value 'devcluster'. You may want to change it in config.toml." >&2
+        else
+          echo "WARNING: The given vault cluster name is the default value 'devcluster'. Do you really intend to use it." >&2
+        fi
+        read -rp "Continue (y/n)" choice
+        if [ "$choice" != "y" ]; then
+            echo "Aborting." >&2
+            exit 2
+        fi
+    fi
+
+    if [ "${origin}" != "config" ]; then
+        confirm_vault_clustername "${clustername}"
+    fi
 }
 
 function check_conf_sanity() {

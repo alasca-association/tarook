@@ -24,7 +24,7 @@
     ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
   run_once: true
   set_fact:
-    ipsec_eap_psk: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ipsec-eap-psk', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.ipsec_eap_psk }}"
+    ipsec_eap_psk: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ipsec-eap-psk', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_ids[vault_cluster_name]).data.data.ipsec_eap_psk }}"
 
 - name: Abort prematurely if PSK contains '"' (Bug)
   become: false

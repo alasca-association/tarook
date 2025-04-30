@@ -14,7 +14,7 @@
     ignore_errors: true
     no_log: true  # prevent private key from being exposed
     ansible.builtin.set_fact:
-      service_account_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'k8s/service-account-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key | b64decode }}"
+      service_account_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'k8s/service-account-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_ids[vault_cluster_name]).data.data.private_key | b64decode }}"
 
   - name: Generate private key if necessary
     when: service_account_key is not defined
@@ -42,7 +42,7 @@
       auth_method: approle
       mount_point: "{{ vault_nodes_approle }}"
       role_id: "{{ vault_node_role_id }}"
-      secret_id: "{{ vault_node_secret_id }}"
+      secret_id: "{{ vault_node_secret_ids[vault_cluster_name] }}"
       path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv/data/k8s/service-account-key"
       data:
         data:
@@ -98,7 +98,7 @@
       delegate_to: "{{ groups['orchestrator'] | first }}"
       vars:
         vault_role_id: "{{ vault_node_role_id }}"
-        vault_secret_id: "{{ vault_node_secret_id }}"
+        vault_secret_id: "{{ vault_node_secret_ids[vault_cluster_name] }}"
       community.hashi_vault.vault_kv2_get:
         auth_method: approle
         mount_point: "{{ vault_nodes_approle }}"
