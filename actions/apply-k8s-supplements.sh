@@ -26,7 +26,7 @@ execute_playbook() {
   notef "Executing playbook $playbook\n"
 
   # Ensure that the latest config is deployed to the inventory
-  "$actions_dir/update-inventory.sh"
+  "$actions_dir/update-inventory.sh" conf_vars
 
   load_conf_vars
   check_venv
@@ -37,6 +37,8 @@ execute_playbook() {
   "$actions_dir/wg-up.sh"
 
   set_kubeconfig
+
+  "$actions_dir/update-inventory.sh" ansible
 
   pushd "$ansible_k8s_supplements_dir"
   # Include k8s-core roles

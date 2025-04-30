@@ -15,6 +15,8 @@
   inherit (yk8s-lib.transform) filterNull removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
   tfvars_file_path = "terraform/config.tfvars.json";
+  tfOutputsPath = "terraform/outputs.json";
+  tfOutputsFullPath = "${config.yk8s.state_directory}/${tfOutputsPath}";
 
   openstackTerraformOptions = [
     "public_network"
@@ -169,40 +171,35 @@ in {
       example = "tf-state";
     };
 
+    outputs_ready = mkInternalOption {
+      readOnly = true;
+      type = types.bool;
+      default = config.yk8s.state_directory != null && builtins.pathExists tfOutputsFullPath;
+    };
+
     outputs = mkInternalOption {
       readOnly = true;
-      type = with types; nullOr attrs;
-      default = let
-        tfOutputsPath = "terraform/outputs.json";
-        tfOutputsFullPath = "${config.yk8s.state_directory}/${tfOutputsPath}";
-      in
-        if config.yk8s.state_directory != null && builtins.pathExists tfOutputsFullPath
+      type = types.attrs;
+      default =
+        if cfg.outputs_ready
         then builtins.fromJSON (builtins.readFile tfOutputsFullPath)
-        else null;
+        else throw "${tfOutputsPath} does not exist yet. Terraform stage needs to be run first.";
     };
   };
   config.yk8s = {
-    _inventory_packages = [
-      (mkGroupVarsFile {
-        cfg = lib.attrsets.getAttrs ["enabled"] cfg;
-        inventory_path = "all/terraform.yaml";
-      })
-    ];
-    _state_packages =
-      lib.optional cfg.enabled
-      (
-        let
-          filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["outputs"]];
-          filteredInfraCfg = lib.attrsets.getAttrs infraTerraformOptions config.yk8s.infra;
-          filteredOpenstackCfg = lib.attrsets.getAttrs openstackTerraformOptions config.yk8s.openstack;
-          mergedCfg =
-            builtins.foldl' (acc: e: lib.attrsets.recursiveUpdate acc (removeObsoleteOptions e)) {}
-            [filteredTerraformCfg filteredInfraCfg filteredOpenstackCfg];
-          transformations = [filterInternal filterNull];
-          varsFile = mkJson "tfvars.json" (pipe mergedCfg transformations);
-        in (pkgs.runCommandLocal "tfvars.json" {} ''
-          install -m 644 -D ${varsFile} $out/${tfvars_file_path}
-        '')
-      );
+    _targets.terraform.state_packages = lib.optional cfg.enabled (
+      let
+        filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["outputs"]];
+        filteredInfraCfg = lib.attrsets.getAttrs infraTerraformOptions config.yk8s.infra;
+        filteredOpenstackCfg = lib.attrsets.getAttrs openstackTerraformOptions config.yk8s.openstack;
+        mergedCfg =
+          builtins.foldl' (acc: e: lib.attrsets.recursiveUpdate acc (removeObsoleteOptions e)) {}
+          [filteredTerraformCfg filteredInfraCfg filteredOpenstackCfg];
+        transformations = [filterInternal filterNull];
+        varsFile = mkJson "tfvars.json" (pipe mergedCfg transformations);
+      in (pkgs.runCommandLocal "tfvars.json" {} ''
+        install -m 644 -D ${varsFile} $out/${tfvars_file_path}
+      '')
+    );
   };
 }

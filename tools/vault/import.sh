@@ -26,7 +26,7 @@ if [ "$#" -ne "$arg_num" ]; then
 fi
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" vault
 
 cluster="$(get_clustername)"
 mode="$1"
@@ -55,7 +55,7 @@ scriptdir="$(dirname "$0")"
 
 inventory_etc=etc
 flag_file="$inventory_etc/migrated-to-vault"
-wg_usage="$(yq '.enabled // true' inventory/yaook-k8s/group_vars/gateways/wireguard.yaml)"
+wg_usage="$(yq '.wg_usage' "${vars_file}")"
 
 if [ ! -d 'etc' ]; then
     echo "$0: ./etc does not exist. are you running this from the right place?" >&2

@@ -6,7 +6,7 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" conf_vars
 
 load_conf_vars
 

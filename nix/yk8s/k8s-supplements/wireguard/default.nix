@@ -237,7 +237,7 @@ in {
         ${wireguard_helper}/bin/wireguard_helper ${varsFile} $out/${inventory_path}
       '';
   in {
-    _inventory_packages =
+    _targets.ansible.inventory_packages =
       if cfg.enabled
       then [(linkToPath "${wireguard_helper_output}/${inventory_path}" "group_vars/${inventory_path}")]
       else [
@@ -246,7 +246,7 @@ in {
           inherit inventory_path;
         })
       ];
-    _state_packages = lib.lists.optional cfg.enabled (linkToPath "${wireguard_helper_output}/${ipam_path}" ipam_path);
+    _targets.ansible.state_packages = lib.lists.optional cfg.enabled (linkToPath "${wireguard_helper_output}/${ipam_path}" ipam_path);
     warnings = lib.optional (cfg.enabled && (builtins.length cfg.peers) == 0) "config.yk8s.wireguard.peers: is empty";
     assertions = let
       inherit (builtins) length;

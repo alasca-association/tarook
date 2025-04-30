@@ -415,6 +415,17 @@ The inventory updater is triggered automatically in advance of each
 action script. It cleans up the inventory and ensures the latest
 variable/value pairs from your configuration file are represented in the ``./inventory`` and ``./state`` directory.
 
+.. code::
+
+   update-inventory.sh - Action Script to update the Cluster Inventory
+
+   Usage: update-inventory.sh [list|help] <target>
+
+   Arguments:
+   list       List available targets
+   help       Print this help message
+   <target>   Update inventory for specific target
+
 .. _actions-references.libsh:
 
 ``lib.sh``

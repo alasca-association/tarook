@@ -6,7 +6,7 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" conf_vars
 
 load_conf_vars
 
@@ -24,6 +24,8 @@ if [ "${tf_usage:-true}" == 'false' ]; then
   errorf "for other use cases. You must not execute this action script."
   exit 1
 fi
+
+"$actions_dir/update-inventory.sh" ansible
 
 # Prepare Gateways, if configured
 pushd "$ansible_k8s_supplements_dir"

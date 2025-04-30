@@ -18,7 +18,7 @@ if [ "$#" -ne "$arg_num" ]; then
 fi
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" vault
 
 cluster="$(get_clustername)"
 # reload the lib to update the vars after initializing the clustername

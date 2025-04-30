@@ -119,7 +119,7 @@ in {
         servicemonitor.labels = config.yk8s.k8s-service-layer.prometheus.common_labels;
       };
     };
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (
       mkGroupVarsFile {
         inherit cfg;

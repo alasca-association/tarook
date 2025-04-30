@@ -340,7 +340,7 @@ in {
   };
   config.yk8s = lib.mkMerge [
     {
-      _inventory_packages = [
+      _targets.ansible.inventory_packages = [
         (mkGroupVarsFile {
           inherit cfg;
           inventory_path = "all/openstack.yaml";
@@ -382,11 +382,11 @@ in {
             else pathExists current_config_file;
           current_cluster_name =
             current_config.cluster_name
-          or
-          # hard-coding this value here as it was the default at the time of writing this module. This ensures that
-          # old clusters that have been set up with an empty value (and hence have been using the old default) will
-          # be compared to the old default value
-          "managed-k8s";
+            or
+            # hard-coding this value here as it was the default at the time of writing this module. This ensures that
+            # old clusters that have been set up with an empty value (and hence have been using the old default) will
+            # be compared to the old default value
+            "managed-k8s";
         in {
           assertion = cluster_exists -> (config.yk8s.infra.cluster_name == current_cluster_name);
           message = ''
@@ -410,64 +410,62 @@ in {
       ];
 
       infra = {
-        networking_floating_ip = config.yk8s.terraform.outputs.networking_floating_ip.value or null;
+        networking_floating_ip = config.yk8s.terraform.outputs.networking_floating_ip.value;
         networking_fixed_ip = config.yk8s.terraform.outputs.networking_fixed_ip.value or null;
         networking_fixed_ip_v6 = config.yk8s.terraform.outputs.networking_fixed_ip_v6.value or null;
-        ansible_hosts =
-          if config.yk8s.terraform.outputs == null
-          then null
-          else {
-            all.vars = {};
-
-            frontend.children = {
-              gateways = {};
-            };
-
-            gateways.hosts =
-              lib.mapAttrs (
-                name: _:
-                  {
-                    ansible_host = config.yk8s.terraform.outputs.gateway_fips.value.${name}.address;
-                    port_id = config.yk8s.terraform.outputs.gateway_ports.value.${name}.id;
-                    local_ipv4_address = builtins.head config.yk8s.terraform.outputs.gateway_ports.value.${name}.all_fixed_ips;
-                  }
-                  // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
-                    local_ipv6_address = builtins.elemAt config.yk8s.terraform.outputs.gateway_ports.value.${name}.all_fixed_ips 1;
-                  }
-              )
-              config.yk8s.terraform.outputs.gateways.value;
-
-            masters.hosts =
-              lib.mapAttrs (
-                name: _:
-                  {
-                    ansible_host = builtins.head config.yk8s.terraform.outputs.master_ports.value.${name}.all_fixed_ips;
-                    port_id = config.yk8s.terraform.outputs.master_ports.value.${name}.id;
-                    local_ipv4_address = builtins.head config.yk8s.terraform.outputs.master_ports.value.${name}.all_fixed_ips;
-                  }
-                  // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
-                    local_ipv6_address = builtins.elemAt config.yk8s.terraform.outputs.master_ports.value.${name}.all_fixed_ips 1;
-                  }
-              )
-              config.yk8s.terraform.outputs.masters.value;
-            workers.hosts =
-              lib.mapAttrs (
-                name: _:
-                  {
-                    ansible_host = builtins.head config.yk8s.terraform.outputs.worker_ports.value.${name}.all_fixed_ips;
-                    port_id = config.yk8s.terraform.outputs.worker_ports.value.${name}.id;
-                    local_ipv4_address = builtins.head config.yk8s.terraform.outputs.worker_ports.value.${name}.all_fixed_ips;
-                  }
-                  // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
-                    local_ipv6_address = builtins.elemAt config.yk8s.terraform.outputs.worker_ports.value.${name}.all_fixed_ips 1;
-                  }
-              )
-              config.yk8s.terraform.outputs.workers.value;
+        ansible_hosts = {
+          all.vars = {
           };
+
+          frontend.children = {
+            gateways = {};
+          };
+
+          gateways.hosts =
+            lib.mapAttrs (
+              name: _:
+                {
+                  ansible_host = config.yk8s.terraform.outputs.gateway_fips.value.${name}.address;
+                  port_id = config.yk8s.terraform.outputs.gateway_ports.value.${name}.id;
+                  local_ipv4_address = builtins.head config.yk8s.terraform.outputs.gateway_ports.value.${name}.all_fixed_ips;
+                }
+                // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
+                  local_ipv6_address = builtins.elemAt config.yk8s.terraform.outputs.gateway_ports.value.${name}.all_fixed_ips 1;
+                }
+            )
+            config.yk8s.terraform.outputs.gateways.value;
+
+          masters.hosts =
+            lib.mapAttrs (
+              name: _:
+                {
+                  ansible_host = builtins.head config.yk8s.terraform.outputs.master_ports.value.${name}.all_fixed_ips;
+                  port_id = config.yk8s.terraform.outputs.master_ports.value.${name}.id;
+                  local_ipv4_address = builtins.head config.yk8s.terraform.outputs.master_ports.value.${name}.all_fixed_ips;
+                }
+                // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
+                  local_ipv6_address = builtins.elemAt config.yk8s.terraform.outputs.master_ports.value.${name}.all_fixed_ips 1;
+                }
+            )
+            config.yk8s.terraform.outputs.masters.value;
+          workers.hosts =
+            lib.mapAttrs (
+              name: _:
+                {
+                  ansible_host = builtins.head config.yk8s.terraform.outputs.worker_ports.value.${name}.all_fixed_ips;
+                  port_id = config.yk8s.terraform.outputs.worker_ports.value.${name}.id;
+                  local_ipv4_address = builtins.head config.yk8s.terraform.outputs.worker_ports.value.${name}.all_fixed_ips;
+                }
+                // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
+                  local_ipv6_address = builtins.elemAt config.yk8s.terraform.outputs.worker_ports.value.${name}.all_fixed_ips 1;
+                }
+            )
+            config.yk8s.terraform.outputs.workers.value;
+        };
       };
       ch-k8s-lbaas = {
-        subnet_id = config.yk8s.terraform.outputs.subnet_id.value or null;
-        floating_ip_network_id = config.yk8s.terraform.outputs.floating_ip_network_id.value or null;
+        subnet_id = config.yk8s.terraform.outputs.subnet_id.value;
+        floating_ip_network_id = config.yk8s.terraform.outputs.floating_ip_network_id.value;
       };
     })
   ];

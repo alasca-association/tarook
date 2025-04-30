@@ -83,7 +83,7 @@ in {
       ];
     };
   };
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       ansible_prefix = "containerd_";

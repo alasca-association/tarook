@@ -2,6 +2,9 @@
 set -euo pipefail
 actions_dir="$(realpath "$(dirname "$0")")/../../actions"
 
+# Ensure that the latest config is deployed to the inventory
+"$actions_dir/update-inventory.sh" vault
+
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 
@@ -31,9 +34,6 @@ if [ "$#" -ne "$arg_num" ]; then
     echo >&2
     exit 2
 fi
-
-# Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
 
 cluster="$(get_clustername)"
 kubernetes_server="$1"

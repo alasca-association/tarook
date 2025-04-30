@@ -168,7 +168,7 @@ in {
       message = "config.yk8s.kubernetes.is_gpu_cluster: is mutually exlusive with config.yk8s.kubernetes.virtualize_gpu";
     }
   ];
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       ansible_prefix = "k8s_";

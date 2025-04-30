@@ -152,7 +152,7 @@ in {
     }
   ];
   config.yk8s.warnings = lib.optional (cfg.enabled) "config.yk8s.ipsec: is deprecated. Support for it will be dropped in a release after v11.0.0";
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       ansible_prefix = "ipsec_";
