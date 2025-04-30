@@ -42,9 +42,13 @@ Bugfixes
 v9.0.6 (2025-03-27)
 -------------------
 
-.. attention:: This release introduced a minor regression
+.. attention:: This release introduced two minor regressions
 
   The ``connect-k8s-to-openstack`` Ansible role fails if :ref:`configuration-options.yk8s.miscellaneous.openstack_cinder_volume_type` is unset.
+
+  Likewise, the ``monitoring_v2`` Ansible role fails if :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.basic_auth_secret_name` is unset.
+
+  These regressions are fixed with release v9.0.9.
 
 Bugfixes
 ~~~~~~~~
