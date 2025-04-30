@@ -36,7 +36,8 @@
           openssh
           openssl
           pre-commit
-          inputs'.nixpkgs-terraform157.legacyPackages.terraform
+          # inputs'.nixpkgs-terraform157.legacyPackages.terraform
+          terraform
           util-linux # for uuidgen
         ];
         pythonPackages = ps:

@@ -29,6 +29,10 @@
       }: {
         _module.args.pkgs = import nixpkgs {
           inherit system;
+          config.allowUnfreePredicate = pkg:
+            builtins.elem (nixpkgs.outputs.lib.getName pkg) [
+              "terraform"
+            ];
         };
         packages = {
           init = pkgs.writeShellApplication {
