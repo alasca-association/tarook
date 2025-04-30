@@ -85,15 +85,6 @@ function load_conf_vars() {
     fi
 }
 
-function check_conf_sanity() {
-    out=$(ansible-inventory -i "${ansible_inventory_base}" --host localhost)
-    if ! (jq --exit-status '.ipv4_enabled or .ipv6_enabled' <<<"${out}" &> /dev/null); then
-        errorf "Neither IPv4 nor IPv6 are enabled."
-        errorf "Enable at least one in your hosts file $ansible_inventory_host_file."
-        exit 2
-    fi
-}
-
 function color_enabled() {
     [ "$use_color" = 'true' ]
 }
