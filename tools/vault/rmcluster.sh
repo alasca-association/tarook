@@ -5,9 +5,9 @@ actions_dir="$(realpath "$(dirname "$0")")/../../actions"
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 
-arg_num=0
-if [ "$#" -ne "$arg_num" ]; then
-    echo "ERROR: Expecting $arg_num argument(s), but $# were given" >&2
+arg_num=1
+if [ "$#" -gt "$arg_num" ]; then
+    echo "ERROR: Expecting at most $arg_num argument(s), but $# were given" >&2
     echo >&2
     exit 2
 fi
@@ -15,7 +15,15 @@ fi
 # Ensure that the latest config is deployed to the inventory
 "$actions_dir/update-inventory.sh"
 
-cluster="$(get_clustername)"
+if [ "${1:+x}" == "x" ]; then
+    # clustername given as argument
+    cluster="$1"
+    confirm_clustername "$cluster"
+else
+    # use configured clustername
+    cluster="$(get_clustername)"
+fi
+
 # reload the lib to update the vars after initializing the clustername
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"

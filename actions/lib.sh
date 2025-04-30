@@ -83,6 +83,40 @@ function load_conf_vars() {
         wg_endpoint="${wg_endpoint:-0}"
         ansible_wg_template="$etc_directory/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}.conf"
     fi
+
+    vault_clustername="$(get_vault_clustername)"
+}
+
+function get_vault_clustername() {
+    yq --raw-output '.vault_cluster_name // error("unset")' "${group_vars_dir}/all/vault-backend.yaml"
+}
+
+function confirm_vault_clustername() {
+    clustername="$1"
+    configured_clustername="$(get_vault_clustername)"
+
+    if [ "${clustername}" != "${configured_clustername}" ]; then
+        echo "Using the following Vault cluster name \
+that is different from the configured vault.cluster_name"
+        echo
+        echo "    configured: ${configured_clustername}"
+        echo "    using: ${clustername}"
+        echo
+    else
+        echo 'Using the following Vault cluster name'
+        echo
+        echo "    ${clustername}"
+        echo
+    fi
+    read -r -p "ARE YOU SURE? (type capital 'yes')" response
+    case "$response" in
+        YES)
+            ;;
+        *)
+            echo 'User consent not given, bailing out.' >&2
+            exit 2
+            ;;
+    esac
 }
 
 function check_conf_sanity() {

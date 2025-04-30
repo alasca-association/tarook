@@ -171,4 +171,3 @@
     - name: Uncordon the node
       ansible.builtin.include_role:
         name: kubeadm-uncordon-node
-...

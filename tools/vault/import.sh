@@ -18,9 +18,9 @@ function usage() {
     echo "        mkcluster-intermediate.sh" >&2
 }
 
-arg_num=1
-if [ "$#" -ne "$arg_num" ]; then
-    echo "ERROR: Expecting $arg_num argument(s), but $# were given" >&2
+arg_num=2
+if [ "$#" -gt "$arg_num" ]; then
+    echo "ERROR: Expecting $arg_num or $((arg_num - 1)) argument(s), but $# were given" >&2
     echo >&2
     exit 2
 fi
@@ -29,7 +29,17 @@ fi
 "$actions_dir/update-inventory.sh"
 
 cluster="$(get_clustername)"
+
 mode="$1"
+
+if [ "${2:+x}" == "x" ]; then
+    # clustername given as argument
+    cluster="$2"
+    confirm_clustername "$cluster"
+else
+    # use configured clustername
+    cluster="$(get_clustername)"
+fi
 
 import_roots=1
 case "$mode" in

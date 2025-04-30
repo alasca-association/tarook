@@ -70,6 +70,34 @@ function get_clustername() {
     yq --raw-output '.vault_cluster_name // error("unset")' "${group_vars_dir}/all/vault-backend.yaml"
 }
 
+function confirm_clustername() {
+    clustername="$1"
+    configured_clustername="$(get_clustername)"
+
+    if [ "${clustername}" != "${configured_clustername}" ]; then
+        echo "Using the following Vault cluster name \
+that is different from the configured vault.cluster_name"
+        echo
+        echo "    configured: ${configured_clustername}"
+        echo "    using: ${clustername}"
+        echo
+    else
+        echo 'Using the following Vault cluster name'
+        echo
+        echo "    ${clustername}"
+        echo
+    fi
+    read -r -p "ARE YOU SURE? (type capital 'yes')" response
+    case "$response" in
+        YES)
+            ;;
+        *)
+            echo 'User consent not given, bailing out.' >&2
+            exit 2
+            ;;
+    esac
+}
+
 function init_cluster_secrets_engines() {
     local pki_root_ttl="$1"
     local allow_existing="${2:-true}"

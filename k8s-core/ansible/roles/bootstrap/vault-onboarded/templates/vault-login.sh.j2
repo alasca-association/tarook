@@ -7,7 +7,7 @@ vault_dir=/etc/vault
 export VAULT_ADDR VAULT_CACERT
 for delay in 1 2 4 8 16 0; do
     role_id="$(cat "$vault_dir/role-id")"
-    secret_id="$(cat "$vault_dir/secret-id")"
+    secret_id="$(cat "$vault_dir/secret-id-{{ vault_cluster_name }}")"
     jq -R --slurp '(. / "\n") | {"role_id": .[0], "secret_id": .[1]}' <<<"$role_id"$'\n'"$secret_id" | vault write -field=token "auth/yaook/nodes/login" - && exit 0
     sleep $delay
 done
