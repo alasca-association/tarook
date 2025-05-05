@@ -6,7 +6,7 @@ metadata:
 provisioner: cinder.csi.openstack.org
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
-{% if openstack_cinder_volume_type is not none %}
+{% if openstack_cinder_volume_type is defined %}
 parameters:
   type: {{ openstack_cinder_volume_type | to_json }}
 {% endif %}
