@@ -6,7 +6,7 @@ actions_dir="$(realpath "$(dirname "$0")")/../../actions"
 . "$(dirname "$0")/lib.sh"
 
 function usage() {
-    echo "usage: $0 [no-intermediates|with-intermediates]" >&2
+    echo "usage: $0 [no-intermediates|with-intermediates] [vault-cluster-name]" >&2
     echo >&2
     echo "Arguments:" >&2
     echo "    no-intermediates" >&2

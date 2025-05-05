@@ -14,18 +14,67 @@ k8s_controller_manager_enable_signing_requests="$(
           "$group_vars_dir/all/kubernetes.yaml" 2>/dev/null
 )" || unset k8s_controller_manager_enable_signing_requests  # unset when unset, invalid or file missing
 
+declare -a vault_kv_secret_refs=(
+    "etcdbackup"
+    "ipmi/*"
+    "ipsec-eap-psk"
+    "k8s/join-key"
+    "k8s/service-account-key"
+    "k8s-pki/cluster-root-ca"
+    "thanos-config"
+    "wireguard-key"
+    "wireguard/wg*-key"
+)
+
+# Sets a set of variables using the given names and the given cluster name +
+#  variable descriptor for the value
+#
+# Usage: set_cluster_specific_variables <cluster-name> [ <var_name>=<descriptor> ]*
+#
+# <descriptor> is one of cluster, cluster_path, ssh_ca_path, k8s_pki_path, k8s_front_proxy_pki_path, etcd_pki_path
+#
+function set_cluster_specific_variables() {
+    local _cluster="${1}"
+    local _cluster_path="$common_path_prefix/$_cluster"
+
+    shift
+
+    for var in "${@}"; do
+        local -n _var="${var%=*}"
+        case "${var#*=}" in
+            "cluster")
+                _var="${_cluster}"
+                ;;
+            "cluster_path")
+                _var="${_cluster_path}"
+                ;;
+            "ssh_pki_path")
+                _var="${_cluster_path}/ssh-ca"
+                ;;
+            "k8s_pki_path")
+                _var="${_cluster_path}/k8s-pki"
+                ;;
+            "k8s_front_proxy_pki_path")
+                _var="${_cluster_path}/k8s-front-proxy-pki"
+                ;;
+            "etcd_pki_path")
+                _var="${_cluster_path}/etcd-pki"
+                ;;
+        esac
+    done
+}
+
 if [ -n "${cluster:-}" ]; then
-    cluster_path="$common_path_prefix/$cluster"
-
+    set_cluster_specific_variables "${cluster}" \
+        cluster_path=cluster_path \
+        ou=cluster \
+        ssh_ca_path=ssh_pki_path \
+        k8s_pki_path=k8s_pki_path \
+        k8s_front_proxy_pki_path=k8s_front_proxy_pki_path \
+        etcd_pki_path=etcd_pki_path
     year="$(date +%Y)"
-    ou="$cluster"
-    organization="${YAOOK_K8S_CA_ORGANIZATION_OVERRIDE:-A Company that Makes Everything (ACME)}"
     country="${YAOOK_K8S_CA_COUNTRY_OVERRIDE:-DE}"
-
-    ssh_ca_path="$cluster_path/ssh-ca"
-    k8s_pki_path="$cluster_path/k8s-pki"
-    k8s_front_proxy_pki_path="$cluster_path/k8s-front-proxy-pki"
-    etcd_pki_path="$cluster_path/etcd-pki"
+    organization="${YAOOK_K8S_CA_ORGANIZATION_OVERRIDE:-A Company that Makes Everything (ACME)}"
 fi
 
 # If we can't find the approle accessor, that's ok
