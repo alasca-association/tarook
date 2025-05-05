@@ -1,1 +1,0 @@
-Fixed application of :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.basic_auth_secret_name` when unset. (regression of v9.0.6)
