@@ -26,7 +26,7 @@ Bugfixes
 ~~~~~~~~
 
 - Fixed application of :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.basic_auth_secret_name` when unset. (regression of v9.0.6) (`!1839 <https://gitlab.com/yaook/k8s/-/merge_requests/1839>`_)
-- Fixed application of :ref:`configuration-options.yk8s.openstack.cinder_volume_type` when unset. (regression of v9.0.6) (`!1839 <https://gitlab.com/yaook/k8s/-/merge_requests/1839>`_)
+- Fixed application of :ref:`configuration-options.yk8s.miscellaneous.openstack_cinder_volume_type` when unset. (regression of v9.0.6) (`!1839 <https://gitlab.com/yaook/k8s/-/merge_requests/1839>`_)
 
 
 v9.0.8 (2025-04-15)
