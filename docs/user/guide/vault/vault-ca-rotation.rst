@@ -166,6 +166,7 @@ After you spread the kubeconfigs, do the following:
 
      Before performing this step,
      make sure to copy all remaining secrets from the old to the new Vault namespace.
+     See doc:`/user/guide/vault/vault-kv-secret-copy` on how to do this for the secrets managed by YAOOK/K8s.
 
    .. console::
 

@@ -16,6 +16,8 @@ for additional environment variables accepted by these tools.
    Vault entity (possibly a root token) to run and needs to be executed
    only once (and on policy updates).
 
+.. _vault.tools.mkcluster-root:
+
 -  ``tools/vault/mkcluster-root.sh``: Prepare a new cluster
    inside Vault, putting the root CA keys inside Vault. That means that
    control over vault implies permanent (until the Root CAs have been
@@ -27,6 +29,8 @@ for additional environment variables accepted by these tools.
    ``mkcluster-root.sh``. Please see
    :ref:`Migrating an existing cluster to Vault <vault.migrating-an-existing-cluster-to-vault>`
    for details.
+
+.. _vault.tools.mkcluster-intermediate:
 
 -  ``tools/vault/mkcluster-intermediate.sh``: Prepare a new
    cluster inside Vault, with intermediate CAs only. This setup is not

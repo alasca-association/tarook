@@ -10,13 +10,19 @@ vault
 vault-ca-rotation
 ```
 
-::::{grid} 2
+::::{grid} 1
 :::{grid-item-card} Using Hashicorp Vault
 :link: /user/guide/vault/vault
 :link-type: doc
 :::
+::::
+::::{grid} 2
 :::{grid-item-card} Root Certificate Authority Rotation
 :link: /user/guide/vault/vault-ca-rotation
+:link-type: doc
+:::
+:::{grid-item-card} Copying Key-Value-Secrets into new namespace
+:link: /user/guide/vault/vault-kv-secret-copy
 :link-type: doc
 :::
 ::::
