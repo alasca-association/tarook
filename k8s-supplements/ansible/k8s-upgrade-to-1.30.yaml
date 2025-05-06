@@ -23,6 +23,8 @@
           playbook of either k8s-core or k8s-supplements is executed.
 
 - name: Upgrade Kubernetes nodes
+  vars:
+    force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
   import_playbook: "{{ ansible_k8s_core_dir }}/upgrade-k8s.yaml"
 
 - name: Overwrite "k8s_version"
