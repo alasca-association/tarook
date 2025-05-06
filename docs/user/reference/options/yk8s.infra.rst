@@ -4,11 +4,6 @@ yk8s.infra
 ^^^^^^^^^^
 
 
-.. _cluster-configuration.infra-configuration:
-
-Infra Configuration
-^^^^^^^^^^^^^^^^^^^
-
 This section contains various configuration options necessary for all
 cluster types, Terraform and bare-metal based.
 

@@ -15,11 +15,6 @@
 in {
   options.yk8s.infra = mkTopSection {
     _docs.preface = ''
-      .. _cluster-configuration.infra-configuration:
-
-      Infra Configuration
-      ^^^^^^^^^^^^^^^^^^^
-
       This section contains various configuration options necessary for all
       cluster types, Terraform and bare-metal based.
     '';
