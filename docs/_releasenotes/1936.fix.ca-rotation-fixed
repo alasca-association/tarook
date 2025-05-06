@@ -1,0 +1,2 @@
+The CA rotation procedure has been fixed once again
+including force-renewal of the certificates and kubeconfig on Kubernetes nodes.
