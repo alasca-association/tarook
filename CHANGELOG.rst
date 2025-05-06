@@ -19,6 +19,16 @@ earlier changes.
 
 .. towncrier release notes start
 
+v8.1.14 (2025-07-16)
+--------------------
+
+Bugfixes
+~~~~~~~~~~~~
+
+- The CA rotation procedure has been fixed once again
+  including force-renewal of the certificates and kubeconfig on Kubernetes nodes. (`!1934 <https://gitlab.com/yaook/k8s/-/merge_requests/1934>`_)
+
+
 v8.1.13 (2025-04-22)
 --------------------
 
