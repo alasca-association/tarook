@@ -28,6 +28,7 @@
         includes = ["minimal"];
         packages = [
           coreutils
+          curl
           gnugrep
           gnused
           gzip
@@ -125,7 +126,6 @@
         includes = ["default" "dev"];
         packages = [
           bashInteractive
-          curl
           vim
           dnsutils
           iputils
