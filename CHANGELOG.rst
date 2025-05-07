@@ -26,7 +26,8 @@ Bugfixes
 ~~~~~~~~~~~~
 
 - The CA rotation procedure has been fixed once again
-  including force-renewal of the certificates and kubeconfig on Kubernetes nodes. (`!1935 <https://gitlab.com/yaook/k8s/-/merge_requests/1935>`_)
+  including force-renewal of the certificates and kubeconfig on Kubernetes nodes
+  and k8s-login for the orchestrator's kubeconfig. (`!1935 <https://gitlab.com/yaook/k8s/-/merge_requests/1935>`_)
 
 
 v9.0.10 (2025-05-07)

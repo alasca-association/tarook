@@ -64,7 +64,10 @@ install_prerequisites
 set_kubeconfig
 
 # Get a new kubeconfig
-run "$actions_dir/k8s-login.sh"
+# If we are completing a CA rotation, renewal must only happen in the end
+if [ "${complete_rotation:-false}" == "false" ]; then
+  run "$actions_dir/k8s-login.sh"
+fi
 
 pushd "$ansible_k8s_core_dir"
 ansible_playbook -i "$ansible_inventory_host_file" \
@@ -83,4 +86,4 @@ ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/rol
 popd
 
 # Get a new kubeconfig
-run "$actions_dir/k8s-login.sh"
+AFLAGS="-e append_next_issuer=${next_issuer:-false}" "$actions_dir/k8s-login.sh"
