@@ -1,2 +1,3 @@
 The CA rotation procedure has been fixed once again
-including force-renewal of the certificates and kubeconfig on Kubernetes nodes.
+including force-renewal of the certificates and kubeconfig on Kubernetes nodes
+and k8s-login for the orchestrator's kubeconfig.
