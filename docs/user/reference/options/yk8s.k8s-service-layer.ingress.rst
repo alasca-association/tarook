@@ -276,7 +276,7 @@ Replica Count
 
 **Default:**::
 
-  1
+  2
 
 
 **Declared by**

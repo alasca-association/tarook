@@ -111,7 +111,7 @@ in {
         Replica Count
       '';
       type = types.ints.positive;
-      default = 1;
+      default = 2;
     };
     allow_snippet_annotations = mkEnableOption "snippet annotations";
   };
