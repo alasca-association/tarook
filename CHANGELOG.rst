@@ -19,6 +19,18 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.1.7 (2025-05-07)
+-------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- We are now using packages from NixOS stable.
+  One reason for that is that we're using boto3 to manage the S3 bucket
+  for :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup`,
+  but the latest versions of boto3 are `incompatible to OpenStack Swift <https://github.com/boto/botocore/issues/3415>`_. (`!1849 <https://gitlab.com/yaook/k8s/-/merge_requests/1849>`_)
+
+
 v9.1.6 (2025-04-15)
 -------------------
 
