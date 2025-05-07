@@ -1,4 +1,0 @@
-We are now using packages from NixOS stable.
-One reason for that is that we're using boto3 to manage the S3 bucket
-for :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup`,
-but the latest versions of boto3 are `incompatible to OpenStack Swift <https://github.com/boto/botocore/issues/3415>`_.
