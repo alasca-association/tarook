@@ -1416,7 +1416,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 **Default:**::
 
-  "prometheus-community/kube-prometheus-stack"
+  "kube-prometheus-stack"
 
 
 **Declared by**
