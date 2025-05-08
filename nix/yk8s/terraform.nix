@@ -184,7 +184,7 @@ in {
           inventory_path = "all/terraform.yaml";
         })
       ]
-      ++ (
+      ++ lib.optionals cfg.enabled (
         let
           linkTfstateIfExists = source: target:
             if config.yk8s.state_directory != null && builtins.pathExists "${config.yk8s.state_directory}/${source}"
@@ -197,7 +197,8 @@ in {
           ++ (linkTfstateIfExists "terraform/rendered/terraform_networking-trampoline.yaml" "group_vars/all/terraform_networking-trampoline.yaml")
           ++ (linkTfstateIfExists "terraform/rendered/terraform_networking.yaml" "group_vars/all/terraform_networking.yaml")
       );
-    _state_packages = [
+    _state_packages =
+      lib.optional cfg.enabled
       (
         let
           filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["prevent_disruption"]];
@@ -211,7 +212,6 @@ in {
         in (pkgs.runCommandLocal "tfvars.json" {} ''
           install -m 644 -D ${varsFile} $out/${tfvars_file_path}
         '')
-      )
-    ];
+      );
   };
 }
