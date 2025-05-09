@@ -4,10 +4,6 @@ yk8s.kubernetes.network
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. note::
-
-  To enable the calico network plugin,
-  ``kubernetes.network.plugin`` needs to be set to ``calico``.
 
 .. _configuration-options.yk8s.kubernetes.network.bgp_announce_service_ips:
 
@@ -115,32 +111,6 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
 **Default:**::
 
   false
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
-
-
-.. _configuration-options.yk8s.kubernetes.network.plugin:
-
-``yk8s.kubernetes.network.plugin``
-##################################
-
-Currently only "calico" is supported.
-
-Calico: High-performance, pure IP networking, policy engine. Calico provides
-layer 3 networking capabilities and associates a virtual router with each node.
-Allows the establishment of zone boundaries through BGP
-
-
-**Type:**::
-
-  value "calico" (singular enum)
-
-
-**Default:**::
-
-  "calico"
 
 
 **Declared by**

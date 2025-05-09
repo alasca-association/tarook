@@ -64,6 +64,30 @@ the above specified Kubernetes version.
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 
 
+.. _configuration-options.yk8s.kubernetes.network.calico.enabled:
+
+``yk8s.kubernetes.network.calico.enabled``
+##########################################
+
+Whether to enable Calico, a high-performance, pure IP networking, policy engine. Calico provides
+layer 3 networking capabilities and associates a virtual router with each node.
+Allows the establishment of zone boundaries through BGP
+
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+
+
 .. _configuration-options.yk8s.kubernetes.network.calico.encapsulation:
 
 ``yk8s.kubernetes.network.calico.encapsulation``
