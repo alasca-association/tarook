@@ -58,7 +58,7 @@ to continue using the "local" backend method.
 ``yk8s.terraform.enabled``
 ##########################
 
-
+Whether to enable Terraform usage.
 
 **Type:**::
 
@@ -66,6 +66,11 @@ to continue using the "local" backend method.
 
 
 **Default:**::
+
+  false
+
+
+**Example:**::
 
   true
 
