@@ -1,0 +1,12 @@
+The keepalived peering mechanism has been changed to peer frontend nodes directly via unicast instead of multicast.
+For single-frontend-node setups, it automatically falls back to multicast as otherwise keepalived goes into an error state.
+
+It is recommended to update its configuration.
+
+The ``migrate-to-release.sh``-script takes care of all the necessary steps:
+
+.. code:: console
+
+  $ bash managed-k8s/actions/migrate-to-release.sh
+
+.

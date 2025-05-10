@@ -1,6 +1,18 @@
 #jinja2: lstrip_blocks: True
 {{ _auto_generated_preamble }}
 
+global_defs {
+    # These settings are required to make things work on OVN-based
+    # clouds.
+    # Inspired by https://github.com/stackitcloud/yawol/pull/129/files
+    vrrp_garp_master_repeat 5
+    vrrp_garp_interval 1
+    vrrp_garp_lower_prio_repeat 1
+    vrrp_garp_master_refresh 300
+    vrrp_garp_master_refresh_repeat 1
+    vrrp_higher_prio_send_advert true
+}
+
 vrrp_script chk_haproxy {
     script "/etc/keepalived/chk_haproxy.sh"
     interval 2
@@ -28,13 +40,26 @@ vrrp_instance VIP_1 {
     virtual_router_id 47
     priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
     advert_int 1
-    authentication {
-        auth_type PASS
-        auth_pass {{ vrrp_password }}
-    }
     virtual_ipaddress {
         {{ networking_fixed_ip }}
     }
+    unicast_src_ip {{ local_ipv4_address | ipaddr('address') }}
+{% if groups['frontend'] | length > 0 %}
+    unicast_peer {
+        {% for hostname in groups['frontend'] %}
+        {% set peer = hostvars[hostname] %}
+        {% if not peer.local_ipv4_address == local_ipv4_address %}
+        {{ peer.local_ipv4_address | ipaddr }}
+        {% endif %}
+        {% endfor %}
+    }
+{% endif %}
+    # Stop nodes with higher priority taking over the master role
+    # to prevent unnecessary traffic interruption and flapping if the higher
+    # priority node has problems and goes absent and becomes available frequently.
+    # We do not really care which gateway exactly is master but that connectivity
+    # is stable.
+    nopreempt
     track_script {
         chk_haproxy
     }
@@ -53,6 +78,7 @@ vrrp_instance VIP_1_V6 {
         {{ networking_fixed_ip_v6 }}
     }
     unicast_src_ip {{ local_ipv6_address | ipaddr }}
+{% if groups['frontend'] | length > 0 %}
     unicast_peer {
         {% for hostname in groups['frontend'] %}
         {% set peer = hostvars[hostname] %}
@@ -61,6 +87,12 @@ vrrp_instance VIP_1_V6 {
         {% endif %}
         {% endfor %}
     }
+{% endif %}
+    # Stop nodes with higher priority taking over the master role
+    # to prevent unnecessary traffic interruption and flapping if the higher
+    # priority node has problems and goes absent and becomes available frequently.
+    # We do not really care which gateway exactly is master but that connectivity
+    # is stable.
     nopreempt
     track_script {
         chk_haproxy

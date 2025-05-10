@@ -35,6 +35,7 @@ in {
     version = mkOption {
       type = types.nonEmptyStr;
       default = "0.9.0";
+      # NOTE: constrained to >= 0.8.0 by assertion (due to OVN support)
     };
     agent_port = mkOption {
       description = ''
@@ -107,6 +108,51 @@ in {
       default = config.yk8s.kubernetes.network.plugin == "calico";
     };
   };
+  config.yk8s.assertions = [
+    # Due to OVN support, require version >= 0.8.0 (warn only if not in semver2 format)
+    (
+      let
+        inherit (builtins) elemAt match typeOf;
+        inherit (lib.strings) toInt;
+        semver2RE = lib.concatStrings [
+          "(0|[1-9][0-9]*)" # major
+          "[.]"
+          "(0|[1-9][0-9]*)" # minor
+          "[.]"
+          "(0|[1-9][0-9]*)" # patch
+          # optional pre-release
+          "(-("
+          "(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)"
+          "([.](0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*"
+          "))?"
+          # build metadata
+          "([+]([0-9a-zA-Z-]+([.][0-9a-zA-Z-]+)*))?"
+        ];
+      in let
+        cfg_version = cfg.version;
+        matches = match semver2RE cfg_version;
+        isSemver2 =
+          if typeOf matches == "list"
+          then true
+          else false;
+      in {
+        assertion =
+          if isSemver2
+          then
+            ! (
+              (toInt (elemAt matches 0) <= 0)
+              && (toInt (elemAt matches 1) < 8)
+            )
+          else
+            lib.warn ''
+              yk8s.ch-k8s-lbaas.version is not in semver2 format.
+              Please make sure that '${cfg_version}' has a version level of at least 0.8.0.
+            ''
+            true;
+        message = "yk8s.ch-k8s-lbaas.version: version must be at least 0.8.0";
+      }
+    )
+  ];
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
