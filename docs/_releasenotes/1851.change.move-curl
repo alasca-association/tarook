@@ -1,0 +1,1 @@
+``curl`` has been moved from the interactive dependency group to the default dependency group as it is required to manage the Terraform state with Gitlab as backend.
