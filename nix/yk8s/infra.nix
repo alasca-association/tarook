@@ -10,7 +10,7 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath mkYamlAtPath removeAttrsByPath;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath mkYamlAtPath removeAttrsByPath mkInternalOption;
   inherit (yk8s-lib.types) ipv4Cidr ipv4Addr;
 in {
   options.yk8s.infra = mkTopSection {
@@ -149,6 +149,30 @@ in {
           };
         });
       };
+
+    final_hosts = mkInternalOption {
+      description = ''
+        Internal read-only option to access all hosts and their effective attributes available to Ansible.
+        Each host gets the additional attribute ``group_names`` which is a list of all Ansible groups to which the host belongs.
+      '';
+      readOnly = true;
+      type = with types; nullOr attrs;
+      default =
+        if cfg.ansible_hosts == null
+        then null
+        else let
+          getHostsFromGroupAttrs = lib.foldlAttrs (
+            acc: groupName: groupValues: let
+              hosts = lib.recursiveUpdate (getHostsFromGroupAttrs (groupValues.children or {})) (groupValues.hosts or {});
+            in
+              lib.recursiveUpdate acc (lib.mapAttrs (
+                  hostName: hostValues: hostValues // {group_names = (hostValues.group_names or []) ++ [groupName];}
+                )
+                hosts)
+          ) {};
+        in
+          getHostsFromGroupAttrs cfg.ansible_hosts;
+    };
   };
 
   config.yk8s.infra.ansible_hosts = {
