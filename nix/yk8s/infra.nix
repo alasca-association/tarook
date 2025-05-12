@@ -208,6 +208,59 @@ in {
           };
         });
       };
+
+    final_hosts = mkInternalOption {
+      description = ''
+        Internal read-only option to access all hosts and their effective attributes available to Ansible.
+        Each host gets the following additional attributes
+        * ``group_names``: A list of all Ansible groups to which the host belongs
+        * ``role``: One of ``master``, ``worker``, ``gateway`` or ``null``
+      '';
+      readOnly = true;
+      type = with types; nullOr attrs;
+      default =
+        if cfg.ansible_hosts == null
+        then null
+        else let
+          getHostsFromGroupAttrs = lib.foldlAttrs (
+            acc: groupName: groupValues: let
+              hosts = lib.recursiveUpdate (getHostsFromGroupAttrs (
+                lib.filterAttrs (n: _: builtins.elem n (builtins.attrNames (groupValues.children or {}))) cfg.ansible_hosts
+              )) (groupValues.hosts or {});
+            in
+              lib.recursiveUpdate acc (lib.mapAttrs (
+                  hostName: hostValues:
+                    hostValues
+                    // rec {
+                      group_names = lib.unique ((lib.attrByPath [hostName "group_names"] [] acc) ++ [groupName]);
+                      role = let
+                        relevantGroups = lib.intersectLists group_names ["masters" "workers" "gateways"];
+                      in
+                        assert lib.assertMsg ((builtins.length relevantGroups) <= 1) "${hostName} has more than one role assigned. Nodes can only be one of master, worker or gateway";
+                          if relevantGroups == []
+                          then null
+                          else lib.strings.removeSuffix "s" (builtins.head relevantGroups);
+                    }
+                )
+                hosts)
+          ) {};
+          allHosts = getHostsFromGroupAttrs cfg.ansible_hosts;
+          groupNames = lib.pipe allHosts [builtins.attrValues (map (v: v.group_names)) lib.flatten lib.unique];
+          allGroups = builtins.foldl' lib.recursiveUpdate cfg.ansible_hosts ([{all.hosts = allHosts;}]
+            ++ (map (group: {
+                ${group} = {
+                  children = cfg.ansible_hosts.${group}.children or {};
+                  vars = cfg.ansible_hosts.${group}.vars or {};
+                  hosts = lib.filterAttrs (_: v: builtins.elem group v.group_names) allHosts;
+                };
+              })
+              groupNames));
+          populateChildren = groupName: groupValues:
+            groupValues
+            // {children = lib.mapAttrs (childName: _: allGroups.${childName}) (groupValues.children or {});};
+        in
+          lib.mapAttrs populateChildren allGroups;
+    };
   };
 
   config.yk8s.assertions = [
