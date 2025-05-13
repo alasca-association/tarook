@@ -1,6 +1,7 @@
 {
   pkgs,
-  inputs',
+  localInputs,
+  system,
   ...
 }: {
   yk8s-env = {
@@ -13,7 +14,7 @@
           jq
           kubectl
           rsync
-          inputs'.nixpkgs-vault1148.legacyPackages.vault
+          localInputs.nixpkgs-vault1148.legacyPackages.${system}.vault
           wireguard-tools
           yq
         ];
@@ -37,7 +38,7 @@
           openssh
           openssl
           pre-commit
-          inputs'.nixpkgs-terraform157.legacyPackages.terraform
+          localInputs.nixpkgs-terraform157.legacyPackages.${system}.terraform
           util-linux # for uuidgen
         ];
         pythonPackages = ps:

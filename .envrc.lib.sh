@@ -19,7 +19,7 @@ _nix_flake_manual() {
   layout_dir=$(direnv_layout_dir)
   mkdir -p "$layout_dir"
   nix_hash_file="$layout_dir/nix_flake.sha256"
-  hash_command="echo '#' devshell: ${YAOOK_K8S_DEVSHELL}; find $flake_dir/nix -type f -exec sha256sum {} +"
+  hash_command="echo '#' devshell: ${YAOOK_K8S_DEVSHELL}; find $flake_dir/managed-k8s/nix -type f -exec sha256sum {} +"
   reload_command="yaook-direnv-reload"
   watch_file "$nix_hash_file"
   nix_hashes="$(bash -c "$hash_command")"
@@ -42,7 +42,7 @@ if [[ ! -d "$PWD" ]] || [[ "\$(realpath "\$(dirname \$0)/../..")" != "$PWD" ]]; 
 fi
 
 rm -f "$out_path" 2>/dev/null
-nix build "$flake_dir#yk8s-env-${YAOOK_K8S_DEVSHELL}" -o "$out_path"
+nix build --override-input yk8s "$flake_dir/managed-k8s" "$flake_dir#yk8s-env-${YAOOK_K8S_DEVSHELL}" -o "$out_path"
 bash -c "$hash_command" > "$nix_hash_file"
 EOF
   chmod +x "$bin_dir/$reload_command"
@@ -58,7 +58,7 @@ EOF
       echo "========"
     fi
     rm -f "$out_path" 2>/dev/null
-    nix build "$flake_dir#yk8s-env-${YAOOK_K8S_DEVSHELL}" -o "$out_path"
+    nix build --override-input yk8s "$flake_dir/managed-k8s" "$flake_dir#yk8s-env-${YAOOK_K8S_DEVSHELL}" -o "$out_path"
     bash -c "$hash_command" > "$nix_hash_file"
   elif [ "$(cat "$nix_hash_file" 2>/dev/null)" != "$nix_hashes" ]; then
     echo "========"
@@ -86,16 +86,14 @@ use_flake_if_nix() {
 
   if [ "${YAOOK_K8S_DIRENV_MANUAL:-false}" == "true" ]; then
     _nix_flake_manual "$flake_dir"
-    watch_file "$flake_dir/nix"
+    watch_file "$flake_dir/managed-k8s/nix"
   else
     _nix_flake_auto "$flake_dir"
     # for auto-reload, only watch the file most likely to update dependencies
     # otherwise the reload frequency would not be bearable
-    watch_file "$flake_dir/nix/dependencies.nix"
+    watch_file "$flake_dir/managed-k8s/nix/dependencies.nix"
   fi
   export NIX_FLAKE_ACTIVE="${NIX_FLAKE_ACTIVE}:${flake_dir}"
-
-  use locale_archive_if_not_set "$flake_dir"
 }
 
 use_locale_archive_if_not_set() {
@@ -108,7 +106,7 @@ use_locale_archive_if_not_set() {
 
     if ! [ -e "$LOCALE_ARCHIVE" ]; then
       echo "Building locale-archive"
-      out_path="$(nix build --print-out-paths "$flake_dir#glibcLocales")"
+      out_path="$(nix build --override-input yk8s "$flake_dir/managed-k8s" --print-out-paths "$flake_dir#glibcLocales")"
       rm -f "$LOCALE_ARCHIVE"
       ln -s "$out_path/lib/locale/locale-archive" "$LOCALE_ARCHIVE"
     fi
@@ -116,7 +114,7 @@ use_locale_archive_if_not_set() {
 }
 
 layout_yaook-k8s() {
-  flake_dir="$(realpath "${1:-managed-k8s}")"
+  flake_dir="$(realpath "${1:-${PWD}}")"
   user_env="$HOME/.config/yaook-k8s/env"
   if [ -e "$user_env" ]; then
     source_env "$user_env"

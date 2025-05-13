@@ -5,6 +5,9 @@
   flake-parts-lib,
   ...
 }: {
+  imports = [
+    ../yk8s-env.nix
+  ];
   options = {
     perSystem =
       flake-parts-lib.mkPerSystemOption
@@ -29,6 +32,7 @@
           pkgs = import localFlake.inputs.nixpkgs {
             inherit system;
           };
+          localInputs = localFlake.inputs;
         };
         imports = [
           ./assertions.nix

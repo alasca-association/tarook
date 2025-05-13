@@ -6,7 +6,6 @@
         config,
         pkgs,
         lib,
-        inputs',
         ...
       }: let
         cfg = config.yk8s-env;
@@ -52,6 +51,13 @@
                   options =
                     commonOptions
                     // {
+                      extraPythonPackages = lib.mkOption {
+                        description = ''
+                          A list of additional Python dependencies of the group
+                        '';
+                        type = listOf (functionTo (listOf package));
+                        default = [];
+                      };
                       includes = lib.mkOption {
                         description = ''
                           A list of group names that should be included by this group.
@@ -93,11 +99,12 @@
                 group.packages
                 group.includes
               );
+            flattenPythonPackages = ps: builtins.foldl' (acc: f: acc ++ f ps) [];
             mergedPythonPackages = group: ps:
               lib.unique (
                 builtins.foldl' (
                   acc: dep: acc ++ (mergedPythonPackages (builtins.getAttr dep cfg.dependencies.groups) ps)
-                ) (group.pythonPackages ps)
+                ) (group.pythonPackages ps ++ flattenPythonPackages ps group.extraPythonPackages)
                 group.includes
               );
           in
