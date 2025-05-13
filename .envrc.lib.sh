@@ -11,10 +11,8 @@ has_flake_support() {
 }
 
 _nix_flake_auto() {
-  if ! has nix_direnv_version || ! nix_direnv_version 2.3.0; then
-    source_url "https://raw.githubusercontent.com/nix-community/nix-direnv/2.3.0/direnvrc" "sha256-Dmd+j63L84wuzgyjITIfSxSD57Tx7v51DMxVZOsiUD8="
-  fi
-  use flake "${flake_dir}#${YAOOK_K8S_DEVSHELL}"
+    _nix_flake_manual "$flake_dir"
+    yaook-direnv-reload
 }
 
 _nix_flake_manual() {
