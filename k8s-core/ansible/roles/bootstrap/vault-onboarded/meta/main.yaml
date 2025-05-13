@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   license: Apache-2.0
-  author: Yaook Authors
+  author: Tarook Authors
 dependencies:
 - helpers/vault-orchestrator-roles
 allow_duplicates: true

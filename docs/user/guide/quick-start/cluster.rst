@@ -3,7 +3,7 @@ Configure cluster
 
 .. note::
    If you plan on deploying OpenStack using `YAOOK/Operator <https://gitlab.com/yaook/operator>`_
-   on top of your YAOOK/K8s cluster, please refer to the
+   on top of your Tarook cluster, please refer to the
    `cluster requirements of yaook/operator <https://docs.yaook.cloud/user/explanations/requirements/k8s-cluster.html>`__
    to see which features are recommended and required to be present in
    your Kubernetes cluster.

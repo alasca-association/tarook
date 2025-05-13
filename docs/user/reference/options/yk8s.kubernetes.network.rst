@@ -30,7 +30,7 @@ BGP peers. By default, only per-node pod networks are announced.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.bgp_gateway_as:
@@ -53,7 +53,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.bgp_worker_as:
@@ -76,7 +76,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.ipv4_nat_outgoing:
@@ -98,7 +98,7 @@ Enable outgoing IPv4 network address translation
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.ipv6_nat_outgoing:
@@ -120,7 +120,7 @@ Enable outgoing IPv6 network address translation
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.pod_subnet:
@@ -143,7 +143,7 @@ automatically to each node.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.pod_subnet_v6:
@@ -166,7 +166,7 @@ automatically to each node.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.service_subnet:
@@ -188,7 +188,7 @@ This is the IPv4 subnet used by Kubernetes for Services.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.service_subnet_v6:
@@ -216,5 +216,5 @@ https://github.com/kubernetes/kubernetes/pull/12841
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
 

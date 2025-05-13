@@ -38,8 +38,8 @@ if [ "${wg_usage:-true}" == "true" ]; then
     if ! tomlq '(.wg_users[] | select(.ident=="'"${wg_user}"'")) // error("not-found")' "$ipam_path" &>/dev/null ; then
         warningf 'Failed to find configured wg_user "%s" in Wireguard IPAM state file (%s).' "$wg_user" "$ipam_path" >&2
         warningf '  Is the user configured as Wireguard peer?' >&2
-        warningf '  See https://yaook.gitlab.io/k8s/devel/user/reference/environmental-variables.html#vpn-configuration' >&2
-        warningf '  and https://yaook.gitlab.io/k8s/devel/user/reference/options/yk8s.wireguard.html#yk8s-wireguard-peers' >&2
+        warningf '  See https://docs.tarook.cloud/devel/user/reference/environmental-variables.html#vpn-configuration' >&2
+        warningf '  and https://docs.tarook.cloud/devel/user/reference/options/yk8s.wireguard.html#yk8s-wireguard-peers' >&2
     fi
 
     #set up wireguard
@@ -47,10 +47,10 @@ if [ "${wg_usage:-true}" == "true" ]; then
         # shellcheck disable=SC2086
         wg_private_key=$(env --ignore-environment --split-string="$wg_private_key_command")
     elif [[ -v wg_private_key_file ]]; then
-        warningf "\$wg_private_key_file is deprecated. Please use \$wg_private_key_command instead. See https://yaook.gitlab.io/k8s/devel/user/reference/environmental-variables.html#vpn-configuration"
+        warningf "\$wg_private_key_file is deprecated. Please use \$wg_private_key_command instead. See https://docs.tarook.cloud/devel/user/reference/environmental-variables.html#vpn-configuration"
         wg_private_key=$(cat "$wg_private_key_file")
     elif [[ -v wg_private_key ]]; then
-        warningf "\$wg_private_key is deprecated. Please use \$wg_private_key_command instead. See https://yaook.gitlab.io/k8s/devel/user/reference/environmental-variables.html#vpn-configuration"
+        warningf "\$wg_private_key is deprecated. Please use \$wg_private_key_command instead. See https://docs.tarook.cloud/devel/user/reference/environmental-variables.html#vpn-configuration"
     fi
     # Creating the conf file with a dummy key. The actual private key is going to be injected via `wg set`
     sed "s#REPLACEME#$(wg genkey | sed 's/^.\{10\}/dummy+key+/')#" "$ansible_wg_template" > "$wg_conf"

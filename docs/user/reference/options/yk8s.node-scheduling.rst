@@ -56,7 +56,7 @@ Labels are assigned to a node during LCM rollout only!
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/node-scheduling.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/node-scheduling.nix
 
 
 .. _configuration-options.yk8s.node-scheduling.scheduling_key_prefix:
@@ -84,7 +84,7 @@ it needs to have that label key. The following defines a prefix for these keys
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/node-scheduling.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/node-scheduling.nix
 
 
 .. _configuration-options.yk8s.node-scheduling.taints:
@@ -121,5 +121,5 @@ Taints are assigned to a node during LCM rollout only!
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/node-scheduling.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/node-scheduling.nix
 

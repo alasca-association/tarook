@@ -32,7 +32,7 @@ Whether to enable Flux management.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.fluxcd.helm_repo_url:
@@ -53,7 +53,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.fluxcd.install:
@@ -76,7 +76,7 @@ FALSE, FLUXCD2 WILL BE DELETED WITHOUT CHECKING FOR DISRUPTION.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.fluxcd.namespace:
@@ -99,7 +99,7 @@ never deleted).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.fluxcd.scheduling_key:
@@ -122,7 +122,7 @@ default.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.fluxcd.version:
@@ -144,5 +144,5 @@ Helm chart version of FluxCD to be deployed.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
 

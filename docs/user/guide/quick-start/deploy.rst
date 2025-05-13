@@ -7,7 +7,7 @@ Deploy your cluster by executing the :ref:`apply-all.sh <actions-references.appl
 
    $ ./managed-k8s/actions/apply-all.sh
 
-Get yourself a hot beverage and joyfully watch as your YAOOK/K8s cluster gets created.
+Get yourself a hot beverage and joyfully watch as your Tarook cluster gets created.
 
 Afterwards you may verify that it's functional by running our smoke tests.
 

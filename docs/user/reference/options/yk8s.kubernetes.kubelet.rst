@@ -32,7 +32,7 @@ Note: To change this value you have to release the Kraken
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubelet.evictionhard_nodefs_inodesfree:
@@ -55,7 +55,7 @@ Note: To change this value you have to release the Kraken
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubelet.evictionsoft_memory_period:
@@ -78,7 +78,7 @@ Note: To change this value you have to release the Kraken
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubelet.pod_limit_master:
@@ -103,7 +103,7 @@ Therefore it's especially helpful for nodes which have much resources.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubelet.pod_limit_worker:
@@ -128,5 +128,5 @@ Therefore it's especially helpful for nodes which have much resources.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
 

@@ -27,7 +27,7 @@ reasonably changed after a cluster has been spawned.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/vault.nix
 
 
 .. _configuration-options.yk8s.vault.nodes_approle:
@@ -48,7 +48,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/vault.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/vault.nix
 
 
 .. _configuration-options.yk8s.vault.path_prefix:
@@ -69,7 +69,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/vault.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/vault.nix
 
 
 .. _configuration-options.yk8s.vault.policy_prefix:
@@ -90,5 +90,5 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/vault.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/vault.nix
 

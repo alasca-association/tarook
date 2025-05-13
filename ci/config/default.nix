@@ -16,7 +16,7 @@ in {
 
   config.yk8s = {
     # A reference for all available options can be found at
-    # https://yaook.gitlab.io/k8s/devel/user/reference/options/index.html
+    # https://docs.tarook.cloud/devel/user/reference/options/index.html
     infra = {
       cluster_name = "ci";
       ipv6_enabled = false;

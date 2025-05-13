@@ -10,7 +10,7 @@ Quickstart Guide
    vault
    deploy
 
-To create a YAOOK/K8s cluster on top of OpenStack, follow the steps below.
+To create a Tarook cluster on top of OpenStack, follow the steps below.
 Alternatively setting up on bare metal requires additional preparations which are not covered by this guide.
 
 .. note::

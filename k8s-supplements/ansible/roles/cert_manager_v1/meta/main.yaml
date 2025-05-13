@@ -1,6 +1,6 @@
 ---
 galaxy_info:
-  author: Yaook Authors
+  author: Tarook Authors
   license: Apache-2.0
 dependencies:
 - config/common_defaults_v1

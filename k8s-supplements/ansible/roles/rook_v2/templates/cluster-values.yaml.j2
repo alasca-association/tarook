@@ -50,7 +50,7 @@ cephClusterSpec:
 {% if rook_use_host_networking %}
     provider: host
 {% endif %}
-    # https://gitlab.com/yaook/k8s/-/merge_requests/1304#note_2041293843
+    # https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1304#note_2041293843
     dualStack: false
 {% if ipv4_enabled %}
     ipFamily: "IPv4"

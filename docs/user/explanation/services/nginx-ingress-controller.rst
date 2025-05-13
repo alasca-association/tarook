@@ -2,7 +2,7 @@ NGINX Ingress controller
 ========================
 
 The NGINX Ingress controller is an optional component
-which can be automatically configured and rolled out by YAOOK/K8s.
+which can be automatically configured and rolled out by Tarook.
 To enable and configure it, please refer to the
 :ref:`NGINX ingress configuration<configuration-options.yk8s.k8s-service-layer.ingress>`.
 

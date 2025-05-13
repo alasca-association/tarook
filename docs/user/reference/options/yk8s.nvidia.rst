@@ -19,7 +19,7 @@ Should point to a object store or otherwise web server, where the vGPU Manager i
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/nvidia.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/nvidia.nix
 
 
 .. _configuration-options.yk8s.nvidia.vgpu.manager_filename:
@@ -36,5 +36,5 @@ Should hold the name of the vGPU Manager installation file.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/nvidia.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/nvidia.nix
 

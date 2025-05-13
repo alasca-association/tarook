@@ -15,9 +15,9 @@ Possible symptoms when running a ``kubectl`` command
 or
 ``The connection to the server localhost:8080 was refused - did you specify the right host or port?``
 
-YAOOK/K8s now uses short-lived kubeconfigs. Which means that, instead of commiting them encrypted into the cluster repository, they are not committed at all but instead re-generated from the Vault when they are needed.
+Tarook now uses short-lived kubeconfigs. Which means that, instead of commiting them encrypted into the cluster repository, they are not committed at all but instead re-generated from the Vault when they are needed.
 
-You can login to the YAOOK/K8s cluster with
+You can login to the Tarook cluster with
 
 .. code:: console
 
@@ -63,7 +63,7 @@ This will generate a kubeconfig that is valid for 8 days (by default). After tha
 
             $ ./managed-k8s/actions/wg-up.sh
 
-“How can I test my YAOOK/K8s-Cluster?”
+“How can I test my Tarook-Cluster?”
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We recommend testing whether your cluster was successfully deployed by
@@ -74,10 +74,10 @@ nodes <faq.how-do-i-ssh-into-my-cluster-nodes>` and/or by running:
 
    $ ./managed-k8s/actions/test.sh
 
-“How can I delete my YAOOK/K8s-Cluster?”
+“How can I delete my Tarook-Cluster?”
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can delete the YAOOK/K8s-Cluster and all associated OpenStack resources
+You can delete the Tarook-Cluster and all associated OpenStack resources
 by triggering the :ref:`destroy.sh <actions-references.destroysh>` script.
 
 .. Warning::
@@ -91,7 +91,7 @@ by triggering the :ref:`destroy.sh <actions-references.destroysh>` script.
 
 .. code:: shell
 
-   $ # Destroy the YAOOK/K8s cluster and delete all OpenStack resources
+   $ # Destroy the Tarook cluster and delete all OpenStack resources
    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_DISRUPT_THE_HARBOUR=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
 
 Troubleshooting
@@ -143,7 +143,7 @@ The ``Get certificate information task`` of the ``k8s-master`` fails
 -  Remove your local Ansible directory but make sure to not remove data
    you still need so make backup in case
    (e.g. ``mv ~/.ansible ~/.ansible.bak``)
--  see `this issue <https://gitlab.com/yaook/k8s/-/issues/441>`__
+-  see `this issue <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/441>`__
 
 Ansible could not initialize the preferred locale: unsupported locale setting
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

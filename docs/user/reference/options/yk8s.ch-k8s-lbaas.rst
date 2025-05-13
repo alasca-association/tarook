@@ -24,7 +24,7 @@ The TCP port on which the LBaaS agent should listen on the frontend nodes.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.agent_source:
@@ -45,7 +45,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.agent_urls:
@@ -69,7 +69,7 @@ set to ``static`` and is ignored otherwise.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.agent_user:
@@ -90,7 +90,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.controller_repo:
@@ -111,7 +111,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.controller_resources:
@@ -132,7 +132,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.controller_resources.limits.cpu:
@@ -156,7 +156,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.controller_resources.limits.memory:
@@ -182,7 +182,7 @@ Request and limit for the LBaaS controller
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.controller_resources.requests.cpu:
@@ -208,7 +208,7 @@ Request and limit for the LBaaS controller
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.controller_resources.requests.memory:
@@ -232,7 +232,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.enabled:
@@ -258,7 +258,7 @@ Whether to enable our LBaas service.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.port_manager:
@@ -268,7 +268,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 
 Configure which IP address ("port") manager to use. Two options are available:
 
-* openstack: Uses OpenStack and the yaook/k8s gateway nodes to provision
+* openstack: Uses OpenStack and the Tarook gateway nodes to provision
   LBaaS IP addresses ports.
 * static: Uses a fixed set of IP addresses to use for load balancing. When the
   static port manager is used,
@@ -289,7 +289,7 @@ Configure which IP address ("port") manager to use. Two options are available:
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.shared_secret:
@@ -313,7 +313,7 @@ $ dd if=/dev/urandom bs=16 count=1 status=none | base64
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.static_ipv4_addresses:
@@ -337,7 +337,7 @@ traffic for these IPv4 addresses.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.use_bgp:
@@ -358,7 +358,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.use_floating_ips:
@@ -384,7 +384,7 @@ Whether to enable the use of floating IPs.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.version:
@@ -405,5 +405,5 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 

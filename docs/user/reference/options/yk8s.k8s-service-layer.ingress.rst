@@ -35,7 +35,7 @@ Whether to enable snippet annotations.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.chart_ref:
@@ -56,7 +56,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.chart_version:
@@ -85,7 +85,7 @@ If the version shall be unpinned, set to: ``null``.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.enable_ssl_passthrough:
@@ -107,7 +107,7 @@ Enable SSL passthrough in the controller
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.enabled:
@@ -133,7 +133,7 @@ Whether to enable nginx-ingress management..
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.helm_repo_url:
@@ -154,7 +154,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.install:
@@ -178,7 +178,7 @@ DISRUPTION.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.namespace:
@@ -201,7 +201,7 @@ never deleted).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.nodeport_http:
@@ -223,7 +223,7 @@ Node port for the HTTP endpoint
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.nodeport_https:
@@ -245,7 +245,7 @@ Node port for the HTTPS endpoint
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.release_name:
@@ -266,7 +266,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.replica_count:
@@ -288,7 +288,7 @@ Replica Count
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.resources:
@@ -309,7 +309,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.resources.limits.cpu:
@@ -333,7 +333,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.resources.limits.memory:
@@ -359,7 +359,7 @@ Request and limit for the Nginx Ingress controller
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.resources.requests.cpu:
@@ -385,7 +385,7 @@ Request and limit for the Nginx Ingress controller
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.resources.requests.memory:
@@ -409,7 +409,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.scheduling_key:
@@ -432,7 +432,7 @@ default.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.ingress.service_type:
@@ -454,5 +454,5 @@ Service type for the frontend Kubernetes service.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 

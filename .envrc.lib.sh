@@ -2,7 +2,7 @@
 
 layout_poetry() {
   echo
-  echo "WARNING: YAOOK/K8s no longer uses Poetry. Please remove all occurences of 'layout poetry' from your .envrc"
+  echo "WARNING: Tarook no longer uses Poetry. Please remove all occurences of 'layout poetry' from your .envrc"
   echo
 }
 
@@ -115,7 +115,7 @@ layout_yaook-k8s() {
     source_env "$user_env"
   else
     echo "WARNING: $user_env was not found. It is likely that user-specific variables are not set."
-    echo "See https://yaook.gitlab.io/k8s/devel/user/reference/environmental-variables.html#minimal-required-changes"
+    echo "See https://docs.tarook.cloud/devel/user/reference/environmental-variables.html#minimal-required-changes"
   fi
   if [ -e .envrc.local ]; then source_env .envrc.local; fi
   use flake_if_nix "$flake_dir"

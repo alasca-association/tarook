@@ -19,13 +19,13 @@ Closes:  #
 
 ---
 
-## [Merge Prerequisites](https://gitlab.com/yaook/meta/-/wikis/Review-Guide)
+## [Merge Prerequisites](https://tarook.gitlab.io/meta/01-reviews.html)
 
 * [ ] MR title (and description) are descriptive
 * [ ] Code is readable and syntactically correct
 * [ ] Code is understandable
 * [ ] Documentation has been updated, if necessary
 * [ ] [Commit messages look good](https://chris.beams.io/posts/git-commit/)
-* [ ] [Release note](https://yaook.gitlab.io/k8s/devel/developer/guide/coding-guide.html#creation-of-release-notes) file in RST format added in latest commit
+* [ ] [Release note](https://docs.tarook.cloud/devel/developer/guide/coding-guide.html#creation-of-release-notes) file in RST format added in latest commit
 
 **As a developer**: please do not tick these boxes yourself. As a reviewer: please get yourself a ~hot~ cold beverage.

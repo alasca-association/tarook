@@ -34,7 +34,7 @@
           '';
         };
         yk8sEnv = pkgs.stdenv.mkDerivation {
-          # This is an empty derivation that pulls the runtime dependencies of YAOOK/K8s into the container
+          # This is an empty derivation that pulls the runtime dependencies of Tarook into the container
           # image without adding them to PATH. This way, our direnv is tested within the CI
           name = "yk8s-env";
           src = ./.;

@@ -14,17 +14,17 @@ What does this mean for you?
 
 We invite the community to follow along, contribute, and help to shape the future of TAROOK as part of the ALASCA ecosystem.
 
-# YAOOK/K8s
+# TAROOK
 
-YAOOK/K8s is a Lifecycle-Management tool to provide and operate a customizable, highly available, and flexible Kubernetes cluster.
+Tarook is an holistic life cycle management of Kubernetes clusters on bare metal or OpenStack.
 
-YAOOK/K8s is part of the [Yaook](https://yaook.cloud) project. All Yaook related resources are publicly available under https://gitlab.com/yaook.
+Tarook is an [ALASCA](https://alasca.cloud/) project. All related resources are publicly available under https://gitlab.com/alasca.cloud/tarook/tarook.
 
-For further information on how to install and use YAOOK/K8s, please refer to the [documentation](#documentation).
+For further information on how to install and use Tarook, please refer to the [documentation](#documentation).
 
 ## Documentation
 
-Documentation is currently available at https://yaook.gitlab.io/k8s/. It is planned to integrate it into https://docs.yaook.cloud/.
+Documentation is currently available at https://docs.tarook.cloud.
 
 The documentation is created with [sphinx](https://www.sphinx-doc.org/en/master/) and located under [docs/](docs/).
 
@@ -33,9 +33,7 @@ Built instructions for the documentation can be found in the [respective README]
 ## Contributing
 
 Contributions, issues and feature requests are welcome.
-Feel free to check the [issues page](https://gitlab.com/yaook/k8s/-/issues) if you want to contribute.
-
-Please also refer to the the [development workflow](https://gitlab.com/yaook/meta/-/wikis/Development-Workflow).
+Feel free to check the [issues page](https://gitlab.com/alasca.cloud/tarook/tarook/-/issues) if you want to contribute.
 
 ## License
 

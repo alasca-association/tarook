@@ -35,7 +35,7 @@
     retries: 60
 
   - name: require service to be reachable from this machine and respond to HTTP (IPv6)
-    when: false  # disabled https://gitlab.com/yaook/k8s/-/issues/683
+    when: false  # disabled https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/683
     uri:
       url: "http://{{ service_state.resources[0].status.loadBalancer.ingress[1].ip }}:{{ check_loadbalancer_service_port }}"
       status_code: 200
@@ -59,7 +59,7 @@
     delay: "{{ error_delay }}"
 
 - name: Check single stack IPv6 lb service functionality
-  when: false  # disabled https://gitlab.com/yaook/k8s/-/issues/683
+  when: false  # disabled https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/683
   block:
   - name: Create SingleStack IPv6 load-balanced service
     kubernetes.core.k8s:

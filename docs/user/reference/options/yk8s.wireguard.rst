@@ -31,7 +31,7 @@ recommended approach for companies and organizations.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.endpoints:
@@ -55,7 +55,7 @@ Each endpoint's id, port and subnet need to be unique.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.endpoints.*.enabled:
@@ -77,7 +77,7 @@ Whether this endpoint is enabled on the frontend nodes.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.endpoints.*.id:
@@ -99,7 +99,7 @@ An ID unique to this endpoint
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.endpoints.*.ip_cidr:
@@ -120,7 +120,7 @@ to tear down tunnels.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.endpoints.*.ip_gw:
@@ -141,7 +141,7 @@ to tear down tunnels.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.endpoints.*.ipv6_cidr:
@@ -172,7 +172,7 @@ to tear down tunnels.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.endpoints.*.ipv6_gw:
@@ -203,7 +203,7 @@ to tear down tunnels.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.endpoints.*.port:
@@ -225,7 +225,7 @@ The port Wireguard should use on the frontend nodes
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.peers:
@@ -263,7 +263,7 @@ The orchestrator must be included in this list.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.peers.*.ident:
@@ -285,7 +285,7 @@ An identifier for the public key
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.peers.*.ip:
@@ -306,7 +306,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.peers.*.ips:
@@ -327,7 +327,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.peers.*.ipsv6:
@@ -348,7 +348,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.peers.*.ipv6:
@@ -369,7 +369,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
 .. _configuration-options.yk8s.wireguard.peers.*.pub_key:
@@ -386,5 +386,5 @@ The public key of the peer created with `wg keygen`
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 

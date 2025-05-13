@@ -7,7 +7,7 @@ Initialization
 Install System Requirements
 ---------------------------
 
-YAOOK/K8s only has a single primary dependency: Nix. Everything else is fetched or built automatically.
+Tarook only has a single primary dependency: Nix. Everything else is fetched or built automatically.
 
 `Nix <https://nixos.org>`__ is a declarative package manager
 which powers NixOS but can also be installed as an additional separate package manager on any
@@ -78,7 +78,7 @@ Required System Resources
 OpenStack Key-Pair
 ~~~~~~~~~~~~~~~~~~
 
-Assuming you are deploying your YAOOK/K8s cluster on top of OpenStack, you
+Assuming you are deploying your Tarook cluster on top of OpenStack, you
 have to `create a ssh key pair in your OpenStack
 project <https://docs.openstack.org/horizon/latest/user/configure-access-and-security-for-instances.html#add-a-key-pair>`__.
 Since the SSH configuration on the Kubernetes host nodes will be
@@ -113,7 +113,7 @@ As outlined in :ref:`user.explanation.architecture-overview`, Wireguard is used 
 Create and Initialize Cluster Repository
 ----------------------------------------
 
-To deploy a YAOOK/K8s cluster, you need to create a git repository which will
+To deploy a Tarook cluster, you need to create a git repository which will
 serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
 1. Create an empty directory as your cluster repository:
@@ -127,15 +127,15 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
    .. code:: console
 
-      $ nix run "git+https://gitlab.com/yaook/k8s#init"
+      $ nix run "git+https://gitlab.com/alasca.cloud/tarook/tarook#init"
 
    .. hint::
 
-      If you want to initialize YAOOK/K8s from a specific branch or tag, do:
+      If you want to initialize Tarook from a specific branch or tag, do:
 
       .. code:: console
 
-         $ nix run "git+https://gitlab.com/yaook/k8s?ref=<branch1>#init" <branch2>
+         $ nix run "git+https://gitlab.com/alasca.cloud/tarook/tarook?ref=<branch1>#init" <branch2>
 
       where ``<branch1>`` selects the branch or tag from which the init script is to be run (defaults to ``devel``)
       and ``<branch2>`` selects the branch or tag that will be checked out in the submodule (defaults to the latest version known to ``branch1``).
@@ -173,10 +173,10 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 Initialize Vault secrets backend
 --------------------------------
 
-YAOOK/K8s exclusively supports `HashiCorp Vault <https://vaultproject.io>`__
+Tarook exclusively supports `HashiCorp Vault <https://vaultproject.io>`__
 as backend for storing secrets.
-For details on the use of Vault in YAOOK/K8s, please see the
-:doc:`Use of HashiCorp Vault in YAOOK/K8s </developer/explanation/vault>` section.
+For details on the use of Vault in Tarook, please see the
+:doc:`Use of HashiCorp Vault in Tarook </developer/explanation/vault>` section.
 
 .. _initialization.initialize-vault-for-a-development-setup:
 

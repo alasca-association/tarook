@@ -68,7 +68,7 @@ Five nodes can handle two failed nodes.
 Secrets Management
 ~~~~~~~~~~~~~~~~~~
 
-The YAOOK/K8s LCM exclusively uses HashiCorp Vault
+The Tarook LCM exclusively uses HashiCorp Vault
 as secrets management backend.
 For more information, please refer to:
 :doc:`/user/explanation/services/vault`.

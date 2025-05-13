@@ -67,9 +67,9 @@ execute this script only once.
 
    A valid Vault token with ``orchestrator`` or ``root`` policy must be sourced.
 
-YAOOK/K8s uses short-lived certificates for its kubeconfigs to enhance security.
-What that means is that the kubeconfig generated during a run of yaook/k8s-core
-is only valid for 8 days and needs to be refreshed using this script.
+Tarook uses short-lived certificates for its kubeconfigs to enhance security.
+What that means is that the kubeconfig generated during a run is only valid
+for 8 days and needs to be refreshed using this script.
 
 Apply Scripts
 -------------
@@ -117,7 +117,7 @@ to manage credentials and secrets.
 ~~~~~~~~~~~~~~~~
 
 The ``apply-all.sh``-script is a wrapper script which can be used
-to create a YAOOK/K8s-cluster on top of OpenStack.
+to create a Tarook-cluster on top of OpenStack.
 
 In general, if you do not want to trigger action scripts in a more fine
 grained manner, this is the script to keep the cluster in sync.
@@ -209,7 +209,7 @@ Usage:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``apply-prepare-gw.sh``-script takes the necessary
-preparations to deploy a YAOOK/K8s cluster on top of OpenStack
+preparations to deploy a Tarook cluster on top of OpenStack
 which covers bootstrapping, preparation and configuration
 of the gateway nodes in front of the Kubernetes cluster.
 
@@ -262,7 +262,7 @@ This is, obviously, destructive. Don’t run light-heartedly.
 ``migrate-to-release.sh``
 ---------------------------
 
-Migrate to a new YAOOK/K8s release, see :doc:`/user/tutorial/upgrade-release`.
+Migrate to a new Tarook release, see :doc:`/user/tutorial/upgrade-release`.
 This script is idempotent.
 
 .. _actions-references.update-frontend-nodessh:

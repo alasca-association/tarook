@@ -43,7 +43,7 @@ export TF_VAR_keypair='firstnamelastname-hostname-gendate'
 
 # Which dependency group should be loaded into your devShell
 # Possible values can be found in nix/dependencies.nix
-# 'dev' is recommended if you do development work on YAOOK/K8s
+# 'dev' is recommended if you do development work on Tarook
 # 'interactive' is recommended if you are on NixOS
 #export YAOOK_K8S_DEVSHELL="dev"
 

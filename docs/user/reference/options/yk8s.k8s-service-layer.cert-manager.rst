@@ -31,7 +31,7 @@ soon :)
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.chart_version:
@@ -60,7 +60,7 @@ If the version shall be unpinned, set to: ``null``.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.enabled:
@@ -86,7 +86,7 @@ Whether to enable management of a cert-manager.io instance.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.helm_repo_url:
@@ -107,7 +107,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.install:
@@ -130,7 +130,7 @@ uninstalled WITHOUT CHECK FOR DISRUPTION!
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.letsencrypt_email:
@@ -156,7 +156,7 @@ ACME/Let's Encrypt issuer.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.letsencrypt_ingress:
@@ -181,7 +181,7 @@ used.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.letsencrypt_preferred_chain:
@@ -204,7 +204,7 @@ to use for the certificate. This can be used to override it.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.letsencrypt_server:
@@ -233,7 +233,7 @@ See https://letsencrypt.org/docs/staging-environment/
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.namespace:
@@ -256,7 +256,7 @@ created automatically, but never deleted automatically.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.release_name:
@@ -277,7 +277,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.scheduling_key:
@@ -300,5 +300,5 @@ default.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 

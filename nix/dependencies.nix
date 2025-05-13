@@ -96,7 +96,7 @@
       };
 
       dev = {
-        description = "This is the recommended group for development work on YAOOK/K8s";
+        description = "This is the recommended group for development work on Tarook";
         includes = ["default" "docs" "lint"];
       };
 

@@ -96,7 +96,7 @@ Name of the s3 bucket to store the backups.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.chart_version:
@@ -125,7 +125,7 @@ If the version shall be unpinned, set to: ``null``.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.days_of_retention:
@@ -148,7 +148,7 @@ are also implemented by Ceph's RGW.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.enabled:
@@ -174,7 +174,7 @@ Whether to enable etcd-backups.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.file_prefix:
@@ -196,7 +196,7 @@ Name of the folder to keep the backup files.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm_repo_url:
@@ -217,7 +217,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.n
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.metrics_port:
@@ -241,7 +241,7 @@ for easier access to the etcd cluster.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.name:
@@ -262,7 +262,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.n
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.namespace:
@@ -283,7 +283,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.n
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.schedule:
@@ -305,7 +305,7 @@ Configure value for the cron job schedule for etcd backups.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.secret_name:
@@ -326,7 +326,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.n
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.vault_mount_point:
@@ -350,7 +350,7 @@ recommended.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.vault_path:
@@ -376,5 +376,5 @@ containing the corresponding S3 credentials.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 

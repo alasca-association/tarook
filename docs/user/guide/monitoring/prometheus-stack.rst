@@ -1,7 +1,7 @@
 Prometheus Stack
 ================
 
-YAOOK/K8s uses the kube-prometheus-stack helm chart with an additional
+Tarook uses the kube-prometheus-stack helm chart with an additional
 abstraction layer.
 To figure out the used version, you could use:
 
@@ -17,16 +17,16 @@ config. The data path is
 ``config -> inventory/prometheus.yaml -> monitoring_v2 -> templates/prometheus_stack.yaml.j2``.
 If a field that you need isn’t listed in ``prometheus_stack.yaml`` or
 statically configured, please
-`open an issue <https://gitlab.com/yaook/k8s/-/issues>`__
+`open an issue <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues>`__
 or, even preferable,
-`submit a merge request :) <https://gitlab.com/yaook/k8s/-/merge_requests>`__.
-YAOOK/K8s developer guide can be found
-`here <https://yaook.gitlab.io/meta/01-developing.html#workflow>`__.
+`submit a merge request :) <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests>`__.
+Tarook developer guide can be found
+`here <https://tarook.gitlab.io/meta/01-developing.html#workflow>`__.
 
-YAOOK/K8s also allows the upgrade of the kube-prometheus-stack.
+Tarook also allows the upgrade of the kube-prometheus-stack.
 You can adjust its version with
 the :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_stack_version` config option
-or unset it to track the default of the current YAOOK/K8s release.
+or unset it to track the default of the current Tarook release.
 
 The upgrade routine can be triggered by running the following:
 

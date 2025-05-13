@@ -23,7 +23,7 @@ yk8s.k8s-service-layer.vault
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.ca_issuer:
@@ -44,7 +44,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.ca_issuer_kind:
@@ -65,7 +65,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.chart_version:
@@ -94,7 +94,7 @@ If the version shall be unpinned, set to: ``null``.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.dnsnames:
@@ -118,7 +118,7 @@ must allow ssl passthrough.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.enable_backups:
@@ -141,7 +141,7 @@ them in an S3 bucket.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.enabled:
@@ -171,7 +171,7 @@ LOCATION to use the Vault instance in the future!
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.external_ingress_class:
@@ -192,7 +192,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.external_ingress_issuer_kind:
@@ -215,7 +215,7 @@ to use for externally facing certificates.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.external_ingress_issuer_name:
@@ -238,7 +238,7 @@ for your ACME service.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.helm_repo_url:
@@ -259,7 +259,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.ingress:
@@ -286,7 +286,7 @@ Whether to enable creation of a publically reachable ingress resource for the AP
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.init_key_shares:
@@ -311,7 +311,7 @@ LOCATION to use the Vault instance in the future!
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.init_key_threshold:
@@ -337,7 +337,7 @@ LOCATION to use the Vault instance in the future!
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.management_cluster_integration:
@@ -373,7 +373,7 @@ the integration to work correctly.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.namespace:
@@ -396,7 +396,7 @@ ever deleted).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.s3_config_file:
@@ -426,7 +426,7 @@ Note: The given path is interpreted as being relative to the cluster repo's conf
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.scheduling_key:
@@ -448,7 +448,7 @@ Scheduling key for the vault instance and its resources. Has no default.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.service_active_node_port:
@@ -471,7 +471,7 @@ See NOTE above regarding exposure of the Vault.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.service_type:
@@ -495,7 +495,7 @@ If you want to expose the Vault to the outside world, use the ingress config abo
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.storage_class:
@@ -517,7 +517,7 @@ Storage class for the vault file storage backend.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.vault.storage_size:
@@ -539,5 +539,5 @@ Storage size for the vault file storage backend.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 

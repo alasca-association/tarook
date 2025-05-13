@@ -32,7 +32,7 @@ Whether to enable enforce rebooting of nodes after every system update
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/testing.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/testing.nix
 
 
 .. _configuration-options.yk8s.testing.nodes:
@@ -56,5 +56,5 @@ must specify at least two nodes.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/testing.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/testing.nix
 
