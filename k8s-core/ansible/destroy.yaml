@@ -1,0 +1,42 @@
+---
+- name: Initialize node connection
+  import_playbook: "connect-to-nodes.yaml"
+  vars:
+    target_hosts: k8s_nodes
+
+- name: Destroy the cluster
+  hosts: k8s_nodes
+  become: true
+  tasks:
+    - name: Check if kubeadm exists
+      command: which kubeadm
+      register: kubeadm_check
+      ignore_errors: true
+      changed_when: false
+    - name: kubeadm reset  # noqa no-changed-when
+      command: kubeadm reset --force --cleanup-tmp-dir
+      when: kubeadm_check.rc == 0
+    - name: Cleanup residual files and directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/kubernetes
+        - /var/lib/kubelet
+        - /var/lib/etcd/
+        - /usr/lib/systemd/system/kubelet.service
+        - /root/.kube
+        - /etc/ansible/facts.d
+    - name: Remove hold of packages
+      become: true
+      command: apt-mark unhold kubelet kubeadm kubectl
+    - name: Uninstall packages
+      become: true
+      ansible.builtin.package:
+        state: absent
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+          - keepalived
+          - haproxy
