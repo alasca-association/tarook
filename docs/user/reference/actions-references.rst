@@ -246,6 +246,14 @@ Destroy the entire cluster and all of its data.
 
 This is, obviously, destructive. Don’t run light-heartedly.
 
+This action operates differently depending on whether the cluster is OpenStack or bare-metal based.
+
+On OpenStack, it deletes all OpenStack resources associated with the cluster and leaves the
+OpenStack project in a clean state for the resources to be re-deployed via the :ref:`apply-terraform action <actions-references.apply-terraformsh>`.
+
+On bare-metal, it resets all nodes to a state that allows re-deployment via the :ref:`apply-all action <actions-references.apply-allsh>`.
+It erases the state of Kubernetes and etcd and removes Tarook-specific config, but it is not guaranteed to leave no trace of Tarook having been present.
+
 .. _actions-references.migrate-to-releasesh:
 
 ``migrate-to-release.sh``
