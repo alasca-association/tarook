@@ -286,7 +286,7 @@ in {
       '';
       type = types.nonEmptyStr;
       # renovate: datasource=helm depName=kube-prometheus-stack registryUrl=https://prometheus-community.github.io/helm-charts
-      default = "72.5.2";
+      default = "72.6.2";
     };
     prometheus_adapter_version = mkOption {
       type = types.nonEmptyStr;
