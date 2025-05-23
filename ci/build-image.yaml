@@ -10,7 +10,7 @@ build_image:
   - export IMAGE_REF="${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   # Manually talking to the registry API, because downloading skopeo only for the lookup would cost ~1min per run
   # Also jq is not available in the Nixos container image
-  - token="$(curl "https://gitlab.com/jwt/auth?scope=repository:yaook/k8s/ci:pull&service=container_registry" | tr -d '\n\t\r ' | grep -oP '"token"\s*:\s*"\K.*?(?=")')"
+  - token="$(curl "https://gitlab.com/jwt/auth?scope=repository:alasca.cloud/tarook/tarook/ci:pull&service=container_registry" | tr -d '\n\t\r ' | grep -oP '"token"\s*:\s*"\K.*?(?=")')"
   - |
     registry_response="$( \
         curl --head --silent --output /dev/null --write-out '%{http_code}' \
