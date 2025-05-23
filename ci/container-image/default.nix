@@ -48,7 +48,7 @@
         };
         tmpdir = pkgs.runCommand "tmp-dir" {} "mkdir -p $out/tmp;";
         container-image = {
-          name = "registry.gitlab.com/yaook/k8s/ci";
+          name = "registry.gitlab.com/alasca.cloud/tarook/tarook/ci";
           contents = [
             yk8sEnv
             (pkgs.buildEnv {
