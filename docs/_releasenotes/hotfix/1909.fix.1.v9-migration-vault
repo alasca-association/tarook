@@ -1,0 +1,1 @@
+A bug in the migration script has been fixed that caused the migration to fail if an empty vault state directory existed from a previous failed attempt.
