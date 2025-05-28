@@ -108,12 +108,13 @@ fi
 
 if [[ -d vault ]]; then
     notef "Migrating vault state..."
-    run mkdir -p state
+    run mkdir -p state/vault
     if (git ls-files --error-unmatch vault/ &> /dev/null); then
-      run git mv vault state/vault
+      run git mv vault/* state/vault
     else
-      run mv vault state/vault
+      run mv vault/* state/vault
     fi
+    rmdir vault
     notef "Done.\n"
 fi
 
