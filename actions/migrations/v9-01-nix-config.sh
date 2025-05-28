@@ -57,11 +57,10 @@ EOF
         echo "miscellaneous.hosts_file = ./hosts;" >> "$config_default"
     fi
     tomlq -s '
-            .[0] * .[1] |
-            if .terraform.enabled == false then
-                .openstack.enabled = false
+            if .[1].terraform.enabled == false then
+                .[1] | del(.terraform) | .openstack.enabled = false
             else
-                .
+                .[0] * .[1]
             end
         ' "$actions_dir/migrations/v9-01-default.toml" "$config_toml" \
         | nix run github:cloudandheat/json2nix -- --strip-outer-bracket >> "$config_default"
