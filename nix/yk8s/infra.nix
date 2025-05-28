@@ -11,7 +11,7 @@
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath;
-  inherit (yk8s-lib.types) ipv4Cidr;
+  inherit (yk8s-lib.types) ipv4Cidr ipv4Addr;
 in {
   options.yk8s.infra = mkTopSection {
     _docs.preface = ''
@@ -52,6 +52,24 @@ in {
     subnet_v6_cidr = mkOption {
       type = types.nonEmptyStr;
       default = "fd00::/120";
+    };
+
+    networking_fixed_ip = mkOption {
+      type = types.nullOr ipv4Addr;
+      default = null;
+      apply = v:
+        if cfg.ipv4_enabled && v == null && config.yk8s.terraform.enabled
+        then builtins.trace "INFO: infra.networking_fixed_ip is not yet set. Terraform stage needs to be run first." v
+        else v;
+    };
+
+    networking_fixed_ip_v6 = mkOption {
+      type = with types; nullOr nonEmptyStr;
+      default = null;
+      apply = v:
+        if cfg.ipv6_enabled && v == null && config.yk8s.terraform.enabled
+        then builtins.trace "INFO: infra.networking_fixed_ip_v6 is not yet set. Terraform stage needs to be run first." v
+        else v;
     };
 
     hosts_file = mkOption {
