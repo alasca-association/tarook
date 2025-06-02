@@ -36,7 +36,10 @@ if [ "${wg_usage:-true}" == "true" ]; then
 
     ipam_path="$state_dir/wireguard/ipam.toml"
     if ! tomlq '(.wg_users[] | select(.ident=="'"${wg_user}"'")) // error("not-found")' "$ipam_path" &>/dev/null ; then
-        warningf 'failed to find wireguard user %s in trampoline configuration' "$wg_user" >&2
+        warningf 'Failed to find configured wg_user "%s" in Wireguard IPAM state file (%s).' "$wg_user" "$ipam_path" >&2
+        warningf '  Is the user configured as Wireguard peer?' >&2
+        warningf '  See https://yaook.gitlab.io/k8s/devel/user/reference/environmental-variables.html#vpn-configuration' >&2
+        warningf '  and https://yaook.gitlab.io/k8s/devel/user/reference/options/yk8s.wireguard.html#yk8s-wireguard-peers' >&2
     fi
 
     #set up wireguard
