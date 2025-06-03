@@ -12,9 +12,11 @@ hide-doc: true
 
 .. toctree::
     :hidden:
+    :caption: Version Information
 
     Releases <https://gitlab.com/yaook/k8s/-/releases>
     releasenotes
+    supported_releases
 
 .. toctree::
     :hidden:
