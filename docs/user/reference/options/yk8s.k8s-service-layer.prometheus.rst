@@ -284,7 +284,7 @@ https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-
 
 **Default:**::
 
-  "9.6.0"
+  "9.8.0"
 
 
 **Declared by**
