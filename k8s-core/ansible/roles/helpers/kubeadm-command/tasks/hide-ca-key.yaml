@@ -1,0 +1,47 @@
+---
+# WORKAROUND: As of kubeadm 1.28.1 only RSA and ECDSA are supported as
+#             algorithms for the Kubernetes cluster root CA key.
+#             Because we are using ED25519 CA keys, we prevent ca.key from
+#             feeding into kubeadm by temporarily renaming it.
+- name: Hide Kubernetes cluster root CA key before kubeadm
+  # NOTE: Ansible does not support renaming files
+  block:
+  - name: Get stat of /etc/kubernetes/pki/ca.key
+    stat:
+      path: /etc/kubernetes/pki/ca.key
+    register: k8s_ca_key_file
+
+  - name: Check that /etc/kubernetes/pki/ca.key is present if it should be
+    when: k8s_controller_manager_enable_signing_requests | bool
+    assert:
+      that:
+      - k8s_ca_key_file.stat.exists
+      fail_msg: >
+        Although 'kubernetes.controller_manager.enable_signing_requests' is enabled,
+        '/etc/kubernetes/pki/ca.key' does not exist.
+
+  - name: Check that /etc/kubernetes/pki/ca.key is absent if it should be
+    when: not k8s_controller_manager_enable_signing_requests | bool
+    assert:
+      that:
+      - not k8s_ca_key_file.stat.exists
+      fail_msg: >
+        Although 'kubernetes.controller_manager.enable_signing_requests' is disabled,
+        '/etc/kubernetes/pki/ca.key' does exist.
+
+  - name: Move /etc/kubernetes/pki/ca.key
+    when: k8s_ca_key_file.stat.exists
+    block:
+    - name: Create backup file of /etc/kubernetes/pki/ca.key
+      copy:
+        remote_src: true
+        src: "{{ k8s_ca_key_file.stat.path }}"
+        dest: "{{ k8s_ca_key_file.stat.path }}.bak~"
+        mode: 0400
+      register: k8s_ca_key_file_backup
+    - name: Remove /etc/kubernetes/pki/ca.key
+      file:
+        path: "{{ k8s_ca_key_file.stat.path }}"
+        state: absent
+      register: k8s_ca_key_file_hidden
+...

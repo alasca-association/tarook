@@ -26,83 +26,20 @@
   when:
   - "'masters' in group_names"
   block:
-  # WORKAROUND: As of kubeadm 1.28.1 only RSA and ECDSA are supported as
-  #             algorithms for the Kubernetes cluster root CA key.
-  #             Because we are using ED25519 CA keys, we prevent ca.key from
-  #             feeding into kubeadm by temporarily renaming it.
-  - name: Hide Kubernetes cluster root CA key before kubeadm
-    # NOTE: Ansible does not support renaming files
-    block:
-    - name: Get stat of /etc/kubernetes/pki/ca.key
-      stat:
-        path: /etc/kubernetes/pki/ca.key
-      register: k8s_ca_key_file
+  - include_tasks: hide-ca-key.yaml
+  - block:
+    - name: "Running '{{ kubeadm_expression | map('quote') | join(' ') }}' on control plane node"  # noqa no-changed-when
+      shell: "umask 077 && {{ kubeadm_expression | map('quote') | join(' ') }}"
+      async: 1800
+      poll: 3
+      register: kubeadm_command
+    always:
+    - include_tasks: reveal-ca-key.yaml
+    - name: Fail if kubeadm command failed
+      when: kubeadm_command.rc != 0
+      fail:
+        msg: |
+          Running '{{ kubeadm_expression | map('quote') | join(' ') }}' failed with the following output:
 
-    - name: Check that /etc/kubernetes/pki/ca.key is present if it should be
-      when: k8s_controller_manager_enable_signing_requests | bool
-      assert:
-        that:
-        - k8s_ca_key_file.stat.exists
-        fail_msg: >
-          Although 'kubernetes.controller_manager.enable_signing_requests' is enabled,
-          '/etc/kubernetes/pki/ca.key' does not exist.
-
-    - name: Check that /etc/kubernetes/pki/ca.key is absent if it should be
-      when: not k8s_controller_manager_enable_signing_requests | bool
-      assert:
-        that:
-        - not k8s_ca_key_file.stat.exists
-        fail_msg: >
-          Although 'kubernetes.controller_manager.enable_signing_requests' is disabled,
-          '/etc/kubernetes/pki/ca.key' does exist.
-
-    - name: Move /etc/kubernetes/pki/ca.key
-      when: k8s_ca_key_file.stat.exists
-      block:
-      - name: Create backup file of /etc/kubernetes/pki/ca.key
-        copy:
-          remote_src: true
-          src: "{{ k8s_ca_key_file.stat.path }}"
-          dest: "{{ k8s_ca_key_file.stat.path }}.bak~"
-          mode: 0400
-        register: k8s_ca_key_file_backup
-      - name: Remove /etc/kubernetes/pki/ca.key
-        file:
-          path: "{{ k8s_ca_key_file.stat.path }}"
-          state: absent
-        register: k8s_ca_key_file_hidden
-
-  - name: "Running '{{ kubeadm_expression | map('quote') | join(' ') }}' on control plane node"  # noqa no-changed-when
-    shell: "umask 077 && {{ kubeadm_expression | map('quote') | join(' ') }}"
-    async: 1800
-    poll: 3
-
-  - name: Reveal Kubernetes cluster root CA key after kubeadm
-    when: k8s_ca_key_file_hidden is not skipped
-    # NOTE: Ansible does not support renaming files
-    block:
-    - name: Move backup file to /etc/kubernetes/pki/ca.key
-      copy:
-        remote_src: true
-        src: "{{ k8s_ca_key_file_backup.dest }}"
-        dest: "{{ k8s_ca_key_file_backup.src }}"
-        mode: 0400
-    - name: Remove backup file
-      file:
-        path: "{{ k8s_ca_key_file_backup.dest }}"
-        state: absent
-
-  - name: Ensure kube-controller-manager client cert flags are (un)set
-    block:
-    - name: "Ensure cluster-signing-cert-file is {{ k8s_controller_manager_enable_signing_requests | ternary('set', 'unset') }}"
-      replace:
-        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-        regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
-        replace: "{{ k8s_controller_manager_enable_signing_requests | ternary('\\1/etc/kubernetes/pki/ca.crt', '\\1') }}"
-
-    - name: "Ensure cluster-signing-cert-file is {{ k8s_controller_manager_enable_signing_requests | ternary('set', 'unset') }}"
-      replace:
-        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-        regexp: '^(\s*-\s*--cluster-signing-key-file=).*'
-        replace: "{{ k8s_controller_manager_enable_signing_requests | ternary('\\1/etc/kubernetes/pki/ca.key', '\\1') }}"
+          {{ kubeadm_command.stderr }}
 ...
