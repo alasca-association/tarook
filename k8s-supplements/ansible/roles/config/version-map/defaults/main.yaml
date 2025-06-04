@@ -41,5 +41,16 @@ image_version_map:
     # https://github.com/kubernetes-csi/external-snapshotter/releases/tag/v8.2.0
     volume_snapshot_controller: "v8.2.0"
 
+  "1.32":
+    openstack:
+      # https://artifacthub.io/packages/helm/cloud-provider-openstack/openstack-cloud-controller-manager/2.32.0
+      cloud_controller_manager_chart: "2.32.0"
+      # https://artifacthub.io/packages/helm/cloud-provider-openstack/openstack-cinder-csi/2.32.0
+      cinder_csi_plugin_chart: "2.32.0"
+    # https://github.com/projectcalico/calico/releases/tag/v3.30.1
+    calico_version: "{{ k8s_network_calico_custom_version | default('3.30.1', true) }}"
+    # https://github.com/kubernetes-csi/external-snapshotter/releases/tag/v8.2.1
+    volume_snapshot_controller: "v8.2.1"
+
 image_versions: "{{ image_version_map[k8s_version_minor] }}"
 ...
