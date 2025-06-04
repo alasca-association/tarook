@@ -10,12 +10,12 @@ The used rook setup is explained in more detail
 .. note::
 
   To enable rook in a cluster on top of OpenStack, you need
-  to set both ``k8s-service-layer.rook.nosds`` and
+  to set both :ref:`configuration-options.yk8s.k8s-service-layer.rook.nosds` and
   ``k8s-service-layer.rook.osd_volume_size``, as well as enable
-  ``kubernetes.storage.rook_enabled`` and either
-  ``kubernetes.local_storage.dynamic.enabled`` or
-  ``kubernetes.local_storage.static.enabled`` local
-  storage (or both) (see :ref:`storage configuration <configuration-options.yk8s.kubernetes.storage>`).
+  :ref:`configuration-options.yk8s.k8s-service-layer.rook.enabled` and either
+  :ref:`configuration-options.yk8s.kubernetes.local_storage.dynamic.enabled` or
+  :ref:`configuration-options.yk8s.kubernetes.local_storage.static.enabled` local
+  storage (or both).
 
 .. _cluster-configuration.rook-configuration.updating-immutable-options:
 
@@ -199,6 +199,32 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 Whether to enable the ceph dashboard for viewing cluster status
 .
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  false
+
+
+**Example:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.rook.enabled:
+
+``yk8s.k8s-service-layer.rook.enabled``
+#######################################
+
+Whether to enable Rook.
 
 **Type:**::
 

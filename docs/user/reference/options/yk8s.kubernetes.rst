@@ -164,6 +164,35 @@ k8s-service-layer.prometheus section.
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/monitoring.nix
 
 
+.. _configuration-options.yk8s.kubernetes.storage.nodeplugin_toleration:
+
+``yk8s.kubernetes.storage.nodeplugin_toleration``
+#################################################
+
+Whether to enable nodeplugin toleration.
+Setting this to true will cause the storage plugins
+to run on all nodes (ignoring all taints). This is often desirable.
+.
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  false
+
+
+**Example:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+
+
 .. _configuration-options.yk8s.kubernetes.version:
 
 ``yk8s.kubernetes.version``
