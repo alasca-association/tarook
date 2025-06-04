@@ -4,7 +4,7 @@ Environment Variable Reference
 The cluster management action scripts rely extensively on environment
 variables to interact with the cluster. A full overview of the variables
 is provided below. It is strongly recommended to read the whole document
-before starting to :doc:`initialize a cluster repository </user/guide/initialization>`
+before starting to :doc:`initialize a cluster repository </user/guide/quick-start/initialization>`
 for the first time.
 
 .. tip::
