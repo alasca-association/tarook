@@ -43,6 +43,7 @@
 in {
   imports = [
     (mkRemovedOptionModule "terraform" "haproxy_ports" "")
+    (mkRemovedOptionModule "terraform" "prevent_disruption" "Preventing disruption is now handled by a lock file in the Terraform state directory.")
     (mkRenamedOptionModuleWithNewSection "terraform" "subnet_cidr" "infra" "subnet_cidr")
     (mkRenamedOptionModuleWithNewSection "terraform" "subnet_v6_cidr" "infra" "subnet_v6_cidr")
     (mkRenamedOptionModuleWithNewSection "terraform" "ipv4_enabled" "infra" "ipv4_enabled")
@@ -121,15 +122,6 @@ in {
       default = true;
     };
 
-    prevent_disruption = mkOption {
-      description = ''
-        If true, prevent Terraform from performing disruptive action
-        defaults to true if unset
-      '';
-      type = types.bool;
-      default = true;
-    };
-
     timeout_time = mkOption {
       type = types.nonEmptyStr;
       default = "30m";
@@ -180,7 +172,7 @@ in {
     _inventory_packages =
       [
         (mkGroupVarsFile {
-          cfg = lib.attrsets.getAttrs ["enabled" "prevent_disruption"] cfg;
+          cfg = lib.attrsets.getAttrs ["enabled"] cfg;
           inventory_path = "all/terraform.yaml";
         })
       ]
@@ -201,7 +193,7 @@ in {
       lib.optional cfg.enabled
       (
         let
-          filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["prevent_disruption"]];
+          filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"]];
           filteredInfraCfg = lib.attrsets.getAttrs infraTerraformOptions config.yk8s.infra;
           filteredOpenstackCfg = lib.attrsets.getAttrs openstackTerraformOptions config.yk8s.openstack;
           mergedCfg =

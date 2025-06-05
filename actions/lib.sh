@@ -14,6 +14,7 @@ submodule_managed_k8s_name="managed-k8s"
 
 terraform_min_version="1.3.0"
 terraform_state_dir="$state_dir/terraform"
+terraform_disruption_lock="$terraform_state_dir/prevent_disruption.lock"
 export TF_DATA_DIR="$terraform_state_dir/.terraform"
 terraform_module="${TERRAFORM_MODULE_PATH:-$code_repository/terraform}"
 terraform_plan="$terraform_state_dir/plan.tfplan"
@@ -70,10 +71,7 @@ function load_vault_container_name() {
 function load_conf_vars() {
     # All the things with side-effects should go here
 
-    terraform_prevent_disruption="$(
-        yq '.prevent_disruption | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
-            "$group_vars_dir/all/terraform.yaml" 2>/dev/null
-    )" || unset terraform_prevent_disruption  # unset when unset, invalid or file missing
+    terraform_prevent_disruption="$(if [ -e "$terraform_disruption_lock" ]; then echo "true"; else echo "false"; fi)"
     tf_usage=${tf_usage:-"$(yq '. | if has ("enabled") then .enabled else true end' "$group_vars_dir/all/terraform.yaml")"}
     wg_usage=${wg_usage:-"$(yq '. | if has("enabled") then .enabled else true end' "$group_vars_dir/gateways/wireguard.yaml")"}
 
@@ -122,16 +120,13 @@ function require_harbour_disruption() {
     load_conf_vars
     if ! harbour_disruption_allowed; then
         # shellcheck disable=SC2016
-        errorf '$MANAGED_K8S_DISRUPT_THE_HARBOUR is set to %q' "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" >&2
+        errorf '$MANAGED_K8S_DISRUPT_THE_HARBOUR is set to %q. Set to true to allow disruption.' "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" >&2
         if [ "${tf_usage:-true}" == 'true' ]; then
-            if [ -z ${terraform_prevent_disruption+x} ]; then
-                errorf "and terraform.prevent_disruption in the config is unset or invalid" >&2
-            else
-                errorf "and terraform.prevent_disruption in the config is set to %q" \
-                       "${terraform_prevent_disruption}" >&2
+            if [ "${terraform_prevent_disruption}" = "true" ]; then
+              errorf "The lockfile $terraform_disruption_lock exists. Delete it to allow disruption."
             fi
         fi
-        errorf 'aborting since disruptive operations on the harbour infra are not allowed' >&2
+        errorf 'Aborting since disruptive operations on the harbour infra are not allowed' >&2
         exit 3
     fi
 }

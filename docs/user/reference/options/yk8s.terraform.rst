@@ -180,29 +180,6 @@ The name of the Gitlab state object in which to store the Terraform state, e.g. 
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
 
 
-.. _configuration-options.yk8s.terraform.prevent_disruption:
-
-``yk8s.terraform.prevent_disruption``
-#####################################
-
-If true, prevent Terraform from performing disruptive action
-defaults to true if unset
-
-
-**Type:**::
-
-  boolean
-
-
-**Default:**::
-
-  true
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
-
-
 .. _configuration-options.yk8s.terraform.timeout_time:
 
 ``yk8s.terraform.timeout_time``
