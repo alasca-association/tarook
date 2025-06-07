@@ -231,8 +231,8 @@
             } ''
               mkdir $out
               rsync -rl --chmod 664 ${self}/ .
-              rsync -rL --chmod 664 --delete ${referenceOptionsRST} docs/user/reference/options
-              python3 -m sphinx docs $out -E
+              rsync -rL --chmod 664 --delete ${referenceOptionsRST}/ docs/user/reference/options
+              sphinx-build -W docs $out
             '';
         };
       });
