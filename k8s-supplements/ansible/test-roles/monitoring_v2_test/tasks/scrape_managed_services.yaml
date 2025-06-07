@@ -149,8 +149,7 @@
   delay: 3
 
 - name: Check calico's monitoring endpoints (operator-based)
-  when:
-  - k8s_network_plugin == "calico"
+  when: k8s_network_calico_enabled
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper

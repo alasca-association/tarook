@@ -13,15 +13,10 @@
 in {
   imports = [
     (mkRemovedOptionModule "kubernetes" "network.plugin_switch_restart_all_namespaces" "")
+    (mkRemovedOptionModule "kubernetes" "network.plugin" "CNIs use their own enable options instead, eg. kubernetes.network.calico.enabled")
   ];
   options.yk8s.kubernetes.network = mkSubSection {
     _docs.order = 8;
-    _docs.preface = ''
-      .. note::
-
-        To enable the calico network plugin,
-        ``kubernetes.network.plugin`` needs to be set to ``calico``.
-    '';
 
     pod_subnet = mkOption {
       description = ''
@@ -75,21 +70,6 @@ in {
       default = 65000;
     };
 
-    # TODO deprecate in favor of calico.enabled which then
-    # conflicts with all other plugins that may be added in the future
-    plugin = mkOption {
-      description = ''
-        Currently only "calico" is supported.
-
-        Calico: High-performance, pure IP networking, policy engine. Calico provides
-        layer 3 networking capabilities and associates a virtual router with each node.
-        Allows the establishment of zone boundaries through BGP
-      '';
-      default = "calico";
-      type = types.enum [
-        "calico"
-      ];
-    };
     ipv4_nat_outgoing = mkOption {
       type = types.bool;
       default = true;

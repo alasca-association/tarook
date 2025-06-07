@@ -2,7 +2,7 @@
 - name: Patch kube-proxy
   include_tasks:
     file: kube_proxy_patch.yaml
-  when: (k8s_monitoring_enabled | bool) and (k8s_network_plugin in ['calico'])
+  when: k8s_monitoring_enabled | bool
 
 - name: Create namespace
   when: k8s_monitoring_enabled | bool

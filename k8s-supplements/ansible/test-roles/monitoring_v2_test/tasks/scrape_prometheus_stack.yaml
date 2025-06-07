@@ -117,7 +117,6 @@
   loop: "{{ groups['masters'] }}"
 
 - name: Check the kube proxy endpoints status
-  when: k8s_network_plugin in ['calico']
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper

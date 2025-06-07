@@ -104,8 +104,7 @@ in {
     };
     use_bgp = mkOption {
       type = types.bool;
-      # TODO common practice is to set this from the calico section
-      default = config.yk8s.kubernetes.network.plugin == "calico";
+      default = config.yk8s.kubernetes.network.calico.enabled;
     };
   };
   config.yk8s.assertions = [

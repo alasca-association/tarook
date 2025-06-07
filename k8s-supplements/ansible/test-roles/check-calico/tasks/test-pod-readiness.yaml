@@ -9,8 +9,6 @@
       label_selectors:
       - k8s-app=tigera-operator
     register: pod_info
-    when:
-    - k8s_network_plugin == 'calico'
     failed_when: ( pod_info.resources[0].status.phase != "Running" ) and ( pod_info.resources[0].status.containerStatuses[0].ready != true )
 
   - name: Check running and readiness status of calico pods
@@ -19,8 +17,6 @@
       label_selectors:
       - app.kubernetes.io/name={{ item }}
     register: pod_info
-    when:
-    - k8s_network_plugin == 'calico'
     failed_when: ( pod_info.resources[0].status.phase != "Running" ) and ( pod_info.resources[0].status.containerStatuses[0].ready != true )
     with_items:
     - calico-node
