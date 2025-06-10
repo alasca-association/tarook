@@ -73,7 +73,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 **Default:**::
 
-  "4.12.2"
+  "4.12.3"
 
 
 **Declared by**
