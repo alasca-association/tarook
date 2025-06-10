@@ -144,7 +144,7 @@ in {
           && v == null
         then
           throw
-          "[k8s-service-layer.vault] If `ingress=true` and `dnsnames` is not empty, you have to set external_ingress_issuer_name"
+          "config.yk8s.k8s-service-layer.vault.external_ingress_issuer_name: must be set because config.yk8s.k8s-service-layer.vault.ingress=true and config.yk8s.k8s-service-layer.vault.dnsnames!=[]"
         else v;
     };
     external_ingress_issuer_kind = mkOption {

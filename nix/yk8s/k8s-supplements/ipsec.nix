@@ -96,7 +96,7 @@ in {
   config.yk8s.assertions = [
     {
       assertion = cfg.test_enabled -> (cfg.remote_private_addrs != null);
-      message = "ipsec.remote_private_addrs has to be set if ipsec.test_enabled is true";
+      message = "config.yk8s.ipsec.remote_private_addrs: must be set because config.yk8s.ipsec.test_enabled=true";
     }
   ];
   config.yk8s._inventory_packages = [

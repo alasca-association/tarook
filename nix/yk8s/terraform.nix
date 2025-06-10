@@ -155,7 +155,7 @@ in {
           && v == null
         then
           throw
-          "terraform.gitlab_backend is enabled but gitlab_project_id is unset"
+          "config.yk8s.terraform.gitlab_project_id: must be set because config.yk8s.terraform.gitlab_backend=true"
         else v;
     };
 

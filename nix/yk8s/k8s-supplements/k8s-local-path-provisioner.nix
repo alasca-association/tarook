@@ -32,7 +32,7 @@ in {
             && static.storageclass_name == v
           then
             throw
-            "[local_storage] Static and dynamic storage classes must have different names"
+            "config.yk8s.kubernetes.local_storage.dynamic.storageclass_name: must not match config.yk8s.kubernetes.local_storage.static.storageclass_name='${static.storageclass_name}'"
           else v;
     };
     namespace = mkOption {

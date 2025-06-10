@@ -222,7 +222,7 @@ in {
         })
       ];
     _state_packages = lib.lists.optional cfg.enabled (linkToPath "${wireguard_helper_output}/${ipam_path}" ipam_path);
-    warnings = lib.optional (cfg.enabled -> (builtins.length cfg.peers) == 0) "Wireguard is enabled but no peers are configured.";
+    warnings = lib.optional (cfg.enabled -> (builtins.length cfg.peers) == 0) "config.yk8s.wireguard.peers: is empty";
     assertions = let
       inherit (builtins) length;
       inherit (lib.lists) unique;
@@ -230,29 +230,29 @@ in {
     in [
       {
         assertion = cfg.enabled -> (length cfg.endpoints) != 0;
-        message = "Wireguard is enabled but no endpoints are configured.";
+        message = "config.yk8s.wireguard.endpoints: must not be empty";
       }
       {
         assertion = cfg.enabled -> allUnique (map (p: p.ident) cfg.peers);
-        message = "wireguard.peers.[].ident are not unique";
+        message = "config.yk8s.wireguard.peers.[].ident: must be unique";
       }
       {
         assertion = cfg.enabled -> allUnique (map (p: p.pub_key) cfg.peers);
-        message = "wireguard.peers.[].pub_key are not unique";
+        message = "config.yk8s.wireguard.peers.[].pub_key: must be unique";
       }
       {
         assertion = cfg.enabled -> allUnique (map (p: p.id) cfg.endpoints);
-        message = "wireguard.endpoints.[].id are not unique";
+        message = "config.yk8s.wireguard.endpoints.[].id: must be unique";
       }
       {
         # 636 = 576 (reasonable minimum MTU for IPv4) + 20 (IPv4 Header) + 8 (UDP Header) + 32 (Wireguard Header)
         assertion = cfg.enabled && config.yk8s.infra.ipv4_enabled && config.yk8s.openstack.enabled -> config.yk8s.openstack.network_mtu >= 636;
-        message = "For Wireguard to work over IPv4, a minimum network MTU of 636 Bytes is required. Please adjust 'yk8s.openstack.network_mtu' accordingly.";
+        message = "config.yk8s.openstack.network_mtu: must be at least 636 Bytes to support Wireguard on IPv4";
       }
       {
         # 1360 = 1280 (technical minimum MTU for IPv6) + 40 (IPv6 Header) + 8 (UDP Header) + 32 (Wireguard Header)
         assertion = cfg.enabled && config.yk8s.infra.ipv6_enabled && config.yk8s.openstack.enabled -> config.yk8s.openstack.network_mtu >= 1360;
-        message = "For Wireguard to work over IPv6, a minimum network MTU of 1360 Bytes is required. Please adjust 'yk8s.openstack.network_mtu' accordingly.";
+        message = "config.yk8s.openstack.network_mtu: must be at least 1360 Bytes to support Wireguard on IPv6";
       }
     ];
   };
