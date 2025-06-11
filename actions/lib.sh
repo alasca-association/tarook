@@ -119,8 +119,10 @@ function require_ansible_disruption() {
 function require_harbour_disruption() {
     load_conf_vars
     if ! harbour_disruption_allowed; then
-        # shellcheck disable=SC2016
-        errorf '$MANAGED_K8S_DISRUPT_THE_HARBOUR is set to %q. Set to true to allow disruption.' "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" >&2
+        if [ "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" != 'true' ]; then
+            # shellcheck disable=SC2016
+            errorf '$MANAGED_K8S_DISRUPT_THE_HARBOUR is set to %q. Set to "true" to allow disruption.' "${MANAGED_K8S_DISRUPT_THE_HARBOUR:-}" >&2
+        fi
         if [ "${tf_usage:-true}" == 'true' ]; then
             if [ "${terraform_prevent_disruption}" = "true" ]; then
               errorf "The lockfile $terraform_disruption_lock exists. Delete it to allow disruption."
