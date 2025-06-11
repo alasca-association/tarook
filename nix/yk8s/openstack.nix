@@ -286,6 +286,14 @@ in {
       default = null;
       example = "\${config.yk8s.infra.cluster_name}-network";
     };
+
+    cinder_enable_topology = mkEnableOption ''
+      the topology feature gate of the cinder controller plugin.
+      Its purpose is to allocate volumes from cinder which are in the same AZ as
+      the worker node to which the volume should be attached.
+      Important: Cinder must support AZs and the AZs must match the AZs used by nova!
+    '';
+
     cinder_volume_type = mkOption {
       description = ''
         Use a specific volume type for the csi-sc-cinderplugin StorageClass.

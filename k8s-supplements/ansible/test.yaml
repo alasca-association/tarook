@@ -228,7 +228,7 @@
          | selectattr('create_storage_class', 'defined')
          | selectattr('create_storage_class', 'equalto', true)
       }}
-    when: "k8s_storage_rook_enabled | bool"
+    when: rook_enabled | bool
     tags:
     - test-block-storage-ceph
     - check-block-storage-ceph
@@ -244,7 +244,7 @@
   - role: check-shared-fs
     vars:
       fs_storage_class: rook-ceph-cephfs
-    when: "(k8s_storage_rook_enabled | bool) and (rook_ceph_fs | bool)"
+    when: "(rook_enabled | bool) and (rook_ceph_fs | bool)"
     tags:
     - test-ceph-shared-filesystem
     - check-ceph-shared-filesystem

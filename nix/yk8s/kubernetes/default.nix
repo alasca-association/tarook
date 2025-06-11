@@ -12,7 +12,6 @@
   inherit (yk8s-lib.types) k8sQuantity;
 in {
   imports = [
-    ./storage.nix
     ./monitoring.nix
     ./network.nix
     ./kubelet.nix
@@ -20,6 +19,8 @@ in {
     (mkRemovedOptionModule "kubernetes" "continuous_join_key" "")
     (mkRenamedOptionModuleWithNewSection "kubernetes" "monitoring.alertmanager_config_secret" "k8s-service-layer.prometheus" "alertmanager_config_secret")
     (mkRemovedOptionModule "kubernetes" "global_monitoring" "This section has been moved to a custom role")
+    (mkRenamedOptionModuleWithNewSection "kubernetes" "storage.rook_enabled" "k8s-service-layer.rook" "enabled")
+    (mkRenamedOptionModuleWithNewSection "kubernetes" "storage.cinder_enable_topology" "openstack" "cinder_enable_topology")
   ];
   options.yk8s.kubernetes = mkTopSection {
     _docs.order = 3;
@@ -89,6 +90,12 @@ in {
         (or manually upload the CA key from your backup to Vault's kv store).
       '';
     };
+
+    storage.nodeplugin_toleration = mkEnableOption ''
+      nodeplugin toleration.
+      Setting this to true will cause the storage plugins
+      to run on all nodes (ignoring all taints). This is often desirable.
+    '';
   };
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {

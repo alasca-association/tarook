@@ -65,7 +65,7 @@
       validate:
         fail_on_error: true
         strict: true
-    when: k8s_storage_rook_enabled
+    when: rook_enabled | bool
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

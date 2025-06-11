@@ -51,12 +51,12 @@ in {
       .. note::
 
         To enable rook in a cluster on top of OpenStack, you need
-        to set both ``k8s-service-layer.rook.nosds`` and
+        to set both :ref:`configuration-options.yk8s.k8s-service-layer.rook.nosds` and
         ``k8s-service-layer.rook.osd_volume_size``, as well as enable
-        ``kubernetes.storage.rook_enabled`` and either
-        ``kubernetes.local_storage.dynamic.enabled`` or
-        ``kubernetes.local_storage.static.enabled`` local
-        storage (or both) (see :ref:`storage configuration <configuration-options.yk8s.kubernetes.storage>`).
+        :ref:`configuration-options.yk8s.k8s-service-layer.rook.enabled` and either
+        :ref:`configuration-options.yk8s.kubernetes.local_storage.dynamic.enabled` or
+        :ref:`configuration-options.yk8s.kubernetes.local_storage.static.enabled` local
+        storage (or both).
 
       .. _cluster-configuration.rook-configuration.updating-immutable-options:
 
@@ -69,6 +69,8 @@ in {
       2. Delete the stateful set: ``kubectl delete -n monitoring sts --cascade=false <statefulset_name>``
       3. Re-deploy it with the LCM: ``AFLAGS="--diff --tags rook --tags rook_v2" bash managed-k8s/actions/apply-k8s-supplements.sh``
     '';
+
+    enabled = mkEnableOption "Rook";
 
     mon_allow_multiple_per_node = mkOption {
       type = types.bool;

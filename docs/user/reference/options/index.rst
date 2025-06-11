@@ -23,7 +23,6 @@ Configuration Options
   yk8s.kubernetes.network.calico
   yk8s.kubernetes.network
   yk8s.kubernetes
-  yk8s.kubernetes.storage
   yk8s.load-balancing
   yk8s.miscellaneous
   yk8s.node-scheduling
@@ -67,8 +66,6 @@ Configuration Options
 :doc:`kubernetes.network <yk8s.kubernetes.network>`
 
 :doc:`kubernetes <yk8s.kubernetes>`
-
-:doc:`kubernetes.storage <yk8s.kubernetes.storage>`
 
 :doc:`load-balancing <yk8s.load-balancing>`
 

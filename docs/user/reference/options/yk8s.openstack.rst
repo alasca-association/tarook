@@ -129,6 +129,36 @@ to true.
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 
 
+.. _configuration-options.yk8s.openstack.cinder_enable_topology:
+
+``yk8s.openstack.cinder_enable_topology``
+#########################################
+
+Whether to enable the topology feature gate of the cinder controller plugin.
+Its purpose is to allocate volumes from cinder which are in the same AZ as
+the worker node to which the volume should be attached.
+Important: Cinder must support AZs and the AZs must match the AZs used by nova!
+.
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  false
+
+
+**Example:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
+
+
 .. _configuration-options.yk8s.openstack.cinder_volume_type:
 
 ``yk8s.openstack.cinder_volume_type``
