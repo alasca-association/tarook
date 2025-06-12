@@ -21,21 +21,15 @@
   retries: "{{ error_retries }}"
   delay: "{{ error_delay }}"
 
-- name: "{{ fluxcd_install | ternary('Add', 'Remove') }} fluxcd2 helm repository"
-  kubernetes.core.helm_repository:
-    name: fluxcd-community
-    repo_url: "{{ fluxcd_helm_repo_url }}"
-    repo_state: "{{ fluxcd_install | ternary('present', 'absent') }}"
-
 - name: Install fluxcdv2
   vars:
     scheduling_key: "{{ fluxcd_scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_ref: fluxcd-community/flux2
+    chart_repo_url: "{{ fluxcd_helm_repo_url }}"
+    chart_ref: flux2
     release_namespace: "{{ fluxcd_namespace }}"
     release_name: flux2
     release_state: "{{ fluxcd_install | ternary('present', 'absent') }}"
-    update_repo_cache: true
     values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
     chart_version: "{{ fluxcd_version }}"
 ...

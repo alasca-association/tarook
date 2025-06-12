@@ -28,22 +28,16 @@
   vars:
     template_folder: "{{ ('k8s-v' + k8s_version_minor + '/') }}"
   block:
-  - name: Add cloud-provider-openstack Repo
-    kubernetes.core.helm_repository:
-      name: cloud-provider-openstack
-      repo_url: "{{ openstack_helm_repo_url }}"
-      repo_state: "present"
-
   - name: Deploy Cloud-Controller-Manager chart
     kubernetes.core.helm:
-      chart_ref: cloud-provider-openstack/openstack-cloud-controller-manager
+      chart_repo_url: "{{ openstack_helm_repo_url }}"
+      chart_ref: openstack-cloud-controller-manager
       chart_version: "{{ image_versions.openstack.cloud_controller_manager_chart }}"
       release_namespace: kube-system
       release_name: openstack-cloud-controller-manager
       release_state: present
       values: "{{ lookup('template', 'openstack-cloud-controller-manager-values.yaml.j2') | from_yaml }}"
       wait: true
-      update_repo_cache: true
     notify:
     - restart CCM
     - restart csi-cinder-controllerplugin
@@ -51,7 +45,8 @@
 
   - name: Deploy Cinder CSI driver plugin chart
     kubernetes.core.helm:
-      chart_ref: cloud-provider-openstack/openstack-cinder-csi
+      chart_repo_url: "{{ openstack_helm_repo_url }}"
+      chart_ref: openstack-cinder-csi
       chart_version: "{{ image_versions.openstack.cinder_csi_plugin_chart }}"
       release_namespace: kube-system
       release_name: cinder-csi

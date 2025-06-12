@@ -51,7 +51,7 @@ in {
     };
     chart_ref = mkOption {
       type = types.nonEmptyStr;
-      default = "ingress-nginx/ingress-nginx";
+      default = "ingress-nginx";
     };
     chart_version = mkOption {
       type = types.nonEmptyStr;

@@ -1,10 +1,4 @@
 ---
-- name: "{{ (gpu_nodes.resources | length > 0) | ternary('Add', 'Remove') }} NVIDIA DCGM Exporter helm repository"
-  kubernetes.core.helm_repository:
-    name: dcgm-exporter
-    repo_url: "{{ monitoring_nvidia_dcgm_exporter_helm_repo_url }}"
-    repo_state: "{{ (gpu_nodes.resources | length > 0) | ternary('present', 'absent') }}"
-
 - name: "{{ (gpu_nodes.resources | length > 0) | ternary('I', 'Uni') }}nstall NVIDIA DCGM exporter"
   vars:
     scheduling_key: "k8s.yaook.cloud/gpu-node"

@@ -27,7 +27,7 @@ soon :)
 
 **Default:**::
 
-  "jetstack/cert-manager"
+  "cert-manager"
 
 
 **Declared by**

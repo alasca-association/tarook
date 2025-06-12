@@ -183,7 +183,7 @@ in {
 
     prometheus_stack_chart_name = mkOption {
       type = types.nonEmptyStr;
-      default = "prometheus-community/kube-prometheus-stack";
+      default = "kube-prometheus-stack";
     };
 
     prometheus_stack_release_name = mkOption {

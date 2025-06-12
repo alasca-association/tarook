@@ -62,20 +62,14 @@
       retries: "{{ error_retries }}"
       delay: "{{ error_delay }}"
 
-    - name: Add projectcalico helm repository
-      kubernetes.core.helm_repository:
-        name: projectcalico
-        repo_url: "{{ calico_helm_repo_url }}"
-        repo_state: "present"
-
     - name: Deploy Tigera operator chart
       kubernetes.core.helm:
-        chart_ref: projectcalico/tigera-operator
+        chart_repo_url: "{{ calico_helm_repo_url }}"
+        chart_ref: tigera-operator
         chart_version: "{{ image_versions.calico_version }}"
         release_namespace: "tigera-operator"
         release_name: "calico"
         release_state: present
-        update_repo_cache: true
         values: "{{ lookup('template', calico_values_file_path) | from_yaml }}"
 
     # Give the operator some time to create the CRDs
