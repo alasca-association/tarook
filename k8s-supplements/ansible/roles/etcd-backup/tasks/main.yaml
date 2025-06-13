@@ -103,7 +103,6 @@
     release_namespace: "{{ etcd_backup_namespace }}"
     release_name: "{{ etcd_backup_name }}"
     release_state: present
-    update_repo_cache: true
     values: "{{ lookup('template', 'etcd_backup.yaml.j2') | from_yaml }}"
     force: "{{ old_etcd_backup_service_info.resources | length > 0 }}"
 ...

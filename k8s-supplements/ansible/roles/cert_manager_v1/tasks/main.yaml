@@ -28,10 +28,6 @@
     release_state: "{{ k8s_cert_manager_install | ternary('present', 'absent') }}"
     chart_version: "{{ k8s_cert_manager_chart_version }}"
     values: "{{ lookup('template', 'cert_manager_values.yaml.j2') | from_yaml }}"
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ error_retries }}"
-  delay: "{{ error_delay }}"
 
 - name: "{{ (k8s_cert_manager_install and (k8s_cert_manager_letsencrypt_email is not none)) | ternary('I', 'Uni') }}nstall Let's Encrypt cluster issuer"
   kubernetes.core.k8s:
