@@ -53,7 +53,6 @@
       release_state: present
       values: "{{ lookup('template', 'csi-cinder-plugin-values.yaml.j2') | from_yaml }}"
       wait: false
-      update_repo_cache: true
 
   - name: Create cinder storage class (hdd)
     kubernetes.core.k8s:

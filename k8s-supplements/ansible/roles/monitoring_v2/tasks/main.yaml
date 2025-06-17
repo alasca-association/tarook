@@ -117,7 +117,6 @@
     release_state: "{{ monitoring_install | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'prometheus_adapter.yaml.j2') | from_yaml }}"
     wait: false
-    update_repo_cache: true
 
 - name: Do we have any gpu nodes?
   kubernetes.core.k8s_info:
@@ -151,5 +150,4 @@
     release_state: "{{ monitoring_internet_probe | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'blackbox_exporter.yaml.j2') | from_yaml }}"
     wait: true
-    update_repo_cache: true
 ...

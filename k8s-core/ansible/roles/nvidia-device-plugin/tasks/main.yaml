@@ -29,5 +29,4 @@
       release_name: nvdp
       release_state: "{{ k8s_nvidia_device_plugin_install | ternary('present', 'absent') }}"
       values: "{{ lookup('file', 'nvdp_values.yaml') | from_yaml }}"
-      update_repo_cache: true
 ...

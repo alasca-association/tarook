@@ -11,5 +11,4 @@
     release_state: "{{ (gpu_nodes.resources | length > 0) | ternary('present', 'absent') }}"
     values: "{{ lookup('template', 'nvidia_dcgm_exporter.yaml.j2') | from_yaml }}"
     wait: true
-    update_repo_cache: true
 ...
