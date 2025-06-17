@@ -239,6 +239,17 @@
     vars:
       _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
 
+  - name: Set static fact that kubernetes is initialized
+    vars:
+      content:
+        k8s_install_status: "initialized"
+    copy:
+      dest: /etc/ansible/facts.d/kubernetes-initialized.fact
+      owner: root
+      group: root
+      mode: 0644
+      content: "{{ content | to_json }}"
+
 - name: Join the K8s control plane
   when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed"
   become: true
