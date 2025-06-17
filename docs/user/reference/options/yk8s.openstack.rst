@@ -6,13 +6,13 @@ yk8s.openstack
 
 .. note::
 
-   There is a variable ``nodes`` to configure
+   :ref:`configuration-options.yk8s.openstack.nodes`
+   allows you to configure
    the k8s master and worker servers.
    The ``role`` attribute must be used to distinguish both [1]_.
 
-   The amount of gateway nodes can be controlled with the `gateway_count` variable.
-   It defaults to the number of elements in the ``azs`` array when
-   ``spread_gateways_across_azs=true`` and 3 otherwise.
+   The amount of gateway nodes can be controlled with
+   :ref:`configuration-options.yk8s.openstack.gateway_count`.
 
 .. [1] Caveat: Changing the role of a Terraform node
                will completely rebuild the node.
@@ -23,7 +23,7 @@ yk8s.openstack
 
 You can add and delete Terraform nodes simply
 by adding and removing their entries to/from the config
-or tuning ``gateway_count`` for gateway nodes.
+or tuning :ref:`configuration-options.yk8s.openstack.gateway_count` for gateway nodes.
 Consider the following example:
 
 .. code:: diff
@@ -58,10 +58,10 @@ Consider the following example:
 The name of an OpenStack node is composed from the following parts:
 
 - for master/worker nodes:
-  ``infra.cluster_name`` ``<the nodes' key in openstack.nodes>``
+  ``yk8s.infra.cluster_name`` ``<the nodes' key in yk8s.openstack.nodes>``
 
 - for gateway nodes:
-  ``infra.cluster_name`` ``openstack.gateway_defaults.common_name`` ``<numeric-index>``
+  ``yk8s.infra.cluster_name`` ``yk8s.openstack.gateway_defaults.common_name`` ``<numeric-index>``
 
 .. code:: nix
 
@@ -259,7 +259,14 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.gateway_count``
 ################################
 
-Amount of gateway nodes to create. (default: 0 --> one for each availability zone when 'spread_gateways_across_azs=true', 3 otherwise)
+Amount of gateway nodes to create.
+
+Defaults to 3
+unless
+:ref:`configuration-options.yk8s.openstack.spread_gateways_across_azs`
+is set to ``true``
+in which case it will match the amount of availability zones by default.
+
 
 **Type:**::
 
@@ -333,7 +340,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.gateway_defaults.root_disk_size``
 ##################################################
 
-Only apples if 'openstack.create_root_disk_on_volume=true'.
+Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
 
 
 **Type:**::
@@ -355,7 +362,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.gateway_defaults.root_disk_volume_type``
 #########################################################
 
-Only apples if 'openstack.create_root_disk_on_volume=true'.
+Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
 If left empty, the default of the IaaS environment will be used.
 
 
@@ -432,7 +439,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.master_defaults.root_disk_size``
 #################################################
 
-Only apples if 'openstack.create_root_disk_on_volume=true'.
+Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
 
 
 **Type:**::
@@ -454,7 +461,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.master_defaults.root_disk_volume_type``
 ########################################################
 
-Only apples if 'openstack.create_root_disk_on_volume=true'.
+Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
 If left empty, the default of the IaaS environment will be used.
 
 
@@ -554,8 +561,8 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.nodes.<name>.anti_affinity_group``
 ###################################################
 
-'anti_affinity_group' must not be set when role!="worker"
-Leaving 'anti_affinity_group' empty means to not join any anti affinity group
+Must not be set when role!="worker".
+If left empty no anti affinity group will be joined.
 
 
 **Type:**::
@@ -714,7 +721,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.spread_gateways_across_azs``
 #############################################
 
-If true, spawn a gateway node in each availability zone listed in 'azs'. Otherwise leave the distribution to the cloud controller.
+If true, spawn a gateway node in each availability zone listed in :ref:`configuration-options.yk8s.openstack.spread_gateways_across_azs`, Otherwise leave the distribution to the cloud controller.
 
 **Type:**::
 
@@ -810,7 +817,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.worker_defaults.root_disk_size``
 #################################################
 
-Only apples if 'openstack.create_root_disk_on_volume=true'.
+Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
 
 
 **Type:**::
@@ -832,7 +839,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.worker_defaults.root_disk_volume_type``
 ########################################################
 
-Only apples if 'openstack.create_root_disk_on_volume=true'.
+Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
 If left empty, the default of the IaaS environment will be used.
 
 

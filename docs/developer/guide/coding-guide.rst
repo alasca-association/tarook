@@ -153,6 +153,55 @@ Examples of non-disruptive actions:
 -  Rebooting a gateway node if at least one other gateway node is up
 -  Updating a (non-customer) Deployment via Kubernetes
 
+Documentation Styleguide
+------------------------
+
+Configuration references
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Config options *everywhere* shall be referred to
+with their fully qualified name in Nix dot notation,
+e.g. ``yk8s.miscellaneous.no_proxy`` instead of just ``no_proxy``.
+
+.. admonition:: Rationale
+
+   Using the fully qualified name eliminates ambiguity
+   and makes it easy to find related documentation.
+
+Occurences within a RST-document shall also
+cross-reference the config option's documentation.
+
+Example:
+
+.. code:: rst
+
+   The address of the proxy or internal docker repositories can be specified
+   using the :ref:`configuration-options.yk8s.miscellaneous.no_proxy` config option.
+
+.. admonition:: Rationale
+
+   Cross-referencing a config option
+   provides readers with an convenient way of discovering details about them.
+
+Occurences within configuration related error and warning messages
+should be prefixed with ``config.``.
+Such messages shall start with a reference of the config option
+that produced the error/warning
+separated with a colon from the rest of the message.
+
+Example:
+
+.. code:: nix
+
+  message = "config.yk8s.miscellaneous.no_proxy: must be set because config.yk8s.miscellaneous.cluster_behind_proxy=true"
+
+.. admonition:: Rationale
+
+   Formatting config error and warning messages like so
+   eliminates ambiguity
+   and make it clear from which config option they originate.
+
+
 Ansible Styleguide
 ------------------
 

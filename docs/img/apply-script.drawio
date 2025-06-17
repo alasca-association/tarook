@@ -174,7 +174,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="l_W8FwnnrHGotwx8I-Ad-129" value="&lt;font face=&quot;Courier New&quot;&gt;config.toml&lt;br&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="l_W8FwnnrHGotwx8I-Ad-129" value="&lt;font face=&quot;Courier New&quot;&gt;default.nix&lt;br&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="392" y="479" width="120" height="45" as="geometry" />
         </mxCell>
         <mxCell id="l_W8FwnnrHGotwx8I-Ad-130" value="group&lt;br&gt;vars" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Courier New;verticalAlign=middle;dashed=1;dashPattern=1 1;" vertex="1" parent="1">

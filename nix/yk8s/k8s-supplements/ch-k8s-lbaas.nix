@@ -51,8 +51,11 @@ in {
         * openstack: Uses OpenStack and the yaook/k8s gateway nodes to provision
           LBaaS IP addresses ports.
         * static: Uses a fixed set of IP addresses to use for load balancing. When the
-          static port manager is used, the ``agent_urls`` and ``static_ipv4_addresses``
-          options must also be configured.
+          static port manager is used,
+          :ref:`configuration-options.yk8s.ch-k8s-lbaas.agent_urls`
+          and
+          :ref:`configuration-options.yk8s.ch-k8s-lbaas.static_ipv4_addresses`
+          must be set as well.
       '';
       type = types.enum [
         "openstack"
@@ -70,20 +73,20 @@ in {
       type = types.listOf ipv4Addr;
       apply = v:
         if v == [] && cfg.port_manager == "static"
-        then throw "[ch-k8s-lbaas] port_manager is 'static' but static_ipv4_addresses is empty"
+        then throw "config.yk8s.ch-k8s-lbaas.static_ipv4_addresses: must not be empty when config.yk8s.ch-k8s-lbaas.port_manager='static'"
         else v;
     };
     agent_urls = mkOption {
       description = ''
         Customize URLs for the agents. This will typically be a list of HTTP URLs
-        like http://agent_ip:15203. This option is only used if the port manager is
-        set to `static`, and must be set if the port manager is `static`.
+        like http://agent_ip:15203. This option must be set if :ref:`configuration-options.yk8s.ch-k8s-lbaas.port_manager` is
+        set to ``static`` and is ignored otherwise.
       '';
       default = [];
       type = types.listOf types.nonEmptyStr;
       apply = v:
         if v == [] && cfg.port_manager == "static"
-        then throw "[ch-k8s-lbaas] port_manager is 'static' but agent_urls is empty"
+        then throw "config.yk8s.ch-k8s-lbaas.agent_urls: must not be empty when config.yk8s.ch-k8s-lbaas.port_manager='static'"
         else v;
     };
     use_floating_ips = mkOption {
@@ -144,11 +147,11 @@ in {
             )
           else
             lib.warn ''
-              yk8s.ch-k8s-lbaas.version is not in semver2 format.
-              Please make sure that '${cfg_version}' has a version level of at least 0.8.0.
+              config.yk8s.ch-k8s-lbaas.version: not in semver2 format
+                                                Please make sure that '${cfg_version}' has a version level of at least 0.8.0.
             ''
             true;
-        message = "yk8s.ch-k8s-lbaas.version: version must be at least 0.8.0";
+        message = "config.yk8s.ch-k8s-lbaas.version: must be at least 0.8.0";
       }
     )
   ];

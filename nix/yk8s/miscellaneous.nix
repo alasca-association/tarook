@@ -47,7 +47,7 @@ in {
     http_proxy = mkOption {
       description = ''
         Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or
-        internal docker repositories can be added to the no_proxy config entry
+        internal docker repositories can be added to the :ref:`configuration-options.yk8s.miscellaneous.no_proxy` config entry
         Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
@@ -58,7 +58,7 @@ in {
     https_proxy = mkOption {
       description = ''
         Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or
-        internal docker repositories can be added to the no_proxy config entry
+        internal docker repositories can be added to the :ref:`configuration-options.yk8s.miscellaneous.no_proxy` config entry
         Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
@@ -69,7 +69,7 @@ in {
     no_proxy = mkOption {
       description = ''
         Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or
-        internal docker repositories can be added to the no_proxy config entry
+        internal docker repositories can be added to the :ref:`configuration-options.yk8s.miscellaneous.no_proxy` config entry
         Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
@@ -122,15 +122,15 @@ in {
   config.yk8s.assertions = [
     {
       assertion = cfg.cluster_behind_proxy -> cfg.http_proxy != null;
-      message = "miscellaneous.http_proxy must be set if miscellaneous.cluster_behind_proxy is true";
+      message = "config.yk8s.miscellaneous.http_proxy: must be set because config.yk8s.miscellaneous.cluster_behind_proxy=true";
     }
     {
       assertion = cfg.cluster_behind_proxy -> cfg.https_proxy != null;
-      message = "miscellaneous.https_proxy must be set if miscellaneous.cluster_behind_proxy is true";
+      message = "config.yk8s.miscellaneous.https_proxy: must be set because config.yk8s.miscellaneous.cluster_behind_proxy=true";
     }
     {
       assertion = cfg.cluster_behind_proxy -> cfg.no_proxy != null;
-      message = "miscellaneous.no_proxy must be set if miscellaneous.cluster_behind_proxy is true";
+      message = "config.yk8s.miscellaneous.no_proxy: must be set because config.yk8s.miscellaneous.cluster_behind_proxy=true";
     }
   ];
   config.yk8s._inventory_packages = [

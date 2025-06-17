@@ -71,7 +71,7 @@ in {
       };
     };
   ###
-  ### Importing from legacy config.toml
+  ### Importing from a single TOML file
   ###
   # yk8s-lib.importTOML ./config.toml;
   #
@@ -86,7 +86,7 @@ in {
   # yk8s-lib.importYamlTree pkgs ./tree;
   #
   ###
-  ### Importing only certain sections from a config file
+  ### Importing only certain sections from a single TOML file
   ###
   # let
   #   onlySections = sections: cfg: lib.attrsets.filterAttrs (n: _: builtins.elem n sections) cfg;

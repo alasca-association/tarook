@@ -17,7 +17,9 @@ While in the long term we want to integrate Vault via a Kubernetes custom signer
 which would redirect CSRs in Kubernetes directly to Vault,
 for now we provide a workaround fix to restore the CSR functionality.
 The fix must be explicitly turned on
-by setting ``[kubernetes.controller_manager].enable_signing_requests=true`` in the config.
+by setting
+:ref:`configuration-options.yk8s.kubernetes.controller_manager.enable_signing_requests`
+to ``true``.
 
 .. [1] Prior to YAOOK/K8s v6.0 CA private keys in Vault were never accessible.
 .. [2] https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/#custom-signers
@@ -33,7 +35,7 @@ Enabling the fix
 
 1. Enable signing requests in the config
 
-   Set ``kubernetes.controller_manager.enable_signing_requests = true`` in the config
+   Set ``yk8s.kubernetes.controller_manager.enable_signing_requests = true`` in the config
 
 2. Configure k8s_control_plane Vault policy
 
@@ -150,13 +152,7 @@ Enabling the fix
 Disabling the fix
 -----------------
 
-1. Set ``kubernetes.controller_manager.enable_signing_requests = false``
-
-   .. code:: shell
-
-      # If you're using config.toml:
-      tomlq --in-place --toml-output '.kubernetes.controller_manager.enable_signing_requests=false' config/config.toml
-
+1. Set ``yk8s.kubernetes.controller_manager.enable_signing_requests = true`` in the config
 
 .. tabs::
 

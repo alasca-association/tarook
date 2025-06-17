@@ -73,7 +73,7 @@ in {
 
       To activate automatic backend of Terraform statefiles to Gitlab,
       adapt the Terraform section of your config:
-      set `gitlab_backend` to True,
+      set :ref:`configuration-options.yk8s.terraform.gitlab_backend` to ``true``,
       set the URL of the Gitlab project and
       the name of the Gitlab state object.
 
@@ -95,7 +95,7 @@ in {
       `personal access token <https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html>`__.
 
       To successful migrate from the "local" to "http" Terraform backend method,
-      ensure that `gitlab_backend` is set to `true`
+      ensure that :ref:`configuration-options.yk8s.terraform.gitlab_backend` is set to ``true``
       and all other required variables are set correctly.
       Incorrect data entry may result in an HTTP error respond,
       such as a HTTP/401 error for incorrect credentials.
@@ -103,7 +103,7 @@ in {
       Terraform is executed and the state is migrated to Gitlab.
 
       To migrate from the "http" to "local" Terraform backend method,
-      set `gitlab_backend=false`,
+      set :ref:`configuration-options.yk8s.terraform.gitlab_backend` to ``false``,
       `MANAGED_K8S_NUKE_FROM_ORBIT=true`,
       and assume
       that all variables above are properly set
@@ -155,7 +155,7 @@ in {
           && v == null
         then
           throw
-          "terraform.gitlab_backend is enabled but gitlab_project_id is unset"
+          "config.yk8s.terraform.gitlab_project_id: must be set because config.yk8s.terraform.gitlab_backend=true"
         else v;
     };
 

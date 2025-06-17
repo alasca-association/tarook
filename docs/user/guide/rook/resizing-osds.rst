@@ -109,7 +109,8 @@ the OSD count.
 
 #. Set the new target volume size. Update the config of the
    Kubernetes cluster by setting
-   ``k8s-service-layer.rook.osd_volume_size`` to the new desired size.
+   :ref:`configuration-options.yk8s.k8s-service-layer.rook.osd_volume_size`
+   to the new desired size.
 
 #. Run `apply-k8s-supplements.sh` (possibly with ``AFLAGS="-t rook --diff"`` to only apply rook changes).
 

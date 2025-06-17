@@ -3,7 +3,11 @@ Rook - General information
 
 .. warning::
 
-   Even if ``ipv4_enabled`` and ``ipv6_enabled``,
+   Even if
+   :ref:`configuration-options.yk8s.infra.ipv4_enabled`
+   and
+   :ref:`configuration-options.yk8s.infra.ipv6_enabled`
+   are both set to ``true``,
    only one IP family will be used for the Ceph daemons
    whereas IPv4 is preferred over IPv6.
 

@@ -15,7 +15,6 @@ in {
         These can act as pull through cache to reduce external network traffic
         and the amount of pulls from registries which have rate limits.
         The upstream registry will automatically be used after all defined hosts have been tried.
-        To configure a default registry mirror, set "registry" to "_default".
       '';
       # TODO: type could be just listOf attrs in case we dont want to typecheck the whole set
       type = types.listOf (types.submodule {

@@ -397,7 +397,7 @@ in {
         if v != [] && cfg.use_all_available_nodes
         then
           throw
-          "[k8s-service-layer.rook] nodes definition is ignored because use_all_available_nodes is true"
+          "config.yk8s.k8s-service-layer.rook.nodes: conflicts with config.yk8s.k8s-service-layer.rook.nodes.use_all_available_nodes=true"
         else v;
       type = types.listOf (types.submodule {
         options = {

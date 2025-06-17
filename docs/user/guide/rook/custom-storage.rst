@@ -29,8 +29,11 @@ devices:
 You do also have the option to manually define the to be used nodes,
 their configuration and devices of the configured nodes as well as
 device-specific configurations. For these configurations to take effect
-one must set ``use_all_available_nodes`` and
-``use_all_available_devices`` to ``false``.
+one must set
+:ref:`configuration-options.yk8s.k8s-service-layer.rook.use_all_available_devices`
+and
+:ref:`configuration-options.yk8s.k8s-service-layer.rook.use_all_available_nodes`
+to ``false``.
 
 In the following an example for a fine-granular
 node-device-configuration can be found:

@@ -25,13 +25,13 @@
     };
     root_disk_size = mkOption {
       description = ''
-        Only apples if 'openstack.create_root_disk_on_volume=true'.
+        Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
       '';
       type = types.ints.positive;
     };
     root_disk_volume_type = mkOption {
       description = ''
-        Only apples if 'openstack.create_root_disk_on_volume=true'.
+        Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
         If left empty, the default of the IaaS environment will be used.
       '';
       type = types.str;
@@ -61,13 +61,13 @@ in {
     _docs.preface = ''
       .. note::
 
-         There is a variable ``nodes`` to configure
+         :ref:`configuration-options.yk8s.openstack.nodes`
+         allows you to configure
          the k8s master and worker servers.
          The ``role`` attribute must be used to distinguish both [1]_.
 
-         The amount of gateway nodes can be controlled with the `gateway_count` variable.
-         It defaults to the number of elements in the ``azs`` array when
-         ``spread_gateways_across_azs=true`` and 3 otherwise.
+         The amount of gateway nodes can be controlled with
+         :ref:`configuration-options.yk8s.openstack.gateway_count`.
 
       .. [1] Caveat: Changing the role of a Terraform node
                      will completely rebuild the node.
@@ -78,7 +78,7 @@ in {
 
       You can add and delete Terraform nodes simply
       by adding and removing their entries to/from the config
-      or tuning ``gateway_count`` for gateway nodes.
+      or tuning :ref:`configuration-options.yk8s.openstack.gateway_count` for gateway nodes.
       Consider the following example:
 
       .. code:: diff
@@ -113,10 +113,10 @@ in {
       The name of an OpenStack node is composed from the following parts:
 
       - for master/worker nodes:
-        ``infra.cluster_name`` ``<the nodes' key in openstack.nodes>``
+        ``yk8s.infra.cluster_name`` ``<the nodes' key in yk8s.openstack.nodes>``
 
       - for gateway nodes:
-        ``infra.cluster_name`` ``openstack.gateway_defaults.common_name`` ``<numeric-index>``
+        ``yk8s.infra.cluster_name`` ``yk8s.openstack.gateway_defaults.common_name`` ``<numeric-index>``
 
       .. code:: nix
 
@@ -167,7 +167,7 @@ in {
 
     # Setting this to false is useful in CI environments if the Cloud Is Full.
     spread_gateways_across_azs = mkOption {
-      description = "If true, spawn a gateway node in each availability zone listed in 'azs'. Otherwise leave the distribution to the cloud controller.";
+      description = "If true, spawn a gateway node in each availability zone listed in :ref:`configuration-options.yk8s.openstack.spread_gateways_across_azs`, Otherwise leave the distribution to the cloud controller.";
       type = types.bool;
       default = true;
     };
@@ -202,7 +202,15 @@ in {
         if cfg.spread_gateways_across_azs
         then length cfg.azs
         else 3;
-      description = "Amount of gateway nodes to create. (default: 0 --> one for each availability zone when 'spread_gateways_across_azs=true', 3 otherwise)";
+      description = ''
+        Amount of gateway nodes to create.
+
+        Defaults to 3
+        unless
+        :ref:`configuration-options.yk8s.openstack.spread_gateways_across_azs`
+        is set to ``true``
+        in which case it will match the amount of availability zones by default.
+      '';
     };
 
     gateway_defaults = recursiveUpdate commonNodeDefaultOptions {
@@ -262,8 +270,8 @@ in {
           };
           anti_affinity_group = mkOption {
             description = ''
-              'anti_affinity_group' must not be set when role!="worker"
-              Leaving 'anti_affinity_group' empty means to not join any anti affinity group
+              Must not be set when role!="worker".
+              If left empty no anti affinity group will be joined.
             '';
             type = with types; nullOr nonEmptyStr;
             default = null;
@@ -327,15 +335,15 @@ in {
         assertion =
           all (node: node.role != "worker" -> node.anti_affinity_group == null)
           (attrValues cfg.nodes);
-        message = "'anti_affinity_group' must not be set for master nodes";
+        message = "config.yk8s.openstack.nodes.[].anti_affinity_group: must not be set for master nodes";
       }
       {
         assertion = (length (filter (node: node.role == "master") (attrValues cfg.nodes))) > 0;
-        message = "At least one node with role=master must be given.";
+        message = "config.yk8s.openstack.nodes: at least one node with role=master must be given.";
       }
       {
         assertion = config.yk8s.infra.ipv4_enabled;
-        message = "YAOOK/k8s Terraform does not yet support IPv6-only, see #685";
+        message = "config.yk8s.openstack: YAOOK/k8s Terraform does not yet support IPv6-only, see #685";
       }
       (let
         current_config_file =
@@ -357,21 +365,22 @@ in {
       in {
         assertion = cluster_exists -> (config.yk8s.infra.cluster_name == current_cluster_name);
         message = ''
+          config.yk8s.infra.cluster_name:
           Will not update terraform config because there is a mismatch between the deployed and future cluster_name. This would cause death and destruction.
-          Set `infra.cluster_name` back to ${current_cluster_name}. Your suggested change ${config.yk8s.infra.cluster_name} is unacceptable.
+          Set `config.yk8s.infra.cluster_name` back to ${current_cluster_name}. Your suggested change ${config.yk8s.infra.cluster_name} is unacceptable.
         '';
       })
       {
         # although IPv4 technically works with lower MTUs, 576 Bytes is the recommended minimum size of datagrams
         # https://datatracker.ietf.org/doc/html/rfc791
         assertion = config.yk8s.infra.ipv4_enabled -> cfg.network_mtu >= 576;
-        message = "A minimum network MTU of 576 Bytes is required for IPv4. Please adjust 'yk8s.openstack.network_mtu' accordingly.";
+        message = "config.yk8s.openstack.network_mtu: must be at least 576 Bytes to support IPv4.";
       }
       {
         # 1280 Bytes is the technical minimum MTU for IPv6 to work
         # https://datatracker.ietf.org/doc/html/rfc8200#section-5
         assertion = config.yk8s.infra.ipv6_enabled -> cfg.network_mtu >= 1280;
-        message = "A minimum network MTU of 1280 Bytes is required for IPv6. Please adjust 'yk8s.openstack.network_mtu' accordingly.";
+        message = "config.yk8s.openstack.network_mtu: must be at least 1280 Bytes to support IPv6.";
       }
     ];
     _inventory_packages = [

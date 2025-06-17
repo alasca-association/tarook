@@ -24,27 +24,9 @@ YAOOK/K8s developer guide can be found
 `here <https://yaook.gitlab.io/meta/01-developing.html#workflow>`__.
 
 YAOOK/K8s also allows the upgrade of the kube-prometheus-stack.
-You can adjust the ``prometheus_stack_version`` in the config
-
-.. code:: nix
-
-   ...
-   monitoring = {
-      ...
-      prometheus_stack_version = "59.1.0";
-      ...
-   };
-
-If the variable isn`t set, the default will be used, which can be found via the
-following call as ``monitoring_prometheus_stack_version``.
-
-.. code:: console
-
-    $ cat managed-k8s/k8s-service-layer/roles/monitoring_v2/defaults/main.yaml
-
-This file also lists currently supported versions.
-As each upgrade requires further steps, i.e. updating the CRDs,
-you cannot simply jump ahead.
+You can adjust its version with
+the :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_stack_version` config option
+or unset it to track the default of the current YAOOK/K8s release.
 
 The upgrade routine can be triggered by running the following:
 
@@ -56,17 +38,18 @@ Prometheus
 ----------
 
 By default we deploy exactly one Prometheus server if the monitoring is enabled.
-This instance doesn't have persistent storage unless ``prometheus_persistent_storage_class``
-is set in ``config.toml``. Prometheus scrapes all *PodMonitors* and *ServiceMonitors*
+This instance doesn't have persistent storage unless
+:ref:`configuration-options.yk8s.k8s-service-layer.prometheus.grafana_persistent_storage_class`
+is configured. Prometheus scrapes all *PodMonitors* and *ServiceMonitors*
 it can find in the different namespaces. This behavior can be altered by setting
-``[k8s-service-layer.prometheus.common_labels]`` in ``config.toml`` to only scrape
-resources which match a certain label set.
+:ref:`configuration-options.yk8s.k8s-service-layer.prometheus.common_labels`
+to only scrape resources which match a certain label set.
 
 Prometheus can be integrated into existing Prometheus-based monitoring setups via `federation <https://prometheus.io/docs/prometheus/latest/federation/>`__
 which is a pull-based approach for gathering a subset of its metrics.
 The alternative way is using a push-based approach called `remote write <https://prometheus.io/docs/practices/remote_write/>`__.
 Remote write allows your Prometheus to actively send metrics to an endpoint (remote write receiver or target)
-and is configured via ``[[k8s-service-layer.prometheus.remote_writes]]`` in ``config.toml``.
+and is configured with ``[[k8s-service-layer.prometheus.remote_writes]]``.
 
 Grafana
 -------
@@ -237,9 +220,9 @@ You must supply a valid configuration for a
 This configuration must be stored in your cluster key-value secrets engine
 under ``kv/data/thanos-config``.
 Inserting a Thanos client config into vault can be automated by storing the
-configuration at ``config/thanos.yaml`` (or specifying another location
-in your config under
-``k8s-service-layer.prometheus.thanos_objectstorage_config_file``)
+configuration at ``config/thanos.yaml``
+and referencing that file with
+:ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_objectstorage_config_file`
 and then triggering the vault update script:
 
 .. code:: console

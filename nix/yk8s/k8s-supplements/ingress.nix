@@ -32,7 +32,7 @@ in {
       .. note::
 
         To enable an ingress controller,
-        ``k8s-service-layer.ingress.enabled`` needs to be set to ``true``.
+        :ref:`configuration-options.yk8s.k8s-service-layer.ingress.enabled` needs to be set to ``true``.
     '';
 
     enabled = mkEnableOption "nginx-ingress management.";

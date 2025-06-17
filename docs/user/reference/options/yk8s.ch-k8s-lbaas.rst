@@ -54,8 +54,8 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.
 ################################
 
 Customize URLs for the agents. This will typically be a list of HTTP URLs
-like http://agent_ip:15203. This option is only used if the port manager is
-set to `static`, and must be set if the port manager is `static`.
+like http://agent_ip:15203. This option must be set if :ref:`configuration-options.yk8s.ch-k8s-lbaas.port_manager` is
+set to ``static`` and is ignored otherwise.
 
 
 **Type:**::
@@ -271,8 +271,11 @@ Configure which IP address ("port") manager to use. Two options are available:
 * openstack: Uses OpenStack and the yaook/k8s gateway nodes to provision
   LBaaS IP addresses ports.
 * static: Uses a fixed set of IP addresses to use for load balancing. When the
-  static port manager is used, the ``agent_urls`` and ``static_ipv4_addresses``
-  options must also be configured.
+  static port manager is used,
+  :ref:`configuration-options.yk8s.ch-k8s-lbaas.agent_urls`
+  and
+  :ref:`configuration-options.yk8s.ch-k8s-lbaas.static_ipv4_addresses`
+  must be set as well.
 
 
 **Type:**::

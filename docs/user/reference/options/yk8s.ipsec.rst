@@ -207,7 +207,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 ###################################
 
 Private address of remote endpoint.
-only used when test_enabled is True
+only used when :ref:`configuration-options.yk8s.ipsec.test_enabled` is ``true``
 
 
 **Type:**::

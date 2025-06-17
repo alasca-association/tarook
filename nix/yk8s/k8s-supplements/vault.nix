@@ -132,7 +132,7 @@ in {
 
     external_ingress_issuer_name = mkOption {
       description = ''
-        If `ingress=True` and `dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use
+        If :ref:`configuration-options.yk8s.k8s-service-layer.vault.ingress` is set to ``true`` and :ref:`configuration-options.yk8s.k8s-service-layer.vault.dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use
         for your ACME service.
       '';
       type = with types; nullOr nonEmptyStr;
@@ -144,7 +144,7 @@ in {
           && v == null
         then
           throw
-          "[k8s-service-layer.vault] If `ingress=true` and `dnsnames` is not empty, you have to set external_ingress_issuer_name"
+          "config.yk8s.k8s-service-layer.vault.external_ingress_issuer_name: must be set because config.yk8s.k8s-service-layer.vault.ingress=true and config.yk8s.k8s-service-layer.vault.dnsnames!=[]"
         else v;
     };
     external_ingress_issuer_kind = mkOption {
@@ -168,7 +168,7 @@ in {
     };
     s3_config_file = mkOption {
       description = ''
-        Credentials to access an S3 bucket to which the backups will be written. Required if `enable_backups = true`.
+        Credentials to access an S3 bucket to which the backups will be written. Required if :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable_backups` is set to ``true``
         You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
       '';
       type = types.nonEmptyStr;

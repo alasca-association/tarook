@@ -53,8 +53,8 @@ in {
         It will install a VGPU manager on the worker node and
         split the GPU according to chosen vgpu type.
         Note: This will not install Nvidia drivers to utilize vGPU guest VMs!!
-        If set to true, please set further variables in the [miscellaneous] section.
-        Note: This is mutually exclusive with "is_gpu_cluster"yed.
+        If set to true, please set further variables in :ref:`configuration-options.yk8s.miscellaneous`.
+        Note: This is mutually exclusive with :ref:`configuration-options.yk8s.kubernetes.is_gpu_cluster`.
       '';
       type = types.bool;
       default = false;

@@ -16,7 +16,6 @@ The cluster repository layout
 
    your_cluster_repo
    ├── config/                           # All user configuration now resides in this directory
-   │   ├── config.toml                   # Legacy cluster configuration, referenced in default.nix
    │   ├── default.nix                   # Nix-based cluster configuration
    │   └── hosts                         # Manual Ansible hosts file for bare-metal, referenced in default.nix
    ├── inventory/yaook-k8s/              # Ansible inventory is now completely generated and MAY be excluded from version control
@@ -60,13 +59,6 @@ is automatically included. Following the concept of separation of concerns,
 variables are only available to stages/layers which need them.
 
 For all available options see :doc:`options/index`
-
-The ``config/config.toml`` configuration file
----------------------------------------------
-
-The ``config.toml`` is the legacy configuration file and can be imported in
-``default.nix`` to allow for gradual migration.
-.
 
 Custom Configuration
 --------------------

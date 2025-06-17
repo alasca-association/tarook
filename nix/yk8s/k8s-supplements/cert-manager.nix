@@ -16,8 +16,8 @@ in {
         .. note::
 
             To enable cert-manager,
-            ``k8s-service-layer.cert-manager.enabled`` needs to be set to
-            ``true``.
+            :ref:`configuration-options.yk8s.k8s-service-layer.cert-manager.enabled`
+            needs to be set to ``true``.
     '';
 
     enabled = mkEnableOption "management of a cert-manager.io instance";

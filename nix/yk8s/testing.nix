@@ -45,11 +45,11 @@ in {
   in [
     {
       assertion = length cfg.nodes != 1;
-      message = "[testing.nodes] If you define any node, then you must specify at least two";
+      message = "config.yk8s.testing.nodes: must at least specify two nodes or none";
     }
     {
       assertion = config.yk8s.openstack.enabled -> nonExistentNodes == [];
-      message = "[testing.nodes] Nodes [${concatStringsSep ", " nonExistentNodes}] don't exist. Note that full hostnames including the prefix '${config.yk8s.infra.cluster_name}-' must be supplied.";
+      message = "config.yk8s.testing.nodes: nodes [${concatStringsSep ", " nonExistentNodes}] don't exist. Note that full hostnames including the prefix '${config.yk8s.infra.cluster_name}-' must be supplied.";
     }
   ];
   config.yk8s._inventory_packages = [

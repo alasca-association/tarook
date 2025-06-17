@@ -1,0 +1,2 @@
+All mentions of the legacy TOML based configuration were removed
+as it has been replaced with Nix since release v9.0.0.
