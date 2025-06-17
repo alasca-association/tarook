@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+actions_dir="$(realpath "$(dirname "$0")")/../../actions"
+
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
 
@@ -10,6 +12,9 @@ if [ "$#" -ne "$arg_num" ]; then
     echo >&2
     exit 2
 fi
+
+# Ensure that the latest config is deployed to the inventory
+"$actions_dir/update-inventory.sh"
 
 if [ -z "${nodes_approle_accessor:-}" ]; then
     echo "approle auth at $nodes_approle_name not initialized yet, creating"
@@ -30,21 +35,25 @@ function write_policy() {
     vault policy write "$common_policy_prefix/$name" -
 }
 
+common_path_prefix_quote_escaped="${common_path_prefix//\"/\\\"}"
+nodes_approle_path_quote_escaped="${nodes_approle_path//\"/\\\"}"
+common_policy_prefix_quote_escaped="${common_policy_prefix//\"/\\\"}"
+
 define k8s_control_plane_policies_current <<EOF
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/k8s-pki/cluster-root-ca" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/k8s-pki/cluster-root-ca" {
     capabilities = ["read", "list"]
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/k8s/join-key" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/k8s/join-key" {
     capabilities = ["create", "update"]
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/k8s/service-account-key" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/k8s/service-account-key" {
     capabilities = ["create", "update", "read"]
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/system-masters_admin" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/system-masters_admin" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -54,7 +63,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/cluster-admins_admin" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/cluster-admins_admin" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -64,7 +73,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/system-masters_apiserver" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/system-masters_apiserver" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -74,7 +83,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/system-masters_controllers" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/system-masters_controllers" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -84,7 +93,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/apiserver" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/apiserver" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -95,7 +104,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/etcd-pki/issuer/+/issue/server" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/etcd-pki/issuer/+/issue/server" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -106,7 +115,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/etcd-pki/issuer/+/issue/peer" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/etcd-pki/issuer/+/issue/peer" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -117,7 +126,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/etcd-pki/issuer/+/issue/healthcheck" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/etcd-pki/issuer/+/issue/healthcheck" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -128,7 +137,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/etcd-pki/issuer/+/issue/kube-apiserver" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/etcd-pki/issuer/+/issue/kube-apiserver" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -139,7 +148,7 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-front-proxy-pki/issuer/+/issue/apiserver" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-front-proxy-pki/issuer/+/issue/apiserver" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -154,11 +163,11 @@ ${k8s_control_plane_policies_current:?}
 EOF
 
 define k8s_node_policies_current <<EOF
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/k8s/join-key" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/k8s/join-key" {
     capabilities = ["read"]
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/system-nodes_node" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/issuer/+/issue/system-nodes_node" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -168,11 +177,11 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     }
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/cert/ca_chain" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/k8s-pki/cert/ca_chain" {
     capabilities = ["read"]
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/etcd-pki/cert/ca_chain" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/etcd-pki/cert/ca_chain" {
     capabilities = ["read"]
 }
 EOF
@@ -182,15 +191,15 @@ ${k8s_node_policies_current:?}
 EOF
 
 define gateway_policies_current <<EOF
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/wireguard-key" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/wireguard-key" {
     capabilities = ["create", "update", "read"]
 }
 
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/wireguard/*" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/wireguard/*" {
     capabilities = ["create", "update", "read"]
 }
 
-path "$common_path_prefix/+/kv/data/ipsec-eap-psk" {
+path "$common_path_prefix_quote_escaped/+/kv/data/ipsec-eap-psk" {
     capabilities = ["read"]
 }
 EOF
@@ -200,7 +209,7 @@ ${gateway_policies_current:?}
 EOF
 
 define node_policies_current <<EOF
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/ssh-ca/sign/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.role_name }}" {
+path "$common_path_prefix_quote_escaped/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/ssh-ca/sign/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.role_name }}" {
     capabilities = ["create", "update"]
 }
 EOF
@@ -210,15 +219,15 @@ ${node_policies_current:?}
 EOF
 
 define orchestrator_policies_current <<EOF
-path "$common_path_prefix/+/ssh-ca/roles/+" {
+path "$common_path_prefix_quote_escaped/+/ssh-ca/roles/+" {
     capabilities = ["delete"]
 }
 
-path "$common_path_prefix/+/ssh-ca/config/ca" {
+path "$common_path_prefix_quote_escaped/+/ssh-ca/config/ca" {
     capabilities = ["read"]
 }
 
-path "$common_path_prefix/+/ssh-ca/roles/+" {
+path "$common_path_prefix_quote_escaped/+/ssh-ca/roles/+" {
     capabilities = ["create", "update"]
     required_parameters = ["key_type", "ttl", "allow_host_certificates", "allow_bare_domains", "allowed_domains", "algorithm_signer"]
     allowed_parameters = {
@@ -231,24 +240,24 @@ path "$common_path_prefix/+/ssh-ca/roles/+" {
     }
 }
 
-path "$nodes_approle_path/role/+" {
+path "$nodes_approle_path_quote_escaped/role/+" {
     capabilities = ["create", "update"]
     required_parameters = ["token_ttl", "token_max_ttl", "token_policies", "token_no_default_policy", "token_type"]
     allowed_parameters = {
         "token_ttl" = [],
         "token_max_ttl" = ["1h"],
         "token_policies" = [
-            "$common_policy_prefix/k8s-control-plane,$common_policy_prefix/k8s-node,$common_policy_prefix/node",
-            "$common_policy_prefix/k8s-control-plane,$common_policy_prefix/k8s-node,$common_policy_prefix/gateway,$common_policy_prefix/node",
-            "$common_policy_prefix/gateway,$common_policy_prefix/node",
-            "$common_policy_prefix/k8s-node,$common_policy_prefix/node",
+            "$common_policy_prefix_quote_escaped/k8s-control-plane,$common_policy_prefix_quote_escaped/k8s-node,$common_policy_prefix_quote_escaped/node",
+            "$common_policy_prefix_quote_escaped/k8s-control-plane,$common_policy_prefix_quote_escaped/k8s-node,$common_policy_prefix_quote_escaped/gateway,$common_policy_prefix_quote_escaped/node",
+            "$common_policy_prefix_quote_escaped/gateway,$common_policy_prefix_quote_escaped/node",
+            "$common_policy_prefix_quote_escaped/k8s-node,$common_policy_prefix_quote_escaped/node",
         ],
         "token_no_default_policy" = ["false"],
         "token_type" = ["service"],
     }
 }
 
-path "$common_path_prefix/+/k8s-pki/issue/any-master" {
+path "$common_path_prefix_quote_escaped/+/k8s-pki/issue/any-master" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -260,7 +269,7 @@ path "$common_path_prefix/+/k8s-pki/issue/any-master" {
     }
 }
 
-path "$common_path_prefix/+/k8s-pki/issue/any-cluster-admin" {
+path "$common_path_prefix_quote_escaped/+/k8s-pki/issue/any-cluster-admin" {
     capabilities = ["create", "update"]
     required_parameters = ["common_name", "ttl"]
     allowed_parameters = {
@@ -272,15 +281,15 @@ path "$common_path_prefix/+/k8s-pki/issue/any-cluster-admin" {
     }
 }
 
-path "$nodes_approle_path/role/+" {
+path "$nodes_approle_path_quote_escaped/role/+" {
     capabilities = ["delete"]
 }
 
-path "$nodes_approle_path/role/+/role-id" {
+path "$nodes_approle_path_quote_escaped/role/+/role-id" {
     capabilities = ["read"]
 }
 
-path "$nodes_approle_path/role/+/secret-id" {
+path "$nodes_approle_path_quote_escaped/role/+/secret-id" {
     capabilities = ["create", "update"]
     required_parameters = ["metadata"]
     allowed_parameters = {
@@ -290,35 +299,35 @@ path "$nodes_approle_path/role/+/secret-id" {
     max_wrapping_ttl = "3h"
 }
 
-path "$nodes_approle_path/role/+/secret-id/destroy" {
+path "$nodes_approle_path_quote_escaped/role/+/secret-id/destroy" {
     capabilities = ["create", "update"]
 }
 
-path "$common_path_prefix/+/kv/data/ipmi/*" {
+path "$common_path_prefix_quote_escaped/+/kv/data/ipmi/*" {
     capabilities = ["read"]
 }
 
-path "$common_path_prefix/+/kv/data/etcdbackup" {
+path "$common_path_prefix_quote_escaped/+/kv/data/etcdbackup" {
     capabilities = ["read"]
 }
 
-path "$common_path_prefix/+/kv/data/ipsec-eap-psk" {
+path "$common_path_prefix_quote_escaped/+/kv/data/ipsec-eap-psk" {
     capabilities = ["read"]
 }
 
-path "$common_path_prefix/+/kv/data/wireguard-key" {
+path "$common_path_prefix_quote_escaped/+/kv/data/wireguard-key" {
     capabilities = ["create", "update", "read"]
 }
 
-path "$common_path_prefix/+/kv/data/wireguard/*" {
+path "$common_path_prefix_quote_escaped/+/kv/data/wireguard/*" {
     capabilities = ["create", "update", "read"]
 }
 
-path "$common_path_prefix/+/kv/data/thanos-config" {
+path "$common_path_prefix_quote_escaped/+/kv/data/thanos-config" {
     capabilities = ["read"]
 }
 
-path "$common_path_prefix/+/kv/data/vault-backup-s3-config" {
+path "$common_path_prefix_quote_escaped/+/kv/data/vault-backup-s3-config" {
     capabilities = ["read"]
 }
 EOF

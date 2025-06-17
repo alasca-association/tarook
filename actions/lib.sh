@@ -81,6 +81,8 @@ function load_conf_vars() {
         wg_endpoint="${wg_endpoint:-0}"
         ansible_wg_template="$etc_directory/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}.conf"
     fi
+
+    vault_path_prefix="$(yq --raw-output '.vault_path_prefix' "$group_vars_dir/all/vault-backend.yaml")"
 }
 
 function check_conf_sanity() {
@@ -142,11 +144,13 @@ function require_vault_token() {
 }
 
 function check_vault_token_policy() {
-    if (vault token lookup -format=json | jq --exit-status 'any(.data.policies[] | contains("root", "yaook/orchestrator"); .)' &> /dev/null); then
+    load_conf_vars
+
+    if (vault token lookup -format=json | jq --exit-status 'any(.data.policies[] | contains("root", "$vault_policy_prefix/orchestrator"); .)' &> /dev/null); then
         return
     fi
     errorf 'Your vault token has insufficient policies for a KUBECONFIG generation'
-    errorf 'The token must either be a root token or have the "yaook/orchestrator" policy'
+    errorf 'The token must either be a root token or have the "'"$vault_path_prefix"'/orchestrator" policy'
     exit 2
 }
 

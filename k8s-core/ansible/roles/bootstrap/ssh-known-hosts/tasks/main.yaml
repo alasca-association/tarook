@@ -25,7 +25,7 @@
       ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
       ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
     community.hashi_vault.vault_read:
-      path: "yaook/{{ vault_cluster_name }}/ssh-ca/config/ca"
+      path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/ssh-ca/config/ca"
       mount_point: "{{ vault_caller_auth_mount_point }}"
       auth_method: "{{ vault_caller_auth_method }}"
       token: "{{ vault_caller_token }}"

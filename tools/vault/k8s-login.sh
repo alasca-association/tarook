@@ -37,10 +37,10 @@ kubernetes_server="$1"
 username="vault:$(vault token lookup -format=json | jq -r .data.path)"
 
 if [ "${super_admin:-false}" == false ]; then
-    credentials=$(vault write -format=json yaook/"$cluster"/k8s-pki/issue/any-cluster-admin common_name="$username" ttl=192h)  # 8 days
+    credentials=$(vault write -format=json "$common_path_prefix/$cluster"/k8s-pki/issue/any-cluster-admin common_name="$username" ttl=192h)  # 8 days
 fi
 
 if [ "${super_admin:-false}" == true ]; then
-    credentials=$(vault write -format=json yaook/"$cluster"/k8s-pki/issue/any-master common_name="$username" ttl=192h)  # 8 days
+    credentials=$(vault write -format=json "$common_path_prefix/$cluster"/k8s-pki/issue/any-master common_name="$username" ttl=192h)  # 8 days
 fi
 jq --arg "username" "$username" --arg "k8s_server" "$kubernetes_server" '{"apiVersion": "v1", "clusters": [{"cluster": {"certificate-authority-data": .data.ca_chain | join("\n") | @base64, "server": $k8s_server}, "name": "kubernetes"}], "contexts": [{"context": {"cluster": "kubernetes", "user": $username}, "name": "\($username)@kubernetes"}], "current-context": "\($username)@kubernetes", "kind": "Config", "preferences": {}, "users": [{"name": $username, "user": {"client-certificate-data": ([.data.certificate] + .data.ca_chain | join("\n")  | @base64), "client-key-data": .data.private_key | @base64}}]}' <<<"$credentials"

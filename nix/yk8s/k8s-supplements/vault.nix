@@ -42,7 +42,7 @@ in {
 
     backup_approle_path = mkOption {
       type = types.nonEmptyStr;
-      default = "yaook/vault_v1/approle/";
+      default = "${config.yk8s.vault.path_prefix}/vault_v1/approle/";
     };
 
     chart_version = mkOption {

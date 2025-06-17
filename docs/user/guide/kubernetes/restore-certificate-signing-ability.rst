@@ -110,8 +110,9 @@ Enabling the fix
 
             .. code:: shell
 
-               clustername="$(yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
-               vault kv put -mount="yaook/${clustername}/kv" k8s-pki/cluster-root-ca private_key=@current-ca.key
+               vault_cluster_name="$(yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
+               vault_path_prefix="$(yq --raw-output .vault_path_prefix inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
+               vault kv put -mount="${vault_path_prefix}/${vault_cluster_name}/kv" k8s-pki/cluster-root-ca private_key=@current-ca.key
 
 
          .. tip:: SHORTCUT
@@ -122,10 +123,11 @@ Enabling the fix
 
             .. code:: shell
 
-               clustername="$(yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
+               vault_cluster_name="$(yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
+               vault_path_prefix="$(yq --raw-output .vault_path_prefix inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
                export VAULT_TOKEN=$root_token
-               ca_key_version="$(vault kv get -format=json -mount=yaook/${clustername}/kv k8s-pki/cluster-root-ca | jq .data.metadata.version)"
-               vault kv undelete -versions="${ca_key_version}" -mount=yaook/${clustername}/kv k8s-pki/cluster-root-ca
+               ca_key_version="$(vault kv get -format=json -mount=${vault_path_prefix}/${vault_cluster_name}/kv k8s-pki/cluster-root-ca | jq .data.metadata.version)"
+               vault kv undelete -versions="${ca_key_version}" -mount=${vault_path_prefix}/${vault_cluster_name}/kv k8s-pki/cluster-root-ca
 
 
       4. Run at least the ``k8s-master`` tag
@@ -146,7 +148,7 @@ Enabling the fix
 
 
 .. [3] The Kubernetes cluster root CA key can be read with
-       ``VAULT_TOKEN=$root_token vault kv get -format=json -mount=yaook/${clustername}/kv k8s-pki/cluster-root-ca``.
+       ``VAULT_TOKEN=$root_token vault kv get -format=json -mount=${vault_path_prefix}/${vault_cluster_name}/kv k8s-pki/cluster-root-ca``.
 
 
 Disabling the fix
@@ -190,9 +192,9 @@ Disabling the fix
 
             .. code:: shell
 
-               clustername="$(yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
-               ca_key_version="$(vault kv get -format=json -mount=yaook/${clustername}/kv k8s-pki/cluster-root-ca | jq .data.metadata.version)"
-               vault kv undelete -versions="${ca_key_version}" -mount=yaook/${clustername}/kv k8s-pki/cluster-root-ca
+               vault_cluster_name="$(yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
+               ca_key_version="$(vault kv get -format=json -mount=${vault_path_prefix}/${vault_cluster_name}/kv k8s-pki/cluster-root-ca | jq .data.metadata.version)"
+               vault kv undelete -versions="${ca_key_version}" -mount=${vault_path_prefix}/${vault_cluster_name}/kv k8s-pki/cluster-root-ca
 
 
             If you wish to completely remove the key backup from Vault, run:
@@ -203,14 +205,14 @@ Disabling the fix
 
             .. code:: shell
 
-               clustername="$(yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
-               vault kv destroy -mount=yaook/${clustername}/kv \
+               vault_cluster_name="$(yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml)"
+               vault kv destroy -mount=${vault_path_prefix}/${vault_cluster_name}/kv \
                    -versions="0,$(
-                       vault kv metadata get -format=json -mount=yaook/${clustername}/kv k8s-pki/cluster-root-ca \
+                       vault kv metadata get -format=json -mount=${vault_path_prefix}/${vault_cluster_name}/kv k8s-pki/cluster-root-ca \
                        | jq '.data.versions | keys_unsorted[] |  tonumber' | tr '\n' ','
                    )" \
                    k8s-pki/cluster-root-ca \
-               && vault kv metadata delete -mount=yaook/${clustername}/kv k8s-pki/cluster-root-ca
+               && vault kv metadata delete -mount=${vault_path_prefix}/${vault_cluster_name}/kv k8s-pki/cluster-root-ca
 
 
 .. [4] https://developer.hashicorp.com/vault/docs/secrets/kv/kv-v2#deleting-and-destroying-data

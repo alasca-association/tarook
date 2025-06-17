@@ -9,14 +9,14 @@
     vault_token: "{{ lookup('env', 'VAULT_TOKEN') }}"
     vault_role_id: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
     vault_secret_id: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
-    vault_backup_s3_config_vault_mount_point: "yaook/{{ vault_cluster_name }}/kv"
+    vault_backup_s3_config_vault_mount_point: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv"
   set_fact:
     yaook_vault_backup_s3: "{{ lookup('community.hashi_vault.vault_kv2_get', 'vault-backup-s3-config', engine_mount_point=vault_backup_s3_config_vault_mount_point, mount_point=vault_auth_mount_point, auth_method=vault_auth_method, token=vault_token, role_id=vault_role_id, secret_id=vault_secret_id).data.data }}"
 
 - name: Declare a policy which allows to save raft snapshots
   vars:
     vault_expression: |
-      vault policy write sys/policies/acl/yaook/backup-creator - << EOF
+      vault policy write sys/policies/acl/{{ vault_policy_prefix }}/backup-creator - << EOF
       path "sys/storage/raft/snapshot" {
         capabilities = ["read"]
       }
@@ -42,7 +42,7 @@
 - name: Create an AppRole for the backup-creator
   vars:
     vault_expression: |
-      vault write auth/{{ yaook_vault_backup_approle_path | quote }}/role/yaook-backup-creator token_policies="sys/policies/acl/yaook/backup-creator" token_ttl=1h
+      vault write auth/{{ yaook_vault_backup_approle_path | quote }}/role/yaook-backup-creator token_policies="sys/policies/acl/{{ vault_policy_prefix }}/backup-creator" token_ttl=1h
   include_tasks: vault_command.yaml
 
 - name: Fetch the role_id

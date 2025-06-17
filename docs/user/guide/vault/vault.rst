@@ -534,16 +534,16 @@ In the following the procedure for that is described:
    .. code:: console
 
       # k8s-pki
-      $ vault list -detailed yaook/<CLUSTER_NAME>/k8s-pki/issuers
-      $ vault read yaook/<CLUSTER_NAME>/k8s-pki/issuer/<ISSUER_ID>/ -format=json | jq -jr ".data.ca_chain[]" > k8s-pki.pem
+      $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/k8s-pki/issuers
+      $ vault read <vault_path_prefix>/<vault_cluster_name>/k8s-pki/issuer/<ISSUER_ID>/ -format=json | jq -jr ".data.ca_chain[]" > k8s-pki.pem
 
       # etcd-pki
-      $ vault list -detailed yaook/<CLUSTER_NAME>/etcd-pki/issuers
-      $ vault read yaook/<CLUSTER_NAME>/etcd-pki/issuer/<ISSUER_ID>/ -format=json | jq -jr ".data.ca_chain[]" > etcd-pki.pem
+      $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/etcd-pki/issuers
+      $ vault read <vault_path_prefix>/<vault_cluster_name>/etcd-pki/issuer/<ISSUER_ID>/ -format=json | jq -jr ".data.ca_chain[]" > etcd-pki.pem
 
       # k8s-front-proxy-pki
-      $ vault list -detailed yaook/<CLUSTER_NAME>/k8s-front-proxy-pki/issuers
-      $ vault read yaook/<CLUSTER_NAME>/k8s-front-proxy-pki/issuer/<ISSUER_ID>/ -format=json | jq -jr ".data.ca_chain[]" > k8s-front-proxy-pki.pem
+      $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/k8s-front-proxy-pki/issuers
+      $ vault read <vault_path_prefix>/<vault_cluster_name>/k8s-front-proxy-pki/issuer/<ISSUER_ID>/ -format=json | jq -jr ".data.ca_chain[]" > k8s-front-proxy-pki.pem
 
 3. Archive the files:
 

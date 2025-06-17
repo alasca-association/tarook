@@ -314,9 +314,10 @@ in {
     };
     vault = {
       cluster_name = "k8s.ci.yaook.cloud";
-      policy_prefix = "yaook";
-      path_prefix = "yaook";
-      nodes_approle = "yaook/nodes";
+      # NOTE: Using non-default randomized values to trigger (hard-coding) errors
+      policy_prefix = "yaook-ci-r1XeB-policy";
+      path_prefix = "yaook-ci-r1XeB";
+      nodes_approle = "yaook-ci-r1XeB-approle/nodes";
     };
   };
 }

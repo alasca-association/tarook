@@ -8,10 +8,10 @@
   register: cronjob_info
   ignore_errors: true
 
-- name: Create the yaook/prometheus policy
+- name: "Create the {{ vault_path_prefix }}/prometheus policy"
   vars:
     vault_expression: |
-      vault policy write sys/policies/acl/yaook/prometheus - << EOF
+      vault policy write sys/policies/acl/{{ vault_policy_prefix }}/prometheus - << EOF
       path "sys/metrics" {
         capabilities = ["list", "read"]
       }
@@ -38,7 +38,7 @@
   block:
     - name: Initially create a Vault periodic token for Prometheus to fetch the metrics
       vars:
-        vault_expression: vault token create -format=json -policy=sys/policies/acl/yaook/prometheus -period=504h -orphan
+        vault_expression: vault token create -format=json -policy=sys/policies/acl/{{ vault_policy_prefix }}/prometheus -period=504h -orphan
       include_tasks: vault_command.yaml
 
     - name: Create the secret

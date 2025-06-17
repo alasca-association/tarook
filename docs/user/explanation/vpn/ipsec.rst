@@ -265,5 +265,5 @@ This can be done with the following command:
 
 .. code:: shell
 
-   # Please substitute CLUSTERNAME & YOUR_IPSEC_EAP_PSK
-   vault kv put yaook/CLUSTERNAME/kv/ipsec-eap-psk ipsec_eap_psk=YOUR_IPSEC_EAP_PSK
+   # Please substitute VAULT_PATH_PREFIX & VAULT_CLUSTER_NAME & YOUR_IPSEC_EAP_PSK
+   vault kv put VAULT_PATH_PREFIX/VAULT_CLUSTER_NAME/kv/ipsec-eap-psk ipsec_eap_psk=YOUR_IPSEC_EAP_PSK

@@ -63,9 +63,9 @@
         recurse: true
 
     - name: Deploy vault login script
-      copy:
+      template:
         dest: /usr/local/lib/yaook-k8s/vault-login.sh
-        src: vault-login.sh
+        src: vault-login.sh.j2
         owner: root
         group: root
         mode: 0740

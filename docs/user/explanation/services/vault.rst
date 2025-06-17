@@ -61,28 +61,30 @@ control is possible, even down into specific parts of a secret engine.
 Organization of Data in Vault
 -----------------------------
 
-All secrets engines used by YAOOK/K8s are mounted below the ``yaook/``
-path prefix. (This prefix is configurable, but that is not well-tested.)
+All secrets engines used by YAOOK/K8s are mounted below the path prefix
+specified with the :ref:`configuration-options.yk8s.vault.path_prefix` config option.
+(Although the prefix is configurable, that is not well-tested.)
 Each cluster gets its own secrets engines, to improve the isolation
 between different clusters. The per-cluster secrets engines are mounted
-at ``yaook/$cluster_name/...``, where ``$cluster_name`` is configured with
-the :ref:`configuration-options.yk8s.vault.cluster_name` config option.
+at ``$path_prefix/$cluster_name/...``,
+where both variables are config options below :ref:`configuration-options.yk8s.vault`.
 
 The following six secrets engines are used:
 
--  ``yaook/$cluster_name/kv``, a KV2 engine for generic secrets
+-  ``$path_prefix/$cluster_name/kv``, a KV2 engine for generic secrets
    (wireguard key, service account signing key, …)
--  ``yaook/$cluster_name/k8s-pki``, a CA to issue identities within the
+-  ``$path_prefix/$cluster_name/k8s-pki``, a CA to issue identities within the
    Kubernetes cluster (e.g. API server, nodes)
--  ``yaook/$cluster_name/k8s-front-proxy-pki``, a CA to prove the
+-  ``$path_prefix/$cluster_name/k8s-front-proxy-pki``, a CA to prove the
    identity of the Kubernetes API server for API extensions
--  ``yaook/$cluster_name/etcd-pki``, a CA to issue identities within the
+-  ``$path_prefix/$cluster_name/etcd-pki``, a CA to issue identities within the
    etcd cluster (e.g. cluster peers, clients)
--  ``yaook/$cluster_name/ssh-ca``, an SSH certificate authority to allow
+-  ``$path_prefix/$cluster_name/ssh-ca``, an SSH certificate authority to allow
    verifying node SSH keys without prior knowledge
 
-In addition to the secrets engines, YAOOK/K8s has a shared ``approle``
-authentication method at ``yaook/nodes``. This auth method is used to
+In addition to the secrets engines, YAOOK/K8s has a shared ``approle`` authentication method
+at the path specified with the :ref:`configuration-options.yk8s.vault.nodes_approle` config option.
+This auth method is used to
 provide credentials for the individual nodes of all clusters.
 
 Vault UI

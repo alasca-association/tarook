@@ -58,11 +58,12 @@ we're still able to talk to the Kubernetes API during this phase.
 Executing a CA rotation
 -----------------------
 
-Please substitute your ``<clustername>`` in the following.
-To verify your configured clustername you can use the following:
+Please substitute ``<vault_path_prefix>`` and ``<vault_cluster_name>`` in the following.
+To recall their values you can use the following:
 
 .. code:: console
 
+  $ yq --raw-output .vault_path_prefix inventory/yaook-k8s/group_vars/all/vault-backend.yaml
   $ yq --raw-output .vault_cluster_name inventory/yaook-k8s/group_vars/all/vault-backend.yaml
 
 Phase 1
@@ -73,13 +74,13 @@ Phase 1
    .. code:: console
 
     $ # Verify currently configured issuers
-    $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
+    $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/k8s-pki/issuers
     Keys                                    is_default    issuer_name
     ----                                    ----------    -----------
     06a9511a-ffd2-2ce3-bd01-2cb2180a5e51    true          n/a
-    $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
+    $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/etcd-pki/issuers
     [...]
-    $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
+    $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/k8s-front-proxy-pki/issuers
     [...]
 
 2. Add a new issuer which will be called ``next`` to all PKIs
@@ -93,9 +94,9 @@ Phase 1
           $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh prepare
 
           $ # Verify
-          $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
-          $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
-          $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
+          $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/k8s-pki/issuers
+          $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/etcd-pki/issuers
+          $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/k8s-front-proxy-pki/issuers
 
       .. tab:: With intermediates
 
@@ -114,9 +115,9 @@ Phase 1
             $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh load-signed-intermediates
 
             $ # Verify
-            $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
-            $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
-            $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
+            $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/k8s-pki/issuers
+            $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/etcd-pki/issuers
+            $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/k8s-front-proxy-pki/issuers
 
 3. If you've created your cluster before 2024, you must additionally update your vault policies
 
@@ -165,14 +166,14 @@ After you spread the kubeconfigs, do the following:
 
           $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh apply
 
-          $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
+          $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/k8s-pki/issuers
           Keys                                    is_default    issuer_name
           ----                                    ----------    -----------
           06a9511a-ffd2-2ce3-bd01-2cb2180a5e51    false         prev
           3e836f42-047f-b078-3795-0386aaff30c0    true          n/a
-          $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
+          $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/etcd-pki/issuers
           [...]
-          $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
+          $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/k8s-front-proxy-pki/issuers
           [...]
 
       .. tab:: With intermediates
@@ -181,14 +182,14 @@ After you spread the kubeconfigs, do the following:
 
           $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh apply
 
-          $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
+          $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/k8s-pki/issuers
           Keys                                    is_default    issuer_name
           ----                                    ----------    -----------
           06a9511a-ffd2-2ce3-bd01-2cb2180a5e51    false         prev
           3e836f42-047f-b078-3795-0386aaff30c0    true          n/a
-          $ vault list -detailed yaook/<clustername>/etcd-pki/issuers
+          $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/etcd-pki/issuers
           [...]
-          $ vault list -detailed yaook/<clustername>/k8s-front-proxy-pki/issuers
+          $ vault list -detailed <vault_path_prefix>/<vault_cluster_name>/k8s-front-proxy-pki/issuers
           [...]
 
 2. Complete the rotation by removing the old CA from accepted bundles

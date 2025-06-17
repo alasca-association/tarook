@@ -4,9 +4,9 @@ set -euo pipefail
 cluster_repository="$(realpath ".")"
 group_vars_dir="${cluster_repository}/inventory/yaook-k8s/group_vars"
 
-common_path_prefix="${YAOOK_K8S_VAULT_PATH_PREFIX:-yaook}"
-common_policy_prefix="${YAOOK_K8S_VAULT_POLICY_PREFIX:-yaook}"
-nodes_approle_name="${YAOOK_K8S_VAULT_NODES_APPROLE_NAME:-${common_path_prefix}/nodes}"
+common_path_prefix="$(yq --raw-output '.vault_path_prefix' "$group_vars_dir/all/vault-backend.yaml")"
+common_policy_prefix="$(yq --raw-output '.vault_policy_prefix' "$group_vars_dir/all/vault-backend.yaml")"
+nodes_approle_name="$(yq --raw-output '.vault_nodes_approle' "$group_vars_dir/all/vault-backend.yaml")"
 nodes_approle_path="auth/$nodes_approle_name"
 k8s_controller_manager_enable_signing_requests="$(
     yq '.k8s_controller_manager_enable_signing_requests

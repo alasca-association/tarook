@@ -25,7 +25,7 @@ in {
       The usage of it is disabled by default but can be enabled (and
       configured) in the following section. The credentials are stored in
       Vault. By default, they are searched for in the cluster’s kv storage (at
-      ``yaook/$clustername/kv``) under ``etcdbackup``. They must be in the
+      ``$vault_path_prefix/$vault_cluster_name/kv``) under ``etcdbackup``. They must be in the
       form of a JSON object/dict with the keys ``access_key`` and
       ``secret_key``.
 
@@ -134,8 +134,8 @@ in {
         recommended.
       '';
       type = types.nonEmptyStr;
-      default = "yaook/${config.yk8s.vault.cluster_name}/kv";
-      defaultText = "yaook/\${config.yk8s.vault.cluster_name}/kv";
+      default = "${config.yk8s.vault.path_prefix}/${config.yk8s.vault.cluster_name}/kv";
+      defaultText = "\${config.yk8s.vault.path_prefix}/\${config.yk8s.vault.cluster_name}/kv";
     };
     vault_path = mkOption {
       description = ''
