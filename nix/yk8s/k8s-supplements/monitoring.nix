@@ -416,7 +416,7 @@ in {
       '';
       type = with types; nullOr nonEmptyStr;
       default = null;
-      example = lib.options.literalExpression "\"\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring\"";
+      example = lib.options.literalExpression "\"\${scheduling_key_prefix}/monitoring\"";
     };
     thanos_store_in_memory_max_size = mkOption {
       description = ''

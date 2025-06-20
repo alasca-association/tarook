@@ -1,0 +1,19 @@
+The :ref:`configuration-options.yk8s.node-scheduling.scheduling_key_prefix` config option
+is deprecated.
+Please substitute it with a let expression (see example below).
+
+.. code:: diff
+
+   - config.yk8s.node-scheduling = {
+   -   scheduling_key_prefix = "foo.example.com";
+   -   labels = {
+   -     node-a = ["${config.yk8s.node-scheduling.scheduling_key_prefix}/label=value"];
+   -   };
+   - };
+   + config.yk8s.node-scheduling = let
+   +   scheduling_key_prefix = "foo.example.com";
+   + in {
+   +   labels = {
+   +     node-a = ["${scheduling_key_prefix}/label=value"];
+   +   };
+   + };

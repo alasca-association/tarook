@@ -1577,7 +1577,7 @@ node.
 
 **Example:**::
 
-  "${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring"
+  "${scheduling_key_prefix}/monitoring"
 
 
 **Declared by**

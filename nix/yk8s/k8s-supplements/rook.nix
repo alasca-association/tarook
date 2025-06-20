@@ -210,7 +210,7 @@ in {
       '';
       type = with types; nullOr nonEmptyStr;
       default = null;
-      example = lib.options.literalExpression "\"\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage\"";
+      example = lib.options.literalExpression "\"\${scheduling_key_prefix}/storage\"";
     };
 
     mon_scheduling_key = mkOption {
@@ -221,7 +221,7 @@ in {
       '';
       type = with types; nullOr nonEmptyStr;
       default = null;
-      example = lib.options.literalExpression "\"\${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mon\"";
+      example = lib.options.literalExpression "\"\${scheduling_key_prefix}/rook-mon\"";
     };
 
     mgr_scheduling_key = mkOption {
@@ -233,7 +233,7 @@ in {
       # TODO: but we could do the merging here if we wanted to
       type = with types; nullOr nonEmptyStr;
       default = null;
-      example = lib.options.literalExpression "\"\${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mgr\"";
+      example = lib.options.literalExpression "\"\${scheduling_key_prefix}/rook-mgr\"";
     };
 
     csi_plugins = mkOption {

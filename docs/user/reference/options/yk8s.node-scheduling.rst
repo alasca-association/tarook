@@ -35,22 +35,22 @@ Labels are assigned to a node during LCM rollout only!
 
   {
     managed-k8s-worker-0 = [
-      "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"
+      "${scheduling_key_prefix}/storage=true"
     ];
     managed-k8s-worker-1 = [
-      "${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"
+      "${scheduling_key_prefix}/monitoring=true"
     ];
     managed-k8s-worker-2 = [
-      "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"
+      "${scheduling_key_prefix}/storage=true"
     ];
     managed-k8s-worker-3 = [
-      "${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"
+      "${scheduling_key_prefix}/monitoring=true"
     ];
     managed-k8s-worker-4 = [
-      "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"
+      "${scheduling_key_prefix}/storage=true"
     ];
     managed-k8s-worker-5 = [
-      "${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"
+      "${scheduling_key_prefix}/monitoring=true"
     ];
   }
 
@@ -63,6 +63,10 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/node-scheduling.nix
 
 ``yk8s.node-scheduling.scheduling_key_prefix``
 ##############################################
+
+.. note:: DEPRECATED
+
+   This option is going to be removed. Please use Nix's let expression instead.
 
 Scheduling keys control where services may run. A scheduling key corresponds
 to both a node label and to a taint. In order for a service to run on a node,
@@ -105,13 +109,13 @@ Taints are assigned to a node during LCM rollout only!
 
   {
     managed-k8s-worker-0 = [
-      "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
+      "${scheduling_key_prefix}/storage=true:NoSchedule"
     ];
     managed-k8s-worker-2 = [
-      "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
+      "${scheduling_key_prefix}/storage=true:NoSchedule"
     ];
     managed-k8s-worker-4 = [
-      "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
+      "${scheduling_key_prefix}/storage=true:NoSchedule"
     ];
   }
 
