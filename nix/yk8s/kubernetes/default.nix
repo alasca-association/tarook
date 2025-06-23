@@ -97,6 +97,12 @@ in {
       to run on all nodes (ignoring all taints). This is often desirable.
     '';
   };
+  config.yk8s.assertions = [
+    {
+      assertion = ! (cfg.is_gpu_cluster && cfg.virtualize_gpu);
+      message = "config.yk8s.kubernetes.is_gpu_cluster: is mutually exlusive with config.yk8s.kubernetes.virtualize_gpu";
+    }
+  ];
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

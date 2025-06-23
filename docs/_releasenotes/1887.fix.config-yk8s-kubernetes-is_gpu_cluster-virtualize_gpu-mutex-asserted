@@ -1,0 +1,4 @@
+The mutual exclusiveness of the config options
+:ref:`configuration-options.yk8s.kubernetes.is_gpu_cluster`
+and :ref:`configuration-options.yk8s.kubernetes.virtualize_gpu`
+is now enforced.
