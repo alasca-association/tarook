@@ -40,7 +40,7 @@ Overview
 - :ref:`lib.sh<actions-references.libsh>`
 - :ref:`manual-terraform.sh<actions-references.manual-terraformsh>`
 - :ref:`wg-up.sh<actions-references.wg-upsh>`
-- :ref:`update_inventory.py<actions-references.update_inventorypy>`
+- :ref:`update-inventory.sh<actions-references.update-inventorysh>`
 
 .. _actions-references.init-cluster-reposh:
 
@@ -397,21 +397,14 @@ Updating the authors for all KSL roles:
 
    $ python3 actions/manage_roles.py update '*' --path k8s-service-layer/roles --author "AUTHORS"
 
-.. _actions-references.update_inventorypy:
+.. _actions-references.update-inventorysh:
 
-``update_inventory.py``
+``update-inventory.sh``
 -----------------------
-
-.. figure:: /img/update-inventory.svg
-   :scale: 80%
-   :alt: Update Inventory Script Visualization
-   :align: center
-
-|
 
 The inventory updater is triggered automatically in advance of each
 action script. It cleans up the inventory and ensures the latest
-variable/value pairs from your configuration file are used.
+variable/value pairs from your configuration file are represented in the ``./inventory`` and ``./state`` directory.
 
 .. _actions-references.libsh:
 
