@@ -54,6 +54,32 @@ Memory resources limit for the apiserver
 **Declared by**
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
 
+.. _configuration-options.yk8s.kubernetes.apiserver.audit_logs:
+
+``yk8s.kubernetes.apiserver.audit_logs``
+##########################################
+
+Whether to enable audit logs for the apiserver
+
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  false
+
+
+**Example:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+
 
 .. _configuration-options.yk8s.kubernetes.controller_manager.enable_signing_requests:
 

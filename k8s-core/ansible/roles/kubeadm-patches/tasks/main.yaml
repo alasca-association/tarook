@@ -2,6 +2,15 @@
 - name: Prepare kubeadm-patches
   become: true
   block:
+    - name: Upload audit log policy file
+      ansible.builtin.template:
+        src: templates/audit-policy.yaml.j2
+        dest: /etc/kubernetes/audit-policy.yaml
+        owner: root
+        group: root
+        mode: '0640'
+      when: k8s_apiserver_audit_logs_enabled
+
     - name: Create kubeadm-patches folder
       file:
         path: /etc/kubernetes/kubeadm-patches
