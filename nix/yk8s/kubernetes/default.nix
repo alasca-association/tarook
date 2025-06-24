@@ -71,6 +71,21 @@ in {
         default = null;
         example = "1Gi";
       };
+      audit_logs = mkOption {
+        description = ''
+          Whether to enable audit logs for the apiserver
+        '';
+        type = types.bool;
+        default = false;
+        example = true;
+      };
+      audit_logs_max_size = mkOption {
+        description = ''
+          Maximal size of apiserver audit log files
+        '';
+        type = types.int;
+        default = 50;
+      };
     };
     controller_manager = {
       large_cluster_size_threshold = mkOption {

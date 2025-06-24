@@ -1,4 +1,51 @@
 [
+{% if k8s_apiserver_audit_logs %}
+  {
+		"op":"add",
+		"path":"/spec/containers/0/command/-",
+		"value":"--audit-policy-file=/etc/kubernetes/audit-policy.yaml"
+	},
+  {
+		"op":"add",
+		"path":"/spec/containers/0/command/-",
+		"value":"--audit-log-path=/var/log/kubernetes/audit/audit.log"
+	},
+  {
+		"op":"add",
+		"path":"/spec/containers/0/command/-",
+		"value":"--audit-log-maxage=1"
+	},
+  {
+		"op":"add",
+		"path":"/spec/containers/0/command/-",
+		"value":"--audit-log-maxsize={{ k8s_apiserver_audit_logs_max_size }}"
+	},
+  {
+		"op":"add",
+		"path":"/spec/containers/0/command/-",
+		"value":"--audit-log-maxbackup=1"
+	},
+  {
+		"op":"add",
+		"path":"/spec/containers/0/volumeMounts/-",
+		"value":{"mountPath":"/etc/kubernetes/audit-policy.yaml", "name":"audit-policy", "readOnly":true}
+  },
+  {
+		"op":"add",
+		"path":"/spec/containers/0/volumeMounts/-",
+		"value":{"mountPath":"/var/log/kubernetes/audit/", "name":"audit-log", "readOnly":false}
+  },
+  {
+		"op":"add",
+		"path":"/spec/volumes/-",
+		"value":{"hostPath":{"path":"/etc/kubernetes/audit-policy.yaml","type":"File"}, "name":"audit-policy"}
+  },
+  {
+		"op":"add",
+		"path":"/spec/volumes/-",
+		"value":{"hostPath":{"path":"/var/log/kubernetes/audit/","type":"DirectoryOrCreate"}, "name":"audit-log"}
+  },
+{% endif %}
 {% if k8s_apiserver_memory_limit is not none %}
 	{
 		"op":"add",
