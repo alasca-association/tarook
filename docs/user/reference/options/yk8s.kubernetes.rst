@@ -7,6 +7,55 @@ yk8s.kubernetes
 This section contains generic information about the Kubernetes cluster
 configuration.
 
+.. _configuration-options.yk8s.kubernetes.apiserver.audit_logs:
+
+``yk8s.kubernetes.apiserver.audit_logs``
+########################################
+
+Whether to enable audit logs for the apiserver
+
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  false
+
+
+**Example:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+
+
+.. _configuration-options.yk8s.kubernetes.apiserver.audit_logs_max_size:
+
+``yk8s.kubernetes.apiserver.audit_logs_max_size``
+#################################################
+
+Maximal size of apiserver audit log files
+
+
+**Type:**::
+
+  signed integer
+
+
+**Default:**::
+
+  50
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+
+
 .. _configuration-options.yk8s.kubernetes.apiserver.frontend_port:
 
 ``yk8s.kubernetes.apiserver.frontend_port``
@@ -49,32 +98,6 @@ Memory resources limit for the apiserver
 **Example:**::
 
   "1Gi"
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
-
-.. _configuration-options.yk8s.kubernetes.apiserver.audit_logs:
-
-``yk8s.kubernetes.apiserver.audit_logs``
-##########################################
-
-Whether to enable audit logs for the apiserver
-
-
-**Type:**::
-
-  boolean
-
-
-**Default:**::
-
-  false
-
-
-**Example:**::
-
-  true
 
 
 **Declared by**
