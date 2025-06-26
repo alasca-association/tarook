@@ -1,5 +1,8 @@
 {{ _auto_generated_preamble }}
 
+{% if k8s_apiserver_audit_logs_custom_policy is not none %}
+{{ k8s_apiserver_audit_logs_custom_policy | to_yaml }}
+{% else %}
 apiVersion: audit.k8s.io/v1
 kind: Policy
 # Don't generate audit events for all requests in RequestReceived stage.
@@ -114,3 +117,4 @@ rules:
     omitStages:
       - "RequestReceived"
   # End of audit profile for Google Container-Optimized OS
+{% endif %}
