@@ -4,6 +4,7 @@ apiVersion: audit.k8s.io/v1
 kind: Policy
 rules:
 - level: Request
+  verbs: ["create", "delete", "update", "deletecollection"]
   resources:
   - group: "" # core
     resources: ["pods"]
@@ -13,6 +14,7 @@ rules:
 # Secrets, ConfigMaps, TokenRequest and TokenReviews can contain sensitive & binary data,
 # so only log at the Metadata level.
 - level: Metadata
+  verbs: ["create", "delete", "update", "deletecollection"]
   resources:
   - group: "" # core
     resources: ["secrets", "configmaps"]
