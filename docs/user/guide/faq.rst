@@ -112,7 +112,7 @@ Troubleshooting
 
    .. code:: console
 
-      $ AFLAGS='-e ansible_ssh_private_key_file=/path/to/private_key_file' ./managed-k8s/actions/apply.sh
+      $ AFLAGS='-e ansible_ssh_private_key_file=/path/to/private_key_file' ./managed-k8s/actions/apply-all.sh
 
 -  Further information is available `in the upstream documentation on
    Ansible connections <https://docs.ansible.com/ansible/latest/user_guide/connection_details.html>`__.
