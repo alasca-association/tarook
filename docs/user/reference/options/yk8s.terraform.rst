@@ -10,7 +10,7 @@ yk8s.terraform
 ``yk8s.terraform.enabled``
 ##########################
 
-
+Whether to enable Terraform usage.
 
 **Type:**::
 
@@ -18,6 +18,11 @@ yk8s.terraform
 
 
 **Default:**::
+
+  false
+
+
+**Example:**::
 
   true
 
