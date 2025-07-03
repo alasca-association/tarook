@@ -1,1 +1,0 @@
-A bug has been fixed that resulted in a warning about missing wireguard peers if wireguard was disabled.
