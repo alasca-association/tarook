@@ -8,6 +8,7 @@
         kubeadm_expression:
           - "kubeadm"
           - "upgrade"
+          - "--ignore-preflight-errors=CreateJob" # timeout is hardcoded to 15s, so we ignore errors
           - "plan"
       include_role:
         name: helpers/kubeadm-command
@@ -23,6 +24,7 @@
           - "--yes"
           - "v{{ next_k8s_version }}"
           - "--certificate-renewal=false"
+          - "--ignore-preflight-errors=CreateJob"
           - "--patches"
           - "/etc/kubernetes/kubeadm-patches"
       include_role:

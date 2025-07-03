@@ -28,6 +28,7 @@
     notify: restart kubelet
 
   - name: Patch kubelet config for eviction values
+    when: "'workers' in group_names"
     block:
     - name: Slurp current kubelet config
       slurp:
@@ -52,7 +53,6 @@
         group: root
         mode: 0600
       notify: restart kubelet
-      when: "'workers' in group_names"
 
 - name: Force restart of kubelet if requested
   debug:

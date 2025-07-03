@@ -41,11 +41,9 @@
           util-linux # for uuidgen
         ];
         pythonPackages = ps:
-          assert !ps ? "kubernetes-validate"; # This will fail as soon as kubernetes-validate is inside nixpkgs; reminding us to remove our own copy of the package
-          
           with ps; [
             kubernetes
-            (callPackage ./pkgs/kubernetes-validate.nix {})
+            kubernetes-validate
             openshift
             loguru
             packaging

@@ -1,0 +1,30 @@
+---
+- name: Reveal Kubernetes cluster root CA key after kubeadm
+  when: k8s_ca_key_file_hidden is not skipped
+  # NOTE: Ansible does not support renaming files
+  block:
+  - name: Move backup file to /etc/kubernetes/pki/ca.key
+    copy:
+      remote_src: true
+      src: "{{ k8s_ca_key_file_backup.dest }}"
+      dest: "{{ k8s_ca_key_file_backup.src }}"
+      mode: 0400
+  - name: Remove backup file
+    file:
+      path: "{{ k8s_ca_key_file_backup.dest }}"
+      state: absent
+
+- name: Ensure kube-controller-manager client cert flags are (un)set
+  block:
+  - name: "Ensure cluster-signing-cert-file is {{ k8s_controller_manager_enable_signing_requests | ternary('set', 'unset') }}"
+    replace:
+      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+      regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
+      replace: "{{ k8s_controller_manager_enable_signing_requests | ternary('\\1/etc/kubernetes/pki/ca.crt', '\\1') }}"
+
+  - name: "Ensure cluster-signing-cert-file is {{ k8s_controller_manager_enable_signing_requests | ternary('set', 'unset') }}"
+    replace:
+      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+      regexp: '^(\s*-\s*--cluster-signing-key-file=).*'
+      replace: "{{ k8s_controller_manager_enable_signing_requests | ternary('\\1/etc/kubernetes/pki/ca.key', '\\1') }}"
+...

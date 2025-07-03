@@ -203,12 +203,12 @@ Kubernetes version
 
 **Type:**::
 
-  string matching the pattern ^1.(29|30|31).[0-9]+$
+  string matching the pattern ^1.(29|30|31|32).[0-9]+$
 
 
 **Default:**::
 
-  "1.31.5"
+  "1.32.5"
 
 
 **Declared by**

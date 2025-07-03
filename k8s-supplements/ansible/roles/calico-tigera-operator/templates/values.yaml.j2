@@ -61,6 +61,16 @@ installation:
 apiServer:
   enabled: true
 
+{% if image_versions.calico_version is version('3.30', 'ge') %}
+# https://www.tigera.io/blog/calico-whisker-your-new-ally-in-network-observability/
+# goldmane configures the Calico Goldmane flow aggregator.
+goldmane:
+  enabled: false
+# whisker configures the Calico Whisker observability UI.
+whisker:
+  enabled: false
+{% endif %}
+
 nodeSelector:
   kubernetes.io/os: linux
   node-role.kubernetes.io/control-plane: ""
