@@ -19,6 +19,25 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.1.8 (2025-07-03)
+-------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- Terraform is now disabled by default, which means that for bare-metal clusters it is now sufficient to disable Openstack. This change is non-breaking, because the OpenStack module automatically enabled Terraform. (`!1856 <https://gitlab.com/yaook/k8s/-/merge_requests/1856>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- A bug has been fixed that resulted in a warning about missing wireguard peers if wireguard was disabled. (`!1856 <https://gitlab.com/yaook/k8s/-/merge_requests/1856>`_)
+- The missing options networking_fixed_ip and networking_fixed_ip_v6 have been added to the infra section. (`!1856 <https://gitlab.com/yaook/k8s/-/merge_requests/1856>`_)
+- Some option renames have been added to simplify migration of bare-metal clusters. (`!1856 <https://gitlab.com/yaook/k8s/-/merge_requests/1856>`_)
+- A bug in the migration script has been fixed that caused the migration to fail if an empty vault state directory existed from a previous failed attempt. (`!1909 <https://gitlab.com/yaook/k8s/-/merge_requests/1909>`_)
+- The migration script does not unnecessarily add an openstack section for bare-metal clusters anymore. (`!1909 <https://gitlab.com/yaook/k8s/-/merge_requests/1909>`_)
+
+
 v9.1.7 (2025-05-07)
 -------------------
 
