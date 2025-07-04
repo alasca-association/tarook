@@ -2,18 +2,18 @@
 - name: Create mirror configuration
   become: true
   block:
-  - name: "Create the host namespace directory for {{ item.registry }}"
+  - name: "Create the {{ item.registry is none | ternary('default host namespace directory', 'host namespace directory for '+item.registry) }}"
     file:
-      path: "/etc/containerd/certs.d/{{ item.registry }}"
+      path: "/etc/containerd/certs.d/{{ item.registry is none | ternary('_default', item.registry) }}"
       state: directory
       mode: 0755
       owner: root
       group: root
 
-  - name: "Create the host config file for {{ item.registry }}"
+  - name: "Create the {{ item.registry is none | ternary('default host config file', 'host config file for '+item.registry) }}"
     template:
       src: hosts.toml.j2
-      dest: "/etc/containerd/certs.d/{{ item.registry }}/hosts.toml"
+      dest: "/etc/containerd/certs.d/{{ item.registry is none | ternary('_default', item.registry) }}/hosts.toml"
       mode: 0644
       owner: root
       group: root

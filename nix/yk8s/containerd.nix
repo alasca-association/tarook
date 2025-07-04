@@ -20,12 +20,12 @@ in {
       type = types.listOf (types.submodule {
         options = {
           registry = mkOption {
-            type = types.nonEmptyStr;
+            type = with types; nullOr nonEmptyStr;
             description = ''
               Name of the registry host for which the mirrors should be used.
               Registry hosts are typically referred to by their internet domain names, aka. registry host names.
               For example, docker.io, quay.io, gcr.io, and ghcr.io.
-              Set to "_default" if the mirrors should be used as default.
+              Set to null if the mirrors should be used as default.
             '';
             example = "gcr.io";
           };
