@@ -255,6 +255,8 @@ in {
         grafana_persistent_storage_class = "csi-sc-cinderplugin";
         prometheus_persistent_storage_class = "csi-sc-cinderplugin";
         thanos_objectstorage_container_name = "ci-monitoring-thanos-data";
+        thanos_objectstorage_config_file = "thanos.yaml";
+        manage_thanos_bucket = false;
         scheduling_key = "${cfg.node-scheduling.scheduling_key_prefix}/monitoring";
         grafana_memory_limit = "768Mi";
         grafana_memory_request = "768Mi";

@@ -260,6 +260,8 @@
     - vault operator unseal $(cat $CI_PROJECT_DIR/unseal.key)
     - vault login $(cat $CI_PROJECT_DIR/root.key)
     - bash ./managed-k8s/tools/vault/init.sh
+      # cp Thanos S3 config
+    - cp /root/thanos.yaml ./config/thanos.yaml
     - bash ./managed-k8s/tools/vault/mkcluster-root.sh
     - export VAULT_TOKEN=$(cat $CI_PROJECT_DIR/root.key)
       # Insert IPSec PSK
