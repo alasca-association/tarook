@@ -11,17 +11,6 @@ Upgrade implications / disruptions
 General procedure
 -----------------
 
-.. note::
-
-   With Kubernetes v1.29, the user specified in the ``admin.conf`` kubeconfig
-   is now bound to the ``kubeadm:cluster-admins`` RBAC group.
-   You should therefore re-generate your ``admin.conf`` kubeconfig
-   after upgrading to Kubernetes v1.29 by e.g. using our login script
-
-   .. code::
-
-      $ ./managed-k8s/actions/k8s-login.sh
-
 1. Ensure that the cluster is healthy. All pods managed by us should be
    Running or Completed. Pods managed by the customer should also be in
    such states; but if they are not, there’s nothing we can do about it.
@@ -32,7 +21,13 @@ General procedure
 
       $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.x.y
 
-3. Once the upgrade executed successfully, update your config
+3. Re-generate an administrative kubeconfig using our login script
+
+   .. code::
+
+      $ ./managed-k8s/actions/k8s-login.sh
+
+4. Once the upgrade executed successfully, update your config
    to point to the new K8s version:
 
    .. code:: nix

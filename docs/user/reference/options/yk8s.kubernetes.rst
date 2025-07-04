@@ -203,7 +203,7 @@ Kubernetes version
 
 **Type:**::
 
-  string matching the pattern ^1.(29|30|31|32).[0-9]+$
+  string matching the pattern ^1.(30|31|32).[0-9]+$
 
 
 **Default:**::
