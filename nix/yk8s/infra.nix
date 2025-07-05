@@ -11,7 +11,7 @@
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath;
-  inherit (yk8s-lib.types) ipv4Cidr;
+  inherit (yk8s-lib.types) ipv4Cidr ipv4Addr;
 in {
   options.yk8s.infra = mkTopSection {
     _docs.preface = ''
@@ -54,6 +54,28 @@ in {
       default = "fd00::/120";
     };
 
+    networking_fixed_ip = mkOption {
+      type = types.nullOr ipv4Addr;
+      default = null;
+      apply = v:
+        if v == null && cfg.ipv4_enabled && config.yk8s.openstack.enabled == false
+        then throw "config.yk8s.infra.networking_fixed_ip must be set if config.yk8s.infra.ipv4_enabled=true and config.yk8s.openstack.enabled=false"
+        else if v != null && config.yk8s.openstack.enabled == true
+        then throw "config.yk8s.infra.networking_fixed_ip must not be set if config.yk8s.openstack.enabled=true"
+        else v;
+    };
+
+    networking_fixed_ip_v6 = mkOption {
+      type = with types; nullOr nonEmptyStr;
+      default = null;
+      apply = v:
+        if v == null && cfg.ipv6_enabled && config.yk8s.openstack.enabled == false
+        then throw "config.yk8s.infra.networking_fixed_ip_v6 must be set if config.yk8s.infra.ipv6_enabled=true and config.yk8s.openstack.enabled=false"
+        else if v != null && config.yk8s.openstack.enabled == true
+        then throw "config.yk8s.infra.networking_fixed_ip_v6 must not be set if config.yk8s.openstack.enabled=true"
+        else v;
+    };
+
     hosts_file = mkOption {
       description = ''
         A custom hosts file in case openstack is disabled
@@ -74,7 +96,9 @@ in {
       (mkGroupVarsFile {
         inherit cfg;
         inventory_path = "all/infra.yaml";
-        transformations = [(lib.attrsets.filterAttrs (n: _: n != "hosts_file"))];
+        transformations =
+          [(lib.attrsets.filterAttrs (n: _: n != "hosts_file"))]
+          ++ (lib.optional config.yk8s.openstack.enabled (lib.attrsets.filterAttrs (n: _: ! (builtins.elem n ["networking_fixed_ip" "networking_fixed_ip_v6"]))));
       })
     ]
     ++ lib.optional (cfg.hosts_file != null)

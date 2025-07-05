@@ -300,7 +300,7 @@ in {
         acc: opt: acc ++ lib.optional ((builtins.getAttr opt cfg) != null) "${opt} is deprecated. Use endpoints instead."
       ) [] ["port" "ip_cidr" "ip_gw" "ipv6_cidr" "ipv6_gw"]
       ++ lib.optional
-      (cfg.enabled -> (length cfg.peers) == 0)
+      (cfg.enabled && (length cfg.peers) == 0)
       "Wireguard is enabled but no peers are configured.";
     assertions = let
       inherit (builtins) length;

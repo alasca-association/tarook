@@ -99,6 +99,48 @@ If set to true, ipv6 will be used
 https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 
 
+.. _configuration-options.yk8s.infra.networking_fixed_ip:
+
+``yk8s.infra.networking_fixed_ip``
+##################################
+
+
+
+**Type:**::
+
+  null or string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])$
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
+
+
+.. _configuration-options.yk8s.infra.networking_fixed_ip_v6:
+
+``yk8s.infra.networking_fixed_ip_v6``
+#####################################
+
+
+
+**Type:**::
+
+  null or non-empty string
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
+
+
 .. _configuration-options.yk8s.infra.subnet_cidr:
 
 ``yk8s.infra.subnet_cidr``
