@@ -58,7 +58,10 @@ to continue using the "local" backend method.
 ``yk8s.terraform.enabled``
 ##########################
 
-
+Whether to enable Terraform usage.
+If :ref:`configuration-options.yk8s.openstack.enabled` is true,
+Terraform is automatically used and must not be explicitly enabled.
+.
 
 **Type:**::
 
@@ -66,6 +69,11 @@ to continue using the "local" backend method.
 
 
 **Default:**::
+
+  false
+
+
+**Example:**::
 
   true
 

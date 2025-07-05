@@ -117,10 +117,11 @@ in {
         export TF_HTTP_USERNAME="<gitlab-username>"
         export TF_HTTP_PASSWORD="<gitlab-access-token>"
     '';
-    enabled = mkOption {
-      type = types.bool;
-      default = true;
-    };
+    enabled = mkEnableOption ''
+      Terraform usage.
+      If :ref:`configuration-options.yk8s.openstack.enabled` is true,
+      Terraform is automatically used and must not be explicitly enabled.
+    '';
 
     timeout_time = mkOption {
       type = types.nonEmptyStr;

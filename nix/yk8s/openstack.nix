@@ -325,71 +325,76 @@ in {
       default = true;
     };
   };
-  config.yk8s = lib.mkIf cfg.enabled {
-    terraform.enabled = true;
+  config.yk8s = lib.mkMerge [
+    (lib.mkIf cfg.enabled {
+      terraform.enabled = true;
 
-    assertions = let
-      inherit (builtins) all length filter attrValues;
-    in [
-      {
-        assertion =
-          all (node: node.role != "worker" -> node.anti_affinity_group == null)
-          (attrValues cfg.nodes);
-        message = "config.yk8s.openstack.nodes.[].anti_affinity_group: must not be set for master nodes";
-      }
-      {
-        assertion = (length (filter (node: node.role == "master") (attrValues cfg.nodes))) > 0;
-        message = "config.yk8s.openstack.nodes: at least one node with role=master must be given.";
-      }
-      {
-        assertion = config.yk8s.infra.ipv4_enabled;
-        message = "config.yk8s.openstack: YAOOK/k8s Terraform does not yet support IPv6-only, see #685";
-      }
-      (let
-        current_config_file =
-          if config.yk8s.state_directory != null
-          then "${config.yk8s.state_directory}/${tfvars_file_path}"
-          else null;
-        current_config = fromJSON (readFile current_config_file);
-        cluster_exists =
-          if current_config_file == null
-          then false
-          else pathExists current_config_file;
-        current_cluster_name =
-          current_config.cluster_name
+      assertions = let
+        inherit (builtins) all length filter attrValues;
+      in [
+        {
+          assertion =
+            all (node: node.role != "worker" -> node.anti_affinity_group == null)
+            (attrValues cfg.nodes);
+          message = "config.yk8s.openstack.nodes.[].anti_affinity_group: must not be set for master nodes";
+        }
+        {
+          assertion = (length (filter (node: node.role == "master") (attrValues cfg.nodes))) > 0;
+          message = "config.yk8s.openstack.nodes: at least one node with role=master must be given.";
+        }
+        {
+          assertion = config.yk8s.infra.ipv4_enabled;
+          message = "config.yk8s.openstack: YAOOK/k8s Terraform does not yet support IPv6-only, see #685";
+        }
+        (let
+          current_config_file =
+            if config.yk8s.state_directory != null
+            then "${config.yk8s.state_directory}/${tfvars_file_path}"
+            else null;
+          current_config = fromJSON (readFile current_config_file);
+          cluster_exists =
+            if current_config_file == null
+            then false
+            else pathExists current_config_file;
+          current_cluster_name =
+            current_config.cluster_name
           or
           # hard-coding this value here as it was the default at the time of writing this module. This ensures that
           # old clusters that have been set up with an empty value (and hence have been using the old default) will
           # be compared to the old default value
           "managed-k8s";
-      in {
-        assertion = cluster_exists -> (config.yk8s.infra.cluster_name == current_cluster_name);
-        message = ''
-          config.yk8s.infra.cluster_name:
-          Will not update terraform config because there is a mismatch between the deployed and future cluster_name. This would cause death and destruction.
-          Set `config.yk8s.infra.cluster_name` back to ${current_cluster_name}. Your suggested change ${config.yk8s.infra.cluster_name} is unacceptable.
-        '';
-      })
-      {
-        # although IPv4 technically works with lower MTUs, 576 Bytes is the recommended minimum size of datagrams
-        # https://datatracker.ietf.org/doc/html/rfc791
-        assertion = config.yk8s.infra.ipv4_enabled -> cfg.network_mtu >= 576;
-        message = "config.yk8s.openstack.network_mtu: must be at least 576 Bytes to support IPv4.";
-      }
-      {
-        # 1280 Bytes is the technical minimum MTU for IPv6 to work
-        # https://datatracker.ietf.org/doc/html/rfc8200#section-5
-        assertion = config.yk8s.infra.ipv6_enabled -> cfg.network_mtu >= 1280;
-        message = "config.yk8s.openstack.network_mtu: must be at least 1280 Bytes to support IPv6.";
-      }
-    ];
-    _inventory_packages = [
-      (mkGroupVarsFile {
-        inherit cfg;
-        inventory_path = "all/openstack.yaml";
-        ansible_prefix = "openstack_";
-        transformations = [(c: builtins.removeAttrs c nonAnsibleOptions)];
-      })
-    ];
-  };
+        in {
+          assertion = cluster_exists -> (config.yk8s.infra.cluster_name == current_cluster_name);
+          message = ''
+            config.yk8s.infra.cluster_name:
+            Will not update terraform config because there is a mismatch between the deployed and future cluster_name. This would cause death and destruction.
+            Set `config.yk8s.infra.cluster_name` back to ${current_cluster_name}. Your suggested change ${config.yk8s.infra.cluster_name} is unacceptable.
+          '';
+        })
+        {
+          # although IPv4 technically works with lower MTUs, 576 Bytes is the recommended minimum size of datagrams
+          # https://datatracker.ietf.org/doc/html/rfc791
+          assertion = config.yk8s.infra.ipv4_enabled -> cfg.network_mtu >= 576;
+          message = "config.yk8s.openstack.network_mtu: must be at least 576 Bytes to support IPv4.";
+        }
+        {
+          # 1280 Bytes is the technical minimum MTU for IPv6 to work
+          # https://datatracker.ietf.org/doc/html/rfc8200#section-5
+          assertion = config.yk8s.infra.ipv6_enabled -> cfg.network_mtu >= 1280;
+          message = "config.yk8s.openstack.network_mtu: must be at least 1280 Bytes to support IPv6.";
+        }
+      ];
+    })
+    {
+      _inventory_packages = [
+        (mkGroupVarsFile {
+          inherit cfg;
+          inventory_path = "all/openstack.yaml";
+          ansible_prefix = "openstack_";
+          only_if_enabled = true;
+          transformations = [(c: builtins.removeAttrs c nonAnsibleOptions)];
+        })
+      ];
+    }
+  ];
 }
