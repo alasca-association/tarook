@@ -101,4 +101,6 @@ vrrp_instance VIP_1_V6 {
 }
 {% endif %}
 
+{% if ch_k8s_lbaas_enabled %}
 include /var/lib/ch-k8s-lbaas-agent/keepalived/*.conf
+{% endif %}
