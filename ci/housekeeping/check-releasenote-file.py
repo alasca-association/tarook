@@ -78,10 +78,11 @@ if __name__ == "__main__":
                         match the actual MR-ID, but we asume you know \
                         what you are doing.")
                 sys.exit(13)
-            fname = os.path.basename(file).split('.')
-            dirname = os.path.dirname(file)
-            fname[0] = MR_IID
-            new_base = '.'.join(fname)
-            newpath = os.path.join(dirname, new_base)
-            os.rename(file, newpath)
-            print(fname, newpath)
+            if not number.isdigit():
+                fname = os.path.basename(file).split('.')
+                dirname = os.path.dirname(file)
+                fname[0] = MR_IID
+                new_base = '.'.join(fname)
+                newpath = os.path.join(dirname, new_base)
+                os.rename(file, newpath)
+                print(fname, newpath)
