@@ -6,6 +6,8 @@
   ...
 }: let
   cfg = config.yk8s;
+  os_region_name = builtins.getEnv "OS_REGION_NAME";
+  selectByRegion = builtins.getAttr os_region_name;
 in {
   # Some values need to be changed during CI runs, so we use an override file
   imports = [./overrides.nix];
@@ -18,24 +20,49 @@ in {
       ipv6_enabled = false;
       subnet_v6_cidr = "fd00::/120";
     };
-    openstack = {
+    openstack = let
+      ubuntu24 = selectByRegion {
+        f1d = "Ubuntu 24.04";
+        f1a = "Ubuntu 24.04 LTS x64";
+      };
+      ubuntu22 = selectByRegion {
+        f1d = "Ubuntu 22.04";
+        f1a = "Ubuntu 22.04 LTS x64";
+      };
+      debian = selectByRegion {
+        f1d = "Debian 12";
+        f1a = "Debian 12 (bookworm)";
+      };
+    in {
       azs = [
         "AZ1"
         "AZ2"
         "AZ3"
       ];
-      public_network = "shared-public-IPv4";
+      public_network = selectByRegion {
+        f1d = "public";
+        f1a = "shared-public-IPv4";
+      };
       master_defaults = {
-        flavor = "M";
-        image = "Ubuntu 24.04 LTS x64";
+        flavor = selectByRegion {
+          f1d = "SCS-2T-4-25s";
+          f1a = "M";
+        };
+        image = ubuntu24;
       };
       worker_defaults = {
-        flavor = "M";
-        image = "Ubuntu 24.04 LTS x64";
+        flavor = selectByRegion {
+          f1d = "SCS-2T-4-25s";
+          f1a = "M";
+        };
+        image = ubuntu24;
       };
       gateway_defaults = {
-        flavor = "XS";
-        image = "Debian 12 (bookworm)";
+        flavor = selectByRegion {
+          f1d = "SCS-1T-1-15s";
+          f1a = "XS";
+        };
+        image = debian;
       };
       spread_gateways_across_azs = false;
       nodes = {
@@ -44,7 +71,7 @@ in {
         };
         master-1 = {
           role = "master";
-          image = "Ubuntu 22.04 LTS x64";
+          image = ubuntu22;
           az = "AZ1";
         };
         master-2 = {
@@ -52,27 +79,42 @@ in {
         };
         worker-storage-0 = {
           role = "worker";
-          flavor = "XL";
-          image = "Ubuntu 22.04 LTS x64";
+          flavor = selectByRegion {
+            f1d = "SCS-8T-16-100s";
+            f1a = "XL";
+          };
+          image = ubuntu22;
         };
         worker-cpu-0 = {
           role = "worker";
-          flavor = "L";
-          image = "Ubuntu 22.04 LTS x64";
+          flavor = selectByRegion {
+            f1d = "SCS-4T-8-50s";
+            f1a = "L";
+          };
+          image = ubuntu22;
         };
         worker-storage-1 = {
           role = "worker";
-          flavor = "L";
+          flavor = selectByRegion {
+            f1d = "SCS-4T-8-50s";
+            f1a = "L";
+          };
           az = "AZ2";
         };
         worker-cpu-1 = {
           role = "worker";
-          flavor = "L";
+          flavor = selectByRegion {
+            f1d = "SCS-4T-8-50s";
+            f1a = "L";
+          };
           az = "AZ3";
         };
         worker-storage-2 = {
           role = "worker";
-          flavor = "XL";
+          flavor = selectByRegion {
+            f1d = "SCS-8T-16-100s";
+            f1a = "XL";
+          };
         };
         worker-gpu-0 = {
           role = "worker";
@@ -80,8 +122,11 @@ in {
         };
         worker-cpu-2 = {
           role = "worker";
-          flavor = "M";
         };
+      };
+      cinder_volume_type = selectByRegion {
+        f1d = "f1c-hdd";
+        f1a = "three_times_replicated-sitewide";
       };
     };
     load-balancing = {
@@ -210,6 +255,8 @@ in {
         grafana_persistent_storage_class = "csi-sc-cinderplugin";
         prometheus_persistent_storage_class = "csi-sc-cinderplugin";
         thanos_objectstorage_container_name = "ci-monitoring-thanos-data";
+        thanos_objectstorage_config_file = "thanos.yaml";
+        manage_thanos_bucket = false;
         scheduling_key = "${cfg.node-scheduling.scheduling_key_prefix}/monitoring";
         grafana_memory_limit = "768Mi";
         grafana_memory_request = "768Mi";
@@ -303,7 +350,6 @@ in {
       remote_private_addrs = "172.20.150.154";
     };
     miscellaneous = {
-      openstack_cinder_volume_type = "three_times_replicated-sitewide";
       custom_chrony_configuration = true;
       custom_ntp_servers = [
         "0.de.pool.ntp.org"

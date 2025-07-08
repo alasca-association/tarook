@@ -22,4 +22,4 @@ Eg. inside flake.nix, additional dependencies are pulled that set certain config
 Nix, TOML, YAML etc.
 
 This means that, no other part of the LCM must make any assumptions about how the configuration looks. In fact, the only sources of truth
-should be the directories ./state and ./inventory. Thus, every script that needs to access any configuration must first run the update_inventory.sh action.
+should be the directories ./state and ./inventory. Thus, every script that needs to access any configuration must first run the :ref:`update-inventory.sh <actions-references.update-inventorysh>` action.

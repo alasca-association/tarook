@@ -16,7 +16,12 @@ if [[ -e "inventory/yaook-k8s/hosts" ]] && [[ ! -L "inventory/yaook-k8s/hosts" ]
     exit 1
 fi
 if [[ -e "state" ]]; then git add state; fi
-out=$(nix build --override-input yk8s "$code_repository" --print-out-paths --no-link "$@" .#yk8s-outputs)
+if [ -z "${TAROOK_NIX_FLAGS:-}" ]; then
+    out=$(nix build --override-input yk8s "$code_repository" --print-out-paths --no-link "$@" .#yk8s-outputs)
+else
+    out=$(nix build --override-input yk8s "$code_repository" --print-out-paths --no-link "${TAROOK_NIX_FLAGS}" "$@" .#yk8s-outputs)
+fi
+
 rsync -rL --chmod 664 "$out/state" .
 rm -rf inventory
 mkdir -p inventory/yaook-k8s/

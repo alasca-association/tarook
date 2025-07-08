@@ -66,7 +66,7 @@ Detailed explanation:
    :doc:`layer-specific </user/explanation/abstraction-layers>` Ansible variables.
    It is completely ephemeral and can be re-generated from the config and the state.
    It is managed by the
-   :ref:`update_inventory.py <actions-references.update_inventorypy>` script.
+   :ref:`update-inventory.sh <actions-references.update-inventorysh>` script.
 
 -  ``etc/`` holds credentials and cluster-specific files
    generated during creation of the cluster.
@@ -95,7 +95,7 @@ Detailed explanation:
    :doc:`Wireguard </user/explanation/vpn/wireguard>` IP address management.
    This file is only of interest if you want to protect your cluster with gateway nodes.
    This file is managed by the
-   :ref:`update_inventory.py <actions-references.update_inventorypy>` script.
+   :ref:`update-inventory.sh <actions-references.update-inventorysh>` script.
    This script will automatically assign IP addresses to your
    :ref:`configured peers <configuration-options.yk8s.wireguard>`.
 
