@@ -71,31 +71,43 @@
     )) {};
 
   /*
-  Return an attributeset where all nested attributes are flattened. The name of the path will be separated by "-"
-  It is possible to pass attribute names that should not be flattened. Example:
+  Return an attributeset where all nested attributes are flattened. The name of the path will be separated by "_"
+  It is possible to pass attribute names (in dot notation) that should not be flattened. Example:
 
   Example:
-  flatten {["d"]} {a.b.c = 1; a.d = 2; }
-  -> {a_b_c = 1; a.d = 2;}
+  flatten {except = ["a.d"];} {a.b.c = 1; a.d.e = 2; }
+  -> {a_b_c = 1; a_d = {e = 2;};}
 
   */
-  flatten = {except}: let
-    inherit (builtins) isAttrs elem;
+  flatten = {except ? []}: let
+    inherit (builtins) isAttrs elem head tail foldl' filter;
     inherit (lib.attrsets) foldlAttrs mapAttrs';
+    except' = map (lib.splitString ".") except;
+    flatten' = except': let
+      exceptCurrentLevel = map head (filter (e: (builtins.length e) == 1) except');
+      exceptNextLevel = outerName:
+        foldl' (acc: e:
+          acc
+          ++ (
+            lib.optional ((head e) == outerName)
+            (tail e)
+          )) [];
+    in
+      foldlAttrs (
+        acc: outerName: outerValue:
+          acc
+          // (
+            if isAttrs outerValue && ! elem outerName exceptCurrentLevel
+            then
+              mapAttrs' (name: value: {
+                name = "${outerName}_${name}";
+                inherit value;
+              }) (flatten' (exceptNextLevel outerName except') outerValue)
+            else {"${outerName}" = outerValue;}
+          )
+      ) {};
   in
-    foldlAttrs (
-      acc: outerName: outerValue:
-        acc
-        // (
-          if isAttrs outerValue && ! elem outerName except
-          then
-            mapAttrs' (name: value: {
-              name = "${outerName}_${name}";
-              inherit value;
-            }) (flatten {inherit except;} outerValue)
-          else {"${outerName}" = outerValue;}
-        )
-    ) {};
+    flatten' except';
 
   /*
   Return the attributeset unchanged if its attribute `enabled` is `true`, else return an empty attributeset.

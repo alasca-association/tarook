@@ -71,6 +71,56 @@ in {
         default = null;
         example = "1Gi";
       };
+      audit_logs.enabled = mkEnableOption "audit logs for the apiserver.";
+      audit_logs.max_size = mkOption {
+        description = ''
+          Maximum size of apiserver audit log files in megabytes before it gets rotated
+        '';
+        type = types.int;
+        default = 50;
+      };
+      audit_logs.custom_policy = mkOption {
+        description = ''
+          Provide a custom audit policy for the kube-apiserver. Overrides the default audit policy.
+
+          You may use ``audit_logs_policy = yk8s-lib.importYAML ./path/to/policy.yaml;`` to import
+          an existing policy manifest. Note that the YAML file has to be added to the git repository
+          to be evaluated by Nix.
+
+          Alternatively, if you prefer to specify the policy in Nix directly, you may use
+          https://github.com/cloudandheat/json2nix to convert existing policies to Nix.
+        '';
+
+        example = {
+          omitStages = [
+            "RequestReceived"
+          ];
+          rules = [
+            {
+              level = "None";
+              nonResourceURLs = [
+                "/healthz*"
+                "/readyz"
+                "/"
+                "/livez"
+                "/version"
+                "/swagger*"
+              ];
+            }
+          ];
+        };
+        default = null;
+        type = with lib.types; nullOr attrs;
+        apply = v:
+          if v == null
+          then null
+          else
+            v
+            // {
+              apiVersion = v.apiVersion or "audit.k8s.io/v1";
+              kind = v.kind or "Policy";
+            };
+      };
     };
     controller_manager = {
       large_cluster_size_threshold = mkOption {
@@ -95,6 +145,7 @@ in {
       inherit cfg;
       ansible_prefix = "k8s_";
       inventory_path = "all/kubernetes.yaml";
+      unflat = ["apiserver.audit_logs.custom_policy"];
     })
   ];
 }
