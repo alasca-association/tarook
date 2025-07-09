@@ -86,7 +86,7 @@ schemes. They differ in the set of environment variables you have to
 provide.
 
 -  **Both** schemes need: ``OS_AUTH_URL``, ``OS_REGION_NAME``,
-   ``OS_INTERFACE`` and ``OS_IDENTITY_VERSION``.
+   ``OS_INTERFACE`` and ``OS_IDENTITY_API_VERSION``.
 
 -  **User name/password based** authentication requires additionally:
    ``OS_PASSWORD``, ``OS_PROJECT_DOMAIN_ID``, ``OS_PROJECT_NAME``,
