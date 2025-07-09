@@ -13,7 +13,7 @@ def create_os_connection():
     project_domain = os.environ['OS_PROJECT_DOMAIN_ID']
     user_domain = os.environ['OS_USER_DOMAIN_NAME']
     auth_url = os.environ['OS_AUTH_URL']
-    region = 'f1a'
+    region = os.environ['OS_REGION_NAME']
 
     return openstack.connect(
         auth_url=auth_url,
@@ -78,10 +78,15 @@ def main():
             )
 
         print("---\nDelete Networks\n---")
+        os_region = os.environ['OS_REGION_NAME']
         for network in conn.list_networks():
-            # do not try to delete public ipv4 network
-            if network['id'] == "585ec5ec-5993-4042-93b9-264b0d82ac8e":
-                continue
+            # do not try to delete public networks
+            if os_region == "f1a":
+                if network['id'] == "585ec5ec-5993-4042-93b9-264b0d82ac8e":
+                    continue
+            if os_region == "f1d":
+                if network['id'] == "086e6f62-8da8-47c3-afef-627ef5057ce4":
+                    continue
             # getattr(network, "subnets", default=getattr(network, "subnet_ids"))
             # throws an exception, the getattr method is overwritten by the class
             # and therefore providing default is not working as expected.
