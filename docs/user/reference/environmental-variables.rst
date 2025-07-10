@@ -217,6 +217,8 @@ Environment Variable        Default                 Description
 
                                                     You **MUST** adjust this variable.
 
+                                                    Example: ``export wg_private_key_command='PASSWORD_STORE_DIR'='"'$PASSWORD_STORE_DIR'"' pass my-wg-key'``.
+
 ``wg_private_key_file``     ``"$(pwd)/../privkey"`` Path to your WireGuard private key
                                                     file. This is not copied to any
                                                     remote machine, but needed to
