@@ -1,0 +1,1 @@
+A new environment group ``yk8s-env.update-inventory`` has been added, so :ref:`update-inventory.sh<actions-references.update-inventorysh>` can be run without downloading unnecessary dependencies.
