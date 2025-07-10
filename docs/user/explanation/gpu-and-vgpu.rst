@@ -20,7 +20,7 @@ Internal usage means you want to run e.g. AI workload inside of your
 Kubernetes cluster.
 
 If you want to make use of GPUs inside of Kubernetes, set
-:ref:`the following <configuration-options.yk8s.kubernetes.kubelet>`:
+:ref:`the following <configuration-options.yk8s.kubernetes.is_gpu_cluster>`:
 
 .. code:: nix
 
