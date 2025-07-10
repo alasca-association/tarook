@@ -1,0 +1,1 @@
+Corrected the docs for :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup`, which previously stated to use ``endpoint_cacrt``, but now correctly states to use ``certRef``.

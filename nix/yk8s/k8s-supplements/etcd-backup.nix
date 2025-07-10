@@ -43,7 +43,7 @@ in {
       ``access_key``     Identifier for your S3 endpoint
       ``secret_key``     Credential for your S3 endpoint
       ``endpoint_url``   URL of your S3 endpoint
-      ``endpoint_cacrt`` Certificate bundle of the endpoint.
+      ``certRef``        Certificate bundle of the endpoint.
       ================== =======================================
 
       These must be put into a YAML file located at ``config/etcd_backup_s3_config.yaml``.
