@@ -119,6 +119,24 @@ resource "openstack_networking_secgroup_rule_v2" "barndoor-ipv4-icmp-egress" {
   security_group_id = openstack_networking_secgroup_v2.barndoor.id
 }
 
+resource "openstack_networking_secgroup_rule_v2" "barndoor-ipv4-vrrp-ingress" {
+  count = var.ipv4_enabled ? 1 : 0
+
+  direction = "ingress"
+  ethertype = "IPv4"
+  protocol = "vrrp"
+  security_group_id = openstack_networking_secgroup_v2.barndoor.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "barndoor-ipv4-vrrp-egress" {
+  count = var.ipv4_enabled ? 1 : 0
+
+  direction = "egress"
+  ethertype = "IPv4"
+  protocol = "vrrp"
+  security_group_id = openstack_networking_secgroup_v2.barndoor.id
+}
+
 resource "openstack_networking_secgroup_rule_v2" "barndoor-ipv6-tcp-ingress" {
   count = var.ipv6_enabled ? 1 : 0
 
@@ -232,5 +250,23 @@ resource "openstack_networking_secgroup_rule_v2" "barndoor-ipv6-opts-egress" {
   direction = "egress"
   ethertype = "IPv6"
   protocol = "ipv6-opts"
+  security_group_id = openstack_networking_secgroup_v2.barndoor.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "barndoor-ipv6-vrrp-ingress" {
+  count = var.ipv6_enabled ? 1 : 0
+
+  direction = "ingress"
+  ethertype = "IPv6"
+  protocol = "vrrp"
+  security_group_id = openstack_networking_secgroup_v2.barndoor.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "barndoor-ipv6-vrrp-egress" {
+  count = var.ipv6_enabled ? 1 : 0
+
+  direction = "egress"
+  ethertype = "IPv6"
+  protocol = "vrrp"
   security_group_id = openstack_networking_secgroup_v2.barndoor.id
 }
