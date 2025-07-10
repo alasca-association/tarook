@@ -6,13 +6,20 @@
   yk8s-env = {
     python = pkgs.python3;
     dependencies.groups = with pkgs; {
+      update-inventory = {
+        description = "Dependencies needed by update-inventory.sh";
+        packages = [
+          git
+          rsync
+        ];
+      };
       minimal = {
         description = "Will be used by direnv when MINIMAL_ACCESS_VENV=true";
+        includes = ["update-inventory"];
         packages = [
           iproute2 # for wg-up
           jq
           kubectl
-          rsync
           inputs'.nixpkgs-vault1148.legacyPackages.vault
           wireguard-tools
           yq
