@@ -17,3 +17,5 @@ Please substitute it with a let expression (see example below).
    +     node-a = ["${scheduling_key_prefix}/label=value"];
    +   };
    + };
+
+_

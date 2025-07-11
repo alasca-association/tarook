@@ -1,3 +1,3 @@
-A note has been added which makes clear that a ready-to-use container runtime
+A note has been added which clearifies that a ready-to-use container runtime
 is needed if one wants to make use of the
 :ref:`development Vault setup <initialization.initialize-vault-for-a-development-setup>`.

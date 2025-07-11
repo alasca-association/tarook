@@ -1,1 +1,1 @@
-The variable ``on_openstack`` is obsolete. If you're providing your own ``hosts`` file for a bare-metal cluster, you may remove the variable from it.
+The variable ``on_openstack`` is obsolete. If you're providing your own hosts file for a bare-metal cluster, you may remove the variable from it.

@@ -1,2 +1,2 @@
-The root of our documentation now redirects to /devel using HTTP redirect
+The root of our documentation now redirects to ``./devel`` using HTTP redirect
 instead of HTML meta refresh.
