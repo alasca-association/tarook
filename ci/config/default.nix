@@ -232,6 +232,9 @@ in {
           limits.memory = "1Gi";
           requests.cpu = "100m";
         };
+        mgr_resources = {
+          limits.memory = "768Mi";
+        };
         operator_resources.requests.cpu = "100m";
         scheduling_key = "${scheduling_key_prefix}/storage";
         mgr_scheduling_key = "${scheduling_key_prefix}/rook-mgr";
