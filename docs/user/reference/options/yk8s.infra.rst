@@ -77,8 +77,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 ``yk8s.infra.ipv6_enabled``
 ###########################
 
-If set to true, ipv6 will be used
-
+Whether to enable IPv6.
 
 **Type:**::
 
@@ -88,6 +87,11 @@ If set to true, ipv6 will be used
 **Default:**::
 
   false
+
+
+**Example:**::
+
+  true
 
 
 **Declared by**

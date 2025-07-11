@@ -1705,15 +1705,14 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 ``yk8s.k8s-service-layer.rook.skip_upgrade_checks``
 ###################################################
 
+Whether to enable Rook's upgrade checks on Ceph daemons during an upgrade.
+
 If OSDs are not replicated, the rook-ceph-operator will reject
 to perform upgrades, because OSDs will become unavailable.
 Set to True so rook will update even if OSDs would become unavailable.
-
-If set to true Rook won’t perform any upgrade checks on Ceph daemons
-during an upgrade. Use this at YOUR OWN RISK, only if you know what
-you’re doing.
+Use this at YOUR OWN RISK, only if you know what you’re doing.
 https://rook.github.io/docs/rook/v1.3/ceph-cluster-crd.html#cluster-settings
-
+.
 
 **Type:**::
 
@@ -1723,6 +1722,11 @@ https://rook.github.io/docs/rook/v1.3/ceph-cluster-crd.html#cluster-settings
 **Default:**::
 
   false
+
+
+**Example:**::
+
+  true
 
 
 **Declared by**

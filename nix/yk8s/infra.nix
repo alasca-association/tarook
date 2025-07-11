@@ -39,13 +39,7 @@ in {
       default = true;
     };
 
-    ipv6_enabled = mkOption {
-      description = ''
-        If set to true, ipv6 will be used
-      '';
-      type = types.bool;
-      default = false;
-    };
+    ipv6_enabled = mkEnableOption "IPv6";
 
     subnet_cidr = mkOption {
       type = ipv4Cidr;

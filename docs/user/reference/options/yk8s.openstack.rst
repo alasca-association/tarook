@@ -746,12 +746,12 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.thanos_delete_container``
 ##########################################
 
-Enable deletion of the Thanos object storage container
+Whether to enable deletion of the Thanos object storage container
 in case
 :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.use_thanos`
 AND :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.manage_thanos_bucket`
 are switched off
-
+.
 
 **Type:**::
 
@@ -761,6 +761,11 @@ are switched off
 **Default:**::
 
   false
+
+
+**Example:**::
+
+  true
 
 
 **Declared by**

@@ -339,8 +339,8 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 ``yk8s.k8s-service-layer.prometheus.grafana_dashboard_enable_multicluster_support``
 ###################################################################################
 
-Enable referencing multiple K8s clusters by a single Grafana datasource.
-
+Whether to enable referencing multiple K8s clusters by a single Grafana datasource.
+.
 
 **Type:**::
 
@@ -350,6 +350,11 @@ Enable referencing multiple K8s clusters by a single Grafana datasource.
 **Default:**::
 
   false
+
+
+**Example:**::
+
+  true
 
 
 **Declared by**

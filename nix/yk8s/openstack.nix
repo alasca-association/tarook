@@ -175,17 +175,13 @@ in {
       type = with types; listOf openstackAvailabilityZoneName;
     };
 
-    thanos_delete_container = mkOption {
-      description = ''
-        Enable deletion of the Thanos object storage container
-        in case
-        :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.use_thanos`
-        AND :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.manage_thanos_bucket`
-        are switched off
-      '';
-      type = types.bool;
-      default = false;
-    };
+    thanos_delete_container = mkEnableOption ''
+      deletion of the Thanos object storage container
+      in case
+      :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.use_thanos`
+      AND :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.manage_thanos_bucket`
+      are switched off
+    '';
 
     # Setting this to false is useful in CI environments if the Cloud Is Full.
     spread_gateways_across_azs = mkOption {
