@@ -20,21 +20,25 @@ vrrp_script chk_haproxy {
     rise 2
 }
 
-{% if ipv4_enabled and ipv6_enabled %}
-
 # Virtual Group Gateway
 # Group the VRRP instances
 vrrp_sync_group VGG {
    group {
+{% if ipv4_enabled %}
       VIP_1
+{% endif %}
+{% if ipv6_enabled %}
       VIP_1_V6
+{% endif %}
+{% if ch_k8s_lbaas_enabled %}
+      LBaaS_VIPs
+{% endif %}
    }
 }
-{% endif %}
 
 {% if ipv4_enabled %}
 vrrp_instance VIP_1 {
-    state MASTER
+    state BACKUP
     interface {{ ansible_default_ipv4.interface }}
     # All VRRP instances belonging to the same cluster must share this id
     virtual_router_id 47
@@ -69,7 +73,7 @@ vrrp_instance VIP_1 {
 
 {% if ipv6_enabled %}
 vrrp_instance VIP_1_V6 {
-    state MASTER
+    state BACKUP
     interface {{ ansible_default_ipv6.interface }}
     virtual_router_id 47
     priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
@@ -101,4 +105,6 @@ vrrp_instance VIP_1_V6 {
 }
 {% endif %}
 
+{% if ch_k8s_lbaas_enabled %}
 include /var/lib/ch-k8s-lbaas-agent/keepalived/*.conf
+{% endif %}
