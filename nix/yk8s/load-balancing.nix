@@ -9,6 +9,11 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit
+    (yk8s-lib.transform)
+    warnIfZero
+    warnIfAttrZero
+    ;
 
   explicitPorts = types.submodule {
     options = {
@@ -77,15 +82,28 @@ in {
       '';
       default = [];
       type = with types; listOf (either port explicitPorts);
+      apply = lib.imap0 (
+        idx: port: let
+          warnHasPortZero = mkMsg: p:
+            if types.port.check p
+            then warnIfZero (mkMsg null) p
+            else warnIfAttrZero mkMsg ["external" "nodeport"];
+        in
+          warnHasPortZero
+          (attr: "config.yk8s.load-balancing.lb_ports[${idx}]${
+            if builtins.typeOf attr == "string"
+            then ".${attr}"
+            else ""
+          }: should not be port zero")
+          port
+      );
     };
 
     deprecated_nodeport_lb_test_port = mkOption {
       type = with types; nullOr port;
       default = null;
       apply = v:
-        if v == 0
-        then throw "[load-balancing.deprecated_nodeport_lb_test_port] cannot be zero"
-        else v;
+        warnIfZero "config.yk8s.load-balancing.deprecated_nodeport_lb_test_port: should not be port zero" v;
     };
 
     vrrp_priorities = mkOption {
@@ -109,6 +127,8 @@ in {
       '';
       type = types.port;
       default = 48981;
+      apply = v:
+        warnIfZero "config.yk8s.load-balancing.haproxy_stats_port: should not be port zero" v;
     };
     haproxy_frontend_k8s_api_maxconn = mkOption {
       type = types.ints.positive;

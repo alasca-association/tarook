@@ -21,7 +21,12 @@
     wireguardKey
     ;
   inherit (yk8s-lib) linkToPath;
-  inherit (yk8s-lib.transform) removeObsoleteOptions filterInternal;
+  inherit
+    (yk8s-lib.transform)
+    filterInternal
+    removeObsoleteOptions
+    warnIfAttrZero
+    ;
   inherit (pkgs.stdenv) mkDerivation;
   inherit (builtins) foldl' elem fromJSON readFile toString;
   inherit (lib.trivial) pipe;
@@ -132,6 +137,14 @@ in {
           };
         };
       });
+      apply = lib.imap0 (
+        idx: port: let
+          warnHasPortZero = mkMsg: warnIfAttrZero mkMsg ["port"];
+        in
+          warnHasPortZero
+          (attr: "config.yk8s.wireguard.endpoints[${idx}].${attr}: should not be port zero")
+          port
+      );
     };
     peers = mkOption {
       description = ''

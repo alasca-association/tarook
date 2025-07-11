@@ -19,6 +19,10 @@
     ociImageTag
     posixUserName
     ;
+  inherit
+    (yk8s-lib.transform)
+    warnIfZero
+    ;
 in {
   imports =
     mkRenamedResourceOptionModules "ch-k8s-lbaas" ["controller"]
@@ -54,6 +58,8 @@ in {
       '';
       type = types.port;
       default = 15203;
+      apply = v:
+        warnIfZero "config.yk8s.ch-k8s-lbaas.agent_port: should not be port zero" v;
     };
     port_manager = mkOption {
       description = ''

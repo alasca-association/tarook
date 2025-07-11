@@ -211,4 +211,28 @@
       ];
   in
     ignoreItemsOfTypeWithMsg msgPrefix ignoredTypes;
+
+  /*
+  Output a warning when the given value is zero
+
+  Arguments:
+    - message: Warning message to output
+    - *: Integer value to check
+  */
+  warnIfZero = message: value: lib.trivial.warnIf (value == 0) message value;
+
+  /*
+  Output a warning for selected items of an attrset if their value is zero
+
+  Arguments:
+    - mkMessage: A function that takes the current attr name and produces the warning message to output
+    - *: Attrset to check
+  */
+  warnIfAttrZero = mkMessage: names:
+    lib.attrsets.mapAttrs (
+      name: value:
+        if builtins.elem name names
+        then warnIfZero (mkMessage name) value
+        else value
+    );
 }

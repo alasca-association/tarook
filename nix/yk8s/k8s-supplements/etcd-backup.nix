@@ -20,6 +20,10 @@
     s3BucketName
     vaultNamespaceName
     ;
+  inherit
+    (yk8s-lib.transform)
+    warnIfZero
+    ;
 in {
   imports = [
     (mkRemovedOptionModule "k8s-service-layer.etcd-backup" "s3_config_name" "")
@@ -184,6 +188,8 @@ in {
       '';
       type = types.port;
       default = 19100;
+      apply = v:
+        warnIfZero "config.yk8s.k8s-service-layer.etcd-backup.metrics_port: should not be port zero" v;
     };
   };
   config.yk8s._inventory_packages = [

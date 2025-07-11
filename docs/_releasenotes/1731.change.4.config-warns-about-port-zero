@@ -1,0 +1,2 @@
+All config options that accept port numbers
+emit a warning for port 0.

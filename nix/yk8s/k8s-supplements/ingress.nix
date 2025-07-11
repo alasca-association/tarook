@@ -19,6 +19,10 @@
     k8sNamespaceName
     k8sServiceType
     ;
+  inherit
+    (yk8s-lib.transform)
+    warnIfZero
+    ;
 in {
   imports = [
     (mkRenamedOptionModule "k8s-service-layer.ingress" "cpu_request" "resources.cpu.request")
@@ -100,6 +104,8 @@ in {
       '';
       type = types.port;
       default = 32080;
+      apply = v:
+        warnIfZero "config.yk8s.k8s-service-layer.ingress.nodeport_http: should not be port zero" v;
     };
     nodeport_https = mkOption {
       description = ''
@@ -107,6 +113,8 @@ in {
       '';
       type = types.port;
       default = 32443;
+      apply = v:
+        warnIfZero "config.yk8s.k8s-service-layer.ingress.nodeport_https: should not be port zero" v;
     };
     enable_ssl_passthrough = mkOption {
       description = ''

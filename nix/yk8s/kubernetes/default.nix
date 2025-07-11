@@ -10,6 +10,10 @@
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
   inherit
+    (yk8s-lib.transform)
+    warnIfZero
+    ;
+  inherit
     (yk8s-lib.types)
     k8sQuantity
     k8sVersion
@@ -67,6 +71,8 @@ in {
       frontend_port = mkOption {
         type = types.port;
         default = 8888;
+        apply = v:
+          warnIfZero "config.yk8s.kubernetes.apiserver: should not be port zero" v;
       };
       memory_limit = mkOption {
         description = ''

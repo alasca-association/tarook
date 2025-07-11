@@ -11,7 +11,10 @@
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath;
-  inherit (yk8s-lib.transform) ignoreItemsOfDisabledIPFamily;
+  inherit
+    (yk8s-lib.transform)
+    ignoreItemsOfDisabledIPFamily
+    ;
   inherit
     (yk8s-lib.types)
     httpHostPathUrl
