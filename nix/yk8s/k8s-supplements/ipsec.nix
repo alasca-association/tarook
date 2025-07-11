@@ -9,6 +9,7 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (yk8s-lib.transform) ignoreItemsOfDisabledIPFamily;
   inherit
     (yk8s-lib.types)
     ipv4Addr
@@ -60,6 +61,15 @@ in {
       '';
       type = with types; listOf (either ipv4Cidr ipv6Cidr);
       default = [];
+      apply = v:
+        ignoreItemsOfDisabledIPFamily {
+          ipv4Types = [ipv4Cidr];
+          ipv6Types = [ipv6Cidr];
+          ipv4Enabled = config.yk8s.infra.ipv4_enabled;
+          ipv6Enabled = config.yk8s.infra.ipv6_enabled;
+        }
+        "config.yk8s.ipsec.peer_networks: "
+        v;
     };
 
     local_networks = mkOption {
@@ -76,6 +86,15 @@ in {
           config.yk8s.kubernetes.network.service_subnet
         ]
       '';
+      apply = v:
+        ignoreItemsOfDisabledIPFamily {
+          ipv4Types = [ipv4Cidr];
+          ipv6Types = [ipv6Cidr];
+          ipv4Enabled = config.yk8s.infra.ipv4_enabled;
+          ipv6Enabled = config.yk8s.infra.ipv6_enabled;
+        }
+        "config.yk8s.ipsec.local_networks: "
+        v;
     };
     virtual_subnet_pool = mkOption {
       description = ''
@@ -84,6 +103,18 @@ in {
       '';
       type = with types; nullOr (listOf (either ipv4Cidr ipv6Cidr));
       default = null;
+      apply = v:
+        if v == null then v
+        else (
+          ignoreItemsOfDisabledIPFamily {
+            ipv4Types = [ipv4Cidr];
+            ipv6Types = [ipv6Cidr];
+            ipv4Enabled = config.yk8s.infra.ipv4_enabled;
+            ipv6Enabled = config.yk8s.infra.ipv6_enabled;
+          }
+          "config.yk8s.ipsec.virtual_subnet_pool: "
+          v
+        );
     };
     remote_addrs = mkOption {
       description = ''
@@ -92,6 +123,15 @@ in {
       '';
       type = with types; listOf (either ipv4Addr ipv6Addr);
       default = [];
+      apply = v:
+        ignoreItemsOfDisabledIPFamily {
+          ipv4Types = [ipv4Addr];
+          ipv6Types = [ipv6Addr];
+          ipv4Enabled = config.yk8s.infra.ipv4_enabled;
+          ipv6Enabled = config.yk8s.infra.ipv6_enabled;
+        }
+        "config.yk8s.ipsec.remote_addrs: "
+        v;
     };
     remote_private_addrs = mkOption {
       description = ''
@@ -100,6 +140,15 @@ in {
       '';
       type = with types; nullOr (listOf (either ipv4Addr ipv6Addr));
       default = null;
+      apply = v:
+        ignoreItemsOfDisabledIPFamily {
+          ipv4Types = [ipv4Addr];
+          ipv6Types = [ipv6Addr];
+          ipv4Enabled = config.yk8s.infra.ipv4_enabled;
+          ipv6Enabled = config.yk8s.infra.ipv6_enabled;
+        }
+        "config.yk8s.ipsec.remote_private_addrs: "
+        v;
     };
   };
   config.yk8s.assertions = [

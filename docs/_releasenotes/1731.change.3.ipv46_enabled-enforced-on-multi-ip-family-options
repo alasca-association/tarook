@@ -1,0 +1,3 @@
+Config options that accept a list of both IPv4 and IPv6 items
+now do ignore items of any IP family that is disabled
+so that they are not rendered into the Ansible inventory.

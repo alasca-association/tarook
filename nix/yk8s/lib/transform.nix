@@ -148,4 +148,67 @@
     matchesRegex "[0-9]+" "foobar" -> false
   */
   matchesRegex = regex: str: (builtins.match regex str) != null;
+
+  /*
+  Filter out items of certain types from a list
+
+  Returns the items that are not ignored and prints the ignored ones.
+
+  Arguments:
+  - messagePrefix: A string to prefix the message of ignored items with
+  - ignoredTypes: A list of item types that shall be ignored
+  - items: A list of items
+  */
+  ignoreItemsOfTypeWithMsg = messagePrefix: ignoredTypes: items: let
+    partitioned =
+      lib.lists.partition (
+        item: ! (lib.lists.any (type: type.check item) ignoredTypes)
+      )
+      items;
+  in
+    if (builtins.length partitioned.wrong) == 0
+    then partitioned.right
+    else
+      builtins.trace
+      "${messagePrefix}Ignoring inapplicable items ${builtins.concatStringsSep ", " partitioned.wrong}"
+      partitioned.right;
+
+  /*
+  Filter out items of the disabled IP family from a list
+
+  Returns the items that are not ignored and prints the ignored ones.
+
+  Arguments:
+  - <customize>: An attribute set that specifies the `ipv4Types` and `ipv6Types`
+                 and whether `ipv4Enabled` and `ipv6Enabled`
+  - msgPrefix: A string to prefix the message of ignored items with
+  - *: A list of items
+  */
+  ignoreItemsOfDisabledIPFamily = {
+    ipv4Types ? [],
+    ipv6Types ? [],
+    ipv4Enabled ? false,
+    ipv6Enabled ? false,
+  }: msgPrefix: let
+    ignoredTypes =
+      builtins.foldl'
+      (acc: x:
+        acc
+        ++ (
+          if x.ignoreIf
+          then x.types
+          else []
+        ))
+      [] [
+        {
+          types = ipv4Types;
+          ignoreIf = ! ipv4Enabled;
+        }
+        {
+          types = ipv6Types;
+          ignoreIf = ! ipv6Enabled;
+        }
+      ];
+  in
+    ignoreItemsOfTypeWithMsg msgPrefix ignoredTypes;
 }
