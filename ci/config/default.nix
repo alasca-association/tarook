@@ -8,6 +8,8 @@
   cfg = config.yk8s;
   os_region_name = builtins.getEnv "OS_REGION_NAME";
   selectByRegion = builtins.getAttr os_region_name;
+
+  scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com";
 in {
   # Some values need to be changed during CI runs, so we use an override file
   imports = [./overrides.nix];
@@ -183,7 +185,6 @@ in {
         enable_signing_requests = true;
       };
       storage = {
-        rook_enabled = true;
         nodeplugin_toleration = true;
       };
       local_storage = {
@@ -206,6 +207,7 @@ in {
     };
     k8s-service-layer = {
       rook = {
+        enabled = true;
         namespace = "rook-ceph";
         cluster_name = "rook-ceph";
         skip_upgrade_checks = true;
@@ -222,16 +224,17 @@ in {
         csi_plugins = true;
         use_host_networking = true;
         dashboard = true;
-        mds_memory_limit = "4Gi";
-        mds_cpu_request = "1";
-        mon_cpu_limit = "500m";
-        mon_cpu_request = "100m";
-        mon_memory_limit = "1Gi";
-        mon_memory_request = "500Mi";
-        operator_cpu_limit = "500m";
-        operator_cpu_request = "100m";
-        scheduling_key = "${cfg.node-scheduling.scheduling_key_prefix}/storage";
-        mgr_scheduling_key = "${cfg.node-scheduling.scheduling_key_prefix}/rook-mgr";
+        mds_resources = {
+          limits.memory = "4Gi";
+          requests.cpu = "1";
+        };
+        mon_resources = {
+          limits.memory = "1Gi";
+          requests.cpu = "100m";
+        };
+        operator_resources.requests.cpu = "100m";
+        scheduling_key = "${scheduling_key_prefix}/storage";
+        mgr_scheduling_key = "${scheduling_key_prefix}/rook-mgr";
         pools = [
           {
             name = "data";
@@ -257,11 +260,11 @@ in {
         thanos_objectstorage_container_name = "ci-monitoring-thanos-data";
         thanos_objectstorage_config_file = "thanos.yaml";
         manage_thanos_bucket = false;
-        scheduling_key = "${cfg.node-scheduling.scheduling_key_prefix}/monitoring";
-        grafana_memory_limit = "768Mi";
-        grafana_memory_request = "768Mi";
-        grafana_cpu_limit = "600m";
-        grafana_cpu_request = "200m";
+        scheduling_key = "${scheduling_key_prefix}/monitoring";
+        grafana_resources = {
+          limits.memory = "768Mi";
+          requests.cpu = "200m";
+        };
         thanos_store_in_memory_max_size = "1GB";
         internet_probe = true;
         internet_probe_targets = [
@@ -300,37 +303,36 @@ in {
       force_reboot_nodes = true;
     };
     node-scheduling = {
-      scheduling_key_prefix = "scheduling.mk8s.cloudandheat.com";
       labels = {
         ci-worker-storage-0 = [
-          "${cfg.node-scheduling.scheduling_key_prefix}/storage=true"
+          "${scheduling_key_prefix}/storage=true"
         ];
         ci-worker-storage-1 = [
-          "${cfg.node-scheduling.scheduling_key_prefix}/storage=true"
+          "${scheduling_key_prefix}/storage=true"
         ];
         ci-worker-storage-2 = [
-          "${cfg.node-scheduling.scheduling_key_prefix}/storage=true"
+          "${scheduling_key_prefix}/storage=true"
         ];
         ci-worker-cpu-0 = [
-          "${cfg.node-scheduling.scheduling_key_prefix}/monitoring=true"
-          "${cfg.node-scheduling.scheduling_key_prefix}/rook-mgr=true"
+          "${scheduling_key_prefix}/monitoring=true"
+          "${scheduling_key_prefix}/rook-mgr=true"
         ];
         ci-worker-cpu-1 = [
-          "${cfg.node-scheduling.scheduling_key_prefix}/monitoring=true"
-          "${cfg.node-scheduling.scheduling_key_prefix}/rook-mgr=true"
+          "${scheduling_key_prefix}/monitoring=true"
+          "${scheduling_key_prefix}/rook-mgr=true"
         ];
       };
       taints = {
         ci-worker-cpu-0 = [
         ];
         ci-worker-storage-0 = [
-          "${cfg.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
+          "${scheduling_key_prefix}/storage=true:NoSchedule"
         ];
         ci-worker-storage-1 = [
-          "${cfg.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
+          "${scheduling_key_prefix}/storage=true:NoSchedule"
         ];
         ci-worker-storage-2 = [
-          "${cfg.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
+          "${scheduling_key_prefix}/storage=true:NoSchedule"
         ];
       };
     };
