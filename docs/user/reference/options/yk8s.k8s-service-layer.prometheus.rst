@@ -983,7 +983,7 @@ Helm chart version of the NVIDIA DCGM exporter
 
 **Default:**::
 
-  "4.1.3"
+  "4.2.0"
 
 
 **Declared by**
