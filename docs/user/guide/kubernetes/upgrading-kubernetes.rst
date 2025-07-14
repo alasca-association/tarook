@@ -55,6 +55,18 @@ version.
    $ # Triggering a Kubernetes upgrade and skip health verification tasks
    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh -s 1.22.11
 
+Adding custom pre- and post-drain tasks
+-----------------------------------------
+Before draining a node, pre-drainability checks and actions can be set.
+Similarly, post-uncordon checks and actions can be defined via a hook.
+These are custom-written roles to ensure that the node is drainable, or to prepare the node for draining, and vice versa for uncordoning.
+Alternatively, it can be validated that the node is uncordoned and running again.
+
+In order to execute a custom role before draining or after uncordoning, it can be referenced in one of the following options:
+In :ref:`configuration-options.yk8s.hooks.pre_drain_roles` add the names of roles which shall be executed before draining the node as a list of Strings. The roles will be executed in that order before the node is drained.
+For post-uncordon hooks respectively, add them to :ref:`configuration-options.yk8s.hooks.post_uncordon_roles`.
+The roles must to be placed inside the ``k8s-custom/roles`` folder.
+
 Kubernetes Component Versioning
 -------------------------------
 

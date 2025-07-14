@@ -8,6 +8,7 @@ Configuration Options
 
   yk8s.ch-k8s-lbaas
   yk8s.containerd
+  yk8s.hooks
   yk8s.infra
   yk8s.ipsec
   yk8s.k8s-service-layer.cert-manager
@@ -36,6 +37,8 @@ Configuration Options
 :doc:`ch-k8s-lbaas <yk8s.ch-k8s-lbaas>`
 
 :doc:`containerd <yk8s.containerd>`
+
+:doc:`hooks <yk8s.hooks>`
 
 :doc:`infra <yk8s.infra>`
 

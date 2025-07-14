@@ -66,7 +66,7 @@ require_ansible_disruption
 set_kubeconfig
 
 pushd "$ansible_k8s_supplements_dir"
-ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles" \
+    ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles:$ansible_k8s_custom_playbook_dir/roles" \
     ansible_playbook -i "$ansible_inventory_host_file" "$playbook" \
     -e "next_k8s_version=$target_version" \
     -e "next_minor_k8s_version=$minor_version" \

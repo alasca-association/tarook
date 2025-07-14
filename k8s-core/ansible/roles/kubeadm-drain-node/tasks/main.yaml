@@ -5,6 +5,10 @@
 # delete local storage by passing '--delete-local-data' to the kubectl cmd.
 # IMPORTANT: this is something we have to inform the customer of!
 ---
+- name: Include pre-drain hooks
+  include_role:
+    name: '{{ item }}'
+  loop: '{{ hooks_pre_drain_roles }}'
 - name: Drain this node
   changed_when: true
   delegate_to: "{{ groups['orchestrator'] | first }}"

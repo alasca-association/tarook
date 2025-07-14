@@ -13,4 +13,8 @@
   register: uncordon_result
   until: uncordon_result is successful
   changed_when: "'uncordoned' in uncordon_result.stdout"
+- name: Include post-uncordon hooks
+  include_role:
+    name: '{{ item }}'
+  loop: '{{ hooks_post_uncordon_roles }}'
 ...
