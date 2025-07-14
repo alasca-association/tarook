@@ -247,7 +247,7 @@
       # Note that this is basically a dummy keypair that is not used to protect any significant data
     - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
       # Ensure that the project is clean
-    - openstack project cleanup --auth-project --auto-approve
+    - python3 clean-up-os-project.py
 
   script:
     - export VAULT_ADDR=https://yaook-vault:8200
