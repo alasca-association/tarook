@@ -250,7 +250,7 @@ in {
       '';
       type = types.nonEmptyStr;
       # renovate: datasource=helm depName=dcgm-exporter registryUrl=https://nvidia.github.io/dcgm-exporter/helm-charts
-      default = "4.1.3";
+      default = "4.2.0";
     };
 
     thanos_objectstorage_config_path = mkOption {
