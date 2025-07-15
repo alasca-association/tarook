@@ -273,7 +273,7 @@ https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-
 
 **Default:**::
 
-  "11.0.0"
+  "11.0.1"
 
 
 **Declared by**
