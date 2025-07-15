@@ -18,7 +18,7 @@ that must be taken LCM-wise after an OpenStack credential rotation.
 
          .. code:: console
 
-            $ AFLAGS="--diff -t connect-k8s-to-openstack" bash managed-k8s/actions/apply-k8s-supplements.sh
+            $ bash managed-k8s/actions/apply-k8s-supplements.sh connect-k8s-to-openstack.yaml
 
       .. tab:: ch-k8s-lbaas enabled
 
@@ -31,7 +31,8 @@ that must be taken LCM-wise after an OpenStack credential rotation.
 
          .. code:: console
 
-            $ AFLAGS="--diff -t connect-k8s-to-openstack,ch-k8s-lbaas" bash managed-k8s/actions/apply-k8s-supplements.sh
+            $ bash managed-k8s/actions/apply-k8s-supplements.sh connect-k8s-to-openstack.yaml
+            $ bash managed-k8s/actions/apply-k8s-supplements.sh install-ch-k8s-lbaas.yaml
 
 3. Verify that everything is able to come up after it has been restarted.
 4. Check which Pods besides the above mentioned have mounted the ``kube-system/cloud-config`` secret:
@@ -52,3 +53,25 @@ that must be taken LCM-wise after an OpenStack credential rotation.
           | "\(.metadata.namespace)/\(.metadata.name)\n"'
 
 6. Figure out how these Pods are controlled and (rollout) restart them.
+
+7. Update Thanos bucket configuration
+
+   .. tabs::
+
+      .. tab:: Thanos enabled
+
+         Thanos is enabled if :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.use_thanos` is set to ``true``.
+         If the custom bucket management setting :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.manage_thanos_bucket`
+         is unset or set to ``true``, apply the required changes by running the following update script:
+
+         .. code:: shell
+
+            $ bash managed-k8s/actions/apply-k8s-supplements.sh install-monitoring.yaml
+
+         This ensures that the Kubernetes secret ``thanos-bucket-config`` for Thanos is updated.
+
+      .. tab:: Thanos disabled
+
+         Thanos is disabled if :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.use_thanos` is unset or set to ``false``.
+
+         In this case, no further action is necessary.
