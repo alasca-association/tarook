@@ -162,7 +162,7 @@ in {
       '';
       type = types.nonEmptyStr;
       # renovate: datasource=helm depName=etcdbackup registryUrl=https://charts.yaook.cloud/operator/stable/
-      default = "0.20250710.0";
+      default = "0.20250717.0";
     };
     metrics_port = mkOption {
       description = ''
