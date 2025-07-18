@@ -6,13 +6,12 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.ingress;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule;
+  inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule mkHelmChartVersionOption;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
   inherit
     (yk8s-lib.types)
     helmChartReleaseName
-    helmChartVersion
     helmChartRepoUrl
     helmChartRef
     k8sLabel
@@ -66,8 +65,7 @@ in {
       type = helmChartRef;
       default = "ingress-nginx";
     };
-    chart_version = mkOption {
-      type = helmChartVersion;
+    chart_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=ingress-nginx registryUrl=https://kubernetes.github.io/ingress-nginx
       default = "4.13.0";
     };

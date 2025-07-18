@@ -1,0 +1,15 @@
+The options to configure helm chart versions have been streamlined.
+From now on, ``null`` can be supplied to unpin a helm chart and rollout the latest available version.
+
+* :ref:`configuration-options.yk8s.k8s-service-layer.cert-manager.chart_version`
+* :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.chart_version`
+* :ref:`configuration-options.yk8s.k8s-service-layer.ingress.chart_version`
+* :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.blackbox_version`
+* :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.nvidia_dcgm_exporter_helm_version`
+* :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_adapter_version`
+* :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_stack_version`
+* :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_chart_version`
+* :ref:`configuration-options.yk8s.k8s-service-layer.rook.version`
+* :ref:`configuration-options.yk8s.k8s-service-layer.vault.chart_version`
+
+.

@@ -6,12 +6,11 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.etcd-backup;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule;
+  inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkHelmChartVersionOption;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
   inherit
     (yk8s-lib.types)
-    helmChartVersion
     helmChartRepoUrl
     k8sNamespaceName
     k8sSecretName
@@ -172,11 +171,7 @@ in {
       type = types.ints.unsigned;
       default = 30;
     };
-    chart_version = mkOption {
-      description = ''
-        etcdbackup chart version to install.
-      '';
-      type = helmChartVersion;
+    chart_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=etcdbackup registryUrl=https://charts.yaook.cloud/operator/stable/
       default = "0.20250717.0";
     };
