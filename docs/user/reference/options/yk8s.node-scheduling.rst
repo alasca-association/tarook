@@ -35,22 +35,22 @@ Labels are assigned to a node during LCM rollout only!
 
   {
     managed-k8s-worker-0 = [
-      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"
+      "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"
     ];
     managed-k8s-worker-1 = [
-      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"
+      "${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"
     ];
     managed-k8s-worker-2 = [
-      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"
+      "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"
     ];
     managed-k8s-worker-3 = [
-      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"
+      "${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"
     ];
     managed-k8s-worker-4 = [
-      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"
+      "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true"
     ];
     managed-k8s-worker-5 = [
-      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"
+      "${config.yk8s.node-scheduling.scheduling_key_prefix}/monitoring=true"
     ];
   }
 
@@ -105,13 +105,13 @@ Taints are assigned to a node during LCM rollout only!
 
   {
     managed-k8s-worker-0 = [
-      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
+      "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
     ];
     managed-k8s-worker-2 = [
-      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
+      "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
     ];
     managed-k8s-worker-4 = [
-      "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
+      "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage=true:NoSchedule"
     ];
   }
 

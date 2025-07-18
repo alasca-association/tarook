@@ -292,7 +292,7 @@ in {
       '';
       type = with types; nullOr nonEmptyStr;
       default = null;
-      example = "\${config.yk8s.infra.cluster_name}-network";
+      example = lib.options.literalExpression "\"\${config.yk8s.infra.cluster_name}-network\"";
     };
 
     cinder_enable_topology = mkEnableOption ''

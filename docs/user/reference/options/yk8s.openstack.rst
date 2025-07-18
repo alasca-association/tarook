@@ -525,7 +525,7 @@ because there might be situations where the CCM should not pick the managed netw
 
 **Example:**::
 
-  "\${config.yk8s.infra.cluster_name}-network"
+  "${config.yk8s.infra.cluster_name}-network"
 
 
 **Declared by**

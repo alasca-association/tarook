@@ -620,7 +620,7 @@ but will use the most specific one for scheduling.
 
 **Example:**::
 
-  "\${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mgr"
+  "${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mgr"
 
 
 **Declared by**
@@ -822,7 +822,7 @@ but will use the most specific one for scheduling.
 
 **Example:**::
 
-  "\${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mon"
+  "${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mon"
 
 
 **Declared by**
@@ -1693,7 +1693,7 @@ node.
 
 **Example:**::
 
-  "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage"
+  "${config.yk8s.node-scheduling.scheduling_key_prefix}/storage"
 
 
 **Declared by**
