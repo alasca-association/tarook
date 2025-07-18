@@ -11,6 +11,19 @@ protocol static k8s_service_net {
     export none;
 }
 
+function filter_organization() {
+    if scope = SCOPE_ORGANIZATION then return true;
+    return false;
+}
+
+filter k8s_worker_v6 {
+{% if wg_enabled %}
+    if filter_wireguard_v6() then accept;
+{% endif %}
+    if filter_organization() then accept;
+    reject;
+}
+
 {% for hostname in groups['k8s_nodes'] %}
 {% set peer = hostvars[hostname] %}
 protocol bgp {{ "%s_v6" | format(hostname | replace('-', '_')) }} {

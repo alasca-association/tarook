@@ -1,11 +1,10 @@
 {{ _auto_generated_preamble }}
 
-filter k8s_worker {
-    {% for ep in wg_endpoints %}
-    {% if ep.enabled and ep.ip_cidr is not none %}
-    if net = {{ ep.ip_cidr }} then accept;
-    {% endif %}
-    {% endfor %}
-    if scope = SCOPE_ORGANIZATION then accept;
-    else reject;
+function filter_wireguard() {
+{% for ep in wg_endpoints %}
+{% if ep.enabled and ep.ip_cidr is not none %}
+    if net = {{ ep.ip_cidr }} then return true;
+{% endif %}
+{% endfor %}
+    return false;
 }
