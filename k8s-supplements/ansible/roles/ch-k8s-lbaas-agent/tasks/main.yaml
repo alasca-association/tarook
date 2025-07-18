@@ -1,4 +1,14 @@
 ---
+- name: Import dependency roles needed when running on OpenStack
+  when: openstack_enabled
+  block:
+  - name: Import bird
+    import_role:
+      name: bird
+  - name: Import nftables
+    import_role:
+      name: nftables
+
 - name: Deploy LBaaS agent
   become: true
   block:
@@ -93,6 +103,7 @@
       group: root
       mode: "u=rw,go=r"
     notify: reload nftables
+    when: openstack_enabled
 
 - name: Disable LBaaS agent
   when: not ch_k8s_lbaas_enabled
