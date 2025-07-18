@@ -124,6 +124,40 @@ in {
       type = types.bool;
       default = config.yk8s.kubernetes.network.calico.enabled;
     };
+    enable_snat = mkDisableOption ''
+      source-nat'ing by the ch-k8s-lbaas-agents running on the frontend nodes.
+
+      Disabling this has a similar effect as a direct server return.
+      It allows to see the real source IP of traffic sent to a LoadBalancer-service.
+
+      After reconfiguring this option, execute the following:
+
+      .. code::
+
+        $ ./managed-k8s/actions/apply-k8s-supplements.sh install-ch-k8s-lbaas.yaml
+
+      to rollout necessary changes.
+
+      Running on OpenStack
+      """"""""""""""""""""
+
+      If source-nat'ing is disabled, the frontend nodes will be configured to act as gateway
+      for the Kubernetes nodes. They will propagate routes via BGP overwriting the default routes of
+      Kubernetes nodes such that **all** traffic is routed via the VIP by default.
+
+      .. warning:: Implications when running on OpenStack
+
+        Disabling source-nat'ing has some implications:
+
+        1. If a failover occurs on the frontend nodes, **all** connections are impacted,
+           not only connections to LoadBalancer-Services.
+        2. The source IP of Kubernetes nodes as seen by the outside world changes from
+           the OpenStack router IP to the Gateway's VIP.
+        3. It's not possible to attach floating IPs to Kubernetes nodes anymore due to
+           routing asymmetry.
+
+      Be aware, that the frontend nodes must be potent enough to handle the increased amount of traffic
+      if source-nat'ing is disabled, as they could become the bottleneck otherwise'';
   };
   config.yk8s.assertions = [
     # Due to OVN support, require version >= 0.8.0 (warn only if not in semver2 format)

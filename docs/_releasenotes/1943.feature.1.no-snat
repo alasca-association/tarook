@@ -1,0 +1,30 @@
+An option to disable SNAT'ing for ``ch-k8s-lbaas`` has been added:
+:ref:`configuration-options.yk8s.ch-k8s-lbaas.enable_snat`.
+
+.. warning::
+
+  Be aware that disabling SNAT'ing potentially has performance implications.
+
+.. tabs::
+
+  .. tab:: Rollout immediately after release upgrade
+
+     When directly coming from a previous release and you want to disable SNAT'ing right away
+     without having done a full rollout yet,
+     you have to adjust the gateway nodes first.
+     In that case, rollout the necessary changes with:
+
+     .. code:: console
+
+       $ ./managed-k8s/actions/apply-prepare-gw.sh
+       $ ./managed-k8s/actions/apply-k8s-supplements.sh install-ch-k8s-lbaas.yaml
+
+  .. tab:: Rollout later
+
+     If you already did a rollout with the current release, it's sufficient to do:
+
+     .. code:: console
+
+       $ ./managed-k8s/actions/apply-k8s-supplements.sh install-ch-k8s-lbaas.yaml
+
+.

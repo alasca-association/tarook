@@ -17,6 +17,9 @@ function filter_organization() {
 }
 
 filter k8s_worker {
+{% if ch_k8s_lbaas_enabled and not ch_k8s_lbaas_enable_snat %}
+    if filter_default_overwrite() then accept;
+{% endif %}
 {% if wg_enabled %}
     if filter_wireguard() then accept;
 {% endif %}
