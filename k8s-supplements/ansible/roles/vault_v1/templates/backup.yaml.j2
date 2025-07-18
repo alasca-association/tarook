@@ -93,7 +93,7 @@ spec:
         - name: YAOOK_BACKUP_SHIFTER_S3_CACERT
           value: /vault/s3_ca.crt
         - name: YAOOK_BACKUP_SHIFTER_S3_ADDRESSING_STYLE
-          value: path
+          value: {{ yaook_vault_backup_s3_addressing_style }}
         - name: YAOOK_BACKUP_SHIFTER_METRICS_PORT
           value: "19100"
         image: registry.yaook.cloud/yaook/backup-shifter:1.0.166

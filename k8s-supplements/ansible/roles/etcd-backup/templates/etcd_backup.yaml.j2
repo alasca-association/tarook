@@ -10,7 +10,7 @@ targets:
     s3:
       endpoint: "{{ etcd_backup_config.endpoint_url }}"
       bucket: "{{ etcd_backup_bucket_name }}"
-      addressingStyle: path
+      addressingStyle: "{{ etcd_backup_addressing_style }}"
       filePrefix: "{{ etcd_backup_file_prefix }}"
       credentialRef:
         name: "{{ etcd_backup_secret_name }}"
