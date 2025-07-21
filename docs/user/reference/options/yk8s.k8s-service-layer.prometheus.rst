@@ -1599,7 +1599,7 @@ Set custom Bitnami/Thanos chart version
 
 **Default:**::
 
-  "17.2.1"
+  "17.2.2"
 
 
 **Declared by**
