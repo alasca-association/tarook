@@ -40,11 +40,12 @@
     kubernetes.core.k8s_exec:
       namespace: "{{ check_ipsec_namespace }}"
       pod: ipsec-test-busybox
-      command: ping -c 1 {{ ipsec_remote_private_addrs }}
+      command: ping -c 1 {{ item }}
     register: ipsec_test_vm_ping
     delay: 5
     retries: 20
     until: ipsec_test_vm_ping.rc == 0
+    loop: "{{ ipsec_remote_private_addrs }}"
 
   - name: delete namespace
     kubernetes.core.k8s:

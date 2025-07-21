@@ -206,13 +206,13 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 ``yk8s.ipsec.remote_private_addrs``
 ###################################
 
-Private address of remote endpoint.
+Private address of remote endpoints.
 only used when :ref:`configuration-options.yk8s.ipsec.test_enabled` is ``true``
 
 
 **Type:**::
 
-  null or non-empty string
+  null or (list of non-empty string)
 
 
 **Default:**::
