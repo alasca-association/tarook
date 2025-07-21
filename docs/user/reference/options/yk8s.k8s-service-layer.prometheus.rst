@@ -1160,7 +1160,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 **Default:**::
 
-  "4.14.1"
+  "4.14.2"
 
 
 **Declared by**
