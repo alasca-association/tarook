@@ -378,7 +378,7 @@ in {
       '';
       type = helmChartVersion;
       # renovate: datasource=helm depName=thanos registryUrl=https://charts.bitnami.com/bitnami
-      default = "17.2.1";
+      default = "17.2.2";
     };
 
     thanos_storage_class = mkOption {
