@@ -9,6 +9,21 @@
   inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit
+    (yk8s-lib.types)
+    helmChartVersion
+    helmChartRepoUrl
+    k8sNamespaceName
+    k8sSecretName
+    posixPathSegment
+    relativeUrlPath
+    s3BucketName
+    vaultNamespaceName
+    ;
+  inherit
+    (yk8s-lib.transform)
+    warnIfZero
+    ;
 in {
   imports = [
     (mkRemovedOptionModule "k8s-service-layer.etcd-backup" "s3_config_name" "")
@@ -91,25 +106,26 @@ in {
 
     enabled = mkEnableOption "etcd-backups";
     secret_name = mkOption {
-      type = types.nonEmptyStr;
+      type = k8sSecretName;
       default = "etcd-backup-s3-credentials";
     };
     namespace = mkOption {
-      type = types.nonEmptyStr;
+      type = k8sNamespaceName;
       default = "kube-system";
     };
     helm_repo_url = mkOption {
-      type = types.nonEmptyStr;
+      type = helmChartRepoUrl;
       default = "https://charts.yaook.cloud/operator/stable/";
     };
     name = mkOption {
-      type = types.nonEmptyStr;
+      type = k8sSecretName;
       default = "etcd-backup";
     };
     schedule = mkOption {
       description = ''
         Configure value for the cron job schedule for etcd backups.
       '';
+      # TODO: Use more specific type
       type = types.nonEmptyStr;
       default = "21 */12 * * *";
     };
@@ -117,14 +133,14 @@ in {
       description = ''
         Name of the s3 bucket to store the backups.
       '';
-      type = types.nonEmptyStr;
+      type = s3BucketName;
       default = "etcd-backup";
     };
     file_prefix = mkOption {
       description = ''
         Name of the folder to keep the backup files.
       '';
-      type = types.str;
+      type = posixPathSegment;
       default = "etcd-backup";
     };
     vault_mount_point = mkOption {
@@ -133,7 +149,7 @@ in {
         be found. This location is the default location used by import.sh and is
         recommended.
       '';
-      type = types.nonEmptyStr;
+      type = vaultNamespaceName;
       default = "yaook/${config.yk8s.vault.cluster_name}/kv";
       defaultText = "yaook/\${config.yk8s.vault.cluster_name}/kv";
     };
@@ -145,7 +161,7 @@ in {
         The role expects a JSON object with `access_key` and `secret_key` keys,
         containing the corresponding S3 credentials.
       '';
-      type = types.nonEmptyStr;
+      type = relativeUrlPath;
       default = "etcdbackup";
     };
     days_of_retention = mkOption {
@@ -153,14 +169,14 @@ in {
         Number of days after which individual items in the bucket are dropped. Enforced by S3 lifecyle rules which
         are also implemented by Ceph's RGW.
       '';
-      type = types.int;
+      type = types.ints.unsigned;
       default = 30;
     };
     chart_version = mkOption {
       description = ''
         etcdbackup chart version to install.
       '';
-      type = types.nonEmptyStr;
+      type = helmChartVersion;
       # renovate: datasource=helm depName=etcdbackup registryUrl=https://charts.yaook.cloud/operator/stable/
       default = "0.20250717.0";
     };
@@ -172,6 +188,8 @@ in {
       '';
       type = types.port;
       default = 19100;
+      apply = v:
+        warnIfZero "config.yk8s.k8s-service-layer.etcd-backup.metrics_port: should not be port zero" v;
     };
   };
   config.yk8s._inventory_packages = [

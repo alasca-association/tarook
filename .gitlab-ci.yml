@@ -39,6 +39,7 @@ stages:
 - build-image  # needs to run first (see !1627)
 - housekeeping
 - lint
+- unit-tests
 - hotfix-prepare
 - cluster-tests
 - diagnostic-tools
@@ -46,6 +47,7 @@ stages:
 - release
 
 include:
+  - local: ci/unit-tests.yaml
   - local: ci/build-image.yaml
   - local: ci/hotfix-prepare.yaml
   - local: ci/cluster-tests.yaml

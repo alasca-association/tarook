@@ -9,6 +9,7 @@
 
   inherit
     (options)
+    mkDisableOption
     mkInternalOption
     mkTopSection
     mkSubSection

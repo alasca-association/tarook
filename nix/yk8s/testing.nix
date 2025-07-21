@@ -7,7 +7,7 @@
   cfg = config.yk8s.testing;
   modules-lib = import ./lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule;
-  inherit (lib) mkOption types;
+  inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
 in {
   imports = [
@@ -29,13 +29,9 @@ in {
       type = with types; listOf nonEmptyStr;
       default = [];
     };
-    force_reboot_nodes = mkOption {
-      description = ''
-        Enforce rebooting of nodes after every system update
-      '';
-      type = types.bool;
-      default = false;
-    };
+    force_reboot_nodes = mkEnableOption ''
+      enforce rebooting of nodes after every system update
+    '';
   };
   config.yk8s.assertions = let
     inherit (builtins) all attrNames elem filter length;

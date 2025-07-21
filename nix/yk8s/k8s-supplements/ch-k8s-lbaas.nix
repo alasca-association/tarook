@@ -8,8 +8,21 @@
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedResourceOptionModules mkResourceOptionModule;
   inherit (lib) mkOption mkEnableOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkResourceOption;
-  inherit (yk8s-lib.types) ipv4Addr;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkResourceOption mkDisableOption;
+  inherit
+    (yk8s-lib.types)
+    base64Str
+    httpHostUrl
+    httpxHostPathUrl
+    ipv4Addr
+    k8sImageRef
+    ociImageTag
+    posixUserName
+    ;
+  inherit
+    (yk8s-lib.transform)
+    warnIfZero
+    ;
 in {
   imports =
     mkRenamedResourceOptionModules "ch-k8s-lbaas" ["controller"]
@@ -29,11 +42,13 @@ in {
         To generate such a secret, you can use the following command:
         $ dd if=/dev/urandom bs=16 count=1 status=none | base64
       '';
-      type = types.nonEmptyStr;
-      example = "RuDXD7CcNZHrRAV9AAN83T7Hc6wVk9IGzPou6UjwWhL+4hu1I4XPj+YG/AgKiFIc1a1EzmQKax9VAj6P/oA45w==";
+      # type as per https://pkg.go.dev/encoding/base64#StdEncoding
+      #  (ch-k8s-lbaas uses that library)
+      type = base64Str;
+      example = "Example+NZHrRAV9AAN83T7Hc6wVk9IGzPou6UjwWhL+4hu1I4XPj+YG/AgKiFIc1a1EzmQKax9VAj6P/oA45w==";
     };
     version = mkOption {
-      type = types.nonEmptyStr;
+      type = ociImageTag;
       default = "0.9.0";
       # NOTE: constrained to >= 0.8.0 by assertion (due to OVN support)
     };
@@ -43,6 +58,8 @@ in {
       '';
       type = types.port;
       default = 15203;
+      apply = v:
+        warnIfZero "config.yk8s.ch-k8s-lbaas.agent_port: should not be port zero" v;
     };
     port_manager = mkOption {
       description = ''
@@ -83,26 +100,25 @@ in {
         set to ``static`` and is ignored otherwise.
       '';
       default = [];
-      type = types.listOf types.nonEmptyStr;
+      # NOTE: ch-k8s-lbaas ignores the HTTP URL path, its agents don't support TLS
+      type = types.listOf httpHostUrl;
       apply = v:
         if v == [] && cfg.port_manager == "static"
         then throw "config.yk8s.ch-k8s-lbaas.agent_urls: must not be empty when config.yk8s.ch-k8s-lbaas.port_manager='static'"
         else v;
     };
-    use_floating_ips = mkOption {
-      type = types.bool;
-      default = true;
-    };
+    use_floating_ips = mkDisableOption "the use of floating IPs";
     controller_repo = mkOption {
-      type = types.nonEmptyStr;
+      type = k8sImageRef;
       default = "registry.gitlab.com/yaook/ch-k8s-lbaas/controller";
     };
     agent_user = mkOption {
-      type = types.nonEmptyStr;
+      type = posixUserName;
       default = "ch-k8s-lbaas-agent";
     };
     agent_source = mkOption {
-      type = types.nonEmptyStr;
+      # NOTE: the URL path is appended to, therefore query and fragment are disallowed
+      type = httpxHostPathUrl;
       default = "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download";
     };
     use_bgp = mkOption {

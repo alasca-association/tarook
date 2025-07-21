@@ -223,8 +223,6 @@
         in rec {
           referenceOptionsJSON = nixosOptionsDoc.optionsJSON;
           referenceOptionsRST = rstDocWithIndex allSections;
-          referenceOptionsAll = rstDocCombined allSections;
-
           docs =
             pkgs.runCommandLocal "yk8s-docs" {
               nativeBuildInputs = [pkgs.rsync config.yk8s-env.environments.docs];

@@ -63,7 +63,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -131,7 +131,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -180,7 +180,7 @@ rook-ceph-compatibility-matrix.
 
 **Type:**::
 
-  null or non-empty string
+  null or OCI image tag
 
 
 **Default:**::
@@ -280,7 +280,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 **Type:**::
 
-  non-empty string
+  Helm chart release name
 
 
 **Default:**::
@@ -301,7 +301,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 **Type:**::
 
-  non-empty string
+  Helm chart release name
 
 
 **Default:**::
@@ -318,9 +318,10 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 ``yk8s.k8s-service-layer.rook.manage_pod_budgets``
 ##################################################
 
-If true, the rook operator will create and manage PodDisruptionBudgets
+Whether to enable management of pod disruption budgets.
+If false, the rook operator will not create and manage PodDisruptionBudgets
 for OSD, Mon, RGW, and MDS daemons.
-
+.
 
 **Type:**::
 
@@ -330,6 +331,11 @@ for OSD, Mon, RGW, and MDS daemons.
 **Default:**::
 
   true
+
+
+**Example:**::
+
+  false
 
 
 **Declared by**
@@ -369,7 +375,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -395,7 +401,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -426,7 +432,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -455,7 +461,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -500,7 +506,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -526,7 +532,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -557,7 +563,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -586,7 +592,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -610,7 +616,7 @@ but will use the most specific one for scheduling.
 
 **Type:**::
 
-  null or non-empty string
+  null or Kubernetes label
 
 
 **Default:**::
@@ -620,7 +626,7 @@ but will use the most specific one for scheduling.
 
 **Example:**::
 
-  "\${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mgr"
+  "${scheduling_key_prefix}/rook-mgr"
 
 
 **Declared by**
@@ -702,7 +708,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -728,7 +734,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -759,7 +765,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -788,7 +794,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -812,7 +818,7 @@ but will use the most specific one for scheduling.
 
 **Type:**::
 
-  null or non-empty string
+  null or Kubernetes label
 
 
 **Default:**::
@@ -822,7 +828,7 @@ but will use the most specific one for scheduling.
 
 **Example:**::
 
-  "\${config.yk8s.node-scheduling.scheduling_key_prefix}/rook-mon"
+  "${scheduling_key_prefix}/rook-mon"
 
 
 **Declared by**
@@ -860,7 +866,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuratio
 
 **Type:**::
 
-  string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  Kubernetes quantity
 
 
 **Default:**::
@@ -887,7 +893,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuratio
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -910,7 +916,7 @@ never deleted).
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -963,7 +969,7 @@ The number of mons has to be uneven.
 
 **Type:**::
 
-  signed integer
+  positive integer, meaning >0
 
 
 **Default:**::
@@ -1096,7 +1102,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Declared by**
@@ -1159,7 +1165,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -1185,7 +1191,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -1216,7 +1222,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -1245,7 +1251,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -1332,7 +1338,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -1358,7 +1364,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -1389,7 +1395,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -1418,7 +1424,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -1440,7 +1446,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuratio
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -1464,7 +1470,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuratio
 
 **Type:**::
 
-  string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  Kubernetes quantity
 
 
 **Default:**::
@@ -1636,7 +1642,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Example:**::
@@ -1683,7 +1689,7 @@ node.
 
 **Type:**::
 
-  null or non-empty string
+  null or Kubernetes label
 
 
 **Default:**::
@@ -1693,7 +1699,7 @@ node.
 
 **Example:**::
 
-  "\${config.yk8s.node-scheduling.scheduling_key_prefix}/storage"
+  "${scheduling_key_prefix}/storage"
 
 
 **Declared by**
@@ -1705,15 +1711,15 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 ``yk8s.k8s-service-layer.rook.skip_upgrade_checks``
 ###################################################
 
+Whether to enable Rook's upgrade checks on Ceph daemons during an upgrade.
+
 If OSDs are not replicated, the rook-ceph-operator will reject
 to perform upgrades, because OSDs will become unavailable.
 Set to True so rook will update even if OSDs would become unavailable.
 
-If set to true Rook won’t perform any upgrade checks on Ceph daemons
-during an upgrade. Use this at YOUR OWN RISK, only if you know what
-you’re doing.
+Use this at YOUR OWN RISK, only if you know what you’re doing.
 https://rook.github.io/docs/rook/v1.3/ceph-cluster-crd.html#cluster-settings
-
+.
 
 **Type:**::
 
@@ -1723,6 +1729,11 @@ https://rook.github.io/docs/rook/v1.3/ceph-cluster-crd.html#cluster-settings
 **Default:**::
 
   false
+
+
+**Example:**::
+
+  true
 
 
 **Declared by**
@@ -1832,7 +1843,7 @@ Version of rook to deploy
 
 **Type:**::
 
-  string matching the pattern ^v1\.[0-9]+\.[0-9]+$
+  Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::

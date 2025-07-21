@@ -1,5 +1,5 @@
 {% if monitoring_thanos_objectstorage_config_file is not none %}
-{{ lookup('file',  monitoring_thanos_objectstorage_config_path + "/" + monitoring_thanos_objectstorage_config_file) }}
+{{ lookup('file', "{{ playbook_dir }}/../../../config/" + monitoring_thanos_objectstorage_config_file) }}
 {% else %}
 type: SWIFT
 config:

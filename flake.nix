@@ -30,6 +30,9 @@
         _module.args.pkgs = import nixpkgs {
           inherit system;
         };
+        imports = [
+          ./nix/test.nix
+        ];
         packages = {
           init = pkgs.writeShellApplication {
             name = "init-cluster-repo";

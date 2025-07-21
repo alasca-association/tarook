@@ -9,7 +9,31 @@
   inherit (modules-lib) mkRenamedOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.types) k8sQuantity k8sServiceType;
+  inherit
+    (yk8s-lib.types)
+    helmChartVersion
+    helmChartRepoUrl
+    k8sIngressClassName
+    k8sIssuerName
+    k8sLabel
+    k8sNamespaceName
+    k8sQuantity
+    k8sServiceType
+    k8sStorageClassName
+    k8sObjectName
+    relativePosixPath
+    subdomainName
+    vaultNamespaceName
+    ;
+  inherit
+    (yk8s-lib.transform)
+    warnIfZero
+    ;
+  # as per https://cert-manager.io/docs/reference/api-docs/#cert-manager.io%2fv1
+  certManagerIssuerKind = types.enum [
+    "Issuer"
+    "ClusterIssuer"
+  ];
 in {
   imports = [
     (mkRenamedOptionModule "k8s-service-layer.vault" "active_node_port" "service_active_node_port")
@@ -26,30 +50,31 @@ in {
     '';
 
     helm_repo_url = mkOption {
-      type = types.nonEmptyStr;
+      type = helmChartRepoUrl;
       default = "https://helm.releases.hashicorp.com";
     };
 
     ca_issuer_kind = mkOption {
-      type = types.nonEmptyStr;
+      type = certManagerIssuerKind;
       default = "Issuer";
     };
 
     ca_issuer = mkOption {
-      type = types.nonEmptyStr;
+      # type as per https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec
+      type = k8sObjectName;
       default = "selfsigned-issuer";
     };
 
     backup_approle_path = mkOption {
-      type = types.nonEmptyStr;
-      default = "yaook/vault_v1/approle/";
+      type = vaultNamespaceName;
+      default = "yaook/vault_v1/approle";
     };
 
     chart_version = mkOption {
       description = ''
         Version of the Helm Chart to use
       '';
-      type = types.nonEmptyStr;
+      type = helmChartVersion;
       # renovate: datasource=helm depName=vault registryUrl=https://helm.releases.hashicorp.com
       default = "0.23.0";
     };
@@ -58,7 +83,7 @@ in {
         Namespace to deploy the vault in (will be created if it does not exist, but
         ever deleted).
       '';
-      type = types.nonEmptyStr;
+      type = k8sNamespaceName;
       default = "k8s-svc-vault";
     };
     dnsnames = mkOption {
@@ -67,7 +92,7 @@ in {
         NOTE: to work correctly, there must exist an ingress of class `nginx` and it
         must allow ssl passthrough.
       '';
-      type = with types; listOf nonEmptyStr;
+      type = with types; listOf subdomainName;
       default = [];
     };
     management_cluster_integration = mkEnableOption ''
@@ -107,14 +132,14 @@ in {
       description = ''
         Scheduling key for the vault instance and its resources. Has no default.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr k8sLabel;
       default = null;
     };
     storage_class = mkOption {
       description = ''
         Storage class for the vault file storage backend.
       '';
-      type = types.nonEmptyStr;
+      type = k8sStorageClassName;
       default = "csi-sc-cinderplugin";
     };
     storage_size = mkOption {
@@ -126,7 +151,7 @@ in {
     };
 
     external_ingress_class = mkOption {
-      type = types.nonEmptyStr;
+      type = k8sIngressClassName;
       default = "nginx";
     };
 
@@ -135,7 +160,8 @@ in {
         If :ref:`configuration-options.yk8s.k8s-service-layer.vault.ingress` is set to ``true`` and :ref:`configuration-options.yk8s.k8s-service-layer.vault.dnsnames` is not empty, you have to tell the LCM which (Cluster)Issuer to use
         for your ACME service.
       '';
-      type = with types; nullOr nonEmptyStr;
+      # type as per https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec
+      type = with types; nullOr k8sIssuerName;
       default = null;
       apply = v:
         if
@@ -152,10 +178,7 @@ in {
         Can be `Issuer` or `ClusterIssuer`, depending on the kind of issuer you would like
         to use for externally facing certificates.
       '';
-      type = types.enum [
-        "Issuer"
-        "ClusterIssuer"
-      ];
+      type = certManagerIssuerKind;
       default = "ClusterIssuer";
     };
     enable_backups = mkOption {
@@ -170,9 +193,18 @@ in {
       description = ''
         Credentials to access an S3 bucket to which the backups will be written. Required if :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable_backups` is set to ``true``
         You can find a template in `managed-k8s/templates/vault_backup_s3_config.template.yaml`.
+
+        Note: The given path is interpreted as being relative to the cluster repo's config directory.
       '';
-      type = types.nonEmptyStr;
-      default = "vault_backup_s3_config.yaml";
+      # NOTE: Not using `pathInStore` here because the expected file contains secrets
+      # TODO: Eliminate config option and store secrets solely in Vault
+      type = with types; nullOr relativePosixPath;
+      default = null;
+      example = "./vault/backup_s3_config.yaml";
+      apply = v:
+        if config.yk8s.k8s-service-layer.vault.enable_backups == true && v == null
+        then throw "[k8s-service-layer.vault.s3_config_file] must not be null when k8s-service-layer.vault.enable_backups == true"
+        else v;
     };
     service_type = mkOption {
       description = ''
@@ -194,6 +226,8 @@ in {
       '';
       type = types.port;
       default = 32048;
+      apply = v:
+        warnIfZero "config.yk8s.k8s-service-layer.vault.service_active_node_port: should not be port zero" v;
     };
   };
   config.yk8s._inventory_packages = [

@@ -20,7 +20,7 @@ those don't work with caching proxies like apt-cacher-ng.
 
 **Type:**::
 
-  null or non-empty string
+  null or RFC3986 HTTP URL (scheme, authority and path only)
 
 
 **Default:**::
@@ -102,7 +102,7 @@ A list of NTP pools.
 
 **Type:**::
 
-  list of non-empty string
+  list of (IPv4 address in four-octets decimal notation or IPv6 address in colon-hexadecimal notation or RFC1123 subdomain name)
 
 
 **Default:**::
@@ -132,7 +132,7 @@ A list of NTP servers.
 
 **Type:**::
 
-  list of non-empty string
+  list of (IPv4 address in four-octets decimal notation or IPv6 address in colon-hexadecimal notation or RFC1123 subdomain name)
 
 
 **Default:**::
@@ -165,7 +165,7 @@ will be set automagically and do not have to set manually here.
 
 **Type:**::
 
-  null or non-empty string
+  null or RFC3986 HTTP URL (scheme, authority and path only)
 
 
 **Default:**::
@@ -195,7 +195,7 @@ will be set automagically and do not have to set manually here.
 
 **Type:**::
 
-  null or non-empty string
+  null or RFC3986 HTTPS URL (scheme, authority and path only)
 
 
 **Default:**::
@@ -225,17 +225,20 @@ will be set automagically and do not have to set manually here.
 
 **Type:**::
 
-  null or non-empty string
+  null or (list of (IPv4 address in four-octets decimal notation or IPv4 address in four-octets decimal notation plus subnet in CIDR notation or RFC1123 subdomain name))
 
 
 **Default:**::
 
-  null
+  [ ]
 
 
 **Example:**::
 
-  "localhost,127.0.0.0/8"
+  [
+    "localhost"
+    "127.0.0.0/8"
+  ]
 
 
 **Declared by**

@@ -95,7 +95,7 @@ variable "gateway_defaults" {
     image                      = string
     flavor                     = string
     root_disk_size             = number
-    root_disk_volume_type      = string
+    root_disk_volume_type      = optional(string)
   })
 }
 
@@ -104,7 +104,7 @@ variable "master_defaults" {
     image                      = string
     flavor                     = string
     root_disk_size             = number
-    root_disk_volume_type      = string
+    root_disk_volume_type      = optional(string)
   })
 }
 
@@ -113,7 +113,7 @@ variable "worker_defaults" {
     image                      = string
     flavor                     = string
     root_disk_size             = number
-    root_disk_volume_type      = string
+    root_disk_volume_type      = optional(string)
     anti_affinity_group        = optional(string)
   })
 }

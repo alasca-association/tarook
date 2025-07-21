@@ -38,7 +38,7 @@ Memory resources limit for the apiserver
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -99,7 +99,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
 
 **Type:**::
 
-  signed integer
+  32 bit unsigned integer; between 0 and 4294967295 (both inclusive)
 
 
 **Default:**::
@@ -203,7 +203,7 @@ Kubernetes version
 
 **Type:**::
 
-  string matching the pattern ^1.(30|31|32).[0-9]+$
+  Kubernetes version (one of: 1.30.x, 1.31.x, 1.32.x)
 
 
 **Default:**::
@@ -220,6 +220,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
 ``yk8s.kubernetes.virtualize_gpu``
 ##################################
 
+Whether to enable virtualization of Nvidia GPUs on worker nodes.
 Set this variable to virtualize Nvidia GPUs on worker nodes
 for usage outside of the Kubernetes cluster / above the Kubernetes layer.
 It will install a VGPU manager on the worker node and
@@ -227,7 +228,7 @@ split the GPU according to chosen vgpu type.
 Note: This will not install Nvidia drivers to utilize vGPU guest VMs!!
 If set to true, please set further variables in :ref:`configuration-options.yk8s.miscellaneous`.
 Note: This is mutually exclusive with :ref:`configuration-options.yk8s.kubernetes.is_gpu_cluster`.
-
+.
 
 **Type:**::
 
@@ -237,6 +238,11 @@ Note: This is mutually exclusive with :ref:`configuration-options.yk8s.kubernete
 **Default:**::
 
   false
+
+
+**Example:**::
+
+  true
 
 
 **Declared by**

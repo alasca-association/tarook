@@ -17,7 +17,7 @@ An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
 
 **Type:**::
 
-  string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])$
+  IPv4 address in four-octets decimal notation
 
 
 **Default:**::
@@ -47,7 +47,7 @@ the above specified Kubernetes version.
 
 **Type:**::
 
-  null or non-empty string
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::
@@ -123,7 +123,7 @@ Changing this value can be useful if one endpoint hosts outdated images or you'r
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain name
 
 
 **Default:**::
@@ -168,7 +168,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 
 **Type:**::
 
-  signed integer
+  positive integer, meaning >0
 
 
 **Default:**::
@@ -191,7 +191,7 @@ it is possible to link to self-maintained values file for the helm chart
 
 **Type:**::
 
-  null or non-empty string
+  null or path in the Nix store
 
 
 **Default:**::
@@ -201,7 +201,7 @@ it is possible to link to self-maintained values file for the helm chart
 
 **Example:**::
 
-  "path-to-a-custom/values.yaml"
+  "./vault/helm/values.yaml"
 
 
 **Declared by**

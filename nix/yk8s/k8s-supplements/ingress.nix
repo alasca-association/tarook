@@ -9,7 +9,20 @@
   inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.types) k8sServiceType k8sQuantity;
+  inherit
+    (yk8s-lib.types)
+    helmChartReleaseName
+    helmChartVersion
+    helmChartRepoUrl
+    helmChartRef
+    k8sLabel
+    k8sNamespaceName
+    k8sServiceType
+    ;
+  inherit
+    (yk8s-lib.transform)
+    warnIfZero
+    ;
 in {
   imports = [
     (mkRenamedOptionModule "k8s-service-layer.ingress" "cpu_request" "resources.cpu.request")
@@ -46,20 +59,20 @@ in {
       default = true;
     };
     helm_repo_url = mkOption {
-      type = types.nonEmptyStr;
+      type = helmChartRepoUrl;
       default = "https://kubernetes.github.io/ingress-nginx";
     };
     chart_ref = mkOption {
-      type = types.nonEmptyStr;
+      type = helmChartRef;
       default = "ingress-nginx";
     };
     chart_version = mkOption {
-      type = types.nonEmptyStr;
+      type = helmChartVersion;
       # renovate: datasource=helm depName=ingress-nginx registryUrl=https://kubernetes.github.io/ingress-nginx
       default = "4.13.0";
     };
     release_name = mkOption {
-      type = types.nonEmptyStr;
+      type = helmChartReleaseName;
       default = "ingress";
     };
     namespace = mkOption {
@@ -67,7 +80,7 @@ in {
         Namespace to deploy the ingress in (will be created if it does not exist, but
         never deleted).
       '';
-      type = types.nonEmptyStr;
+      type = k8sNamespaceName;
       default = "k8s-svc-ingress";
     };
     service_type = mkOption {
@@ -82,7 +95,7 @@ in {
         Scheduling key for the cert manager instance and its resources. Has no
         default.
       '';
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr k8sLabel;
       default = null;
     };
     nodeport_http = mkOption {
@@ -91,6 +104,8 @@ in {
       '';
       type = types.port;
       default = 32080;
+      apply = v:
+        warnIfZero "config.yk8s.k8s-service-layer.ingress.nodeport_http: should not be port zero" v;
     };
     nodeport_https = mkOption {
       description = ''
@@ -98,6 +113,8 @@ in {
       '';
       type = types.port;
       default = 32443;
+      apply = v:
+        warnIfZero "config.yk8s.k8s-service-layer.ingress.nodeport_https: should not be port zero" v;
     };
     enable_ssl_passthrough = mkOption {
       description = ''
@@ -110,7 +127,7 @@ in {
       description = ''
         Replica Count
       '';
-      type = types.ints.positive;
+      type = types.ints.unsigned;
       default = 2;
     };
     allow_snippet_annotations = mkEnableOption "snippet annotations";

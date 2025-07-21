@@ -1,0 +1,7 @@
+The following config options now accept a Nix path
+instead of a file path string
+(e.g. ``"path/file"`` → ``./path/file``).
+
+- :ref:`configuration-options.yk8s.kubernetes.network.calico.values_file_path`
+
+_

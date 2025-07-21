@@ -71,15 +71,27 @@
     )) {};
 
   /*
-  Return an attributeset where all nested attributes are flattened. The name of the path will be separated by "-"
-  It is possible to pass attribute names that should not be flattened. Example:
+  Return an attributeset where all nested attributes are flattened. The name of the path will be separated by "_"
+  Optionally pass a list of attribute names that should not be flattened.
 
   Example:
-  flatten {["d"]} {a.b.c = 1; a.d = 2; }
-  -> {a_b_c = 1; a.d = 2;}
+  flatten {except=["d"];} { a.b.c = 1; a.d = 2; }
+  -> { a_b_c = 1; a.d = 2; }
+
+  Optionally pass a depth until which the nesting should be flattened.
+  Attention: Nestings that do not exceed the specified depth and end with an empty attribute set will disappear
+
+  Example:
+  flatten {depth=1;} { a.b.c = 1; a.d = 2; }
+  -> { a_b = {c = 1;}; a_d = 2; }
+  flatten {depth=2;} { a.b.c = 1; a.d = {}; }
+  -> { a_b_c = 1; }
 
   */
-  flatten = {except}: let
+  flatten = {
+    except ? [],
+    depth ? null,
+  }: let
     inherit (builtins) isAttrs elem;
     inherit (lib.attrsets) foldlAttrs mapAttrs';
   in
@@ -87,12 +99,22 @@
       acc: outerName: outerValue:
         acc
         // (
-          if isAttrs outerValue && ! elem outerName except
+          if
+            (depth != null -> depth > 0)
+            && isAttrs outerValue
+            && ! elem outerName except
           then
             mapAttrs' (name: value: {
               name = "${outerName}_${name}";
               inherit value;
-            }) (flatten {inherit except;} outerValue)
+            }) (flatten {
+                inherit except;
+                depth =
+                  if depth == null
+                  then null
+                  else depth - 1;
+              }
+              outerValue)
           else {"${outerName}" = outerValue;}
         )
     ) {};
@@ -113,4 +135,104 @@
       name = "${prefix}${name}";
       inherit value;
     });
+
+  /*
+  Return whether a regular expression is matched by a given string
+
+  Arguments:
+  - regex: The regular expression
+  - str: A string
+
+  Example:
+    matchesRegex "foo.*" "foobar" -> true
+    matchesRegex "[0-9]+" "foobar" -> false
+  */
+  matchesRegex = regex: str: (builtins.match regex str) != null;
+
+  /*
+  Filter out items of certain types from a list
+
+  Returns the items that are not ignored and prints the ignored ones.
+
+  Arguments:
+  - messagePrefix: A string to prefix the message of ignored items with
+  - ignoredTypes: A list of item types that shall be ignored
+  - items: A list of items
+  */
+  ignoreItemsOfTypeWithMsg = messagePrefix: ignoredTypes: items: let
+    partitioned =
+      lib.lists.partition (
+        item: ! (lib.lists.any (type: type.check item) ignoredTypes)
+      )
+      items;
+  in
+    if (builtins.length partitioned.wrong) == 0
+    then partitioned.right
+    else
+      builtins.trace
+      "${messagePrefix}Ignoring inapplicable items ${builtins.concatStringsSep ", " partitioned.wrong}"
+      partitioned.right;
+
+  /*
+  Filter out items of the disabled IP family from a list
+
+  Returns the items that are not ignored and prints the ignored ones.
+
+  Arguments:
+  - <customize>: An attribute set that specifies the `ipv4Types` and `ipv6Types`
+                 and whether `ipv4Enabled` and `ipv6Enabled`
+  - msgPrefix: A string to prefix the message of ignored items with
+  - *: A list of items
+  */
+  ignoreItemsOfDisabledIPFamily = {
+    ipv4Types ? [],
+    ipv6Types ? [],
+    ipv4Enabled ? false,
+    ipv6Enabled ? false,
+  }: msgPrefix: let
+    ignoredTypes =
+      builtins.foldl'
+      (acc: x:
+        acc
+        ++ (
+          if x.ignoreIf
+          then x.types
+          else []
+        ))
+      [] [
+        {
+          types = ipv4Types;
+          ignoreIf = ! ipv4Enabled;
+        }
+        {
+          types = ipv6Types;
+          ignoreIf = ! ipv6Enabled;
+        }
+      ];
+  in
+    ignoreItemsOfTypeWithMsg msgPrefix ignoredTypes;
+
+  /*
+  Output a warning when the given value is zero
+
+  Arguments:
+    - message: Warning message to output
+    - *: Integer value to check
+  */
+  warnIfZero = message: value: lib.trivial.warnIf (value == 0) message value;
+
+  /*
+  Output a warning for selected items of an attrset if their value is zero
+
+  Arguments:
+    - mkMessage: A function that takes the current attr name and produces the warning message to output
+    - *: Attrset to check
+  */
+  warnIfAttrZero = mkMessage: names:
+    lib.attrsets.mapAttrs (
+      name: value:
+        if builtins.elem name names
+        then warnIfZero (mkMessage name) value
+        else value
+    );
 }

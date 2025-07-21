@@ -21,12 +21,12 @@ probably be removed in the foreseeable future.
 
 **Type:**::
 
-  16 bit unsigned integer; between 0 and 65535 (both inclusive)
+  null or 16 bit unsigned integer; between 0 and 65535 (both inclusive)
 
 
 **Default:**::
 
-  0
+  null
 
 
 **Declared by**
@@ -85,7 +85,7 @@ Port for HAProxy statistics
 
 **Type:**::
 
-  signed integer
+  16 bit unsigned integer; between 0 and 65535 (both inclusive)
 
 
 **Default:**::

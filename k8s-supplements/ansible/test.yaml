@@ -175,13 +175,13 @@
   gather_facts: false
   vars_files:
   - vars/retries.yaml
-  vars:
-    gateway: "{{ groups['gateways'] | first or groups['masters'] | first }}"
-    first_worker: "{{ groups['workers'] | first }}"
-    deprecated_nodeport_lb_test_port: "{{ hostvars[groups['frontend'] | first ]['deprecated_nodeport_lb_test_port'] | default(0) }}"
   roles:
   - role: check-services
-    when: "deprecated_nodeport_lb_test_port | int > 0"
+    when: hostvars[groups['frontend'] | first ]['deprecated_nodeport_lb_test_port'] is not none
+    vars:
+      gateway: "{{ groups['gateways'] | first or groups['masters'] | first }}"
+      first_worker: "{{ groups['workers'] | first }}"
+      deprecated_nodeport_lb_test_port: "{{ hostvars[groups['frontend'] | first ]['deprecated_nodeport_lb_test_port'] }}"
     tags:
     - test-services
     - check-services

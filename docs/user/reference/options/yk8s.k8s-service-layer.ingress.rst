@@ -47,7 +47,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 **Type:**::
 
-  non-empty string
+  RFC3986 relative URL path
 
 
 **Default:**::
@@ -68,7 +68,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 **Type:**::
 
-  non-empty string
+  Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::
@@ -137,7 +137,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 **Type:**::
 
-  non-empty string
+  RFC3986 HTTP(S) URL
 
 
 **Default:**::
@@ -184,7 +184,7 @@ never deleted).
 
 **Type:**::
 
-  non-empty string
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
 
 
 **Default:**::
@@ -249,7 +249,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ingress.nix
 
 **Type:**::
 
-  non-empty string
+  Helm chart release name
 
 
 **Default:**::
@@ -271,7 +271,7 @@ Replica Count
 
 **Type:**::
 
-  positive integer, meaning >0
+  unsigned integer, meaning >=0
 
 
 **Default:**::
@@ -316,7 +316,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -337,7 +337,7 @@ Request and limit for the Nginx Ingress controller
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -363,7 +363,7 @@ Request and limit for the Nginx Ingress controller
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -392,7 +392,7 @@ Thus, this option is deprecated.
 
 **Type:**::
 
-  null or string matching the pattern ^(((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))((Ki|Mi|Gi|Ti|Pi|Ei)|(e((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+)))|E((([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))|([+-])(([0-9]+)|([0-9]+)[.]([0-9]+)|([0-9]+)[.]|[.]([0-9]+))))|(m|k|M|G|T|P|E)?))$
+  null or Kubernetes quantity
 
 
 **Default:**::
@@ -415,7 +415,7 @@ default.
 
 **Type:**::
 
-  null or non-empty string
+  null or Kubernetes label
 
 
 **Default:**::

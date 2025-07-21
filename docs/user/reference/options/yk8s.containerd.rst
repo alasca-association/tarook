@@ -66,7 +66,7 @@ Optionally specify a port.
 
 **Type:**::
 
-  list of non-empty string
+  list of RFC3986 HTTPS URL (scheme, authority and path only)
 
 
 **Example:**::
@@ -89,12 +89,12 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/containerd.nix
 Name of the registry host for which the mirrors should be used.
 Registry hosts are typically referred to by their internet domain names, aka. registry host names.
 For example, docker.io, quay.io, gcr.io, and ghcr.io.
-Set to "_default" if the mirrors should be used as default.
+Set to null if the mirrors should be used as default.
 
 
 **Type:**::
 
-  non-empty string
+  null or RFC1123 subdomain name
 
 
 **Example:**::

@@ -2,6 +2,16 @@
   types = import ./types.nix {inherit lib;};
   transform = import ./transform.nix {inherit lib;};
 in rec {
+  /*
+  Like nixpkgs.lib.options.mkEnableOption but with true as the default
+  */
+  mkDisableOption = name:
+    lib.mkOption {
+      default = true;
+      example = false;
+      description = "Whether to enable ${name}.";
+      type = lib.types.bool;
+    };
   mkInternalOption = args:
     lib.mkOption ({
         internal = true;

@@ -26,7 +26,7 @@
   lineinfile:
     path: /etc/environment
     regexp: "^(.*{{ item }}.*)$"
-    line: "{{ item }}={{ no_proxy }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
+    line: "{{ item }}={{ no_proxy | join(',') }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
     state: present
   loop:
     - NO_PROXY
@@ -55,6 +55,6 @@
         - http_proxy={{ http_proxy }}
         - HTTPS_PROXY={{ https_proxy }}
         - https_proxy={{ https_proxy }}
-        - NO_PROXY={{ no_proxy }}
-        - no_proxy={{ no_proxy }}
+        - NO_PROXY={{ no_proxy | join(',') }}
+        - no_proxy={{ no_proxy | join(',') }}
 ...

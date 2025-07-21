@@ -13,8 +13,8 @@ default as it requires some prethinking.
 ``yk8s.testing.force_reboot_nodes``
 ###################################
 
-Enforce rebooting of nodes after every system update
-
+Whether to enable enforce rebooting of nodes after every system update
+.
 
 **Type:**::
 
@@ -24,6 +24,11 @@ Enforce rebooting of nodes after every system update
 **Default:**::
 
   false
+
+
+**Example:**::
+
+  true
 
 
 **Declared by**

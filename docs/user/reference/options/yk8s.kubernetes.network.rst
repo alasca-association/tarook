@@ -42,7 +42,9 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 **Type:**::
 
-  signed integer
+  Autonomous system number reserved for private use
+  
+  Allowed ranges: 64512-65534, 4200000000-4294967294
 
 
 **Default:**::
@@ -63,7 +65,9 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 **Type:**::
 
-  positive integer, meaning >0
+  Autonomous system number reserved for private use
+  
+  Allowed ranges: 64512-65534, 4200000000-4294967294
 
 
 **Default:**::
@@ -80,6 +84,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
 ``yk8s.kubernetes.network.ipv4_nat_outgoing``
 #############################################
 
+Enable outgoing IPv4 network address translation
 
 
 **Type:**::
@@ -101,6 +106,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/network.nix
 ``yk8s.kubernetes.network.ipv6_nat_outgoing``
 #############################################
 
+Enable outgoing IPv6 network address translation
 
 
 **Type:**::
@@ -128,7 +134,7 @@ automatically to each node.
 
 **Type:**::
 
-  string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])/([0-9]|[12][0-9]|3[0-2])$
+  IPv4 address in four-octets decimal notation plus subnet in CIDR notation
 
 
 **Default:**::
@@ -151,7 +157,7 @@ automatically to each node.
 
 **Type:**::
 
-  non-empty string
+  IPv6 address in colon-hexadecimal notation plus subnet in CIDR notation
 
 
 **Default:**::
@@ -173,7 +179,7 @@ This is the IPv4 subnet used by Kubernetes for Services.
 
 **Type:**::
 
-  string matching the pattern ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]).){3}(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])/([0-9]|[12][0-9]|3[0-2])$
+  IPv4 address in four-octets decimal notation plus subnet in CIDR notation
 
 
 **Default:**::
@@ -201,7 +207,7 @@ https://github.com/kubernetes/kubernetes/pull/12841
 
 **Type:**::
 
-  non-empty string
+  IPv6 address in colon-hexadecimal notation plus subnet in CIDR notation
 
 
 **Default:**::

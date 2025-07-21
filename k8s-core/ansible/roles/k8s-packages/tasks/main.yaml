@@ -20,7 +20,7 @@
   lineinfile:
     path: /etc/environment
     regexp: "^(.*{{ item }}.*)$"
-    line: "{{ item }}={{ no_proxy }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
+    line: "{{ item }}={{ no_proxy | join(',') }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
     state: present
   loop:
     - NO_PROXY
@@ -32,7 +32,7 @@
   lineinfile:
     path: /etc/profile.d/proxy.sh
     regexp: "^(.*{{ item }}.*)$"
-    line: "{{ item }}={{ no_proxy }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
+    line: "{{ item }}={{ no_proxy | join(',') }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
     state: present
   loop:
     - NO_PROXY
