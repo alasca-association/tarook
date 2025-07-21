@@ -262,18 +262,24 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 ``yk8s.k8s-service-layer.prometheus.blackbox_version``
 ######################################################
 
-Deploy a specific blackbox exporter version
-https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
+The helm chart version to be used.
+
+If the version shall be unpinned, set to: ``null``.
 
 
 **Type:**::
 
-  Helm chart version (Semantic version 2 string or OCI image tag)
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::
 
   "11.1.0"
+
+
+**Example:**::
+
+  "1.2.3"
 
 
 **Declared by**
@@ -985,17 +991,24 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 ``yk8s.k8s-service-layer.prometheus.nvidia_dcgm_exporter_helm_version``
 #######################################################################
 
-Helm chart version of the NVIDIA DCGM exporter
+The helm chart version to be used.
+
+If the version shall be unpinned, set to: ``null``.
 
 
 **Type:**::
 
-  Helm chart version (Semantic version 2 string or OCI image tag)
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::
 
   "4.2.0"
+
+
+**Example:**::
+
+  "1.2.3"
 
 
 **Declared by**
@@ -1163,16 +1176,24 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 ``yk8s.k8s-service-layer.prometheus.prometheus_adapter_version``
 ################################################################
 
+The helm chart version to be used.
+
+If the version shall be unpinned, set to: ``null``.
 
 
 **Type:**::
 
-  Helm chart version (Semantic version 2 string or OCI image tag)
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::
 
   "4.14.1"
+
+
+**Example:**::
+
+  "1.2.3"
 
 
 **Declared by**
@@ -1450,21 +1471,24 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 ``yk8s.k8s-service-layer.prometheus.prometheus_stack_version``
 ##############################################################
 
-helm chart version of the prometheus stack
-https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
-If you set this empty (not unset), the latest version is used
-Note that upgrades require additional steps and maybe even LCM changes are needed:
-https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#upgrading-chart
+The helm chart version to be used.
+
+If the version shall be unpinned, set to: ``null``.
 
 
 **Type:**::
 
-  Helm chart version (Semantic version 2 string or OCI image tag)
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::
 
   "73.2.3"
+
+
+**Example:**::
+
+  "1.2.3"
 
 
 **Declared by**
@@ -1601,17 +1625,24 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 ``yk8s.k8s-service-layer.prometheus.thanos_chart_version``
 ##########################################################
 
-Set custom Bitnami/Thanos chart version
+The helm chart version to be used.
+
+If the version shall be unpinned, set to: ``null``.
 
 
 **Type:**::
 
-  Helm chart version (Semantic version 2 string or OCI image tag)
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::
 
   "17.2.1"
+
+
+**Example:**::
+
+  "1.2.3"
 
 
 **Declared by**
