@@ -180,6 +180,7 @@ in {
       };
       apiserver = {
         frontend_port = 8888;
+        audit_logs.enabled = true;
       };
       controller_manager = {
         enable_signing_requests = true;
