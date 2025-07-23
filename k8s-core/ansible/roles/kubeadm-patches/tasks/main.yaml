@@ -3,13 +3,19 @@
   become: true
   block:
     - name: Upload audit log policy file
-      ansible.builtin.template:
-        src: templates/audit-policy.yaml.j2
+      copy:
+        src: "{{ k8s_apiserver_audit_logs_policy_file }}"
         dest: /etc/kubernetes/audit-policy.yaml
         owner: root
         group: root
         mode: '0640'
       when: k8s_apiserver_audit_logs_enabled
+
+    - name: Remove audit log policy file
+      file:
+        state: absent
+        path: "/etc/kubernetes/audit-policy.yaml"
+      when: not k8s_apiserver_audit_logs_enabled
 
     - name: Create kubeadm-patches folder
       file:
