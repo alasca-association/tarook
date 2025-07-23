@@ -19,7 +19,7 @@ pages:
   - !reference [.pages, script]
   # Permanently redirect requests for / to /devel/
   # see https://docs.gitlab.com/user/project/pages/redirects/
-  - echo "/ /devel/ 301" > _build/html/_redirects
+  - echo "/k8s/ /k8s/devel/ 301" > _build/html/_redirects
   - mv _build/html public
   tags: !reference [.pages, tags]
   dependencies: !reference [.pages, dependencies]
