@@ -295,7 +295,7 @@ in {
       '';
       type = helmChartVersion;
       # renovate: datasource=helm depName=kube-prometheus-stack registryUrl=https://prometheus-community.github.io/helm-charts
-      default = "73.2.3";
+      default = "75.13.0";
     };
     prometheus_adapter_version = mkOption {
       type = helmChartVersion;
