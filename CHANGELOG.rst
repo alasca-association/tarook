@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.1.9 (2025-07-07)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+
+- Support for audit policies has been added. (`!1896 <https://gitlab.com/yaook/k8s/-/merge_requests/1896>`_)
+
+
 v9.1.8 (2025-07-03)
 -------------------
 

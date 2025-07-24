@@ -72,11 +72,11 @@
 
   /*
   Return an attributeset where all nested attributes are flattened. The name of the path will be separated by "_"
-  Optionally pass a list of attribute names that should not be flattened.
+  Optionally pass a list of attribute names (in dot notation) that should not be flattened.
 
   Example:
-  flatten {except=["d"];} { a.b.c = 1; a.d = 2; }
-  -> { a_b_c = 1; a.d = 2; }
+  flatten {except = ["a.d"];} {a.b.c = 1; a.d.e = 2; }
+  -> {a_b_c = 1; a_d = {e = 2;};}
 
   Optionally pass a depth until which the nesting should be flattened.
   Attention: Nestings that do not exceed the specified depth and end with an empty attribute set will disappear
@@ -92,32 +92,47 @@
     except ? [],
     depth ? null,
   }: let
-    inherit (builtins) isAttrs elem;
+    inherit (builtins) isAttrs elem head tail foldl' filter;
     inherit (lib.attrsets) foldlAttrs mapAttrs';
+    except' = map (lib.splitString ".") except;
+    flatten' = {
+      except',
+      depth,
+    }: let
+      exceptCurrentLevel = map head (filter (e: (builtins.length e) == 1) except');
+      exceptNextLevel = outerName:
+        foldl' (acc: e:
+          acc
+          ++ (
+            lib.optional ((head e) == outerName)
+            (tail e)
+          )) [];
+    in
+      foldlAttrs (
+        acc: outerName: outerValue:
+          acc
+          // (
+            if
+              (depth != null -> depth > 0)
+              && isAttrs outerValue
+              && ! elem outerName exceptCurrentLevel
+            then
+              mapAttrs' (name: value: {
+                name = "${outerName}_${name}";
+                inherit value;
+              }) (flatten' {
+                  except' = exceptNextLevel outerName except';
+                  depth =
+                    if depth == null
+                    then null
+                    else depth - 1;
+                }
+                outerValue)
+            else {"${outerName}" = outerValue;}
+          )
+      ) {};
   in
-    foldlAttrs (
-      acc: outerName: outerValue:
-        acc
-        // (
-          if
-            (depth != null -> depth > 0)
-            && isAttrs outerValue
-            && ! elem outerName except
-          then
-            mapAttrs' (name: value: {
-              name = "${outerName}_${name}";
-              inherit value;
-            }) (flatten {
-                inherit except;
-                depth =
-                  if depth == null
-                  then null
-                  else depth - 1;
-              }
-              outerValue)
-          else {"${outerName}" = outerValue;}
-        )
-    ) {};
+    flatten' {inherit except' depth;};
 
   /*
   Return the attributeset unchanged if its attribute `enabled` is `true`, else return an empty attributeset.

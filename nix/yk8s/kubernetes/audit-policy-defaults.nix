@@ -1,0 +1,195 @@
+{
+  apiVersion = "audit.k8s.io/v1";
+  kind = "Policy";
+  # Don't generate audit events for all requests in RequestReceived stage.
+  # Use union of both if omitStages is also defined in rules.
+  omitStages = [
+    "RequestReceived"
+  ];
+  omitManagedFields = true;
+  rules = [
+    # Audit profile from Google Container-Optimized OS
+    # https://github.com/kubernetes/kubernetes/blob/cacd595bae429e5739edaf02c6915e9c5731dea7/cluster/gce/gci/configure-helper.sh#L1227C1-L1232C18
+    # Don't log events with no relevance for us and which happen very often
+
+    # Don't log these read-only URLs.
+    {
+      level = "None"; # The first matching rule sets the audit level of the event
+      nonResourceURLs = [
+        "/healthz*"
+        "/readyz" # We had maaaaaany of those with code 200
+        "/" # Had many of those, too, by user system:anonymous with HTTP 403
+        "/livez" # Here, too
+        "/version"
+        "/swagger*"
+      ];
+    }
+
+    # Don't log events requests because of performance impact.
+    {
+      level = "None";
+      resources = [
+        {
+          group = ""; # core
+          resources = [
+            "events"
+          ];
+        }
+      ];
+    }
+
+    {
+      level = "Request";
+      users = [
+        "kubelet"
+        "system:node-problem-detector"
+        "system:serviceaccount:kube-system:node-problem-detector"
+      ];
+      verbs = [
+        "update"
+        "patch"
+      ];
+      resources = [
+        {
+          group = ""; # core
+          resources = [
+            "nodes/status"
+            "pods/status"
+          ];
+        }
+      ];
+      omitStages = [
+        "RequestReceived"
+      ];
+    }
+    {
+      level = "Request";
+      userGroups = [
+        "system:nodes"
+      ];
+      verbs = [
+        "update"
+        "patch"
+      ];
+      resources = [
+        {
+          group = "";
+          resources = [
+            "nodes/status"
+            "pods/status"
+          ];
+        }
+      ];
+      omitStages = [
+        "RequestReceived"
+      ];
+    }
+
+    # deletecollection calls can be large, don't log responses for expected namespace deletions
+    {
+      level = "Request";
+      users = [
+        "system:serviceaccount:kube-system:namespace-controller"
+      ];
+      verbs = [
+        "deletecollection"
+      ];
+      omitStages = [
+        "RequestReceived"
+      ];
+    }
+
+    # Secrets, ConfigMaps, TokenRequest and TokenReviews can contain sensitive & binary data,
+    # so only log at the Metadata level.
+    {
+      level = "Metadata";
+      resources = [
+        {
+          group = ""; # core
+          resources = [
+            "secrets"
+            "configmaps"
+            "serviceaccounts/token"
+          ];
+        }
+        {
+          group = "authentication.k8s.io";
+          resources = [
+            "tokenreviews"
+          ];
+        }
+      ];
+      omitStages = [
+        "RequestReceived"
+      ];
+    }
+
+    # Get responses can be large; skip them.
+    {
+      level = "Request";
+      verbs = [
+        "get"
+        "list"
+        "watch"
+      ];
+      resources = [
+        {group = "";} # core
+        {group = "admissionregistration.k8s.io";}
+        {group = "apiextensions.k8s.io";}
+        {group = "apiregistration.k8s.io";}
+        {group = "apps";}
+        {group = "authentication.k8s.io";}
+        {group = "authorization.k8s.io";}
+        {group = "autoscaling";}
+        {group = "batch";}
+        {group = "certificates.k8s.io";}
+        {group = "extensions";}
+        {group = "metrics.k8s.io";}
+        {group = "networking.k8s.io";}
+        {group = "node.k8s.io";}
+        {group = "policy";}
+        {group = "rbac.authorization.k8s.io";}
+        {group = "scheduling.k8s.io";}
+        {group = "storage.k8s.io";}
+      ];
+      omitStages = [
+        "RequestReceived"
+      ];
+    }
+    # Default level for known APIs
+    {
+      level = "Request";
+      resources = [
+        {group = "";} # core
+        {group = "admissionregistration.k8s.io";}
+        {group = "apiextensions.k8s.io";}
+        {group = "apiregistration.k8s.io";}
+        {group = "apps";}
+        {group = "authentication.k8s.io";}
+        {group = "authorization.k8s.io";}
+        {group = "autoscaling";}
+        {group = "batch";}
+        {group = "certificates.k8s.io";}
+        {group = "extensions";}
+        {group = "metrics.k8s.io";}
+        {group = "networking.k8s.io";}
+        {group = "node.k8s.io";}
+        {group = "policy";}
+        {group = "rbac.authorization.k8s.io";}
+        {group = "scheduling.k8s.io";}
+        {group = "storage.k8s.io";}
+      ];
+      omitStages = [
+        "RequestReceived"
+      ];
+    }
+    # Default level for all other requests.
+    {
+      level = "Metadata";
+      omitStages = [
+        "RequestReceived"
+      ];
+    }
+  ];
+  # End of audit profile for Google Container-Optimized OS
+}
