@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.1.11 (2025-07-24)
+--------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- A new environment group ``yk8s-env.update-inventory`` has been added, so ``update-inventory.sh`` can be run without downloading unnecessary dependencies. (`!1921 <https://gitlab.com/yaook/k8s/-/merge_requests/1921>`_)
+
+
 v9.1.10 (2025-07-16)
 --------------------
 
