@@ -7,6 +7,293 @@ yk8s.kubernetes
 This section contains generic information about the Kubernetes cluster
 configuration.
 
+.. _configuration-options.yk8s.kubernetes.apiserver.audit_logs.enabled:
+
+``yk8s.kubernetes.apiserver.audit_logs.enabled``
+################################################
+
+Whether to enable audit logs for the apiserver.
+
+.. note::
+
+  Modifications to this setting and its related only apply during Kubernetes upgrades.
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  false
+
+
+**Example:**::
+
+  true
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+
+
+.. _configuration-options.yk8s.kubernetes.apiserver.audit_logs.max_size:
+
+``yk8s.kubernetes.apiserver.audit_logs.max_size``
+#################################################
+
+Maximum size of apiserver audit log files in megabytes before it gets rotated
+
+
+**Type:**::
+
+  unsigned integer, meaning >=0
+
+
+**Default:**::
+
+  50
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+
+
+.. _configuration-options.yk8s.kubernetes.apiserver.audit_logs.policy:
+
+``yk8s.kubernetes.apiserver.audit_logs.policy``
+###############################################
+
+The audit policy for the kube-apiserver.
+Checkout the
+`Kubernetes Auditing Documentation <https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/#audit-policy>`_
+for further information on how to configure.
+
+You may use ``audit_logs.policy = yk8s-lib.importYAML ./path/to/policy.yaml;`` to import
+an existing policy manifest. Note that the YAML file has to be added to the git repository
+in order to be evaluated by Nix.
+
+Alternatively, if you prefer to specify the policy in Nix directly, you may use
+https://github.com/cloudandheat/json2nix to convert existing policies to Nix.
+
+Note that this option is not type checked by Nix, so make sure that it it's a valid audit policy.
+
+
+**Type:**::
+
+  attribute set
+
+
+**Default:**::
+
+  {
+    apiVersion = "audit.k8s.io/v1";
+    kind = "Policy";
+    # Don't generate audit events for all requests in RequestReceived stage.
+    # Use union of both if omitStages is also defined in rules.
+    omitStages = [
+      "RequestReceived"
+    ];
+    omitManagedFields = true;
+    rules = [
+      # Audit profile from Google Container-Optimized OS
+      # https://github.com/kubernetes/kubernetes/blob/cacd595bae429e5739edaf02c6915e9c5731dea7/cluster/gce/gci/configure-helper.sh#L1227C1-L1232C18
+      # Don't log events with no relevance for us and which happen very often
+  
+      # Don't log these read-only URLs.
+      {
+        level = "None"; # The first matching rule sets the audit level of the event
+        nonResourceURLs = [
+          "/healthz*"
+          "/readyz" # We had maaaaaany of those with code 200
+          "/" # Had many of those, too, by user system:anonymous with HTTP 403
+          "/livez" # Here, too
+          "/version"
+          "/swagger*"
+        ];
+      }
+  
+      # Don't log events requests because of performance impact.
+      {
+        level = "None";
+        resources = [
+          {
+            group = ""; # core
+            resources = [
+              "events"
+            ];
+          }
+        ];
+      }
+  
+      {
+        level = "Request";
+        users = [
+          "kubelet"
+          "system:node-problem-detector"
+          "system:serviceaccount:kube-system:node-problem-detector"
+        ];
+        verbs = [
+          "update"
+          "patch"
+        ];
+        resources = [
+          {
+            group = ""; # core
+            resources = [
+              "nodes/status"
+              "pods/status"
+            ];
+          }
+        ];
+        omitStages = [
+          "RequestReceived"
+        ];
+      }
+      {
+        level = "Request";
+        userGroups = [
+          "system:nodes"
+        ];
+        verbs = [
+          "update"
+          "patch"
+        ];
+        resources = [
+          {
+            group = "";
+            resources = [
+              "nodes/status"
+              "pods/status"
+            ];
+          }
+        ];
+        omitStages = [
+          "RequestReceived"
+        ];
+      }
+  
+      # deletecollection calls can be large, don't log responses for expected namespace deletions
+      {
+        level = "Request";
+        users = [
+          "system:serviceaccount:kube-system:namespace-controller"
+        ];
+        verbs = [
+          "deletecollection"
+        ];
+        omitStages = [
+          "RequestReceived"
+        ];
+      }
+  
+      # Secrets, ConfigMaps, TokenRequest and TokenReviews can contain sensitive & binary data,
+      # so only log at the Metadata level.
+      {
+        level = "Metadata";
+        resources = [
+          {
+            group = ""; # core
+            resources = [
+              "secrets"
+              "configmaps"
+              "serviceaccounts/token"
+            ];
+          }
+          {
+            group = "authentication.k8s.io";
+            resources = [
+              "tokenreviews"
+            ];
+          }
+        ];
+        omitStages = [
+          "RequestReceived"
+        ];
+      }
+  
+      # Get responses can be large; skip them.
+      {
+        level = "Request";
+        verbs = [
+          "get"
+          "list"
+          "watch"
+        ];
+        resources = [
+          {group = "";} # core
+          {group = "admissionregistration.k8s.io";}
+          {group = "apiextensions.k8s.io";}
+          {group = "apiregistration.k8s.io";}
+          {group = "apps";}
+          {group = "authentication.k8s.io";}
+          {group = "authorization.k8s.io";}
+          {group = "autoscaling";}
+          {group = "batch";}
+          {group = "certificates.k8s.io";}
+          {group = "extensions";}
+          {group = "metrics.k8s.io";}
+          {group = "networking.k8s.io";}
+          {group = "node.k8s.io";}
+          {group = "policy";}
+          {group = "rbac.authorization.k8s.io";}
+          {group = "scheduling.k8s.io";}
+          {group = "storage.k8s.io";}
+        ];
+        omitStages = [
+          "RequestReceived"
+        ];
+      }
+      # Default level for known APIs
+      {
+        level = "Request";
+        resources = [
+          {group = "";} # core
+          {group = "admissionregistration.k8s.io";}
+          {group = "apiextensions.k8s.io";}
+          {group = "apiregistration.k8s.io";}
+          {group = "apps";}
+          {group = "authentication.k8s.io";}
+          {group = "authorization.k8s.io";}
+          {group = "autoscaling";}
+          {group = "batch";}
+          {group = "certificates.k8s.io";}
+          {group = "extensions";}
+          {group = "metrics.k8s.io";}
+          {group = "networking.k8s.io";}
+          {group = "node.k8s.io";}
+          {group = "policy";}
+          {group = "rbac.authorization.k8s.io";}
+          {group = "scheduling.k8s.io";}
+          {group = "storage.k8s.io";}
+        ];
+        omitStages = [
+          "RequestReceived"
+        ];
+      }
+      # Default level for all other requests.
+      {
+        level = "Metadata";
+        omitStages = [
+          "RequestReceived"
+        ];
+      }
+    ];
+    # End of audit profile for Google Container-Optimized OS
+  }
+  
+
+
+**Example:**::
+
+  yk8s-lib.importYAML ./path/to/policy.yaml # Note that the file has to be added to the git repository to be evaluated by Nix
+  
+
+
+**Declared by**
+https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+
+
 .. _configuration-options.yk8s.kubernetes.apiserver.frontend_port:
 
 ``yk8s.kubernetes.apiserver.frontend_port``
@@ -49,32 +336,6 @@ Memory resources limit for the apiserver
 **Example:**::
 
   "1Gi"
-
-
-**Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
-
-.. _configuration-options.yk8s.kubernetes.apiserver.audit_logs:
-
-``yk8s.kubernetes.apiserver.audit_logs``
-##########################################
-
-Whether to enable audit logs for the apiserver
-
-
-**Type:**::
-
-  boolean
-
-
-**Default:**::
-
-  false
-
-
-**Example:**::
-
-  true
 
 
 **Declared by**
