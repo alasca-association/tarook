@@ -27,7 +27,6 @@
         ip_sans: "{% if local_ipv4_address is defined %}{{ local_ipv4_address }},{% endif %}{% if local_ipv6_address is defined %}{{ local_ipv6_address }},{% endif %}127.0.0.1,::1"
         ttl: 8784h
       get_cert_notify: Restart etcd
-      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain etcd peer certificate
     include_role:
@@ -47,7 +46,6 @@
         ip_sans: "{% if local_ipv4_address is defined %}{{ local_ipv4_address }},{% endif %}{% if local_ipv6_address is defined %}{{ local_ipv6_address }},{% endif %}127.0.0.1,::1"
         ttl: 8784h
       get_cert_notify: Restart etcd
-      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain etcd healthcheck certificate
     include_role:
@@ -66,7 +64,6 @@
         alt_names: "{{ inventory_hostname }}"
         ttl: 8784h
       get_cert_notify: Restart etcd
-      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain apiserver etcd client certificate
     include_role:
@@ -84,7 +81,6 @@
         common_name: "{{ inventory_hostname }}"
         ttl: 8784h
       get_cert_notify: Restart kube-apiserver
-      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain apiserver frontend certificate
     include_role:
@@ -104,7 +100,6 @@
         ip_sans: "{% if ipv4_enabled %}{{ networking_fixed_ip }},{{ k8s_network_service_subnet | ansible.utils.nthhost(1) }},{% endif %}{% if ipv6_enabled %}{{ networking_fixed_ip_v6 }},{{ k8s_network_service_subnet_v6 | ansible.utils.nthhost(1) }},{% endif %}{% if local_ipv4_address is defined %}{{ local_ipv4_address }},{% endif %}{% if local_ipv6_address is defined %}{{ local_ipv6_address }},{% endif %}127.0.0.1,::1"
         ttl: 8784h
       get_cert_notify: Restart kube-apiserver
-      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain apiserver kubelet client certificate
     include_role:
@@ -122,7 +117,6 @@
         common_name: "apiserver:{{ inventory_hostname }}.node.{{ vault_cluster_name }}"
         ttl: 8784h
       get_cert_notify: Restart kube-apiserver
-      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
 
   - name: Obtain apiserver front proxy client certificate
     include_role:
@@ -140,4 +134,3 @@
         common_name: "front-proxy-client"
         ttl: 8784h
       get_cert_notify: Restart kube-apiserver
-      force_renewal: "{{ next_k8s_version is defined | ternary(true, false) }}"
