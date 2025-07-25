@@ -157,6 +157,7 @@ in {
       message = "config.yk8s.ipsec.remote_private_addrs: must be set because config.yk8s.ipsec.test_enabled=true";
     }
   ];
+  config.yk8s.warnings = lib.optional (cfg.enabled) "config.yk8s.ipsec: is deprecated. Support for it will be dropped in a release after v11.0.0";
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
