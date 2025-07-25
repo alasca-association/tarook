@@ -5,9 +5,9 @@ You may override them if needed.
 
 It is recommended to apply the cluster repo's gitignore rules to its git index
 with *every* major release.
-The following will remove any committed but gitignore file from version control:
+The following will remove any committed but gitignored file from version control:
 
-.. code: shell
+.. code:: shell
 
    git ls-files --ignored --cached --exclude-from=.gitignore -z \
      | xargs --null git rm --cached -r

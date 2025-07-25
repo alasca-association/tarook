@@ -1,1 +1,1 @@
-The options to configure a wireguard endpoint directly under ``wireguard`` have been removed. Please use :ref:`configuration-options.yk8s.wireguard.endpoints` instead.
+The options to configure a wireguard endpoint directly under :ref:`configuration-options.yk8s.wireguard` have been removed. Please use :ref:`configuration-options.yk8s.wireguard.endpoints` instead.

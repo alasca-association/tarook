@@ -1,13 +1,13 @@
 The VIP port IP address and the gateway port IDs are now added to the
 ch-k8s-lbaas configuration (``./k8s-supplements/ansible/roles/ch-k8s-lbaas-controller/templates/controller-config.toml``)
-which is required as we re-introduced OpenStack security groups and in especially
+which is required as we re-introduced OpenStack security groups which are
 needed in OpenStack environments which use OVN.
 
 From now on, ch-k8s-lbaas must know the OpenStack port id for its configuration.
-The port id is added to the hosts file by Terraform.
+The port id is added to the hosts file by Terraform automatically.
 Terraform therefore has to be triggered once and the ch-k8s-lbaas setup must be updated.
 
-The ``migrate-to-release.sh``-script takes care of all the necessary steps:
+The :ref:`actions-references.migrate-to-releasesh` script takes care of all the necessary steps:
 
 .. code:: console
 

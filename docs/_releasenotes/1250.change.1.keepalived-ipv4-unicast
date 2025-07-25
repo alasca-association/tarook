@@ -3,7 +3,7 @@ For single-frontend-node setups, it automatically falls back to multicast as oth
 
 It is recommended to update its configuration.
 
-The ``migrate-to-release.sh``-script takes care of all the necessary steps:
+The :ref:`actions-references.migrate-to-releasesh` script takes care of all the necessary steps:
 
 .. code:: console
 

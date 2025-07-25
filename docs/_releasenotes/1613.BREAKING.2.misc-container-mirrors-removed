@@ -1,2 +1,2 @@
-The option ``miscellaneous.container_mirrors`` has been removed.
+The option ``yk8s.miscellaneous.container_mirrors`` has been removed.
 Mirrors can be configured via :ref:`configuration-options.yk8s.containerd.mirrors` now.

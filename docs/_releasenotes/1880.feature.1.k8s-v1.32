@@ -1,7 +1,1 @@
 Support for Kubernetes v1.32 has been added.
-The default Kubernetes version has been bumped:
-:ref:`configuration-options.yk8s.kubernetes.version`.
-It is important, that a clusters configuration reflects the deployed Kubernetes version.
-
-Take a look at the following document for upgrade instructions:
-:doc:`/user/guide/kubernetes/upgrading-kubernetes`.
