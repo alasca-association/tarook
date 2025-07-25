@@ -262,7 +262,7 @@ This is, obviously, destructive. Don’t run light-heartedly.
 ``migrate-to-release.sh``
 ---------------------------
 
-Migrate to a new YAOOK/K8s release, see doc:`/user/tutorial/upgrade-release`.
+Migrate to a new YAOOK/K8s release, see :doc:`/user/tutorial/upgrade-release`.
 This script is idempotent.
 
 .. _actions-references.update-frontend-nodessh:
