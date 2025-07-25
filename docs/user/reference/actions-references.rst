@@ -262,8 +262,7 @@ This is, obviously, destructive. Don’t run light-heartedly.
 ``migrate-to-release.sh``
 ---------------------------
 
-Migrate an existing cluster repository which has been created
-`pre-core-split <https://gitlab.com/yaook/k8s/-/merge_requests/823>`__ to the new cluster repository structure.
+Migrate to a new YAOOK/K8s release, see doc:`/user/tutorial/upgrade-release`.
 This script is idempotent.
 
 .. _actions-references.update-frontend-nodessh:
