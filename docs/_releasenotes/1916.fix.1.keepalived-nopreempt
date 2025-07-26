@@ -1,1 +1,0 @@
-The ``nopreempt`` setting of keepalived for the VRRP instances has been fixed by setting the initial states to ``BACKUP``.

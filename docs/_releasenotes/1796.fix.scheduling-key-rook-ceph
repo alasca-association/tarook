@@ -1,1 +1,0 @@
-We fixed a bug where the :ref:`configuration-options.yk8s.k8s-service-layer.rook.scheduling_key` wasn't properly used for nodeAffinity.

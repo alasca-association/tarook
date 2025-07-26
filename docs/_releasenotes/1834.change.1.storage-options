@@ -1,1 +1,0 @@
-The option ``yk8s.kubernetes.storage.rook_enabled`` has been moved to :ref:`configuration-options.yk8s.k8s-service-layer.rook.enabled`

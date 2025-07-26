@@ -1,8 +1,0 @@
-The following legacy options have been removed as they had no effect in recent versions,
-aren't documented well and it is currently not intended to support the use cases they once served:
-
-* ``yk8s.miscellaneous.docker_insecure_registries``
-* ``yk8s.miscellaneous.container_mirror_default_host``
-* ``yk8s.miscellaneous.configure_mirror_ca``
-
-Mirrors can be configured via :ref:`configuration-options.yk8s.containerd.mirrors` now.

@@ -1,1 +1,0 @@
-The feature to manage IPSec tunnels (:ref:`configuration-options.yk8s.ipsec`) is deprecated and support for it will be dropped in a release after v11.0.0.

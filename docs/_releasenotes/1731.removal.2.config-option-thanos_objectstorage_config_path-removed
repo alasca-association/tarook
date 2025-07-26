@@ -1,4 +1,0 @@
-The ``yk8s.k8s-service-layer.prometheus.thanos_objectstorage_config_path``
-config option is removed.
-Please use :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_objectstorage_config_file`
-instead.

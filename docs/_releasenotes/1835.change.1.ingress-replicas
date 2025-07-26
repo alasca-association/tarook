@@ -1,1 +1,0 @@
-The default value for :ref:`configuration-options.yk8s.k8s-service-layer.ingress.replica_count` has been increased to ``2`` in order to reduce the chance of interruptions for accepting new connections during Kubernetes upgrades and the like.

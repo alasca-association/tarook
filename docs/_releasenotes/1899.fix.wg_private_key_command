@@ -1,2 +1,0 @@
-A bug in :ref:`wg-up.sh <actions-references.wg-upsh>` has been fixed that caused ``wg_private_key_command`` to fail if it contained environment variables.
-See :ref:`environmental-variables.vpn-configuration` for an example on how to use it with `pass <https://www.passwordstore.org/>`_.

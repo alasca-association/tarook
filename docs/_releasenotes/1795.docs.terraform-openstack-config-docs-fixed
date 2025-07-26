@@ -1,3 +1,0 @@
-A part of documentation that is specific to the config options in :ref:`configuration-options.yk8s.terraform`
-has been moved back from :ref:`configuration-options.yk8s.openstack`.
-The documentation of both config sections received minor corrections.

@@ -1,2 +1,0 @@
-The feature to configure mirrors for containerd has been re-added.
-Mirrors can be configured via :ref:`configuration-options.yk8s.containerd.mirrors` now.

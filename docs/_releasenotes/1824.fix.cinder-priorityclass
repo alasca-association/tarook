@@ -1,1 +1,0 @@
-The ``priorityClassName`` ``system-node-critical`` is now applied to the csi-cinder-plugin again to prevent its Pods from getting evicted.
