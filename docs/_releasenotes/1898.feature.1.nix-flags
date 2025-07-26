@@ -1,3 +1,0 @@
-A new env var ``TAROOK_NIX_FLAGS`` has been introduced: :ref:`Behavior-altering variables <environmental-variables.behavior-altering-variables>`.
-
-It can be used to supply additional flags to the ``nix build`` process of :ref:`update-inventory.sh<actions-references.update-inventorysh>`.

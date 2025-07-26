@@ -1,1 +1,0 @@
-If :ref:`configuration-options.yk8s.ch-k8s-lbaas.enabled` is set to ``true``, its keepalived VRRP instance is grouped with the VRRP instances of the VIP and VIP_v6 to ensure all instances are in consistent states.

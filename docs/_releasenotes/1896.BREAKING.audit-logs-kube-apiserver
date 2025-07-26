@@ -1,2 +1,0 @@
-The option ``yk8s.kubernetes.apiserver.audit_logs.custom_policy`` has been removed.
-Use :ref:`configuration-options.yk8s.kubernetes.apiserver.audit_logs.policy` instead.

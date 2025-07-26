@@ -1,9 +1,0 @@
-The :ref:`configuration-options.yk8s.ipsec.remote_private_addrs` config option
-expects a list now
-instead of a non-empty string previously.
-
-.. attention:: Action required
-
-   If you use this option in your config, you must convert its value.
-
-_

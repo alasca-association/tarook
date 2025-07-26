@@ -1,2 +1,0 @@
-The :ref:`configuration-options.yk8s.load-balancing.deprecated_nodeport_lb_test_port` config option
-rejects port 0 now.

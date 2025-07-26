@@ -1,3 +1,0 @@
-A fixture for unit testing nix code has been added
-along with the `unit-tests` CI stage and `test-nix-yk8s` CI job
-for running these unit tests.

@@ -1,1 +1,0 @@
-The option ``yk8s.kubernetes.storage.cinder_enable_topology`` has been moved to :ref:`configuration-options.yk8s.openstack.cinder_enable_topology`

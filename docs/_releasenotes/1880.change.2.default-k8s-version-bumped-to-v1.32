@@ -1,8 +1,0 @@
-The default for :ref:`configuration-options.yk8s.kubernetes.version` has been bumped to v1.32.
-
-.. note::
-
-   It is important, that a cluster's configuration reflects the deployed Kubernetes version.
-
-   Take a look at the following document for upgrade instructions:
-   :doc:`/user/guide/kubernetes/upgrading-kubernetes`.
