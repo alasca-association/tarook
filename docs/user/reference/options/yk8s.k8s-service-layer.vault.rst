@@ -73,17 +73,24 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 ``yk8s.k8s-service-layer.vault.chart_version``
 ##############################################
 
-Version of the Helm Chart to use
+The helm chart version to be used.
+
+If the version shall be unpinned, set to: ``null``.
 
 
 **Type:**::
 
-  Helm chart version (Semantic version 2 string or OCI image tag)
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::
 
   "0.23.0"
+
+
+**Example:**::
+
+  "1.2.3"
 
 
 **Declared by**

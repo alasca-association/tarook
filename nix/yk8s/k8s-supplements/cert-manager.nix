@@ -5,13 +5,14 @@
   ...
 }: let
   cfg = config.yk8s.k8s-service-layer.cert-manager;
+  modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (modules-lib) mkHelmChartVersionOption;
   inherit
     (yk8s-lib.types)
     emailAddress
     helmChartReleaseName
-    helmChartVersion
     helmChartRef
     helmChartRepoUrl
     httpxHostPathUrl
@@ -56,8 +57,7 @@ in {
       type = helmChartRef;
       default = "cert-manager";
     };
-    chart_version = mkOption {
-      type = helmChartVersion;
+    chart_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=cert-manager registryUrl=https://charts.jetstack.io
       default = "1.18.2";
     };

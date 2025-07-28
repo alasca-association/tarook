@@ -39,16 +39,24 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.
 ``yk8s.k8s-service-layer.cert-manager.chart_version``
 #####################################################
 
+The helm chart version to be used.
+
+If the version shall be unpinned, set to: ``null``.
 
 
 **Type:**::
 
-  Helm chart version (Semantic version 2 string or OCI image tag)
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
 
 
 **Default:**::
 
   "1.18.2"
+
+
+**Example:**::
+
+  "1.2.3"
 
 
 **Declared by**

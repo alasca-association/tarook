@@ -6,12 +6,11 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.vault;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRenamedOptionModule;
+  inherit (modules-lib) mkRenamedOptionModule mkHelmChartVersionOption;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
   inherit
     (yk8s-lib.types)
-    helmChartVersion
     helmChartRepoUrl
     k8sIngressClassName
     k8sIssuerName
@@ -70,11 +69,7 @@ in {
       default = "yaook/vault_v1/approle";
     };
 
-    chart_version = mkOption {
-      description = ''
-        Version of the Helm Chart to use
-      '';
-      type = helmChartVersion;
+    chart_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=vault registryUrl=https://helm.releases.hashicorp.com
       default = "0.23.0";
     };

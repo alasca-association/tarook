@@ -6,7 +6,7 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.prometheus;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule;
+  inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule mkHelmChartVersionOption;
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) foldlAttrs;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkMultiResourceOptions;
@@ -15,7 +15,6 @@
     absolutePosixPath
     bytesPower10
     helmChartReleaseName
-    helmChartVersion
     helmChartRepoUrl
     helmChartRef
     httpxHostPathUrl
@@ -269,11 +268,7 @@ in {
       default = "https://nvidia.github.io/dcgm-exporter/helm-charts";
     };
 
-    nvidia_dcgm_exporter_helm_version = mkOption {
-      description = ''
-        Helm chart version of the NVIDIA DCGM exporter
-      '';
-      type = helmChartVersion;
+    nvidia_dcgm_exporter_helm_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=dcgm-exporter registryUrl=https://nvidia.github.io/dcgm-exporter/helm-charts
       default = "4.2.0";
     };
@@ -285,20 +280,11 @@ in {
       type = absolutePosixPath;
       default = "/var/lib/node_exporter/textfile_collector";
     };
-    prometheus_stack_version = mkOption {
-      description = ''
-        helm chart version of the prometheus stack
-        https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
-        If you set this empty (not unset), the latest version is used
-        Note that upgrades require additional steps and maybe even LCM changes are needed:
-        https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#upgrading-chart
-      '';
-      type = helmChartVersion;
+    prometheus_stack_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=kube-prometheus-stack registryUrl=https://prometheus-community.github.io/helm-charts
       default = "73.2.3";
     };
-    prometheus_adapter_version = mkOption {
-      type = helmChartVersion;
+    prometheus_adapter_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=prometheus-adapter registryUrl=https://prometheus-community.github.io/helm-charts
       default = "4.14.2";
     };
@@ -372,11 +358,7 @@ in {
       default = true;
     };
 
-    thanos_chart_version = mkOption {
-      description = ''
-        Set custom Bitnami/Thanos chart version
-      '';
-      type = helmChartVersion;
+    thanos_chart_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=thanos registryUrl=https://charts.bitnami.com/bitnami
       default = "17.2.3";
     };
@@ -475,12 +457,7 @@ in {
       type = with types; listOf subdomainLabel;
       default = [];
     };
-    blackbox_version = mkOption {
-      description = ''
-        Deploy a specific blackbox exporter version
-        https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
-      '';
-      type = helmChartVersion;
+    blackbox_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=prometheus-blackbox-exporter registryUrl=https://prometheus-community.github.io/helm-charts
       default = "11.1.1";
     };

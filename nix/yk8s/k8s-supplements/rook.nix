@@ -6,14 +6,13 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.rook;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule;
+  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule mkHelmChartVersionOption;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection logIf mkGroupVarsFile mkMultiResourceOptions;
   inherit (yk8s-lib.options) mkDisableOption;
   inherit
     (yk8s-lib.types)
     helmChartReleaseName
-    helmChartVersion
     k8sLabel
     k8sNamespaceName
     k8sObjectName
@@ -140,11 +139,7 @@ in {
       default = null;
     };
 
-    version = mkOption {
-      description = ''
-        Version of rook to deploy
-      '';
-      type = helmChartVersion;
+    version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=rook-ceph registryUrl=https://charts.rook.io/release
       default = "v1.16.6";
     };
