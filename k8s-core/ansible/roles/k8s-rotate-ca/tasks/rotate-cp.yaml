@@ -124,6 +124,8 @@
 - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻
   delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
+  tags:
+    - k8s-restart-everything
   block:
   - name: Gather all namespaces
     kubernetes.core.k8s_info:

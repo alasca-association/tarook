@@ -138,9 +138,23 @@ Phase 1
 4. Run the rotation action to roll out both CAs in the cluster and create kubeconfigs
    issued by the CA of the new clustername but trusting both CAs.
 
-   .. code:: console
+   .. tabs::
 
-     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-root-ca.sh -n <new_clustername>
+      .. tab:: With regular workload
+
+         .. code:: console
+
+           $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-root-ca.sh -n <new_clustername>
+
+      .. tab:: With special workload that needs graceful restart, such as YAOOK Openstack
+
+         ``update-kubernetes-nodes.sh`` will pause before draining each node
+         to allow for manual pre-drain actions.
+
+         .. code:: console
+
+           $ MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS='--skip-tags k8s-restart-everything' ./managed-k8s/actions/rotate-root-ca.sh -n <new_clustername>
+           $ ./managed-k8s/actions/update-kubernetes-nodes.sh
 
 5. Verify workload is able to come back up
 
@@ -175,9 +189,23 @@ After you spread the kubeconfigs, do the following:
 2. Complete the rotation by removing the old CA from accepted bundles
    and renewing certificates for all components
 
-   .. code:: console
+   .. tabs::
 
-     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-root-ca.sh -c
+      .. tab:: With regular workload
+
+         .. code:: console
+
+           $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-root-ca.sh -c
+
+      .. tab:: With special workload that needs graceful restart, such as YAOOK Openstack
+
+         ``update-kubernetes-nodes.sh`` will pause before draining each node
+         to allow for manual pre-drain actions.
+
+         .. code:: console
+
+           $ MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS='--skip-tags k8s-restart-everything' ./managed-k8s/actions/rotate-root-ca.sh -c
+           $ ./managed-k8s/actions/update-kubernetes-nodes.sh
 
 3. Verify workload is able to come back up
 
