@@ -1,5 +1,11 @@
 {% extends "!page.html" %}
 {% block body %}
+<p style="background-color: var(--color-background-item);color:#d86363;text-align: center;line-height: 80px;">
+    <strong>
+      YAOOK/K8s will be renamed and migrated to <a href="https://gitlab.com/alasca.cloud/tarook/tarook/" target="_blank">TAROOK</a> on August 8, 2025.
+      For more details, see the <a href="https://gitlab.com/yaook/k8s/-/blob/devel/README.md" target="_blank">project README</a>.
+    </strong>
+</p>
 {% if current_version and latest_version and current_version != latest_version and current_version != release and current_version.name != latest_version.release %}
 <p style="background-color: var(--color-background-item);color:var(--color-foreground-secondary);text-align: center;line-height: 80px;">
   <strong>

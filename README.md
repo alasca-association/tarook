@@ -1,3 +1,19 @@
+# Project Rename Announcement
+
+The YAOOK/K8s project will be separated from YAOOK and becomes a standalone project of the ALASCA association on **August 8th, 2025**. It will be renamed to **TAROOK** in that course.
+
+The repository will be migrated to https://gitlab.com/alasca.cloud/tarook/tarook/ on that day.
+
+What does this mean for you?
+
+- Repository URLs and documentation will be updated on August 8th, 2025.
+
+- Existing functionality and usage patterns will remain unaffected.
+
+- Contributions, issues, and discussions will continue seamlessly at https://gitlab.com/alasca.cloud/tarook/tarook/.
+
+We invite the community to follow along, contribute, and help to shape the future of TAROOK as part of the ALASCA ecosystem.
+
 # YAOOK/K8s
 
 YAOOK/K8s is a Lifecycle-Management tool to provide and operate a customizable, highly available, and flexible Kubernetes cluster.
