@@ -1,0 +1,3 @@
+In case the Kubernetes control plane nodes serve as frontend nodes
+we do not deploy an additional Prometheus node-exporter service monitor for frontend nodes anymore
+since the monitoring stack already provides one for all Kubernetes nodes.

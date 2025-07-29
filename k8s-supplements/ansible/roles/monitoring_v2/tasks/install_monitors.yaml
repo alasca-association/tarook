@@ -15,8 +15,9 @@
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
 
-  - name: "{{ (groups['gateways'] | default([]) | length > 0) | ternary('Create', 'Delete') }} bird service monitor (frontend)"
+  - name: "{{ (groups['gateways'] | default([]) | length > 0) | ternary('Create', 'Delete') }} bird service monitor (gateway-frontend)"
     kubernetes.core.k8s:
+      # Only deploy when we have actual gateway nodes
       state: "{{ (groups['gateways'] | default([]) | length > 0) | ternary('present', 'absent') }}"
       apply: true
       definition: "{{ lookup('template', 'bird-service-monitor.yaml.j2') }}"
@@ -72,9 +73,10 @@
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
 
-  - name: Create service monitor node-exporters (frontend)
+  - name: "{{ (groups['gateways'] | default([]) | length > 0) | ternary('Create', 'Delete') }} service monitor node-exporters (gateway-frontend)"
     kubernetes.core.k8s:
-      state: present
+      # Only deploy when we have actual gateway nodes
+      state: "{{ (groups['gateways'] | default([]) | length > 0) | ternary('present', 'absent') }}"
       apply: true
       definition: "{{ lookup('template', 'node-exporter-service-monitor.yaml.j2') }}"
       validate:
