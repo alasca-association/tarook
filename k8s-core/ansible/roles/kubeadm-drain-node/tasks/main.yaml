@@ -6,20 +6,31 @@
 # IMPORTANT: this is something we have to inform the customer of!
 ---
 - name: Drain this node
-  changed_when: true
   delegate_to: "{{ groups['orchestrator'] | first }}"
   when: _allow_disruption
-  ansible.builtin.command:
-  args:
-    argv:
-    - kubectl
-    - drain
-    - "{{ inventory_hostname }}"
-    - "--force"
-    - "--ignore-daemonsets"
-    - "--delete-emptydir-data=true"
-  register: task_result
-  until: task_result is not failed
-  retries: "{{ error_retries }}"
-  delay: "{{ error_delay }}"
+  block:
+  - name: Wait for manual pre-drain action
+    ansible.builtin.pause:
+      prompt: |
+
+        ATTENTION: Node '{{ inventory_hostname }}' is about to be drained.
+
+        Pausing here in case your workload needs additional treatment,
+        such as resource eviction in case of YAOOK Openstack (`yaookctl drain '{{ inventory_hostname }}'`)
+
+  - name: Drain this node (Kubernetes)
+    changed_when: true
+    ansible.builtin.command:
+    args:
+      argv:
+      - kubectl
+      - drain
+      - "{{ inventory_hostname }}"
+      - "--force"
+      - "--ignore-daemonsets"
+      - "--delete-emptydir-data=true"
+    register: task_result
+    until: task_result is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 ...
