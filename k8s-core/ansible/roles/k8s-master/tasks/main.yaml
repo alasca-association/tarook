@@ -169,7 +169,7 @@
     mode: u=rwx,go-rwx
 
 - name: Spawn K8s cluster with 'kubeadm init'
-  when: "local_kube_apiserver_status is failed and lb_kube_apiserver_status is failed"
+  when: "local_kube_apiserver_status is failed and lb_kube_apiserver_status is failed and not ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') == 'initialized'"
   tags:
   - spawn
   become: true
@@ -251,7 +251,7 @@
       content: "{{ content | to_json }}"
 
 - name: Join the K8s control plane
-  when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed"
+  when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed and not ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') == 'initialized'"
   become: true
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
