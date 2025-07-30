@@ -1,20 +1,24 @@
 {{ _auto_generated_preamble }}
 
-apiVersion: kubeadm.k8s.io/v1beta3
+apiVersion: kubeadm.k8s.io/v1beta4
 kind: JoinConfiguration
 nodeRegistration:
   ignorePreflightErrors:
   - FileAvailable--etc-kubernetes-kubelet.conf
   kubeletExtraArgs:
 {% if openstack_enabled %}
-    cloud-provider: "external"
+    - name: cloud-provider
+      value: "external"
 {% endif %}
 {% if ipv4_enabled and ipv6_enabled %}
-    node-ip: {{ [local_ipv4_address, local_ipv6_address] | join(",") | to_json }}
+    - name: node-ip
+      value: {{ [local_ipv4_address, local_ipv6_address] | join(",") | to_json }}
 {% elif ipv4_enabled %}
-    node-ip: {{ local_ipv4_address | to_json }}
+    - name: node-ip
+      value: {{ local_ipv4_address | to_json }}
 {% elif ipv6_enabled %}
-    node-ip: {{ local_ipv6_address | to_json }}
+    - name: node-ip
+      value: {{ local_ipv6_address | to_json }}
 {% endif %}
   name: {{ inventory_hostname }}
 
