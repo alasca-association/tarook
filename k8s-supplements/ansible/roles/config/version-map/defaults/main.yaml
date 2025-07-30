@@ -9,17 +9,6 @@ next_k8s_version_minor: '{{ next_k8s_version | regex_replace("^v?(\d+.\d+)(.\d+)
 # is not included here because `kube-prometheus` comes with its own type
 # of versioning.
 image_version_map:
-  "1.30":
-    openstack:
-      # https://artifacthub.io/packages/helm/cloud-provider-openstack/openstack-cloud-controller-manager/2.30.2
-      cloud_controller_manager_chart: "2.30.2"
-      # https://artifacthub.io/packages/helm/cloud-provider-openstack/openstack-cinder-csi/2.30.0
-      cinder_csi_plugin_chart: "2.30.0"
-    # https://github.com/projectcalico/calico/releases/tag/v3.28.1
-    calico_version: "{{ k8s_network_calico_custom_version | default('3.28.1', true) }}"
-    # https://github.com/kubernetes-csi/external-snapshotter/releases/tag/v8.0.1
-    volume_snapshot_controller: "v8.0.1"
-
   "1.31":
     openstack:
       # https://artifacthub.io/packages/helm/cloud-provider-openstack/openstack-cloud-controller-manager/2.31.1

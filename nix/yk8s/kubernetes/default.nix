@@ -44,7 +44,6 @@ in {
         Kubernetes version
       '';
       type = k8sVersion [
-        [1 30]
         [1 31]
         [1 32]
         [1 33]
