@@ -89,11 +89,14 @@ in {
       };
       audit_logs = {
         enabled = mkEnableOption ''
-          audit logs for the apiserver.
+          audit logs for the kube-apiserver.
 
-          .. note::
-
-            Modifications to this setting and its related only apply during Kubernetes upgrades'';
+          If enabled, a policy file is mounted to the kube-apiserver.
+          The policy file can be adjusted via
+          :ref:`configuration-options.yk8s.kubernetes.apiserver.audit_logs.policy`.
+          Logs are written to ``/var/log/kubernetes/audit/audit.log``.
+          The ``audit-log-maxage`` and ``audit-log-maxbackup`` settings are
+          currently hardcoded to ``1``'';
         max_size = mkOption {
           description = ''
             Maximum size of apiserver audit log files in megabytes before it gets rotated
