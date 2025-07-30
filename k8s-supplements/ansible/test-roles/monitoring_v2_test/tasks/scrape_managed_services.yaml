@@ -76,7 +76,8 @@
     retries: 60
     delay: 3
 
-- name: Check node-exporter (frontend) endpoint status
+- name: Check node-exporter (gateway-frontend) endpoint status
+  when: "groups['gateways'] | default([]) | length > 0"
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
