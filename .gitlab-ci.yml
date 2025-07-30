@@ -194,6 +194,7 @@ build-docs-check:
     - towncrier build --version x.x.x --keep
     - sphinx-build -W docs _build/html
     - mv _build/html public
+    - mv docs/_redirects public/
   artifacts:
     expose_as: "Rendered Docs"
     expire_in: "7 days"
