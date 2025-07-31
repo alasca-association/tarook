@@ -25,6 +25,11 @@ v10.0.1 (2025-07-31)
 Bugfixes
 ~~~~~~~~
 
+- Fixed a bug in the `vault_v1` Ansible role that let the role fail
+  when the value of ref:`configuration-options.yk8s.k8s-service-layer.vault.backup_approle_path`
+  did not end with a forward slash.
+  With release v10.0.0 this failure became unavoidable
+  because the config option's value now *must never* end with a slash. (`!1974 <https://gitlab.com/yaook/k8s/-/merge_requests/1974>`_)
 - :ref:`configuration-options.yk8s.k8s-service-layer.vault.s3_config_file`
   is not forced to be set anymore. (`!1974 <https://gitlab.com/yaook/k8s/-/merge_requests/1974>`_)
 
