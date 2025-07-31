@@ -196,10 +196,6 @@ in {
       type = with types; nullOr relativePosixPath;
       default = null;
       example = "./vault/backup_s3_config.yaml";
-      apply = v:
-        if config.yk8s.k8s-service-layer.vault.enable_backups == true && v == null
-        then throw "[k8s-service-layer.vault.s3_config_file] must not be null when k8s-service-layer.vault.enable_backups == true"
-        else v;
     };
     service_type = mkOption {
       description = ''
