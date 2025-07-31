@@ -46,7 +46,7 @@ The upstream registry will automatically be used after all defined hosts have be
       mirrors = [
         "https://registry-cache-4.example.com"
       ];
-      registry = "_default";
+      registry = null;
     }
   ]
 
