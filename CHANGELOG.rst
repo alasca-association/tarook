@@ -19,6 +19,16 @@ earlier changes.
 
 .. towncrier release notes start
 
+v10.0.1 (2025-07-31)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- :ref:`configuration-options.yk8s.k8s-service-layer.vault.s3_config_file`
+  is not forced to be set anymore. (`!1972 <https://gitlab.com/yaook/k8s/-/merge_requests/1972>`_)
+
+
 v10.0.0 (2025-07-26)
 --------------------
 
