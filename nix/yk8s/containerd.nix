@@ -54,7 +54,7 @@ in {
           mirrors = ["https://registry-cache-3.example.com"];
         }
         {
-          registry = "_default";
+          registry = null;
           mirrors = ["https://registry-cache-4.example.com"];
         }
       ];
