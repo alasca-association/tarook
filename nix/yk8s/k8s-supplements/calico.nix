@@ -100,7 +100,7 @@ in {
       '';
       type = with types; nullOr pathInStore;
       default = null;
-      example = "./vault/helm/values.yaml";
+      example = lib.options.literalExpression "./vault/helm/values.yaml";
     };
     custom_version = mkOption {
       description = ''

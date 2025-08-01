@@ -201,7 +201,7 @@ it is possible to link to self-maintained values file for the helm chart
 
 **Example:**::
 
-  "./vault/helm/values.yaml"
+  ./vault/helm/values.yaml
 
 
 **Declared by**
