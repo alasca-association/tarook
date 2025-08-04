@@ -29,7 +29,7 @@ if [ "${MANAGED_K8S_NUKE_FROM_ORBIT:-}" = 'true' ]; then
     else
         container_id="$(jq -r '((.resources | map(select(.name == "thanos_data" and .type == "openstack_objectstorage_container_v1")) | first).instances | first).attributes.id' "$terraform_state_dir/terraform.tfstate")"
     fi
-    if [ "x$container_id" != 'xnull' ]; then
+    if [ "$container_id" != 'null' ]; then
         printf 'Deleting object storage container contents of %q ...' "$container_id"
         while IFS=$'\n' read -r -d '' -a objects < <( openstack object list "$container_id" -f value && printf '\0' ); do
             if [ "${#objects[@]}" = '0' ]; then
