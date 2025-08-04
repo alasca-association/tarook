@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v10.0.2 (2025-08-05)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- Cluster setup for IPv6-only clusters has been fixed. (`!1977 <https://gitlab.com/yaook/k8s/-/merge_requests/1977>`_)
+
+
 v10.0.1 (2025-07-31)
 --------------------
 
