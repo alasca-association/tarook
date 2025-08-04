@@ -58,10 +58,12 @@
               The path to the cluster's state directory relative to the Nix file
               in which it is defined. Must be set to ./state or _state_base_path
               has to be adapted as well.
+
+              This is to be set in flake.nix.
             '';
             type = with types; nullOr pathInStore;
             default = null;
-            example = "state_directory = ./state; # from flake.nix";
+            example = lib.options.literalExpression "./state";
           };
           _inventory_base_path = mkOption {
             description = ''

@@ -1,0 +1,2 @@
+Fixed the examples of config options
+that expect a `Nix path <https://nix.dev/manual/nix/2.25/language/types#type-path>`_.

@@ -43,7 +43,7 @@ A custom hosts file in case :ref:`configuration-options.yk8s.openstack.enabled` 
 
 **Example:**::
 
-  "./hosts"
+  ./hosts
 
 
 **Declared by**

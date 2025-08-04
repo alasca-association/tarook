@@ -73,7 +73,7 @@ in {
       '';
       type = with types; nullOr pathInStore;
       default = null;
-      example = "./hosts";
+      example = lib.options.literalExpression "./hosts";
       apply = v:
         if v == null && config.yk8s.openstack.enabled == false
         then throw "infra.hosts_file must be set if openstack is disabled"
