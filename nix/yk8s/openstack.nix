@@ -148,6 +148,9 @@ in {
     '';
 
     enabled = mkOption {
+      description = ''
+        Whether to build the cluster on top of Openstack.
+      '';
       type = types.bool;
       default = true;
     };
@@ -170,7 +173,7 @@ in {
     };
 
     azs = mkOption {
-      description = "Defines the availability zones of your cloud to use for the creation of servers.";
+      description = "Availability zones of the underlying Openstack cloud to use for the creation of servers.";
       default = [];
       type = with types; listOf openstackAvailabilityZoneName;
     };
@@ -260,6 +263,9 @@ in {
         User defined attribute set of control plane and worker nodes to be created with specified values
 
         At least one node with role=master must be given.
+
+        You may also specify those attributes or a subset of them
+        using :ref:`yk8s.openstack.{master,worker}_defaults <configuration-options.yk8s.openstack>`.
       '';
       type = types.attrsOf (types.submodule {
         options = {

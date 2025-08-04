@@ -149,8 +149,20 @@ in {
     peers = mkOption {
       description = ''
         The Wireguard peers that should be able to connect to the frontend nodes.
+
+        The orchestrator must be included in this list.
       '';
       default = [];
+      example = [
+        {
+          ident = "alice";
+          pub_key = "ExampleWgKeyLiKUsKjhSDY9u06pX68rbdg4V6dkHFo=";
+        }
+        {
+          ident = "bob";
+          pub_key = "AnotherExampleWgKey8xOMMOW2dsda6s6BKkasi3al=";
+        }
+      ];
       type = types.listOf (types.submodule {
         options = {
           pub_key = mkOption {

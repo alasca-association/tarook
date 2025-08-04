@@ -29,6 +29,12 @@ in {
     cluster_name = mkOption {
       # NOTE: empty or spaced strings must never by accepted here
       type = k8sClusterName;
+      description = ''
+        Name of the cluster that is to be build and managed.
+
+        Used to distinguish the cluster from others
+        and to name harbour infrastructure resources.
+      '';
     };
 
     ipv4_enabled = mkDisableOption "IPv4";

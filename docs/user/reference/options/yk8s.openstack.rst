@@ -86,7 +86,7 @@ The name of an OpenStack node is composed from the following parts:
 ``yk8s.openstack.azs``
 ######################
 
-Defines the availability zones of your cloud to use for the creation of servers.
+Availability zones of the underlying Openstack cloud to use for the creation of servers.
 
 **Type:**::
 
@@ -244,6 +244,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 ``yk8s.openstack.enabled``
 ##########################
 
+Whether to build the cluster on top of Openstack.
 
 
 **Type:**::
@@ -548,6 +549,9 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/openstack.nix
 User defined attribute set of control plane and worker nodes to be created with specified values
 
 At least one node with role=master must be given.
+
+You may also specify those attributes or a subset of them
+using :ref:`yk8s.openstack.{master,worker}_defaults <configuration-options.yk8s.openstack>`.
 
 
 **Type:**::
