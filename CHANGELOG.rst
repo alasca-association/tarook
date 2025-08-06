@@ -19,19 +19,28 @@ earlier changes.
 
 .. towncrier release notes start
 
+v10.0.2 (2025-08-05)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- Cluster setup for IPv6-only clusters has been fixed. (`!1977 <https://gitlab.com/yaook/k8s/-/merge_requests/1977>`_)
+
+
 v10.0.1 (2025-07-31)
 --------------------
 
 Bugfixes
 ~~~~~~~~
 
-- Fixed a bug in the `vault_v1` Ansible role that let the role fail
-  when the value of ref:`configuration-options.yk8s.k8s-service-layer.vault.backup_approle_path`
+- Fixed a bug in the ``vault_v1`` Ansible role that let the role fail
+  when the value of :ref:`configuration-options.yk8s.k8s-service-layer.vault.backup_approle_path`
   did not end with a forward slash.
   With release v10.0.0 this failure became unavoidable
-  because the config option's value now *must never* end with a slash. (`!1974 <https://gitlab.com/yaook/k8s/-/merge_requests/1974>`_)
+  because since then the config option's value must not end with a slash anymore. (`!1974 <https://gitlab.com/yaook/k8s/-/merge_requests/1974>`_)
 - :ref:`configuration-options.yk8s.k8s-service-layer.vault.s3_config_file`
-  is not forced to be set anymore. (`!1974 <https://gitlab.com/yaook/k8s/-/merge_requests/1974>`_)
+  is not forced to be set anymore. (regression of v10.0.0) (`!1974 <https://gitlab.com/yaook/k8s/-/merge_requests/1974>`_)
 
 
 v10.0.0 (2025-07-26)
