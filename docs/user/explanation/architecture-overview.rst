@@ -1,3 +1,5 @@
+.. _user.explanation.architecture-overview:
+
 Architecture Overview
 ---------------------
 

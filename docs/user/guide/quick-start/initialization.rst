@@ -82,12 +82,20 @@ Assuming you are deploying your YAOOK/K8s cluster on top of OpenStack, you
 have to `create a ssh key pair in your OpenStack
 project <https://docs.openstack.org/horizon/latest/user/configure-access-and-security-for-instances.html#add-a-key-pair>`__.
 Since the SSH configuration on the Kubernetes host nodes will be
-hardened, your key has to be in the format of a supported cryptographic
-algorithm. A list of these and an example of how to create such a key
-can be found in the :ref:`appendix <initialization.appendix>`.
+hardened, your key has to be generated using one of the supported cryptographic
+algorithm listed :ref:`here <initialization.appendix>`. Note that RSA keys are not supported.
+
+Example:
+
+.. code:: console
+
+   $ ssh-keygen -t ed25519
+   $ openstack keypair create --public-key ~/.ssh/id_ed25519.pub <firstnamelastname-hostname-gendate>
 
 WireGuard Key
 ~~~~~~~~~~~~~
+
+As outlined in :ref:`user.explanation.architecture-overview`, Wireguard is used to access the cluster via the gateway nodes.
 
 .. code:: console
 
@@ -160,21 +168,30 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
    3. Make sure they have taken effect by running ``direnv allow``.
 
-.. _initialization.initialize-vault-for-a-development-setup:
+.. _initialization.initialize-vault-secrets-backend:
 
-Initialize Vault for a Development Setup
-----------------------------------------
+Initialize Vault secrets backend
+--------------------------------
 
 YAOOK/K8s exclusively supports `HashiCorp Vault <https://vaultproject.io>`__
 as backend for storing secrets.
 For details on the use of Vault in YAOOK/K8s, please see the
 :doc:`Use of HashiCorp Vault in YAOOK/K8s </developer/explanation/vault>` section.
 
-To initialize a **local** Vault instance for **development purposes**, do the following:
+.. _initialization.initialize-vault-for-a-development-setup:
+
+At the time of writing
+there is no documentation on how to create a production-ready Vault backend yet
+but for testing purposes you may use the development setup [#vault-dev-setup-caveats]_
+which automatically sets up a Vault instance in a local container.
+
+.. [#vault-dev-setup-caveats] Note that the development Vault setup
+   is built for ease-of-use
+   and no special care is taken security-wise (stores unseal key and root token on disk)
 
 .. note::
 
-   You must have setup a container runtime like e.g. ``docker`` or ``podman``!
+   We assume you have setup a container runtime like e.g. ``docker`` or ``podman``!
 
 1. Ensure that sourcing (comment it in) ``vault_env.sh`` is part of your cluster ``.envrc``.
 
@@ -218,21 +235,6 @@ To initialize a **local** Vault instance for **development purposes**, do the fo
       This is not suited for productive deployments or production use,
       for many reasons!
 
-6. Run the init command for Vault
-
-   .. code:: console
-
-      $  ./managed-k8s/tools/vault/init.sh
-
-7. If you are creating a new cluster, run:
-
-   .. code:: console
-
-      $ ./managed-k8s/tools/vault/mkcluster-root.sh
-
-   If you are migrating an old cluster see
-   :ref:`here <vault.migrating-an-existing-cluster-to-vault>`.
-
 
 .. _initialization.appendix:
 
@@ -244,14 +246,3 @@ Allowed cryptographic algorithms for SSH
 
 .. literalinclude:: /templates/ssh-hardening-vars.yaml
    :language: yaml
-
-SSH key generation
-~~~~~~~~~~~~~~~~~~
-
-Creating a valid SSH key can be achieved by generating the key as
-follows, before uploading the public part to OpenStack:
-
-.. code:: console
-
-   $ # Generating an ed25519 SSH key
-   $ ssh-keygen -t ed25519`

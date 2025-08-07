@@ -235,6 +235,8 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 The Wireguard peers that should be able to connect to the frontend nodes.
 
+The orchestrator must be included in this list.
+
 
 **Type:**::
 
@@ -244,6 +246,20 @@ The Wireguard peers that should be able to connect to the frontend nodes.
 **Default:**::
 
   [ ]
+
+
+**Example:**::
+
+  [
+    {
+      ident = "alice";
+      pub_key = "ExampleWgKeyLiKUsKjhSDY9u06pX68rbdg4V6dkHFo=";
+    }
+    {
+      ident = "bob";
+      pub_key = "AnotherExampleWgKey8xOMMOW2dsda6s6BKkasi3al=";
+    }
+  ]
 
 
 **Declared by**

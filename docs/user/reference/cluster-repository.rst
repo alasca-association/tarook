@@ -58,7 +58,7 @@ Detailed explanation:
    :doc:`configuration </user/reference/cluster-configuration>` variables of
    the cluster.
 
-   Note that the :doc:`initialization </user/guide/initialization>`
+   Note that the :doc:`initialization </user/guide/quick-start/initialization>`
    script ``init.sh`` will bootstrap your configuration from that
    template.
 

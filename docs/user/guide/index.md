@@ -11,8 +11,7 @@ monitoring/index
 rook/index
 vault/index
 faq
-initialization
-quick-start
+quick-start/index
 updating-host-nodes
 minimal-access-venv
 rotate-openstack-credentials

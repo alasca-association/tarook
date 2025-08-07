@@ -12,6 +12,10 @@ cluster types, Terraform and bare-metal based.
 ``yk8s.infra.cluster_name``
 ###########################
 
+Name of the cluster that is to be build and managed.
+
+Used to distinguish the cluster from others
+and to name harbour infrastructure resources.
 
 
 **Type:**::

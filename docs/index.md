@@ -37,7 +37,7 @@ hide-doc: true
 
 ::::{grid} 1
 :::{grid-item-card}  Quick Start Guide
-:link: /user/guide/quick-start
+:link: /user/guide/quick-start/index
 :link-type: doc
 The quick start guide is meant to give you a kickstart in deploying your first YAOOK/K8s cluster.
 :::

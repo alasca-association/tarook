@@ -1135,7 +1135,7 @@ Changes in the Documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - `!1454 <https://gitlab.com/yaook/k8s/-/merge_requests/1454>`_
-- A hint to set ``USE_VAULT_IN_DOCKER`` for development setups has been added to :doc:`Initialization documentation </user/guide/initialization>` (`!1461 <https://gitlab.com/yaook/k8s/-/merge_requests/1461>`_)
+- A hint to set ``USE_VAULT_IN_DOCKER`` for development setups has been added to the Initialization documentation (`!1461 <https://gitlab.com/yaook/k8s/-/merge_requests/1461>`_)
 - The documentation has been updated to ensure compliance with the Kubernetes trademarks and
   streamline to consistently use "YAOOK/K8s for the LCM. (`!1465 <https://gitlab.com/yaook/k8s/-/merge_requests/1465>`_)
 

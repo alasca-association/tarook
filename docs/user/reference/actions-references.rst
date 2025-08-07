@@ -48,7 +48,7 @@ Overview
 ------------------------
 
 The ``init-cluster-repo.sh``-script is used for the
-:doc:`Cluster Repository Initialization </user/guide/initialization>`.
+:doc:`Cluster Repository Initialization </user/guide/quick-start/initialization>`.
 Before executing this script you **must** have configured your
 :doc:`environment variables </user/reference/environmental-variables>`.
 The script will create the basic cluster repository structure as
