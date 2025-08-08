@@ -63,7 +63,7 @@ General Information
 
 In general, we’re mapping the versions of components which are essential
 for Kubernetes to properly work to the Kubernetes version in the
-``k8s-config`` `role <https://gitlab.com/yaook/k8s/-/blob/devel/k8s-base/roles/k8s-config/defaults/main.yaml#L31>`__.
+``k8s-config`` `role <https://gitlab.com/alasca.cloud/tarook/tarook/-/blob/devel/k8s-base/roles/k8s-config/defaults/main.yaml#L31>`__.
 
 All versions of non-essential components are not mapped to the
 Kubernetes version, i.e. all components/services above the Kubernetes

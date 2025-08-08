@@ -24,7 +24,7 @@ Directory where the volumes will be placed on the worker node
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-path-provisioner.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-path-provisioner.nix
 
 
 .. _configuration-options.yk8s.kubernetes.local_storage.dynamic.enabled:
@@ -52,7 +52,7 @@ can be used with PVCs to allocate local storage on a node.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-path-provisioner.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-path-provisioner.nix
 
 
 .. _configuration-options.yk8s.kubernetes.local_storage.dynamic.namespace:
@@ -74,7 +74,7 @@ Namespace to deploy the components in
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-path-provisioner.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-path-provisioner.nix
 
 
 .. _configuration-options.yk8s.kubernetes.local_storage.dynamic.nodeplugin_toleration:
@@ -98,7 +98,7 @@ to run on all nodes (ignoring all taints). This is often desirable.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-path-provisioner.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-path-provisioner.nix
 
 
 .. _configuration-options.yk8s.kubernetes.local_storage.dynamic.storageclass_name:
@@ -123,7 +123,7 @@ names if both are enabled!
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-path-provisioner.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-path-provisioner.nix
 
 
 .. _configuration-options.yk8s.kubernetes.local_storage.dynamic.version:
@@ -145,5 +145,5 @@ Version of the local path controller to deploy
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-path-provisioner.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-path-provisioner.nix
 

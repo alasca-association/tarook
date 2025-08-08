@@ -154,7 +154,7 @@ in {
       Persistence
       ***********
 
-      With `release/v3.0 · YAOOK / k8s · GitLab <https://gitlab.com/yaook/k8s/-/blob/release/v3.0/CHANGELOG.rst>`__,
+      With `release/v3.0 · Tarook · GitLab <https://gitlab.com/alasca.cloud/tarook/tarook/-/blob/release/v3.0/CHANGELOG.rst>`__,
       persistence for Thanos components has been reworked.
       By default, Thanos components use emptyDirs.
       Depending on the size of the cluster and the metrics
@@ -351,8 +351,8 @@ in {
     manage_thanos_bucket = mkOption {
       description = ''
         Let terraform create an object storage container / bucket for you if `true`.
-        If set to `false` one must provide a valid configuration via Vault
-        See: https://yaook.gitlab.io/k8s/release/v3.0/managed-services/prometheus/prometheus-stack.html#custom-bucket-management
+        If set to `false` one must provide a valid configuration via Vault.
+        See :ref:`thanos.custom-bucket-management` for details.
       '';
       type = types.bool;
       default = true;
@@ -477,7 +477,7 @@ in {
             '';
             # NOTE: This value is used in the prometheus-blackbox-exporter helm chart
             #       where it ends up in the metadata.name field of the ServiceMonitor Kubernetes object.
-            #       See https://gitlab.com/yaook/k8s/-/merge_requests/1731#note_2635298999
+            #       See https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1731#note_2635298999
             type = k8sObjectName;
           };
           url = mkOption {

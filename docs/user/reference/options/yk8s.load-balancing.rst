@@ -30,7 +30,7 @@ probably be removed in the foreseeable future.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/load-balancing.nix
 
 
 .. _configuration-options.yk8s.load-balancing.haproxy_frontend_k8s_api_maxconn:
@@ -51,7 +51,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/load-balancing.nix
 
 
 .. _configuration-options.yk8s.load-balancing.haproxy_frontend_nodeport_maxconn:
@@ -72,7 +72,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/load-balancing.nix
 
 
 .. _configuration-options.yk8s.load-balancing.haproxy_stats_port:
@@ -94,7 +94,7 @@ Port for HAProxy statistics
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/load-balancing.nix
 
 
 .. _configuration-options.yk8s.load-balancing.lb_ports:
@@ -128,7 +128,7 @@ The NodePorts are either literally exposed by HAProxy or can be mapped to other 
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/load-balancing.nix
 
 
 .. _configuration-options.yk8s.load-balancing.openstack_lbaas:
@@ -154,7 +154,7 @@ Whether to enable OpenStack-based load-balancing.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/load-balancing.nix
 
 
 .. _configuration-options.yk8s.load-balancing.vrrp_priorities:
@@ -186,5 +186,5 @@ Please note the keepalived.conf manpage for choosing priority values.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/load-balancing.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/load-balancing.nix
 

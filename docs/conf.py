@@ -6,9 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'yaook/k8s'
-copyright = '2020-2025, Yaook Authors'
-author = 'YAOOK Authors'
+project = 'TAROOK'
+copyright = '2020-2025, Tarook Authors'
+author = 'Tarook Authors'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -41,12 +41,12 @@ html_static_path = ['_static']
 # -- Furo --------------------------------------------------------------------
 html_theme_options = {
     "sidebar_hide_name": True,
-    "source_repository": "https://gitlab.com/yaook/k8s",
+    "source_repository": "https://gitlab.com/alasca.cloud/tarook/tarook",
     "source_branch": "devel",
     "source_directory": "docs/",
 }
-html_logo = "_static/yaook-husky-small.png"
-html_favicon = '_static/Husky_blue.svg'
+html_logo = "_static/2024-alasca-Tarook-light-blue_o.png"
+html_favicon = '_static/2024-alasca-Tarook-light-blue.svg'
 html_css_files = [
     'dropup.css',
 ]

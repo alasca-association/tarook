@@ -29,7 +29,7 @@
       in {
         config._module.args = {
           inherit yk8s-lib;
-          # Pin all packages used by this module to the version managed in the yaook/k8s repo
+          # Pin all packages used by this module to the version managed in the Tarook repo
           pkgs = import inputs.yk8s.inputs.nixpkgs {
             inherit system;
           };

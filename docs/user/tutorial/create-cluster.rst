@@ -1,7 +1,7 @@
-How to Create a YAOOK/K8s Cluster
+How to Create a TAROOK Cluster
 =================================
 
-In this tutorial, we are going to set up a YAOOK/K8s cluster using OpenStack virtual machines.
+In this tutorial, we are going to set up a Tarook cluster using OpenStack virtual machines.
 
 
 What Do We Need?
@@ -31,11 +31,11 @@ What Do We Need?
 
 - The link to the :doc:`FAQ </user/guide/faq>` in case you hit trouble.
 - You find some links to connect to us
-  `here <https://gitlab.com/yaook/meta/-/wikis/home#chat>`__
+  `here <https://gitlab.com/alasca.cloud/tarook/meta/-/wikis/home#chat>`__
   in case the FAQ can't help.
 
 Now we are going to install all dependencies
-that we need to create a YAOOK/K8s cluster.
+that we need to create a Tarook cluster.
 
 Prepare the Workstation
 -----------------------
@@ -120,11 +120,11 @@ Create project folder:
     $ mkdir ~/clusters
     $ cd ~/clusters
 
-Clone ``YAOOK/K8s`` repository:
+Clone ``Tarook`` repository:
 
 .. code:: console
 
-    $ git clone https://gitlab.com/yaook/k8s.git
+    $ git clone https://gitlab.com/alasca.cloud/tarook/tarook.git
 
 Create an empty git repository as your cluster repository:
 
@@ -214,7 +214,7 @@ Adopt the amount of nodes,
 e.g. one worker node and one master node.
 Please have a look `here <https://docs.yaook.cloud/requirements/k8s-cluster.html#size>`__
 for a recommended size
-of a YAOOK/K8s cluster.
+of a Tarook cluster.
 
 .. code:: nix
 
@@ -261,7 +261,7 @@ Copy and paste it under
 Initialise Vault
 ----------------
 
-YAOOK/K8s uses `HashiCorp Vault <https://www.vaultproject.io/>`__
+Tarook uses `HashiCorp Vault <https://www.vaultproject.io/>`__
 to store secrets (passwords, tokens, certificates, encryption keys, and other sensitive data).
 
 .. note::
@@ -348,7 +348,7 @@ and then run it:
 
     $ k9s
 
-The next time you would like to play with your YAOOK/K8s cluster
+The next time you would like to play with your Tarook cluster
 (e.g., after a workstation reboot),
 please don't forget to open the directory with your cluster to load the environment,
 and to establish the WireGuard connection:

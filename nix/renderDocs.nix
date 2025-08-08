@@ -90,7 +90,7 @@
           in
             allSectionsWithSubsections;
 
-          declarationsBaseUrl = "https://gitlab.com/yaook/k8s/-/tree/devel/";
+          declarationsBaseUrl = "https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/";
 
           /*
           Returns a list of all evaluated options that start with `prefix` but not with any string from the `exluded` list

@@ -13,7 +13,7 @@ DualStack-Support on Kubernetes with Calico
 
    Currently IPv6-based LoadBalancer services are not tested
    nor supported by ch-k8s-lbaas.
-   See `#683 <https://gitlab.com/yaook/k8s/-/issues/683>`__.
+   See `#683 <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/683>`__.
 
 .. note::
 
@@ -29,10 +29,10 @@ addresses to
 This enables Pod off-cluster egress routing (e.g. the Internet) via
 both, IPv4 and IPv6 interfaces.
 
-Enabling DualStack-Support for managed YAOOK/K8s
+Enabling DualStack-Support for managed TAROOK
 ------------------------------------------------
 
-This section states necessary config changes to your managed YAOOK/K8s setup to
+This section states necessary config changes to your managed Tarook setup to
 enable DualStack-support.
 
 Prerequisites
@@ -40,7 +40,7 @@ Prerequisites
 
 -  Kubernetes ``v1.21`` or later
 -  Calico ``v3.11`` or later
--  For managed YAOOK/K8s on OpenStack clusters:
+-  For managed Tarook on OpenStack clusters:
 
    -  Terraform ``v0.12`` or later
    -  `ch-k8s-lbaas <https://github.com/cloudandheat/ch-k8s-lbaas>`__
@@ -94,7 +94,7 @@ Design / Procedure considerations
 ---------------------------------
 
 The following section provides an overview of assumptions, requirements
-and design decisions for the DualStack support in managed YAOOK/K8s.
+and design decisions for the DualStack support in managed Tarook.
 
 DualStack-Support in OpenStack
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -120,7 +120,7 @@ in OpenStack requires:
 
 -  creating an IPv6 router interface
 
-DualStack-Support for managed YAOOK/K8s
+DualStack-Support for managed Tarook
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. note::

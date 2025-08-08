@@ -5,7 +5,7 @@ The :doc:`environment variables </user/reference/environmental-variables>`
 affect how the user interacts with the cluster via the
 :doc:`action scripts </user/reference/actions-references>`. The directory
 ``config/`` however holds the configuration of the cluster itself
-and can be adjusted to customize the YAOOK/K8s cluster to fit your needs. It also
+and can be adjusted to customize the Tarook cluster to fit your needs. It also
 contains certain flags which can trigger operational tasks.
 
 
@@ -63,7 +63,7 @@ For all available options see :doc:`options/index`
 Custom Configuration
 --------------------
 
-Since YAOOK/K8s allows to
+Since Tarook allows to
 :ref:`execute custom playbooks <abstraction-layers.customization>`, the
 custom section allows you to specify your own custom variables to be
 used in these.

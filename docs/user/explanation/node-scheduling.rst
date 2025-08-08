@@ -31,7 +31,7 @@ Assigning labels and taints
 
 .. note::
 
-   Some node labels are managed by YAOOK/k8s.
+   Some node labels are managed by Tarook.
    Expect your changes to such labels to be overwritten.
    Please refer to
    :ref:`the respective documentation <cluster.node-labeling>` for details.
@@ -44,7 +44,7 @@ for nodes that already joined the cluster.
 Changing node labels/taints can lead to disruption if the workload
 is not immediately reconfigured as well.
 A more detailed explanation can be found in the respective
-`commit <https://gitlab.com/yaook/k8s/-/commit/4baba5e94b63af34ce44541c69e7c798a673e3bb>`__
+`commit <https://gitlab.com/alasca.cloud/tarook/tarook/-/commit/4baba5e94b63af34ce44541c69e7c798a673e3bb>`__
 which reworked this behavior.
 
 For details on how to configure labels and taints for nodes, please refer to
@@ -55,7 +55,7 @@ Defining a common Scheduling-Key-Prefix
 
 It is often desirable to use a common prefix
 for self-defined labels and taints for consistency.
-YAOOK/K8s allows to define such a scheduling-key-prefix and then
+Tarook allows to define such a scheduling-key-prefix and then
 use it in the label and taint definitions.
 
 Please refer to the

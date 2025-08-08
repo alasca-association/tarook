@@ -59,7 +59,7 @@
         True
       )
   # TODO: we will need to add proper support for IPv6-only later
-  # https://gitlab.com/yaook/k8s/-/issues/685
+  # https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/685
   when: hostvars[inventory_hostname]['networking_fixed_ip'] != None
 
 - name: Verify that controller-config contains port IDs

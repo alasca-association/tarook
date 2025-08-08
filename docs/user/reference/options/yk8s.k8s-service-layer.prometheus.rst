@@ -42,7 +42,7 @@ which are recommended to have the same value.
 Persistence
 ***********
 
-With `release/v3.0 · YAOOK / k8s · GitLab <https://gitlab.com/yaook/k8s/-/blob/release/v3.0/CHANGELOG.rst>`__,
+With `release/v3.0 · Tarook · GitLab <https://gitlab.com/alasca.cloud/tarook/tarook/-/blob/release/v3.0/CHANGELOG.rst>`__,
 persistence for Thanos components has been reworked.
 By default, Thanos components use emptyDirs.
 Depending on the size of the cluster and the metrics
@@ -89,7 +89,7 @@ How many replicas of the alertmanager should be deployed inside the cluster
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.alertmanager_resources:
@@ -110,7 +110,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.alertmanager_resources.limits.cpu:
@@ -134,7 +134,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.alertmanager_resources.limits.memory:
@@ -167,7 +167,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.alertmanager_resources.requests.cpu:
@@ -200,7 +200,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.alertmanager_resources.requests.memory:
@@ -224,7 +224,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.allow_external_rules:
@@ -254,7 +254,7 @@ set, cluster wide rules are considered from all namespaces.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.blackbox_version:
@@ -283,7 +283,7 @@ If the version shall be unpinned, set to: ``null``.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.common_labels:
@@ -316,7 +316,7 @@ The key can not be "release" as that one is already used by the Prometheus helm 
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.grafana_admin_secret_name:
@@ -337,7 +337,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.grafana_dashboard_enable_multicluster_support:
@@ -364,7 +364,7 @@ Whether to enable referencing multiple K8s clusters by a single Grafana datasour
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.grafana_persistent_storage_class:
@@ -388,7 +388,7 @@ The value has to be a valid StorageClass available in your cluster.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.grafana_resources:
@@ -409,7 +409,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.grafana_resources.limits.cpu:
@@ -433,7 +433,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.grafana_resources.limits.memory:
@@ -466,7 +466,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.grafana_resources.requests.cpu:
@@ -499,7 +499,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.grafana_resources.requests.memory:
@@ -523,7 +523,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.grafana_root_url:
@@ -545,7 +545,7 @@ The full public facing url you use in browser, used for redirects and emails
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.install:
@@ -569,7 +569,7 @@ DISRUPTION (sic!).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.internet_probe:
@@ -597,7 +597,7 @@ https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.internet_probe_targets:
@@ -618,7 +618,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.internet_probe_targets.*.interval:
@@ -640,7 +640,7 @@ Scraping interval. Overrides value set in `defaults`
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.internet_probe_targets.*.module:
@@ -664,7 +664,7 @@ module to be used.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.internet_probe_targets.*.name:
@@ -681,7 +681,7 @@ Pretty name that will appear in Prometheus / AlertManager
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.internet_probe_targets.*.scrapeTimeout:
@@ -703,7 +703,7 @@ Scrape timeout. Overrides value set in `defaults`
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.internet_probe_targets.*.url:
@@ -732,7 +732,7 @@ or IP address with port (tcp_connect).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.kube_state_metrics_resources:
@@ -753,7 +753,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.kube_state_metrics_resources.limits.cpu:
@@ -777,7 +777,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.kube_state_metrics_resources.limits.memory:
@@ -810,7 +810,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.kube_state_metrics_resources.requests.cpu:
@@ -843,7 +843,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.kube_state_metrics_resources.requests.memory:
@@ -867,7 +867,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.manage_thanos_bucket:
@@ -876,8 +876,8 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 ##########################################################
 
 Let terraform create an object storage container / bucket for you if `true`.
-If set to `false` one must provide a valid configuration via Vault
-See: https://yaook.gitlab.io/k8s/release/v3.0/managed-services/prometheus/prometheus-stack.html#custom-bucket-management
+If set to `false` one must provide a valid configuration via Vault.
+See :ref:`thanos.custom-bucket-management` for details.
 
 
 **Type:**::
@@ -891,7 +891,7 @@ See: https://yaook.gitlab.io/k8s/release/v3.0/managed-services/prometheus/promet
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.monitoring_internet_probe:
@@ -918,7 +918,7 @@ Whether to enable adding blackbox-exporter to test basic internet connectivity
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.namespace:
@@ -941,7 +941,7 @@ never deleted).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.node_exporter_textfile_collector_path:
@@ -962,7 +962,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.nvidia_dcgm_exporter_helm_repo_url:
@@ -983,7 +983,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.nvidia_dcgm_exporter_helm_version:
@@ -1012,7 +1012,7 @@ If the version shall be unpinned, set to: ``null``.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.operator_resources:
@@ -1033,7 +1033,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.operator_resources.limits.cpu:
@@ -1057,7 +1057,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.operator_resources.limits.memory:
@@ -1090,7 +1090,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.operator_resources.requests.cpu:
@@ -1123,7 +1123,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.operator_resources.requests.memory:
@@ -1147,7 +1147,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_adapter_release_name:
@@ -1168,7 +1168,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_adapter_version:
@@ -1197,7 +1197,7 @@ If the version shall be unpinned, set to: ``null``.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_helm_repo_url:
@@ -1218,7 +1218,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_persistent_storage_class:
@@ -1242,7 +1242,7 @@ https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentati
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_persistent_storage_resource_request:
@@ -1265,7 +1265,7 @@ https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentati
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_resources:
@@ -1286,7 +1286,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_resources.limits.cpu:
@@ -1310,7 +1310,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_resources.limits.memory:
@@ -1343,7 +1343,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_resources.requests.cpu:
@@ -1376,7 +1376,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_resources.requests.memory:
@@ -1400,7 +1400,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_service_name:
@@ -1421,7 +1421,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_stack_chart_name:
@@ -1442,7 +1442,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_stack_release_name:
@@ -1463,7 +1463,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_stack_version:
@@ -1492,7 +1492,7 @@ If the version shall be unpinned, set to: ``null``.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes:
@@ -1513,7 +1513,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.basic_auth_secret_name:
@@ -1533,7 +1533,7 @@ The secret must contain the following keys:
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.url:
@@ -1554,7 +1554,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs:
@@ -1586,7 +1586,7 @@ https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentati
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.scheduling_key:
@@ -1617,7 +1617,7 @@ node.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_chart_version:
@@ -1646,7 +1646,7 @@ If the version shall be unpinned, set to: ``null``.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_compact_resources:
@@ -1667,7 +1667,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_compact_resources.limits.cpu:
@@ -1691,7 +1691,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_compact_resources.limits.memory:
@@ -1724,7 +1724,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_compact_resources.requests.cpu:
@@ -1757,7 +1757,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_compact_resources.requests.memory:
@@ -1781,7 +1781,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_compactor_size:
@@ -1806,7 +1806,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-config
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_objectstorage_config_file:
@@ -1833,7 +1833,7 @@ Note: The given path is interpreted as being relative to the cluster repo's conf
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_objectstorage_container_name:
@@ -1854,7 +1854,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_query_additional_store_endpoints:
@@ -1877,7 +1877,7 @@ The endpoint will be extended to `dnssrv+_grpc._tcp.{{ endpoint }}.monitoring.sv
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_query_resources:
@@ -1898,7 +1898,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_query_resources.limits.cpu:
@@ -1922,7 +1922,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_query_resources.limits.memory:
@@ -1955,7 +1955,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_query_resources.requests.cpu:
@@ -1988,7 +1988,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_query_resources.requests.memory:
@@ -2012,7 +2012,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_sidecar_resources:
@@ -2033,7 +2033,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_sidecar_resources.limits.cpu:
@@ -2057,7 +2057,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_sidecar_resources.limits.memory:
@@ -2090,7 +2090,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_sidecar_resources.requests.cpu:
@@ -2123,7 +2123,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_sidecar_resources.requests.memory:
@@ -2147,7 +2147,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_storage_class:
@@ -2176,7 +2176,7 @@ the helm chart completely.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_store_in_memory_max_size:
@@ -2201,7 +2201,7 @@ thanos_store_memory_request and thanos_store_memory_limit
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_store_resources:
@@ -2222,7 +2222,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_store_resources.limits.cpu:
@@ -2246,7 +2246,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_store_resources.limits.memory:
@@ -2279,7 +2279,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_store_resources.requests.cpu:
@@ -2312,7 +2312,7 @@ same value).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_store_resources.requests.memory:
@@ -2336,7 +2336,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.thanos_storegateway_size:
@@ -2361,7 +2361,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-config
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.use_grafana:
@@ -2382,7 +2382,7 @@ Enable grafana
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.prometheus.use_thanos:
@@ -2408,5 +2408,5 @@ Whether to enable use of Thanos.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
 

@@ -1,5 +1,5 @@
 ---
-# In an older version, yk8s shipped its own Service and ServiceMonitor for the metrics
+# In an older version, Tarook shipped its own Service and ServiceMonitor for the metrics
 # of etcd-backup.
 # This task removes the now outdated service from existing clusters.
 # Can be removed in a future version.

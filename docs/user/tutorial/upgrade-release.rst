@@ -1,13 +1,13 @@
-How to Upgrade to a new YAOOK/K8s release
+How to Upgrade to a new TAROOK release
 =========================================
 
 In this tutorial, we will guide you step-by-step through the process of upgrading
-to a new YAOOK/K8s release.
+to a new Tarook release.
 
 Carefully read the whole document before taking any actions.
 Also verify that you are looking at the documentation of the target release version.
 All currently available releases can be found on the
-`Gitlab releases page <https://gitlab.com/yaook/k8s/-/releases>`_.
+`Gitlab releases page <https://gitlab.com/alasca.cloud/tarook/tarook/-/releases>`_.
 
 
 .. important::
@@ -23,7 +23,7 @@ plus solid understanding of `git submodules <https://git-scm.com/book/en/v2/Git-
 
 All steps are to performed from the cluster repo's root.
 
-Choosing the target YAOOK/K8s release
+Choosing the target TAROOK release
 -------------------------------------
 
 It is recommended to consult the :doc:`Releasenotes </releasenotes>` in any case.
@@ -64,7 +64,7 @@ You can directly jump to any available minor version of the next major release t
    You **must** read the :doc:`Releasenotes </releasenotes>`
    if you want to upgrade to a new major release.
 
-Performing the YAOOK/K8s Upgrade
+Performing the TAROOK Upgrade
 --------------------------------
 
 1. If enabled, establish the WireGuard connection:
@@ -88,7 +88,7 @@ Performing the YAOOK/K8s Upgrade
 
       .. tab:: Major Release Upgrade
 
-         Update the YAOOK/K8s submodule to the next major version:
+         Update the Tarook submodule to the next major version:
 
          .. code:: console
 
@@ -99,7 +99,7 @@ Performing the YAOOK/K8s Upgrade
 
       .. tab:: Minor Release Upgrade
 
-         Update the YAOOK/K8s submodule to a specific minor version:
+         Update the Tarook submodule to a specific minor version:
 
          .. code:: console
 
@@ -110,7 +110,7 @@ Performing the YAOOK/K8s Upgrade
 
       .. tab:: Patch Release Upgrade
 
-         Update the YAOOK/K8s submodule to the latest available patch version:
+         Update the Tarook submodule to the latest available patch version:
 
          .. code:: console
 

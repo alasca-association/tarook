@@ -650,7 +650,7 @@ in rec {
   #       Tests revealed that names with characters, such as *@+?# and even
   #       emojis work just fine with the Vault CLI client but are handled
   #       differently by the `hashi_vault` Ansible module.
-  #       In https://gitlab.com/yaook/k8s/-/merge_requests/1731#note_2385728506
+  #       In https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1731#note_2385728506
   #       it was decided that we do not want to reject what Vault accepts,
   #       hence further investigation is needed.
   vaultNamespaceName = mkRegexStrOptionType {

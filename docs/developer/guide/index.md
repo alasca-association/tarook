@@ -11,7 +11,7 @@ simulate-bm
 read-config
 ```
 
-Keep this at hand when *developing* with YAOOK/K8s.
+Keep this at hand when *developing* with Tarook.
 
 
 ::::{grid} 2

@@ -1,12 +1,12 @@
 Using snapshots
 ===============
 
-The YAOOK/K8s cluster provides the functionality of creating snapshots of your PVCs in Openstack.
+The Tarook cluster provides the functionality of creating snapshots of your PVCs in Openstack.
 
 Creating snapshot
 -----------------
 
-The YAOOK/K8s LCM provides besides the default storage-class ``csi-sc-cinderplugin``
+The Tarook LCM provides besides the default storage-class ``csi-sc-cinderplugin``
 a default volume-snapshot-class ``csi-cinder-snapclass``.
 To create a snapshot for a PVC apply the following yaml (make changes accordingly).
 You can create your own VolumeSnapshotClass, see

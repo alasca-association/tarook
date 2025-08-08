@@ -429,6 +429,7 @@ function rotate_pki_issuer() {
 }
 
 function import_etcd_backup_config() {
+
     etcdbackup_config_path=config/etcd_backup_s3_config.yaml
     if etcdbackup_config="$(yq --compact-output . "$etcdbackup_config_path")"; then
         if ! vault kv get "$cluster_path"/kv/etcdbackup > /dev/null; then
@@ -532,7 +533,7 @@ function import_vault_backup_s3_config() {
         echo "Please ensure the file is created at config/$vault_backup_s3_config_file" >&2
         echo "with the necessary S3 bucket details for automated Vault backups." >&2
         echo "For more information, please refer to the documentation:" >&2
-        echo "https://yaook.gitlab.io/k8s/release/v8.0/user/reference/services/vault.html#backups" >&2
+        echo "https://docs.tarook.cloud/devel/user/reference/services/vault.html#backups" >&2
         exit 1
     fi
     vault_backup_s3_config="$(yq --compact-output . config/"$vault_backup_s3_config_file")"

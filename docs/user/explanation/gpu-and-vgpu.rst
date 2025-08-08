@@ -68,7 +68,7 @@ vGPU VM. To avoid the crash use the option ``-parallelism=1`` with
 vGPU support requires i.e. the installation of a vGPU management
 software to slice the actual GPU into virtual ones. The responsible role
 is
-``vgpu`-support`` (see `here <https://gitlab.com/yaook/k8s/-/tree/devel/k8s-base/roles/vgpu-support>`__).
+``vgpu`-support`` (see `here <https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/k8s-base/roles/vgpu-support>`__).
 The procedure is described in the following section.
 
 The vGPU Support is only available for NVIDIA GPUs which support GPU
@@ -76,7 +76,7 @@ virtualization. If you want to check if your GPU supports virtualization
 you can check the official `NVIDIA
 Guide <https://docs.nvidia.com/grid/gpus-supported-by-vgpu.html>`__.
 
-Both AMD CPUs and INTEL CPUs are supported in YAOOK/K8s for GPU
+Both AMD CPUs and INTEL CPUs are supported in Tarook for GPU
 virtualization. To virtualize the GPU the BIOS setting VT-D/IOMMU has to
 be enabled. Therefore a ``enable_iommu.cfg`` snippet will be
 automatically added in ``/etc/default/grub.d``. This is useful because
@@ -84,7 +84,7 @@ the grubfile is not changed and therefore presets are kept and the
 ``*.cfg`` files in ``grub.d`` are loaded after the grubfile. This allows
 us to make additional modifications in the future.
 
-To enable the vGPU support in YAOOK/K8s, the following variables must be
+To enable the vGPU support in Tarook, the following variables must be
 set in the configuration. For a full reference see
 :ref:`configuration-options.yk8s.nvidia`.
 The vGPU Manager software can be downloaded in the
@@ -98,7 +98,7 @@ The vGPU Manager software can be downloaded in the
       manager_filename = "bar";  # vGPU manager
    }
 
-After YAOOK/K8s has been rolled out, the folder for the chosen
+After Tarook has been rolled out, the folder for the chosen
 configuration still has to be found. The following steps have to be done
 only once and are needed for Yaook
 `Operator <https://docs.yaook.cloud/index.html>`__ and Openstack.

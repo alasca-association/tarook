@@ -14,7 +14,7 @@ consists of:
    defines the platform layout and other properties of the cluster
 
 A user checks out the cluster repository and uses it to interact with
-the YAOOK/K8s cluster.
+the Tarook cluster.
 
 Cluster Repository Structure
 ----------------------------
@@ -79,7 +79,7 @@ Detailed explanation:
    :ref:`enable it in your environment variables <environmental-variables.behavior-altering-variables>`.
 
 -  ``managed-k8s/`` is a git submodule which refers to this (the
-   ``yaook/k8s``) repository. By using a submodule, we get a pinning to
+   ``Tarook``) repository. By using a submodule, we get a pinning to
    an exact commit and hold the hash of that commit inside the cluster
    repository. This allows us to reproducibly roll out the cluster with
    the same state without changes again, even if the branch of

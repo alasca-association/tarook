@@ -79,7 +79,7 @@ Terraform is automatically used and must not be explicitly enabled.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/terraform.nix
 
 
 .. _configuration-options.yk8s.terraform.gitlab_backend:
@@ -109,7 +109,7 @@ must be configured in a separate file `~/.config/yaook-k8s/env`.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/terraform.nix
 
 
 .. _configuration-options.yk8s.terraform.gitlab_base_url:
@@ -136,7 +136,7 @@ The base HTTP(s) URL of your GitLab instance.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/terraform.nix
 
 
 .. _configuration-options.yk8s.terraform.gitlab_project_id:
@@ -158,7 +158,7 @@ The unique ID of your GitLab project.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/terraform.nix
 
 
 .. _configuration-options.yk8s.terraform.gitlab_state_name:
@@ -185,7 +185,7 @@ The name of the Gitlab state object in which to store the Terraform state, e.g. 
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/terraform.nix
 
 
 .. _configuration-options.yk8s.terraform.timeout_time:
@@ -206,5 +206,5 @@ Timeout duration for Terraform operations
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/terraform.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/terraform.nix
 

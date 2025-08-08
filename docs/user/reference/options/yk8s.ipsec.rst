@@ -30,7 +30,7 @@ Whether to enable IPsec.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 
 
 .. _configuration-options.yk8s.ipsec.esp_proposals:
@@ -52,7 +52,7 @@ A list of parent SA proposals to offer to the client.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 
 
 .. _configuration-options.yk8s.ipsec.local_networks:
@@ -88,7 +88,7 @@ List of CIDRs to offer to the peer
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 
 
 .. _configuration-options.yk8s.ipsec.peer_networks:
@@ -111,7 +111,7 @@ assignments will be routed.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 
 
 .. _configuration-options.yk8s.ipsec.proposals:
@@ -128,7 +128,7 @@ A list of parent SA proposals to offer to the client.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 
 
 .. _configuration-options.yk8s.ipsec.purge_installation:
@@ -154,7 +154,7 @@ Whether to enable purging the IPsec installation.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 
 
 .. _configuration-options.yk8s.ipsec.remote_addrs:
@@ -177,7 +177,7 @@ address is used.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 
 
 .. _configuration-options.yk8s.ipsec.remote_name:
@@ -198,7 +198,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 
 
 .. _configuration-options.yk8s.ipsec.remote_private_addrs:
@@ -221,7 +221,7 @@ only used when :ref:`configuration-options.yk8s.ipsec.test_enabled` is ``true``
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 
 
 .. _configuration-options.yk8s.ipsec.test_enabled:
@@ -249,7 +249,7 @@ Must make sure a remote endpoint, with ipsec enabled, is running and open for co
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 
 
 .. _configuration-options.yk8s.ipsec.virtual_subnet_pool:
@@ -272,5 +272,5 @@ to clients which do not have remote networks. (e.g.: "10.3.0.0/24")
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 

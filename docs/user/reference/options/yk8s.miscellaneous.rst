@@ -29,7 +29,7 @@ those don't work with caching proxies like apt-cacher-ng.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
 .. _configuration-options.yk8s.miscellaneous.cluster_behind_proxy:
@@ -59,7 +59,7 @@ NOTE: These chances are currently only tested for Debian-based operating systems
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
 .. _configuration-options.yk8s.miscellaneous.custom_chrony_configuration:
@@ -89,7 +89,7 @@ Chrony treats both similarily but it expects that a pool will resolve to several
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
 .. _configuration-options.yk8s.miscellaneous.custom_ntp_pools:
@@ -119,7 +119,7 @@ A list of NTP pools.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
 .. _configuration-options.yk8s.miscellaneous.custom_ntp_servers:
@@ -149,7 +149,7 @@ A list of NTP servers.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
 .. _configuration-options.yk8s.miscellaneous.http_proxy:
@@ -159,7 +159,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or
 internal docker repositories can be added to the :ref:`configuration-options.yk8s.miscellaneous.no_proxy` config entry
-Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
+Important note: Settings for the Tarook cluster itself (like the service subnet or the pod subnet)
 will be set automagically and do not have to set manually here.
 
 
@@ -179,7 +179,7 @@ will be set automagically and do not have to set manually here.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
 .. _configuration-options.yk8s.miscellaneous.https_proxy:
@@ -189,7 +189,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or
 internal docker repositories can be added to the :ref:`configuration-options.yk8s.miscellaneous.no_proxy` config entry
-Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
+Important note: Settings for the Tarook cluster itself (like the service subnet or the pod subnet)
 will be set automagically and do not have to set manually here.
 
 
@@ -209,7 +209,7 @@ will be set automagically and do not have to set manually here.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
 .. _configuration-options.yk8s.miscellaneous.no_proxy:
@@ -219,7 +219,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 Set the approriate HTTP proxy settings for your cluster here. E.g. the address of the proxy or
 internal docker repositories can be added to the :ref:`configuration-options.yk8s.miscellaneous.no_proxy` config entry
-Important note: Settings for the yaook-k8s cluster itself (like the service subnet or the pod subnet)
+Important note: Settings for the Tarook cluster itself (like the service subnet or the pod subnet)
 will be set automagically and do not have to set manually here.
 
 
@@ -242,7 +242,7 @@ will be set automagically and do not have to set manually here.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/miscellaneous.nix
 
 
 .. _configuration-options.yk8s.miscellaneous.vm_max_map_count:
@@ -266,5 +266,5 @@ If you leave the value commented out you're fine and the system's default will b
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/miscellaneous.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/miscellaneous.nix
 

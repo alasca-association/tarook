@@ -1,30 +1,14 @@
-# Project Rename Announcement
+# TAROOK
 
-The YAOOK/K8s project will be separated from YAOOK and becomes a standalone project of the ALASCA association on **August 8th, 2025**. It will be renamed to **TAROOK** in that course.
+Tarook is an holistic life cycle management of Kubernetes clusters on bare metal or OpenStack.
 
-The repository will be migrated to https://gitlab.com/alasca.cloud/tarook/tarook/ on that day.
+Tarook is an [ALASCA](https://alasca.cloud/) project. All related resources are publicly available under https://gitlab.com/alasca.cloud/tarook/tarook.
 
-What does this mean for you?
-
-- Repository URLs and documentation will be updated on August 8th, 2025.
-
-- Existing functionality and usage patterns will remain unaffected.
-
-- Contributions, issues, and discussions will continue seamlessly at https://gitlab.com/alasca.cloud/tarook/tarook/.
-
-We invite the community to follow along, contribute, and help to shape the future of TAROOK as part of the ALASCA ecosystem.
-
-# YAOOK/K8s
-
-YAOOK/K8s is a Lifecycle-Management tool to provide and operate a customizable, highly available, and flexible Kubernetes cluster.
-
-YAOOK/K8s is part of the [Yaook](https://yaook.cloud) project. All Yaook related resources are publicly available under https://gitlab.com/yaook.
-
-For further information on how to install and use YAOOK/K8s, please refer to the [documentation](#documentation).
+For further information on how to install and use Tarook, please refer to the [documentation](#documentation).
 
 ## Documentation
 
-Documentation is currently available at https://yaook.gitlab.io/k8s/. It is planned to integrate it into https://docs.yaook.cloud/.
+Documentation is currently available at https://docs.tarook.cloud.
 
 The documentation is created with [sphinx](https://www.sphinx-doc.org/en/master/) and located under [docs/](docs/).
 
@@ -33,10 +17,25 @@ Built instructions for the documentation can be found in the [respective README]
 ## Contributing
 
 Contributions, issues and feature requests are welcome.
-Feel free to check the [issues page](https://gitlab.com/yaook/k8s/-/issues) if you want to contribute.
-
-Please also refer to the the [development workflow](https://gitlab.com/yaook/meta/-/wikis/Development-Workflow).
+Feel free to check the [issues page](https://gitlab.com/alasca.cloud/tarook/tarook/-/issues) if you want to contribute.
 
 ## License
 
 [Apache 2](LICENSE.txt)
+
+## Project Rename
+
+The Tarook project was previously known as YAOOK/k8s and got separated from the YAOOK project.
+It has become a standalone project of the ALASCA association on **August 8th, 2025**.
+
+The repository has been migrated to https://gitlab.com/alasca.cloud/tarook/tarook/ on that day.
+
+What does this mean for you?
+
+- Repository URLs and documentation have been updated on August 8th, 2025.
+
+- Existing functionality and usage patterns will remain unaffected.
+
+- Contributions, issues, and discussions will continue seamlessly at https://gitlab.com/alasca.cloud/tarook/tarook/.
+
+We invite the community to follow along, contribute, and help to shape the future of Tarook as part of the ALASCA ecosystem.

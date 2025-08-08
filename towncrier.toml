@@ -3,7 +3,7 @@ directory = "docs/_releasenotes/"
 filename = "CHANGELOG.rst"
 # template =  "docs/releasenotes_template.jinja"
 title_format = "{version} ({project_date})"
-issue_format = "`!{issue} <https://gitlab.com/yaook/k8s/-/merge_requests/{issue}>`_"
+issue_format = "`!{issue} <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/{issue}>`_"
 underlines = ["-", "~", "^"]
 
 [[tool.towncrier.type]]

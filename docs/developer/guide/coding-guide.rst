@@ -3,7 +3,7 @@ Coding Guide
 
 This document contains a coding guideline specifically written for this
 repository. For general information please refer to the
-`YAOOK Development Process Documentation <https://yaook.gitlab.io/meta/01-development-process.html>`__.
+`Tarook Development Process Documentation <https://tarook.gitlab.io/meta/01-development-process.html>`__.
 
 pre-commit-hooks
 ----------------
@@ -399,7 +399,7 @@ If you are responsible for the creation of releases
 
 **How to trigger a release:**
 
-1. Go to `rdm <https://gitlab.com/yaook/rdm>`__ and start a pipeline setting ``YAOOK_K8S_CI_RELEASE`` to ``true``.
+1. Go to `rdm <https://gitlab.com/alasca.cloud/tarook/rdm>`__ and start a pipeline setting ``YAOOK_K8S_CI_RELEASE`` to ``true``.
 2. After a few minutes there should be a new ``release-prepare/v$Major.$Minor.$Patch``-branch.
 3. The pipeline is triggered like described in :ref:`the policy <release-and-versioning-policy.yaook-k8s-implementation>`
 4. Make sure the pipeline did pass sucessfully and especially the changelog is rendered correctly, otherwise correct it directly on

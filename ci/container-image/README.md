@@ -4,7 +4,7 @@ This Nix expression builds the container image used in the GitLab CI.
 
 It can be manually built by running `nix build .#ciImage` from inside the LCM directory. The resulting image is a `.tar.gz` file that is linked to `./result` and can be loaded with eg. `docker load < ./result`. A more efficient approach is to stream it directly with `nix run .#streamCiImage | docker load`.
 
-Note that the features `nix-command` and `flakes` need to be enabled as described in the [installation guide](https://yaook.gitlab.io/k8s/devel/user/guide/quick-start/initialization.html). Alternatively, the command can be run with `nix run --extra-experimental-features nix-command --extra-experimental-features flakes ...`.
+Note that the features `nix-command` and `flakes` need to be enabled as described in the [installation guide](https://docs.tarook.cloud/devel/user/guide/quick-start/initialization.html). Alternatively, the command can be run with `nix run --extra-experimental-features nix-command --extra-experimental-features flakes ...`.
 
 For successful use, it is required that the following prerequisites
 are fulfilled:

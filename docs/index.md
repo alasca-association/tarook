@@ -2,7 +2,7 @@
 hide-doc: true
 ---
 
-# Welcome to YAOOK/K8s's documentation!
+# Welcome to TAROOK's documentation!
 
 ```{eval-rst}
 .. toctree::
@@ -13,7 +13,7 @@ hide-doc: true
 .. toctree::
     :hidden:
 
-    Releases <https://gitlab.com/yaook/k8s/-/releases>
+    Releases <https://gitlab.com/alasca.cloud/tarook/tarook/-/releases>
     releasenotes
 
 .. toctree::
@@ -39,7 +39,7 @@ hide-doc: true
 :::{grid-item-card}  Quick Start Guide
 :link: /user/guide/quick-start/index
 :link-type: doc
-The quick start guide is meant to give you a kickstart in deploying your first YAOOK/K8s cluster.
+The quick start guide is meant to give you a kickstart in deploying your first Tarook cluster.
 :::
 ::::
 
@@ -52,7 +52,7 @@ The releasenotes give you all essential information about recent changes.
 :::{grid-item-card} Release upgrade
 :link: /user/tutorial/upgrade-release
 :link-type: doc
-Tutorial on how to upgrade to a new YAOOK/K8s release.
+Tutorial on how to upgrade to a new TAROOK release.
 :::
 ::::
 
@@ -62,12 +62,12 @@ Tutorial on how to upgrade to a new YAOOK/K8s release.
 :::{grid-item-card}  User Explanations
 :link: /user/explanation/index
 :link-type: doc
-In-depth explanations and discussion about how (and why) YAOOK/K8s works from the user perspective.
+In-depth explanations and discussion about how (and why) Tarook works from the user perspective.
 :::
 :::{grid-item-card}  User Guide
 :link: /user/guide/index
 :link-type: doc
-Keep this under your pillow when *running* YAOOK/K8s clusters.
+Keep this under your pillow when *running* Tarook clusters.
 :::
 ::::
 
@@ -75,12 +75,12 @@ Keep this under your pillow when *running* YAOOK/K8s clusters.
 :::{grid-item-card}  User References
 :link: /user/reference/index
 :link-type: doc
-Technical reference documentation of YAOOK/K8s from the user perspective.
+Technical reference documentation of TAROOK from the user perspective.
 :::
 :::{grid-item-card}  User Tutorials
 :link: /user/tutorial/index
 :link-type: doc
-User facing tutorials on YAOOK/K8s.
+User facing tutorials on TAROOK.
 :::
 ::::
 
@@ -90,12 +90,12 @@ User facing tutorials on YAOOK/K8s.
 :::{grid-item-card}  Developer Explanations
 :link: /developer/explanation/index
 :link-type: doc
-In-depth explanations and discussion about how (and why) YAOOK/K8s works from the developer perspective.
+In-depth explanations and discussion about how (and why) Tarook works from the developer perspective.
 :::
 :::{grid-item-card}  Developer Guides
 :link: /developer/guide/index
 :link-type: doc
-Keep this at hand when *developing* with YAOOK/K8s.
+Keep this at hand when *developing* with Tarook.
 :::
 ::::
 
@@ -103,6 +103,6 @@ Keep this at hand when *developing* with YAOOK/K8s.
 :::{grid-item-card}  Developer References
 :link: /developer/reference/index
 :link-type: doc
-Technical reference documentation of YAOOK/K8s from the developer perspective.
+Technical reference documentation of Tarook from the developer perspective.
 :::
 ::::

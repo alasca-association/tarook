@@ -24,7 +24,7 @@ and to name harbour infrastructure resources.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 
 .. _configuration-options.yk8s.infra.hosts_file:
@@ -51,7 +51,7 @@ A custom hosts file in case :ref:`configuration-options.yk8s.openstack.enabled` 
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 
 .. _configuration-options.yk8s.infra.ipv4_enabled:
@@ -77,7 +77,7 @@ Whether to enable IPv4.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 
 .. _configuration-options.yk8s.infra.ipv6_enabled:
@@ -103,7 +103,7 @@ Whether to enable IPv6.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 
 .. _configuration-options.yk8s.infra.networking_fixed_ip:
@@ -124,7 +124,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 
 .. _configuration-options.yk8s.infra.networking_fixed_ip_v6:
@@ -145,7 +145,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 
 .. _configuration-options.yk8s.infra.subnet_cidr:
@@ -166,7 +166,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 
 .. _configuration-options.yk8s.infra.subnet_v6_cidr:
@@ -187,5 +187,5 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/infra.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 

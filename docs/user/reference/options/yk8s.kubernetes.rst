@@ -34,7 +34,7 @@ Whether to enable audit logs for the apiserver.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
 .. _configuration-options.yk8s.kubernetes.apiserver.audit_logs.max_size:
@@ -56,7 +56,7 @@ Maximum size of apiserver audit log files in megabytes before it gets rotated
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
 .. _configuration-options.yk8s.kubernetes.apiserver.audit_logs.policy:
@@ -291,7 +291,7 @@ Note that this option is not type checked by Nix, so make sure that it it's a va
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
 .. _configuration-options.yk8s.kubernetes.apiserver.frontend_port:
@@ -312,7 +312,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
 .. _configuration-options.yk8s.kubernetes.apiserver.memory_limit:
@@ -339,7 +339,7 @@ Memory resources limit for the apiserver
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
 .. _configuration-options.yk8s.kubernetes.controller_manager.enable_signing_requests:
@@ -374,7 +374,7 @@ you must run the CA rotation script
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
 .. _configuration-options.yk8s.kubernetes.controller_manager.large_cluster_size_threshold:
@@ -395,7 +395,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
 .. _configuration-options.yk8s.kubernetes.is_gpu_cluster:
@@ -419,7 +419,7 @@ so that the driver and surrounding framework is deployed.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
 .. _configuration-options.yk8s.kubernetes.monitoring.enabled:
@@ -448,7 +448,7 @@ For prometheus-specific configurations take a look at the config options in
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes/monitoring.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/monitoring.nix
 
 
 .. _configuration-options.yk8s.kubernetes.storage.nodeplugin_toleration:
@@ -477,7 +477,7 @@ to run on all nodes (ignoring all taints). This is often desirable.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
 .. _configuration-options.yk8s.kubernetes.version:
@@ -499,7 +499,7 @@ Kubernetes version
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
 .. _configuration-options.yk8s.kubernetes.virtualize_gpu:
@@ -533,5 +533,5 @@ Note: This is mutually exclusive with :ref:`configuration-options.yk8s.kubernete
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 

@@ -52,7 +52,7 @@ The upstream registry will automatically be used after all defined hosts have be
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/containerd.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/containerd.nix
 
 
 .. _configuration-options.yk8s.containerd.mirrors.*.mirrors:
@@ -78,7 +78,7 @@ Optionally specify a port.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/containerd.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/containerd.nix
 
 
 .. _configuration-options.yk8s.containerd.mirrors.*.registry:
@@ -103,5 +103,5 @@ Set to null if the mirrors should be used as default.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/containerd.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/containerd.nix
 

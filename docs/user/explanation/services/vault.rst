@@ -1,16 +1,16 @@
-Use of HashiCorp Vault in YAOOK/K8s
+Use of HashiCorp Vault in TAROOK
 ===================================
 
-As of Summer 2023, YAOOK/K8s exclusively supports
+As of Summer 2023, Tarook exclusively supports
 `HashiCorp Vault <https://vaultproject.io>`__ as backend for storing secrets.
 Previously, passwordstore was used. Vault supports many different kinds
 of secrets and in particular its support for managing PKIs made it
-attractive for YAOOK/K8s.
+attractive for Tarook.
 
-A Vault instance can be the backend for one or more YAOOK/K8s clusters;
+A Vault instance can be the backend for one or more Tarook clusters;
 it is not required that each cluster has a separate Vault. It is also
 possible to use the Vault instance for something else in addition to
-hosting YAOOK/K8s clusters, though this is not recommended to avoid
+hosting Tarook clusters, though this is not recommended to avoid
 accidental exposure of credentials.
 
 Vault primer
@@ -20,7 +20,7 @@ If you are already familiar with Vault, you can skip this section.
 
 Vault is a secret storage engine. Secrets are organized in so-called
 secrets engines. Each engine manages a different type of secret. For
-YAOOK/K8s, the three most important secret engines are:
+Tarook, the three most important secret engines are:
 
 -  `SSH CA/Certificate management <https://www.vaultproject.io/docs/secrets/ssh>`__
    (``ssh``)
@@ -44,11 +44,11 @@ endpoints, as well as the ``auth/`` prefix under which authentication
 methods live.
 
 Authentication methods can, like secrets engines, be used in a very
-modular fashion. For YAOOK/K8s, the
+modular fashion. For Tarook, the
 `approle <https://www.vaultproject.io/docs/auth/approle>`__ method
 is most important. It allows to create role/secret pairs, which are
 functionally identical to a username/password pair. These are intended
-to be used by machine accounts and in YAOOK/K8s they are used to give
+to be used by machine accounts and in Tarook they are used to give
 each node a unique credential.
 
 Access to data in Vault, including authentication configuration, happens
@@ -61,7 +61,7 @@ control is possible, even down into specific parts of a secret engine.
 Organization of Data in Vault
 -----------------------------
 
-All secrets engines used by YAOOK/K8s are mounted below the ``yaook/``
+All secrets engines used by Tarook are mounted below the ``yaook/``
 path prefix. (This prefix is configurable, but that is not well-tested.)
 Each cluster gets its own secrets engines, to improve the isolation
 between different clusters. The per-cluster secrets engines are mounted
@@ -81,7 +81,7 @@ The following six secrets engines are used:
 -  ``yaook/$cluster_name/ssh-ca``, an SSH certificate authority to allow
    verifying node SSH keys without prior knowledge
 
-In addition to the secrets engines, YAOOK/K8s has a shared ``approle``
+In addition to the secrets engines, Tarook has a shared ``approle``
 authentication method at ``yaook/nodes``. This auth method is used to
 provide credentials for the individual nodes of all clusters.
 

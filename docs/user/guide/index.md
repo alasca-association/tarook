@@ -17,4 +17,4 @@ minimal-access-venv
 rotate-openstack-credentials
 ```
 
-Keep this under your pillow when *running* YAOOK/K8s clusters.
+Keep this under your pillow when *running* Tarook clusters.

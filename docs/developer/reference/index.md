@@ -8,4 +8,4 @@ hidden: true
 
 ```
 
-Technical reference documentation of YAOOK/K8s from the developer perspective.
+Technical reference documentation of Tarook from the developer perspective.

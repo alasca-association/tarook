@@ -26,7 +26,7 @@ An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.calico.custom_version:
@@ -61,7 +61,7 @@ the above specified Kubernetes version.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.calico.enabled:
@@ -85,7 +85,7 @@ Allows the establishment of zone boundaries through BGP
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.calico.encapsulation:
@@ -109,7 +109,7 @@ https://docs.tigera.io/calico/latest/reference/installation/api#operator.tigera.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.calico.image_registry:
@@ -132,7 +132,7 @@ Changing this value can be useful if one endpoint hosts outdated images or you'r
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.calico.ipipmode:
@@ -156,7 +156,7 @@ https://docs.tigera.io/calico/latest/reference/resources/ippool#spec
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.calico.mtu:
@@ -177,7 +177,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 
 
 .. _configuration-options.yk8s.kubernetes.network.calico.values_file_path:
@@ -205,5 +205,5 @@ it is possible to link to self-maintained values file for the helm chart
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 

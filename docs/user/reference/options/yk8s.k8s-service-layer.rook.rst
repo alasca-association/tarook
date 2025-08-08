@@ -51,7 +51,7 @@ Whether to enable the CephFS shared filesystem.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.ceph_fs_name:
@@ -72,7 +72,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.ceph_fs_preserve_pools_on_delete:
@@ -98,7 +98,7 @@ Whether to enable preservation of pools on delete.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.ceph_fs_replicated:
@@ -119,7 +119,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.cluster_name:
@@ -140,7 +140,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.csi_plugins:
@@ -163,7 +163,7 @@ Set to false to disable CSI plugins, if they are not needed in the rook cluster.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.custom_ceph_version:
@@ -189,7 +189,7 @@ rook-ceph-compatibility-matrix.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.dashboard:
@@ -216,7 +216,7 @@ Whether to enable the ceph dashboard for viewing cluster status
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.enabled:
@@ -242,7 +242,7 @@ Whether to enable Rook.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.encrypt_osds:
@@ -268,7 +268,7 @@ Whether to enable encryption of OSDs.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.helm_release_name_cluster:
@@ -289,7 +289,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.helm_release_name_operator:
@@ -310,7 +310,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.manage_pod_budgets:
@@ -339,7 +339,7 @@ for OSD, Mon, RGW, and MDS daemons.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mds_resources:
@@ -360,7 +360,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mds_resources.limits.cpu:
@@ -384,7 +384,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mds_resources.limits.memory:
@@ -415,7 +415,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mds_resources.requests.cpu:
@@ -446,7 +446,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mds_resources.requests.memory:
@@ -470,7 +470,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mgr_resources:
@@ -491,7 +491,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mgr_resources.limits.cpu:
@@ -515,7 +515,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mgr_resources.limits.memory:
@@ -546,7 +546,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mgr_resources.requests.cpu:
@@ -577,7 +577,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mgr_resources.requests.memory:
@@ -601,7 +601,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mgr_scheduling_key:
@@ -630,7 +630,7 @@ but will use the most specific one for scheduling.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mgr_use_pg_autoscaler:
@@ -651,7 +651,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mon_allow_multiple_per_node:
@@ -672,7 +672,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mon_resources:
@@ -693,7 +693,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mon_resources.limits.cpu:
@@ -717,7 +717,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mon_resources.limits.memory:
@@ -748,7 +748,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mon_resources.requests.cpu:
@@ -779,7 +779,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mon_resources.requests.memory:
@@ -803,7 +803,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mon_scheduling_key:
@@ -832,7 +832,7 @@ but will use the most specific one for scheduling.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mon_volume:
@@ -853,7 +853,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mon_volume_size:
@@ -875,7 +875,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuratio
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.mon_volume_storage_class:
@@ -902,7 +902,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuratio
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.namespace:
@@ -925,7 +925,7 @@ never deleted).
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.nmgrs:
@@ -954,7 +954,7 @@ The count of mgrs is adjustable since rook v1.6 and does not work with older ver
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.nmons:
@@ -978,7 +978,7 @@ The number of mons has to be uneven.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.nodeplugin_toleration:
@@ -999,7 +999,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.nodes:
@@ -1027,7 +1027,7 @@ See :doc:`/user/guide/rook/custom-storage`
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.nodes.*.config:
@@ -1048,7 +1048,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.nodes.*.devices:
@@ -1069,7 +1069,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.nodes.*.devices.<name>.config:
@@ -1090,7 +1090,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.nodes.*.name:
@@ -1106,7 +1106,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.nosds:
@@ -1129,7 +1129,7 @@ workers you use.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.operator_resources:
@@ -1150,7 +1150,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.operator_resources.limits.cpu:
@@ -1174,7 +1174,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.operator_resources.limits.memory:
@@ -1205,7 +1205,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.operator_resources.requests.cpu:
@@ -1236,7 +1236,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.operator_resources.requests.memory:
@@ -1260,7 +1260,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.osd_anti_affinity:
@@ -1281,7 +1281,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.osd_autodestroy_safe:
@@ -1302,7 +1302,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.osd_resources:
@@ -1323,7 +1323,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.osd_resources.limits.cpu:
@@ -1347,7 +1347,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.osd_resources.limits.memory:
@@ -1378,7 +1378,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.osd_resources.requests.cpu:
@@ -1409,7 +1409,7 @@ https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-conf
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.osd_resources.requests.memory:
@@ -1433,7 +1433,7 @@ Thus, this option is deprecated.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.osd_storage_class:
@@ -1455,7 +1455,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuratio
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.osd_volume_size:
@@ -1479,7 +1479,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuratio
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.pools:
@@ -1504,7 +1504,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.pools.*.create_storage_class:
@@ -1525,7 +1525,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.pools.*.device_class:
@@ -1546,7 +1546,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.pools.*.erasure_coded:
@@ -1567,7 +1567,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.pools.*.erasure_coded.coding_chunks:
@@ -1588,7 +1588,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.pools.*.erasure_coded.data_chunks:
@@ -1609,7 +1609,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.pools.*.failure_domain:
@@ -1630,7 +1630,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.pools.*.name:
@@ -1651,7 +1651,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.pools.*.replicated:
@@ -1672,7 +1672,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.scheduling_key:
@@ -1703,7 +1703,7 @@ node.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.skip_upgrade_checks:
@@ -1737,7 +1737,7 @@ https://rook.github.io/docs/rook/v1.3/ceph-cluster-crd.html#cluster-settings
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.toolbox:
@@ -1760,7 +1760,7 @@ introspect the cluster state.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.use_all_available_devices:
@@ -1782,7 +1782,7 @@ See :doc:`/user/guide/rook/custom-storage`
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.use_all_available_nodes:
@@ -1804,7 +1804,7 @@ See :doc:`/user/guide/rook/custom-storage`
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.use_host_networking:
@@ -1830,7 +1830,7 @@ Whether to enable usage of the host network..
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 
 
 .. _configuration-options.yk8s.k8s-service-layer.rook.version:
@@ -1859,5 +1859,5 @@ If the version shall be unpinned, set to: ``null``.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/rook.nix
 

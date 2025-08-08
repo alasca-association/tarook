@@ -557,7 +557,7 @@ if __name__ == "__main__":
             "Issue tracker url. If the issue tracker for your role is not on"
             " github. Defaults to %(default)s"
         ),
-        default="https://gitlab.com/yaook/k8s/-/issues",
+        default="https://gitlab.com/alasca.cloud/tarook/tarook/-/issues",
     )
     meta_parser_init.add_argument(
         "--dependencies",

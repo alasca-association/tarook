@@ -10,7 +10,7 @@
 in {
   options.yk8s.custom = mkOption {
     description = ''
-      Since yaook/k8s allows to
+      Since Tarook allows to
       :ref:`execute custom playbook(s) <abstraction-layers.customization>`, the
       following section allows you to specify your own custom variables to be
       used in these.

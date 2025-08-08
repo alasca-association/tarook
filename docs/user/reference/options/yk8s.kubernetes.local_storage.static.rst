@@ -23,7 +23,7 @@ yk8s.kubernetes.local_storage.static
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
 
 
 .. _configuration-options.yk8s.kubernetes.local_storage.static.discovery_directory:
@@ -44,7 +44,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-sto
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
 
 
 .. _configuration-options.yk8s.kubernetes.local_storage.static.enabled:
@@ -74,7 +74,7 @@ It is recommended to use the dynamic local storage instead.
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
 
 
 .. _configuration-options.yk8s.kubernetes.local_storage.static.namespace:
@@ -95,7 +95,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-sto
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
 
 
 .. _configuration-options.yk8s.kubernetes.local_storage.static.nodeplugin_toleration:
@@ -116,7 +116,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-sto
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
 
 
 .. _configuration-options.yk8s.kubernetes.local_storage.static.storageclass_name:
@@ -141,7 +141,7 @@ names if both are enabled!
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
 
 
 .. _configuration-options.yk8s.kubernetes.local_storage.static.version:
@@ -163,5 +163,5 @@ See https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/rele
 
 
 **Declared by**
-https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/k8s-local-storage-controller.nix
 

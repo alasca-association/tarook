@@ -368,7 +368,7 @@ in {
         }
         {
           assertion = config.yk8s.infra.ipv4_enabled;
-          message = "config.yk8s.openstack: YAOOK/k8s Terraform does not yet support IPv6-only, see #685";
+          message = "config.yk8s.openstack: Tarook Terraform does not yet support IPv6-only, see #685";
         }
         (let
           current_config_file =

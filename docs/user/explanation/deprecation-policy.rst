@@ -3,11 +3,11 @@ Deprecation Policy
 
 Below we outline our policy on deprecating and removing features and Kubernetes releases.
 
-For the removal of features and K8s releases from YAOOK/K8s we will give an advanced
+For the removal of features and K8s releases from Tarook we will give an advanced
 notice of at least 30 days. This notice is given using the
-`changelog <https://yaook.gitlab.io/k8s/devel/releasenotes.html>`__.
+`changelog <https://docs.tarook.cloud/devel/releasenotes.html>`__.
 
-Support for older releases of YAOOK/K8s
+Support for older releases of TAROOK
 ---------------------------------------
 
 A release becomes EOL when there are three newer (major/minor) versions but earliest four weeks

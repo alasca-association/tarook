@@ -36,7 +36,7 @@ def process_deletion_outcome(outcome: typing.Optional[bool]):
 def main():
     """
     This script cleans up the currently sourced OpenStack project from all
-    yaook/k8s relevant resources. The order of removal is to some extend
+    Tarook relevant resources. The order of removal is to some extend
     important as there are some dependencies between the various resources.
     """
 

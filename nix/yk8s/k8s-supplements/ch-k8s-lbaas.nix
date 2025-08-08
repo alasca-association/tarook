@@ -65,7 +65,7 @@ in {
       description = ''
         Configure which IP address ("port") manager to use. Two options are available:
 
-        * openstack: Uses OpenStack and the yaook/k8s gateway nodes to provision
+        * openstack: Uses OpenStack and the Tarook gateway nodes to provision
           LBaaS IP addresses ports.
         * static: Uses a fixed set of IP addresses to use for load balancing. When the
           static port manager is used,

@@ -154,8 +154,8 @@ External resources
 ======================================= ======================================================================= ===================================================
 Environment Variable                    Default                                                                 Description
 ======================================= ======================================================================= ===================================================
-``MANAGED_K8S_GIT``                     ``gitlab.com:yaook/k8s``                                                This git URL is used by ``init-cluster-repo.sh`` to
-                                                                                                                bootstrap the LCM (``yaook/k8s``)
+``MANAGED_K8S_GIT``                     ``gitlab.com/alasca.cloud/tarook/tarook``                               This git URL is used by ``init-cluster-repo.sh`` to
+                                                                                                                bootstrap the LCM (``Tarook``)
                                                                                                                 repository. Can be used to override
                                                                                                                 the repository to use another mirror.
 ``MANAGED_K8S_LATEST_RELEASE``          ``true``                                                                If set to ``true``, ``init-cluster-repo.sh`` will checkout the
@@ -334,11 +334,11 @@ Vault tooling variables
    with.
 
 -  ``YAOOK_K8S_VAULT_PATH_PREFIX`` (default: ``yaook``): Vault URI path
-   prefix to be used for all secrets engines used by YAOOK/K8s. Changing
+   prefix to be used for all secrets engines used by Tarook. Changing
    this is not fully supported and at your own risk.
 
 -  ``YAOOK_K8S_VAULT_POLICY_PREFIX`` (default: ``yaook``): Vault policy
-   name prefix to be used for all policies created by YAOOK/K8s.
+   name prefix to be used for all policies created by Tarook.
    Changing this is not fully supported and at your own risk.
 
 -  ``YAOOK_K8S_VAULT_NODES_APPROLE_NAME`` (default:
