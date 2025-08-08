@@ -1,5 +1,5 @@
 {
-  inputs.yk8s.url = "git+https://gitlab.com/yaook/k8s";
+  inputs.yk8s.url = "git+https://gitlab.com/alasca.cloud/tarook/tarook";
   inputs.nixpkgs.follows = "yk8s/nixpkgs";
   inputs.flake-parts.follows = "yk8s/flake-parts";
 
