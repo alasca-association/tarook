@@ -1637,7 +1637,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "17.2.3"
+  "17.2.6"
 
 
 **Example:**::
