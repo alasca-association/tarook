@@ -1,6 +1,11 @@
-use clap::{Args, Parser, Subcommand};
+use crate::commands::*;
+use crate::errors::BashScriptError;
+use clap::Parser;
 use std::process::Command;
 use std::process::Stdio;
+
+pub mod commands;
+pub mod errors;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -10,81 +15,39 @@ struct Cli {
     command: Commands,
 }
 
-#[derive(Subcommand)]
-enum Commands {
-    /// Initialize something
-    #[command(subcommand)]
-    Init(InitCommands),
-    /// Apply things
-    #[command(subcommand)]
-    Apply(ApplyCommands),
-    #[command(subcommand)]
-    Update(UpdateCommands),
-    Upgrade {},
-    #[command(subcommand)]
-    Migrate(MigrateCommands),
-    #[command(subcommand)]
-    Vault(VaultCommands),
-    /// k8s
-    #[command(subcommand)]
-    Kubernetes(KubernetesCommands),
-    #[command(subcommand)]
-    Tests(TestsCommands),
-    #[command(subcommand)]
-    Connection(ConnectionCommands),
-    Ssh {},
-}
+/// Runs a bash script from a relative path.
+///
+/// Returns an error if the status code is not 0.
+///
+/// This function should be deleted in the future as all functionality should be moved from the
+/// shell scripts to Rust.
+///
+/// # Examples
+///
+/// ```
+/// run_bash_script("test.sh").expect("oh noez..!");
+/// ```
+fn run_bash_script(path: &str) -> Result<(), BashScriptError> {
+    // https://stackoverflow.com/questions/31992237/how-would-you-stream-output-from-a-process
+    let mut cmd = Command::new("bash")
+        .arg(path)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .spawn()
+        .expect("IO error");
 
-#[derive(Subcommand, Debug)]
-enum InitCommands {
-    Git,
-}
+    // It's streaming here
 
-#[derive(Subcommand, Debug)]
-enum ApplyCommands {
-    All,
-    Terraform,
-    Gateway,
-    Custom,
-    Supplements,
-}
+    let status = cmd.wait();
 
-#[derive(Subcommand, Debug)]
-enum UpdateCommands {
-    FrontendNodes,
-    KubernetesNodes,
-    Inventory,
-}
-
-#[derive(Subcommand, Debug)]
-enum MigrateCommands {
-    Release,
-}
-
-#[derive(Subcommand, Debug)]
-enum VaultCommands {
-    Init,
-}
-
-#[derive(Subcommand, Debug)]
-enum KubernetesCommands {
-    Init(KubernetesInitArgs),
-}
-
-#[derive(Args, Debug)]
-struct KubernetesInitArgs {
-    #[arg(short, long)]
-    super_admin: bool,
-}
-
-#[derive(Subcommand, Debug)]
-enum TestsCommands {
-    All,
-}
-
-#[derive(Subcommand, Debug)]
-enum ConnectionCommands {
-    Up,
+    if !status.as_ref().unwrap().success() {
+        Err(BashScriptError::NonZeroExitCodeError {
+            script: path.to_owned(),
+            exit_code: status.as_ref().unwrap().code().expect("no exit code"),
+        })
+    } else {
+        Ok(())
+    }
 }
 
 fn main() {
@@ -98,17 +61,7 @@ fn main() {
             println!("apply {:?}", subcommand);
             match &subcommand {
                 ApplyCommands::All {} => {
-                    // https://stackoverflow.com/questions/31992237/how-would-you-stream-output-from-a-process
-                    let mut cmd = Command::new("bash")
-                        .arg("apply.sh")
-                        .stdout(Stdio::inherit())
-                        .stderr(Stdio::inherit())
-                        .spawn()
-                        .expect("Failed to execute command");
-
-                    // It's streaming here
-                    let status = cmd.wait();
-                    println!("Exited with status {:?}", status);
+                    run_bash_script("apply.sh").expect("oh noez..!");
                 }
                 _ => {}
             }
@@ -137,5 +90,21 @@ fn main() {
         Commands::Ssh {} => {
             println!("ssh");
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn run_bash_script_should_fail_when_script_doesnt_exist() {
+        assert_eq!(
+            run_bash_script("thisdoesnotexist.sh"),
+            Err(BashScriptError::NonZeroExitCodeError {
+                script: "thisdoesnotexist.sh".to_owned(),
+                exit_code: 127
+            })
+        )
     }
 }
