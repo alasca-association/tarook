@@ -1,0 +1,2 @@
+The :ref:`release migration script <actions-references.migrate-to-releasesh>`
+now stages (and commits) its updates to a cluster repo's gitignore.
