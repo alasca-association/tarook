@@ -1,0 +1,2 @@
+The :ref:`release migration script <actions-references.migrate-to-releasesh>`
+does not output expected and misleading ``git apply`` errors anymore.
