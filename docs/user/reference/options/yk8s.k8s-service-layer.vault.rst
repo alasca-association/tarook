@@ -26,6 +26,34 @@ yk8s.k8s-service-layer.vault
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
+.. _configuration-options.yk8s.k8s-service-layer.vault.backup_s3_addressing_style:
+
+``yk8s.k8s-service-layer.vault.backup_s3_addressing_style``
+###########################################################
+
+The addressing style used for the s3 bucket that stores the vault backups.
+
+- ``path``: Bucket name is included in the URI path.
+- ``virtual``: Bucket name is included in the hostname.
+- ``auto``: Attempts to use virtual, but falls back to path if necessary.
+
+Only relevant if :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable_backups` is set to ``true``.
+
+
+**Type:**::
+
+  one of "path", "virtual", "auto"
+
+
+**Default:**::
+
+  "path"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
 .. _configuration-options.yk8s.k8s-service-layer.vault.ca_issuer:
 
 ``yk8s.k8s-service-layer.vault.ca_issuer``
