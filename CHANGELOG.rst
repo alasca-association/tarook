@@ -19,6 +19,22 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.0.12 (2025-08-13)
+--------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- The project has been renamed from YAOOK/K8s to TAROOK.
+  The repository location has been updated to reflect this change. (`!2001 <https://gitlab.com/yaook/k8s/-/merge_requests/2001>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- `!2001 <https://gitlab.com/yaook/k8s/-/merge_requests/2001>`_
+
+
 v9.0.11 (2025-07-16)
 --------------------
 
