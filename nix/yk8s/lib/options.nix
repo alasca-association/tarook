@@ -1,4 +1,6 @@
-{lib}: rec {
+{lib}: let
+  yk8s-lib.types = import ./types.nix {inherit lib;};
+in rec {
   /*
   Like nixpkgs.lib.options.mkEnableOption but with true as the default
   */
@@ -93,7 +95,7 @@
   }
   */
   mkHelmValuesOption = {
-    name,
+    descriptionName,
     valuesDocUrl ? null,
     extraDescription ? "",
     chartOptions ? {},
@@ -102,7 +104,7 @@
     lib.mkOption {
       description =
         ''
-          Helm values for the ${name} helm chart.
+          Helm values for the ${descriptionName} helm chart.
 
           Some values are set by default through Tarook, but arbitrary values can be set.
         ''
@@ -117,15 +119,65 @@
         options = chartOptions;
       };
     };
-  mkHelmChartVersionOption = args:
+  mkHelmChartVersionOption = args @ {descriptionName ? null, ...}:
     lib.mkOption ({
         example = "1.2.3";
         description = ''
-          The helm chart version to be used.
+          Version of the${lib.optionalString (descriptionName != null) " ${descriptionName}"} Helm chart to be used.
 
           If the version shall be unpinned, set to: ``null``.
         '';
         type = lib.types.nullOr yk8s-lib.types.helmChartVersion;
       }
-      // args);
+      // (removeAttrs args ["descriptionName"]));
+
+  mkHelmReleaseOptions = {
+    descriptionName,
+    defaultRepoUrl,
+    defaultChartRef,
+    defaultChartVersion,
+    defaultReleaseNamespace,
+    defaultReleaseName,
+    defaultValues ? {},
+    valuesDocUrl ? null,
+    extraValuesDescription ? "",
+    chartOptions ? {},
+  }: {
+    chart_repo_url = lib.mkOption {
+      description = ''
+        The URL to the Helm repository for the ${descriptionName} Helm chart.
+      '';
+      type = yk8s-lib.types.helmChartRepoUrl;
+      default = defaultRepoUrl;
+    };
+    chart_ref = lib.mkOption {
+      description = ''
+        The chart reference (relative to the repository) of the ${descriptionName} Helm chart.
+      '';
+      type = yk8s-lib.types.helmChartRef;
+      default = defaultChartRef;
+    };
+    chart_version = mkHelmChartVersionOption {
+      inherit descriptionName;
+      default = defaultChartVersion;
+    };
+    release_namespace = lib.mkOption {
+      description = ''
+        The namespace in which to install ${descriptionName}.
+      '';
+      type = yk8s-lib.types.k8sNamespaceName;
+      default = defaultReleaseNamespace;
+    };
+    release_name = lib.mkOption {
+      description = ''
+        The release name inside the cluster for ${descriptionName}.
+      '';
+      type = lib.types.nonEmptyStr;
+      default = defaultReleaseName;
+    };
+    values = mkHelmValuesOption {
+      inherit descriptionName valuesDocUrl chartOptions defaultValues;
+      extraDescription = extraValuesDescription;
+    };
+  };
 }
