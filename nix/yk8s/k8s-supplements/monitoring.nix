@@ -6,7 +6,7 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.prometheus;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule;
+  inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkRenamedResourceOptionModule mkMultiResourceOptionsModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) foldlAttrs;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkMultiResourceOptions;
@@ -40,70 +40,68 @@
     subdomainLabel
     ;
 in {
-  imports =
-    [
-      (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "use_jsonnet_setup"] "")
-      (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "use_helm_thanos"] "")
-      (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "migrate_from_v1"] "")
-      (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "alertmanager_config_secret"] "")
-      (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "alertmanager_configuration_name"] "")
-      (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "kube_state_metrics_metric_annotation_allow_list"] "")
-      (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "thanos_metadata_volume_size"] "")
-      (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "thanos_metadata_volume_storage_class"] "")
-      (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "grafana_plugins"] "")
-      (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "prometheus_monitor_all_namespaces"] "")
-      (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "monitor_all_namespaces"] "")
-      (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "thanos_objectstorage_config_path"] "Use `thanos_objectstorage_config_file` instead.")
+  imports = [
+    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "use_jsonnet_setup"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "use_helm_thanos"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "migrate_from_v1"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "alertmanager_config_secret"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "alertmanager_configuration_name"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "kube_state_metrics_metric_annotation_allow_list"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "thanos_metadata_volume_size"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "thanos_metadata_volume_storage_class"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "grafana_plugins"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "prometheus_monitor_all_namespaces"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "monitor_all_namespaces"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "thanos_objectstorage_config_path"] "Use `thanos_objectstorage_config_file` instead.")
 
-      (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_cpu_request"] ["k8s-service-layer" "prometheus" "operator_resources" "cpu" "request"])
-      (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_cpu_limit"] ["k8s-service-layer" "prometheus" "operator_resources" "cpu" "limit"])
-      (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_memory_request"] ["k8s-service-layer" "prometheus" "operator_resources" "memory" "request"])
-      (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_memory_limit"] ["k8s-service-layer" "prometheus" "operator_resources" "memory" "limit"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_cpu_request"] ["k8s-service-layer" "prometheus" "operator_resources" "cpu" "request"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_cpu_limit"] ["k8s-service-layer" "prometheus" "operator_resources" "cpu" "limit"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_memory_request"] ["k8s-service-layer" "prometheus" "operator_resources" "memory" "request"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_memory_limit"] ["k8s-service-layer" "prometheus" "operator_resources" "memory" "limit"])
 
-      (mkMultiResourceOptionsModule "k8s-service-layer.prometheus" {
-        description = ''
-          PROMETHEUS POD RESOURCE LIMITS
-          The following limits are applied to the respective pods.
-          Note that the Prometheus limits are chosen fairly conservatively and may need
-          tuning for larger and smaller clusters.
-          By default, we prefer to set limits in such a way that the Pods end up in the
-          Guaranteed QoS class (i.e. both CPU and Memory limits and requests set to the
-          same value).
-        '';
-        resources = {
-          operator.memory.limit = "400Mi";
-          operator.cpu.request = "100m";
+    (mkMultiResourceOptionsModule "k8s-service-layer.prometheus" {
+      description = ''
+        PROMETHEUS POD RESOURCE LIMITS
+        The following limits are applied to the respective pods.
+        Note that the Prometheus limits are chosen fairly conservatively and may need
+        tuning for larger and smaller clusters.
+        By default, we prefer to set limits in such a way that the Pods end up in the
+        Guaranteed QoS class (i.e. both CPU and Memory limits and requests set to the
+        same value).
+      '';
+      resources = {
+        operator.memory.limit = "400Mi";
+        operator.cpu.request = "100m";
 
-          alertmanager.memory.limit = "256Mi";
-          alertmanager.cpu.request = "100m";
+        alertmanager.memory.limit = "256Mi";
+        alertmanager.cpu.request = "100m";
 
-          prometheus.memory.limit = "3Gi";
-          prometheus.cpu.request = "1";
+        prometheus.memory.limit = "3Gi";
+        prometheus.cpu.request = "1";
 
-          grafana.memory.limit = "512Mi";
-          grafana.cpu.request = "100m";
-          grafana.cpu.example = "500m";
+        grafana.memory.limit = "512Mi";
+        grafana.cpu.request = "100m";
+        grafana.cpu.example = "500m";
 
-          kube_state_metrics.memory.limit = "128Mi";
-          kube_state_metrics.cpu.request = "50m";
+        kube_state_metrics.memory.limit = "128Mi";
+        kube_state_metrics.cpu.request = "50m";
 
-          thanos_sidecar.memory.limit = "256Mi";
-          thanos_sidecar.cpu.request = "500m";
+        thanos_sidecar.memory.limit = "256Mi";
+        thanos_sidecar.cpu.request = "500m";
 
-          thanos_query.memory.limit = "786Mi";
-          thanos_query.cpu.request = "100m";
-          thanos_query.cpu.example = "1";
+        thanos_query.memory.limit = "786Mi";
+        thanos_query.cpu.request = "100m";
+        thanos_query.cpu.example = "1";
 
-          thanos_compact.memory.limit = "200Mi";
-          thanos_compact.cpu.request = "100m";
+        thanos_compact.memory.limit = "200Mi";
+        thanos_compact.cpu.request = "100m";
 
-          thanos_store.memory.limit = "2Gi";
-          thanos_store.cpu.request = "100m";
-          thanos_store.cpu.example = "500m";
-        };
-      })
-    ]
-    ++ (mkRenamedResourceOptionModules ["k8s-service-layer" "prometheus"] [
+        thanos_store.memory.limit = "2Gi";
+        thanos_store.cpu.request = "100m";
+        thanos_store.cpu.example = "500m";
+      };
+    })
+    (mkRenamedResourceOptionModule ["k8s-service-layer" "prometheus"] [
       "operator"
       "alertmanager"
       "prometheus"
@@ -113,7 +111,8 @@ in {
       "thanos_query"
       "thanos_compact"
       "thanos_store"
-    ]);
+    ])
+  ];
 
   options.yk8s.k8s-service-layer.prometheus = mkTopSection {
     _docs.preface = ''

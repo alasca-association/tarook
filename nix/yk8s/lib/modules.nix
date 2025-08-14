@@ -62,7 +62,7 @@ in rec {
   };
 
   /*
-  Return a list of modules that causes warnings to be shown if a resource option
+  Return a module that causes warnings to be shown if a resource option
   of the form ${prefix}_[memory|cpu]_[request|limit] is used, the defined value
   however forwarded to${prefix}_resources.[memory|cpu].[request|limit].
   For example,
@@ -70,20 +70,22 @@ in rec {
     imports = [
       ....
     ] ++
-    (mkRenamedResourceOptionModules ["k8s-service-layer" "rook"] ["mon" "osd" "mgr" "mds" "operator"]);
+    (mkRenamedResourceOptionModule ["k8s-service-layer" "rook"] ["mon" "osd" "mgr" "mds" "operator"]);
   */
-  mkRenamedResourceOptionModules = section: prefix:
-    lib.mapCartesianProduct ({
-      prefix,
-      res,
-      type,
-    }: (
-      mkRenamedOptionModule (section ++ ["${prefix}_${res}_${type}"]) (section ++ ["${prefix}_resources" "${type}s" "${res}"])
-    )) {
-      inherit prefix;
-      res = ["memory" "cpu"];
-      type = ["request" "limit"];
-    };
+  mkRenamedResourceOptionModule = section: prefix: {
+    imports =
+      lib.mapCartesianProduct ({
+        prefix,
+        res,
+        type,
+      }: (
+        mkRenamedOptionModule (section ++ ["${prefix}_${res}_${type}"]) (section ++ ["${prefix}_resources" "${type}s" "${res}"])
+      )) {
+        inherit prefix;
+        res = ["memory" "cpu"];
+        type = ["request" "limit"];
+      };
+  };
 
   /*
   Return a module that causes a warning to be shown if the

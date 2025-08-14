@@ -6,7 +6,7 @@
 }: let
   cfg = config.yk8s.ch-k8s-lbaas;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRenamedResourceOptionModules mkResourceOptionModule;
+  inherit (modules-lib) mkRenamedResourceOptionModule mkResourceOptionModule;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkResourceOption mkDisableOption;
   inherit
@@ -24,15 +24,14 @@
     warnIfZero
     ;
 in {
-  imports =
-    mkRenamedResourceOptionModules ["ch-k8s-lbaas"] ["controller"]
-    ++ [
-      (mkResourceOptionModule "ch-k8s-lbaas" "controller_resources" {
-        description = "Request and limit for the LBaaS controller";
-        cpu.request = "100m";
-        memory.limit = "256Mi";
-      })
-    ];
+  imports = [
+    (mkRenamedResourceOptionModule ["ch-k8s-lbaas"] ["controller"])
+    (mkResourceOptionModule "ch-k8s-lbaas" "controller_resources" {
+      description = "Request and limit for the LBaaS controller";
+      cpu.request = "100m";
+      memory.limit = "256Mi";
+    })
+  ];
 
   options.yk8s.ch-k8s-lbaas = mkTopSection {
     enabled = mkEnableOption "our LBaas service";
