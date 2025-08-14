@@ -34,10 +34,15 @@ in rec {
     absOptionName = ["yk8s"] ++ optionPath;
     section = findTopSection options optionPath;
     option = lib.lists.removePrefix section optionPath;
+    isSection = option == [];
+    desc =
+      if isSection
+      then "section"
+      else "option";
   in {
     options = setAttrByPath absOptionName (mkOption {
       visible = false;
-      apply = x: throw "The option `${showOption absOptionName}' can no longer be used since it's been removed. ${replacementInstructions}";
+      apply = x: throw "The ${desc} `${showOption absOptionName}' can no longer be used since it's been removed. ${replacementInstructions}";
     });
     config.yk8s =
       {
@@ -47,50 +52,13 @@ in rec {
           {
             assertion = !opt.isDefined;
             message = ''
-              The option definition `${showOption absOptionName}' in ${showFiles opt.files} no longer has any effect; please remove it.
+              The ${desc} definition `${showOption absOptionName}' in ${showFiles opt.files} no longer has any effect; please remove it.
               ${replacementInstructions}
             '';
           }
         ];
       }
-      // setAttrByPath section {_internal.removedOptions = [option];};
-  };
-
-  /*
-  Return a module that causes a warning to be shown if the
-  specified section is defined. For example,
-
-  mkRemovedOptionModule "passwordstore" "<replacement instructions>"
-
-  causes a assertion if the user defines passwordstore.
-
-  replacementInstructions is a string that provides instructions on
-  how to achieve the same functionality without the removed option,
-  or alternatively a reasoning why the functionality is not needed.
-  replacementInstructions SHOULD be provided!
-
-  */
-  mkRemovedSectionModule = sectionName: replacementInstructions: {options, ...}: let
-    section = splitString "." sectionName;
-    absSectionName = ["yk8s"] ++ section;
-  in {
-    options = setAttrByPath absSectionName (mkOption {
-      visible = false;
-      apply = x: throw "The section `${showOption absSectionName}' can no longer be used since it's been removed. ${replacementInstructions}";
-    });
-    config.yk8s = {
-      assertions = let
-        opt = getAttrFromPath absSectionName options;
-      in [
-        {
-          assertion = !opt.isDefined;
-          message = ''
-            The section definition `${showOption absSectionName}' in ${showFiles opt.files} no longer has any effect; please remove it.
-            ${replacementInstructions}
-          '';
-        }
-      ];
-    };
+      // (lib.optionalAttrs (!isSection) (setAttrByPath section {_internal.removedOptions = [option];}));
   };
 
   /*

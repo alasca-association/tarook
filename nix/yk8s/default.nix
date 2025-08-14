@@ -18,7 +18,7 @@
       }: let
         yk8s-lib = import ./lib {inherit lib pkgs;};
         modules-lib = import ./lib/modules.nix {inherit lib;};
-        inherit (modules-lib) mkRemovedSectionModule;
+        inherit (modules-lib) mkRemovedOptionModule;
         inherit (lib) types mkOption;
         inherit (yk8s-lib) mkInternalOption linkToPath baseSystemAssertWarn;
         inherit
@@ -49,8 +49,8 @@
           ./miscellaneous.nix
           ./containerd.nix
           ./k8s-supplements
-          (mkRemovedSectionModule "passwordstore" "Passwordstore has been replaced by Vault.")
-          (mkRemovedSectionModule "cah-users" "")
+          (mkRemovedOptionModule ["passwordstore"] "Passwordstore has been replaced by Vault.")
+          (mkRemovedOptionModule ["cah-users"] "")
         ];
         options.yk8s = {
           state_directory = mkOption {
