@@ -1,6 +1,7 @@
 {
   pkgs,
   inputs',
+  self',
   ...
 }: {
   yk8s-env = {
@@ -44,6 +45,7 @@
           openssh
           openssl
           pre-commit
+          self'.packages.tarookctl
           inputs'.nixpkgs-terraform157.legacyPackages.terraform
           util-linux # for uuidgen
         ];

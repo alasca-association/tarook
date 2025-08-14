@@ -3,6 +3,7 @@
   inputs.nixpkgs-terraform157.url = "github:NixOS/nixpkgs/39ed4b64ba5929e8e9221d06b719a758915e619b";
   inputs.nixpkgs-vault1148.url = "github:NixOS/nixpkgs/7cf8d6878561e8b2e4b1186f79f1c0e66963bdac";
   inputs.flake-parts.url = "github:hercules-ci/flake-parts";
+  inputs.crane.url = "github:ipetkov/crane";
 
   outputs = inputs @ {
     self,
@@ -17,6 +18,7 @@
         ./nix/renderDocs.nix
         ./nix/yk8s-env.nix
         ./nix/templates
+        ./nix/tarookctl.nix
         ./ci/container-image
       ];
       perSystem = {
