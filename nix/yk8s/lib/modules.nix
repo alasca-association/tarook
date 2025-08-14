@@ -70,7 +70,7 @@ in rec {
     imports = [
       ....
     ] ++
-    (mkRenamedResourceOptionModules "k8s-service-layer.rook" ["mon" "osd" "mgr" "mds" "operator"]);
+    (mkRenamedResourceOptionModules ["k8s-service-layer" "rook"] ["mon" "osd" "mgr" "mds" "operator"]);
   */
   mkRenamedResourceOptionModules = section: prefix:
     lib.mapCartesianProduct ({
@@ -78,7 +78,7 @@ in rec {
       res,
       type,
     }: (
-      mkRenamedOptionModule section "${prefix}_${res}_${type}" "${prefix}_resources.${type}s.${res}"
+      mkRenamedOptionModule (section ++ ["${prefix}_${res}_${type}"]) (section ++ ["${prefix}_resources" "${type}s" "${res}"])
     )) {
       inherit prefix;
       res = ["memory" "cpu"];
@@ -87,12 +87,12 @@ in rec {
 
   /*
   Return a module that causes a warning to be shown if the
-  specified "from" option is defined; the defined value is however
-  forwarded to the "to" option. This can be used to rename options
+  specified "fromPath" option is defined; the defined value is however
+  forwarded to the "toPath" option. This can be used to rename options
   while providing backward compatibility. For example,
 
     imports = [
-      (mkRenamedOptionModule "wireguard" "wg_ip_cidr" "ip_cidr")
+      (mkRenamedOptionModule ["wireguard" "wg_ip_cidr"] ["wireguard" "ip_cidr"])
     ];
 
   forwards any definitions of wireguard.wg_ip_cidr to
@@ -101,33 +101,11 @@ in rec {
   This also copies over the priority from the aliased option to the
   non-aliased option.
   */
-  mkRenamedOptionModule = sectionName: from: to: (mkRenamedOptionModuleWithNewSection sectionName from sectionName to);
-
-  /*
-  Return a module that causes a warning to be shown if the
-  specified "from" option is defined; the defined value is however
-  forwarded to the "to" option. This can be used to rename options
-  while providing backward compatibility. For example,
-
-    imports = [
-      (mkRenamedOptionModuleWithNewSection "sec1" "op1" "sec2" "op1")
-    ]
-
-  forwards any definitions of wireguard.wg_ip_cidr to
-  wireguard.ip_cidr while printing a warning.
-
-  This also copies over the priority from the aliased option to the
-  non-aliased option.
-  */
-  mkRenamedOptionModuleWithNewSection = sectionNameFrom: from: sectionNameTo: to: let
-    sectionFrom = splitString "." sectionNameFrom;
-    sectionTo = splitString "." sectionNameTo;
-    from' = splitString "." from;
-    to' = splitString "." to;
-    fromWithSection = sectionFrom ++ from';
-    toWithSection = sectionTo ++ to';
-    absFrom = ["yk8s"] ++ fromWithSection;
-    absTo = ["yk8s"] ++ toWithSection;
+  mkRenamedOptionModule = fromPath: toPath: {options, ...}: let
+    sectionFrom = findTopSection options fromPath;
+    optionFrom = lib.lists.removePrefix sectionFrom fromPath;
+    absFrom = ["yk8s"] ++ fromPath;
+    absTo = ["yk8s"] ++ toPath;
   in {
     imports = [
       (doRename {
@@ -135,10 +113,10 @@ in rec {
         to = absTo;
         visible = false;
         warn = true;
-        use = builtins.trace "Obsolete option `${showOption fromWithSection}' is used. It was renamed to `${showOption toWithSection}'.";
+        use = builtins.trace "Obsolete option `${showOption absFrom}' is used. It was renamed to `${showOption absTo}'.";
       })
       {
-        config.yk8s = setAttrByPath sectionFrom {_internal.removedOptions = [from'];};
+        config.yk8s = setAttrByPath sectionFrom {_internal.removedOptions = [optionFrom];};
       }
       ({options, ...}: {
         config.yk8s.warnings = let

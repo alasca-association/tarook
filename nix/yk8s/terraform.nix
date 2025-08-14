@@ -7,7 +7,7 @@
 }: let
   cfg = config.yk8s.terraform;
   modules-lib = import ./lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModuleWithNewSection;
+  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
@@ -50,25 +50,25 @@ in {
   imports = [
     (mkRemovedOptionModule ["terraform" "haproxy_ports"] "")
     (mkRemovedOptionModule ["terraform" "prevent_disruption"] "Preventing disruption is now handled by a lock file in the Terraform state directory.")
-    (mkRenamedOptionModuleWithNewSection "terraform" "subnet_cidr" "infra" "subnet_cidr")
-    (mkRenamedOptionModuleWithNewSection "terraform" "subnet_v6_cidr" "infra" "subnet_v6_cidr")
-    (mkRenamedOptionModuleWithNewSection "terraform" "ipv4_enabled" "infra" "ipv4_enabled")
-    (mkRenamedOptionModuleWithNewSection "terraform" "ipv6_enabled" "infra" "ipv6_enabled")
-    (mkRenamedOptionModuleWithNewSection "terraform" "cluster_name" "infra" "cluster_name")
-    (mkRenamedOptionModuleWithNewSection "terraform" "public_network" "openstack" "public_network")
-    (mkRenamedOptionModuleWithNewSection "terraform" "keypair" "openstack" "keypair")
-    (mkRenamedOptionModuleWithNewSection "terraform" "azs" "openstack" "azs")
-    (mkRenamedOptionModuleWithNewSection "terraform" "thanos_delete_container" "openstack" "thanos_delete_container")
-    (mkRenamedOptionModuleWithNewSection "terraform" "spread_gateways_across_azs" "openstack" "spread_gateways_across_azs")
-    (mkRenamedOptionModuleWithNewSection "terraform" "create_root_disk_on_volume" "openstack" "create_root_disk_on_volume")
-    (mkRenamedOptionModuleWithNewSection "terraform" "network_mtu" "openstack" "network_mtu")
-    (mkRenamedOptionModuleWithNewSection "terraform" "dns_nameservers_v4" "openstack" "dns_nameservers_v4")
-    (mkRenamedOptionModuleWithNewSection "terraform" "monitoring_manage_thanos_bucket" "openstack" "monitoring_manage_thanos_bucket")
-    (mkRenamedOptionModuleWithNewSection "terraform" "gateway_count" "openstack" "gateway_count")
-    (mkRenamedOptionModuleWithNewSection "terraform" "gateway_defaults" "openstack" "gateway_defaults")
-    (mkRenamedOptionModuleWithNewSection "terraform" "master_defaults" "openstack" "master_defaults")
-    (mkRenamedOptionModuleWithNewSection "terraform" "worker_defaults" "openstack" "worker_defaults")
-    (mkRenamedOptionModuleWithNewSection "terraform" "nodes" "openstack" "nodes")
+    (mkRenamedOptionModule ["terraform" "subnet_cidr"] ["infra" "subnet_cidr"])
+    (mkRenamedOptionModule ["terraform" "subnet_v6_cidr"] ["infra" "subnet_v6_cidr"])
+    (mkRenamedOptionModule ["terraform" "ipv4_enabled"] ["infra" "ipv4_enabled"])
+    (mkRenamedOptionModule ["terraform" "ipv6_enabled"] ["infra" "ipv6_enabled"])
+    (mkRenamedOptionModule ["terraform" "cluster_name"] ["infra" "cluster_name"])
+    (mkRenamedOptionModule ["terraform" "public_network"] ["openstack" "public_network"])
+    (mkRenamedOptionModule ["terraform" "keypair"] ["openstack" "keypair"])
+    (mkRenamedOptionModule ["terraform" "azs"] ["openstack" "azs"])
+    (mkRenamedOptionModule ["terraform" "thanos_delete_container"] ["openstack" "thanos_delete_container"])
+    (mkRenamedOptionModule ["terraform" "spread_gateways_across_azs"] ["openstack" "spread_gateways_across_azs"])
+    (mkRenamedOptionModule ["terraform" "create_root_disk_on_volume"] ["openstack" "create_root_disk_on_volume"])
+    (mkRenamedOptionModule ["terraform" "network_mtu"] ["openstack" "network_mtu"])
+    (mkRenamedOptionModule ["terraform" "dns_nameservers_v4"] ["openstack" "dns_nameservers_v4"])
+    (mkRenamedOptionModule ["terraform" "monitoring_manage_thanos_bucket"] ["openstack" "monitoring_manage_thanos_bucket"])
+    (mkRenamedOptionModule ["terraform" "gateway_count"] ["openstack" "gateway_count"])
+    (mkRenamedOptionModule ["terraform" "gateway_defaults"] ["openstack" "gateway_defaults"])
+    (mkRenamedOptionModule ["terraform" "master_defaults"] ["openstack" "master_defaults"])
+    (mkRenamedOptionModule ["terraform" "worker_defaults"] ["openstack" "worker_defaults"])
+    (mkRenamedOptionModule ["terraform" "nodes"] ["openstack" "nodes"])
   ];
 
   options.yk8s.terraform = mkTopSection {

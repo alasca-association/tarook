@@ -55,10 +55,10 @@ in {
       (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "monitor_all_namespaces"] "")
       (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "thanos_objectstorage_config_path"] "Use `thanos_objectstorage_config_file` instead.")
 
-      (mkRenamedOptionModule "k8s-service-layer.prometheus" "prometheus_operator_cpu_request" "operator_resources.cpu.request")
-      (mkRenamedOptionModule "k8s-service-layer.prometheus" "prometheus_operator_cpu_limit" "operator_resources.cpu.limit")
-      (mkRenamedOptionModule "k8s-service-layer.prometheus" "prometheus_operator_memory_request" "operator_resources.memory.request")
-      (mkRenamedOptionModule "k8s-service-layer.prometheus" "prometheus_operator_memory_limit" "operator_resources.memory.limit")
+      (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_cpu_request"] ["k8s-service-layer" "prometheus" "operator_resources" "cpu" "request"])
+      (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_cpu_limit"] ["k8s-service-layer" "prometheus" "operator_resources" "cpu" "limit"])
+      (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_memory_request"] ["k8s-service-layer" "prometheus" "operator_resources" "memory" "request"])
+      (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_memory_limit"] ["k8s-service-layer" "prometheus" "operator_resources" "memory" "limit"])
 
       (mkMultiResourceOptionsModule "k8s-service-layer.prometheus" {
         description = ''
@@ -103,7 +103,7 @@ in {
         };
       })
     ]
-    ++ (mkRenamedResourceOptionModules "k8s-service-layer.prometheus" [
+    ++ (mkRenamedResourceOptionModules ["k8s-service-layer" "prometheus"] [
       "operator"
       "alertmanager"
       "prometheus"

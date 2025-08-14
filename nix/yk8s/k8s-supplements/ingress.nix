@@ -25,10 +25,10 @@
     ;
 in {
   imports = [
-    (mkRenamedOptionModule "k8s-service-layer.ingress" "cpu_request" "resources.cpu.request")
-    (mkRenamedOptionModule "k8s-service-layer.ingress" "cpu_limit" "resources.cpu.limit")
-    (mkRenamedOptionModule "k8s-service-layer.ingress" "memory_request" "resources.memory.request")
-    (mkRenamedOptionModule "k8s-service-layer.ingress" "memory_limit" "resources.memory.limit")
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "cpu_request"] ["k8s-service-layer" "ingress" "resources" "cpu" "request"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "cpu_limit"] ["k8s-service-layer" "ingress" "resources" "cpu" "limit"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "memory_request"] ["k8s-service-layer" "ingress" "resources" "memory" "request"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "memory_limit"] ["k8s-service-layer" "ingress" "resources" "memory" "limit"])
 
     (mkResourceOptionModule "k8s-service-layer.ingress" "resources" {
       description = "Request and limit for the Nginx Ingress controller";

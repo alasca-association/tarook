@@ -25,7 +25,7 @@
     ;
 in {
   imports =
-    mkRenamedResourceOptionModules "ch-k8s-lbaas" ["controller"]
+    mkRenamedResourceOptionModules ["ch-k8s-lbaas"] ["controller"]
     ++ [
       (mkResourceOptionModule "ch-k8s-lbaas" "controller_resources" {
         description = "Request and limit for the LBaaS controller";

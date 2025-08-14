@@ -32,8 +32,8 @@
   inherit (lib.trivial) pipe;
 in {
   imports = [
-    (mkRenamedOptionModule "wireguard" "wg_ip_cidr" "ip_cidr")
-    (mkRenamedOptionModule "wireguard" "wg_ipv6_cidr" "ipv6_cidr")
+    (mkRenamedOptionModule ["wireguard" "wg_ip_cidr"] ["wireguard" "ip_cidr"])
+    (mkRenamedOptionModule ["wireguard" "wg_ipv6_cidr"] ["wireguard" "ipv6_cidr"])
     (mkRemovedOptionModule ["wireguard" "rollout_company_users"] "")
     (mkRemovedOptionModule ["wireguard" "s2s_enabled"] "")
     (mkRemovedOptionModule ["wireguard" "port"] "Use endpoints instead")

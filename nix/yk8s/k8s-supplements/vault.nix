@@ -37,7 +37,7 @@
   ];
 in {
   imports = [
-    (mkRenamedOptionModule "k8s-service-layer.vault" "active_node_port" "service_active_node_port")
+    (mkRenamedOptionModule ["k8s-service-layer" "vault" "active_node_port"] ["k8s-service-layer" "vault" "service_active_node_port"])
   ];
   options.yk8s.k8s-service-layer.vault = mkTopSection {
     enabled = mkEnableOption ''

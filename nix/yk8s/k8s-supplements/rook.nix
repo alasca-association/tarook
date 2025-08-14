@@ -51,7 +51,7 @@ in {
         };
       })
     ]
-    ++ (mkRenamedResourceOptionModules "k8s-service-layer.rook" ["mon" "osd" "mgr" "mds" "operator"]);
+    ++ (mkRenamedResourceOptionModules ["k8s-service-layer" "rook"] ["mon" "osd" "mgr" "mds" "operator"]);
 
   options.yk8s.k8s-service-layer.rook = mkTopSection {
     _docs.preface = ''
