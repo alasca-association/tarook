@@ -25,7 +25,6 @@
   inherit (yk8s-lib.options) mkHelmReleaseOptions;
 in {
   imports = [
-    (mkRemovedOptionModule "k8s-service-layer.etcd-backup" "s3_config_name" "")
 
     (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "namespace" "helm.release_namespace")
     (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "helm_repo_url" "helm.chart_repo_url")
@@ -37,6 +36,7 @@ in {
     (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "addressing_style" "helm.values.targets.s3.addressingStyle")
     (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "secret_name" "helm.values.targets.s3.credentialRef.name")
     (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "file_prefix" "helm.values.targets.s3.filePrefix")
+    (mkRemovedOptionModule ["k8s-service-layer" "etcd-backup" "s3_config_name"] "")
   ];
 
   options.yk8s.k8s-service-layer.etcd-backup = mkTopSection {

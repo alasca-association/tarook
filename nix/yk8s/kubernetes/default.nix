@@ -24,11 +24,11 @@ in {
     ./monitoring.nix
     ./network.nix
     ./kubelet.nix
-    (mkRemovedOptionModule "kubernetes" "use_podsecuritypolicies" "")
-    (mkRemovedOptionModule "kubernetes" "continuous_join_key" "")
+    (mkRemovedOptionModule ["kubernetes" "use_podsecuritypolicies"] "")
+    (mkRemovedOptionModule ["kubernetes" "continuous_join_key"] "")
     (mkRenamedOptionModuleWithNewSection "kubernetes" "monitoring.alertmanager_config_secret" "k8s-service-layer.prometheus" "alertmanager_config_secret")
-    (mkRemovedOptionModule "kubernetes" "global_monitoring" "This section has been moved to a custom role")
-    (mkRemovedOptionModule "kubernetes" "apiserver.audit_logs.custom_policy" "Use config.yk8s.kubernetes.apiserver.audit_logs.policy instead")
+    (mkRemovedOptionModule ["kubernetes" "global_monitoring"] "This section has been moved to a custom role")
+    (mkRemovedOptionModule ["kubernetes" "apiserver" "audit_logs" "custom_policy"] "Use config.yk8s.kubernetes.apiserver.audit_logs.policy instead")
     (mkRenamedOptionModuleWithNewSection "kubernetes" "storage.rook_enabled" "k8s-service-layer.rook" "enabled")
     (mkRenamedOptionModuleWithNewSection "kubernetes" "storage.cinder_enable_topology" "openstack" "cinder_enable_topology")
   ];

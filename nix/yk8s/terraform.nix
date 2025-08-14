@@ -48,8 +48,8 @@
   ];
 in {
   imports = [
-    (mkRemovedOptionModule "terraform" "haproxy_ports" "")
-    (mkRemovedOptionModule "terraform" "prevent_disruption" "Preventing disruption is now handled by a lock file in the Terraform state directory.")
+    (mkRemovedOptionModule ["terraform" "haproxy_ports"] "")
+    (mkRemovedOptionModule ["terraform" "prevent_disruption"] "Preventing disruption is now handled by a lock file in the Terraform state directory.")
     (mkRenamedOptionModuleWithNewSection "terraform" "subnet_cidr" "infra" "subnet_cidr")
     (mkRenamedOptionModuleWithNewSection "terraform" "subnet_v6_cidr" "infra" "subnet_v6_cidr")
     (mkRenamedOptionModuleWithNewSection "terraform" "ipv4_enabled" "infra" "ipv4_enabled")

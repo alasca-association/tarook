@@ -2,12 +2,24 @@
 with lib; let
   yk8s-lib.transform = import ./transform.nix {inherit lib;};
   yk8s-lib.types = import ./types.nix {inherit lib;};
+
+  findTopSection = options: path: let
+    _findTopSection = options: currentPath: let
+      opt = lib.getAttrFromPath (["yk8s"] ++ currentPath) options;
+    in
+      if opt?"_internal" && opt._internal.sectionType.default == "top"
+      then currentPath
+      else if currentPath == []
+      then path
+      else _findTopSection options (lib.init currentPath);
+  in
+    _findTopSection options path;
 in rec {
   /*
      Return a module that causes a warning to be shown if the
      specified option is defined. For example,
 
-     mkRemovedOptionModule "kubernetes" "use_podsecuritypolicies" "<replacement instructions>"
+     mkRemovedOptionModule ["kubernetes" "use_podsecuritypolicies"] "<replacement instructions>"
 
      causes a assertion if the user defines kubernetes.use_podsecuritypolicies.
 
@@ -18,10 +30,10 @@ in rec {
 
   (Adapted from https://github.com/nixos/nixpkgs/blob/master/lib/modules.nix)
   */
-  mkRemovedOptionModule = sectionName: optionName: replacementInstructions: {options, ...}: let
-    section = splitString "." sectionName;
-    option = splitString "." optionName;
-    absOptionName = ["yk8s"] ++ section ++ option;
+  mkRemovedOptionModule = optionPath: replacementInstructions: {options, ...}: let
+    absOptionName = ["yk8s"] ++ optionPath;
+    section = findTopSection options optionPath;
+    option = lib.lists.removePrefix section optionPath;
   in {
     options = setAttrByPath absOptionName (mkOption {
       visible = false;
