@@ -40,4 +40,9 @@ spec:
       - name: calico-busybox-test
         image: registry.gitlab.com/yaook/images/k8s-debian:main
         command: ["sleep", "infinity"]
+        securityContext:
+          capabilities:
+            drop: ["ALL"]
+            # Add NET_RAW to be able to ping
+            add: ["NET_RAW"]
       serviceAccountName: calico-busybox-test
