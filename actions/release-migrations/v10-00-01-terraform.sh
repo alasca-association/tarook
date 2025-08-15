@@ -11,7 +11,7 @@ load_conf_vars
 if [ "${tf_usage:-true}" == 'true' ]; then
   notef "Temporarily patching the Terraform module \
 to unignore allowed_address_pairs..."
-  if git -C "${code_repository}" apply --check --reverse \
+  if git -C "${code_repository}" apply --quiet --check --reverse \
 "$(realpath --no-symlinks --relative-to="${code_repository}" "$actions_dir")\
 /release-migrations/v10-00-tf-unignore-allowed_address_pairs.patch"
   then
