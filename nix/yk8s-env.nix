@@ -42,7 +42,7 @@
           dependencies = {
             groups = lib.mkOption {
               description = ''
-                Dependencies for yk8s are organized in groups, so for each purpose, only the
+                Dependencies for Tarook are organized in groups, so for each purpose, only the
                 minimal amount of dependencies has to be loaded. Groups can contain Python
                 dependencies, non-Python dependencies and they can include other groups in a directed acyclic graph.
               '';

@@ -149,7 +149,7 @@
         <mxCell id="l_W8FwnnrHGotwx8I-Ad-123" value="ansible/roles/" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=1 1;fontFamily=Courier New;verticalAlign=top;fillColor=#FFFFFF;" vertex="1" parent="1">
           <mxGeometry x="833" y="690" width="140" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="l_W8FwnnrHGotwx8I-Ad-124" value="yaook-k8s" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=1 1;fontFamily=Courier New;verticalAlign=top;fillColor=#E3E3E3;opacity=75;" vertex="1" parent="1">
+        <mxCell id="l_W8FwnnrHGotwx8I-Ad-124" value="Tarook" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=1 1;fontFamily=Courier New;verticalAlign=top;fillColor=#E3E3E3;opacity=75;" vertex="1" parent="1">
           <mxGeometry x="823.5" y="412" width="160" height="87" as="geometry" />
         </mxCell>
         <mxCell id="l_W8FwnnrHGotwx8I-Ad-125" value="hosts" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Courier New;verticalAlign=middle;" vertex="1" parent="1">
