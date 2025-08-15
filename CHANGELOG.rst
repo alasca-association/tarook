@@ -19,6 +19,31 @@ earlier changes.
 
 .. towncrier release notes start
 
+v10.0.3 (2025-08-13)
+--------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- The project has been renamed from YAOOK/K8s to TAROOK.
+  The repository location has been updated to reflect this change. (`!1870 <https://gitlab.com/yaook/k8s/-/merge_requests/1870>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- The :ref:`release migration script <actions-references.migrate-to-releasesh>`
+  now stages (and commits) its updates to a cluster repo's gitignore. (`!1999 <https://gitlab.com/yaook/k8s/-/merge_requests/1999>`_)
+- The :ref:`release migration script <actions-references.migrate-to-releasesh>`
+  does not output expected and misleading ``git apply`` errors anymore. (`!1999 <https://gitlab.com/yaook/k8s/-/merge_requests/1999>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- `!1999 <https://gitlab.com/yaook/k8s/-/merge_requests/1999>`_
+
+
 v10.0.2 (2025-08-05)
 --------------------
 
