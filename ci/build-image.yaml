@@ -1,7 +1,7 @@
 build_image:
   tags:
     - docker
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.26.2"
+  image: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/nixos/nix:2.26.2"
   stage: build-image
   before_script:
   - cp ci/container-image/nix.conf /etc/nix/nix.conf
@@ -10,7 +10,7 @@ build_image:
   - export IMAGE_REF="${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   # Manually talking to the registry API, because downloading skopeo only for the lookup would cost ~1min per run
   # Also jq is not available in the Nixos container image
-  - token="$(curl "https://gitlab.com/jwt/auth?scope=repository:yaook/k8s/ci:pull&service=container_registry" | tr -d '\n\t\r ' | grep -oP '"token"\s*:\s*"\K.*?(?=")')"
+  - token="$(curl "https://gitlab.com/jwt/auth?scope=repository:${CI_PROJECT_PATH}/ci:pull&service=container_registry" | tr -d '\n\t\r ' | grep -oP '"token"\s*:\s*"\K.*?(?=")')"
   - |
     registry_response="$( \
         curl --head --silent --output /dev/null --write-out '%{http_code}' \
@@ -32,7 +32,7 @@ build_image:
 
 
 .deploy_image:
-  image: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/nixos/nix:2.26.2"
+  image: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/nixos/nix:2.26.2"
   stage: tag-image
   before_script:
     - |

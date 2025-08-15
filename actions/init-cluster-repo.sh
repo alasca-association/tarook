@@ -7,7 +7,7 @@ actions_dir="$(dirname "$0")"
 
 submodule_base="submodules"
 
-submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/yaook/k8s.git}"
+submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/alasca.cloud/tarook/tarook.git}"
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     if [ ! -d "$submodule_managed_k8s_name" ]; then
