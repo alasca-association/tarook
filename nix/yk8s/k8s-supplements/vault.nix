@@ -197,6 +197,24 @@ in {
       default = null;
       example = "./vault/backup_s3_config.yaml";
     };
+    backup_s3_addressing_style = mkOption {
+      description = ''
+        The addressing style used for the s3 bucket that stores the vault backups.
+
+        - ``path``: Bucket name is included in the URI path.
+        - ``virtual``: Bucket name is included in the hostname.
+        - ``auto``: Attempts to use virtual, but falls back to path if necessary.
+
+        Only relevant if :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable_backups` is set to ``true``.
+      '';
+      # as per https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#:~:text=addressing_style:
+      type = types.enum [
+        "path"
+        "virtual"
+        "auto"
+      ];
+      default = "path";
+    };
     service_type = mkOption {
       description = ''
         Type of the Kubernetes Service of the Vault

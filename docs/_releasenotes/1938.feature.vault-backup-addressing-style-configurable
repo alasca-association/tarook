@@ -1,0 +1,1 @@
+Added :ref:`configuration-options.yk8s.k8s-service-layer.vault.backup_s3_addressing_style` to configure the addressing style of the vault-backup bucket.
