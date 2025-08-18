@@ -34,19 +34,34 @@ fn run_bash_script(path: &str) -> Result<(), BashScriptError> {
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .spawn()
-        .expect("IO error");
+        .expect("Failed to execute");
 
     // It's streaming here
 
     let status = cmd.wait();
 
-    if !status.as_ref().unwrap().success() {
-        Err(BashScriptError::NonZeroExitCodeError {
-            script: path.to_owned(),
-            exit_code: status.as_ref().unwrap().code().expect("no exit code"),
-        })
-    } else {
-        Ok(())
+    match status {
+        Ok(res) => match res.code() {
+            Some(code) => {
+                println!("Exited with status code: {code}");
+                match code {
+                    0 => Ok(()),
+                    n => Err(BashScriptError::NonZeroExitCodeError {
+                        script: path.to_owned(),
+                        exit_code: n,
+                    }),
+                }
+            }
+            None => {
+                println!("Process terminated by signal");
+                Err(BashScriptError::ExitedBySignalError {
+                    script: path.to_owned(),
+                })
+            }
+        },
+        Err(_) => {
+            todo!("Figure out what happened here.")
+        }
     }
 }
 

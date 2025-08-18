@@ -3,6 +3,7 @@ use thiserror::Error;
 #[derive(Error, Debug, PartialEq)]
 pub enum BashScriptError {
     NonZeroExitCodeError { script: String, exit_code: i32 },
+    ExitedBySignalError { script: String },
 }
 
 impl std::fmt::Display for BashScriptError {
@@ -10,6 +11,9 @@ impl std::fmt::Display for BashScriptError {
         match self {
             BashScriptError::NonZeroExitCodeError { script, exit_code } => {
                 write!(f, "{} exited with {}", script, exit_code)
+            }
+            BashScriptError::ExitedBySignalError { script } => {
+                write!(f, "{} terminated by signal", script)
             }
         }
     }
