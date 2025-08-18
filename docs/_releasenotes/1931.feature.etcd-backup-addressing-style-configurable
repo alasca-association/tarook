@@ -1,0 +1,1 @@
+Added :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.addressing_style` to configure the addressing style of the etcd-backup bucket.

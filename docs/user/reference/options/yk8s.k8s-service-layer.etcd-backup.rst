@@ -77,6 +77,32 @@ Alternatively, you can also manually insert your configuration into vault.
 
   </details>
 
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.addressing_style:
+
+``yk8s.k8s-service-layer.etcd-backup.addressing_style``
+#######################################################
+
+The addressing style used for the s3 bucket that stores the etcd backups.
+
+- ``path``: Bucket name is included in the URI path.
+- ``virtual``: Bucket name is included in the hostname.
+- ``auto``: Attempts to use virtual, but falls back to path if necessary.
+
+
+**Type:**::
+
+  one of "path", "virtual", "auto"
+
+
+**Default:**::
+
+  "path"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+
+
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.bucket_name:
 
 ``yk8s.k8s-service-layer.etcd-backup.bucket_name``

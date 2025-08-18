@@ -135,6 +135,22 @@ in {
       type = s3BucketName;
       default = "etcd-backup";
     };
+    addressing_style = mkOption {
+      description = ''
+        The addressing style used for the s3 bucket that stores the etcd backups.
+
+        - ``path``: Bucket name is included in the URI path.
+        - ``virtual``: Bucket name is included in the hostname.
+        - ``auto``: Attempts to use virtual, but falls back to path if necessary.
+      '';
+      # as per https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#:~:text=addressing_style:
+      type = types.enum [
+        "path"
+        "virtual"
+        "auto"
+      ];
+      default = "path";
+    };
     file_prefix = mkOption {
       description = ''
         Name of the folder to keep the backup files.
