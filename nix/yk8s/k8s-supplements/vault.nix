@@ -21,6 +21,7 @@
     k8sStorageClassName
     k8sObjectName
     relativePosixPath
+    s3BucketName
     subdomainName
     vaultNamespaceName
     ;
@@ -214,6 +215,15 @@ in {
         "auto"
       ];
       default = "path";
+    };
+    backup_s3_bucket = mkOption {
+      description = ''
+        Configure the S3 bucket name to which vault backups will be written.
+
+        Only relevant if :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable_backups` is set to ``true``.
+      '';
+      type = s3BucketName;
+      default = "vault-backup";
     };
     service_type = mkOption {
       description = ''

@@ -79,7 +79,7 @@ spec:
               key: s3_endpoint
               name: vault-backup
         - name: YAOOK_BACKUP_SHIFTER_S3_BUCKET
-          value: vault-backup
+          value: {{ yaook_vault_backup_s3_bucket }}
         - name: YAOOK_BACKUP_SHIFTER_S3_ACCESS_KEY
           valueFrom:
             secretKeyRef:
