@@ -54,6 +54,30 @@ Only relevant if :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
 
 
+.. _configuration-options.yk8s.k8s-service-layer.vault.backup_s3_bucket:
+
+``yk8s.k8s-service-layer.vault.backup_s3_bucket``
+#################################################
+
+Configure the S3 bucket name to which vault backups will be written.
+
+Only relevant if :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable_backups` is set to ``true``.
+
+
+**Type:**::
+
+  S3 bucket name
+
+
+**Default:**::
+
+  "vault-backup"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/vault.nix
+
+
 .. _configuration-options.yk8s.k8s-service-layer.vault.ca_issuer:
 
 ``yk8s.k8s-service-layer.vault.ca_issuer``
