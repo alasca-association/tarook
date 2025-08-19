@@ -13,7 +13,7 @@ hide-doc: true
 .. toctree::
     :hidden:
 
-    Releases <https://gitlab.com/alasca.cloud/tarook/tarook/-/releases>
+    Releases <https://meta.docs.tarook.cloud/supported_releases.html>
     releasenotes
 
 .. toctree::
