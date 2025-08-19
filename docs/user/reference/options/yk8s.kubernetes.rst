@@ -490,12 +490,12 @@ Kubernetes version
 
 **Type:**::
 
-  Kubernetes version (one of: 1.30.x, 1.31.x, 1.32.x)
+  Kubernetes version (one of: 1.30.x, 1.31.x, 1.32.x, 1.33.x)
 
 
 **Default:**::
 
-  "1.32.5"
+  "1.33.3"
 
 
 **Declared by**

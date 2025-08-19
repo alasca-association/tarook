@@ -47,8 +47,9 @@ in {
         [1 30]
         [1 31]
         [1 32]
+        [1 33]
       ];
-      default = "1.32.5";
+      default = "1.33.3";
     };
     is_gpu_cluster = mkOption {
       description = ''

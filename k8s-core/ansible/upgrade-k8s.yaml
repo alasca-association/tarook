@@ -85,6 +85,7 @@
       when:
         - ipv4_enabled and ipv6_enabled
         - next_k8s_version is version('1.32', '>=')
+        - next_k8s_version is version('1.33', '<')
       tags: migrations/kubelet-config-map-patch
 
 - name: Renew PKI (Worker)
