@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v9.0.13 (2025-08-19)
+--------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- The Thanos image repository has been set to ``bitnamilegacy/thanos`` due to `recent changes by the Bitnami offering <https://github.com/bitnami/containers/issues/83267>`_. (`!1990 <https://gitlab.com/yaook/k8s/-/merge_requests/1990>`_)
+
+
 v9.0.12 (2025-08-13)
 --------------------
 
