@@ -270,7 +270,7 @@ in {
 
     nvidia_dcgm_exporter_helm_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=dcgm-exporter registryUrl=https://nvidia.github.io/dcgm-exporter/helm-charts
-      default = "4.4.0";
+      default = "4.4.1";
     };
 
     monitoring_internet_probe = mkEnableOption ''
