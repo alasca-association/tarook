@@ -25,7 +25,7 @@ Feel free to check the [issues page](https://gitlab.com/alasca.cloud/tarook/taro
 
 ## Project Rename
 
-The Tarook project was previously known as YAOOK/k8s and got separated from the YAOOK project.
+The Tarook project was previously known as YAOOK/K8s and got separated from the YAOOK project.
 It has become a standalone project of the ALASCA association on **August 8th, 2025**.
 
 The repository has been migrated to https://gitlab.com/alasca.cloud/tarook/tarook/ on that day.
