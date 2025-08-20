@@ -385,6 +385,27 @@ with lib; let
           inherit nonStringValuesRejected;
         };
       };
+      openstackSwiftContainerName = {
+        target = optionTypes.openstackSwiftContainerName;
+        tests.typeChecking = {
+          accepted.inputs = [
+            "a"
+            "foo3"
+            "6bar"
+            "some-container"
+            "container name with spaces"
+            "-name-with-leading-dash"
+            "CAPITAL_NAME"
+            "container-name-with-256-characters-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ];
+          rejected.inputs = [
+            ""
+            "www/pages"
+            "container-name-with-257-characters-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ];
+          inherit nonStringValuesRejected;
+        };
+      };
       openstackFlavorName = {
         target = optionTypes.openstackFlavorName;
         tests.typeChecking = {

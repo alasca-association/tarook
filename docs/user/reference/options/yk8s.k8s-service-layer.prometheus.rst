@@ -1845,7 +1845,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 
 **Type:**::
 
-  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
+  Openstack Swift container name
 
 
 **Default:**::
