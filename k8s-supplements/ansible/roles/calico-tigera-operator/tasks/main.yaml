@@ -18,33 +18,6 @@
 # Always applying if Tigera operator already exists
 # because this is faster than checking which version
 # is currently deployed.
-# Drop me along with support for Kubernetes v1.30
-- name: Deploy CRDs for Calico v3.29
-  when:
-    - image_versions.calico_version is version('3.29', 'ge')
-    - image_versions.calico_version is version('3.30', 'lt')
-    - tigera_operator_exists
-  delegate_to: "{{ groups['orchestrator'] | first }}"
-  run_once: true
-  kubernetes.core.k8s:
-    definition: "{{ lookup('file', 'v3.29-operator-crds.yaml') }}"
-    apply: true
-    state: present
-    server_side_apply:
-      force_conflicts: true
-      field_manager: ansible
-    validate:
-      fail_on_error: true
-      strict: true
-  # Retry this task on failures
-  register: k8s_apply
-  until: k8s_apply is not failed
-  retries: "{{ error_retries }}"
-  delay: "{{ error_delay }}"
-
-# Always applying if Tigera operator already exists
-# because this is faster than checking which version
-# is currently deployed.
 # Drop me along with support for Kubernetes v1.31
 - name: Deploy CRDs for Calico v3.30
   when:

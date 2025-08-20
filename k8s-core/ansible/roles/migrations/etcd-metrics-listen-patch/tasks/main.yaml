@@ -1,12 +1,4 @@
 ---
-- name: Figure out kubeadm version  # noqa no-changed-when
-  command:
-    argv:
-    - kubeadm
-    - version
-    - -o=json
-  register: kubeadm_version
-
 - name: Patch kubeadm ConfigMap
   delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
@@ -25,8 +17,7 @@
   # kubeadm uses v1beta4 since v1.31
   # the type of etcd.local.extraArgs changed in-between
   # https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/
-  - name: Patch kubeadm-config ConfigMap (>= K8s v1.31)
-    when: (kubeadm_version.stdout | from_json).clientVersion.minor | int >= 31
+  - name: Patch kubeadm-config ConfigMap
     vars:
       current_cluster_configuration: "{{ kubeadm_configmap.resources[0].data.ClusterConfiguration | from_yaml }}"
       patch:
@@ -35,29 +26,6 @@
             extraArgs:
             - name: listen-metrics-urls
               value: "http://127.0.0.1:2381,http://[::1]:2381"
-    kubernetes.core.k8s:
-      definition:
-        apiVersion: v1
-        kind: ConfigMap
-        metadata:
-          name: kubeadm-config
-          namespace: kube-system
-        data:
-          ClusterConfiguration: "{{ current_cluster_configuration | combine(patch, recursive=true) | to_nice_yaml(indent=2) }}"
-    register: kubeadm_configmap_patched
-    until: kubeadm_configmap_patched is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
-
-  - name: Patch kubeadm-config ConfigMap (< K8s v1.31)
-    when: (kubeadm_version.stdout | from_json).clientVersion.minor | int < 31
-    vars:
-      current_cluster_configuration: "{{ kubeadm_configmap.resources[0].data.ClusterConfiguration | from_yaml }}"
-      patch:
-        etcd:
-          local:
-            extraArgs:
-              listen-metrics-urls: "http://127.0.0.1:2381,http://[::1]:2381"
     kubernetes.core.k8s:
       definition:
         apiVersion: v1
