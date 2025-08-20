@@ -16,7 +16,7 @@ cluster types, Terraform and bare-metal based.
 
 **Type:**::
 
-  RFC1123 subdomain label (lowercase)
+  non-empty string without spaces
 
 
 **Declared by**
