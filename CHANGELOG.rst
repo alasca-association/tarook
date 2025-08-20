@@ -231,7 +231,7 @@ Breaking changes
   .. code:: shell
 
      git ls-files --ignored --cached --exclude-from=.gitignore -z \
-       | xargs --null git rm --cached -r
+       | xargs --no-run-if-empty --null git rm --cached -r
 
   _ (`!1789 <https://gitlab.com/yaook/k8s/-/merge_requests/1789>`_)
 - Updated default version of helm chart thanos of https://github.com/bitnami/charts from 15.14.1 to 16.0.2 (`!1798 <https://gitlab.com/yaook/k8s/-/merge_requests/1798>`_)
