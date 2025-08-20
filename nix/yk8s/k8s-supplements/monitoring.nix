@@ -28,11 +28,11 @@
     k8sLabelAttrs
     k8sNamespaceName
     k8sObjectName
-    k8sPodContainerName
     k8sQuantity
     k8sSecretName
     k8sServiceName
     k8sStorageClassName
+    openstackSwiftContainerName
     prometheusIntervalStr
     prometheusTimeoutStr
     prometheusRelabelConfig
@@ -449,7 +449,7 @@ in {
       default = null;
     };
     thanos_objectstorage_container_name = mkOption {
-      type = k8sPodContainerName;
+      type = openstackSwiftContainerName;
       default = "${config.yk8s.infra.cluster_name}-monitoring-thanos-data";
       defaultText = "\${config.yk8s.infra.cluster_name}-monitoring-thanos-data";
     };
