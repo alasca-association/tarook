@@ -1814,7 +1814,7 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 
 **Type:**::
 
-  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
+  Openstack Swift container name
 
 
 **Default:**::
