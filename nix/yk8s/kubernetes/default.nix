@@ -128,7 +128,7 @@ in {
               yk8s-lib.importYAML ./path/to/policy.yaml # Note that the file has to be added to the git repository to be evaluated by Nix
             '';
             type = lib.types.submodule {
-              freeformType = lib.types.attrs;
+              freeformType = yk8s-lib.types.jsonValue;
             };
             default = import defaultsFile;
 
