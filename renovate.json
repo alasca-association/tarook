@@ -28,8 +28,9 @@
   },
   "customManagers": [
     {
+      "description": "Manage default helm chart versions",
       "customType": "regex",
-      "fileMatch": ["^nix/yk8s/.*\\.nix$"],
+      "managerFilePatterns": ["/^nix/yk8s/.*\\.nix$/"],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?) registryUrl=(?<registryUrl>.*?)\\n\\s*default\\s=\\s\"(?<currentValue>.*?)\";\\n"
       ],
