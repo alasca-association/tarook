@@ -124,7 +124,7 @@ in {
               Note that this option is not type checked by Nix, so make sure that it it's a valid audit policy.
             '';
 
-            example = lib.options.literalExample ''
+            example = lib.options.literalExpression ''
               yk8s-lib.importYAML ./path/to/policy.yaml # Note that the file has to be added to the git repository to be evaluated by Nix
             '';
             type = lib.types.submodule {
