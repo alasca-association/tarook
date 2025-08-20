@@ -446,6 +446,12 @@
     matchAgainstAllOf = ["^http(s)?(${rfc3986.xUrlRE})$"];
   };
 
+  nonEmptyNonSpacedStr = mkRegexStrOptionType {
+    name = "nonEmptyNonSpacedStr";
+    description = "${lib.types.nonEmptyStr.description} without spaces";
+    matchAgainstAllOf = ["^[^ ]+$"];
+  };
+
   ### reusable option types (parameterized) ###
 
   mkRfc1035SubdomainLabelType = {rejectCapitals ? false}:
@@ -893,10 +899,7 @@ in rec {
     matchAgainstAllOf = ["^(${oci.dist1.imageNameRE}):(${oci.dist1.imageTagRE})$"];
   };
 
-  k8sClusterName = mkRfc1123SubdomainLabelType {
-    rejectCapitals = true;
-    enforceMaxLength63 = true;
-  };
+  k8sClusterName = nonEmptyNonSpacedStr;
   k8sVersion = versions: let
     inherit (builtins) concatStringsSep foldl' length map typeOf;
   in

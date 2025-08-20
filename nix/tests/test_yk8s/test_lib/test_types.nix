@@ -1876,14 +1876,13 @@ with lib; let
             "managed-k8s"
             "devcluster"
             "1cluster1"
-          ];
-          rfc1123SubdomainLabelsAccepted.inputs = selectStringsByMaxLength 63 reusableValues.rfc1123SubdomainLabels;
-          rejected.inputs = [
-            ""
             "clusterNameWithCapitals"
-            "cluster name with spaces"
             "cluster.name"
             "cluster-name-with-64-characters-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ];
+          rejected.inputs = [
+            ""
+            "cluster name with spaces"
           ];
         };
       };
