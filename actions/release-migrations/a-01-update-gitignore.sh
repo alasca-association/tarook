@@ -100,7 +100,8 @@ notef "Synced LCM defined gitignore rules to ${cluster_repo_gitignore}"
 hintf "It is recommended to apply the gitignore rules to the git index \
 by running:
 
-git ls-files --ignored --cached --exclude-from=.gitignore -z | xargs --null git rm --cached -r"
+git ls-files --ignored --cached --exclude-from=.gitignore -z \
+| xargs --no-run-if-empty --null git rm --cached -r"
 
 if git diff --quiet --exit-code -- .gitignore; then
   run git add .gitignore
