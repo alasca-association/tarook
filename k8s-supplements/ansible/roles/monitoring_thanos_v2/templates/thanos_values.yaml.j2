@@ -3,6 +3,11 @@ global:
 {% if monitoring_thanos_storage_class is defined %}
   storageClass: {{ monitoring_thanos_storage_class | to_json }}
 {% endif %}
+{# Original containers have been substituted, see https://github.com/bitnami/containers/issues/83267 #}
+  security:
+    allowInsecureImages: true
+image:
+  repository: bitnamilegacy/thanos
 
 existingObjstoreSecret: {{ monitoring_thanos_config_secret_name | quote }}
 compactor:
