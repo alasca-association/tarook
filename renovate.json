@@ -36,6 +36,34 @@
       ],
       "datasourceTemplate": "helm",
       "versioningTemplate": "semver"
+    },
+    {
+      "description": "Default Kubernetes version in nix config",
+      "customType": "regex",
+      "managerFilePatterns": ["/^nix/yk8s/kubernetes/default\\.nix$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?) packageName=(?<packageName>.*?)\\n\\s*default\\s=\\s\"(?<currentValue>.*?)\";\\n"
+      ]
+    },
+    {
+      "description": "Default Kubernetes version in CI manifest",
+      "customType": "regex",
+      "managerFilePatterns": ["/^ci/cluster-tests\\.yaml$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?) packageName=(?<packageName>.*?)\\n\\s*-\\sMANAGED_K8S_RELEASE_THE_KRAKEN=true\\s\\./managed-k8s/actions/upgrade\\.sh\\s(?<currentValue>.*?)\\n",
+        "# renovate: datasource=(?<datasource>.*?) packageName=(?<packageName>.*?)\\n\\s*-\\stomlq\\s--in-place\\s--toml-output\\s'\\.kubernetes\\.version\\s=\\s\\\"(?<currentValue>.*?)\\\"'\\sconfig/overrides.toml\\n"
+      ]
     }
+  ],
+  "separateMinorPatch": true,
+  "packageRules": [
+      {
+        "description": "Only patch updates for Kubernetes",
+        "matchDatasources": ["github-releases"],
+        "matchPackageNames": ["kubernetes/kubernetes"],
+        "updateTypes": ["patch"],
+        "enabled": true,
+        "groupName": "k8s-version"
+      }
   ]
 }
