@@ -388,6 +388,23 @@
     };
   };
 
+  # as per https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html
+  # (without the prefix and suffix specifics)
+  s3 = {
+    bucket.name = rec {
+      RE = "(${prefix.RE})[a-z0-9]";
+      negativeREs = [
+        "^[^.]+([.][^.]+)*[.]{2}.*$" # two periods in a row
+        "^((${rfc952.ipv4AddrRE})|(${rfc3513.ipv6AddressRE}))$" # ip addresses
+        "^xn--.*$" # punny code
+      ];
+      prefix = {
+        RE = "[a-z0-9][a-z0-9.-]{1,61}";
+        inherit negativeREs;
+      };
+    };
+  };
+
   ### option type generators ###
 
   /*
@@ -1183,15 +1200,17 @@ in rec {
   s3BucketName = mkRegexStrOptionType {
     name = "s3BucketName";
     description = "S3 bucket name";
-    # https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html
-    # (without the prefix and suffix specifics)
     matchAgainstAllOf = [
-      "^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
+      "^(${s3.bucket.name.RE})$"
     ];
-    matchAgainstNoneOf = [
-      "^[^.]+([.][^.]+)*[.]{2}.*$" # two periods in a row
-      "^((${rfc952.ipv4AddrRE})|(${rfc3513.ipv6AddressRE}))$" # ip addresses
-      "^xn--.*$" # punny code
+    matchAgainstNoneOf = s3.bucket.name.prefix.negativeREs;
+  };
+  s3BucketNamePrefix = mkRegexStrOptionType {
+    name = "s3BucketNamePrefix";
+    description = "S3 bucket name prefix";
+    matchAgainstAllOf = [
+      "^(${s3.bucket.name.prefix.RE})$"
     ];
+    matchAgainstNoneOf = s3.bucket.name.prefix.negativeREs;
   };
 }

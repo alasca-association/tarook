@@ -208,12 +208,12 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 ``yk8s.k8s-service-layer.etcd-backup.file_prefix``
 ##################################################
 
-Name of the folder to keep the backup files.
+Prefix for :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.bucket_name`
 
 
 **Type:**::
 
-  POSIX path segment (without special '.' and '..')
+  S3 bucket name prefix
 
 
 **Default:**::
