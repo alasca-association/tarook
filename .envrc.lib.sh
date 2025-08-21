@@ -123,4 +123,10 @@ layout_yaook-k8s() {
 
   ANSIBLE_COLLECTIONS_PATH="$(direnv_layout_dir)/ansible"
   export ANSIBLE_COLLECTIONS_PATH
+  HELM_CACHE_HOME="$(direnv_layout_dir)/helm/cache"
+  export HELM_CACHE_HOME
+  HELM_CONFIG_HOME="$(direnv_layout_dir)/helm/config"
+  export HELM_CONFIG_HOME
+  HELM_DATA_HOME="$(direnv_layout_dir)/helm/data"
+  export HELM_DATA_HOME
 }
