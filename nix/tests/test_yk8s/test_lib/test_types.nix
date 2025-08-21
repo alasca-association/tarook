@@ -2699,6 +2699,31 @@ with lib; let
           inherit nonStringValuesRejected;
         };
       };
+      s3BucketNamePrefix = {
+        target = optionTypes.s3BucketNamePrefix;
+        tests.typeChecking = {
+          # s3BucketNamePrefix is a superset of s3BucketName with length<63
+          accepted.inputs = with builtins;
+            filter (x: (stringLength x) < 63) s3BucketName.tests.typeChecking.accepted.inputs;
+          rejected.inputs =
+            [
+              ""
+              # from https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html#bucket-names
+              "amzn_s3_demo_bucket" # contains underscores
+              "AmznS3DemoBucket" # contains uppercase letters
+              "example..com" # contains two periods in a row
+              "xn--kxae4bafwg.xn--pxaix.example.com" # contains punycode
+              "BUCKET"
+              "abbb-bucket-prefix-with-63-characters-bbbbbbbbbbbbbbbbbbbbbbbbba"
+              "-bucket"
+              ".bucket"
+            ]
+            # matches format of an IP address
+            ++ ipv4Addr.tests.typeChecking.accepted.inputs
+            ++ ipv6Addr.tests.typeChecking.accepted.inputs;
+          inherit nonStringValuesRejected;
+        };
+      };
     };
   };
 in
