@@ -19,6 +19,12 @@ earlier changes.
 
 .. towncrier release notes start
 
+v10.0.4 (2025-08-21)
+--------------------
+
+No significant changes.
+
+
 v10.0.3 (2025-08-13)
 --------------------
 
