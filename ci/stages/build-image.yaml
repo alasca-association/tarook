@@ -32,18 +32,6 @@ build_image:
     reports:
       dotenv: image.env
 
-
-.deploy_image:
-  image: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/nixos/nix:2.30.2"
-  stage: tag-image
-  before_script:
-    - |
-      cat > /etc/nix/nix.conf <<EOF
-      build-users-group = nixbld
-      sandbox = false
-      extra-experimental-features = nix-command flakes
-      EOF
-
 deploy_image_default_branch:
   image: !reference [.deploy_image, image]
   stage: !reference [.deploy_image, stage]

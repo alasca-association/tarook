@@ -23,7 +23,7 @@
     ]
   },
   "postUpgradeTasks": {
-    "commands": ["bash ci/create_renovate_release_note.sh '{{{datasource}}}' '{{{depNameSanitized}}}' '{{{sourceUrl}}}' '{{{currentVersion}}}' '{{{newVersion}}}' '{{{isMajor}}}'"],
+    "commands": ["bash ci/scripts/create_renovate_release_note.sh '{{{datasource}}}' '{{{depNameSanitized}}}' '{{{sourceUrl}}}' '{{{currentVersion}}}' '{{{newVersion}}}' '{{{isMajor}}}'"],
     "executionMode": "branch"
   },
   "customManagers": [

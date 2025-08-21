@@ -1,10 +1,38 @@
-# Custom playbook for the CI
-# to test the custom stage
 ---
-- name: Verify custom stage
+- name: Restart everything
   hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - k8s-core-vars/retries.yaml
   tasks:
-  - name: Verify custom stage
-    debug:
-      msg: "It works!"
+  - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻
+    run_once: true
+    block:
+    - name: Gather all namespaces
+      kubernetes.core.k8s_info:
+        kind: Namespace
+      register: gather_namespaces
+
+    - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻  # noqa no-changed-when
+      with_nested:
+      - "{{ gather_namespaces.resources }}"
+      - ["daemonset", "deployment", "statefulset"]
+      loop_control:
+        label: "Restart every {{ item[1] }} in namespace {{ item[0].metadata.name }}"
+      command:
+        argv:
+        - kubectl
+        - rollout
+        - restart
+        - "{{ item[1] }}"
+        - --namespace
+        - "{{ item[0].metadata.name }}"
+      register: rollout_restart
+      until: rollout_restart.rc == 0
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
+  - name: Pause, let things settle for 3m
+    pause:
+      minutes: 3
 ...

@@ -1,0 +1,88 @@
+render-options:
+  stage: housekeeping
+  needs:
+    - job: build_image # otherwise it would be run at the same time as build_image (and then fail) if the optional job was skipped
+      optional: true
+    - job: release-note-file-check
+      optional: true
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
+  before_script:
+    - git config --global user.email "$GITLAB_USER_EMAIL"
+    - git config --global user.name "$GITLAB_USER_NAME"
+  script:
+    - bash ./ci/scripts/render-options.sh
+  artifacts:
+    paths:
+      - public/
+  rules:
+    - !reference [.default_lint_rules, rules]
+    - changes:
+      - nix/yk8s/**/*
+      if: $SKIP_HOUSEKEEPING != "true"
+      when: on_success
+    - when: never
+
+release-note-file-check:
+  stage: housekeeping
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
+  variables:
+    CONFIG_FILE: ci/res/towncrier.toml
+    HOTFIX: "False"
+    SOURCE_BRANCH: origin/${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
+    TARGET_BRANCH: origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
+    COMMIT_MESSAGE: MR-number for releasenote(s) changed
+    COMMIT_FILES: docs/_releasenotes
+  before_script:
+    - git fetch origin "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
+    - |
+      if [ "${CI_MERGE_REQUEST_PROJECT_URL}" = "${CI_MERGE_REQUEST_SOURCE_PROJECT_URL}" ]; then
+        FORK=False
+      else
+        FORK=True
+      fi
+    - git config --global user.name "${GITLAB_USER_NAME}"
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+  script:
+    # we need to catch the exit-code from python as it otherwise will not be transmitted correctly
+    - exit_code=0
+    - python3 ci/scripts/check-releasenote-file.py "${CI_PROJECT_DIR}" "${TARGET_BRANCH}" "${CONFIG_FILE}" "${CI_MERGE_REQUEST_IID}" "${COMMIT_FILES}" "${FORK}" "${HOTFIX}" || exit_code=$?
+    - echo $exit_code
+    - towncrier build --version x.x.x --config "${CONFIG_FILE}" --draft
+    - |
+      if [ "${exit_code}" != 0 ]; then
+        exit "${exit_code}"
+      fi
+    - |
+      if [ "${FORK}" = "False" ]; then
+        git fetch origin "${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+        git checkout "${SOURCE_BRANCH}"
+        git status
+        CHANGES=$(git diff "${SOURCE_BRANCH}" --name-only -- "${COMMIT_FILES}" | wc -l)
+        if [ "${CHANGES}" -gt 0 ]; then
+          echo "committing"
+          git add ${COMMIT_FILES}
+          git commit --amend --no-edit
+          git push --force -o ci.skip "https://gitlab-ci-token:${PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}" HEAD:"${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+        fi
+      fi
+  tags:
+    - docker
+  retry: 1
+  allow_failure:
+    exit_codes: 13 # if number in hotfix doesn't match MR-IID, exit with warning
+  rules:
+    # don't run when CHANGELOG.rst has been edited
+    - if: $SKIP_HOUSEKEEPING != "true"
+      changes:
+      - CHANGELOG.rst
+      when: never
+    # run only for MRs from hotfixing-branches ..
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ $REGEX_RELEASE_HOTFIX_BRANCH_PREFIX'
+      variables:
+        COMMIT_FILES: docs/_releasenotes/hotfix
+        HOTFIX: "True"
+      when: on_success
+    # .. and to devel
+    - if:  $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+      when: on_success
+    - when: never

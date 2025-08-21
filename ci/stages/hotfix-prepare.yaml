@@ -20,7 +20,7 @@ add-hotfix-information:
     - VERSION=$(printf '%s.%s.%s' "${CURRENT_VERSION[0]}" "${CURRENT_VERSION[1]}" "$((CURRENT_VERSION[2]+1))")
     - echo "${VERSION}" > ./version
     # create towncrier-config
-    - sed -e "s|directory.*releasenote.*|directory = \"${RELEASENOTE_PATH}\"|g" towncrier.toml > "${TOWNCRIER_CONFIG}"
+    - sed -e "s|directory.*releasenote.*|directory = \"${RELEASENOTE_PATH}\"|g" ci/res/towncrier.toml > "${TOWNCRIER_CONFIG}"
     # create changelog
     - towncrier build --version "v${VERSION}" --config "${TOWNCRIER_CONFIG}" --yes
     - rm "${TOWNCRIER_CONFIG}"

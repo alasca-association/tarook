@@ -1,0 +1,184 @@
+# always lint on merge trains
+.default_lint_rules:
+  rules:
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
+      when: on_success
+
+tflint:
+  image:
+    name: "ghcr.io/terraform-linters/tflint:v0.58.1"
+    entrypoint: ["/bin/sh", "-c"]
+  stage: lint
+  script:
+    - tflint --chdir=terraform/
+  tags:
+    - docker
+  rules:
+    - !reference [.default_lint_rules, rules]
+    - changes:
+      - 'terraform/**/*'
+      if: $SKIP_LINT != "true"
+      when: on_success
+    - when: never
+
+shellcheck:
+  image: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/koalaman/shellcheck-alpine:v0.11.0"
+  stage: lint
+  script:
+    - "find -iname '*.sh' '!' -ipath './.git/**' -print0 | xargs -0 -- shellcheck -Calways"
+  tags:
+    - docker
+  rules:
+    - !reference [.default_lint_rules, rules]
+    - changes:
+      - '**/*.sh'
+      if: $SKIP_LINT != "true"
+      when: on_success
+    - when: never
+
+yamllint:
+  stage: lint
+  tags:
+    - docker
+  image: registry.gitlab.com/pipeline-components/yamllint:latest
+  script:
+    - yamllint .
+  rules:
+    - !reference [.default_lint_rules, rules]
+    - changes:
+      - '**/*.{yaml,yml}'
+      if: $SKIP_LINT != "true"
+      when: on_success
+    - when: never
+
+detect-vault-image:
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
+  stage: lint
+  script:
+    - bash ./actions/detect-vault-image.sh
+  tags:
+    - docker
+  rules:
+    - !reference [.default_lint_rules, rules]
+    - when: on_success
+      if: $SKIP_LINT != "true"
+
+ansible-lint:
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
+  stage: lint
+  script:
+    - "ansible-galaxy install -r ansible/requirements.yaml"
+    - "ANSIBLE_ROLES_PATH=./k8s-core/ansible/roles:./k8s-supplements/ansible/roles:./k8s-supplements/ansible/test-roles ansible-lint -c ci/res/ansible-lint-conf --offline"
+  tags:
+    - docker
+  rules:
+    - !reference [.default_lint_rules, rules]
+    - when: on_success
+      if: $SKIP_LINT != "true"
+
+flake8:
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
+  script:
+    - 'python3 -m flake8'
+  stage: lint
+  tags:
+    - docker
+  rules:
+    - !reference [.default_lint_rules, rules]
+    - changes:
+      - '**/*.py'
+      if: $SKIP_LINT != "true"
+      when: on_success
+    - when: never
+
+pre-commit-hooks:
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
+  script:
+    - 'SKIP=shellcheck,yamllint,flake8,check-flake pre-commit run --all-files || true'
+    - git --no-pager diff
+    - git restore .
+    - 'SKIP=shellcheck,yamllint,flake8,check-flake pre-commit run --all-files'
+  stage: lint
+  tags:
+    - docker
+  rules:
+    - !reference [.default_lint_rules, rules]
+    - when: on_success
+      if: $SKIP_LINT != "true"
+
+build-docs-check:
+  stage: lint
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
+  variables:
+    CONFIG_FILE: ci/res/towncrier.toml
+  script:
+    - towncrier build --version x.x.x --config "${CONFIG_FILE}" --keep
+    - sphinx-build -W docs _build/html
+    - mv _build/html public
+  artifacts:
+    expose_as: "Rendered Docs"
+    expire_in: "7 days"
+    paths:
+      - public/
+  rules:
+    # run only on MR when changes were made
+    - if: '($CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result") && ($SKIP_LINT != "true")'
+      changes:
+      - 'docs/**/*'
+      - 'docs/*'  # the above does not include files directly in docs/
+      - 'CHANGELOG.rst'
+      when: on_success
+    - when: never
+  tags:
+    - docker
+
+check-key-expiry:
+  stage: lint
+  image: "nixery.dev/shell/coreutils/findutils/gnupg/gnugrep/file"
+  script:
+  - ci/scripts/check-key-expiry.sh
+
+  rules:
+    - !reference [.default_lint_rules, rules]
+    # run only on MR when changes were made
+    - if: '($CI_MERGE_REQUEST_EVENT_TYPE == "detached" || $CI_MERGE_REQUEST_EVENT_TYPE == "merged_result") && ($SKIP_LINT != "true")'
+      changes:
+      - '**/*.gpg'
+      when: on_success
+    # always run on devel branch
+    - if: $CI_COMMIT_REF_NAME == $YAOOK_K8S_DEFAULT_BRANCH
+      when: on_success
+    - when: never
+  tags:
+    - docker
+
+pages-dry-run:
+  stage: lint
+  image: !reference [.pages, image]
+  before_script: !reference [.pages, before_script]
+  script:
+  - !reference [.pages, script]
+  - mv _build/html private
+  tags: !reference [.pages, tags]
+  dependencies: !reference [.pages, dependencies]
+  artifacts:
+    expose_as: "Rendered Multiversion Docs"
+    expire_in: "7 days"
+    paths:
+      - private/
+  rules:
+    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
+      when: on_success
+    - changes:
+      - 'docs/**/*'
+      - 'docs/*'  # the above does not include files directly in docs/
+      - 'CHANGELOG.rst'
+      #  sphinx-multiversion may be updated
+      - nix/dependencies.nix
+      - flake.lock
+      # sphinx-multiversion always uses this file from the current branch, so changes may break other versions
+      - docs/conf.py
+      if: $SKIP_LINT != "true"
+      when: on_success
+    - when: manual
+      allow_failure: true

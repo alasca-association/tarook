@@ -247,7 +247,7 @@
       # Note that this is basically a dummy keypair that is not used to protect any significant data
     - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
       # Ensure that the project is clean
-    - python3 clean-up-os-project.py
+    - python3 scripts/clean-up-os-project.py
 
   script:
     - export VAULT_ADDR=https://yaook-vault:8200
@@ -269,14 +269,12 @@
       # Validate tools/vault/mkcsrs.sh
     - bash ./managed-k8s/tools/vault/mkcsrs.sh
     - for csr in k8s-cluster.csr k8s-etcd.csr k8s-front-proxy.csr; do openssl req -in $csr -noout -text; done
-      # Create custom play
-    - cp custom-play.yaml k8s-custom/main.yaml
     - export AFLAGS="-e ansible_ssh_private_key_file=/root/.ssh/id_rsa"
     - ./managed-k8s/actions/apply-all.sh
     - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-frontend-nodes.sh
     - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-kubernetes-nodes.sh
     - ./managed-k8s/actions/apply-custom.sh
-    - ./managed-k8s/ci/test.sh
+    - ./managed-k8s/ci/scripts/test.sh
     - ./managed-k8s/actions/test.sh
   after_script:
     # artifacts are overridden by later stages, so we need to re-export the variable here
@@ -285,7 +283,7 @@
     - cd ci/
     - direnv allow
     - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
-    - ./after_script_cleanup.sh
+    - ./scripts/after_script_cleanup.sh
 
   artifacts:
     reports:
@@ -321,7 +319,7 @@
 
     # Shuffle once more
   - ./managed-k8s/actions/apply-custom.sh
-  - ./managed-k8s/ci/test.sh
+  - ./managed-k8s/ci/scripts/test.sh
   - ./managed-k8s/actions/test.sh
   after_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, after_script]
