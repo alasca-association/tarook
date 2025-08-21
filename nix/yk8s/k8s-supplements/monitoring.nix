@@ -6,10 +6,11 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.prometheus;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule mkHelmChartVersionOption;
+  inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (lib.attrsets) foldlAttrs;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkMultiResourceOptions;
+  inherit (yk8s-lib.options) mkHelmChartVersionOption;
   inherit
     (yk8s-lib.types)
     absolutePosixPath
