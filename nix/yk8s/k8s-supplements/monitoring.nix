@@ -542,9 +542,19 @@ in {
           };
           module = mkOption {
             description = ''
-              module to be used.
+              The module to be used for the probe.
 
-              "http_api" allows status codes 200, 300 and 401
+              Defaults to ``http_2xx`` if :ref:`configuration-options.yk8s.infra.ipv4_enabled` is ``true``.
+              Otherwise, defaults to ``http_2xx_v6`` if :ref:`configuration-options.yk8s.infra.ipv6_enabled` is ``true``.
+
+              Modules without the ``_v6`` suffix use IPv4 as preferred protocol.
+              IPv6-specific modules (indicated by the ``_v6`` suffix) are only available
+              if :ref:`configuration-options.yk8s.infra.ipv6_enabled` is enabled.
+              They use IPv6 as preferred protocol.
+
+              For example, if :ref:`configuration-options.yk8s.infra.ipv6_enabled` is enabled,
+              you could use the module ``http_api_v6`` to probe the target
+              which allows HTTP status codes 200, 300 and 401.
             '';
             type = types.enum [
               "http_2xx"
@@ -552,8 +562,18 @@ in {
               "http_api_insecure"
               "icmp"
               "tcp_connect"
+              "http_2xx_v6"
+              "http_api_v6"
+              "http_api_insecure_v6"
+              "icmp_v6"
+              "tcp_connect_v6"
             ];
-            default = "http_2xx";
+            default =
+              if config.yk8s.infra.ipv4_enabled
+              then "http_2xx"
+              else if config.yk8s.infra.ipv6_enabled
+              then "http_2xx_v6"
+              else throw "yk8s.k8s-service-layer.prometheus.internet_probe_targets.*.module: unable to choose default. This is likely a bug"; # should never happen
           };
         };
       });
@@ -574,6 +594,17 @@ in {
       };
     };
   };
+  config.yk8s.assertions =
+    []
+    # check that no IPv6 module is configured in any probe if yk8s.infra.ipv6_enabled is disabled
+    ++ lib.imap0
+    (i: x: let
+      idx = builtins.toString i;
+    in {
+      assertion = cfg.internet_probe -> ! config.yk8s.infra.ipv6_enabled -> ! lib.strings.hasSuffix "_v6" x.module;
+      message = "config.yk8s.k8s-service-layer.prometheus.internet_probe_targets[${idx}].module: ${x.module} is an IPv6-specific module but config.yk8s.infra.ipv6_enabled=false";
+    })
+    cfg.internet_probe_targets;
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

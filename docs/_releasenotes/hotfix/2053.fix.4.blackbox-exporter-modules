@@ -1,0 +1,2 @@
+Allow to configure IPv6-specific modules for blackbox-exporter probes in :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.internet_probe_targets.*.module`.
+Although these modules have been introduced in v9.1.0, they could not be configured until now.
