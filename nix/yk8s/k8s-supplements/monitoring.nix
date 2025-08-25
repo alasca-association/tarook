@@ -531,7 +531,7 @@ in {
 
               For example, if :ref:`configuration-options.yk8s.infra.ipv6_enabled` is enabled,
               you could use the module ``http_api_v6`` to probe the target
-              which allows HTTP status codes 200, 300 and 401.
+              which allows HTTP status codes 200, 300, 400 and 401.
             '';
             type = types.enum [
               "http_2xx"
