@@ -388,6 +388,23 @@
     };
   };
 
+  # as per https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html
+  # (without the prefix and suffix specifics)
+  s3 = {
+    bucket.name = rec {
+      RE = "(${prefix.RE})[a-z0-9]";
+      negativeREs = [
+        "^[^.]+([.][^.]+)*[.]{2}.*$" # two periods in a row
+        "^((${rfc952.ipv4AddrRE})|(${rfc3513.ipv6AddressRE}))$" # ip addresses
+        "^xn--.*$" # punny code
+      ];
+      prefix = {
+        RE = "[a-z0-9][a-z0-9.-]{1,61}";
+        inherit negativeREs;
+      };
+    };
+  };
+
   ### option type generators ###
 
   /*
@@ -444,6 +461,12 @@
     name = "httpxUrl";
     description = "RFC3986 HTTP(S) URL";
     matchAgainstAllOf = ["^http(s)?(${rfc3986.xUrlRE})$"];
+  };
+
+  nonEmptyNonSpacedStr = mkRegexStrOptionType {
+    name = "nonEmptyNonSpacedStr";
+    description = "${lib.types.nonEmptyStr.description} without spaces";
+    matchAgainstAllOf = ["^[^ ]+$"];
   };
 
   ### reusable option types (parameterized) ###
@@ -632,6 +655,14 @@ in rec {
           };
 
   openstackAvailabilityZoneName = lib.types.nonEmptyStr;
+  openstackSwiftContainerName = mkRegexStrOptionType {
+    name = "openstackSwiftContainerName";
+    description = "Openstack Swift container name";
+    # as per https://docs.openstack.org/api-ref/object-store/#create-update-or-delete-container-metadata
+    matchAgainstAllOf = [
+      "^[^/]{1,256}$" # non-empty, length 1-256, no slashes
+    ];
+  };
   openstackFlavorName = lib.types.nonEmptyStr;
   openstackImageName = lib.types.nonEmptyStr;
   openstackKeypairName = lib.types.nonEmptyStr;
@@ -885,10 +916,7 @@ in rec {
     matchAgainstAllOf = ["^(${oci.dist1.imageNameRE}):(${oci.dist1.imageTagRE})$"];
   };
 
-  k8sClusterName = mkRfc1123SubdomainLabelType {
-    rejectCapitals = true;
-    enforceMaxLength63 = true;
-  };
+  k8sClusterName = nonEmptyNonSpacedStr;
   k8sVersion = versions: let
     inherit (builtins) concatStringsSep foldl' length map typeOf;
   in
@@ -1172,15 +1200,17 @@ in rec {
   s3BucketName = mkRegexStrOptionType {
     name = "s3BucketName";
     description = "S3 bucket name";
-    # https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html
-    # (without the prefix and suffix specifics)
     matchAgainstAllOf = [
-      "^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
+      "^(${s3.bucket.name.RE})$"
     ];
-    matchAgainstNoneOf = [
-      "^[^.]+([.][^.]+)*[.]{2}.*$" # two periods in a row
-      "^((${rfc952.ipv4AddrRE})|(${rfc3513.ipv6AddressRE}))$" # ip addresses
-      "^xn--.*$" # punny code
+    matchAgainstNoneOf = s3.bucket.name.prefix.negativeREs;
+  };
+  s3BucketNamePrefix = mkRegexStrOptionType {
+    name = "s3BucketNamePrefix";
+    description = "S3 bucket name prefix";
+    matchAgainstAllOf = [
+      "^(${s3.bucket.name.prefix.RE})$"
     ];
+    matchAgainstNoneOf = s3.bucket.name.prefix.negativeREs;
   };
 }

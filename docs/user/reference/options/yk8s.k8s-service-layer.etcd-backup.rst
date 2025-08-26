@@ -175,12 +175,12 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.n
 ``yk8s.k8s-service-layer.etcd-backup.file_prefix``
 ##################################################
 
-Name of the folder to keep the backup files.
+Prefix for :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.bucket_name`
 
 
 **Type:**::
 
-  POSIX path segment (without special '.' and '..')
+  S3 bucket name prefix
 
 
 **Default:**::

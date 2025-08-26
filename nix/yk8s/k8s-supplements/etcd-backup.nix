@@ -18,6 +18,7 @@
     posixPathSegment
     relativeUrlPath
     s3BucketName
+    s3BucketNamePrefix
     vaultNamespaceName
     ;
   inherit
@@ -138,9 +139,9 @@ in {
     };
     file_prefix = mkOption {
       description = ''
-        Name of the folder to keep the backup files.
+        Prefix for :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.bucket_name`
       '';
-      type = posixPathSegment;
+      type = s3BucketNamePrefix;
       default = "etcd-backup";
     };
     vault_mount_point = mkOption {
