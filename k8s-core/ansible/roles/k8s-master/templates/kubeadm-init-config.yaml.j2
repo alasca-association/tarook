@@ -1,18 +1,22 @@
 {{ _auto_generated_preamble }}
 
-apiVersion: kubeadm.k8s.io/v1beta3
+apiVersion: kubeadm.k8s.io/v1beta4
 kind: InitConfiguration
 nodeRegistration:
   kubeletExtraArgs:
 {% if openstack_enabled %}
-    cloud-provider: "external"
+    - name: cloud-provider
+      value: "external"
 {% endif %}
 {% if ipv4_enabled and ipv6_enabled %}
-    node-ip: {{ [local_ipv4_address, local_ipv6_address] | join(",") | to_json }}
+    - name: node-ip
+      value: {{ [local_ipv4_address, local_ipv6_address] | join(",") | to_json }}
 {% elif ipv4_enabled %}
-    node-ip: {{ local_ipv4_address | to_json }}
+    - name: node-ip
+      value: {{ local_ipv4_address | to_json }}
 {% elif ipv6_enabled %}
-    node-ip: {{ local_ipv6_address | to_json }}
+    - name: node-ip
+      value: {{ local_ipv6_address | to_json }}
 {% endif %}
   name: {{ inventory_hostname }}
 
@@ -25,7 +29,7 @@ localAPIEndpoint:
   bindPort: 6443
 
 ---
-apiVersion: kubeadm.k8s.io/v1beta3
+apiVersion: kubeadm.k8s.io/v1beta4
 kind: ClusterConfiguration
 kubernetesVersion: "v{{ k8s_version }}"
 controlPlaneEndpoint: "{% if ipv4_enabled %}{{ networking_fixed_ip }}{% else %}[{{ networking_fixed_ip_v6 }}]{% endif %}:{{ k8s_apiserver_frontend_port }}"
@@ -43,38 +47,48 @@ networking:
 
 apiServer:
   extraArgs:
-    service-account-issuer: https://kubernetes.default.svc
-    service-account-signing-key-file: /etc/kubernetes/pki/sa.key
-    enable-admission-plugins: NodeRestriction
+    - name: service-account-issuer
+      value: "https://kubernetes.default.svc"
+    - name: service-account-signing-key-file
+      value: "/etc/kubernetes/pki/sa.key"
+    - name: enable-admission-plugins
+      value: "NodeRestriction"
 
 etcd:
   local:
     extraArgs:
 {% if ipv4_enabled and ipv6_enabled %}
-      listen-metrics-urls: "http://127.0.0.1:2381,http://[::1]:2381"
+      - name: listen-metrics-urls
+        value: "http://127.0.0.1:2381,http://[::1]:2381"
 {% endif %}
 
 controllerManager:
   extraArgs:
 {% if ipv4_enabled %}
-    bind-address: "0.0.0.0"
+    - name: bind-address
+      value: "0.0.0.0"
 {% elif ipv6_enabled %}
-    bind-address: "::"
+    - name: bind-address
+      value: "::"
 {% endif %}
-    large-cluster-size-threshold: "{{ k8s_controller_manager_large_cluster_size_threshold | default(50) }}"
+    - name: large-cluster-size-threshold
+      value: "{{ k8s_controller_manager_large_cluster_size_threshold | default(50) }}"
 {% if ipv6_enabled %}
     # The size for the pod subnets of the nodes.
     # This value is not respected by calico.
     # The maximum allowed diff is 16 bits and the smallest allowed value is /112
-    node-cidr-mask-size-ipv6: "{{ [((k8s_network_pod_subnet_v6 | split('/'))[1] | int) + 16, 112] | min }}"
+    - name: node-cidr-mask-size-ipv6
+      value: "{{ [((k8s_network_pod_subnet_v6 | split('/'))[1] | int) + 16, 112] | min }}"
 {% endif %}
 
 scheduler:
     extraArgs:
 {% if ipv4_enabled %}
-      bind-address: "0.0.0.0"
+      - name: bind-address
+        value: "0.0.0.0"
 {% elif ipv6_enabled %}
-      bind-address: "::"
+      - name: bind-address
+        value: "::"
 {% endif %}
 
 ---
