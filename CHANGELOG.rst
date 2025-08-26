@@ -19,6 +19,41 @@ earlier changes.
 
 .. towncrier release notes start
 
+v10.0.5 (2025-08-26)
+--------------------
+
+New Features
+~~~~~~~~~~~~
+
+- The following modules of :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.internet_probe_targets.*.module` now do also accept the HTTP status code ``400``:
+
+  * ``http_api_v6``
+  * ``http_api_insecure_v6``
+  * ``http_api``
+  * ``http_api_insecure``
+
+  . (`!2053 <https://gitlab.com/yaook/k8s/-/merge_requests/2053>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- Allow to configure IPv6-specific modules for blackbox-exporter probes in :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.internet_probe_targets.*.module`.
+  Although these modules have been introduced in v9.1.0, they could not be configured until now. (`!2053 <https://gitlab.com/yaook/k8s/-/merge_requests/2053>`_)
+- Fixed the type of :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_objectstorage_container_name`
+  (regression of v10.0.0) (`!2053 <https://gitlab.com/yaook/k8s/-/merge_requests/2053>`_)
+- Fixed the type of :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.file_prefix`
+  (regression of v10.0.0) (`!2053 <https://gitlab.com/yaook/k8s/-/merge_requests/2053>`_)
+- Fixed the type of :ref:`configuration-options.yk8s.infra.cluster_name`
+  (regression of v10.0.0) (`!2053 <https://gitlab.com/yaook/k8s/-/merge_requests/2053>`_)
+
+
+Misc
+~~~~
+
+- `!2053 <https://gitlab.com/yaook/k8s/-/merge_requests/2053>`_
+
+
 v10.0.4 (2025-08-19)
 --------------------
 

@@ -1,8 +1,0 @@
-The following modules of :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.internet_probe_targets.*.module` now do also accept the HTTP status code ``400``:
-
-* ``http_api_v6``
-* ``http_api_insecure_v6``
-* ``http_api``
-* ``http_api_insecure``
-
-.

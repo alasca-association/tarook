@@ -1,2 +1,0 @@
-Fixed the type of :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_objectstorage_container_name`
-(regression of v10.0.0)
