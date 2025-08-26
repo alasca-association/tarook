@@ -274,7 +274,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "11.3.0"
+  "11.3.1"
 
 
 **Example:**::
