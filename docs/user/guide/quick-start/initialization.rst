@@ -16,6 +16,10 @@ dependencies locked to specific versions so everybody can produce the same ident
 
 1. Install Nix on a non NixOS system
 
+   .. note::
+
+      ``nix (Nix) >= 2.9.0`` is required.
+
    .. tabs::
 
       .. tab:: Via the official installer
