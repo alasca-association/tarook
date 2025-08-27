@@ -648,14 +648,24 @@ https://gitlab.com/yaook/k8s/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.ni
 ``yk8s.k8s-service-layer.prometheus.internet_probe_targets.*.module``
 #####################################################################
 
-module to be used.
+The module to be used for the probe.
 
-"http_api" allows status codes 200, 300 and 401
+Defaults to ``http_2xx`` if :ref:`configuration-options.yk8s.infra.ipv4_enabled` is ``true``.
+Otherwise, defaults to ``http_2xx_v6`` if :ref:`configuration-options.yk8s.infra.ipv6_enabled` is ``true``.
+
+Modules without the ``_v6`` suffix use IPv4 as preferred protocol.
+IPv6-specific modules (indicated by the ``_v6`` suffix) are only available
+if :ref:`configuration-options.yk8s.infra.ipv6_enabled` is enabled.
+They use IPv6 as preferred protocol.
+
+For example, if :ref:`configuration-options.yk8s.infra.ipv6_enabled` is enabled,
+you could use the module ``http_api_v6`` to probe the target
+which allows HTTP status codes 200, 300, 400 and 401.
 
 
 **Type:**::
 
-  one of "http_2xx", "http_api", "http_api_insecure", "icmp", "tcp_connect"
+  one of "http_2xx", "http_api", "http_api_insecure", "icmp", "tcp_connect", "http_2xx_v6", "http_api_v6", "http_api_insecure_v6", "icmp_v6", "tcp_connect_v6"
 
 
 **Default:**::
