@@ -1,1 +1,0 @@
-Added :ref:`configuration-options.yk8s.k8s-service-layer.vault.backup_s3_bucket` to configure the bucket name for vault backup.
