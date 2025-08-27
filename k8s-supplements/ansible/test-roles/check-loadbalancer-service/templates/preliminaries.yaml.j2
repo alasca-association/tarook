@@ -30,7 +30,7 @@ spec:
         operator: Exists
       containers:
       - name: echo
-        image: registry.gitlab.com/yaook/images/k8s-nginx:main
+        image: registry.gitlab.com/alasca.cloud/tarook/images/unprivileged-nginx:main
         ports:
         - containerPort: 8080
       serviceAccountName: test
