@@ -20,7 +20,7 @@ and to name harbour infrastructure resources.
 
 **Type:**::
 
-  RFC1123 subdomain label (lowercase)
+  non-empty string without spaces
 
 
 **Declared by**
