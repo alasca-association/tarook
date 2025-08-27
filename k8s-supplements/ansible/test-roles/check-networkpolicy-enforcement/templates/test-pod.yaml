@@ -14,7 +14,7 @@ spec:
   - key: ""
     operator: Exists
   containers:
-  - image: registry.gitlab.com/yaook/images/k8s-debian:main
+  - image: registry.gitlab.com/alasca.cloud/tarook/images/debian:main
     imagePullPolicy: IfNotPresent
     name: curl
     command:

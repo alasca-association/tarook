@@ -16,7 +16,7 @@ spec:
   - key: ""
     operator: Exists
   containers:
-  - image: registry.gitlab.com/yaook/images/k8s-debian:main
+  - image: registry.gitlab.com/alasca.cloud/tarook/images/debian:main
     imagePullPolicy: IfNotPresent
     name: debian
     command: ["bash", "-c", "set -euo pipefail; cd /mnt; test -e noise; sha256sum -c SHA256SUMS"]
