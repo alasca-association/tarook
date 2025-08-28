@@ -2724,6 +2724,27 @@ with lib; let
           inherit nonStringValuesRejected;
         };
       };
+      jsonValue = {
+        target = optionTypes.jsonValue;
+        tests.typeChecking = {
+          accepted.inputs = [
+            null
+            false
+            1
+            1.5
+            "a string"
+            ["a" "list" 1 1.5 {}]
+            {
+              an = "attributeset";
+              containing = ["a" "list" 1 1.5];
+            }
+          ];
+          rejected.inputs = [
+            (x: x)
+            ./.
+          ];
+        };
+      };
     };
   };
 in

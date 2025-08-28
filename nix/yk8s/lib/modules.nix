@@ -317,15 +317,4 @@ in rec {
       ]) []
     resources;
   };
-  mkHelmChartVersionOption = args:
-    lib.mkOption ({
-        example = "1.2.3";
-        description = ''
-          The helm chart version to be used.
-
-          If the version shall be unpinned, set to: ``null``.
-        '';
-        type = lib.types.nullOr yk8s-lib.types.helmChartVersion;
-      }
-      // args);
 }

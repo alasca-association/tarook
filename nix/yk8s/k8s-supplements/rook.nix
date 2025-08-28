@@ -6,10 +6,10 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.rook;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule mkHelmChartVersionOption;
+  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection logIf mkGroupVarsFile mkMultiResourceOptions;
-  inherit (yk8s-lib.options) mkDisableOption;
+  inherit (yk8s-lib.options) mkDisableOption mkHelmChartVersionOption;
   inherit
     (yk8s-lib.types)
     helmChartReleaseName

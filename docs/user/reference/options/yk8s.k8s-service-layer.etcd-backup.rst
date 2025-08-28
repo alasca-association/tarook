@@ -77,83 +77,6 @@ Alternatively, you can also manually insert your configuration into vault.
 
   </details>
 
-.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.addressing_style:
-
-``yk8s.k8s-service-layer.etcd-backup.addressing_style``
-#######################################################
-
-The addressing style used for the s3 bucket that stores the etcd backups.
-
-- ``path``: Bucket name is included in the URI path.
-- ``virtual``: Bucket name is included in the hostname.
-- ``auto``: Attempts to use virtual, but falls back to path if necessary.
-
-
-**Type:**::
-
-  one of "path", "virtual", "auto"
-
-
-**Default:**::
-
-  "path"
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
-
-
-.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.bucket_name:
-
-``yk8s.k8s-service-layer.etcd-backup.bucket_name``
-##################################################
-
-Name of the s3 bucket to store the backups.
-
-
-**Type:**::
-
-  S3 bucket name
-
-
-**Default:**::
-
-  "etcd-backup"
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
-
-
-.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.chart_version:
-
-``yk8s.k8s-service-layer.etcd-backup.chart_version``
-####################################################
-
-The helm chart version to be used.
-
-If the version shall be unpinned, set to: ``null``.
-
-
-**Type:**::
-
-  null or Helm chart version (Semantic version 2 string or OCI image tag)
-
-
-**Default:**::
-
-  "0.20250724.0"
-
-
-**Example:**::
-
-  "1.2.3"
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
-
-
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.days_of_retention:
 
 ``yk8s.k8s-service-layer.etcd-backup.days_of_retention``
@@ -203,33 +126,34 @@ Whether to enable etcd-backups.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
-.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.file_prefix:
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.chart_ref:
 
-``yk8s.k8s-service-layer.etcd-backup.file_prefix``
-##################################################
+``yk8s.k8s-service-layer.etcd-backup.helm.chart_ref``
+#####################################################
 
-Prefix for :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.bucket_name`
+The chart reference (relative to the repository) of the etcd-backup Helm chart.
 
 
 **Type:**::
 
-  S3 bucket name prefix
+  RFC3986 relative URL path
 
 
 **Default:**::
 
-  "etcd-backup"
+  "etcdbackup"
 
 
 **Declared by**
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
-.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm_repo_url:
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.chart_repo_url:
 
-``yk8s.k8s-service-layer.etcd-backup.helm_repo_url``
-####################################################
+``yk8s.k8s-service-layer.etcd-backup.helm.chart_repo_url``
+##########################################################
 
+The URL to the Helm repository for the etcd-backup Helm chart.
 
 
 **Type:**::
@@ -246,10 +170,132 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
-.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.metrics_port:
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.chart_version:
 
-``yk8s.k8s-service-layer.etcd-backup.metrics_port``
-###################################################
+``yk8s.k8s-service-layer.etcd-backup.helm.chart_version``
+#########################################################
+
+Version of the etcd-backup Helm chart to be used.
+
+If the version shall be unpinned, set to: ``null``.
+
+
+**Type:**::
+
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
+
+
+**Default:**::
+
+  "0.20250724.0"
+
+
+**Example:**::
+
+  "1.2.3"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.release_name:
+
+``yk8s.k8s-service-layer.etcd-backup.helm.release_name``
+########################################################
+
+The release name inside the cluster for etcd-backup.
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "etcd-backup"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.release_namespace:
+
+``yk8s.k8s-service-layer.etcd-backup.helm.release_namespace``
+#############################################################
+
+The namespace in which to install etcd-backup.
+
+
+**Type:**::
+
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
+
+
+**Default:**::
+
+  "kube-system"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values:
+
+``yk8s.k8s-service-layer.etcd-backup.helm.values``
+##################################################
+
+Helm values for the etcd-backup helm chart.
+
+Some values are set by default through Tarook, but arbitrary values can be set.
+For a full list of possible values, see
+https://gitlab.com/yaook/operator/-/blob/devel/yaook/helm_builder/Charts/etcdbackup/values-template.yaml.j2
+
+
+**Type:**::
+
+  JSON value
+
+
+**Default:**::
+
+  { }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values.certRef:
+
+``yk8s.k8s-service-layer.etcd-backup.helm.values.certRef``
+##########################################################
+
+Can not be set here and will be supplied dynamically via Ansible
+See :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup` for how to set the value.
+
+
+**Type:**::
+
+  unspecified value
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values.metrics_port:
+
+``yk8s.k8s-service-layer.etcd-backup.helm.values.metrics_port``
+###############################################################
 
 Metrics port on which the backup-shifter Pod will provide metrics.
 Please note that the etcd-backup deployment runs in host network mode
@@ -270,52 +316,10 @@ for easier access to the etcd cluster.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
-.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.name:
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values.schedule:
 
-``yk8s.k8s-service-layer.etcd-backup.name``
-###########################################
-
-
-
-**Type:**::
-
-  RFC1123 subdomain name (lowercase) or RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
-
-
-**Default:**::
-
-  "etcd-backup"
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
-
-
-.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.namespace:
-
-``yk8s.k8s-service-layer.etcd-backup.namespace``
-################################################
-
-
-
-**Type:**::
-
-  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
-
-
-**Default:**::
-
-  "kube-system"
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
-
-
-.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.schedule:
-
-``yk8s.k8s-service-layer.etcd-backup.schedule``
-###############################################
+``yk8s.k8s-service-layer.etcd-backup.helm.values.schedule``
+###########################################################
 
 Configure value for the cron job schedule for etcd backups.
 
@@ -334,10 +338,58 @@ Configure value for the cron job schedule for etcd backups.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
 
 
-.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.secret_name:
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.addressingStyle:
 
-``yk8s.k8s-service-layer.etcd-backup.secret_name``
-##################################################
+``yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.addressingStyle``
+#############################################################################
+
+The addressing style used for the s3 bucket that stores the etcd backups.
+
+- ``path``: Bucket name is included in the URI path.
+- ``virtual``: Bucket name is included in the hostname.
+- ``auto``: Attempts to use virtual, but falls back to path if necessary.
+
+
+**Type:**::
+
+  one of "path", "virtual", "auto"
+
+
+**Default:**::
+
+  "path"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.bucket:
+
+``yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.bucket``
+####################################################################
+
+Name of the s3 bucket to store the backups.
+
+
+**Type:**::
+
+  S3 bucket name
+
+
+**Default:**::
+
+  "etcd-backup"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.credentialRef.name:
+
+``yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.credentialRef.name``
+################################################################################
 
 
 
@@ -349,6 +401,51 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 **Default:**::
 
   "etcd-backup-s3-credentials"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.endpoint:
+
+``yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.endpoint``
+######################################################################
+
+Can not be set here and will be supplied dynamically via Ansible.
+See :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup` for how to set the value.
+
+
+**Type:**::
+
+  unspecified value
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.filePrefix:
+
+``yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.filePrefix``
+########################################################################
+
+Prefix for :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.bucket`
+
+
+**Type:**::
+
+  S3 bucket name prefix
+
+
+**Default:**::
+
+  "etcd-backup"
 
 
 **Declared by**

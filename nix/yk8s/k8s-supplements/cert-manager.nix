@@ -5,10 +5,9 @@
   ...
 }: let
   cfg = config.yk8s.k8s-service-layer.cert-manager;
-  modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (modules-lib) mkHelmChartVersionOption;
+  inherit (yk8s-lib.options) mkHelmChartVersionOption;
   inherit
     (yk8s-lib.types)
     emailAddress

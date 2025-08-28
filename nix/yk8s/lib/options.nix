@@ -1,6 +1,5 @@
 {lib}: let
-  types = import ./types.nix {inherit lib;};
-  transform = import ./transform.nix {inherit lib;};
+  yk8s-lib.types = import ./types.nix {inherit lib;};
 in rec {
   /*
   Like nixpkgs.lib.options.mkEnableOption but with true as the default
@@ -54,4 +53,131 @@ in rec {
     // opts);
   mkTopSection = mkSection {sectionType = "top";};
   mkSubSection = mkSection {sectionType = "sub";};
+
+  /*
+  Returns an option representing the values of a Helm chart.
+
+  A name must be given, all other parameters are optional.
+
+  defaultValues can be given but note that they will be lost completely if the user
+  sets any value themselves (even if they set different values than are set in defaultValues).
+  For all values that should persist additionally to any user specified values, add them as
+  chartOptions with their own default value.
+
+  !!IMPORTANT!!
+  Note that the option must be added to the unflat list of mkGroupVarsFile
+
+  Example:
+
+  {
+    options.yk8s.my-module.helm_values = mkHelmValuesOption {
+      name = "my-application";
+      defaultValues = {
+        A = "this setting will be lost as soon as anything else is set by the user or by a module, even if A is not set there"
+      };
+      chartOptions = {
+        B = lib.mkOption {
+          # ...
+          default = "this setting will persist if other options are set but will be overwritten if B is set somewhere else";
+      };
+    };
+    config.yk8s.my-module.helm_values = {
+      C = "this setting will persist if other options are set and will create a conflict if C is set somewhere else. In order to override it, lib.mkForce must be used";
+    };
+    config.yk8s._inventory_packages = [
+      (mkGroupVarsFile {
+        inherit (config.yk8s) my-module;
+        ansible_prefix = "my_prefix_";
+        inventory_path = "all/my_module.yaml";
+        unflat = ["helm_values"];
+        })
+    ];
+  }
+  */
+  mkHelmValuesOption = {
+    descriptionName,
+    valuesDocUrl ? null,
+    extraDescription ? "",
+    chartOptions ? {},
+    defaultValues ? {},
+  }:
+    lib.mkOption {
+      description =
+        ''
+          Helm values for the ${descriptionName} helm chart.
+
+          Some values are set by default through Tarook, but arbitrary values can be set.
+        ''
+        + (lib.optionalString (valuesDocUrl != null) ''
+          For a full list of possible values, see
+          ${valuesDocUrl}
+        '')
+        + extraDescription;
+      default = defaultValues;
+      type = lib.types.submodule {
+        freeformType = yk8s-lib.types.jsonValue;
+        options = chartOptions;
+      };
+    };
+  mkHelmChartVersionOption = args @ {descriptionName ? null, ...}:
+    lib.mkOption ({
+        example = "1.2.3";
+        description = ''
+          Version of the${lib.optionalString (descriptionName != null) " ${descriptionName}"} Helm chart to be used.
+
+          If the version shall be unpinned, set to: ``null``.
+        '';
+        type = lib.types.nullOr yk8s-lib.types.helmChartVersion;
+      }
+      // (removeAttrs args ["descriptionName"]));
+
+  mkHelmReleaseOptions = {
+    descriptionName,
+    defaultRepoUrl,
+    defaultChartRef,
+    defaultChartVersion,
+    defaultReleaseNamespace,
+    defaultReleaseName,
+    defaultValues ? {},
+    valuesDocUrl ? null,
+    extraValuesDescription ? "",
+    chartOptions ? {},
+  }: {
+    chart_repo_url = lib.mkOption {
+      description = ''
+        The URL to the Helm repository for the ${descriptionName} Helm chart.
+      '';
+      type = yk8s-lib.types.helmChartRepoUrl;
+      default = defaultRepoUrl;
+    };
+    chart_ref = lib.mkOption {
+      description = ''
+        The chart reference (relative to the repository) of the ${descriptionName} Helm chart.
+      '';
+      type = yk8s-lib.types.helmChartRef;
+      default = defaultChartRef;
+    };
+    chart_version = mkHelmChartVersionOption {
+      inherit descriptionName;
+      default = defaultChartVersion;
+    };
+    release_namespace = lib.mkOption {
+      description = ''
+        The namespace in which to install ${descriptionName}.
+      '';
+      type = yk8s-lib.types.k8sNamespaceName;
+      default = defaultReleaseNamespace;
+    };
+    release_name = lib.mkOption {
+      description = ''
+        The release name inside the cluster for ${descriptionName}.
+      '';
+      type = lib.types.nonEmptyStr;
+      default = defaultReleaseName;
+    };
+    values = mkHelmValuesOption {
+      inherit descriptionName valuesDocUrl chartOptions defaultValues;
+      extraDescription = extraValuesDescription;
+    };
+  };
 }

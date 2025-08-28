@@ -39,7 +39,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 ``yk8s.k8s-service-layer.cert-manager.chart_version``
 #####################################################
 
-The helm chart version to be used.
+Version of the Helm chart to be used.
 
 If the version shall be unpinned, set to: ``null``.
 

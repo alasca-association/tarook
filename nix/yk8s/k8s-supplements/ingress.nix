@@ -6,9 +6,10 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.ingress;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule mkHelmChartVersionOption;
+  inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (yk8s-lib.options) mkHelmChartVersionOption;
   inherit
     (yk8s-lib.types)
     helmChartReleaseName
