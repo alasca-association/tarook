@@ -26,7 +26,7 @@
     '';
   in
     name: file:
-      pkgs.runCommandNoCCLocal name {} ''
+      pkgs.runCommandLocal name {} ''
         cat ${preamble} ${file} > $out
       '';
 
@@ -67,8 +67,6 @@
   mkJsonAtPath = path: attrs: linkToPath (mkJson path attrs) path;
   linkToPath = file: path:
     pkgs.runCommandLocal path {
-      allowSubstitutes = false;
-      preferLocalBuild = true;
     } ''
       mkdir -p $(dirname $out/${path})
       ln -s ${file} $out/${path}
