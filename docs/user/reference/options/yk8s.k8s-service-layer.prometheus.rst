@@ -262,7 +262,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 ``yk8s.k8s-service-layer.prometheus.blackbox_version``
 ######################################################
 
-The helm chart version to be used.
+Version of the Helm chart to be used.
 
 If the version shall be unpinned, set to: ``null``.
 
@@ -1001,7 +1001,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 ``yk8s.k8s-service-layer.prometheus.nvidia_dcgm_exporter_helm_version``
 #######################################################################
 
-The helm chart version to be used.
+Version of the Helm chart to be used.
 
 If the version shall be unpinned, set to: ``null``.
 
@@ -1186,7 +1186,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 ``yk8s.k8s-service-layer.prometheus.prometheus_adapter_version``
 ################################################################
 
-The helm chart version to be used.
+Version of the Helm chart to be used.
 
 If the version shall be unpinned, set to: ``null``.
 
@@ -1481,7 +1481,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 ``yk8s.k8s-service-layer.prometheus.prometheus_stack_version``
 ##############################################################
 
-The helm chart version to be used.
+Version of the Helm chart to be used.
 
 If the version shall be unpinned, set to: ``null``.
 
@@ -1635,7 +1635,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 ``yk8s.k8s-service-layer.prometheus.thanos_chart_version``
 ##########################################################
 
-The helm chart version to be used.
+Version of the Helm chart to be used.
 
 If the version shall be unpinned, set to: ``null``.
 
