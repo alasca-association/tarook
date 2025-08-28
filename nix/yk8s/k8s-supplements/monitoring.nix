@@ -59,7 +59,7 @@ in {
     (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_memory_request"] ["k8s-service-layer" "prometheus" "operator_resources" "memory" "request"])
     (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_memory_limit"] ["k8s-service-layer" "prometheus" "operator_resources" "memory" "limit"])
 
-    (mkMultiResourceOptionsModule "k8s-service-layer.prometheus" {
+    (mkMultiResourceOptionsModule ["k8s-service-layer" "prometheus"] {
       description = ''
         PROMETHEUS POD RESOURCE LIMITS
         The following limits are applied to the respective pods.

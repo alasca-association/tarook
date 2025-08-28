@@ -161,23 +161,20 @@ in rec {
   Example usage:
 
     imports = [
-      (mkResourceOptionModule "ch-k8s-lbaas" "controller_resources" {
+      (mkResourceOptionModule ["ch-k8s-lbaas"] ["controller_resources"] {
         description = "Request and limit for the LBaaS controller";
         cpu.request = "100m";
         memory.limit = "256Mi";
       })
     ];
   */
-  mkResourceOptionModule = sectionName: optionName: {
+  mkResourceOptionModule = sectionPath: optionPath: {
     description,
     cpu,
     memory,
   }: let
-    sec = ["yk8s"] ++ (splitString "." sectionName);
-    opt =
-      if length (splitString "." optionName) == 1
-      then [optionName]
-      else abort "mkResouceOptionModule doesn't currently support nested optionNames (at ${sectionName}.${optionName})";
+    sec = ["yk8s"] ++ sectionPath;
+    opt = optionPath;
     absOpt = sec ++ opt;
   in
     {config, ...}: {
@@ -221,7 +218,7 @@ in rec {
         };
         apply = yk8s-lib.transform.filterNull;
       });
-      config = setAttrByPath (sec ++ ["_internal" "unflat"]) opt;
+      config = setAttrByPath (sec ++ ["_internal" "unflat"]) [(lib.concatStringsSep "." opt)];
       imports = [
         (checkResources absOpt)
       ];
@@ -234,7 +231,7 @@ in rec {
   For example
    imports =
       [
-        (mkMultiResourceOptionsModule "k8s-service-layer.rook" {
+        (mkMultiResourceOptionsModule ["k8s-service-layer" "rook"] {
           description = ''
             Requests and limits for rook/ceph
 
@@ -260,17 +257,14 @@ in rec {
           };
         })
   */
-  mkMultiResourceOptionsModule = sectionName: {
+  mkMultiResourceOptionsModule = sectionPath: {
     description,
     resources,
-  }: let
-    sec = ["yk8s"] ++ (splitString "." sectionName);
-    names = attrNames resources;
-  in {
+  }: {
     imports = lib.attrsets.foldlAttrs (acc: prefix: values:
       acc
       ++ [
-        (mkResourceOptionModule sectionName "${prefix}_resources" {
+        (mkResourceOptionModule sectionPath ["${prefix}_resources"] {
           inherit description;
           inherit (values) cpu memory;
         })

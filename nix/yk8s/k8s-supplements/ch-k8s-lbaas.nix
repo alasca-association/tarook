@@ -26,7 +26,7 @@
 in {
   imports = [
     (mkRenamedResourceOptionModule ["ch-k8s-lbaas"] ["controller"])
-    (mkResourceOptionModule "ch-k8s-lbaas" "controller_resources" {
+    (mkResourceOptionModule ["ch-k8s-lbaas"] ["controller_resources"] {
       description = "Request and limit for the LBaaS controller";
       cpu.request = "100m";
       memory.limit = "256Mi";

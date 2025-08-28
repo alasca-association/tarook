@@ -30,7 +30,7 @@ in {
     (mkRenamedOptionModule ["k8s-service-layer" "ingress" "memory_request"] ["k8s-service-layer" "ingress" "resources" "memory" "request"])
     (mkRenamedOptionModule ["k8s-service-layer" "ingress" "memory_limit"] ["k8s-service-layer" "ingress" "resources" "memory" "limit"])
 
-    (mkResourceOptionModule "k8s-service-layer.ingress" "resources" {
+    (mkResourceOptionModule ["k8s-service-layer" "ingress"] ["resources"] {
       description = "Request and limit for the Nginx Ingress controller";
       cpu.request = "100m";
       memory.limit = "128Mi";

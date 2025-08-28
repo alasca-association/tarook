@@ -25,7 +25,7 @@ in {
     (mkRemovedOptionModule ["k8s-service-layer" "rook" "use_helm"] "")
     (mkRemovedOptionModule ["k8s-service-layer" "rook" "on_openstack"] "Set automatically if openstack.enabled is true.")
     (mkRenamedResourceOptionModule ["k8s-service-layer" "rook"] ["mon" "osd" "mgr" "mds" "operator"])
-    (mkMultiResourceOptionsModule "k8s-service-layer.rook" {
+    (mkMultiResourceOptionsModule ["k8s-service-layer" "rook"] {
       description = ''
         Requests and limits for rook/ceph
 
