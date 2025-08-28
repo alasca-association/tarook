@@ -67,7 +67,7 @@ use_flake_if_nix() {
   fi
   YAOOK_K8S_DEVSHELL=${YAOOK_K8S_DEVSHELL:-default}
 
-  if [[ "${NIX_FLAKE_ACTIVE:-""}" == *"$flake_dir"* ]]; then echo "Flake alreay active. Skipping..."; return; fi
+  if [[ "${NIX_FLAKE_ACTIVE:-""}" == *"$flake_dir"* ]]; then echo "Flake already active. Skipping..."; return; fi
 
   if ! has nix; then return; fi
 
