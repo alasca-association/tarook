@@ -1850,7 +1850,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "v1.16.6"
+  "v1.17.8"
 
 
 **Example:**::
