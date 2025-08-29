@@ -12,11 +12,14 @@ configuration.
 ``yk8s.kubernetes.apiserver.audit_logs.enabled``
 ################################################
 
-Whether to enable audit logs for the apiserver.
+Whether to enable audit logs for the kube-apiserver.
 
-.. note::
-
-  Modifications to this setting and its related only apply during Kubernetes upgrades.
+If enabled, a policy file is mounted to the kube-apiserver.
+The policy file can be adjusted via
+:ref:`configuration-options.yk8s.kubernetes.apiserver.audit_logs.policy`.
+Logs are written to ``/var/log/kubernetes/audit/audit.log``.
+The ``audit-log-maxage`` and ``audit-log-maxbackup`` settings are
+currently hardcoded to ``1``.
 
 **Type:**::
 
@@ -81,7 +84,7 @@ Note that this option is not type checked by Nix, so make sure that it it's a va
 
 **Type:**::
 
-  attribute set
+  JSON value
 
 
 **Default:**::
@@ -320,8 +323,11 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 ``yk8s.kubernetes.apiserver.memory_limit``
 ##########################################
 
-Memory resources limit for the apiserver
+Memory resources limit for the apiserver.
 
+.. note::
+
+  Modifications to this setting only apply on an upgrade of Kubernetes.
 
 **Type:**::
 

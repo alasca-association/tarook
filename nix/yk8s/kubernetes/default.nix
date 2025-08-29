@@ -78,19 +78,25 @@ in {
       };
       memory_limit = mkOption {
         description = ''
-          Memory resources limit for the apiserver
-        '';
+          Memory resources limit for the apiserver.
+
+          .. note::
+
+            Modifications to this setting only apply on an upgrade of Kubernetes.'';
         type = types.nullOr k8sQuantity;
         default = null;
         example = "1Gi";
       };
       audit_logs = {
         enabled = mkEnableOption ''
-          audit logs for the apiserver.
+          audit logs for the kube-apiserver.
 
-          .. note::
-
-            Modifications to this setting and its related only apply during Kubernetes upgrades'';
+          If enabled, a policy file is mounted to the kube-apiserver.
+          The policy file can be adjusted via
+          :ref:`configuration-options.yk8s.kubernetes.apiserver.audit_logs.policy`.
+          Logs are written to ``/var/log/kubernetes/audit/audit.log``.
+          The ``audit-log-maxage`` and ``audit-log-maxbackup`` settings are
+          currently hardcoded to ``1``'';
         max_size = mkOption {
           description = ''
             Maximum size of apiserver audit log files in megabytes before it gets rotated
@@ -118,11 +124,11 @@ in {
               Note that this option is not type checked by Nix, so make sure that it it's a valid audit policy.
             '';
 
-            example = lib.options.literalExample ''
+            example = lib.options.literalExpression ''
               yk8s-lib.importYAML ./path/to/policy.yaml # Note that the file has to be added to the git repository to be evaluated by Nix
             '';
             type = lib.types.submodule {
-              freeformType = lib.types.attrs;
+              freeformType = yk8s-lib.types.jsonValue;
             };
             default = import defaultsFile;
 

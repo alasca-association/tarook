@@ -1,0 +1,180 @@
+---
+# Must be created before the ClusterConfiguration and kube-apiserver have been patched
+- name: Upload audit log policy file
+  become: true
+  when: k8s_apiserver_audit_logs_enabled
+  copy:
+    src: "{{ k8s_apiserver_audit_logs_policy_file }}"
+    dest: /etc/kubernetes/audit-policy.yaml
+    owner: root
+    group: root
+    mode: '0640'
+  # If the policy file changed, we have to restart kube-apiserver
+  notify: Restart kube-apiserver
+
+# Skip if the node is not initialized yet, because then there is no kube-apiserver around
+# In this case, the configuration is done via the kubeadm-init-config in the k8s-master role
+# on cluster initializtion and joining nodes get the configuration from the kubadm ConfigMap
+- name: Skip role
+  when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') == 'not_initialized'
+  meta: end_role
+
+- name: Patch kubeadm ConfigMap ClusterConfiguration
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  run_once: true
+  block:
+  - name: Get current ConfigMap
+    kubernetes.core.k8s_info:
+      api_version: v1
+      kind: ConfigMap
+      name: kubeadm-config
+      namespace: kube-system
+    register: kubeadm_configmap
+    until: kubeadm_configmap is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
+
+  - name: Modify ClusterConfiguration
+    vars:
+      patch:
+        apiServer:
+          extraArgs:
+          - name: audit-log-maxage
+            value: '1'
+          - name: audit-log-maxbackup
+            value: '1'
+          - name: audit-log-maxsize
+            value: "{{ k8s_apiserver_audit_logs_max_size | to_json }}"
+          - name: audit-log-path
+            value: /var/log/kubernetes/audit/audit.log
+          - name: audit-policy-file
+            value: /etc/kubernetes/audit-policy.yaml
+          extraVolumes:
+          - name: "audit-policy"
+            hostPath: "/etc/kubernetes/audit-policy.yaml"
+            mountPath: "/etc/kubernetes/audit-policy.yaml"
+            readOnly: true
+            pathType: File
+          - name: "audit-log"
+            hostPath: "/var/log/kubernetes/audit/"
+            mountPath: "/var/log/kubernetes/audit/"
+            pathType: DirectoryOrCreate
+    block:
+    - name: Set fact about current ClusterConfiguration
+      set_fact:
+        cluster_configuration: "{{ kubeadm_configmap.resources[0].data.ClusterConfiguration | from_yaml }}"
+
+    - name: Remove audit-logs specifics from cluster configuration
+      when: not k8s_apiserver_audit_logs_enabled
+      ansible.utils.update_fact:
+        updates:
+        - path: cluster_configuration.apiServer.extraArgs
+          value: "{{ cluster_configuration.apiServer.extraArgs | default([]) | difference(patch.apiServer.extraArgs) }}"
+        - path: cluster_configuration.apiServer.extraVolumes
+          value: "{{ cluster_configuration.apiServer.extraVolumes | default([]) | difference(patch.apiServer.extraVolumes) }}"
+      register: updated_cluster_configuration_removal
+
+    - name: Add audit-logs specifics to cluster configuration
+      when: k8s_apiserver_audit_logs_enabled
+      ansible.utils.update_fact:
+        updates:
+        - path: cluster_configuration.apiServer.extraArgs
+          value: "{{ cluster_configuration.apiServer.extraArgs | default([]) | union(patch.apiServer.extraArgs) }}"
+        - path: cluster_configuration.apiServer.extraVolumes
+          value: "{{ cluster_configuration.apiServer.extraVolumes | default([]) | union(patch.apiServer.extraVolumes) }}"
+      register: updated_cluster_configuration_addition
+
+  - name: Patch kubeadm-config ConfigMap
+    vars:
+      updated_cluster_configuration: "{{ updated_cluster_configuration_removal.skipped | default(False) | ternary(updated_cluster_configuration_addition, updated_cluster_configuration_removal) }}"
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: kubeadm-config
+          namespace: kube-system
+        data:
+          ClusterConfiguration: "{{ updated_cluster_configuration.cluster_configuration | to_nice_yaml(indent=2) }}"
+    register: kubeadm_configmap_patched
+    until: kubeadm_configmap_patched is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
+
+- name: Regenerate kube-apiserver manifests
+  become: true
+  block:
+  - name: Get current ConfigMap
+    become: false
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    kubernetes.core.k8s_info:
+      api_version: v1
+      kind: ConfigMap
+      name: kubeadm-config
+      namespace: kube-system
+    register: kubeadm_configmap
+    until: kubeadm_configmap is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
+
+  - name: Create ClusterConfiguration file on host
+    copy:
+      dest: /tmp/cluster-configuration.yaml
+      owner: root
+      group: root
+      mode: 0400
+      content: "{{ kubeadm_configmap.resources[0].data.ClusterConfiguration }}"
+
+  # needed for kubeadm init
+  - name: Generate super admin kubeconfig
+    become: false
+    environment:
+      ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+      ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+    # must use block to be able to set environment
+    block:
+    - name: Generate super admin kubeconfig
+      include_role:
+        name: k8s-master
+        tasks_from: mkkubeconfig.yaml
+      vars:
+        kubeconfig_api_server_url: "https://{% if ipv4_enabled %}{{ networking_fixed_ip }}{% elif ipv6_enabled %}[{{ networking_fixed_ip_v6 }}]{% endif %}:{{ k8s_apiserver_frontend_port }}"
+        vault_role_id: "{{ vault_node_role_id }}"
+        vault_secret_id: "{{ vault_node_secret_id }}"
+        kubeconfig_title: super-admin
+        kubeconfig_destination: /etc/kubernetes/super-admin.conf
+        kubeconfig_role: system-masters_admin
+        kubeconfig_user: kubernetes-super-admin
+
+  # Thankfully, this does only restart the kube-apiserver Pod on changes
+  - name: Regenerate kube-apiserver manifest via kubeadm
+    vars:
+      kubeadm_expression:
+      - kubeadm
+      - init
+      - phase
+      - control-plane
+      - apiserver
+      - --config
+      - /tmp/cluster-configuration.yaml
+    include_role:
+      name: helpers/kubeadm-command
+
+  - name: Remove super admin kubeconfig
+    file:
+      path: /etc/kubernetes/super-admin.conf
+      state: absent
+
+  - name: Remove ClusterConfiguration file
+    file:
+      path: /tmp/cluster-configuration.yaml
+      state: absent
+
+# Must be removed after the ClusterConfiguration and kube-apiserver have been patched
+- name: Remove audit log policy file
+  become: true
+  when: not k8s_apiserver_audit_logs_enabled
+  file:
+    state: absent
+    path: "/etc/kubernetes/audit-policy.yaml"
+...

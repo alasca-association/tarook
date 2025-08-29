@@ -84,6 +84,7 @@
   - 1
   - "100%"
   roles:
+  - role: audit-logs
   - role: k8s-master
     tags: k8s-master
     # Drop this role along with release v9.0.0

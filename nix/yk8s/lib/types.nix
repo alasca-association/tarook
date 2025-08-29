@@ -1205,6 +1205,7 @@ in rec {
     ];
     matchAgainstNoneOf = s3.bucket.name.prefix.negativeREs;
   };
+
   s3BucketNamePrefix = mkRegexStrOptionType {
     name = "s3BucketNamePrefix";
     description = "S3 bucket name prefix";

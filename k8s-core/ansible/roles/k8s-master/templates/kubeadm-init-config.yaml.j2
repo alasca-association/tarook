@@ -53,6 +53,28 @@ apiServer:
       value: "/etc/kubernetes/pki/sa.key"
     - name: enable-admission-plugins
       value: "NodeRestriction"
+{% if k8s_apiserver_audit_logs_enabled %}
+    - name: audit-policy-file
+      value: "/etc/kubernetes/audit-policy.yaml"
+    - name: audit-log-path
+      value: "/var/log/kubernetes/audit/audit.log"
+    - name: audit-log-maxage
+      value: "1"
+    - name: audit-log-maxsize
+      value: "{{ k8s_apiserver_audit_logs_max_size }}"
+    - name: audit-log-maxbackup
+      value: "1"
+  extraVolumes:
+    - name: "audit-policy"
+      hostPath: "/etc/kubernetes/audit-policy.yaml"
+      mountPath: "/etc/kubernetes/audit-policy.yaml"
+      readOnly: true
+      pathType: File
+    - name: "audit-log"
+      hostPath: "/var/log/kubernetes/audit/"
+      mountPath: "/var/log/kubernetes/audit/"
+      pathType: DirectoryOrCreate
+{% endif %}
 
 etcd:
   local:
