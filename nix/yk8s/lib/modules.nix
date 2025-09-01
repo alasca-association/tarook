@@ -218,7 +218,7 @@ in rec {
         };
         apply = yk8s-lib.transform.filterNull;
       });
-      config = setAttrByPath (sec ++ ["_internal" "unflat"]) [(lib.concatStringsSep "." opt)];
+      config = setAttrByPath (sec ++ ["_internal" "unflat"]) [opt];
       imports = [
         (checkResources absOpt)
       ];

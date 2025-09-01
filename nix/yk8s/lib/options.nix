@@ -28,7 +28,7 @@ in rec {
           default = cfg.sectionType;
         };
         unflat = mkInternalOption {
-          type = with lib.types; listOf nonEmptyStr;
+          type = with lib.types; listOf (listOf nonEmptyStr);
           default = [];
         };
         transformations = mkInternalOption {
@@ -89,7 +89,9 @@ in rec {
         inherit (config.yk8s) my-module;
         ansible_prefix = "my_prefix_";
         inventory_path = "all/my_module.yaml";
-        unflat = ["helm_values"];
+        unflat = [
+          ["helm" "values"]
+        ];
         })
     ];
   }

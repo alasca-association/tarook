@@ -246,7 +246,9 @@ in {
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
-      unflat = ["helm.values"];
+      unflat = [
+        ["helm" "values"]
+      ];
       ansible_prefix = "etcd_backup_";
       inventory_path = "all/etcd-backup.yaml";
       transformations = [

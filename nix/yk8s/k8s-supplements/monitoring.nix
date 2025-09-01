@@ -587,7 +587,9 @@ in {
       inherit cfg;
       ansible_prefix = "monitoring_";
       inventory_path = "all/prometheus.yaml";
-      unflat = ["common_labels"];
+      unflat = [
+        ["common_labels"]
+      ];
     })
   ];
 }
