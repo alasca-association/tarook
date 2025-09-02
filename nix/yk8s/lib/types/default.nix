@@ -20,8 +20,6 @@
   vault = import ./vault.nix {inherit lib;};
   wireguard = import ./wireguard.nix {inherit lib;};
 in {
-  inherit (common) attrsOf';
-
   inherit
     (gitlab)
     gitlabProjectId
@@ -118,7 +116,6 @@ in {
     (prometheus)
     prometheusIntervalStr
     prometheusLabelName
-    prometheusRelabelConfig
     prometheusTimeoutStr
     ;
   inherit

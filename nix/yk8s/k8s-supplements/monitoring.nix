@@ -35,7 +35,7 @@
     openstackSwiftContainerName
     prometheusIntervalStr
     prometheusTimeoutStr
-    prometheusRelabelConfig
+    prometheusLabelName
     relativePosixPath
     subdomainLabel
     ;
@@ -238,7 +238,42 @@ in {
                   A list of RelabelConfigs, see
                   https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#monitoring.coreos.com/v1.RelabelConfig
                 '';
-                type = with types; listOf prometheusRelabelConfig;
+                type = with types;
+                  listOf (lib.types.submodule {
+                    # as per https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#monitoring.coreos.com/v1.RelabelConfig
+                    # without inter-field dependencies and constraints
+                    options = {
+                      sourceLabels = lib.mkOption {
+                        type = types.nullOr (types.listOf prometheusLabelName);
+                        default = null;
+                      };
+                      separator = lib.mkOption {
+                        type = types.nullOr types.str;
+                        default = null;
+                      };
+                      targetLabel = lib.mkOption {
+                        type = types.nullOr prometheusLabelName;
+                        default = null;
+                      };
+                      regex = lib.mkOption {
+                        type = types.nullOr types.nonEmptyStr;
+                        default = null;
+                      };
+                      modulus = lib.mkOption {
+                        # NOTE: for some reason `types.ints.u64` is not made available
+                        type = types.nullOr types.ints.unsigned;
+                        default = null;
+                      };
+                      replacement = lib.mkOption {
+                        type = types.nullOr types.nonEmptyStr;
+                        default = null;
+                      };
+                      action = lib.mkOption {
+                        type = types.nullOr types.nonEmptyStr;
+                        default = null;
+                      };
+                    };
+                  });
                 example = [
                   {
                     targetLabel = "prometheus";
