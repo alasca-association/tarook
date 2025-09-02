@@ -117,6 +117,7 @@ spec:
           secretName: vault-backup
 
 ---
+{% if k8s_monitoring_enabled | bool %}
 
 apiVersion: v1
 kind: Service
@@ -156,3 +157,4 @@ spec:
   endpoints:
     - port: metrics
       path: /metrics
+{% endif %}
