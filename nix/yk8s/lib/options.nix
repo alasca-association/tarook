@@ -1,5 +1,5 @@
 {lib}: let
-  yk8s-lib.types = import ./types.nix {inherit lib;};
+  yk8s-lib.types = import ./types {inherit lib;};
 in rec {
   /*
   Like nixpkgs.lib.options.mkEnableOption but with true as the default

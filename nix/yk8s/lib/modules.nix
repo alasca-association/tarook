@@ -1,6 +1,6 @@
 {lib, ...}: let
   yk8s-lib.transform = import ./transform.nix {inherit lib;};
-  yk8s-lib.types = import ./types.nix {inherit lib;};
+  yk8s-lib.types = import ./types {inherit lib;};
 
   inherit
     (lib)

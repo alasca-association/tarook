@@ -5,7 +5,7 @@
 }:
 with lib; let
   inherit (lib) runTests;
-  yk8s-lib.transform = import (ctx.importPath + "/../transform.nix") {inherit lib;};
+  yk8s-lib.transform = import (ctx.importPath + "/../../transform.nix") {inherit lib;};
   yk8s-lib.types = import (ctx.importPath) {inherit lib;};
 
   # --- Transforming functions --- #
