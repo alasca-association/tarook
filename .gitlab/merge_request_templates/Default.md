@@ -19,7 +19,7 @@ Closes:  #
 
 ---
 
-## [Merge Prerequisites](https://tarook.gitlab.io/meta/01-reviews.html)
+## [Merge Prerequisites](https://meta.docs.tarook.cloud/dev-process/reviews.html)
 
 * [ ] MR title (and description) are descriptive
 * [ ] Code is readable and syntactically correct
