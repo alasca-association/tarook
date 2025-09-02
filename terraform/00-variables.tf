@@ -4,10 +4,16 @@ variable "cluster_name" {
 
 variable "subnet_cidr" {
   type = string
+  # The following basically makes the variable optional
+  nullable = true
+  default = null
 }
 
 variable "subnet_v6_cidr" {
   type = string
+  # The following basically makes the variable optional
+  nullable = true
+  default = null
 }
 
 variable "ipv6_enabled" {

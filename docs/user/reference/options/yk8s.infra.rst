@@ -153,6 +153,8 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 ``yk8s.infra.subnet_cidr``
 ##########################
 
+The IPv4 CIDR of the internally used network.
+Only applies if :ref:`configuration-options.yk8s.infra.ipv4_enabled` is set to ``true``.
 
 
 **Type:**::
@@ -174,6 +176,8 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 ``yk8s.infra.subnet_v6_cidr``
 #############################
 
+The IPv6 CIDR of the internally used network.
+Only applies if :ref:`configuration-options.yk8s.infra.ipv6_enabled` is set to ``true``.
 
 
 **Type:**::

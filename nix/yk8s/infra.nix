@@ -44,11 +44,27 @@ in {
     subnet_cidr = mkOption {
       type = ipv4Cidr;
       default = "172.30.154.0/24";
+      description = ''
+        The IPv4 CIDR of the internally used network.
+        Only applies if :ref:`configuration-options.yk8s.infra.ipv4_enabled` is set to ``true``.
+      '';
+      apply = v:
+        if ! cfg.ipv4_enabled
+        then null
+        else v;
     };
 
     subnet_v6_cidr = mkOption {
       type = ipv6Cidr;
       default = "fd00::/120";
+      description = ''
+        The IPv6 CIDR of the internally used network.
+        Only applies if :ref:`configuration-options.yk8s.infra.ipv6_enabled` is set to ``true``.
+      '';
+      apply = v:
+        if ! cfg.ipv6_enabled
+        then null
+        else v;
     };
 
     networking_fixed_ip = mkOption {
