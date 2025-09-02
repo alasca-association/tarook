@@ -4,6 +4,7 @@
   inputs.nixpkgs-vault1148.url = "github:NixOS/nixpkgs/7cf8d6878561e8b2e4b1186f79f1c0e66963bdac";
   inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
   inputs.flake-parts.url = "github:hercules-ci/flake-parts";
+  inputs.systems.url = "github:nix-systems/x86_64-linux/2ecfcac5e15790ba6ce360ceccddb15ad16d08a8";
 
   outputs = inputs @ {
     self,
@@ -12,7 +13,7 @@
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
+      systems = import inputs.systems;
       debug = true;
       imports = [
         ./nix/renderDocs.nix
