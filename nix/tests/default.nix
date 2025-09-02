@@ -38,7 +38,7 @@
     - self: This function
     - yk8s-test-lib: Attrset holding the yk8s test library
     - path: The directory path to search for tests
-    - importPath: The path from where tests should import their target, e.g. ./nix/yk8s/lib/types.nix
+    - importPath: The path from where tests should import their target, e.g. ./nix/yk8s/lib/types
     - extra: Optional attrset with additional data or functions
   */
   evalTests = {
