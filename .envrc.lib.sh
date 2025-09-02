@@ -120,4 +120,13 @@ layout_yaook-k8s() {
   if [ -e .envrc.local ]; then source_env .envrc.local; fi
   use flake_if_nix "$flake_dir"
   use locale_archive_if_not_set "$flake_dir"
+
+  ANSIBLE_COLLECTIONS_PATH="$(direnv_layout_dir)/ansible"
+  export ANSIBLE_COLLECTIONS_PATH
+  HELM_CACHE_HOME="$(direnv_layout_dir)/helm/cache"
+  export HELM_CACHE_HOME
+  HELM_CONFIG_HOME="$(direnv_layout_dir)/helm/config"
+  export HELM_CONFIG_HOME
+  HELM_DATA_HOME="$(direnv_layout_dir)/helm/data"
+  export HELM_DATA_HOME
 }
