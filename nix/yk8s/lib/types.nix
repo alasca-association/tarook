@@ -561,42 +561,6 @@
     };
 in rec {
   /*
-  Variant of nixpkgs.lib.types.attrsOf
-
-  An attribute set of where the values are of the type specified for their respective names in `ts`.
-
-  Example:
-    (attrsOf' {a = nonEmptyStr;}).check {a = "foo"; b = 1;} -> true
-    (attrsOf' {a = nonEmptyStr;}).check {a = ""; b = 1;} -> false
-    (attrsOf' {a = nonEmptyStr;}).check {b = 1;} -> true
-  */
-  attrsOf' = ts:
-    lib.mkOptionType {
-      name = "attrsOf'";
-      description = "attribute set with items of specific types (${
-        builtins.concatStringsSep ", " (
-          lib.attrsets.foldlAttrs (acc: n: v: acc ++ ["${n}: ${v.name}"]) [] ts
-        )
-      })";
-      check = x:
-        lib.types.attrs.check x
-        && lib.attrsets.foldlAttrs
-        (
-          acc: n: v:
-            acc
-            && (
-              if (builtins.hasAttr n ts)
-              then (builtins.getAttr n ts).check v
-              else true
-            )
-        )
-        true
-        x;
-      nestedTypes.elemType = lib.attrsets.attrValues ts;
-      inherit (lib.types.attrs) merge emptyValue;
-    };
-
-  /*
   Composite type to constrain the input length of string/list option types
 
   Example:
@@ -1183,18 +1147,6 @@ in rec {
     name = "prometheusTimeoutStr";
     description = "Prometheus timeout string";
     matchAgainstAllOf = ["^(${k8s.coreos-monitoring.v1.prometheusDurationRE})$"];
-  };
-  # as per https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#monitoring.coreos.com/v1.RelabelConfig
-  # without inter-field dependencies and constraints
-  prometheusRelabelConfig = attrsOf' {
-    sourceLabels = lib.types.listOf prometheusLabelName;
-    separator = lib.types.str;
-    targetLabel = prometheusLabelName;
-    regex = lib.types.nonEmptyStr;
-    # NOTE: for some reason `types.ints.u64` is not made available
-    modulus = lib.types.ints.unsigned;
-    replacement = lib.types.nonEmptyStr;
-    action = lib.types.nonEmptyStr;
   };
 
   s3BucketName = mkRegexStrOptionType {
