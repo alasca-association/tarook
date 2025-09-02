@@ -48,6 +48,7 @@ in {
         [1 32]
         [1 33]
       ];
+      # renovate: datasource=github-releases packageName=kubernetes/kubernetes
       default = "1.33.3";
     };
     is_gpu_cluster = mkOption {
