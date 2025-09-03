@@ -136,12 +136,30 @@ run sed -i 's/"{{ rook_mds_cpu_limit }}"/cfg.k8s-service-layer.rook.mds_resource
 run sed -i 's/"{{ rook_operator_memory_limit }}"/cfg.k8s-service-layer.rook.operator_resources.limits.memory/g' "$config_default"
 run sed -i 's/"{{ rook_operator_cpu_limit }}"/cfg.k8s-service-layer.rook.operator_resources.limits.cpu/g' "$config_default"
 
+run sed -i 's/mon_memory_limit/mon_resources.limits.memory/g' "$config_default"
+run sed -i 's/mon_memory_request/mon_resources.requests.memory/g' "$config_default"
+run sed -i 's/osd_memory_limit/osd_resources.limits.memory/g' "$config_default"
+run sed -i 's/osd_memory_request/osd_resources.requests.memory/g' "$config_default"
+run sed -i 's/mgr_memory_limit/mgr_resources.limits.memory/g' "$config_default"
+run sed -i 's/mgr_memory_request/mgr_resources.requests.memory/g' "$config_default"
+run sed -i 's/mds_memory_limit/mds_resources.limits.memory/g' "$config_default"
+run sed -i 's/mds_memory_request/mds_resources.requests.memory/g' "$config_default"
+run sed -i 's/operator_memory_limit/operator_resources.limits.memory/g' "$config_default"
+run sed -i 's/operator_memory_request/operator_resources.requests.memory/g' "$config_default"
+
 run sed -i 's/"{{ monitoring_alertmanager_memory_limit }}"/cfg.k8s-service-layer.monitoring.alertmanager_resources.limits.memory/g' "$config_default"
 run sed -i 's/"{{ monitoring_alertmanager_cpu_limit }}"/cfg.k8s-service-layer.monitoring.alertmanager_resources.limits.cpu/g' "$config_default"
 run sed -i 's/"{{ monitoring_prometheus_memory_limit }}"/cfg.k8s-service-layer.monitoring.prometheus_resources.limits.memory/g' "$config_default"
 run sed -i 's/"{{ monitoring_prometheus_cpu_limit }}"/cfg.k8s-service-layer.monitoring.prometheus_resources.limits.cpu/g' "$config_default"
 run sed -i 's/"{{ monitoring_thanos_sidecar_memory_limit }}"/cfg.k8s-service-layer.monitoring.thanos_resources.limits.memory/g' "$config_default"
 run sed -i 's/"{{ monitoring_thanos_sidecar_cpu_limit }}"/cfg.k8s-service-layer.monitoring.thanos_resources.limits.cpu/g' "$config_default"
+
+run sed -i 's/alertmanager_memory_limit/alertmanager_resources.limits.memory/g' "$config_default"
+run sed -i 's/alertmanager_memory_request/alertmanager_resources.requests.memory/g' "$config_default"
+run sed -i 's/prometheus_memory_limit/prometheus_resources.limits.memory/g' "$config_default"
+run sed -i 's/prometheus_memory_request/prometheus_resources.requests.memory/g' "$config_default"
+run sed -i 's/thanos_sidecar_memory_limit/thanos_sidecar_resources.limits.memory/g' "$config_default"
+run sed -i 's/thanos_sidecar_memory_request/thanos_sidecar_resources.requests.memory/g' "$config_default"
 
 notef "Done.\n"
 
