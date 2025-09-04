@@ -139,6 +139,8 @@ merge-to-release-branch:
     - touch docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"
     - git add docs/_releasenotes/+.misc.release-v"${YAOOK_K8S_BUILD_VERSION}"
     - git commit -m "Trigger MR to devel for "${CI_COMMIT_BRANCH}"" --allow-empty
+    - sed -i '1,/.. towncrier release notes start/!d' CHANGELOG.rst
+    - git commit -m "Reset changelog" CHANGELOG.rst
     - |
       git push -o ci.skip --set-upstream origin "${CI_COMMIT_BRANCH}" \
         -o merge_request.create -o merge_request.target="${YAOOK_K8S_DEFAULT_BRANCH}" -o merge_request.label="Release" \
