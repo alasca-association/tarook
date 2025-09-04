@@ -211,7 +211,7 @@ build-docs-check:
 
 check-key-expiry:
   stage: lint
-  image: "nixery.dev/shell/coreutils/findutils/gnupg/gnugrep/file"
+  image: "${CI_REGISTRY}/alasca.cloud/tarook/images/check-key-expiry:main"
   script:
   - ci/lint/check-key-expiry.sh
 
