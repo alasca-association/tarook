@@ -19,6 +19,15 @@ earlier changes.
 
 .. towncrier release notes start
 
+v10.0.6 (2025-09-04)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- The CI has been fixed. No user-facing changes (`!2095 <https://gitlab.com/yaook/k8s/-/merge_requests/2095>`_)
+
+
 v10.0.5 (2025-08-26)
 --------------------
 
