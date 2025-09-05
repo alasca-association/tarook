@@ -1,6 +1,11 @@
 # adapted from https://raw.githubusercontent.com/NixOS/nixpkgs/master/nixos/modules/misc/assertions.nix
-{lib, ...}:
-with lib; {
+{lib, ...}: let
+  inherit
+    (lib)
+    mkOption
+    types
+    ;
+in {
   options.yk8s = {
     assertions = mkOption {
       type = types.listOf types.unspecified;

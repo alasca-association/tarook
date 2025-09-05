@@ -1,7 +1,21 @@
-{lib, ...}:
-with lib; let
+{lib, ...}: let
   yk8s-lib.transform = import ./transform.nix {inherit lib;};
   yk8s-lib.types = import ./types.nix {inherit lib;};
+
+  inherit
+    (lib)
+    splitString
+    setAttrByPath
+    mkOption
+    showOption
+    getAttrFromPath
+    showFiles
+    doRename
+    attrByPath
+    concatStringsSep
+    optional
+    length
+    ;
 
   findTopSection = options: path: let
     _findTopSection = options: currentPath: let
