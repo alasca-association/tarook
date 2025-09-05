@@ -5,15 +5,8 @@
   ...
 }: let
   cfg = config.yk8s.kubernetes.local_storage.static;
-  inherit (lib) mkOption mkEnableOption types;
-  inherit (yk8s-lib) mkSubSection;
-  inherit
-    (yk8s-lib.types)
-    absolutePosixPath
-    k8sNamespaceName
-    k8sStorageClassName
-    ociImageTag
-    ;
+  inherit (lib) mkOption mkEnableOption;
+  inherit (yk8s-lib) mkSubSection types;
 in {
   options.yk8s.kubernetes.local_storage.static = mkSubSection {
     _docs.order = 6;
@@ -30,26 +23,26 @@ in {
         NOTE: the static and dynamic provisioner must have distinct storage class
         names if both are enabled!
       '';
-      type = k8sStorageClassName;
+      type = types.yk8s.k8s.storageClassName;
       default = "local-storage";
     };
     namespace = mkOption {
-      type = k8sNamespaceName;
+      type = types.yk8s.k8s.namespaceName;
       default = "kube-system";
     };
     discovery_directory = mkOption {
-      type = absolutePosixPath;
+      type = types.yk8s.posix.absolutePath;
       default = "/mnt/mk8s-disks";
     };
     data_directory = mkOption {
-      type = absolutePosixPath;
+      type = types.yk8s.posix.absolutePath;
       default = "/mnt/data";
     };
     version = mkOption {
       description = ''
         See https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/releases/tag/v2.5.0
       '';
-      type = ociImageTag;
+      type = types.yk8s.oci.imageTag;
       default = "v2.5.0";
     };
     nodeplugin_toleration = mkOption {

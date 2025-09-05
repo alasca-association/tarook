@@ -6,48 +6,48 @@
     posix1-2024
     ;
 in {
-  posixPathSegment = mkRegexStrOptionType {
+  pathSegment = mkRegexStrOptionType {
     name = "posixPathSegment";
     description = "POSIX path segment (without special '.' and '..')";
     matchAgainstAllOf = ["^(${posix1-2024.filenameNoSpecialRE})$"];
   };
-  posixPathSegmentWithSpecial = mkRegexStrOptionType {
+  pathSegmentWithSpecial = mkRegexStrOptionType {
     name = "posixPathSegmentWithSpecial";
     description = "POSIX path segment";
     matchAgainstAllOf = ["^(${posix1-2024.filenameRE})$"];
   };
-  posixFilename = mkRegexStrOptionType {
+  filename = mkRegexStrOptionType {
     name = "posixFilename";
     description = "POSIX file name";
     matchAgainstAllOf = ["^(${posix1-2024.filenameNoSpecialRE})$"];
   };
 
-  relativePosixPath = mkRegexStrOptionType {
+  relativePath = mkRegexStrOptionType {
     name = "relativePosixPath";
     description = "Relative POSIX path (without special '.' and '..')";
     matchAgainstAllOf = ["^(${posix1-2024.pathname.relativeNoSpecialRE})$"];
   };
-  relativePosixPathWithSpecial = mkRegexStrOptionType {
+  relativePathWithSpecial = mkRegexStrOptionType {
     name = "relativePosixPathWithSpecial";
     description = "Relative POSIX path";
     matchAgainstAllOf = ["^(${posix1-2024.pathname.relativeRE})$"];
   };
-  absolutePosixPath = mkRegexStrOptionType {
+  absolutePath = mkRegexStrOptionType {
     name = "absolutePosixPath";
     description = "Absolute POSIX path (without special '.' and '..')";
     matchAgainstAllOf = ["^(${posix1-2024.pathname.absoluteNoSpecialRE})$"];
   };
-  absolutePosixPathWithSpecial = mkRegexStrOptionType {
+  absolutePathWithSpecial = mkRegexStrOptionType {
     name = "absolutePosixPathWithSpecial";
     description = "Absolute POSIX path";
     matchAgainstAllOf = ["^(${posix1-2024.pathname.absoluteRE})$"];
   };
-  posixPath = mkRegexStrOptionType {
+  path = mkRegexStrOptionType {
     name = "posixPath";
     description = "Absolute or relative POSIX path (without special '.' and '..')";
     matchAgainstAllOf = ["^(${posix1-2024.pathname.anyNoSpecialRE})$"];
   };
-  posixPathWithSpecial = mkRegexStrOptionType {
+  pathWithSpecial = mkRegexStrOptionType {
     name = "posixPathWithSpecial";
     description = "Absolute or relative POSIX path";
     matchAgainstAllOf = ["^(${posix1-2024.pathname.anyRE})$"];

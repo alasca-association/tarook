@@ -7,38 +7,10 @@
   cfg = config.yk8s.k8s-service-layer.prometheus;
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule;
-  inherit (lib) mkEnableOption mkOption types;
+  inherit (lib) mkEnableOption mkOption;
   inherit (lib.attrsets) foldlAttrs;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkMultiResourceOptions;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkMultiResourceOptions types;
   inherit (yk8s-lib.options) mkHelmChartVersionOption;
-  inherit
-    (yk8s-lib.types)
-    absolutePosixPath
-    bytesPower10
-    helmChartReleaseName
-    helmChartRepoUrl
-    helmChartRef
-    httpxHostPathUrl
-    httpxUrl
-    ipv4Addr
-    ipv4AddrWithPort
-    ipv6Addr
-    ipv6AddrWithPort
-    k8sLabel
-    k8sLabelAttrs
-    k8sNamespaceName
-    k8sObjectName
-    k8sQuantity
-    k8sSecretName
-    k8sServiceName
-    k8sStorageClassName
-    openstackSwiftContainerName
-    prometheusIntervalStr
-    prometheusTimeoutStr
-    prometheusLabelName
-    relativePosixPath
-    subdomainLabel
-    ;
 in {
   imports =
     [
@@ -195,22 +167,22 @@ in {
     };
 
     prometheus_helm_repo_url = mkOption {
-      type = helmChartRepoUrl;
+      type = types.yk8s.helm.chartRepoUrl;
       default = "https://prometheus-community.github.io/helm-charts";
     };
 
     prometheus_stack_chart_name = mkOption {
-      type = helmChartRef;
+      type = types.yk8s.helm.chartRef;
       default = "kube-prometheus-stack";
     };
 
     prometheus_stack_release_name = mkOption {
-      type = helmChartReleaseName;
+      type = types.yk8s.helm.chartReleaseName;
       default = "prometheus-stack";
     };
 
     prometheus_adapter_release_name = mkOption {
-      type = helmChartReleaseName;
+      type = types.yk8s.helm.chartReleaseName;
       default = "prometheus-adapter";
     };
 
@@ -221,7 +193,7 @@ in {
           submodule {
             options = {
               url = mkOption {
-                type = httpxUrl;
+                type = types.yk8s.networking.httpxUrl;
                 example = "http://remote-write-receiver:9090/api/v1/write";
               };
               basic_auth_secret_name = mkOption {
@@ -231,7 +203,7 @@ in {
                   - username: FOO
                   - password: BAR
                 '';
-                type = k8sSecretName;
+                type = types.yk8s.k8s.secretName;
               };
               write_relabel_configs = mkOption {
                 description = ''
@@ -244,7 +216,7 @@ in {
                     # without inter-field dependencies and constraints
                     options = {
                       sourceLabels = lib.mkOption {
-                        type = types.nullOr (types.listOf prometheusLabelName);
+                        type = types.nullOr (types.listOf types.yk8s.prometheus.labelName);
                         default = null;
                       };
                       separator = lib.mkOption {
@@ -291,7 +263,7 @@ in {
     };
 
     grafana_admin_secret_name = mkOption {
-      type = k8sSecretName;
+      type = types.yk8s.k8s.secretName;
       default = "cah-grafana-admin";
     };
 
@@ -300,7 +272,7 @@ in {
     '';
 
     nvidia_dcgm_exporter_helm_repo_url = mkOption {
-      type = helmChartRepoUrl;
+      type = types.yk8s.helm.chartRepoUrl;
       default = "https://nvidia.github.io/dcgm-exporter/helm-charts";
     };
 
@@ -313,7 +285,7 @@ in {
       adding blackbox-exporter to test basic internet connectivity
     '';
     node_exporter_textfile_collector_path = mkOption {
-      type = absolutePosixPath;
+      type = types.yk8s.posix.absolutePath;
       default = "/var/lib/node_exporter/textfile_collector";
     };
     prometheus_stack_version = mkHelmChartVersionOption {
@@ -330,12 +302,12 @@ in {
         Namespace to deploy the monitoring in (will be created if it does not exist, but
         never deleted).
       '';
-      type = k8sNamespaceName;
+      type = types.yk8s.k8s.namespaceName;
       default = "monitoring";
     };
 
     prometheus_service_name = mkOption {
-      type = k8sServiceName;
+      type = types.yk8s.k8s.serviceName;
       default = "prometheus-operated";
     };
 
@@ -345,7 +317,7 @@ in {
         By default an empty-dir is used.
         https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
       '';
-      type = with types; nullOr k8sStorageClassName;
+      type = with types; nullOr types.yk8s.k8s.storageClassName;
       default = null;
     };
 
@@ -354,7 +326,7 @@ in {
         Configure persistent storage for Prometheus
         https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
       '';
-      type = k8sQuantity;
+      type = types.yk8s.k8s.quantity;
       default = "50Gi";
     };
 
@@ -368,7 +340,7 @@ in {
       description = ''
         The full public facing url you use in browser, used for redirects and emails
       '';
-      type = with types; nullOr httpxHostPathUrl;
+      type = with types; nullOr types.yk8s.networking.httpxHostPathUrl;
       default = null;
     };
 
@@ -378,7 +350,7 @@ in {
         in the defined StorageClass. Otherwise, persistence is disabled for Grafana.
         The value has to be a valid StorageClass available in your cluster.
       '';
-      type = with types; nullOr k8sStorageClassName;
+      type = with types; nullOr types.yk8s.k8s.storageClassName;
       default = null;
     };
 
@@ -410,7 +382,7 @@ in {
         manual intervention and it may be necessary to reinstall
         the helm chart completely.
       '';
-      type = with types; nullOr k8sStorageClassName;
+      type = with types; nullOr types.yk8s.k8s.storageClassName;
       default = null;
     };
 
@@ -421,7 +393,7 @@ in {
 
         Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-configuration.updating-immutable-options`)
       '';
-      type = with types; nullOr k8sQuantity;
+      type = with types; nullOr types.yk8s.k8s.quantity;
       default = null;
     };
 
@@ -432,7 +404,7 @@ in {
 
         Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-configuration.updating-immutable-options`)
       '';
-      type = with types; nullOr k8sQuantity;
+      type = with types; nullOr types.yk8s.k8s.quantity;
       default = null;
     };
 
@@ -452,7 +424,7 @@ in {
         If no scheduling key is defined for service, it will run on any untainted
         node.
       '';
-      type = with types; nullOr k8sLabel;
+      type = with types; nullOr types.yk8s.k8s.label;
       default = null;
       example = lib.options.literalExpression "\"\${scheduling_key_prefix}/monitoring\"";
     };
@@ -463,11 +435,11 @@ in {
         This value should be chosen in a sane matter based on
         thanos_store_memory_request and thanos_store_memory_limit
       '';
-      type = with types; nullOr bytesPower10;
+      type = with types; nullOr yk8s.bytesPower10;
       default = null;
     };
     thanos_objectstorage_container_name = mkOption {
-      type = openstackSwiftContainerName;
+      type = types.yk8s.openstack.swiftContainerName;
       default = "${config.yk8s.infra.cluster_name}-monitoring-thanos-data";
       defaultText = "\${config.yk8s.infra.cluster_name}-monitoring-thanos-data";
     };
@@ -477,7 +449,7 @@ in {
       '';
       # NOTE: Not using `pathInStore` here because the expected file contains secrets
       # TODO: Eliminate config option and store secrets solely in Vault
-      type = with types; nullOr relativePosixPath;
+      type = with types; nullOr types.yk8s.posix.relativePath;
       default = null;
       example = "./monitoring/thanos_objectstorage.config";
     };
@@ -490,7 +462,7 @@ in {
         Provide a list of DNS endpoints for additional thanos store endpoints.
         The endpoint will be extended to `dnssrv+_grpc._tcp.{{ endpoint }}.monitoring.svc.cluster.local`.
       '';
-      type = with types; listOf subdomainLabel;
+      type = with types; listOf types.yk8s.networking.subdomainLabel;
       default = [];
     };
     blackbox_version = mkHelmChartVersionOption {
@@ -514,7 +486,7 @@ in {
             # NOTE: This value is used in the prometheus-blackbox-exporter helm chart
             #       where it ends up in the metadata.name field of the ServiceMonitor Kubernetes object.
             #       See https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1731#note_2635298999
-            type = k8sObjectName;
+            type = types.yk8s.k8s.objectName;
           };
           url = mkOption {
             # see https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-blackbox-exporter/values.yaml#L327
@@ -530,11 +502,11 @@ in {
               or IP address with port (tcp_connect).
             '';
             type = types.oneOf [
-              httpxUrl
-              ipv4Addr
-              ipv6Addr
-              ipv4AddrWithPort
-              ipv6AddrWithPort
+              types.yk8s.networking.httpxUrl
+              types.yk8s.networking.ipv4Addr
+              types.yk8s.networking.ipv6Addr
+              types.yk8s.networking.ipv4AddrWithPort
+              types.yk8s.networking.ipv6AddrWithPort
             ];
             example = "http://example.com/healthz";
           };
@@ -542,7 +514,7 @@ in {
             description = ''
               Scraping interval. Overrides value set in `defaults`
             '';
-            type = prometheusIntervalStr;
+            type = types.yk8s.prometheus.intervalStr;
             default = "60s";
           };
 
@@ -550,7 +522,7 @@ in {
             description = ''
               Scrape timeout. Overrides value set in `defaults`
             '';
-            type = prometheusTimeoutStr;
+            type = types.yk8s.prometheus.timeoutStr;
             default = "60s";
           };
           module = mkOption {
@@ -599,7 +571,7 @@ in {
         The LCM takes care that all ServiceMonitors created by itself are labeled accordingly.
         The key can not be "release" as that one is already used by the Prometheus helm chart.
       '';
-      type = k8sLabelAttrs;
+      type = types.yk8s.k8s.labelAttrs;
       default = {
       };
       example = {

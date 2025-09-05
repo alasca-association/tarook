@@ -9,8 +9,8 @@
     ;
 in {
   # as per https://v3.helm.sh/docs/topics/chart_repository/
-  helmChartRepoUrl = httpxUrlType;
-  helmChartReleaseName = mkRegexStrOptionType {
+  chartRepoUrl = httpxUrlType;
+  chartReleaseName = mkRegexStrOptionType {
     name = "helmChartReleaseName";
     description = "Helm chart release name";
     matchAgainstAllOf = [
@@ -20,10 +20,10 @@ in {
       "^.{1,53}$"
     ];
   };
-  helmChartVersion = mkRegexStrOptionType {
+  chartVersion = mkRegexStrOptionType {
     name = "helmChartVersion";
     description = "Helm chart version (Semantic version 2 string or OCI image tag)";
     matchAgainstAllOf = ["^(${helm.v3.chartVersionRE})$"];
   };
-  helmChartRef = relativeUrlPathType;
+  chartRef = relativeUrlPathType;
 }

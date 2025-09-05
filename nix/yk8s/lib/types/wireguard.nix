@@ -6,7 +6,7 @@
     rfc4648
     ;
 in {
-  wireguardKey = mkRegexStrOptionType {
+  key = mkRegexStrOptionType {
     name = "wireguardKey";
     description = "Wireguard key";
     matchAgainstAllOf = [

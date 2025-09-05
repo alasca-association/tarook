@@ -5,18 +5,18 @@
     mkRegexStrOptionType
     k8s
     ;
-in rec {
-  prometheusIntervalStr = mkRegexStrOptionType {
+in {
+  intervalStr = mkRegexStrOptionType {
     name = "prometheusIntervalStr";
     description = "Prometheus interval string";
     matchAgainstAllOf = ["^(${k8s.coreos-monitoring.v1.prometheusDurationRE})$"];
   };
-  prometheusLabelName = mkRegexStrOptionType {
+  labelName = mkRegexStrOptionType {
     name = "prometheusLabelName";
     description = "Prometheus label name";
     matchAgainstAllOf = ["^(${k8s.coreos-monitoring.v1.prometheusLabelNameRE})$"];
   };
-  prometheusTimeoutStr = mkRegexStrOptionType {
+  timeoutStr = mkRegexStrOptionType {
     name = "prometheusTimeoutStr";
     description = "Prometheus timeout string";
     matchAgainstAllOf = ["^(${k8s.coreos-monitoring.v1.prometheusDurationRE})$"];

@@ -9,16 +9,8 @@
   modules-lib = import ./lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (pkgs.stdenv) mkDerivation;
-  inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkDisableOption linkToPath;
-  inherit
-    (yk8s-lib.types)
-    ipv4Addr
-    ipv6Addr
-    ipv4Cidr
-    ipv6Cidr
-    k8sClusterName
-    ;
+  inherit (lib) mkEnableOption mkOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkDisableOption linkToPath types;
 in {
   options.yk8s.infra = mkTopSection {
     _docs.preface = ''
@@ -28,7 +20,7 @@ in {
 
     cluster_name = mkOption {
       # NOTE: empty or spaced strings must never by accepted here
-      type = k8sClusterName;
+      type = types.yk8s.k8s.clusterName;
       description = ''
         Name of the cluster that is to be build and managed.
 
@@ -42,7 +34,7 @@ in {
     ipv6_enabled = mkEnableOption "IPv6";
 
     subnet_cidr = mkOption {
-      type = ipv4Cidr;
+      type = types.yk8s.networking.ipv4Cidr;
       default = "172.30.154.0/24";
       description = ''
         The IPv4 CIDR of the internally used network.
@@ -55,7 +47,7 @@ in {
     };
 
     subnet_v6_cidr = mkOption {
-      type = ipv6Cidr;
+      type = types.yk8s.networking.ipv6Cidr;
       default = "fd00::/120";
       description = ''
         The IPv6 CIDR of the internally used network.
@@ -68,7 +60,7 @@ in {
     };
 
     networking_fixed_ip = mkOption {
-      type = types.nullOr ipv4Addr;
+      type = types.nullOr types.yk8s.networking.ipv4Addr;
       default = null;
       apply = v:
         if v == null && cfg.ipv4_enabled && config.yk8s.openstack.enabled == false
@@ -79,7 +71,7 @@ in {
     };
 
     networking_fixed_ip_v6 = mkOption {
-      type = with types; nullOr ipv6Addr;
+      type = with types; nullOr types.yk8s.networking.ipv6Addr;
       default = null;
       apply = v:
         if v == null && cfg.ipv6_enabled && config.yk8s.openstack.enabled == false

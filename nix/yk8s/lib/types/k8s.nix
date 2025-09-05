@@ -11,8 +11,8 @@
     golang
     ;
 in rec {
-  k8sClusterName = nonEmptyNonSpacedStr;
-  k8sVersion = versions: let
+  clusterName = nonEmptyNonSpacedStr;
+  version = versions: let
     inherit (builtins) concatStringsSep foldl' length map typeOf;
   in
     assert lib.assertMsg
@@ -52,18 +52,18 @@ in rec {
           })[.][0-9]+$"
         ];
       };
-  k8sQuantity = mkRegexStrOptionType {
+  quantity = mkRegexStrOptionType {
     name = "k8sQuantity";
     description = "Kubernetes quantity";
     matchAgainstAllOf = ["^(${k8s.quantityRE})$"];
   };
-  k8sThreshold = mkRegexStrOptionType {
+  threshold = mkRegexStrOptionType {
     name = "k8sThreshold";
     description = "Kubernetes threshold";
     matchAgainstAllOf = ["^(${k8s.quantityRE}|(0|[1-9][0-9]*)%)$"];
   };
   # as per https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  k8sServiceType = lib.types.enum [
+  serviceType = lib.types.enum [
     "ClusterIP"
     "NodePort"
     "LoadBalancer"
@@ -74,7 +74,7 @@ in rec {
   # and https://kubernetes.io/docs/concepts/overview/working-with-objects/names
   # NOTE: Although capitals are valid as per the RFCs, Kubernetes rejects them
   # NOTE: k8sObjectName is an unspecific type and should be avoided if possible
-  k8sObjectName = lib.types.oneOf [
+  objectName = lib.types.oneOf [
     (mkRfc1123SubdomainNameType {
       rejectCapitals = true;
       enforceMaxLength253_63 = true;
@@ -85,14 +85,14 @@ in rec {
     })
     (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sNamespaceName = lib.types.oneOf [
+  namespaceName = lib.types.oneOf [
     (mkRfc1123SubdomainLabelType {
       rejectCapitals = true;
       enforceMaxLength63 = true;
     })
     (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sStorageClassName = lib.types.oneOf [
+  storageClassName = lib.types.oneOf [
     (mkRfc1123SubdomainNameType {
       rejectCapitals = true;
       enforceMaxLength253_63 = true;
@@ -103,7 +103,7 @@ in rec {
     })
     (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sSecretName = lib.types.oneOf [
+  secretName = lib.types.oneOf [
     (mkRfc1123SubdomainNameType {
       rejectCapitals = true;
       enforceMaxLength253_63 = true;
@@ -114,8 +114,8 @@ in rec {
     })
     (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sServiceName = mkRfc1035SubdomainLabelType {rejectCapitals = true;};
-  k8sIngressClassName = lib.types.oneOf [
+  serviceName = mkRfc1035SubdomainLabelType {rejectCapitals = true;};
+  ingressClassName = lib.types.oneOf [
     (mkRfc1123SubdomainNameType {
       rejectCapitals = true;
       enforceMaxLength253_63 = true;
@@ -126,7 +126,7 @@ in rec {
     })
     (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sIssuerName = lib.types.oneOf [
+  issuerName = lib.types.oneOf [
     (mkRfc1123SubdomainNameType {
       rejectCapitals = true;
       enforceMaxLength253_63 = true;
@@ -137,14 +137,14 @@ in rec {
     })
     (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sPodContainerName = lib.types.oneOf [
+  podContainerName = lib.types.oneOf [
     (mkRfc1123SubdomainLabelType {
       rejectCapitals = true;
       enforceMaxLength63 = true;
     })
     (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sLabelPrefix = mkRegexStrOptionType {
+  labelPrefix = mkRegexStrOptionType {
     name = "k8sLabelPrefix";
     description = "Kubernetes label prefix";
     matchAgainstAllOf = [
@@ -154,7 +154,7 @@ in rec {
       "^.{0,253}$"
     ];
   };
-  k8sLabelValue = mkRegexStrOptionType {
+  labelValue = mkRegexStrOptionType {
     name = "k8sLabelValue";
     description = "Kubernetes label value";
     matchAgainstAllOf = [
@@ -164,7 +164,7 @@ in rec {
       "^.{0,63}$"
     ];
   };
-  k8sLabel = mkRegexStrOptionType {
+  label = mkRegexStrOptionType {
     name = "k8sLabel";
     description = "Kubernetes label";
     matchAgainstAllOf = [
@@ -174,7 +174,7 @@ in rec {
       "^([^/]{0,253}[/])?([^/]{0,63})$"
     ];
   };
-  k8sLabelStr = mkRegexStrOptionType {
+  labelStr = mkRegexStrOptionType {
     name = "k8sLabelStr";
     description = "Kubernetes label string";
     matchAgainstAllOf = [
@@ -184,7 +184,7 @@ in rec {
       "^([^/=]{0,253}[/])?([^/=]{0,63})[=]([^=]{0,63})$"
     ];
   };
-  k8sLabelAttrs = lib.mkOptionType {
+  labelAttrs = lib.mkOptionType {
     name = "k8sLabelAttrs";
     description = "attribute set of Kubernetes label-value pairs";
     descriptionClass = "noun";
@@ -193,14 +193,14 @@ in rec {
       && (
         lib.attrsets.foldlAttrs (
           acc: label: value:
-            acc && k8sLabel.check label && k8sLabelValue.check value
+            acc && label.check label && labelValue.check value
         )
         true
         x
       );
   };
 
-  k8sTaintStr = mkRegexStrOptionType {
+  taintStr = mkRegexStrOptionType {
     name = "k8sTaintStr";
     description = "Kubernetes taint string";
     matchAgainstAllOf = [
@@ -211,12 +211,12 @@ in rec {
     ];
   };
   # as per https://kubernetes.io/docs/reference/glossary/?fundamental=true#term-duration
-  k8sDurationStr = mkRegexStrOptionType {
+  durationStr = mkRegexStrOptionType {
     name = "k8sDurationStr";
     description = "Kubernetes duration string";
     matchAgainstAllOf = ["^(${golang.unsignedIntDurationStrRE})$"];
   };
-  k8sImageRef = mkRegexStrOptionType {
+  imageRef = mkRegexStrOptionType {
     name = "k8sImageRef";
     description = "Kubernetes container image reference";
     matchAgainstAllOf = ["^(${k8s.imageRefRE})$"];
