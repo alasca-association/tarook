@@ -6,7 +6,7 @@
     s3
     ;
 in {
-  s3BucketName = mkRegexStrOptionType {
+  bucketName = mkRegexStrOptionType {
     name = "s3BucketName";
     description = "S3 bucket name";
     matchAgainstAllOf = [
@@ -15,7 +15,7 @@ in {
     matchAgainstNoneOf = s3.bucket.name.prefix.negativeREs;
   };
 
-  s3BucketNamePrefix = mkRegexStrOptionType {
+  bucketNamePrefix = mkRegexStrOptionType {
     name = "s3BucketNamePrefix";
     description = "S3 bucket name prefix";
     matchAgainstAllOf = [

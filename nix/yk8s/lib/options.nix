@@ -1,5 +1,5 @@
 {lib}: let
-  yk8s-lib.types = import ./types {inherit lib;};
+  types = import ./types {inherit lib;};
 in rec {
   /*
   Like nixpkgs.lib.options.mkEnableOption but with true as the default
@@ -115,7 +115,7 @@ in rec {
         + extraDescription;
       default = defaultValues;
       type = lib.types.submodule {
-        freeformType = yk8s-lib.types.jsonValue;
+        freeformType = types.yk8s.jsonValue;
         options = chartOptions;
       };
     };
@@ -127,7 +127,7 @@ in rec {
 
           If the version shall be unpinned, set to: ``null``.
         '';
-        type = lib.types.nullOr yk8s-lib.types.helmChartVersion;
+        type = lib.types.nullOr types.yk8s.helm.chartVersion;
       }
       // (removeAttrs args ["descriptionName"]));
 
@@ -147,14 +147,14 @@ in rec {
       description = ''
         The URL to the Helm repository for the ${descriptionName} Helm chart.
       '';
-      type = yk8s-lib.types.helmChartRepoUrl;
+      type = types.yk8s.helm.chartRepoUrl;
       default = defaultRepoUrl;
     };
     chart_ref = lib.mkOption {
       description = ''
         The chart reference (relative to the repository) of the ${descriptionName} Helm chart.
       '';
-      type = yk8s-lib.types.helmChartRef;
+      type = types.yk8s.helm.chartRef;
       default = defaultChartRef;
     };
     chart_version = mkHelmChartVersionOption {
@@ -165,7 +165,7 @@ in rec {
       description = ''
         The namespace in which to install ${descriptionName}.
       '';
-      type = yk8s-lib.types.k8sNamespaceName;
+      type = types.yk8s.k8s.namespaceName;
       default = defaultReleaseNamespace;
     };
     release_name = lib.mkOption {

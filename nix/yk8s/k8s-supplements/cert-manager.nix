@@ -5,19 +5,9 @@
   ...
 }: let
   cfg = config.yk8s.k8s-service-layer.cert-manager;
-  inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (lib) mkEnableOption mkOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
   inherit (yk8s-lib.options) mkHelmChartVersionOption;
-  inherit
-    (yk8s-lib.types)
-    emailAddress
-    helmChartReleaseName
-    helmChartRef
-    helmChartRepoUrl
-    httpxHostPathUrl
-    k8sLabel
-    k8sNamespaceName
-    ;
 in {
   options.yk8s.k8s-service-layer.cert-manager = mkTopSection {
     _docs.preface = ''
@@ -37,7 +27,7 @@ in {
         Configure in which namespace the cert-manager is run. The namespace is
         created automatically, but never deleted automatically.
       '';
-      type = k8sNamespaceName;
+      type = types.yk8s.k8s.namespaceName;
       default = "k8s-svc-cert-manager";
     };
     install = mkOption {
@@ -49,11 +39,11 @@ in {
       default = true;
     };
     helm_repo_url = mkOption {
-      type = helmChartRepoUrl;
+      type = types.yk8s.helm.chartRepoUrl;
       default = "https://charts.jetstack.io";
     };
     chart_ref = mkOption {
-      type = helmChartRef;
+      type = types.yk8s.helm.chartRef;
       default = "cert-manager";
     };
     chart_version = mkHelmChartVersionOption {
@@ -61,7 +51,7 @@ in {
       default = "1.18.2";
     };
     release_name = mkOption {
-      type = helmChartReleaseName;
+      type = types.yk8s.helm.chartReleaseName;
       default = "cert-manager";
     };
     scheduling_key = mkOption {
@@ -69,7 +59,7 @@ in {
         Scheduling key for the cert manager instance and its resources. Has no
         default.
       '';
-      type = with types; nullOr k8sLabel;
+      type = with types; nullOr types.yk8s.k8s.label;
       default = null;
     };
     letsencrypt_email = mkOption {
@@ -80,7 +70,7 @@ in {
         CERTIFICATES UNDER OUR NAME. Customers are supposed to deploy their own
         ACME/Let's Encrypt issuer.
       '';
-      type = with types; nullOr emailAddress;
+      type = with types; nullOr types.yk8s.networking.emailAddress;
       default = null;
     };
     letsencrypt_preferred_chain = mkOption {
@@ -107,7 +97,7 @@ in {
         is to switch between staging and production.
         See https://letsencrypt.org/docs/staging-environment/
       '';
-      type = httpxHostPathUrl;
+      type = types.yk8s.networking.httpxHostPathUrl;
       default = "https://acme-v02.api.letsencrypt.org/directory";
       example = "https://acme-staging-v02.api.letsencrypt.org/directory";
     };

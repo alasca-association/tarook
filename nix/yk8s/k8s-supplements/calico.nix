@@ -7,15 +7,8 @@
   cfg = config.yk8s.kubernetes.network.calico;
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule;
-  inherit (lib) mkOption types;
-  inherit (yk8s-lib) mkSubSection;
-  inherit
-    (yk8s-lib.types)
-    helmChartVersion
-    ipv4Addr
-    relativePosixPath
-    subdomainName
-    ;
+  inherit (lib) mkOption;
+  inherit (yk8s-lib) mkSubSection types;
 in {
   imports = [
     (mkRemovedOptionModule "kubernetes" "network.calico.use_tigera_operator" "")
@@ -82,7 +75,7 @@ in {
         An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
       '';
       # as per https://docs.tigera.io/calico/latest/reference/resources/node#bgp#:~:text=routeReflectorClusterID
-      type = ipv4Addr;
+      type = types.yk8s.networking.ipv4Addr;
       default = "244.0.0.1";
     };
     image_registry = mkOption {
@@ -90,7 +83,7 @@ in {
         Specify the registry endpoint
         Changing this value can be useful if one endpoint hosts outdated images or you're subject to rate limiting
       '';
-      type = subdomainName;
+      type = types.yk8s.networking.subdomainName;
       default = "quay.io";
     };
     values_file_path = mkOption {
@@ -114,7 +107,7 @@ in {
         If not specified here, a predefined Calico version will be matched against
         the above specified Kubernetes version.
       '';
-      type = types.nullOr helmChartVersion;
+      type = types.nullOr types.yk8s.helm.chartVersion;
       default = null;
       example = "3.25.1";
     };

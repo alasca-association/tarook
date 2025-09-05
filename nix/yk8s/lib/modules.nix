@@ -1,7 +1,7 @@
 {lib, ...}:
 with lib; let
   yk8s-lib.transform = import ./transform.nix {inherit lib;};
-  yk8s-lib.types = import ./types {inherit lib;};
+  types = import ./types {inherit lib;};
 in rec {
   /*
      Return a module that causes a warning to be shown if the
@@ -231,12 +231,12 @@ in rec {
 
                 Thus, this option is deprecated.
               '';
-              type = lib.types.nullOr yk8s-lib.types.k8sQuantity;
+              type = lib.types.nullOr types.yk8s.k8s.quantity;
               default = cpu.limit or null;
             };
             requests.cpu = lib.mkOption {
               inherit description;
-              type = lib.types.nullOr yk8s-lib.types.k8sQuantity;
+              type = lib.types.nullOr types.yk8s.k8s.quantity;
               default = cpu.request or null;
               example = cpu.example or null;
             };
@@ -247,13 +247,13 @@ in rec {
 
                 Thus, this option is deprecated.
               '';
-              type = lib.types.nullOr yk8s-lib.types.k8sQuantity;
+              type = lib.types.nullOr types.yk8s.k8s.quantity;
               default = memory.request or (attrByPath (absOpt ++ ["limits" "memory"]) null config);
               defaultText = memory.request or "\${${lib.strings.concatStringsSep "." (["config"] ++ absOpt ++ ["limits" "memory"])}}";
             };
             limits.memory = lib.mkOption {
               inherit description;
-              type = lib.types.nullOr yk8s-lib.types.k8sQuantity;
+              type = lib.types.nullOr types.yk8s.k8s.quantity;
               default = memory.limit or null;
               example = memory.example or null;
             };

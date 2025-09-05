@@ -7,18 +7,9 @@
   cfg = config.yk8s.k8s-service-layer.ingress;
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule;
-  inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (lib) mkEnableOption mkOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
   inherit (yk8s-lib.options) mkHelmChartVersionOption;
-  inherit
-    (yk8s-lib.types)
-    helmChartReleaseName
-    helmChartRepoUrl
-    helmChartRef
-    k8sLabel
-    k8sNamespaceName
-    k8sServiceType
-    ;
   inherit
     (yk8s-lib.transform)
     warnIfZero
@@ -59,11 +50,11 @@ in {
       default = true;
     };
     helm_repo_url = mkOption {
-      type = helmChartRepoUrl;
+      type = types.yk8s.helm.chartRepoUrl;
       default = "https://kubernetes.github.io/ingress-nginx";
     };
     chart_ref = mkOption {
-      type = helmChartRef;
+      type = types.yk8s.helm.chartRef;
       default = "ingress-nginx";
     };
     chart_version = mkHelmChartVersionOption {
@@ -71,7 +62,7 @@ in {
       default = "4.13.2";
     };
     release_name = mkOption {
-      type = helmChartReleaseName;
+      type = types.yk8s.helm.chartReleaseName;
       default = "ingress";
     };
     namespace = mkOption {
@@ -79,14 +70,14 @@ in {
         Namespace to deploy the ingress in (will be created if it does not exist, but
         never deleted).
       '';
-      type = k8sNamespaceName;
+      type = types.yk8s.k8s.namespaceName;
       default = "k8s-svc-ingress";
     };
     service_type = mkOption {
       description = ''
         Service type for the frontend Kubernetes service.
       '';
-      type = k8sServiceType;
+      type = types.yk8s.k8s.serviceType;
       default = "LoadBalancer";
     };
     scheduling_key = mkOption {
@@ -94,7 +85,7 @@ in {
         Scheduling key for the cert manager instance and its resources. Has no
         default.
       '';
-      type = with types; nullOr k8sLabel;
+      type = with types; nullOr types.yk8s.k8s.label;
       default = null;
     };
     nodeport_http = mkOption {

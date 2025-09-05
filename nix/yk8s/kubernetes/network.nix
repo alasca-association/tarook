@@ -7,14 +7,8 @@
   cfg = config.yk8s.kubernetes.network;
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule;
-  inherit (lib) mkOption mkEnableOption types;
-  inherit (yk8s-lib) mkSubSection;
-  inherit
-    (yk8s-lib.types)
-    ipv4Cidr
-    ipv6Cidr
-    privateUseAutonomousSystemNumber
-    ;
+  inherit (lib) mkOption mkEnableOption;
+  inherit (yk8s-lib) mkSubSection types;
 in {
   imports = [
     (mkRemovedOptionModule "kubernetes" "network.plugin_switch_restart_all_namespaces" "")
@@ -29,14 +23,14 @@ in {
         automatically to each node.
       '';
       default = "10.244.0.0/16";
-      type = ipv4Cidr;
+      type = types.yk8s.networking.ipv4Cidr;
     };
     service_subnet = mkOption {
       description = ''
         This is the IPv4 subnet used by Kubernetes for Services.
       '';
       default = "10.96.0.0/12";
-      type = ipv4Cidr;
+      type = types.yk8s.networking.ipv4Cidr;
     };
     pod_subnet_v6 = mkOption {
       description = ''
@@ -44,7 +38,7 @@ in {
         automatically to each node.
       '';
       default = "fdff:2::/56";
-      type = ipv6Cidr;
+      type = types.yk8s.networking.ipv6Cidr;
     };
     service_subnet_v6 = mkOption {
       description = ''
@@ -57,7 +51,7 @@ in {
 
       '';
       default = "fdff:3::/108";
-      type = ipv6Cidr;
+      type = types.yk8s.networking.ipv6Cidr;
     };
 
     bgp_announce_service_ips = mkEnableOption ''
@@ -66,12 +60,12 @@ in {
     '';
 
     bgp_worker_as = mkOption {
-      type = privateUseAutonomousSystemNumber;
+      type = types.yk8s.networking.privateUseAutonomousSystemNumber;
       default = 64512;
     };
 
     bgp_gateway_as = mkOption {
-      type = privateUseAutonomousSystemNumber;
+      type = types.yk8s.networking.privateUseAutonomousSystemNumber;
       default = 65000;
     };
 

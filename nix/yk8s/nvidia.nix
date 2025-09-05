@@ -5,14 +5,8 @@
   ...
 }: let
   cfg = config.yk8s.nvidia;
-  inherit (lib) mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit
-    (yk8s-lib.types)
-    httpxUrl
-    posixFilename
-    xftpUrl
-    ;
+  inherit (lib) mkOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
 in {
   options.yk8s.nvidia = mkTopSection {
     vgpu = {
@@ -20,13 +14,13 @@ in {
         description = ''
           Should point to a object store or otherwise web server, where the vGPU Manager installation file is available.
         '';
-        type = types.either httpxUrl xftpUrl;
+        type = types.either types.yk8s.networking.httpxUrl types.yk8s.networking.xftpUrl;
       };
       manager_filename = mkOption {
         description = ''
           Should hold the name of the vGPU Manager installation file.
         '';
-        type = posixFilename;
+        type = types.yk8s.posix.filename;
       };
     };
   };

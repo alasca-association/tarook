@@ -5,13 +5,8 @@
   ...
 }: let
   cfg = config.yk8s.containerd;
-  inherit (lib) mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit
-    (yk8s-lib.types)
-    httpsHostPathUrl
-    subdomainName
-    ;
+  inherit (lib) mkOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
 in {
   options.yk8s.containerd = mkTopSection {
     mirrors = mkOption {
@@ -24,7 +19,7 @@ in {
       type = types.listOf (types.submodule {
         options = {
           registry = mkOption {
-            type = with types; nullOr subdomainName;
+            type = with types; nullOr types.yk8s.networking.subdomainName;
             description = ''
               Name of the registry host for which the mirrors should be used.
               Registry hosts are typically referred to by their internet domain names, aka. registry host names.
@@ -34,7 +29,7 @@ in {
             example = "gcr.io";
           };
           mirrors = mkOption {
-            type = with types; listOf httpsHostPathUrl;
+            type = with types; listOf types.yk8s.networking.httpsHostPathUrl;
             example = ["https://registry-1.example.com" "https://registry-2.example.com:5000"];
             description = ''
               A list of URLs which should be substituted for the registry.
