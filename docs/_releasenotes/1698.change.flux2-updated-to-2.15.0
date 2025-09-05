@@ -1,0 +1,19 @@
+Updated default version of helm chart flux2 of https://github.com/fluxcd-community/helm-charts from 2.9.2 to 2.15.0
+
+.. warning::
+
+    This upgrades the Flux controllers from app version 2.0.1 to 2.5.1.
+    You potentially have to adjust your deployed custom resources.
+    Check the changelog for API adjustments:
+
+    * https://github.com/fluxcd/flux2/releases/tag/v2.1.0
+    * https://github.com/fluxcd/flux2/releases/tag/v2.2.0
+    * https://github.com/fluxcd/flux2/releases/tag/v2.3.0
+    * https://github.com/fluxcd/flux2/releases/tag/v2.4.0
+    * https://github.com/fluxcd/flux2/releases/tag/v2.5.0
+
+    You can upgrade more fine grained by setting the desired version via :ref:`configuration-options.yk8s.k8s-service-layer.fluxcd.version`.
+
+    Further information can be found in the `Flux releases documentation <https://fluxcd.io/flux/releases/>`_.
+
+.
