@@ -48,55 +48,53 @@
     importPath,
     extra ? {},
   }: let
-    inherit (builtins) baseNameOf foldl' isBool toString;
+    inherit (builtins) baseNameOf all isBool toString;
     inherit (lib.trivial) boolToString;
     inherit (lib.debug) traceSeq;
     inherit (yk8s-test-lib) getTestFiles;
     testFilePrefix = yk8s-test-lib.filePrefix;
+
+    # Run each collected test file or directory
+    results = builtins.map (
+      file: let
+        # Import test file or directory
+        #  passing it lib, yk8s-test-lib, test context, a test evaluator and optional extra arguments
+        test_output = import file.path {
+          inherit lib yk8s-test-lib extra;
+          ctx = {
+            evaluator = self;
+            importPath =
+              importPath
+              + "/${lib.removePrefix testFilePrefix (baseNameOf file.path)}";
+          };
+        };
+        # Set boolean outcome
+        # (tests need to return booleans, if they don't they are deemed to have failed)
+        outcome =
+          if (isBool test_output)
+          then test_output
+          else false;
+      in
+        traceSeq "Evaluating ${toString file.path} ..."
+        {
+          outcome =
+            traceSeq "Outcome: ${toString file.path}: ${boolToString outcome}${
+              if outcome != test_output
+              then " (invalid output)"
+              else ""
+            }"
+            outcome;
+        }
+      # collect test files and directories
+    ) (getTestFiles path);
+
+    forcedResults = builtins.deepSeq results results; # force complete evaluation
   in
     # NOTE: Completely evaluate all tests first then accumulate results
     #       so that the evaluation is not stopped by a negative result
     #       and all of them are traced
     # Accumulate test boolean outcomes
-    foldl' (acc: result: acc && result.outcome) true (
-      let
-        # Run each collected test file or directory
-        results = builtins.map (
-          file: let
-            # Import test file or directory
-            #  passing it lib, yk8s-test-lib, test context, a test evaluator and optional extra arguments
-            test_output = import file.path {
-              inherit lib yk8s-test-lib extra;
-              ctx = {
-                evaluator = self;
-                importPath =
-                  importPath
-                  + "/${lib.removePrefix testFilePrefix (baseNameOf file.path)}";
-              };
-            };
-            # Set boolean outcome
-            # (tests need to return booleans, if they don't they are deemed to have failed)
-            outcome =
-              if (isBool test_output)
-              then test_output
-              else false;
-          in
-            traceSeq "Evaluating ${toString file.path} ..."
-            {
-              outcome =
-                traceSeq "Outcome: ${toString file.path}: ${boolToString outcome}${
-                  if outcome != test_output
-                  then " (invalid output)"
-                  else ""
-                }"
-                outcome;
-            }
-          # collect test files and directories
-        ) (getTestFiles path);
-      in
-        # Return test result (which contains the outcome)
-        builtins.deepSeq results results # force complete evaluation
-    );
+    all (r: r.outcome) forcedResults;
 
   yk8s-test-lib = rec {
     inherit
