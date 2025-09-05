@@ -14,6 +14,41 @@ Information about unreleased changes can be found
 
 .. towncrier release notes start
 
+v10.0.6 (2025-09-05)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- k8s-login run in :doc:`root CA rotation </user/guide/vault/vault-ca-rotation>` phase 1
+  works again with a Vault token only having the ``yaook/orchestrator`` policy.
+  (regression of v10.0.0)
+
+  .. note:: Action needed
+
+     To activate the fix the Vault orchestrator policy needs to be updated.
+
+     .. code:: shell
+
+        VAULT_TOKEN=$vault_root_token ./managed-k8s/tools/vault/init.sh
+
+  _ (`!2098 <https://gitlab.com/yaook/k8s/-/merge_requests/2098>`_)
+
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Changelogs of previous releases have been dropped.
+  These are still accessible when switching to the respective version.
+  From now on, changelogs for each version will be maintained separately and not continously. (`!2098 <https://gitlab.com/yaook/k8s/-/merge_requests/2098>`_)
+
+
+Misc
+~~~~
+
+- `!2098 <https://gitlab.com/yaook/k8s/-/merge_requests/2098>`_
+
+
 v10.0.5 (2025-08-26)
 --------------------
 
