@@ -1,15 +1,11 @@
 {
-  lib,
   yk8s-test-lib,
   ctx,
   ...
-}: let
-  pkgs = import <nixpkgs> {};
-in
-  with ctx;
-    evaluator {
-      self = evaluator;
-      yk8s-test-lib = yk8s-test-lib;
-      path = ./.;
-      importPath = importPath;
-    }
+}:
+ctx.evaluator {
+  inherit yk8s-test-lib;
+  inherit (ctx) importPath;
+  self = ctx.evaluator;
+  path = ./.;
+}
