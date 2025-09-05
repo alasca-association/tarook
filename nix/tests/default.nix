@@ -51,7 +51,7 @@
     inherit (builtins) baseNameOf foldl' isBool toString;
     inherit (lib.trivial) boolToString;
     inherit (lib.debug) traceSeq;
-    inherit (yk8s-test-lib) getTestFiles stripPrefix;
+    inherit (yk8s-test-lib) getTestFiles;
     testFilePrefix = yk8s-test-lib.filePrefix;
   in
     # NOTE: Completely evaluate all tests first then accumulate results
@@ -71,7 +71,7 @@
                 evaluator = self;
                 importPath =
                   importPath
-                  + "/${stripPrefix testFilePrefix (baseNameOf file.path)}";
+                  + "/${lib.removePrefix testFilePrefix (baseNameOf file.path)}";
               };
             };
             # Set boolean outcome
@@ -136,14 +136,6 @@
         (name: _: lib.strings.hasPrefix filePrefix name)
         (selectFilesByType ["regular" "directory"] path)
       );
-
-    /*
-    Strip a prefix from a string
-    */
-    stripPrefix = prefix: str: let
-      inherit (builtins) head match;
-    in
-      head (match "^${prefix}(.+)$" str);
   };
 in
   evalTests {
