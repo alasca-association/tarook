@@ -1,34 +1,96 @@
 {lib}: let
-  common = (import ./_common) {inherit lib;};
+  types = (import ./.) {inherit lib;};
+
   inherit
-    (common)
-    nonEmptyNonSpacedStr
-    mkRegexStrOptionType
-    k8s
-    mkRfc1123SubdomainNameType
-    mkRfc1035SubdomainLabelType
-    mkRfc1123SubdomainLabelType
-    golang
+    (types.yk8s.strings)
+    _mkRegexStrOptionType
+    _nonEmptyNonSpacedStr
     ;
+  inherit
+    (types.yk8s.networking)
+    _mkRfc1123SubdomainNameType
+    _mkRfc1035SubdomainLabelType
+    _mkRfc1123SubdomainLabelType
+    ;
+  inherit
+    (types.yk8s.networking._regexes)
+    rfc1123
+    rfc9293
+    ;
+  inherit (types.yk8s._regexes) golang;
+
+  oci = types.yk8s.oci._regexes;
+  k8s = types.yk8s.k8s._regexes;
 in rec {
-  k8sClusterName = nonEmptyNonSpacedStr;
-  k8sVersion = versions: let
+  # as per Kubernetes documentation
+  _regexes = {
+    # https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/
+    # TODO: enforce quantity is lower than 2^63-1
+    quantityRE = let
+      quantityRE_ = "(${signedNumberRE})(${suffixRE})";
+      DIGIT = "[0-9]";
+      digitsRE = "${DIGIT}+";
+      decimalPlaceDigitsRE = "${DIGIT}{1,3}"; # constrain to max 3 decimal places
+      numberRE = "(${digitsRE})|(${digitsRE})[.](${decimalPlaceDigitsRE})|(${digitsRE})[.]|[.](${decimalPlaceDigitsRE})";
+      SIGN = "[+-]";
+      signedNumberRE = "(${numberRE})|${SIGN}(${numberRE})";
+      suffixRE = "(${binarySiRE})|(${decimalExponentRE})|(${decimalSiRE})?"; # decimalSI may be empty
+      binarySiRE = "Ki|Mi|Gi|Ti|Pi|Ei";
+      decimalSiRE = "m|k|M|G|T|P|E";
+      decimalExponentRE = "e(${signedNumberRE})|E(${signedNumberRE})";
+    in
+      quantityRE_;
+
+    # https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set
+    labelPrefixRE = "(${rfc1123.subdomainNameRE})";
+    # TODO: enforce length<=63 (positive lookaheads are not supported unfortunately)
+    labelNameRE = "([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]";
+    labelRE = "((${k8s.labelPrefixRE})[/])?(${k8s.labelNameRE})";
+    # TODO: enforce length<=63 (positive lookaheads are not supported unfortunately)
+    labelValueRE = "(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?";
+
+    # https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration
+    taintEffectRE = "(NoExecute|NoSchedule|PreferNoSchedule)";
+
+    # as per https://kubernetes.io/docs/concepts/containers/images/#image-names
+    imageRefRE = lib.concatStrings [
+      "((${rfc1123.subdomainNameRE})([:]${rfc9293.portNumberRE})?[/])?" # domain/ or domain:port/
+      "(${oci.dist1.imageNameRE})" # image-name
+      "([:](${oci.dist1.imageTagRE}))?" # optional :image-tag
+      "([@](${oci.format1.imageDigestStrRE}))?" # optional @digest
+    ];
+
+    # as per servicemonitors.monitoring.coreos.com Kubernetes CRD v1
+    coreos-monitoring = {
+      v1 = let
+        # https://github.com/prometheus-operator/prometheus-operator/blob/main/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml#L260 (interval, scrapeTimeout)
+        prometheusIntervalRE = "0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?";
+      in {
+        prometheusDurationRE = prometheusIntervalRE;
+        # https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#monitoring.coreos.com/v1.LabelName
+        prometheusLabelNameRE = "[a-zA-Z0-9_]+";
+      };
+    };
+  };
+
+  clusterName = _nonEmptyNonSpacedStr;
+  kubernetesVersions = versions: let
     inherit (builtins) concatStringsSep foldl' length map typeOf;
   in
     assert lib.assertMsg
     (typeOf versions == "list")
-    "k8sVersion: versions must be a list, not ${typeOf versions}";
+    "kubernetesVersions: versions must be a list, not ${typeOf versions}";
     assert lib.assertMsg
     (length versions > 0)
-    "k8sVersion: versions must contain at least one item";
+    "kubernetesVersions: versions must contain at least one item";
     assert lib.assertMsg
     (foldl' (acc: x: acc && (typeOf x == "list")) true versions)
-    "k8sVersion: versions must provide each version as a list";
+    "kubernetesVersions: versions must provide each version as a list";
     assert lib.assertMsg
     (foldl' (acc: x: acc && (length x == 2)) true versions)
-    "k8sVersion: versions must only contain major and minor version";
-      mkRegexStrOptionType {
-        name = "k8sVersion";
+    "kubernetesVersions: versions must only contain major and minor version";
+      _mkRegexStrOptionType {
+        name = "kubernetesVersions";
         description = ''
           Kubernetes version (one of: ${
             concatStringsSep ", " (
@@ -52,18 +114,18 @@ in rec {
           })[.][0-9]+$"
         ];
       };
-  k8sQuantity = mkRegexStrOptionType {
+  quantity = _mkRegexStrOptionType {
     name = "k8sQuantity";
     description = "Kubernetes quantity";
     matchAgainstAllOf = ["^(${k8s.quantityRE})$"];
   };
-  k8sThreshold = mkRegexStrOptionType {
+  threshold = _mkRegexStrOptionType {
     name = "k8sThreshold";
     description = "Kubernetes threshold";
     matchAgainstAllOf = ["^(${k8s.quantityRE}|(0|[1-9][0-9]*)%)$"];
   };
   # as per https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  k8sServiceType = lib.types.enum [
+  serviceType = lib.types.enum [
     "ClusterIP"
     "NodePort"
     "LoadBalancer"
@@ -74,77 +136,77 @@ in rec {
   # and https://kubernetes.io/docs/concepts/overview/working-with-objects/names
   # NOTE: Although capitals are valid as per the RFCs, Kubernetes rejects them
   # NOTE: k8sObjectName is an unspecific type and should be avoided if possible
-  k8sObjectName = lib.types.oneOf [
-    (mkRfc1123SubdomainNameType {
+  objectName = lib.types.oneOf [
+    (_mkRfc1123SubdomainNameType {
       rejectCapitals = true;
       enforceMaxLength253_63 = true;
     })
-    (mkRfc1123SubdomainLabelType {
+    (_mkRfc1123SubdomainLabelType {
       rejectCapitals = true;
       enforceMaxLength63 = true;
     })
-    (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
+    (_mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sNamespaceName = lib.types.oneOf [
-    (mkRfc1123SubdomainLabelType {
+  namespaceName = lib.types.oneOf [
+    (_mkRfc1123SubdomainLabelType {
       rejectCapitals = true;
       enforceMaxLength63 = true;
     })
-    (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
+    (_mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sStorageClassName = lib.types.oneOf [
-    (mkRfc1123SubdomainNameType {
+  storageClassName = lib.types.oneOf [
+    (_mkRfc1123SubdomainNameType {
       rejectCapitals = true;
       enforceMaxLength253_63 = true;
     })
-    (mkRfc1123SubdomainLabelType {
+    (_mkRfc1123SubdomainLabelType {
       rejectCapitals = true;
       enforceMaxLength63 = true;
     })
-    (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
+    (_mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sSecretName = lib.types.oneOf [
-    (mkRfc1123SubdomainNameType {
+  secretName = lib.types.oneOf [
+    (_mkRfc1123SubdomainNameType {
       rejectCapitals = true;
       enforceMaxLength253_63 = true;
     })
-    (mkRfc1123SubdomainLabelType {
+    (_mkRfc1123SubdomainLabelType {
       rejectCapitals = true;
       enforceMaxLength63 = true;
     })
-    (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
+    (_mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sServiceName = mkRfc1035SubdomainLabelType {rejectCapitals = true;};
-  k8sIngressClassName = lib.types.oneOf [
-    (mkRfc1123SubdomainNameType {
+  serviceName = _mkRfc1035SubdomainLabelType {rejectCapitals = true;};
+  ingressClassName = lib.types.oneOf [
+    (_mkRfc1123SubdomainNameType {
       rejectCapitals = true;
       enforceMaxLength253_63 = true;
     })
-    (mkRfc1123SubdomainLabelType {
+    (_mkRfc1123SubdomainLabelType {
       rejectCapitals = true;
       enforceMaxLength63 = true;
     })
-    (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
+    (_mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sIssuerName = lib.types.oneOf [
-    (mkRfc1123SubdomainNameType {
+  issuerName = lib.types.oneOf [
+    (_mkRfc1123SubdomainNameType {
       rejectCapitals = true;
       enforceMaxLength253_63 = true;
     })
-    (mkRfc1123SubdomainLabelType {
+    (_mkRfc1123SubdomainLabelType {
       rejectCapitals = true;
       enforceMaxLength63 = true;
     })
-    (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
+    (_mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sPodContainerName = lib.types.oneOf [
-    (mkRfc1123SubdomainLabelType {
+  podContainerName = lib.types.oneOf [
+    (_mkRfc1123SubdomainLabelType {
       rejectCapitals = true;
       enforceMaxLength63 = true;
     })
-    (mkRfc1035SubdomainLabelType {rejectCapitals = true;})
+    (_mkRfc1035SubdomainLabelType {rejectCapitals = true;})
   ];
-  k8sLabelPrefix = mkRegexStrOptionType {
+  labelPrefix = _mkRegexStrOptionType {
     name = "k8sLabelPrefix";
     description = "Kubernetes label prefix";
     matchAgainstAllOf = [
@@ -154,7 +216,7 @@ in rec {
       "^.{0,253}$"
     ];
   };
-  k8sLabelValue = mkRegexStrOptionType {
+  labelValue = _mkRegexStrOptionType {
     name = "k8sLabelValue";
     description = "Kubernetes label value";
     matchAgainstAllOf = [
@@ -164,7 +226,7 @@ in rec {
       "^.{0,63}$"
     ];
   };
-  k8sLabel = mkRegexStrOptionType {
+  label = _mkRegexStrOptionType {
     name = "k8sLabel";
     description = "Kubernetes label";
     matchAgainstAllOf = [
@@ -174,7 +236,7 @@ in rec {
       "^([^/]{0,253}[/])?([^/]{0,63})$"
     ];
   };
-  k8sLabelStr = mkRegexStrOptionType {
+  labelStr = _mkRegexStrOptionType {
     name = "k8sLabelStr";
     description = "Kubernetes label string";
     matchAgainstAllOf = [
@@ -184,7 +246,7 @@ in rec {
       "^([^/=]{0,253}[/])?([^/=]{0,63})[=]([^=]{0,63})$"
     ];
   };
-  k8sLabelAttrs = lib.mkOptionType {
+  labelAttrs = lib.mkOptionType {
     name = "k8sLabelAttrs";
     description = "attribute set of Kubernetes label-value pairs";
     descriptionClass = "noun";
@@ -192,15 +254,15 @@ in rec {
       builtins.isAttrs x
       && (
         lib.attrsets.foldlAttrs (
-          acc: label: value:
-            acc && k8sLabel.check label && k8sLabelValue.check value
+          acc: l: v:
+            acc && label.check l && labelValue.check v
         )
         true
         x
       );
   };
 
-  k8sTaintStr = mkRegexStrOptionType {
+  taintStr = _mkRegexStrOptionType {
     name = "k8sTaintStr";
     description = "Kubernetes taint string";
     matchAgainstAllOf = [
@@ -211,12 +273,12 @@ in rec {
     ];
   };
   # as per https://kubernetes.io/docs/reference/glossary/?fundamental=true#term-duration
-  k8sDurationStr = mkRegexStrOptionType {
+  durationStr = _mkRegexStrOptionType {
     name = "k8sDurationStr";
     description = "Kubernetes duration string";
     matchAgainstAllOf = ["^(${golang.unsignedIntDurationStrRE})$"];
   };
-  k8sImageRef = mkRegexStrOptionType {
+  imageRef = _mkRegexStrOptionType {
     name = "k8sImageRef";
     description = "Kubernetes container image reference";
     matchAgainstAllOf = ["^(${k8s.imageRefRE})$"];

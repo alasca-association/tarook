@@ -7,18 +7,8 @@
   cfg = config.yk8s.ch-k8s-lbaas;
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedResourceOptionModule mkResourceOptionModule;
-  inherit (lib) mkOption mkEnableOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkDisableOption;
-  inherit
-    (yk8s-lib.types)
-    base64Str
-    httpHostUrl
-    httpxHostPathUrl
-    ipv4Addr
-    k8sImageRef
-    ociImageTag
-    posixUserName
-    ;
+  inherit (lib) mkOption mkEnableOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkResourceOption mkDisableOption mkInternalOption types;
   inherit
     (yk8s-lib.transform)
     warnIfZero
@@ -43,11 +33,11 @@ in {
       '';
       # type as per https://pkg.go.dev/encoding/base64#StdEncoding
       #  (ch-k8s-lbaas uses that library)
-      type = base64Str;
+      type = types.yk8s.encoding.base64Str;
       example = "Example+NZHrRAV9AAN83T7Hc6wVk9IGzPou6UjwWhL+4hu1I4XPj+YG/AgKiFIc1a1EzmQKax9VAj6P/oA45w==";
     };
     version = mkOption {
-      type = ociImageTag;
+      type = types.yk8s.oci.imageTag;
       default = "0.9.0";
       # NOTE: constrained to >= 0.8.0 by assertion (due to OVN support)
     };
@@ -86,7 +76,7 @@ in {
         traffic for these IPv4 addresses.
       '';
       default = [];
-      type = types.listOf ipv4Addr;
+      type = with types; listOf yk8s.networking.ipv4Addr;
       apply = v:
         if v == [] && cfg.port_manager == "static"
         then throw "config.yk8s.ch-k8s-lbaas.static_ipv4_addresses: must not be empty when config.yk8s.ch-k8s-lbaas.port_manager='static'"
@@ -100,7 +90,7 @@ in {
       '';
       default = [];
       # NOTE: ch-k8s-lbaas ignores the HTTP URL path, its agents don't support TLS
-      type = types.listOf httpHostUrl;
+      type = with types; listOf yk8s.networking.httpHostUrl;
       apply = v:
         if v == [] && cfg.port_manager == "static"
         then throw "config.yk8s.ch-k8s-lbaas.agent_urls: must not be empty when config.yk8s.ch-k8s-lbaas.port_manager='static'"
@@ -108,16 +98,16 @@ in {
     };
     use_floating_ips = mkDisableOption "the use of floating IPs";
     controller_repo = mkOption {
-      type = k8sImageRef;
+      type = types.yk8s.k8s.imageRef;
       default = "registry.gitlab.com/yaook/ch-k8s-lbaas/controller";
     };
     agent_user = mkOption {
-      type = posixUserName;
+      type = types.yk8s.posix.userName;
       default = "ch-k8s-lbaas-agent";
     };
     agent_source = mkOption {
       # NOTE: the URL path is appended to, therefore query and fragment are disallowed
-      type = httpxHostPathUrl;
+      type = types.yk8s.networking.httpxHostPathUrl;
       default = "https://github.com/cloudandheat/ch-k8s-lbaas/releases/download";
     };
     use_bgp = mkOption {

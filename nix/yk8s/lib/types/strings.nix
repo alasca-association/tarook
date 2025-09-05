@@ -1,7 +1,7 @@
 {lib}: let
-  transform = import ../../transform.nix {inherit lib;};
+  transform = import ./../transform.nix {inherit lib;};
   inherit (transform) matchesRegex;
-in {
+in rec {
   /*
   Create an option type that matches a given string value against a set of regular expressions
 
@@ -11,7 +11,7 @@ in {
   - matchAgainstAllOf: Optional list of regular expressions of which all must match
   - matchAgainstNoneOf: Optional list of regular expressions of which none must match
   */
-  mkRegexStrOptionType = {
+  _mkRegexStrOptionType = {
     name,
     description,
     matchAgainstAllOf ? [],
@@ -39,4 +39,10 @@ in {
             matchAgainstNoneOf
           );
       };
+
+  _nonEmptyNonSpacedStr = _mkRegexStrOptionType {
+    name = "_nonEmptyNonSpacedStr";
+    description = "${lib.types.nonEmptyStr.description} without spaces";
+    matchAgainstAllOf = ["^[^ ]+$"];
+  };
 }

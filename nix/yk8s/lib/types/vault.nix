@@ -1,8 +1,9 @@
 {lib}: let
-  common = (import ./_common) {inherit lib;};
+  types = (import ./.) {inherit lib;};
+
   inherit
-    (common)
-    mkRegexStrOptionType
+    (types.yk8s.strings)
+    _mkRegexStrOptionType
     ;
 in {
   # TODO: Vault namespace names are part of URL paths in Vault's REST API.
@@ -15,7 +16,7 @@ in {
   #       In https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1731#note_2385728506
   #       it was decided that we do not want to reject what Vault accepts,
   #       hence further investigation is needed.
-  vaultNamespaceName = mkRegexStrOptionType {
+  namespaceName = _mkRegexStrOptionType {
     name = "vaultNamespaceName";
     description = "Name of a Hashicorp Vault namespace";
     # as per https://developer.hashicorp.com/vault/docs/enterprise/namespaces#namespace-naming-restrictions
@@ -32,7 +33,7 @@ in {
       "^.*?(\\{\\{.*}}).*?$" # template string within
     ];
   };
-  vaultChildNamespaceNameSegment = mkRegexStrOptionType {
+  childNamespaceNameSegment = _mkRegexStrOptionType {
     name = "vaultChildNamespaceNameSegment";
     description = "Segment of a Hashicorp Vault namespace";
     # as per https://developer.hashicorp.com/vault/docs/enterprise/namespaces#namespace-naming-restrictions

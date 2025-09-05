@@ -7,17 +7,8 @@
   cfg = config.yk8s.k8s-service-layer.etcd-backup;
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule;
-  inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit
-    (yk8s-lib.types)
-    k8sSecretName
-    posixPathSegment
-    relativeUrlPath
-    s3BucketName
-    s3BucketNamePrefix
-    vaultNamespaceName
-    ;
+  inherit (lib) mkEnableOption mkOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
   inherit
     (yk8s-lib.transform)
     warnIfZero
@@ -187,7 +178,7 @@ in {
 
               The bucket is expected to exist and must be created manually in advance!
             '';
-            type = s3BucketName;
+            type = types.yk8s.s3.bucketName;
             default = "etcd-backup";
           };
           addressingStyle = mkOption {
@@ -207,14 +198,14 @@ in {
             default = "path";
           };
           credentialRef.name = mkOption {
-            type = k8sSecretName;
+            type = types.yk8s.k8s.secretName;
             default = "etcd-backup-s3-credentials";
           };
           filePrefix = mkOption {
             description = ''
               Prefix for :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.bucket`
             '';
-            type = s3BucketNamePrefix;
+            type = types.yk8s.s3.bucketNamePrefix;
             default = "etcd-backup";
           };
         };
@@ -235,7 +226,7 @@ in {
         be found. This location is the default location used by import.sh and is
         recommended.
       '';
-      type = vaultNamespaceName;
+      type = types.yk8s.vault.namespaceName;
       default = "yaook/${config.yk8s.vault.cluster_name}/kv";
       defaultText = "yaook/\${config.yk8s.vault.cluster_name}/kv";
     };
@@ -247,7 +238,7 @@ in {
         The role expects a JSON object with `access_key` and `secret_key` keys,
         containing the corresponding S3 credentials.
       '';
-      type = relativeUrlPath;
+      type = types.yk8s.networking.relativeUrlPath;
       default = "etcdbackup";
     };
   };

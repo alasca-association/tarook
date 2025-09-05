@@ -7,17 +7,12 @@
   cfg = config.yk8s.kubernetes;
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule;
-  inherit (lib) mkOption mkEnableOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkYaml;
+  inherit (lib) mkOption mkEnableOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkYaml types;
   inherit
     (yk8s-lib.transform)
     warnIfZero
     filterNull
-    ;
-  inherit
-    (yk8s-lib.types)
-    k8sQuantity
-    k8sVersion
     ;
 in {
   imports = [
@@ -43,7 +38,7 @@ in {
       description = ''
         Kubernetes version
       '';
-      type = k8sVersion [
+      type = types.yk8s.k8s.kubernetesVersions [
         [1 31]
         [1 32]
         [1 33]
@@ -84,7 +79,7 @@ in {
           .. note::
 
             Modifications to this setting only apply on an upgrade of Kubernetes.'';
-        type = types.nullOr k8sQuantity;
+        type = with types; nullOr yk8s.k8s.quantity;
         default = null;
         example = "1Gi";
       };
@@ -128,8 +123,8 @@ in {
             example = lib.options.literalExpression ''
               yk8s-lib.importYAML ./path/to/policy.yaml # Note that the file has to be added to the git repository to be evaluated by Nix
             '';
-            type = lib.types.submodule {
-              freeformType = yk8s-lib.types.jsonValue;
+            type = types.submodule {
+              freeformType = types.yk8s.formats.jsonValue;
             };
             default = import defaultsFile;
 

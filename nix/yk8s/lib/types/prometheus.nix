@@ -1,33 +1,37 @@
 {lib}: let
-  common = (import ./_common) {inherit lib;};
+  types = (import ./.) {inherit lib;};
+
   inherit
-    (common)
-    attrsOf'
-    mkRegexStrOptionType
-    k8s
+    (types.yk8s.strings)
+    _mkRegexStrOptionType
     ;
+  inherit
+    (types.yk8s)
+    attrsOf'
+    ;
+  k8s = types.yk8s.k8s._regexes;
 in rec {
-  prometheusIntervalStr = mkRegexStrOptionType {
+  intervalStr = _mkRegexStrOptionType {
     name = "prometheusIntervalStr";
     description = "Prometheus interval string";
     matchAgainstAllOf = ["^(${k8s.coreos-monitoring.v1.prometheusDurationRE})$"];
   };
-  prometheusLabelName = mkRegexStrOptionType {
+  labelName = _mkRegexStrOptionType {
     name = "prometheusLabelName";
     description = "Prometheus label name";
     matchAgainstAllOf = ["^(${k8s.coreos-monitoring.v1.prometheusLabelNameRE})$"];
   };
-  prometheusTimeoutStr = mkRegexStrOptionType {
+  timeoutStr = _mkRegexStrOptionType {
     name = "prometheusTimeoutStr";
     description = "Prometheus timeout string";
     matchAgainstAllOf = ["^(${k8s.coreos-monitoring.v1.prometheusDurationRE})$"];
   };
   # as per https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#monitoring.coreos.com/v1.RelabelConfig
   # without inter-field dependencies and constraints
-  prometheusRelabelConfig = attrsOf' {
-    sourceLabels = lib.types.listOf prometheusLabelName;
+  relabelConfig = attrsOf' {
+    sourceLabels = lib.types.listOf labelName;
     separator = lib.types.str;
-    targetLabel = prometheusLabelName;
+    targetLabel = labelName;
     regex = lib.types.nonEmptyStr;
     # NOTE: for some reason `types.ints.u64` is not made available
     modulus = lib.types.ints.unsigned;

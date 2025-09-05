@@ -9,20 +9,11 @@
   modules-lib = import ./lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule;
   inherit (pkgs.stdenv) mkDerivation;
-  inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath;
+  inherit (lib) mkEnableOption mkOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath types;
   inherit
     (yk8s-lib.transform)
     ignoreItemsOfDisabledIPFamily
-    ;
-  inherit
-    (yk8s-lib.types)
-    httpHostPathUrl
-    httpsHostPathUrl
-    ipv4Addr
-    ipv4Cidr
-    ipv6Addr
-    subdomainName
     ;
 in {
   imports = [
@@ -71,7 +62,7 @@ in {
         Important note: Settings for the Tarook cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
-      type = with types; nullOr httpHostPathUrl;
+      type = with types; nullOr yk8s.networking.httpHostPathUrl;
       default = null;
       example = "http://proxy.example.com:8889";
     };
@@ -82,7 +73,7 @@ in {
         Important note: Settings for the Tarook cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
-      type = with types; nullOr httpsHostPathUrl;
+      type = with types; nullOr yk8s.networking.httpsHostPathUrl;
       default = null;
       example = "https://proxy.example.com:8889";
     };
@@ -93,12 +84,12 @@ in {
         Important note: Settings for the Tarook cluster itself (like the service subnet or the pod subnet)
         will be set automagically and do not have to set manually here.
       '';
-      type = with types; nullOr (listOf (oneOf [ipv4Addr ipv4Cidr subdomainName]));
+      type = with types; nullOr (listOf (oneOf [yk8s.networking.ipv4Addr yk8s.networking.ipv4Cidr yk8s.networking.subdomainName]));
       default = [];
       example = ["localhost" "127.0.0.0/8"];
       apply = v:
         ignoreItemsOfDisabledIPFamily {
-          ipv4Types = [ipv4Cidr];
+          ipv4Types = [types.yk8s.networking.ipv4Cidr];
           ipv4Enabled = config.yk8s.infra.ipv4_enabled;
         }
         "config.yk8s.miscellaneous.no_proxy: "
@@ -123,13 +114,13 @@ in {
       description = ''
         A list of NTP pools.
       '';
-      type = with types; listOf (oneOf [ipv4Addr ipv6Addr subdomainName]);
+      type = with types; listOf (oneOf [yk8s.networking.ipv4Addr yk8s.networking.ipv6Addr yk8s.networking.subdomainName]);
       default = [];
       example = ["0.pool.ntp.example.org" "1.pool.ntp.example.org"];
       apply = v:
         ignoreItemsOfDisabledIPFamily {
-          ipv4Types = [ipv4Addr];
-          ipv6Types = [ipv6Addr];
+          ipv4Types = [types.yk8s.networking.ipv4Addr];
+          ipv6Types = [types.yk8s.networking.ipv6Addr];
           ipv4Enabled = config.yk8s.infra.ipv4_enabled;
           ipv6Enabled = config.yk8s.infra.ipv6_enabled;
         }
@@ -140,13 +131,13 @@ in {
       description = ''
         A list of NTP servers.
       '';
-      type = with types; listOf (oneOf [ipv4Addr ipv6Addr subdomainName]);
+      type = with types; listOf (oneOf [yk8s.networking.ipv4Addr yk8s.networking.ipv6Addr yk8s.networking.subdomainName]);
       default = [];
       example = ["0.server.ntp.example.org" "1.server.ntp.example.org"];
       apply = v:
         ignoreItemsOfDisabledIPFamily {
-          ipv4Types = [ipv4Addr];
-          ipv6Types = [ipv6Addr];
+          ipv4Types = [types.yk8s.networking.ipv4Addr];
+          ipv6Types = [types.yk8s.networking.ipv6Addr];
           ipv4Enabled = config.yk8s.infra.ipv4_enabled;
           ipv6Enabled = config.yk8s.infra.ipv6_enabled;
         }
@@ -160,7 +151,7 @@ in {
         As a secondary effect, https repositories are not used, since
         those don't work with caching proxies like apt-cacher-ng.
       '';
-      type = with types; nullOr httpHostPathUrl;
+      type = with types; nullOr yk8s.networking.httpHostPathUrl;
       default = null;
     };
   };

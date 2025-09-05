@@ -9,20 +9,9 @@
   modules-lib = import ./lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (pkgs.stdenv) mkDerivation;
-  inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkDisableOption linkToPath mkYamlAtPath mkInternalOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkDisableOption linkToPath mkYamlAtPath mkInternalOption types;
   inherit (yk8s-lib.transform) filterNull;
-  inherit
-    (yk8s-lib.types)
-    ipv4Addr
-    ipv6Addr
-    ipv4Cidr
-    ipv6Cidr
-    k8sClusterName
-    absolutePosixPath
-    jsonValue
-    subdomainName
-    ;
+  inherit (lib) mkEnableOption mkOption;
 in {
   options.yk8s.infra = mkTopSection {
     _docs.preface = ''
@@ -32,7 +21,7 @@ in {
 
     cluster_name = mkOption {
       # NOTE: empty or spaced strings must never by accepted here
-      type = k8sClusterName;
+      type = types.yk8s.k8s.clusterName;
       description = ''
         Name of the cluster that is to be build and managed.
 
@@ -46,7 +35,7 @@ in {
     ipv6_enabled = mkEnableOption "IPv6";
 
     subnet_cidr = mkOption {
-      type = ipv4Cidr;
+      type = types.yk8s.networking.ipv4Cidr;
       default = "172.30.154.0/24";
       description = ''
         The IPv4 CIDR of the internally used network.
@@ -59,7 +48,7 @@ in {
     };
 
     subnet_v6_cidr = mkOption {
-      type = ipv6Cidr;
+      type = types.yk8s.networking.ipv6Cidr;
       default = "fd00::/120";
       description = ''
         The IPv6 CIDR of the internally used network.
@@ -72,7 +61,7 @@ in {
     };
 
     networking_fixed_ip = mkOption {
-      type = types.nullOr ipv4Addr;
+      type = with types; nullOr yk8s.networking.ipv4Addr;
       default = null;
       apply = v:
         if cfg.ipv4_enabled && v == null && config.yk8s.terraform.enabled
@@ -81,7 +70,7 @@ in {
     };
 
     networking_fixed_ip_v6 = mkOption {
-      type = with types; nullOr ipv6Addr;
+      type = with types; nullOr yk8s.networking.ipv6Addr;
       default = null;
       apply = v:
         if cfg.ipv6_enabled && v == null && config.yk8s.terraform.enabled
@@ -94,7 +83,7 @@ in {
       description = ''
         Address that is used by Wireguard and IPsec to connect to the active gateway node.
       '';
-      type = types.nullOr ipv4Addr;
+      type = with types; nullOr yk8s.networking.ipv4Addr;
       default = null;
       apply = v:
         if v == null && config.yk8s.terraform.enabled
@@ -114,18 +103,18 @@ in {
     ansible_hosts = let
       applyGroupSubmoduleAttrs = lib.mapAttrs (_: lib.filterAttrs (_: a: a != {}));
       hostsSubmodule = types.submodule {
-        freeformType = jsonValue;
+        freeformType = types.yk8s.formats.jsonValue;
         options = {
           ansible_host = mkOption {
-            type = with types; nullOr (oneOf [ipv4Addr ipv6Addr subdomainName]);
+            type = with types; with types.yk8s.networking; nullOr (oneOf [ipv4Addr ipv6Addr subdomainName]);
             default = null;
           };
           local_ipv4_address = mkOption {
-            type = types.nullOr ipv4Addr;
+            type = with types; nullOr yk8s.networking.ipv4Addr;
             default = null;
           };
           local_ipv6_address = mkOption {
-            type = types.nullOr ipv6Addr;
+            type = with types; nullOr yk8s.networking.ipv6Addr;
             default = null;
           };
         };
@@ -143,7 +132,7 @@ in {
             default = {};
           };
           vars = mkOption {
-            type = types.attrsOf jsonValue;
+            type = with types; attrsOf yk8s.formats.jsonValue;
             default = {};
           };
         };
@@ -170,7 +159,7 @@ in {
           freeformType = types.attrsOf groupSubmodule;
           options = {
             all.vars.ansible_python_interpreter = mkOption {
-              type = absolutePosixPath;
+              type = types.yk8s.posix.absolutePath;
               default = "/usr/bin/python3";
             };
             frontend = mkOption {

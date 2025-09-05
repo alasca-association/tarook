@@ -48,7 +48,7 @@
     importPath,
     extra ? {},
   }: let
-    inherit (builtins) baseNameOf all isBool toString;
+    inherit (builtins) baseNameOf all isBool isAttrs toString;
     inherit (lib.trivial) boolToString;
     inherit (lib.debug) traceSeq;
     inherit (yk8s-test-lib) getTestFiles;
@@ -69,17 +69,23 @@
           };
         };
         # Set boolean outcome
-        # (tests need to return booleans, if they don't they are deemed to have failed)
-        outcome =
-          if (isBool test_output)
+        # (tests need to return either booleans or attrsets with an attribute "result" that is a boolean, otherwise they are deemed to have failed)
+        result =
+          if isBool test_output
           then test_output
+          else if isAttrs test_output && test_output?result && isBool test_output.result
+          then test_output.result
+          else null;
+        outcome =
+          if isBool result
+          then result
           else false;
       in
         traceSeq "Evaluating ${toString file.path} ..."
         {
           outcome =
             traceSeq "Outcome: ${toString file.path}: ${boolToString outcome}${
-              if outcome != test_output
+              if outcome != result
               then " (invalid output)"
               else ""
             }"

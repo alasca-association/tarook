@@ -8,30 +8,19 @@
   cfg = config.yk8s.openstack;
   modules-lib = import ./lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule;
-  inherit (lib) mkEnableOption mkOption types;
+  inherit (lib) mkEnableOption mkOption;
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkDisableOption linkToPath;
-  inherit
-    (yk8s-lib.types)
-    ipv4Addr
-    openstackAvailabilityZoneName
-    openstackFlavorName
-    openstackImageName
-    openstackKeypairName
-    openstackNetworkName
-    openstackServerGroupName
-    openstackVolumeTypeName
-    ;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkDisableOption linkToPath types;
   inherit (yk8s-lib.transform) removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
   tfvars_file_path = "terraform/config.tfvars.json";
   commonNodeDefaultOptions = {
     image = mkOption {
-      type = openstackImageName;
+      type = types.yk8s.openstack.imageName;
     };
     flavor = mkOption {
-      type = openstackFlavorName;
+      type = types.yk8s.openstack.flavorName;
     };
     root_disk_size = mkOption {
       description = ''
@@ -44,7 +33,7 @@
         Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
         If null, the default of the IaaS environment will be used.
       '';
-      type = types.nullOr openstackVolumeTypeName;
+      type = with types; nullOr yk8s.openstack.volumeTypeName;
       default = null;
     };
   };
@@ -159,7 +148,7 @@ in {
       description = ''
         Name of the Openstack provider network to use
       '';
-      type = openstackNetworkName;
+      type = types.yk8s.openstack.networkName;
     };
 
     keypair = mkOption {
@@ -168,14 +157,14 @@ in {
 
         Will most of the time be set via the environment variable TF_VAR_keypair
       '';
-      type = with types; nullOr openstackKeypairName;
+      type = with types; nullOr yk8s.openstack.keypairName;
       default = null;
     };
 
     azs = mkOption {
       description = "Availability zones of the underlying Openstack cloud to use for the creation of servers.";
       default = [];
-      type = with types; listOf openstackAvailabilityZoneName;
+      type = with types; listOf yk8s.openstack.availabilityZoneName;
     };
 
     thanos_delete_container = mkEnableOption ''
@@ -206,7 +195,7 @@ in {
     };
 
     dns_nameservers_v4 = mkOption {
-      type = with types; listOf ipv4Addr;
+      type = with types; listOf yk8s.networking.ipv4Addr;
       default = [];
       description = "A list of IPv4 addresses which will be configured as DNS nameservers of the IPv4 subnet.";
     };
@@ -253,7 +242,7 @@ in {
         description = ''
           Leaving this empty means to not join any anti affinity group
         '';
-        type = with types; nullOr openstackServerGroupName;
+        type = with types; nullOr yk8s.openstack.serverGroupName;
         default = null;
       };
     };
@@ -276,15 +265,15 @@ in {
             ];
           };
           image = mkOption {
-            type = with types; nullOr openstackImageName;
+            type = with types; nullOr yk8s.openstack.imageName;
             default = null;
           };
           flavor = mkOption {
-            type = with types; nullOr openstackFlavorName;
+            type = with types; nullOr yk8s.openstack.flavorName;
             default = null;
           };
           az = mkOption {
-            type = with types; nullOr openstackAvailabilityZoneName;
+            type = with types; nullOr yk8s.openstack.availabilityZoneName;
             default = null;
           };
           root_disk_size = mkOption {
@@ -292,7 +281,7 @@ in {
             default = null;
           };
           root_disk_volume_type = mkOption {
-            type = with types; nullOr openstackVolumeTypeName;
+            type = with types; nullOr yk8s.openstack.volumeTypeName;
             default = null;
           };
           anti_affinity_group = mkOption {
@@ -300,7 +289,7 @@ in {
               Must not be set when role!="worker".
               If left empty no anti affinity group will be joined.
             '';
-            type = with types; nullOr openstackServerGroupName;
+            type = with types; nullOr yk8s.openstack.serverGroupName;
             default = null;
           };
         };
@@ -317,7 +306,7 @@ in {
         Note: This network name isn't fetched automagically (by terraform) on purpose
         because there might be situations where the CCM should not pick the managed network.
       '';
-      type = with types; nullOr openstackNetworkName;
+      type = with types; nullOr yk8s.openstack.networkName;
       default = null;
       example = lib.options.literalExpression "\"\${config.yk8s.infra.cluster_name}-network\"";
     };
@@ -336,7 +325,7 @@ in {
         If unset, no volume type is explicitly set and the default volume type
         of the IaaS-layer is used.
       '';
-      type = with types; nullOr openstackVolumeTypeName;
+      type = with types; nullOr yk8s.openstack.volumeTypeName;
       default = null;
     };
 

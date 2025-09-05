@@ -116,7 +116,7 @@ in {
 
         Please note the keepalived.conf manpage for choosing priority values.
       '';
-      type = types.listOf types.int;
+      type = with types; listOf int;
       default = [150 100 50];
     };
     openstack_lbaas = mkEnableOption "OpenStack-based load-balancing";

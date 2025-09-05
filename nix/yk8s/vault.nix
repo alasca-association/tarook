@@ -5,14 +5,8 @@
   ...
 }: let
   cfg = config.yk8s.vault;
-  inherit (lib) mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit
-    (yk8s-lib.types)
-    vaultChildNamespaceNameSegment
-    vaultNamespaceName
-    withLimitedLength
-    ;
+  inherit (lib) mkOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
 in {
   options.yk8s.vault = mkTopSection {
     cluster_name = mkOption {
@@ -22,21 +16,21 @@ in {
         This name must be unique within a single vault instance and cannot be
         reasonably changed after a cluster has been spawned.
       '';
-      type = withLimitedLength {max = 32;} vaultChildNamespaceNameSegment; # see bug#721
+      type = with types; yk8s.withLimitedLength {max = 32;} yk8s.vault.childNamespaceNameSegment; # see bug#721
       default = config.yk8s.infra.cluster_name;
       defaultText = "\${config.yk8s.infra.cluster_name}";
     };
 
     policy_prefix = mkOption {
-      type = vaultNamespaceName;
+      type = types.yk8s.vault.namespaceName;
       default = "yaook";
     };
     path_prefix = mkOption {
-      type = vaultNamespaceName;
+      type = types.yk8s.vault.namespaceName;
       default = "yaook";
     };
     nodes_approle = mkOption {
-      type = vaultNamespaceName;
+      type = types.yk8s.vault.namespaceName;
       default = "yaook/nodes";
     };
   };

@@ -7,16 +7,10 @@
   cfg = config.yk8s.k8s-service-layer.cert-manager;
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule;
-  inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (lib) mkEnableOption mkOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
   inherit (yk8s-lib.k8s) mkAffinity mkTolerations;
   inherit (yk8s-lib.options) mkHelmReleaseOptions;
-  inherit
-    (yk8s-lib.types)
-    emailAddress
-    httpxHostPathUrl
-    k8sLabel
-    ;
 in {
   imports = [
     (mkRenamedOptionModule ["k8s-service-layer" "cert-manager" "namespace"] ["k8s-service-layer" "cert-manager" "helm" "release_namespace"])
@@ -64,7 +58,7 @@ in {
         Scheduling key for the cert manager instance and its resources. Has no
         default.
       '';
-      type = with types; nullOr k8sLabel;
+      type = with types; nullOr yk8s.k8s.label;
       default = null;
     };
     letsencrypt_email = mkOption {
@@ -75,7 +69,7 @@ in {
         CERTIFICATES UNDER OUR NAME. Customers are supposed to deploy their own
         ACME/Let's Encrypt issuer.
       '';
-      type = with types; nullOr emailAddress;
+      type = with types; nullOr yk8s.networking.emailAddress;
       default = null;
     };
     letsencrypt_preferred_chain = mkOption {
@@ -102,7 +96,7 @@ in {
         is to switch between staging and production.
         See https://letsencrypt.org/docs/staging-environment/
       '';
-      type = httpxHostPathUrl;
+      type = types.yk8s.networking.httpxHostPathUrl;
       default = "https://acme-v02.api.letsencrypt.org/directory";
       example = "https://acme-staging-v02.api.letsencrypt.org/directory";
     };

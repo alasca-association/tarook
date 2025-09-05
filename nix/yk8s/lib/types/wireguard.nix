@@ -1,12 +1,16 @@
 {lib}: let
-  common = (import ./_common) {inherit lib;};
+  types = (import ./.) {inherit lib;};
+
   inherit
-    (common)
-    mkRegexStrOptionType
+    (types.yk8s.strings)
+    _mkRegexStrOptionType
+    ;
+  inherit
+    (types.yk8s.networking._regexes)
     rfc4648
     ;
 in {
-  wireguardKey = mkRegexStrOptionType {
+  key = _mkRegexStrOptionType {
     name = "wireguardKey";
     description = "Wireguard key";
     matchAgainstAllOf = [

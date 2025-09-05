@@ -1,44 +1,13 @@
-{lib}: rec {
-  regex = import ./regex.nix {inherit lib;};
-  reusableTypes = import ./reusable-types.nix {inherit lib;};
-  typeGenerators = import ./type-generators.nix {inherit lib;};
-
-  inherit
-    (regex)
-    cidr
-    golang
-    helm
-    isoiec80000
-    k8s
-    oci
-    posix1-2024
-    rfc1035
-    rfc1123
-    rfc2234
-    rfc3513
-    rfc3986
-    rfc4648
-    rfc5234
-    rfc5322
-    rfc9293
-    rfc952
-    s3
-    semver
-    strongswan
-    ;
-  inherit
-    (reusableTypes)
-    httpxUrlType
-    mkRfc1035SubdomainLabelType
-    mkRfc1035SubdomainNameType
-    mkRfc1123SubdomainLabelType
-    mkRfc1123SubdomainNameType
-    nonEmptyNonSpacedStr
-    relativeUrlPathType
-    urlPathSegmentType
-    ;
-  inherit (typeGenerators) mkRegexStrOptionType;
-
+{lib}: {
+  _regexes = {
+    # as per Golang documentation
+    golang = let
+      # https://pkg.go.dev/tie#ParseDuration
+      parseDuration.unsignedRE = "((0|[1-9][0-9]*)(ns|µs|us|ms|s|m|h))+";
+    in {
+      unsignedIntDurationStrRE = parseDuration.unsignedRE;
+    };
+  };
   /*
   Variant of nixpkgs.lib.types.attrsOf
 
@@ -95,7 +64,7 @@
         assert lib.assertMsg
         (elemType.descriptionClass == "noun")
         "withLimitedLength can only be used with noun class option types";
-          lib.mkOptionType rec {
+          lib.mkOptionType {
             name = "${elemType.name}WithLimitedLength";
             description = "${elemType.description} with ${
               if (min == null || max == null)
