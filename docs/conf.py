@@ -63,15 +63,17 @@ todo_include_todos = True
 # autosectionlabel_prefix_document = True
 
 # -- Multiversion ------------------------------------------------------------
-smv_branch_whitelist = r'(devel|release\/v\d+\.\d+)$'
-# None leads to warnings, so we use an impossible match instead
-smv_tag_whitelist = r'matchnothing^'
-smv_remote_whitelist = r'^origin$'
-smv_released_pattern = r'^.*release\/v\d+\.\d+.*$'
-
 # get latest version
 f = open("../version", "r")
 lines = f.readlines()
 min_version = lines[0].rpartition('.')[0]
 smv_latest_version = f"release/v{min_version}"
 print(smv_latest_version)
+
+# Whitelist devel and latest 5 major versions
+min_version_major = int(min_version.rpartition('.')[0])
+smv_branch_whitelist = fr'(devel|release\/v({min_version_major}|{min_version_major-1}|{min_version_major-2}|{min_version_major-3}|{min_version_major-4})\.\d+)$'  # noqa: E501
+# None leads to warnings, so we use an impossible match instead
+smv_tag_whitelist = r'matchnothing^'
+smv_remote_whitelist = r'^origin$'
+smv_released_pattern = r'^.*release\/v\d+\.\d+.*$'
