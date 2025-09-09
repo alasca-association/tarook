@@ -39,7 +39,7 @@ in {
         (cfg:
           if config.yk8s.kubernetes.virtualize_gpu
           then cfg
-          else {})
+          else builtins.removeAttrs cfg ["vgpu"])
       ];
     })
   ];
