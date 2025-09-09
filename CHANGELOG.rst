@@ -14,6 +14,15 @@ Information about unreleased changes can be found
 
 .. towncrier release notes start
 
+v9.1.17 (2025-09-09)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug has been fixed that prevented the nvidia device plugin to be rolled out and updated. (`!2109 <https://gitlab.com/yaook/k8s/-/merge_requests/2109>`_)
+
+
 v9.1.16 (2025-09-05)
 --------------------
 
