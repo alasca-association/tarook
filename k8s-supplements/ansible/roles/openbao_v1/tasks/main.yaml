@@ -1,0 +1,144 @@
+---
+- name: Ensure namespace exists
+  kubernetes.core.k8s:
+    apply: true
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ openbao_on_k8s_namespace }}"
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
+
+- name: Create the internal PKI
+  import_tasks: internal_pki.yaml
+
+- name: Create the external PKI
+  when: openbao_on_k8s_ingress
+  import_tasks: external_pki.yaml
+
+- name: Deploy Openbao
+  vars:
+    scheduling_key: "{{ openbao_on_k8s_scheduling_key | default(None) }}"
+  kubernetes.core.helm:
+    chart_repo_url: "{{ openbao_on_k8s_helm_repo_url }}"
+    chart_ref: openbao
+    chart_version: "{{ openbao_on_k8s_chart_version }}"
+    release_namespace: "{{ openbao_on_k8s_namespace }}"
+    release_name: openbao
+    release_state: present
+    values: "{{ lookup('template', 'openbao.yaml.j2') | from_yaml }}"
+
+- name: Find openbao pods
+  kubernetes.core.k8s_info:
+    api_version: v1
+    namespace: "{{ openbao_on_k8s_namespace }}"
+    kind: Pod
+    label_selectors: app.kubernetes.io/instance=openbao,app.kubernetes.io/name=openbao,component=server
+  register: openbao_pods
+  failed_when: "(openbao_pods.resources | length) == 0"
+  retries: 10
+  delay: 5
+
+- name: Obtain openbao status
+  kubernetes.core.k8s_exec:
+    namespace: "{{ openbao_on_k8s_namespace }}"
+    pod: "{{ openbao_pods.resources[0].metadata.name }}"
+    container: openbao
+    command: bao status -format=json
+  # not found or other fatal signals
+  until: '(openbao_status.rc | default(255)) < 128 and openbao_status.stdout != ""'
+  failed_when: '(openbao_status.rc | default(255)) >= 128 or openbao_status.stdout == ""'
+  register: openbao_status
+  retries: 10
+  delay: 5
+
+# Bao commands are usually idempotent
+- name: Initialize Openbao in first pod if not initialized
+  when: 'not (openbao_status.stdout | from_json).initialized'
+  block:
+  - name: Initialize Openbao
+    kubernetes.core.k8s_exec:
+      namespace: "{{ openbao_on_k8s_namespace }}"
+      pod: "{{ openbao_pods.resources[0].metadata.name }}"
+      container: openbao
+      command: 'bao operator init -key-shares={{ openbao_on_k8s_init_key_shares | quote }} -key-threshold={{ openbao_on_k8s_init_key_threshold | quote }} -format=json'
+    failed_when: 'openbao_init.rc != 0'
+    register: openbao_init
+
+  - name: "Ensure {{ etc_dir }}/openbao exists"
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    file:
+      path: "{{ etc_dir }}/openbao"
+      state: directory
+
+  # TODO: I'm caching those to facilitate development. We want to rotate these keys and token immediately after the cluster was spawned.
+  - name: "SENSITIVE: Write UNSEAL KEYS into cluster repo ({{ etc_dir }}/openbao/unseal.key)"
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    copy:
+      content: "{{ (openbao_init.stdout | from_json).unseal_keys_b64 }}"
+      dest: "{{ etc_dir }}/openbao/unseal.key"
+      mode: u=rw,og-rwx
+
+  - name: "SENSITIVE: Write ROOT TOKEN into cluster repo ({{ etc_dir }}/openbao/root.token)"
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    copy:
+      content: "{{ (openbao_init.stdout | from_json).root_token }}"
+      dest: "{{ etc_dir }}/openbao/root.token"
+      mode: u=rw,og-rwx
+
+- name: Load unseal key(s) and a root token
+  import_tasks: credentials.yaml
+
+# We have to unseal at least one openbao replica before the raft cluster can be established
+- name: Unseal the initial Openbao pod
+  loop:
+  - "{{ openbao_pods.resources[0] }}"
+  loop_control:
+    label: "{{ pod.metadata.name }}"
+    loop_var: pod
+  include_tasks: unseal.yaml
+
+- name: Wait until all openbao instances have joined the cluster
+  kubernetes.core.k8s_exec:
+    namespace: "{{ openbao_on_k8s_namespace }}"
+    pod: "{{ item.metadata.name }}"
+    container: openbao
+    command: bao status -format=json
+  register: openbao_status
+  failed_when: openbao_status.rc == 1
+  until: (openbao_status.stdout | from_json).initialized
+  retries: 10
+  delay: 5
+  loop: "{{ openbao_pods.resources }}"
+
+# TODO: The unseal command sometimes fails with a timeout (triggered by openbao) and yet the openbao replica is unsealed eventually.
+# Potentially VAULT_MAX_RETRIES can help
+- name: Unseal all residual pods
+  loop: "{{ openbao_pods.resources }}"
+  loop_control:
+    label: "{{ pod.metadata.name }}"
+    loop_var: pod
+  # Note: We're using the loop + `include_tasks` dance to emulate looping over a block
+  include_tasks: unseal.yaml
+
+- name: Add monitoring
+  import_tasks: monitoring.yaml
+  when:
+  - k8s_monitoring_enabled | bool
+  - openbao_on_k8s_root_token is defined
+  - openbao_on_k8s_root_token | length > 0
+
+- name: Add backups
+  include_tasks: backup.yaml
+  when:
+  - openbao_on_k8s_enable_backups | bool
+  - openbao_on_k8s_root_token is defined
+  - openbao_on_k8s_root_token | length > 0
+...

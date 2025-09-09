@@ -1,0 +1,14 @@
+---
+- name: Install Openbao
+  hosts: orchestrator
+  gather_facts: false
+  vars_files:
+  - vars/retries.yaml
+  - vars/etc.yaml
+  roles:
+  - role: openbao_on_k8s_v1
+    when: openbao_on_k8s_enabled | bool
+    tags:
+    - openbao_on_k8s_v1
+    - openbao
+...

@@ -1,0 +1,18 @@
+---
+- name: Fire a bao command
+  # The goal of this surprisingly complex expression is avoid any appearance of the token in the `cmdline` of the bao cli process.
+  # We cannot interact directly with the openbao API via HTTP because port forwarding to the orchestrator ain't easy.
+  # The inner expression reads and exports the VAULT_TOKEN from stdin. The value for stdin is provided directly to the command module.
+  # We checked for leaks via the following probe:
+  # `sudo bpftrace -e 'tracepoint:syscalls:sys_enter_exec*{ printf("pid: %d, comm: %s, args: ", pid, comm); join(args->argv); }'
+  command: |
+    kubectl exec -i -n {{ openbao_on_k8s_namespace | quote }} {{ openbao_pods.resources[0].metadata.name | quote }} -c openbao -- sh -xe -c 'read VAULT_TOKEN; export VAULT_TOKEN; {{ bao_expression }}'
+  register: bao_out
+  # This operation ought to be idempotent but detecting if the policy already exists is imho unneccessary boilerplate
+  changed_when: true
+  until: bao_out is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
+  args:
+    stdin: "{{ openbao_on_k8s_root_token }}"
+...

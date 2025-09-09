@@ -36,6 +36,9 @@
 - name: Install Hashicorp Vault
   import_playbook: install-vault.yaml
 
+- name: Install Openbao
+  import_playbook: install-openbao.yaml
+
 - name: Install Flux
   import_playbook: install-flux.yaml
 
