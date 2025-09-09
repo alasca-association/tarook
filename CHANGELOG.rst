@@ -14,6 +14,15 @@ Information about unreleased changes can be found
 
 .. towncrier release notes start
 
+v10.1.2 (2025-09-09)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug has been fixed that prevented the nvidia device plugin to be rolled out and updated. (`!2108 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2108>`_)
+
+
 v10.1.1 (2025-09-05)
 --------------------
 
