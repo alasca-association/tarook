@@ -305,7 +305,7 @@
   script:
     # Spawn and test cluster
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - tomlq --in-place --toml-output '.kubernetes.version = "1.31.12"' config/overrides.toml
+  - tomlq --in-place --toml-output '.kubernetes.version = "1.31.13"' config/overrides.toml
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
 
     # Upgrade cluster to k8s v1.32
