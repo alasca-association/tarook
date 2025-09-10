@@ -71,7 +71,7 @@
   rfc952 = let
     # Section GRAMMATICAL HOST TABLE SPECIFICATION
     addressRE = "(${octetRE})[.](${octetRE})[.](${octetRE})[.](${octetRE})";
-    octetRE = "(25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])";
+    octetRE = "(25[0-5]|(2[0-4]|1[0-9]|[1-9])?[0-9])";
 
     domainnameRE = hnameRE;
     hnameRE = "(${nameRE})*([.](${nameRE}))?";
