@@ -7,7 +7,7 @@
 }: let
   cfg = config.yk8s.miscellaneous;
   modules-lib = import ./lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModuleWithNewSection;
+  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule;
   inherit (pkgs.stdenv) mkDerivation;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile linkToPath;
@@ -26,29 +26,29 @@
     ;
 in {
   imports = [
-    (mkRemovedOptionModule "miscellaneous" "ingress_whitelisting" "")
-    (mkRemovedOptionModule "miscellaneous" "container_runtime" "")
-    (mkRemovedOptionModule "miscellaneous" "pip_mirror_url" "")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "ipv4_enabled" "infra" "ipv4_enabled")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "ipv6_enabled" "infra" "ipv6_enabled")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "subnet_v6_cidr" "infra" "subnet_v6_cidr")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "subnet_cidr" "infra" "subnet_cidr")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "networking_fixed_ip" "infra" "networking_fixed_ip")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "networking_fixed_ip_v6" "infra" "networking_fixed_ip_v6")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "hosts_file" "infra" "hosts_file")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "k8s_network_ipv4_nat_outgoing" "kubernetes" "network.ipv4_nat_outgoing")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "k8s_network_ipv6_nat_outgoing" "kubernetes" "network.ipv6_nat_outgoing")
-    (mkRemovedOptionModule "miscellaneous" "openstack_connect_use_helm" "Helm is now always used to deploy the CCM and the cinder CSI plugin")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "openstack_network_name" "openstack" "network_name")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "openstack_cinder_volume_type" "openstack" "cinder_volume_type")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "check_openstack_credentials" "openstack" "check_credentials")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "haproxy_frontend_nodeport_maxconn" "load-balancing" "haproxy_frontend_nodeport_maxconn")
-    (mkRenamedOptionModuleWithNewSection "miscellaneous" "haproxy_frontend_k8s_api_maxconn" "load-balancing" "haproxy_frontend_k8s_api_maxconn")
-    (mkRemovedOptionModule "miscellaneous" "docker_registry_mirrors" "Use containerd.mirrors instead")
-    (mkRemovedOptionModule "miscellaneous" "docker_insecure_registries" "Use containerd.mirrors instead")
-    (mkRemovedOptionModule "miscellaneous" "container_mirror_default_host" "Use containerd.mirrors instead")
-    (mkRemovedOptionModule "miscellaneous" "container_mirrors" "Use containerd.mirrors instead")
-    (mkRemovedOptionModule "miscellaneous" "wireguard_on_workers" "")
+    (mkRemovedOptionModule ["miscellaneous" "ingress_whitelisting"] "")
+    (mkRemovedOptionModule ["miscellaneous" "container_runtime"] "")
+    (mkRemovedOptionModule ["miscellaneous" "pip_mirror_url"] "")
+    (mkRenamedOptionModule ["miscellaneous" "ipv4_enabled"] ["infra" "ipv4_enabled"])
+    (mkRenamedOptionModule ["miscellaneous" "ipv6_enabled"] ["infra" "ipv6_enabled"])
+    (mkRenamedOptionModule ["miscellaneous" "subnet_v6_cidr"] ["infra" "subnet_v6_cidr"])
+    (mkRenamedOptionModule ["miscellaneous" "subnet_cidr"] ["infra" "subnet_cidr"])
+    (mkRenamedOptionModule ["miscellaneous" "networking_fixed_ip"] ["infra" "networking_fixed_ip"])
+    (mkRenamedOptionModule ["miscellaneous" "networking_fixed_ip_v6"] ["infra" "networking_fixed_ip_v6"])
+    (mkRenamedOptionModule ["miscellaneous" "hosts_file"] ["infra" "hosts_file"])
+    (mkRenamedOptionModule ["miscellaneous" "k8s_network_ipv4_nat_outgoing"] ["kubernetes" "network" "ipv4_nat_outgoing"])
+    (mkRenamedOptionModule ["miscellaneous" "k8s_network_ipv6_nat_outgoing"] ["kubernetes" "network" "ipv6_nat_outgoing"])
+    (mkRemovedOptionModule ["miscellaneous" "openstack_connect_use_helm"] "Helm is now always used to deploy the CCM and the cinder CSI plugin")
+    (mkRenamedOptionModule ["miscellaneous" "openstack_network_name"] ["openstack" "network_name"])
+    (mkRenamedOptionModule ["miscellaneous" "openstack_cinder_volume_type"] ["openstack" "cinder_volume_type"])
+    (mkRenamedOptionModule ["miscellaneous" "check_openstack_credentials"] ["openstack" "check_credentials"])
+    (mkRenamedOptionModule ["miscellaneous" "haproxy_frontend_nodeport_maxconn"] ["load-balancing" "haproxy_frontend_nodeport_maxconn"])
+    (mkRenamedOptionModule ["miscellaneous" "haproxy_frontend_k8s_api_maxconn"] ["load-balancing" "haproxy_frontend_k8s_api_maxconn"])
+    (mkRemovedOptionModule ["miscellaneous" "docker_registry_mirrors"] "Use containerd.mirrors instead")
+    (mkRemovedOptionModule ["miscellaneous" "docker_insecure_registries"] "Use containerd.mirrors instead")
+    (mkRemovedOptionModule ["miscellaneous" "container_mirror_default_host"] "Use containerd.mirrors instead")
+    (mkRemovedOptionModule ["miscellaneous" "container_mirrors"] "Use containerd.mirrors instead")
+    (mkRemovedOptionModule ["miscellaneous" "wireguard_on_workers"] "")
   ];
   options.yk8s.miscellaneous = mkTopSection {
     _docs.preface = ''

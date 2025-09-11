@@ -6,7 +6,7 @@
 }: let
   cfg = config.yk8s.kubernetes;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModuleWithNewSection;
+  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkYaml;
   inherit
@@ -24,13 +24,13 @@ in {
     ./monitoring.nix
     ./network.nix
     ./kubelet.nix
-    (mkRemovedOptionModule "kubernetes" "use_podsecuritypolicies" "")
-    (mkRemovedOptionModule "kubernetes" "continuous_join_key" "")
-    (mkRenamedOptionModuleWithNewSection "kubernetes" "monitoring.alertmanager_config_secret" "k8s-service-layer.prometheus" "alertmanager_config_secret")
-    (mkRemovedOptionModule "kubernetes" "global_monitoring" "This section has been moved to a custom role")
-    (mkRemovedOptionModule "kubernetes" "apiserver.audit_logs.custom_policy" "Use config.yk8s.kubernetes.apiserver.audit_logs.policy instead")
-    (mkRenamedOptionModuleWithNewSection "kubernetes" "storage.rook_enabled" "k8s-service-layer.rook" "enabled")
-    (mkRenamedOptionModuleWithNewSection "kubernetes" "storage.cinder_enable_topology" "openstack" "cinder_enable_topology")
+    (mkRemovedOptionModule ["kubernetes" "use_podsecuritypolicies"] "")
+    (mkRemovedOptionModule ["kubernetes" "continuous_join_key"] "")
+    (mkRenamedOptionModule ["kubernetes" "monitoring" "alertmanager_config_secret"] ["k8s-service-layer" "prometheus" "alertmanager_config_secret"])
+    (mkRemovedOptionModule ["kubernetes" "global_monitoring"] "This section has been moved to a custom role")
+    (mkRemovedOptionModule ["kubernetes" "apiserver" "audit_logs" "custom_policy"] "Use config.yk8s.kubernetes.apiserver.audit_logs.policy instead")
+    (mkRenamedOptionModule ["kubernetes" "storage" "rook_enabled"] ["k8s-service-layer" "rook" "enabled"])
+    (mkRenamedOptionModule ["kubernetes" "storage" "cinder_enable_topology"] ["openstack" "cinder_enable_topology"])
   ];
   options.yk8s.kubernetes = mkTopSection {
     _docs.order = 3;

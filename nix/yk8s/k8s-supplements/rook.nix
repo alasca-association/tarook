@@ -6,7 +6,7 @@
 }: let
   cfg = config.yk8s.k8s-service-layer.rook;
   modules-lib = import ../lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule mkRenamedResourceOptionModules mkMultiResourceOptionsModule;
+  inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule mkRenamedResourceOptionModule mkMultiResourceOptionsModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection logIf mkGroupVarsFile mkMultiResourceOptions;
   inherit (yk8s-lib.options) mkDisableOption mkHelmChartVersionOption;
@@ -21,37 +21,36 @@
     ociImageTag
     ;
 in {
-  imports =
-    [
-      (mkRemovedOptionModule "k8s-service-layer.rook" "use_helm" "")
-      (mkRemovedOptionModule "k8s-service-layer.rook" "on_openstack" "Set automatically if openstack.enabled is true.")
-      (mkMultiResourceOptionsModule "k8s-service-layer.rook" {
-        description = ''
-          Requests and limits for rook/ceph
+  imports = [
+    (mkRemovedOptionModule ["k8s-service-layer" "rook" "use_helm"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "rook" "on_openstack"] "Set automatically if openstack.enabled is true.")
+    (mkRenamedResourceOptionModule ["k8s-service-layer" "rook"] ["mon" "osd" "mgr" "mds" "operator"])
+    (mkMultiResourceOptionsModule ["k8s-service-layer" "rook"] {
+      description = ''
+        Requests and limits for rook/ceph
 
-          The default values are the *absolute minimum* values required by rook. Going
-          below these numbers will make rook refuse to even create the pods. See also:
-          https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-configuration-settings
-        '';
-        resources = {
-          mon.cpu.request = "100m";
-          mon.memory.limit = "1Gi";
+        The default values are the *absolute minimum* values required by rook. Going
+        below these numbers will make rook refuse to even create the pods. See also:
+        https://rook.io/docs/rook/v1.2/ceph-cluster-crd.html#cluster-wide-resources-configuration-settings
+      '';
+      resources = {
+        mon.cpu.request = "100m";
+        mon.memory.limit = "1Gi";
 
-          osd.cpu.request = null;
-          osd.memory.limit = "2Gi";
+        osd.cpu.request = null;
+        osd.memory.limit = "2Gi";
 
-          mgr.cpu.request = "100m";
-          mgr.memory.limit = "512Mi";
+        mgr.cpu.request = "100m";
+        mgr.memory.limit = "512Mi";
 
-          mds.cpu.request = null;
-          mds.memory.limit = "4Gi";
+        mds.cpu.request = null;
+        mds.memory.limit = "4Gi";
 
-          operator.cpu.request = null;
-          operator.memory.limit = "512Mi";
-        };
-      })
-    ]
-    ++ (mkRenamedResourceOptionModules "k8s-service-layer.rook" ["mon" "osd" "mgr" "mds" "operator"]);
+        operator.cpu.request = null;
+        operator.memory.limit = "512Mi";
+      };
+    })
+  ];
 
   options.yk8s.k8s-service-layer.rook = mkTopSection {
     _docs.preface = ''

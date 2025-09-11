@@ -25,18 +25,18 @@
   inherit (yk8s-lib.options) mkHelmReleaseOptions;
 in {
   imports = [
-    (mkRemovedOptionModule "k8s-service-layer.etcd-backup" "s3_config_name" "")
+    (mkRemovedOptionModule ["k8s-service-layer" "etcd-backup" "s3_config_name"] "")
 
-    (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "namespace" "helm.release_namespace")
-    (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "helm_repo_url" "helm.chart_repo_url")
-    (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "name" "helm.release_name")
-    (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "chart_version" "helm.chart_version")
-    (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "schedule" "helm.values.schedule")
-    (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "metrics_port" "helm.values.metrics_port")
-    (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "bucket_name" "helm.values.targets.s3.bucket")
-    (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "addressing_style" "helm.values.targets.s3.addressingStyle")
-    (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "secret_name" "helm.values.targets.s3.credentialRef.name")
-    (mkRenamedOptionModule "k8s-service-layer.etcd-backup" "file_prefix" "helm.values.targets.s3.filePrefix")
+    (mkRenamedOptionModule ["k8s-service-layer" "etcd-backup" "namespace"] ["k8s-service-layer" "etcd-backup" "helm" "release_namespace"])
+    (mkRenamedOptionModule ["k8s-service-layer" "etcd-backup" "helm_repo_url"] ["k8s-service-layer" "etcd-backup" "helm" "chart_repo_url"])
+    (mkRenamedOptionModule ["k8s-service-layer" "etcd-backup" "name"] ["k8s-service-layer" "etcd-backup" "helm" "release_name"])
+    (mkRenamedOptionModule ["k8s-service-layer" "etcd-backup" "chart_version"] ["k8s-service-layer" "etcd-backup" "helm" "chart_version"])
+    (mkRenamedOptionModule ["k8s-service-layer" "etcd-backup" "schedule"] ["k8s-service-layer" "etcd-backup" "helm" "values" "schedule"])
+    (mkRenamedOptionModule ["k8s-service-layer" "etcd-backup" "metrics_port"] ["k8s-service-layer" "etcd-backup" "helm" "values" "metrics_port"])
+    (mkRenamedOptionModule ["k8s-service-layer" "etcd-backup" "bucket_name"] ["k8s-service-layer" "etcd-backup" "helm" "values" "targets" "s3" "bucket"])
+    (mkRenamedOptionModule ["k8s-service-layer" "etcd-backup" "addressing_style"] ["k8s-service-layer" "etcd-backup" "helm" "values" "targets" "s3" "addressingStyle"])
+    (mkRenamedOptionModule ["k8s-service-layer" "etcd-backup" "secret_name"] ["k8s-service-layer" "etcd-backup" "helm" "values" "targets" "s3" "credentialRef" "name"])
+    (mkRenamedOptionModule ["k8s-service-layer" "etcd-backup" "file_prefix"] ["k8s-service-layer" "etcd-backup" "helm" "values" "targets" "s3" "filePrefix"])
   ];
 
   options.yk8s.k8s-service-layer.etcd-backup = mkTopSection {
@@ -246,7 +246,9 @@ in {
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
-      unflat = ["helm.values"];
+      unflat = [
+        ["helm" "values"]
+      ];
       ansible_prefix = "etcd_backup_";
       inventory_path = "all/etcd-backup.yaml";
       transformations = [

@@ -53,7 +53,7 @@
   };
 in {
   imports = [
-    (mkRemovedOptionModule "load-balancing" "priorities" "")
+    (mkRemovedOptionModule ["load-balancing" "priorities"] "")
   ];
 
   options.yk8s.load-balancing = mkTopSection {

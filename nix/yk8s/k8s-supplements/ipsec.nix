@@ -20,7 +20,7 @@
     ;
 in {
   imports = [
-    (mkRemovedOptionModule "ipsec" "eap_psk" "")
+    (mkRemovedOptionModule ["ipsec" "eap_psk"] "")
   ];
 
   options.yk8s.ipsec = mkTopSection {
@@ -104,17 +104,19 @@ in {
       type = with types; nullOr (listOf (either ipv4Cidr ipv6Cidr));
       default = null;
       apply = v:
-        if v == null then v
-        else (
-          ignoreItemsOfDisabledIPFamily {
-            ipv4Types = [ipv4Cidr];
-            ipv6Types = [ipv6Cidr];
-            ipv4Enabled = config.yk8s.infra.ipv4_enabled;
-            ipv6Enabled = config.yk8s.infra.ipv6_enabled;
-          }
-          "config.yk8s.ipsec.virtual_subnet_pool: "
-          v
-        );
+        if v == null
+        then v
+        else
+          (
+            ignoreItemsOfDisabledIPFamily {
+              ipv4Types = [ipv4Cidr];
+              ipv6Types = [ipv6Cidr];
+              ipv4Enabled = config.yk8s.infra.ipv4_enabled;
+              ipv6Enabled = config.yk8s.infra.ipv6_enabled;
+            }
+            "config.yk8s.ipsec.virtual_subnet_pool: "
+            v
+          );
     };
     remote_addrs = mkOption {
       description = ''

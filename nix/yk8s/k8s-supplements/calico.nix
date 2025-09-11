@@ -18,11 +18,11 @@
     ;
 in {
   imports = [
-    (mkRemovedOptionModule "kubernetes" "network.calico.use_tigera_operator" "")
-    (mkRemovedOptionModule "kubernetes" "network.calico.ip_autodetection_method" "")
-    (mkRemovedOptionModule "kubernetes" "network.calico.ipv6_autodetection_method" "")
-    (mkRemovedOptionModule "kubernetes" "network.calico.calico_ip_autodetection_method" "")
-    (mkRemovedOptionModule "kubernetes" "network.calico.calico_ipv6_autodetection_method" "")
+    (mkRemovedOptionModule ["kubernetes" "network" "calico" "use_tigera_operator"] "")
+    (mkRemovedOptionModule ["kubernetes" "network" "calico" "ip_autodetection_method"] "")
+    (mkRemovedOptionModule ["kubernetes" "network" "calico" "ipv6_autodetection_method"] "")
+    (mkRemovedOptionModule ["kubernetes" "network" "calico" "calico_ip_autodetection_method"] "")
+    (mkRemovedOptionModule ["kubernetes" "network" "calico" "calico_ipv6_autodetection_method"] "")
   ];
 
   options.yk8s.kubernetes.network.calico = mkSubSection {

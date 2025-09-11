@@ -32,15 +32,15 @@
   inherit (lib.trivial) pipe;
 in {
   imports = [
-    (mkRenamedOptionModule "wireguard" "wg_ip_cidr" "ip_cidr")
-    (mkRenamedOptionModule "wireguard" "wg_ipv6_cidr" "ipv6_cidr")
-    (mkRemovedOptionModule "wireguard" "rollout_company_users" "")
-    (mkRemovedOptionModule "wireguard" "s2s_enabled" "")
-    (mkRemovedOptionModule "wireguard" "port" "Use endpoints instead")
-    (mkRemovedOptionModule "wireguard" "ip_cidr" "Use endpoints instead")
-    (mkRemovedOptionModule "wireguard" "ipv6_cidr" "Use endpoints instead")
-    (mkRemovedOptionModule "wireguard" "ip_gw" "Use endpoints instead")
-    (mkRemovedOptionModule "wireguard" "ipv6_gw" "Use endpoints instead")
+    (mkRenamedOptionModule ["wireguard" "wg_ip_cidr"] ["wireguard" "ip_cidr"])
+    (mkRenamedOptionModule ["wireguard" "wg_ipv6_cidr"] ["wireguard" "ipv6_cidr"])
+    (mkRemovedOptionModule ["wireguard" "rollout_company_users"] "")
+    (mkRemovedOptionModule ["wireguard" "s2s_enabled"] "")
+    (mkRemovedOptionModule ["wireguard" "port"] "Use endpoints instead")
+    (mkRemovedOptionModule ["wireguard" "ip_cidr"] "Use endpoints instead")
+    (mkRemovedOptionModule ["wireguard" "ipv6_cidr"] "Use endpoints instead")
+    (mkRemovedOptionModule ["wireguard" "ip_gw"] "Use endpoints instead")
+    (mkRemovedOptionModule ["wireguard" "ipv6_gw"] "Use endpoints instead")
   ];
 
   options.yk8s.wireguard = mkTopSection {

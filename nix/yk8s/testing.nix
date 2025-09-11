@@ -11,7 +11,7 @@
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
 in {
   imports = [
-    (mkRenamedOptionModule "testing" "test-nodes" "nodes")
+    (mkRenamedOptionModule ["testing" "test-nodes"] ["testing" "nodes"])
   ];
   options.yk8s.testing = mkTopSection {
     _docs.preface = ''

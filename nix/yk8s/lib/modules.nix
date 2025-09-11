@@ -2,12 +2,24 @@
 with lib; let
   yk8s-lib.transform = import ./transform.nix {inherit lib;};
   yk8s-lib.types = import ./types.nix {inherit lib;};
+
+  findTopSection = options: path: let
+    _findTopSection = options: currentPath: let
+      opt = lib.getAttrFromPath (["yk8s"] ++ currentPath) options;
+    in
+      if opt?"_internal" && opt._internal.sectionType.default == "top"
+      then currentPath
+      else if currentPath == []
+      then path
+      else _findTopSection options (lib.init currentPath);
+  in
+    _findTopSection options path;
 in rec {
   /*
      Return a module that causes a warning to be shown if the
      specified option is defined. For example,
 
-     mkRemovedOptionModule "kubernetes" "use_podsecuritypolicies" "<replacement instructions>"
+     mkRemovedOptionModule ["kubernetes" "use_podsecuritypolicies"] "<replacement instructions>"
 
      causes a assertion if the user defines kubernetes.use_podsecuritypolicies.
 
@@ -18,14 +30,19 @@ in rec {
 
   (Adapted from https://github.com/nixos/nixpkgs/blob/master/lib/modules.nix)
   */
-  mkRemovedOptionModule = sectionName: optionName: replacementInstructions: {options, ...}: let
-    section = splitString "." sectionName;
-    option = splitString "." optionName;
-    absOptionName = ["yk8s"] ++ section ++ option;
+  mkRemovedOptionModule = optionPath: replacementInstructions: {options, ...}: let
+    absOptionName = ["yk8s"] ++ optionPath;
+    section = findTopSection options optionPath;
+    option = lib.lists.removePrefix section optionPath;
+    isSection = option == [];
+    desc =
+      if isSection
+      then "section"
+      else "option";
   in {
     options = setAttrByPath absOptionName (mkOption {
       visible = false;
-      apply = x: throw "The option `${showOption absOptionName}' can no longer be used since it's been removed. ${replacementInstructions}";
+      apply = x: throw "The ${desc} `${showOption absOptionName}' can no longer be used since it's been removed. ${replacementInstructions}";
     });
     config.yk8s =
       {
@@ -35,54 +52,17 @@ in rec {
           {
             assertion = !opt.isDefined;
             message = ''
-              The option definition `${showOption absOptionName}' in ${showFiles opt.files} no longer has any effect; please remove it.
+              The ${desc} definition `${showOption absOptionName}' in ${showFiles opt.files} no longer has any effect; please remove it.
               ${replacementInstructions}
             '';
           }
         ];
       }
-      // setAttrByPath section {_internal.removedOptions = [option];};
+      // (lib.optionalAttrs (!isSection) (setAttrByPath section {_internal.removedOptions = [option];}));
   };
 
   /*
-  Return a module that causes a warning to be shown if the
-  specified section is defined. For example,
-
-  mkRemovedOptionModule "passwordstore" "<replacement instructions>"
-
-  causes a assertion if the user defines passwordstore.
-
-  replacementInstructions is a string that provides instructions on
-  how to achieve the same functionality without the removed option,
-  or alternatively a reasoning why the functionality is not needed.
-  replacementInstructions SHOULD be provided!
-
-  */
-  mkRemovedSectionModule = sectionName: replacementInstructions: {options, ...}: let
-    section = splitString "." sectionName;
-    absSectionName = ["yk8s"] ++ section;
-  in {
-    options = setAttrByPath absSectionName (mkOption {
-      visible = false;
-      apply = x: throw "The section `${showOption absSectionName}' can no longer be used since it's been removed. ${replacementInstructions}";
-    });
-    config.yk8s = {
-      assertions = let
-        opt = getAttrFromPath absSectionName options;
-      in [
-        {
-          assertion = !opt.isDefined;
-          message = ''
-            The section definition `${showOption absSectionName}' in ${showFiles opt.files} no longer has any effect; please remove it.
-            ${replacementInstructions}
-          '';
-        }
-      ];
-    };
-  };
-
-  /*
-  Return a list of modules that causes warnings to be shown if a resource option
+  Return a module that causes warnings to be shown if a resource option
   of the form ${prefix}_[memory|cpu]_[request|limit] is used, the defined value
   however forwarded to${prefix}_resources.[memory|cpu].[request|limit].
   For example,
@@ -90,29 +70,31 @@ in rec {
     imports = [
       ....
     ] ++
-    (mkRenamedResourceOptionModules "k8s-service-layer.rook" ["mon" "osd" "mgr" "mds" "operator"]);
+    (mkRenamedResourceOptionModule ["k8s-service-layer" "rook"] ["mon" "osd" "mgr" "mds" "operator"]);
   */
-  mkRenamedResourceOptionModules = section: prefix:
-    lib.mapCartesianProduct ({
-      prefix,
-      res,
-      type,
-    }: (
-      mkRenamedOptionModule section "${prefix}_${res}_${type}" "${prefix}_resources.${type}s.${res}"
-    )) {
-      inherit prefix;
-      res = ["memory" "cpu"];
-      type = ["request" "limit"];
-    };
+  mkRenamedResourceOptionModule = section: prefix: {
+    imports =
+      lib.mapCartesianProduct ({
+        prefix,
+        res,
+        type,
+      }: (
+        mkRenamedOptionModule (section ++ ["${prefix}_${res}_${type}"]) (section ++ ["${prefix}_resources" "${type}s" "${res}"])
+      )) {
+        inherit prefix;
+        res = ["memory" "cpu"];
+        type = ["request" "limit"];
+      };
+  };
 
   /*
   Return a module that causes a warning to be shown if the
-  specified "from" option is defined; the defined value is however
-  forwarded to the "to" option. This can be used to rename options
+  specified "fromPath" option is defined; the defined value is however
+  forwarded to the "toPath" option. This can be used to rename options
   while providing backward compatibility. For example,
 
     imports = [
-      (mkRenamedOptionModule "wireguard" "wg_ip_cidr" "ip_cidr")
+      (mkRenamedOptionModule ["wireguard" "wg_ip_cidr"] ["wireguard" "ip_cidr"])
     ];
 
   forwards any definitions of wireguard.wg_ip_cidr to
@@ -121,33 +103,11 @@ in rec {
   This also copies over the priority from the aliased option to the
   non-aliased option.
   */
-  mkRenamedOptionModule = sectionName: from: to: (mkRenamedOptionModuleWithNewSection sectionName from sectionName to);
-
-  /*
-  Return a module that causes a warning to be shown if the
-  specified "from" option is defined; the defined value is however
-  forwarded to the "to" option. This can be used to rename options
-  while providing backward compatibility. For example,
-
-    imports = [
-      (mkRenamedOptionModuleWithNewSection "sec1" "op1" "sec2" "op1")
-    ]
-
-  forwards any definitions of wireguard.wg_ip_cidr to
-  wireguard.ip_cidr while printing a warning.
-
-  This also copies over the priority from the aliased option to the
-  non-aliased option.
-  */
-  mkRenamedOptionModuleWithNewSection = sectionNameFrom: from: sectionNameTo: to: let
-    sectionFrom = splitString "." sectionNameFrom;
-    sectionTo = splitString "." sectionNameTo;
-    from' = splitString "." from;
-    to' = splitString "." to;
-    fromWithSection = sectionFrom ++ from';
-    toWithSection = sectionTo ++ to';
-    absFrom = ["yk8s"] ++ fromWithSection;
-    absTo = ["yk8s"] ++ toWithSection;
+  mkRenamedOptionModule = fromPath: toPath: {options, ...}: let
+    sectionFrom = findTopSection options fromPath;
+    optionFrom = lib.lists.removePrefix sectionFrom fromPath;
+    absFrom = ["yk8s"] ++ fromPath;
+    absTo = ["yk8s"] ++ toPath;
   in {
     imports = [
       (doRename {
@@ -155,10 +115,10 @@ in rec {
         to = absTo;
         visible = false;
         warn = true;
-        use = builtins.trace "Obsolete option `${showOption fromWithSection}' is used. It was renamed to `${showOption toWithSection}'.";
+        use = builtins.trace "Obsolete option `${showOption absFrom}' is used. It was renamed to `${showOption absTo}'.";
       })
       {
-        config.yk8s = setAttrByPath sectionFrom {_internal.removedOptions = [from'];};
+        config.yk8s = setAttrByPath sectionFrom {_internal.removedOptions = [optionFrom];};
       }
       ({options, ...}: {
         config.yk8s.warnings = let
@@ -201,23 +161,20 @@ in rec {
   Example usage:
 
     imports = [
-      (mkResourceOptionModule "ch-k8s-lbaas" "controller_resources" {
+      (mkResourceOptionModule ["ch-k8s-lbaas"] ["controller_resources"] {
         description = "Request and limit for the LBaaS controller";
         cpu.request = "100m";
         memory.limit = "256Mi";
       })
     ];
   */
-  mkResourceOptionModule = sectionName: optionName: {
+  mkResourceOptionModule = sectionPath: optionPath: {
     description,
     cpu,
     memory,
   }: let
-    sec = ["yk8s"] ++ (splitString "." sectionName);
-    opt =
-      if length (splitString "." optionName) == 1
-      then [optionName]
-      else abort "mkResouceOptionModule doesn't currently support nested optionNames (at ${sectionName}.${optionName})";
+    sec = ["yk8s"] ++ sectionPath;
+    opt = optionPath;
     absOpt = sec ++ opt;
   in
     {config, ...}: {
@@ -261,7 +218,7 @@ in rec {
         };
         apply = yk8s-lib.transform.filterNull;
       });
-      config = setAttrByPath (sec ++ ["_internal" "unflat"]) opt;
+      config = setAttrByPath (sec ++ ["_internal" "unflat"]) [opt];
       imports = [
         (checkResources absOpt)
       ];
@@ -274,7 +231,7 @@ in rec {
   For example
    imports =
       [
-        (mkMultiResourceOptionsModule "k8s-service-layer.rook" {
+        (mkMultiResourceOptionsModule ["k8s-service-layer" "rook"] {
           description = ''
             Requests and limits for rook/ceph
 
@@ -300,17 +257,14 @@ in rec {
           };
         })
   */
-  mkMultiResourceOptionsModule = sectionName: {
+  mkMultiResourceOptionsModule = sectionPath: {
     description,
     resources,
-  }: let
-    sec = ["yk8s"] ++ (splitString "." sectionName);
-    names = attrNames resources;
-  in {
+  }: {
     imports = lib.attrsets.foldlAttrs (acc: prefix: values:
       acc
       ++ [
-        (mkResourceOptionModule sectionName "${prefix}_resources" {
+        (mkResourceOptionModule sectionPath ["${prefix}_resources"] {
           inherit description;
           inherit (values) cpu memory;
         })

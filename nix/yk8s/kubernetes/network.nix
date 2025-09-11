@@ -17,8 +17,8 @@
     ;
 in {
   imports = [
-    (mkRemovedOptionModule "kubernetes" "network.plugin_switch_restart_all_namespaces" "")
-    (mkRemovedOptionModule "kubernetes" "network.plugin" "CNIs use their own enable options instead, eg. kubernetes.network.calico.enabled")
+    (mkRemovedOptionModule ["kubernetes" "network" "plugin_switch_restart_all_namespaces"] "")
+    (mkRemovedOptionModule ["kubernetes" "network" "plugin"] "CNIs use their own enable options instead, eg. kubernetes.network.calico.enabled")
   ];
   options.yk8s.kubernetes.network = mkSubSection {
     _docs.order = 8;

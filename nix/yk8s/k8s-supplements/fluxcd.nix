@@ -18,7 +18,7 @@
     ;
 in {
   imports = [
-    (mkRemovedOptionModule "k8s-service-layer.fluxcd" "legacy" "Support for the legacy FluxCD installation has been dropped.\nYou must switch to an older release and migrate if you have not yet.")
+    (mkRemovedOptionModule ["k8s-service-layer" "fluxcd" "legacy"] "Support for the legacy FluxCD installation has been dropped.\nYou must switch to an older release and migrate if you have not yet.")
   ];
   options.yk8s.k8s-service-layer.fluxcd = mkTopSection {
     _docs.preface = ''
