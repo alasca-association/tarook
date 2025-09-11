@@ -209,7 +209,7 @@ in {
     k8s-service-layer = {
       rook = {
         enabled = true;
-        namespace = "rook-ceph";
+        namespace = "ceph-rook-custom";
         cluster_name = "rook-ceph";
         skip_upgrade_checks = true;
         nodeplugin_toleration = true;

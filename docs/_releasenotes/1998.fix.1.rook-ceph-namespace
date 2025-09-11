@@ -1,0 +1,1 @@
+A bug has been fixed which prevented to deploy rook-ceph in a different namespace than the default: :ref:`configuration-options.yk8s.k8s-service-layer.rook.namespace`.
