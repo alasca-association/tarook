@@ -192,6 +192,12 @@ in rec {
         withQuery = true;
         withFragment = true;
       };
+      urlRE = mkUriRE {
+        inherit schemeRE;
+        hierPartRE = "//(${authorityRE})(${pathAbEmptyRE})"; # Section 3
+        withQuery = true;
+        withFragment = true;
+      };
     };
 
     # as per IETF RFC 4648
@@ -447,6 +453,17 @@ in rec {
     description = "RFC3986 (S)FTP URL";
     matchAgainstAllOf = ["^(s)?ftp(${rfc3986.xUrlRE})$"];
   };
+
+  url = urlWith {schemeRE = rfc3986.schemeRE;};
+  urlWith = {schemeRE}:
+    _mkRegexStrOptionType {
+      name = "url";
+      description = "RFC3986 URL";
+      matchAgainstAllOf = [
+        "^(${rfc3986.urlRE})$"
+        "^(${schemeRE}):.*$"
+      ];
+    };
 
   emailAddress = _mkRegexStrOptionType {
     name = "emailAddress";

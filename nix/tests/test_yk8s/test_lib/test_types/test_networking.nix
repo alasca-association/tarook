@@ -760,6 +760,39 @@
           inherit nonStringValuesRejected;
         };
       };
+      url = {
+        target = optionTypes.url;
+        tests.typeChecking = {
+          accepted.inputs =
+            ["unix:///var/run/containerd/containerd.sock"]
+            ++ httpxUrl.tests.typeChecking.accepted.inputs
+            ++ xftpUrl.tests.typeChecking.accepted.inputs;
+          rejected.inputs =
+            [""]
+            ++ intersectLists
+            httpxUrl.tests.typeChecking.rejected.inputs
+            xftpUrl.tests.typeChecking.rejected.inputs;
+        };
+      };
+
+      urlWith = {
+        target = optionTypes.urlWith;
+        tests.typeChecking = rec {
+          accepted.params = [{schemeRE = "unix";}];
+          accepted.inputs = [
+            "unix:///var/run/containerd/containerd.sock"
+            "unix://a/relative/path"
+          ];
+          rejected.params = accepted.params;
+          rejected.inputs =
+            [""]
+            ++ intersectLists
+            httpxUrl.tests.typeChecking.rejected.inputs
+            xftpUrl.tests.typeChecking.rejected.inputs
+            ++ httpxUrl.tests.typeChecking.accepted.inputs
+            ++ xftpUrl.tests.typeChecking.accepted.inputs;
+        };
+      };
 
       ipsecProposalStr = {
         target = optionTypes.ipsecProposalStr;
