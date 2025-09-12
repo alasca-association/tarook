@@ -6,6 +6,7 @@
   options = import ./options.nix {inherit lib;};
   types = import ./types.nix {inherit lib;};
   transform = import ./transform.nix {inherit lib;};
+  k8s = import ./k8s.nix {inherit lib;};
 
   inherit
     (options)

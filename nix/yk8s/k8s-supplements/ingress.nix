@@ -9,14 +9,11 @@
   inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.options) mkHelmChartVersionOption;
+  inherit (yk8s-lib.k8s) mkAffinities mkTolerations;
+  inherit (yk8s-lib.options) mkHelmReleaseOptions;
   inherit
     (yk8s-lib.types)
-    helmChartReleaseName
-    helmChartRepoUrl
-    helmChartRef
     k8sLabel
-    k8sNamespaceName
     k8sServiceType
     ;
   inherit
@@ -25,12 +22,24 @@
     ;
 in {
   imports = [
-    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "cpu_request"] ["k8s-service-layer" "ingress" "resources" "cpu" "request"])
-    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "cpu_limit"] ["k8s-service-layer" "ingress" "resources" "cpu" "limit"])
-    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "memory_request"] ["k8s-service-layer" "ingress" "resources" "memory" "request"])
-    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "memory_limit"] ["k8s-service-layer" "ingress" "resources" "memory" "limit"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "cpu_request"] ["k8s-service-layer" "ingress" "helm" "values" "controller" "resources" "cpu" "request"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "cpu_limit"] ["k8s-service-layer" "ingress" "helm" "values" "controller" "resources" "cpu" "limit"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "memory_request"] ["k8s-service-layer" "ingress" "helm" "values" "controller" "resources" "memory" "request"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "memory_limit"] ["k8s-service-layer" "ingress" "helm" "values" "controller" "resources" "memory" "limit"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "namespace"] ["k8s-service-layer" "ingress" "helm" "release_namespace"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "helm_repo_url"] ["k8s-service-layer" "ingress" "helm" "chart_repo_url"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "release_name"] ["k8s-service-layer" "ingress" "helm" "release_name"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "chart_version"] ["k8s-service-layer" "ingress" "helm" "chart_version"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "chart_ref"] ["k8s-service-layer" "ingress" "helm" "chart_ref"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "service_type"] ["k8s-service-layer" "ingress" "helm" "values" "controller" "service" "type"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "nodeport_http"] ["k8s-service-layer" "ingress" "helm" "values" "controller" "service" "nodePorts" "http"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "nodeport_https"] ["k8s-service-layer" "ingress" "helm" "values" "controller" "service" "nodePorts" "https"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "enable_ssl_passthrough"] ["k8s-service-layer" "ingress" "helm" "values" "controller" "extraArgs" "enable-ssl-passthrough"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "replica_count"] ["k8s-service-layer" "ingress" "helm" "values" "controller" "replicaCount"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "allow_snippet_annotations"] ["k8s-service-layer" "ingress" "helm" "values" "controller" "allowSnippetAnnotations"])
+    (mkRenamedOptionModule ["k8s-service-layer" "ingress" "resources"] ["k8s-service-layer" "ingress" "helm" "values" "controller" "resources"])
 
-    (mkResourceOptionModule ["k8s-service-layer" "ingress"] ["resources"] {
+    (mkResourceOptionModule ["k8s-service-layer" "ingress"] ["helm" "values" "controller" "resources"] {
       description = "Request and limit for the Nginx Ingress controller";
       cpu.request = "100m";
       memory.limit = "128Mi";
@@ -58,37 +67,6 @@ in {
       type = types.bool;
       default = true;
     };
-    helm_repo_url = mkOption {
-      type = helmChartRepoUrl;
-      default = "https://kubernetes.github.io/ingress-nginx";
-    };
-    chart_ref = mkOption {
-      type = helmChartRef;
-      default = "ingress-nginx";
-    };
-    chart_version = mkHelmChartVersionOption {
-      # renovate: datasource=helm depName=ingress-nginx registryUrl=https://kubernetes.github.io/ingress-nginx
-      default = "4.13.2";
-    };
-    release_name = mkOption {
-      type = helmChartReleaseName;
-      default = "ingress";
-    };
-    namespace = mkOption {
-      description = ''
-        Namespace to deploy the ingress in (will be created if it does not exist, but
-        never deleted).
-      '';
-      type = k8sNamespaceName;
-      default = "k8s-svc-ingress";
-    };
-    service_type = mkOption {
-      description = ''
-        Service type for the frontend Kubernetes service.
-      '';
-      type = k8sServiceType;
-      default = "LoadBalancer";
-    };
     scheduling_key = mkOption {
       description = ''
         Scheduling key for the cert manager instance and its resources. Has no
@@ -97,43 +75,104 @@ in {
       type = with types; nullOr k8sLabel;
       default = null;
     };
-    nodeport_http = mkOption {
-      description = ''
-        Node port for the HTTP endpoint
-      '';
-      type = types.port;
-      default = 32080;
-      apply = v:
-        warnIfZero "config.yk8s.k8s-service-layer.ingress.nodeport_http: should not be port zero" v;
+    helm = mkHelmReleaseOptions {
+      descriptionName = "ingress-nginx";
+      defaultRepoUrl = "https://kubernetes.github.io/ingress-nginx";
+      defaultChartRef = "ingress-nginx";
+      # renovate: datasource=helm depName=ingress-nginx registryUrl=https://kubernetes.github.io/ingress-nginx
+      defaultChartVersion = "4.13.2";
+      defaultReleaseNamespace = "k8s-svc-ingress";
+      defaultReleaseName = "ingress";
+      valuesDocUrl = "https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml";
+      chartOptions = {
+        controller = {
+          service = {
+            type = mkOption {
+              description = ''
+                Service type for the frontend Kubernetes service.
+              '';
+              type = k8sServiceType;
+              default = "LoadBalancer";
+            };
+
+            nodePorts = {
+              http = mkOption {
+                description = ''
+                  Node port for the HTTP endpoint
+                '';
+                type = types.port;
+                default = 32080;
+                apply = v:
+                  warnIfZero "config.yk8s.k8s-service-layer.ingress.nodeport_http: should not be port zero" v;
+              };
+              https = mkOption {
+                description = ''
+                  Node port for the HTTPS endpoint
+                '';
+                type = types.port;
+                default = 32443;
+                apply = v:
+                  warnIfZero "config.yk8s.k8s-service-layer.ingress.nodeport_https: should not be port zero" v;
+              };
+            };
+          };
+
+          replicaCount = mkOption {
+            description = ''
+              Replica Count
+            '';
+            type = types.ints.unsigned;
+            default = 2;
+          };
+          allowSnippetAnnotations = mkEnableOption "snippet annotations";
+
+          extraArgs.enable-ssl-passthrough = mkOption {
+            description = ''
+              Enable SSL passthrough in the controller
+            '';
+            type = types.bool;
+            default = true;
+          };
+        };
+      };
     };
-    nodeport_https = mkOption {
-      description = ''
-        Node port for the HTTPS endpoint
-      '';
-      type = types.port;
-      default = 32443;
-      apply = v:
-        warnIfZero "config.yk8s.k8s-service-layer.ingress.nodeport_https: should not be port zero" v;
-    };
-    enable_ssl_passthrough = mkOption {
-      description = ''
-        Enable SSL passthrough in the controller
-      '';
-      type = types.bool;
-      default = true;
-    };
-    replica_count = mkOption {
-      description = ''
-        Replica Count
-      '';
-      type = types.ints.unsigned;
-      default = 2;
-    };
-    allow_snippet_annotations = mkEnableOption "snippet annotations";
+  };
+  config.yk8s.k8s-service-layer.ingress.helm.values = let
+    inherit (config.yk8s.infra) ipv4_enabled ipv6_enabled;
+    affinity = mkAffinities {inherit (cfg) scheduling_key;};
+    tolerations = mkTolerations {inherit (cfg) scheduling_key;};
+  in {
+    defaultBackend = {inherit affinity tolerations;};
+    controller =
+      {
+        inherit affinity tolerations;
+        service = {
+          ipFamilyPolicy =
+            if ipv4_enabled && ipv6_enabled
+            then "PreferDualStack"
+            else "SingleStack";
+          ipFamilies =
+            (lib.optional ipv4_enabled "IPv4")
+            ++ (lib.optional ipv6_enabled "IPv6");
+        };
+        priorityClassName = "system-cluster-critical";
+        image.allowPrivilegeEscalation = false;
+      }
+      // lib.optionalAttrs config.yk8s.kubernetes.monitoring.enabled {
+        metrics = {
+          enabled = true;
+          serviceMonitor = {
+            enabled = true;
+            namespace = cfg.helm.release_namespace;
+            additionalLabels = config.yk8s.k8s-service-layer.prometheus.common_labels;
+          };
+        };
+      };
   };
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
+      unflat = [["helm" "values"]];
       ansible_prefix = "k8s_ingress_";
       inventory_path = "all/ingress.yaml";
     })
