@@ -1493,7 +1493,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "77.3.0"
+  "77.7.0"
 
 
 **Example:**::
