@@ -58,7 +58,6 @@
             python-openstackclient
             jsonschema
             hvac
-            boto3
           ];
       };
 
