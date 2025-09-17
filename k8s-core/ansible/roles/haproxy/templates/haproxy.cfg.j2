@@ -18,7 +18,12 @@ defaults
   timeout server  50000
 
 frontend healthz
+{% if ipv4_enabled | bool %}
   bind 127.0.0.1:6669
+{% endif %}
+{% if ipv6_enabled | bool %}
+  bind [::1]:6669
+{% endif %}
   mode http
   monitor-uri /healthz
   option dontlognull
