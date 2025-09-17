@@ -32,6 +32,7 @@
 - name: Install etcd-backup
   import_playbook: install-etcd-backup.yaml
 
+# NOTE: Requires cert-manager to be deployed
 - name: Install Hashicorp Vault
   import_playbook: install-vault.yaml
 

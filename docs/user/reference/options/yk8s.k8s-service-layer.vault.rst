@@ -205,6 +205,9 @@ Whether to enable HashiCorp Vault management.
 NOTE: On the first run, the unseal keys and the root token will be printed IN
 PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
 LOCATION to use the Vault instance in the future!
+
+For Vault's internal PKI cert-manager needs to be deployed as well
+through :ref:`configuration-options.yk8s.k8s-service-layer.cert-manager`
 .
 
 **Type:**::

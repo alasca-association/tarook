@@ -45,6 +45,9 @@ in {
       NOTE: On the first run, the unseal keys and the root token will be printed IN
       PLAINTEXT on the ansible output. The unseal keys MUST BE SAVED IN A SECURE
       LOCATION to use the Vault instance in the future!
+
+      For Vault's internal PKI cert-manager needs to be deployed as well
+      through :ref:`configuration-options.yk8s.k8s-service-layer.cert-manager`
     '';
     ingress = mkEnableOption ''
       creation of a publically reachable ingress resource for the API endpoint of vault.
@@ -250,6 +253,17 @@ in {
         warnIfZero "config.yk8s.k8s-service-layer.vault.service_active_node_port: should not be port zero" v;
     };
   };
+  config.yk8s.assertions = [
+    {
+      assertion = cfg.enabled -> config.yk8s.k8s-service-layer.cert-manager.enabled;
+      message = lib.strings.concatStrings [
+        "config.yk8s.k8s-service-layer.vault.enabled:"
+        " requires `config.yk8s.k8s-service-layer.cert-manager.enabled=true`"
+        " when true"
+        " because Vault's internal PKI is created with cert-manager."
+      ];
+    }
+  ];
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
