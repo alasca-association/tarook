@@ -11,6 +11,8 @@ global_defs {
     vrrp_garp_master_refresh 300
     vrrp_garp_master_refresh_repeat 1
     vrrp_higher_prio_send_advert true
+    # Enforce VRRP version v3
+    vrrp_version 3
 }
 
 vrrp_script chk_haproxy {
