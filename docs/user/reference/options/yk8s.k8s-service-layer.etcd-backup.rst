@@ -4,25 +4,18 @@ yk8s.k8s-service-layer.etcd-backup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-Automated etcd backups can be configured in this section. When enabled
-it periodically creates snapshots of etcd database and store it in a
-object storage using s3. It uses the helm chart
+Automated etcd backups can be configured in this section. When enabled,
+it periodically creates snapshots of etcd database and stores them in an
+object storage bucket using S3. It uses the helm chart
 `etcdbackup <https://gitlab.com/yaook/operator/-/tree/devel/yaook/helm_builder/Charts/etcd-backup>`__
-present in yaook operator helm chart repository. The object storage
-retains data for 30 days then deletes it.
+present in yaook operator helm chart repository.
 
-The usage of it is disabled by default but can be enabled (and
+The usage of it is disabled by default, but can be enabled (and
 configured) in the following section. The credentials are stored in
 Vault. By default, they are searched for in the cluster’s kv storage (at
 ``yaook/$clustername/kv``) under ``etcdbackup``. They must be in the
 form of a JSON object/dict with the keys ``access_key`` and
 ``secret_key``.
-
-.. note::
-
-  To enable etcd-backup,
-  :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.enabled`
-  needs to be set to ``true``.
 
 The following values need to be set:
 
@@ -60,15 +53,47 @@ Alternatively, you can also manually insert your configuration into vault.
 
   </details>
 
+.. important::
+
+  The bucket configured in
+  :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.bucket`
+  is expected to exist and must be created manually in advance!
+
 .. raw:: html
 
   <details>
-  <summary>Generate/Figure out etcd-backup configuration values</summary>
+  <summary>OpenStack: Generate EC2 credentials</summary>
 
 .. code:: shell
 
   # Generate access and secret key on OpenStack
   openstack ec2 credentials create
+
+.. raw:: html
+
+  </details>
+
+.. raw:: html
+
+  <details>
+  <summary>OpenStack: Generate object storage container (bucket)</summary>
+
+.. code:: shell
+
+  # Generate object storage container on OpenStack
+  containername="$(yq --raw-output '.etcd_backup_helm_values.targets.s3.bucket' inventory/yaook-k8s/group_vars/all/etcd-backup.yaml)"
+  openstack container create "$containername"
+
+.. raw:: html
+
+  </details>
+
+.. raw:: html
+
+  <details>
+  <summary>Get certificate chain of S3 endpoint</summary>
+
+.. code:: shell
 
   # Get certificate bundle of url
   openssl s_client -connect ENDPOINT_URL:PORT showcerts 2>&1 < /dev/null | sed -n '/-----BEGIN/,/-----END/p'
@@ -76,29 +101,6 @@ Alternatively, you can also manually insert your configuration into vault.
 .. raw:: html
 
   </details>
-
-.. _configuration-options.yk8s.k8s-service-layer.etcd-backup.days_of_retention:
-
-``yk8s.k8s-service-layer.etcd-backup.days_of_retention``
-########################################################
-
-Number of days after which individual items in the bucket are dropped. Enforced by S3 lifecyle rules which
-are also implemented by Ceph's RGW.
-
-
-**Type:**::
-
-  unsigned integer, meaning >=0
-
-
-**Default:**::
-
-  30
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/etcd-backup.nix
-
 
 .. _configuration-options.yk8s.k8s-service-layer.etcd-backup.enabled:
 
@@ -370,6 +372,8 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 ####################################################################
 
 Name of the s3 bucket to store the backups.
+
+The bucket is expected to exist and must be created manually in advance!
 
 
 **Type:**::
