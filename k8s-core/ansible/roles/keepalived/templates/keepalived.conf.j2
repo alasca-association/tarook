@@ -49,17 +49,6 @@ vrrp_instance VIP_1 {
     virtual_ipaddress {
         {{ networking_fixed_ip }}
     }
-    unicast_src_ip {{ local_ipv4_address | ipaddr('address') }}
-{% if groups['frontend'] | length > 0 %}
-    unicast_peer {
-        {% for hostname in groups['frontend'] %}
-        {% set peer = hostvars[hostname] %}
-        {% if not peer.local_ipv4_address == local_ipv4_address %}
-        {{ peer.local_ipv4_address | ipaddr }}
-        {% endif %}
-        {% endfor %}
-    }
-{% endif %}
     # Stop nodes with higher priority taking over the master role
     # to prevent unnecessary traffic interruption and flapping if the higher
     # priority node has problems and goes absent and becomes available frequently.
@@ -83,17 +72,6 @@ vrrp_instance VIP_1_V6 {
     virtual_ipaddress {
         {{ networking_fixed_ip_v6 }}
     }
-    unicast_src_ip {{ local_ipv6_address | ipaddr }}
-{% if groups['frontend'] | length > 0 %}
-    unicast_peer {
-        {% for hostname in groups['frontend'] %}
-        {% set peer = hostvars[hostname] %}
-        {% if not peer.local_ipv6_address == local_ipv6_address %}
-        {{ peer.local_ipv6_address | ipaddr }}
-        {% endif %}
-        {% endfor %}
-    }
-{% endif %}
     # Stop nodes with higher priority taking over the master role
     # to prevent unnecessary traffic interruption and flapping if the higher
     # priority node has problems and goes absent and becomes available frequently.

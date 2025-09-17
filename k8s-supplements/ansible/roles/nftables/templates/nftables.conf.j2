@@ -122,6 +122,7 @@ table inet filter {
         udp dport 546 udp sport 547 accept comment "Allow DHCPv6"
         tcp dport @tcp_internal_accepted ip6 saddr @ipv6_internal_accepted  accept comment "Accept connections to internal services from private subnet v6"
         meta nfproto ipv6 meta l4proto ipv6-icmp limit rate 5/second accept comment "Accept all ICMPv6 traffic"
+        ip6 saddr fe80::/10 ip6 daddr ff02::12/128 accept comment "Allow multicast link-local IPv6 VRRP traffic"
         {% endif %}
 
     }
