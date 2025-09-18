@@ -1,0 +1,1 @@
+Fixed a bug which prevented etcd-backup to be deployed in a modified namespace: :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.release_namespace`.

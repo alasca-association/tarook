@@ -42,25 +42,44 @@
     etcd_backup_config: "{{ lookup('community.hashi_vault.vault_kv2_get', etcd_backup_vault_path, engine_mount_point=etcd_backup_vault_mount_point, mount_point=vault_auth_mount_point, auth_method=vault_auth_method, token=vault_token, role_id=vault_role_id, secret_id=vault_secret_id).data.data }}"
 
 - name: Create a Secret to save s3 credentials
-  kubernetes.core.k8s:
-    state: present
-    apply: true
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: "{{ etcd_backup_helm_values.targets.s3.credentialRef.name }}"
-        namespace: "{{ etcd_backup_helm_release_namespace }}"
-      data:
-        access: "{{ etcd_backup_config.access_key | b64encode }}"
-        secret: "{{ etcd_backup_config.secret_key | b64encode }}"
-    validate:
-      fail_on_error: true
-  # Retry this task on failures
-  register: k8s_apply
-  until: k8s_apply is not failed
-  retries: "{{ error_retries }}"
-  delay: "{{ error_delay }}"
+  block:
+    - name: Ensure namespace exists
+      kubernetes.core.k8s:
+        apply: true
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ etcd_backup_helm_release_namespace }}"
+        validate:
+          fail_on_error: true
+          strict: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
+    - name: Create S3 credentials Secret
+      kubernetes.core.k8s:
+        state: present
+        apply: true
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "{{ etcd_backup_helm_values.targets.s3.credentialRef.name }}"
+            namespace: "{{ etcd_backup_helm_release_namespace }}"
+          data:
+            access: "{{ etcd_backup_config.access_key | b64encode }}"
+            secret: "{{ etcd_backup_config.secret_key | b64encode }}"
+        validate:
+          fail_on_error: true
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
 - name: Manage the backup bucket
   environment:
