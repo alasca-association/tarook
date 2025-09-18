@@ -24,6 +24,11 @@ in {
   ];
 
   options.yk8s.ch-k8s-lbaas = mkTopSection {
+    _docs.preface = ''
+      ``ch-k8s-lbaas`` is a LoadBalancing-solution for clusters running on OpenStack
+      as well as clusters running on bare metal.
+      Further information about it can be found here: :doc:`/user/explanation/services/ch-k8s-lbaas`.
+    '';
     enabled = mkEnableOption "our LBaas service";
     shared_secret = mkOption {
       description = ''
