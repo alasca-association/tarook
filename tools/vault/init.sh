@@ -193,6 +193,10 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
 path "$common_path_prefix/+/kv/data/ipsec-eap-psk" {
     capabilities = ["read"]
 }
+
+path "$common_path_prefix/+/kv/data/ch-k8s-lbaas-shared-secret" {
+    capabilities = ["read"]
+}
 EOF
 
 write_policy gateway <<EOF
@@ -342,6 +346,10 @@ path "$common_path_prefix/+/kv/data/thanos-config" {
 
 path "$common_path_prefix/+/kv/data/vault-backup-s3-config" {
     capabilities = ["read"]
+}
+
+path "$common_path_prefix/+/kv/data/ch-k8s-lbaas-shared-secret" {
+    capabilities = ["create", "update", "read"]
 }
 EOF
 

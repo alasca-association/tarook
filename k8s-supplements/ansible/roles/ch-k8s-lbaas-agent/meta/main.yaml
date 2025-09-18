@@ -5,4 +5,5 @@ galaxy_info:
 dependencies:
 - config/k8s-config
 - ch-k8s-lbaas-common
+- helpers/vault-approle
 ...

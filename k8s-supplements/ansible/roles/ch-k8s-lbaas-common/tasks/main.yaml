@@ -1,2 +1,69 @@
 ---
+- name: Generate a shared secret if not configured
+  when: ch_k8s_lbaas_enabled
+  become: false
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  run_once: true
+  block:
+  - name: Manage shared secret in Vault
+    environment:
+      ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+      ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+    block:
+    - name: Lookup shared secret in Vault  # noqa ignore-errors
+      no_log: true  # prevent secret from being exposed
+      ignore_errors: true
+      community.hashi_vault.vault_kv2_get:
+        path: "{{ ch_k8s_lbaas_shared_secret_vault_path }}"
+        engine_mount_point: "{{ ch_k8s_lbaas_shared_secret_vault_mount_point }}"
+        auth_method: "{{ vault_caller_auth_method }}"
+        mount_point: "{{ vault_caller_auth_mount_point }}"
+        token: "{{ vault_caller_token }}"
+        role_id: "{{ vault_caller_role_id }}"
+        secret_id: "{{ vault_caller_secret_id }}"
+        token_validate: false
+      register: shared_secret_lookup
+
+    # In a future release, when dropping the shared secret option from
+    # the configuration, the when-condition should be changed to
+    #   when: shared_secret_lookup is failed
+    - name: Generate shared secret if none exists, yet
+      when: shared_secret_lookup is failed and ch_k8s_lbaas_shared_secret is none
+      set_fact:
+        ch_k8s_lbaas_shared_secret_gen: "{{ lookup('pipe', 'dd if=/dev/urandom bs=30 count=1 status=none | base64') }}"
+
+    - name: Store shared secret in Vault
+      block:
+      # In a future release, when dropping the shared_secret option from
+      # the configuration, we should always write
+      # "ch_k8s_lbaas_shared_secret_gen" into Vault
+      # and we should remove the block-rescue workaround to print a proper error message
+      - name: Store shared secret in Vault
+        no_log: false  # prevent secret from being exposed
+        community.hashi_vault.vault_kv2_write:
+          path: "{{ ch_k8s_lbaas_shared_secret_vault_path }}"
+          engine_mount_point: "{{ ch_k8s_lbaas_shared_secret_vault_mount_point }}"
+          auth_method: "{{ vault_caller_auth_method }}"
+          mount_point: "{{ vault_caller_auth_mount_point }}"
+          token: "{{ vault_caller_token }}"
+          role_id: "{{ vault_caller_role_id }}"
+          secret_id: "{{ vault_caller_secret_id }}"
+          token_validate: false
+          read_before_write: true
+          data:
+            # use the value configured via Nix until the option gets removed
+            # fallback to a generated secret if shared secret is not configured via Nix
+            shared_secret: "{{ ch_k8s_lbaas_shared_secret is not none | ternary(ch_k8s_lbaas_shared_secret, shared_secret_lookup.data.data.shared_secret | default(ch_k8s_lbaas_shared_secret_gen)) }}"
+      rescue:
+      - name: Fail if shared secret could not be written into Vault
+        fail:
+          msg: |
+            Failed to write the shared secret into Vault at
+            '{{ ch_k8s_lbaas_shared_secret_vault_mount_point }}/data/{{ ch_k8s_lbaas_shared_secret_vault_path }}'.
+
+            Does your {{ vault_caller_auth_method }}'s Vault policy allow it?
+
+            You might need to complete the necessary steps
+            outlined in the changelog at
+            https://docs.tarook.cloud/release/v12.0/releasenotes.html
 ...

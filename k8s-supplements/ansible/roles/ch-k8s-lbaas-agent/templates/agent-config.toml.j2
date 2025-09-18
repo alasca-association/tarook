@@ -1,6 +1,16 @@
 {{ _auto_generated_preamble }}
 
-shared-secret={{ ch_k8s_lbaas_shared_secret | to_json }}
+shared-secret={{
+  lookup(
+    'community.hashi_vault.vault_kv2_get',
+    ch_k8s_lbaas_shared_secret_vault_path,
+    engine_mount_point=ch_k8s_lbaas_shared_secret_vault_mount_point,
+    mount_point=vault_nodes_approle,
+    auth_method='approle',
+    role_id=vault_node_role_id,
+    secret_id=vault_node_secret_id
+  ).data.data.shared_secret | to_json
+}}
 bind-address="0.0.0.0"
 bind-port={{ ch_k8s_lbaas_agent_port | to_json }}
 

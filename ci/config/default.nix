@@ -167,7 +167,6 @@ in {
     };
     ch-k8s-lbaas = {
       enabled = true;
-      shared_secret = "IYeOlEFO1h3uc9x1bdw9thNNgmn1gm8dmzos3f04PLmFjt3d";
       agent_port = 15203;
     };
     kubernetes = {
