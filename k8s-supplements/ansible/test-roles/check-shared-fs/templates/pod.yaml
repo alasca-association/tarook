@@ -14,7 +14,7 @@ spec:
   - key: ""
     operator: Exists
   containers:
-  - image: registry.gitlab.com/yaook/images/k8s-debian:main
+  - image: registry.gitlab.com/alasca.cloud/tarook/images/debian:main
     imagePullPolicy: IfNotPresent
     name: debian
     command: ["bash", "-c", "set -euo pipefail; touch /mnt/{{ item }}; for i in $(seq 1 60); do all_ok=1; for worker in $0; do if [ ! -e /mnt/$worker ]; then all_ok=0; echo \"hint for $worker missing\"; fi; done; if [ $all_ok = 1 ]; then break; fi; sleep 1; done; [ $all_ok = 1 ]", {{ test_worker_nodes | join(' ') | to_json }}]

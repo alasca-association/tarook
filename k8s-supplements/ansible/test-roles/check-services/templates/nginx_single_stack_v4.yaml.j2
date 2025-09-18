@@ -38,7 +38,7 @@ spec:
     operator: Exists
     effect: NoSchedule
   containers:
-  - image: registry.gitlab.com/yaook/images/k8s-nginx:main
+  - image: registry.gitlab.com/alasca.cloud/tarook/images/unprivileged-nginx:main
     name: nginx-single-stack-v4
     resources: {}
   dnsPolicy: ClusterFirst

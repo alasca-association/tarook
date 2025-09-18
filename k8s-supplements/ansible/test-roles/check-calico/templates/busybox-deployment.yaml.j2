@@ -38,6 +38,6 @@ spec:
         operator: Exists
       containers:
       - name: calico-busybox-test
-        image: registry.gitlab.com/yaook/images/k8s-debian:main
+        image: registry.gitlab.com/alasca.cloud/tarook/images/debian:main
         command: ["sleep", "infinity"]
       serviceAccountName: calico-busybox-test
