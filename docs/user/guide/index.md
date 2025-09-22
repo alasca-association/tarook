@@ -12,6 +12,7 @@ rook/index
 vault/index
 faq
 quick-start/index
+upgrade-release
 updating-host-nodes
 minimal-access-venv
 rotate-openstack-credentials
