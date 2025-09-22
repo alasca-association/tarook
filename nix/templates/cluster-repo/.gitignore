@@ -1,3 +1,6 @@
+##### BEGIN managed by yk8s
+# hint: You can override any rule in this block
+#       by copying it prefixed with '!' right after the end marker
 *.key
 etc/kubeadm_token
 /wg*.conf
@@ -8,3 +11,4 @@ etc/manifests/
 inventory
 result
 etc/admin.conf
+##### END managed by yk8s
