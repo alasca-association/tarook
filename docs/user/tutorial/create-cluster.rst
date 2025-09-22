@@ -8,17 +8,6 @@ What Do We Need?
 ----------------
 
 - Access to an OpenStack cloud with the following resources available:
-    - At least 3 VMs need to be able to spawn:\
-      by default we need 10 VMs (using our VM provider):
-      17 VCPUs, 32 GB RAM and 4 floating IPs,\
-      but you can configure the VMs later in the config\
-
-    .. note::
-
-        The requirements may be different,
-        e.g. you need one external IP and one gateway VM (1 VCPU and 1 GB RAM)
-        for every availability zone.
-
     - An SSH key configured to access spawned instances
       and the name of that key known to you:
       via dashboard (Project → Compute → Key Pairs → Create Key Pair), or
@@ -302,65 +291,8 @@ Spawn the Cluster
 
     $ bash managed-k8s/actions/apply-all.sh
 
-This will do a full deploy and consists of multiple stages.
-You can also execute these steps manually one after another
-instead of directly call ``apply-all.sh``.
-In case you want to better understand what's going on -
-simply check the :doc:`script </user/reference/actions-references>`
-for what to execute in which order.
-
-.. note::
-
-    If you change the Cloud configuration in a destructive manner
-    (decrease node counts, change flavors etc.)
-    after having the previous config already deployed,
-    these changes will not be applied by default
-    to avoid havoc.
-    For that case,
-    you need to use an additional environment variable.
-    You should not export that variable
-    to avoid breaking things by accident.
-
-    Remove the lock file ``./state/terraform/prevent_disruption.lock``
-
-    Then run
-
-    .. code:: console
-
-        $ MANAGED_K8S_DISRUPT_THE_HARBOUR=true bash managed-k8s/actions/apply-terraform.sh
-
 From this point on
 you can use the K8s cluster for deploying any application.
 
 Enjoy Your Cluster!
 -------------------
-
-Would you like to have a visualisation of your cluster?
-Just install `k9s <https://k9scli.io/>`__ with
-
-.. code:: console
-
-    $ brew install derailed/k9s/k9s
-
-and then run it:
-
-.. code:: console
-
-    $ k9s
-
-The next time you would like to play with your Tarook cluster
-(e.g., after a workstation reboot),
-please don't forget to open the directory with your cluster to load the environment,
-and to establish the WireGuard connection:
-
-.. code:: console
-
-    $ bash managed-k8s/actions/wg-up.sh
-
-To tear down your cluster, remove the lock file ``./state/terraform/prevent_disruption.lock``.
-
-Than run:
-
-.. code:: console
-
-    $ MANAGED_K8S_NUKE_FROM_ORBIT=true MANAGED_K8S_DISRUPT_THE_HARBOUR=true MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/destroy.sh
