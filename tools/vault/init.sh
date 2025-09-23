@@ -228,6 +228,7 @@ path "$common_path_prefix/+/ssh-ca/roles/+" {
         "allow_bare_domains" = ["true"],
         "allowed_domains" = [],
         "algorithm_signer" = [],
+        "allow_empty_principals" = ["true"],
     }
 }
 

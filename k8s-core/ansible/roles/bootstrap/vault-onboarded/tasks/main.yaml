@@ -6,6 +6,28 @@
   include_role:
     name: bootstrap/vault-cli
 
+- name: Get secrets backend API title and version
+  block:
+  - name: Get secrets backend OpenAPI spec
+    environment:
+      ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+      ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+    community.hashi_vault.vault_read:
+      path: sys/internal/specs/openapi
+      auth_method: none
+    register: get_secrets_backend_openapi_spec
+
+  - name: Set secrets backend API facts
+    set_fact:
+      secrets_backend_api_title: "{{ get_vault_openbao_openapi_spec.data.info.title }}"
+      secrets_backend_api_version: "{{ get_vault_openbao_openapi_spec.data.info.version }}"
+
+  - name: Verify secrets backend API facts
+    assert:
+      that:
+        - secrets_backend_api_title in ['HashiCorp Vault API', 'OpenBao API']
+        - secrets_backend_api_version != ''
+
 - name: Onboard node to vault
   block:
   - name: Set vault node name
@@ -120,21 +142,58 @@
 
     - name: Configure SSH CA role
       delegate_to: "{{ groups['orchestrator'] | first }}"
-      community.hashi_vault.vault_write:
-        path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/ssh-ca/roles/{{ vault_node_name }}"
-        mount_point: "{{ vault_caller_auth_mount_point }}"
-        auth_method: "{{ vault_caller_auth_method }}"
-        token: "{{ vault_caller_token }}"
-        role_id: "{{ vault_caller_role_id }}"
-        secret_id: "{{ vault_caller_secret_id }}"
-        token_validate: false
-        data:
-          key_type: ca
-          allow_host_certificates: "true"
-          allow_bare_domains: "true"
-          allowed_domains: "{{ vault_node_name }},{{ inventory_hostname }}"
-          ttl: "720h"
-          algorithm_signer: "rsa-sha2-512"
+      block:
+      - name: Configure SSH CA role (Vault <1.17, Openbao <2.0.2)
+        when: >
+          (
+            secrets_backend_api_title == "HashiCorp Vault API"
+            and secrets_backend_api_version is version('1.17.0', '<')
+          ) or (
+            secrets_backend_api_title == "OpenBao API"
+            and secrets_backend_api_version is version('2.0.2', '<')
+          )
+        community.hashi_vault.vault_write:
+          path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/ssh-ca/roles/{{ vault_node_name }}"
+          mount_point: "{{ vault_caller_auth_mount_point }}"
+          auth_method: "{{ vault_caller_auth_method }}"
+          token: "{{ vault_caller_token }}"
+          role_id: "{{ vault_caller_role_id }}"
+          secret_id: "{{ vault_caller_secret_id }}"
+          token_validate: false
+          data:
+            key_type: ca
+            allow_host_certificates: "true"
+            allow_bare_domains: "true"
+            allowed_domains: "{{ vault_node_name }},{{ inventory_hostname }}"
+            ttl: "720h"
+            algorithm_signer: "rsa-sha2-512"
+            # allow_empty_principals parameter not given
+
+      - name: Configure SSH CA role (Vault >=1.17, Openbao >=2.0.2)
+        when: >
+          (
+            secrets_backend_api_title == "HashiCorp Vault API"
+            and secrets_backend_api_version is version('1.17.0', '>=')
+          ) or (
+            secrets_backend_api_title == "OpenBao API"
+            and secrets_backend_api_version is version('2.0.2', '>=')
+          )
+        community.hashi_vault.vault_write:
+          path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/ssh-ca/roles/{{ vault_node_name }}"
+          mount_point: "{{ vault_caller_auth_mount_point }}"
+          auth_method: "{{ vault_caller_auth_method }}"
+          token: "{{ vault_caller_token }}"
+          role_id: "{{ vault_caller_role_id }}"
+          secret_id: "{{ vault_caller_secret_id }}"
+          token_validate: false
+          data:
+            key_type: ca
+            allow_host_certificates: "true"
+            allow_bare_domains: "true"
+            allowed_domains: "{{ vault_node_name }},{{ inventory_hostname }}"
+            ttl: "720h"
+            algorithm_signer: "rsa-sha2-512"
+            allow_empty_principals: "true"
 
     - name: Discover role ID
       delegate_to: "{{ groups['orchestrator'] | first }}"
