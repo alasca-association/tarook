@@ -26,6 +26,7 @@
 in {
   imports = [
     (mkRemovedOptionModule ["k8s-service-layer" "etcd-backup" "s3_config_name"] "")
+    (mkRemovedOptionModule ["k8s-service-layer" "etcd-backup" "days_of_retention"] "The functionality has been removed. Please manually configure a retention policy, if desired.")
 
     (mkRenamedOptionModule ["k8s-service-layer" "etcd-backup" "namespace"] ["k8s-service-layer" "etcd-backup" "helm" "release_namespace"])
     (mkRenamedOptionModule ["k8s-service-layer" "etcd-backup" "helm_repo_url"] ["k8s-service-layer" "etcd-backup" "helm" "chart_repo_url"])
@@ -41,25 +42,18 @@ in {
 
   options.yk8s.k8s-service-layer.etcd-backup = mkTopSection {
     _docs.preface = ''
-      Automated etcd backups can be configured in this section. When enabled
-      it periodically creates snapshots of etcd database and store it in a
-      object storage using s3. It uses the helm chart
+      Automated etcd backups can be configured in this section. When enabled,
+      it periodically creates snapshots of etcd database and stores them in an
+      object storage bucket using S3. It uses the helm chart
       `etcdbackup <https://gitlab.com/yaook/operator/-/tree/devel/yaook/helm_builder/Charts/etcd-backup>`__
-      present in yaook operator helm chart repository. The object storage
-      retains data for 30 days then deletes it.
+      present in yaook operator helm chart repository.
 
-      The usage of it is disabled by default but can be enabled (and
+      The usage of it is disabled by default, but can be enabled (and
       configured) in the following section. The credentials are stored in
       Vault. By default, they are searched for in the cluster’s kv storage (at
       ``yaook/$clustername/kv``) under ``etcdbackup``. They must be in the
       form of a JSON object/dict with the keys ``access_key`` and
       ``secret_key``.
-
-      .. note::
-
-        To enable etcd-backup,
-        :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.enabled`
-        needs to be set to ``true``.
 
       The following values need to be set:
 
@@ -97,15 +91,47 @@ in {
 
         </details>
 
+      .. important::
+
+        The bucket configured in
+        :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup.helm.values.targets.s3.bucket`
+        is expected to exist and must be created manually in advance!
+
       .. raw:: html
 
         <details>
-        <summary>Generate/Figure out etcd-backup configuration values</summary>
+        <summary>OpenStack: Generate EC2 credentials</summary>
 
       .. code:: shell
 
         # Generate access and secret key on OpenStack
         openstack ec2 credentials create
+
+      .. raw:: html
+
+        </details>
+
+      .. raw:: html
+
+        <details>
+        <summary>OpenStack: Generate object storage container (bucket)</summary>
+
+      .. code:: shell
+
+        # Generate object storage container on OpenStack
+        containername="$(yq --raw-output '.etcd_backup_helm_values.targets.s3.bucket' inventory/yaook-k8s/group_vars/all/etcd-backup.yaml)"
+        openstack container create "$containername"
+
+      .. raw:: html
+
+        </details>
+
+      .. raw:: html
+
+        <details>
+        <summary>Get certificate chain of S3 endpoint</summary>
+
+      .. code:: shell
 
         # Get certificate bundle of url
         openssl s_client -connect ENDPOINT_URL:PORT showcerts 2>&1 < /dev/null | sed -n '/-----BEGIN/,/-----END/p'
@@ -158,6 +184,8 @@ in {
           bucket = mkOption {
             description = ''
               Name of the s3 bucket to store the backups.
+
+              The bucket is expected to exist and must be created manually in advance!
             '';
             type = s3BucketName;
             default = "etcd-backup";
@@ -221,14 +249,6 @@ in {
       '';
       type = relativeUrlPath;
       default = "etcdbackup";
-    };
-    days_of_retention = mkOption {
-      description = ''
-        Number of days after which individual items in the bucket are dropped. Enforced by S3 lifecyle rules which
-        are also implemented by Ceph's RGW.
-      '';
-      type = types.ints.unsigned;
-      default = 30;
     };
   };
 

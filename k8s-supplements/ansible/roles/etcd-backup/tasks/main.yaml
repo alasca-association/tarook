@@ -1,33 +1,4 @@
 ---
-# In an older version, Tarook shipped its own Service and ServiceMonitor for the metrics
-# of etcd-backup.
-# This task removes the now outdated service from existing clusters.
-# Can be removed in a future version.
-# See #639
-- name: Check if old etcd-backup metric service exists
-  kubernetes.core.k8s_info:
-    kind: Service
-    namespace: "kube-system"
-    name: "etcd-backup-monitoring"
-  register: old_etcd_backup_service_info
-
-- name: Remove deprecated etcd-backup monitoring resources
-  when: old_etcd_backup_service_info.resources | length > 0
-  block:
-    - name: Remove old etcd-backup metrics service
-      kubernetes.core.k8s:
-        state: absent
-        name: etcd-backup-monitoring
-        namespace: "kube-system"
-        kind: Service
-
-    - name: Remove old etcd-backup ServiceMonitor
-      kubernetes.core.k8s:
-        state: absent
-        name: etcd-backup
-        namespace: "kube-system"
-        kind: ServiceMonitor
-
 - name: Read S3 secrets from Vault
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
@@ -81,39 +52,6 @@
       retries: "{{ error_retries }}"
       delay: "{{ error_delay }}"
 
-- name: Manage the backup bucket
-  environment:
-    EC2_ACCESS_KEY: "{{ etcd_backup_config.access_key }}"
-    EC2_SECRET_KEY: "{{ etcd_backup_config.secret_key }}"
-    EC2_URL: "{{ etcd_backup_config.endpoint_url }}"
-  block:
-    - name: Check if bucket exists
-      community.aws.s3_bucket_info:
-        name: "{{ etcd_backup_helm_values.targets.s3.bucket }}"
-      register: bucket_info
-
-    - name: Create bucket if it does not exist
-      amazon.aws.s3_bucket:
-        name: "{{ etcd_backup_helm_values.targets.s3.bucket }}"
-        # Even if the etcd-backup role is disabled afterwards we will not delete the bucket automatically
-        state: present
-        # By default, we're using RGW so only use a subset of the S3 API
-        ceph: true
-        # Make sure that no one can read the dumps without authentication
-        delete_public_access: true
-        # That's the default. Added the flag to make it explicit that no S3 server-side encryption takes place
-        encryption: none
-        # Needed when in ceph compat mode
-        s3_url: "{{ etcd_backup_config.endpoint_url }}"
-
-    - name: "Configure a lifecycle rule on the bucket to expire (delete) items after {{ etcd_backup_days_of_retention }}"
-      community.aws.s3_lifecycle:
-        name: "{{ etcd_backup_helm_values.targets.s3.bucket }}"
-        expiration_days: "{{ etcd_backup_days_of_retention }}"
-        prefix: "{{ etcd_backup_helm_values.targets.s3.filePrefix }}"
-        status: enabled
-        state: present
-
 - name: Deploy yaook operator etcd backup chart
   kubernetes.core.helm:
     chart_repo_url: "{{ etcd_backup_helm_chart_repo_url }}"
@@ -129,5 +67,4 @@
           'certRef': etcd_backup_config.certRef
         }, recursive=true
       ) }}
-    force: "{{ old_etcd_backup_service_info.resources | length > 0 }}"
 ...
