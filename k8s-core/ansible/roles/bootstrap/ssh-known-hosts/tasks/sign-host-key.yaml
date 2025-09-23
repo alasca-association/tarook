@@ -7,13 +7,13 @@
 
 - name: "Sign public key {{ host_key_path }}"
   delegate_to: "{{ groups['orchestrator'] | first }}"
+  delegate_facts: true
   community.hashi_vault.vault_write:
     path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/ssh-ca/sign/{{ vault_node_name }}"
-    mount_point: "{{ vault_caller_auth_mount_point }}"
-    auth_method: "{{ vault_caller_auth_method }}"
-    token: "{{ vault_caller_token }}"
-    role_id: "{{ vault_caller_role_id }}"
-    secret_id: "{{ vault_caller_secret_id }}"
+    mount_point: "{{ vault_nodes_approle }}"
+    auth_method: approle
+    role_id: "{{ vault_node_role_id }}"
+    secret_id: "{{ vault_node_secret_id }}"
     token_validate: false
     data:
       cert_type: host
