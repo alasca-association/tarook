@@ -1,0 +1,1 @@
+It is now checked that a Kubernetes control-plane node fulfills kubeadm's minimal CPU and memory requirements during node bootstrapping: at least 2 CPUs and 1700MB memory per node.

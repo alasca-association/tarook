@@ -2,6 +2,22 @@
 - name: Initialize node connection
   import_playbook: "connect-to-nodes.yaml"
 
+- name: Sanity checks
+  hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  tasks:
+  - name: Sanity checks for Kubernetes control-plane nodes
+    when: "'masters' in group_names"
+    block:
+    - name: Assert kubeadm's minimal requirements for control-plane nodes
+      assert:
+        that:
+        - ansible_processor_nproc >= 2
+        - ansible_memory_mb.real.total >= 1622
+        fail_msg: |
+          The node {{ inventory_hostname }} does not meet kubeadm's minimal requirements for control-plane nodes:
+            - at least 2 cores (number of cores is {{ ansible_processor_nproc }})
+            - at least 1622MiB (1700MB) RAM (available RAM is {{ ansible_memory_mb.real.total }}MiB)
+
 - name: Onboard node
   hosts: "{{ target_hosts | default('all:!orchestrator') }}"
   vars_files:
