@@ -1198,7 +1198,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "5.0.0"
+  "5.1.0"
 
 
 **Example:**::
