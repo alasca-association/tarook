@@ -38,7 +38,17 @@
       "versioningTemplate": "semver"
     },
     {
-      "description": "Default Kubernetes version in nix config",
+      "description": "Kubernetes version in nix cluster repository configuration template",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^nix/templates/cluster-repo/config/default\\.nix$/",
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?) packageName=(?<packageName>.*?)\\n\\s*version\\s=\\s\"(?<currentValue>.*?)\";\\n"
+      ]
+    },
+    {
+      "description": "Default Kubernetes version in nix config definition",
       "customType": "regex",
       "managerFilePatterns": ["/^nix/yk8s/kubernetes/default\\.nix$/"],
       "matchStrings": [
