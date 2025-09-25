@@ -13,5 +13,8 @@ virtual-router-id-base=10
 config-file="/var/lib/ch-k8s-lbaas-agent/keepalived/lbaas.conf"
 check-delay=2
 
+[nftables]
+enable-snat={{ ch_k8s_lbaas_enable_snat | bool | lower }}
+
 [nftables.service]
 config-file="/var/lib/ch-k8s-lbaas-agent/nftables/lbaas.conf"

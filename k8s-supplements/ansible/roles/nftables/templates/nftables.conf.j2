@@ -167,6 +167,10 @@ include "/var/lib/ch-k8s-lbaas-agent/nftables/*.conf"
 
 table ip nat {
     chain postrouting {
-        fib saddr type != local masquerade;
+{% if ch_k8s_lbaas_enabled and not ch_k8s_lbaas_enable_snat %}
+        ip saddr {{ priv_ip_cidr }} masquerade comment "Only SNAT internal traffic";
+{% else %}
+        fib saddr type != local masquerade comment "SNAT all traffic";
+{% endif %}
     }
 }

@@ -235,6 +235,64 @@ Thus, this option is deprecated.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
 
 
+.. _configuration-options.yk8s.ch-k8s-lbaas.enable_snat:
+
+``yk8s.ch-k8s-lbaas.enable_snat``
+#################################
+
+Whether to enable source-nat'ing by the ch-k8s-lbaas-agents running on the frontend nodes.
+
+Disabling this has a similar effect as a direct server return.
+It allows to see the real source IP of traffic sent to a LoadBalancer-service.
+
+After reconfiguring this option, execute the following:
+
+.. code::
+
+  $ ./managed-k8s/actions/apply-k8s-supplements.sh install-ch-k8s-lbaas.yaml
+
+to rollout necessary changes.
+
+Running on OpenStack
+""""""""""""""""""""
+
+If source-nat'ing is disabled, the frontend nodes will be configured to act as gateway
+for the Kubernetes nodes. They will propagate routes via BGP overwriting the default routes of
+Kubernetes nodes such that **all** traffic is routed via the VIP by default.
+
+.. warning:: Implications when running on OpenStack
+
+  Disabling source-nat'ing has some implications:
+
+  1. If a failover occurs on the frontend nodes, **all** connections are impacted,
+     not only connections to LoadBalancer-Services.
+  2. The source IP of Kubernetes nodes as seen by the outside world changes from
+     the OpenStack router IP to the Gateway's VIP.
+  3. It's not possible to attach floating IPs to Kubernetes nodes anymore due to
+     routing asymmetry.
+
+Be aware, that the frontend nodes must be potent enough to handle the increased amount of traffic
+if source-nat'ing is disabled, as they could become the bottleneck otherwise.
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  true
+
+
+**Example:**::
+
+  false
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ch-k8s-lbaas.nix
+
+
 .. _configuration-options.yk8s.ch-k8s-lbaas.enabled:
 
 ``yk8s.ch-k8s-lbaas.enabled``
