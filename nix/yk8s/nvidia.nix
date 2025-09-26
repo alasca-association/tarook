@@ -7,12 +7,14 @@
   cfg = config.yk8s.nvidia;
   inherit (lib) mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (yk8s-lib.k8s) mkTolerations;
   inherit
     (yk8s-lib.types)
     httpxUrl
     posixFilename
     xftpUrl
     ;
+  inherit (yk8s-lib.options) mkHelmReleaseOptions;
 in {
   options.yk8s.nvidia = mkTopSection {
     vgpu = {
@@ -29,17 +31,57 @@ in {
         type = posixFilename;
       };
     };
+    device_plugin = {
+      install = mkOption {
+        type = types.bool;
+        default = config.yk8s.kubernetes.is_gpu_cluster && !config.yk8s.kubernetes.virtualize_gpu;
+        visible = false;
+        readOnly = true;
+      };
+      helm = mkHelmReleaseOptions {
+        descriptionName = "nvidia device plugin";
+        valuesDocUrl = "https://github.com/NVIDIA/k8s-device-plugin/blob/main/deployments/helm/nvidia-device-plugin/values.yaml";
+        defaultRepoUrl = "https://nvidia.github.io/k8s-device-plugin";
+        defaultChartRef = "nvidia-device-plugin";
+        # renovate: datasource=helm depName=nvidia-device-plugin registryUrl=https://nvidia.github.io/k8s-device-plugin
+        defaultChartVersion = "0.17.4";
+        defaultReleaseNamespace = "k8s-nvidia-device-plugin";
+        defaultReleaseName = "nvdp";
+      };
+    };
   };
+
+  config.yk8s.nvidia.device_plugin.helm.values = let
+    schedulingSettings = {
+      nodeSelector = {"k8s.yaook.cloud/gpu-node" = "true";};
+      tolerations = mkTolerations {scheduling_key = "";};
+    };
+  in
+    schedulingSettings
+    // {
+      # Subcharts
+      # https://github.com/NVIDIA/gpu-operator/tree/master/deployments/gpu-operator/charts/node-feature-discovery
+      nfd.worker = schedulingSettings;
+
+      # https://github.com/NVIDIA/gpu-feature-discovery
+      gfd = {
+        enabled = true;
+      };
+    };
+
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       ansible_prefix = "nvidia_";
       inventory_path = "all/nvidia.yaml";
+      unflat = [
+        ["device_plugin" "helm" "values"]
+      ];
       transformations = [
         (cfg:
           if config.yk8s.kubernetes.virtualize_gpu
           then cfg
-          else {})
+          else builtins.removeAttrs cfg ["vgpu"])
       ];
     })
   ];

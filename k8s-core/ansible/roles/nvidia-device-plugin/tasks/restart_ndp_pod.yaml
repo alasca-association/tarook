@@ -9,7 +9,7 @@
   - name: "Get nvidia-device-plugin Pod running on node {{ inventory_hostname }}"
     kubernetes.core.k8s_info:
       kind: Pod
-      namespace: "{{ k8s_nvidia_device_plugin_namespace }}"
+      namespace: "{{ nvidia_device_plugin_helm_release_namespace }}"
       field_selectors:
       - "spec.nodeName={{ inventory_hostname }}"
       label_selectors:
@@ -28,7 +28,7 @@
     kubernetes.core.k8s:
       state: absent
       kind: Pod
-      namespace: "{{ k8s_nvidia_device_plugin_namespace }}"
+      namespace: "{{ nvidia_device_plugin_helm_release_namespace }}"
       name: "{{ pod_name }}"
       label_selectors:
       - app.kubernetes.io/instance=nvdp
