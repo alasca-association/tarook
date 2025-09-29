@@ -129,6 +129,8 @@ Version of the Helm chart to be used.
 
 If the version shall be unpinned, set to: ``null``.
 
+See also :doc:`/user/guide/vault/upgrade`.
+
 
 **Type:**::
 
@@ -137,7 +139,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "0.23.0"
+  "0.25.0"
 
 
 **Example:**::

@@ -60,7 +60,8 @@ in {
 
     chart_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=vault registryUrl=https://helm.releases.hashicorp.com
-      default = "0.23.0";
+      extraDescription = "See also :doc:`/user/guide/vault/upgrade`.";
+      default = "0.25.0";
     };
     namespace = mkOption {
       description = ''

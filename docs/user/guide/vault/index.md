@@ -8,6 +8,7 @@ hidden: true
 
 vault
 automatic-backups
+upgrade
 vault-ca-rotation
 ```
 
@@ -22,6 +23,10 @@ vault-ca-rotation
 :::
 ::::
 ::::{grid} 2
+:::{grid-item-card} Upgrading Hashicorp Vault
+:link: /user/guide/vault/upgrade
+:link-type: doc
+:::
 :::{grid-item-card} Root Certificate Authority Rotation
 :link: /user/guide/vault/vault-ca-rotation
 :link-type: doc
