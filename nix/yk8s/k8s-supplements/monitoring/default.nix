@@ -5,25 +5,23 @@
   ...
 }: let
   cfg = config.yk8s.k8s-service-layer.prometheus;
-  modules-lib = import ../lib/modules.nix {inherit lib;};
+  modules-lib = import ../../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkRenamedResourceOptionModule mkMultiResourceOptionsModule;
   inherit (lib) mkEnableOption mkOption;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile types isValidSemver2;
   inherit (yk8s-lib.options) mkHelmChartVersionOption;
 in {
   imports = [
+    ./grafana.nix
+    ./thanos.nix
+
     (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "use_jsonnet_setup"] "")
-    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "use_helm_thanos"] "")
     (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "migrate_from_v1"] "")
     (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "alertmanager_config_secret"] "")
     (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "alertmanager_configuration_name"] "")
     (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "kube_state_metrics_metric_annotation_allow_list"] "")
-    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "thanos_metadata_volume_size"] "")
-    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "thanos_metadata_volume_storage_class"] "")
-    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "grafana_plugins"] "")
     (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "prometheus_monitor_all_namespaces"] "")
     (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "monitor_all_namespaces"] "")
-    (mkRemovedOptionModule ["k8s-service-layer" "prometheus" "thanos_objectstorage_config_path"] "Use `thanos_objectstorage_config_file` instead.")
 
     (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_cpu_request"] ["k8s-service-layer" "prometheus" "operator_resources" "cpu" "request"])
     (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_operator_cpu_limit"] ["k8s-service-layer" "prometheus" "operator_resources" "cpu" "limit"])
@@ -50,109 +48,20 @@ in {
         prometheus.memory.limit = "3Gi";
         prometheus.cpu.request = "1";
 
-        grafana.memory.limit = "512Mi";
-        grafana.cpu.request = "100m";
-        grafana.cpu.example = "500m";
-
         kube_state_metrics.memory.limit = "128Mi";
         kube_state_metrics.cpu.request = "50m";
-
-        thanos_sidecar.memory.limit = "256Mi";
-        thanos_sidecar.cpu.request = "500m";
-
-        thanos_query.memory.limit = "786Mi";
-        thanos_query.cpu.request = "100m";
-        thanos_query.cpu.example = "1";
-
-        thanos_compact.memory.limit = "200Mi";
-        thanos_compact.cpu.request = "100m";
-
-        thanos_store.memory.limit = "2Gi";
-        thanos_store.cpu.request = "100m";
-        thanos_store.cpu.example = "500m";
       };
     })
     (mkRenamedResourceOptionModule ["k8s-service-layer" "prometheus"] [
       "operator"
       "alertmanager"
       "prometheus"
-      "grafana"
       "kube_state_metrics"
-      "thanos_sidecar"
-      "thanos_query"
-      "thanos_compact"
-      "thanos_store"
     ])
   ];
 
   options.yk8s.k8s-service-layer.prometheus = mkTopSection {
-    _docs.preface = ''
-      The used prometheus-based monitoring setup will be explained in more
-      detail soon :)
-
-      .. note::
-
-        To enable prometheus,
-        :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.install`
-        and
-        :ref:`configuration-options.yk8s.kubernetes.monitoring.enabled`
-        need to be set to ``true``.
-
-
-      Tweak Thanos Configuration
-      """"""""""""""""""""""""""
-
-      index-cache-size / in-memory-max-size
-      *************************************
-
-      Thanos is unaware of its Kubernetes limits
-      which can lead to OOM kills of the storegateway
-      if a lot of metrics are requested.
-
-      This can be prevented by tuning the following config options:
-
-        - :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_store_in_memory_max_size`
-        - :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_store_resources.limits.memory`
-        - :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_store_resources.requests.memory`
-
-      Note that the value must be a decimal unit!
-      Please also note that
-      if no explicit memory limit is configured
-      the helm chart default is used which is not optimal.
-      You should configure both memory limit and request
-      which are recommended to have the same value.
-
-      Persistence
-      ***********
-
-      With `release/v3.0 · Tarook · GitLab <https://gitlab.com/alasca.cloud/tarook/tarook/-/blob/release/v3.0/CHANGELOG.rst>`__,
-      persistence for Thanos components has been reworked.
-      By default, Thanos components use emptyDirs.
-      Depending on the size of the cluster and the metrics
-      flying around, Thanos components may need more disk
-      than the host node can provide them and in that cases
-      it makes sense to configure persistence.
-
-      If you want to enable persistence for Thanos components,
-      you can do so by configuring a storage class
-      to use and you can specify the persistent volume
-      size for each component with the following config options:
-
-        - :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_storage_class`
-        - :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_storegateway_size`
-        - :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos_compactor_size`
-
-      .. _cluster-configuration.prometheus-configuration.updating-immutable-options:
-
-      Updating immutable options
-      **************************
-
-      Some options are immutable when deployed.
-      If you want to change them nonetheless, follow these manual steps:
-      1. Increase the size of the corresponding PVC
-      2. Delete the stateful set: ``kubectl delete -n monitoring sts --cascade=false thanos-<storegateway|compactor>``
-      3. Re-deploy it with the LCM: ``AFLAGS="--diff --tags thanos" bash managed-k8s/actions/apply-k8s-supplements.sh``
-    '';
+    _docs.preface = builtins.readFile ./preface.rst;
 
     install = mkOption {
       description = ''
@@ -257,15 +166,6 @@ in {
         );
     };
 
-    grafana_admin_secret_name = mkOption {
-      type = types.yk8s.k8s.secretName;
-      default = "cah-grafana-admin";
-    };
-
-    grafana_dashboard_enable_multicluster_support = mkEnableOption ''
-      referencing multiple K8s clusters by a single Grafana datasource.
-    '';
-
     nvidia_dcgm_exporter_helm_repo_url = mkOption {
       type = types.yk8s.helm.chartRepoUrl;
       default = "https://nvidia.github.io/dcgm-exporter/helm-charts";
@@ -325,84 +225,6 @@ in {
       default = "50Gi";
     };
 
-    use_grafana = mkOption {
-      description = "Enable grafana";
-      type = types.bool;
-      default = true;
-    };
-
-    grafana_root_url = mkOption {
-      description = ''
-        The full public facing url you use in browser, used for redirects and emails
-      '';
-      type = with types; nullOr yk8s.networking.httpxHostPathUrl;
-      default = null;
-    };
-
-    grafana_persistent_storage_class = mkOption {
-      description = ''
-        If this variable is defined, Grafana will store its data in a PersistentVolume
-        in the defined StorageClass. Otherwise, persistence is disabled for Grafana.
-        The value has to be a valid StorageClass available in your cluster.
-      '';
-      type = with types; nullOr yk8s.k8s.storageClassName;
-      default = null;
-    };
-
-    use_thanos = mkEnableOption "use of Thanos";
-
-    manage_thanos_bucket = mkOption {
-      description = ''
-        Let terraform create an object storage container / bucket for you if `true`.
-        If set to `false` one must provide a valid configuration via Vault.
-        See :ref:`thanos.custom-bucket-management` for details.
-      '';
-      type = types.bool;
-      default = true;
-    };
-
-    thanos_chart_version = mkHelmChartVersionOption {
-      # renovate: datasource=helm depName=thanos registryUrl=https://charts.bitnami.com/bitnami
-      default = "17.2.3";
-    };
-
-    thanos_storage_class = mkOption {
-      description = ''
-        Thanos uses emptyDirs by default for its components
-        for faster access.
-        If that's not feasible, a storage class can be set to
-        enable persistence and the size for each component volume
-        can be configured.
-        Note that switching between persistence requires
-        manual intervention and it may be necessary to reinstall
-        the helm chart completely.
-      '';
-      type = with types; nullOr yk8s.k8s.storageClassName;
-      default = null;
-    };
-
-    thanos_storegateway_size = mkOption {
-      description = ''
-        You can explicitly set the PV size for each component.
-        If left undefined, the helm chart defaults will be used
-
-        Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-configuration.updating-immutable-options`)
-      '';
-      type = with types; nullOr yk8s.k8s.quantity;
-      default = null;
-    };
-
-    thanos_compactor_size = mkOption {
-      description = ''
-        You can explicitly set the PV size for each component.
-        If left undefined, the helm chart defaults will be used
-
-        Immutable when deployed. (See also :ref:`cluster-configuration.prometheus-configuration.updating-immutable-options`)
-      '';
-      type = with types; nullOr yk8s.k8s.quantity;
-      default = null;
-    };
-
     alertmanager_replicas = mkOption {
       description = ''
         How many replicas of the alertmanager should be deployed inside the cluster
@@ -423,43 +245,10 @@ in {
       default = null;
       example = lib.options.literalExpression "\"\${scheduling_key_prefix}/monitoring\"";
     };
-    thanos_store_in_memory_max_size = mkOption {
-      description = ''
-        https://thanos.io/tip/components/store.md/#in-memory-index-cache
-        Note: Unit must be specified as decimal! (MB,GB)
-        This value should be chosen in a sane matter based on
-        thanos_store_memory_request and thanos_store_memory_limit
-      '';
-      type = with types; nullOr yk8s.units.bytesPower10;
-      default = null;
-    };
-    thanos_objectstorage_container_name = mkOption {
-      type = types.yk8s.openstack.swiftContainerName;
-      default = "${config.yk8s.infra.cluster_name}-monitoring-thanos-data";
-      defaultText = lib.literalExpression ''"''${config.yk8s.infra.cluster_name}-monitoring-thanos-data"'';
-    };
-    thanos_objectstorage_config_file = mkOption {
-      description = ''
-        Note: The given path is interpreted as being relative to the cluster repo's config directory.
-      '';
-      # NOTE: Not using `pathInStore` here because the expected file contains secrets
-      # TODO: Eliminate config option and store secrets solely in Vault
-      type = with types; nullOr yk8s.posix.relativePath;
-      default = null;
-      example = "./monitoring/thanos_objectstorage.config";
-    };
     internet_probe = mkEnableOption ''
       scraping external targets via blackbox exporter
       https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
     '';
-    thanos_query_additional_store_endpoints = mkOption {
-      description = ''
-        Provide a list of DNS endpoints for additional thanos store endpoints.
-        The endpoint will be extended to `dnssrv+_grpc._tcp.{{ endpoint }}.monitoring.svc.cluster.local`.
-      '';
-      type = with types; listOf yk8s.networking.subdomainLabel;
-      default = [];
-    };
     blackbox_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=prometheus-blackbox-exporter registryUrl=https://prometheus-community.github.io/helm-charts
       default = "11.16.0";
@@ -584,7 +373,7 @@ in {
     # check that no IPv6 module is configured in any probe if yk8s.infra.ipv6_enabled is disabled
     ++ lib.imap0
     (i: x: let
-      idx = builtins.toString i;
+      idx = toString i;
     in {
       assertion = cfg.internet_probe -> ! config.yk8s.infra.ipv6_enabled -> ! lib.strings.hasSuffix "_v6" x.module;
       message = "config.yk8s.k8s-service-layer.prometheus.internet_probe_targets[${idx}].module: ${x.module} is an IPv6-specific module but config.yk8s.infra.ipv6_enabled=false";
