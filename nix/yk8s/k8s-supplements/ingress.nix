@@ -9,7 +9,7 @@
   inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.k8s) mkAffinities mkTolerations;
+  inherit (yk8s-lib.k8s) mkAffinity mkTolerations;
   inherit (yk8s-lib.options) mkHelmReleaseOptions;
   inherit
     (yk8s-lib.types)
@@ -139,7 +139,7 @@ in {
   };
   config.yk8s.k8s-service-layer.ingress.helm.values = let
     inherit (config.yk8s.infra) ipv4_enabled ipv6_enabled;
-    affinity = mkAffinities {inherit (cfg) scheduling_key;};
+    affinity = mkAffinity {inherit (cfg) scheduling_key;};
     tolerations = mkTolerations {inherit (cfg) scheduling_key;};
   in {
     defaultBackend = {inherit affinity tolerations;};

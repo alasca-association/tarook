@@ -13,7 +13,7 @@
       }
     ];
 
-  mkAffinities = {
+  mkAffinity = {
     scheduling_key ? null,
     pod_affinity_key ? null,
     pod_affinity_operator ? "Exists",
