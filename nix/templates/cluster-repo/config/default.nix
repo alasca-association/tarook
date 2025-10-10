@@ -92,8 +92,5 @@ in {
   ###
   ### Importing only certain sections from a single TOML file
   ###
-  # let
-  #   onlySections = sections: cfg: lib.attrsets.filterAttrs (n: _: builtins.elem n sections) cfg;
-  # in
-  #   onlySections ["wireguard" "load-balancing" "vault"] (yk8s-lib.importTOML ./config.toml);
+  # lib.getAttrs ["wireguard" "load-balancing" "vault"] (yk8s-lib.importTOML ./config.toml);
 }
