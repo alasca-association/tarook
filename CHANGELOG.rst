@@ -12,4 +12,7 @@ generation of our release notes file.
 Information about unreleased changes can be found
 `here <https://gitlab.com/yaook/k8s/-/tree/devel/docs/_releasenotes?ref_type=heads>`__.
 
+General information about release upgrades are documented at
+:doc:`/user/guide/upgrade-release`.
+
 .. towncrier release notes start

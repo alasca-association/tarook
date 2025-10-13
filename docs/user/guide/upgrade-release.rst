@@ -26,7 +26,8 @@ All steps are to performed from the cluster repo's root.
 Choosing the target TAROOK release
 -------------------------------------
 
-It is recommended to consult the :doc:`Releasenotes </releasenotes>` in any case.
+It is recommended to consult the :doc:`Releasenotes </releasenotes>`
+of each intermediate version in any case.
 Details about the used scheme can be found at
 :doc:`Release and Versioning Policy </developer/explanation/release-and-versioning-policy>`.
 
@@ -47,7 +48,8 @@ This means, it is feasible to jump to any available next patch release.
 Minor Versions
 ^^^^^^^^^^^^^^
 
-Skipping minor versions is usually supported, but it’s highly recommended to carefully review the release notes.
+Skipping minor versions is usually supported, but it’s highly recommended to carefully review the releasenotes
+including releasenotes of intermediate releases.
 This means, it is feasible to jump to any available next minor release.
 
 
@@ -62,6 +64,7 @@ You can directly jump to any available minor version of the next major release t
 .. important::
 
    You **must** read the :doc:`Releasenotes </releasenotes>`
+   of each intermediate version
    if you want to upgrade to a new major release.
 
 Performing the TAROOK Upgrade
@@ -122,7 +125,8 @@ Performing the TAROOK Upgrade
 
       .. tab:: Major Release Upgrade
 
-         **Follow every instruction** mentioned in the :doc:`Releasenotes </releasenotes>`.
+         **Follow every instruction** mentioned in the :doc:`Releasenotes </releasenotes>`
+         of each intermediate version.
          In most cases, necessary steps to move to the next major release are automated:
 
          .. code:: console
