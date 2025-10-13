@@ -1,9 +1,11 @@
 # unattended-upgrades is a useful feature but untested upgrades at the wrong time
 # can cause a lot of pain
+# As gateway nodes are the interface to the outer world,
+# we want it enabled on them though
 ---
 - name: Remove unattended-upgrades
   become: true
   package:
     name: unattended-upgrades
-    state: absent
+    state: "{{ ('gateways' in group_names) | ternary('present', 'absent') }}"
 ...
