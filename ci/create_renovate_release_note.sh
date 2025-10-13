@@ -33,7 +33,11 @@ if [ -f "$RELEASENOTE_FILE" ]; then
 fi
 
 if [[ $DATASOURCE == 'helm' ]]; then
-  echo "Updated default version of helm chart $DEP_NAME of $SOURCE_URL from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
+  if [[ -z $SOURCE_URL ]]; then
+    echo "Updated default version of helm chart $DEP_NAME from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
+  else
+    echo "Updated default version of helm chart $DEP_NAME of $SOURCE_URL from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
+  fi
 else
   touch "$RELEASENOTE_FILE"
 fi
