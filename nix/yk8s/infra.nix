@@ -20,6 +20,8 @@
     ipv6Cidr
     k8sClusterName
     absolutePosixPath
+    jsonValue
+    subdomainName
     ;
 in {
   options.yk8s.infra = mkTopSection {
@@ -111,6 +113,23 @@ in {
 
     ansible_hosts = let
       applyGroupSubmoduleAttrs = lib.mapAttrs (_: lib.filterAttrs (_: a: a != {}));
+      hostsSubmodule = types.submodule {
+        freeformType = jsonValue;
+        options = {
+          ansible_host = mkOption {
+            type = with types; nullOr (oneOf [ipv4Addr ipv6Addr subdomainName]);
+            default = null;
+          };
+          local_ipv4_address = mkOption {
+            type = types.nullOr ipv4Addr;
+            default = null;
+          };
+          local_ipv6_address = mkOption {
+            type = types.nullOr ipv6Addr;
+            default = null;
+          };
+        };
+      };
       groupSubmodule = types.submodule {
         options = {
           children = mkOption {
@@ -120,11 +139,11 @@ in {
             apply = applyGroupSubmoduleAttrs;
           };
           hosts = mkOption {
-            type = with types; attrsOf anything;
+            type = types.attrsOf hostsSubmodule;
             default = {};
           };
           vars = mkOption {
-            type = with types; attrsOf anything;
+            type = types.attrsOf jsonValue;
             default = {};
           };
         };
@@ -289,6 +308,24 @@ in {
     {
       assertion = ! config.yk8s.terraform.enabled -> (cfg.ansible_hosts == null && cfg.hosts_file == null);
       message = "One of config.yk8s.infra.hosts_file and config.yk8s.infra.ansible_hosts must be set";
+    }
+    {
+      assertion =
+        (cfg.ansible_hosts != null)
+        -> builtins.all (host: (host.ansible_connection or "") != "local" -> host.ansible_host != null) (builtins.attrValues cfg.final_hosts.all.hosts);
+      message = "ansible_host must be set for all hosts in config.yk8s.infra.ansible_hosts if ansible_connection!=local";
+    }
+    {
+      assertion =
+        (cfg.ansible_hosts != null && cfg.ipv4_enabled)
+        -> builtins.all (host: host.local_ipv4_address != null) (builtins.attrValues cfg.final_hosts.k8s_nodes.hosts);
+      message = "local_ipv4_address must be set for all hosts in config.yk8s.infra.ansible_hosts.k8s_nodes";
+    }
+    {
+      assertion =
+        (cfg.ansible_hosts != null && cfg.ipv6_enabled)
+        -> builtins.all (host: host.local_ipv6_address != null) (builtins.attrValues cfg.final_hosts.k8s_nodes.hosts);
+      message = "local_ipv6_address must be set for all hosts in config.yk8s.infra.ansible_hosts.k8s_nodes";
     }
   ];
   config.yk8s.warnings = lib.optional (cfg.hosts_file != null) "config.yk8s.infra.hosts_file is deprecated. Use config.yk8s.infra.ansible_hosts instead.";
