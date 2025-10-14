@@ -74,6 +74,11 @@ dependencies locked to specific versions so everybody can produce the same ident
    but the rest of the guide assumes that direnv is available. You can enter the virtual environments and set
    all necessary environment variables manually instead, but then you're on your own.
 
+We additionally suggest to install the
+`helm diff <https://github.com/databus23/helm-diff>`__
+helm plugin to get proper diffs with the Ansible
+`kubernetes.core.helm module <https://docs.ansible.com/ansible/latest/collections/kubernetes/core/helm_module.html>`__.
+
 .. _initialization.required-system-resources:
 
 Required System Resources
