@@ -47,8 +47,19 @@
               ${./.}/actions/init-cluster-repo.sh
             '';
           };
+          alejandra-tree = pkgs.writeShellApplication {
+            name = "alejandra-tree";
+            runtimeInputs = [pkgs.alejandra];
+            text = ''
+              if [[ $# -eq 0 ]]; then
+                exec alejandra .
+              else
+                exec alejandra "$@"
+              fi
+            '';
+          };
         };
-        formatter = pkgs.alejandra;
+        formatter = self.packages.${system}.alejandra-tree;
       };
       flake = {lib, ...}: {
         flakeModules.yk8s = import ./nix/yk8s;

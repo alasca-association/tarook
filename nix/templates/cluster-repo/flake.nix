@@ -15,8 +15,12 @@
       ];
       systems = import inputs.systems;
       debug = true;
-      perSystem = {pkgs, ...}: {
-        formatter = pkgs.alejandra;
+      perSystem = {
+        system,
+        pkgs,
+        ...
+      }: {
+        formatter = inputs.yk8s.packages.${system}.alejandra-tree;
         imports = [./config];
 
         # Don't change this except you know what you're doing
