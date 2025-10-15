@@ -1,4 +1,4 @@
-An option to disable SNAT'ing for ``ch-k8s-lbaas`` has been added:
+An option to disable SNAT'ing for :doc:`ch-k8s-lbaas </user/explanation/services/ch-k8s-lbaas>` has been added:
 :ref:`configuration-options.yk8s.ch-k8s-lbaas.enable_snat`.
 
 .. warning::
