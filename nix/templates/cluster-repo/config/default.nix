@@ -85,15 +85,7 @@ in {
   # yk8s-lib.importYAML pkgs ./config.yaml;
   #
   ###
-  ### Importing from a tree of YAML files where the file name represents the section
-  ###
-  # yk8s-lib.importYamlTree pkgs ./tree;
-  #
-  ###
   ### Importing only certain sections from a single TOML file
   ###
-  # let
-  #   onlySections = sections: cfg: lib.attrsets.filterAttrs (n: _: builtins.elem n sections) cfg;
-  # in
-  #   onlySections ["wireguard" "load-balancing" "vault"] (yk8s-lib.importTOML ./config.toml);
+  # lib.getAttrs ["wireguard" "load-balancing" "vault"] (yk8s-lib.importTOML ./config.toml);
 }
