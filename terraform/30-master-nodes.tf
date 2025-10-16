@@ -97,3 +97,11 @@ resource "openstack_compute_instance_v2" "master" {
     ignore_changes = [key_pair, image_id, config_drive]
   }
 }
+
+output masters {
+  value = openstack_compute_instance_v2.master
+  sensitive = true
+}
+output master_ports {
+  value = openstack_networking_port_v2.master
+}

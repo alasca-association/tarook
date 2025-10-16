@@ -8,7 +8,7 @@
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedResourceOptionModule mkResourceOptionModule;
   inherit (lib) mkOption mkEnableOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkResourceOption mkDisableOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkDisableOption;
   inherit
     (yk8s-lib.types)
     base64Str
@@ -158,6 +158,22 @@ in {
 
       Be aware, that the frontend nodes must be potent enough to handle the increased amount of traffic
       if source-nat'ing is disabled, as they could become the bottleneck otherwise'';
+    subnet_id = mkInternalOption {
+      type = with types; nullOr nonEmptyStr;
+      default = null;
+      apply = v:
+        if v == null && config.yk8s.terraform.enabled
+        then builtins.trace "INFO: ch-k8s-lbaas.subnet_id is not yet set. Terraform stage needs to be run first." v
+        else v;
+    };
+    floating_ip_network_id = mkInternalOption {
+      type = with types; nullOr nonEmptyStr;
+      default = null;
+      apply = v:
+        if v == null && config.yk8s.terraform.enabled
+        then builtins.trace "INFO: ch-k8s-lbaas.floating_ip_network_id is not yet set. Terraform stage needs to be run first." v
+        else v;
+    };
   };
   config.yk8s.assertions = [
     # Due to OVN support, require version >= 0.8.0 (warn only if not in semver2 format)
@@ -203,6 +219,10 @@ in {
         message = "config.yk8s.ch-k8s-lbaas.version: must be at least 0.8.0";
       }
     )
+    {
+      assertion = (!config.yk8s.openstack.enabled) -> (cfg.subnet_id == null && cfg.floating_ip_network_id == null);
+      message = "config.yk8s.ch-k8s-lbaas.subnet_id and config.yk8s.ch-k8s-lbaas.floating_ip_network_id must be null if config.yk8s.openstack.enabled==false";
+    }
   ];
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {

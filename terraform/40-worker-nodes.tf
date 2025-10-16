@@ -117,3 +117,11 @@ resource "openstack_compute_instance_v2" "worker" {
     ignore_changes = [key_pair, image_id, config_drive, scheduler_hints]
   }
 }
+
+output workers {
+  value = openstack_compute_instance_v2.worker
+  sensitive = true
+}
+output worker_ports {
+  value = openstack_networking_port_v2.worker
+}
