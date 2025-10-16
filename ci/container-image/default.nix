@@ -45,7 +45,7 @@
           '';
           propagatedBuildInputs = with config.yk8s-env.environments; [default dev docs];
         };
-        tmpdir = pkgs.runCommand "tmp-dir" {} "mkdir -p $out/tmp;";
+        tmpdir = pkgs.runCommandLocal "tmp-dir" {} "mkdir -p $out/tmp;";
         container-image = {
           name = "registry.gitlab.com/alasca.cloud/tarook/tarook/ci";
           contents = [
