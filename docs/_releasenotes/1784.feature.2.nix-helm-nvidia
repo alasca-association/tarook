@@ -1,1 +1,0 @@
-The helm chart for the Nvidia device plugin can now be configured with arbitrary values through :ref:`configuration-options.yk8s.nvidia.device_plugin.helm.values`.

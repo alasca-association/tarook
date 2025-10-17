@@ -1,1 +1,0 @@
-The ``build-docs-check`` CI job now uses Nix to build the documentation.

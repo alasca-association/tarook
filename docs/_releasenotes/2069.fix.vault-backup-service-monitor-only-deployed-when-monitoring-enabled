@@ -1,3 +1,0 @@
-Fixed the ``vault_v1`` Ansible role
-to deploy the vault-backup ServiceMonitor
-only when monitoring is enabled via :ref:`configuration-options.yk8s.kubernetes.monitoring.enabled`.

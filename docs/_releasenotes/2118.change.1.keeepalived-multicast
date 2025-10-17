@@ -1,1 +1,0 @@
-The peering mechanism of keepalived has been changed from explicit unicast back to multicast.

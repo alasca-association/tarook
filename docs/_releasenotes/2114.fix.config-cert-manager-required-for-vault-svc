@@ -1,3 +1,0 @@
-Deploying Vault on Kubernetes through :ref:`configuration-options.yk8s.k8s-service-layer.vault`
-requires cert-manager
-which is now documented and enforced at config evaluation.
