@@ -1,1 +1,1 @@
-The Helm chart url, name and version can now be configured for the nvidia device plugin through :ref:`yk8s.nvidia.device_plugin.helm <configuration-options.yk8s.nvidia>`.
+The helm chart url, name and version can now be configured for the nvidia device plugin through :ref:`yk8s.nvidia.device_plugin.helm <configuration-options.yk8s.nvidia>`.

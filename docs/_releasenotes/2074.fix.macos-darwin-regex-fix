@@ -1,1 +1,0 @@
-Fixes an issue where regex validation of IP patterns did not work on macOS hosts.
