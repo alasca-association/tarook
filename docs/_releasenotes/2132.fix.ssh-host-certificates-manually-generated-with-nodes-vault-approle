@@ -1,4 +1,0 @@
-SSH host certificates are now always generated using the ``yaook/nodes`` Vault approle.
-Previously the orchestrator's credentials were used
-when ``USE_VAULT_IN_DOCKER=true`` (see :doc:`/developer/explanation/vault`) was set
-which prevented the use of unpriviledged Vault tokens.

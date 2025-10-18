@@ -1,3 +1,0 @@
-The ``.gitignore`` file of the cluster repository now includes the 'managed by yk8s' markers
-from cluster repo initialization already,
-not just after the first release migration.

@@ -1,4 +1,0 @@
-The bucket management tasks have been dropped for :ref:`configuration-options.yk8s.k8s-service-layer.etcd-backup`.
-It is now the user's responsibility to ensure the bucket exists.
-Documentation has been updated accordingly.
-Existing buckets are not touched.

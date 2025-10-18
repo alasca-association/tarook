@@ -1,1 +1,0 @@
-Ansible and Helm now don't try to use user-wide (cache) directories anymore.
