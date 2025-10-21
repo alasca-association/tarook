@@ -28,8 +28,8 @@ filter k8s_worker_v6 {
 {% set peer = hostvars[hostname] %}
 protocol bgp {{ "%s_v6" | format(hostname | replace('-', '_')) }} {
     table master;
-    local {{ networking_fixed_ip_v6 | ipaddr }} as {{ k8s_network_bgp_gateway_as }};
-    neighbor {{ peer.local_ipv6_address | ipaddr }} as {{ k8s_network_bgp_worker_as }};
+    local {{ networking_fixed_ip_v6 | ansible.utils.ipaddr }} as {{ k8s_network_bgp_gateway_as }};
+    neighbor {{ peer.local_ipv6_address | ansible.utils.ipaddr }} as {{ k8s_network_bgp_worker_as }};
     multihop;
     import filter {
         /* universal are routes we may export to our peers */
