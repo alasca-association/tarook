@@ -1013,7 +1013,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "4.5.2"
+  "4.6.0"
 
 
 **Example:**::
