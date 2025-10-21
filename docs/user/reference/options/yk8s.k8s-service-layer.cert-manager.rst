@@ -13,56 +13,6 @@ soon :)
       :ref:`configuration-options.yk8s.k8s-service-layer.cert-manager.enabled`
       needs to be set to ``true``.
 
-.. _configuration-options.yk8s.k8s-service-layer.cert-manager.chart_ref:
-
-``yk8s.k8s-service-layer.cert-manager.chart_ref``
-#################################################
-
-
-
-**Type:**::
-
-  RFC3986 relative URL path
-
-
-**Default:**::
-
-  "cert-manager"
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
-
-
-.. _configuration-options.yk8s.k8s-service-layer.cert-manager.chart_version:
-
-``yk8s.k8s-service-layer.cert-manager.chart_version``
-#####################################################
-
-Version of the Helm chart to be used.
-
-If the version shall be unpinned, set to: ``null``.
-
-
-**Type:**::
-
-  null or Helm chart version (Semantic version 2 string or OCI image tag)
-
-
-**Default:**::
-
-  "1.19.1"
-
-
-**Example:**::
-
-  "1.2.3"
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
-
-
 .. _configuration-options.yk8s.k8s-service-layer.cert-manager.enabled:
 
 ``yk8s.k8s-service-layer.cert-manager.enabled``
@@ -89,11 +39,34 @@ Whether to enable management of a cert-manager.io instance.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
 
 
-.. _configuration-options.yk8s.k8s-service-layer.cert-manager.helm_repo_url:
+.. _configuration-options.yk8s.k8s-service-layer.cert-manager.helm.chart_ref:
 
-``yk8s.k8s-service-layer.cert-manager.helm_repo_url``
-#####################################################
+``yk8s.k8s-service-layer.cert-manager.helm.chart_ref``
+######################################################
 
+The chart reference (relative to the repository) of the cert-manager Helm chart.
+
+
+**Type:**::
+
+  RFC3986 relative URL path
+
+
+**Default:**::
+
+  "cert-manager"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.cert-manager.helm.chart_repo_url:
+
+``yk8s.k8s-service-layer.cert-manager.helm.chart_repo_url``
+###########################################################
+
+The URL to the Helm repository for the cert-manager Helm chart.
 
 
 **Type:**::
@@ -104,6 +77,105 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 **Default:**::
 
   "https://charts.jetstack.io"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.cert-manager.helm.chart_version:
+
+``yk8s.k8s-service-layer.cert-manager.helm.chart_version``
+##########################################################
+
+Version of the cert-manager Helm chart to be used.
+
+If the version shall be unpinned, set to: ``null``.
+
+
+**Type:**::
+
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
+
+
+**Default:**::
+
+  "1.19.1"
+
+
+**Example:**::
+
+  "1.2.3"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.cert-manager.helm.release_name:
+
+``yk8s.k8s-service-layer.cert-manager.helm.release_name``
+#########################################################
+
+The release name inside the cluster for cert-manager.
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "cert-manager"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.cert-manager.helm.release_namespace:
+
+``yk8s.k8s-service-layer.cert-manager.helm.release_namespace``
+##############################################################
+
+The namespace in which to install cert-manager.
+
+
+**Type:**::
+
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
+
+
+**Default:**::
+
+  "k8s-svc-cert-manager"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.cert-manager.helm.values:
+
+``yk8s.k8s-service-layer.cert-manager.helm.values``
+###################################################
+
+Helm values for the cert-manager helm chart.
+
+Some values are set by default through Tarook, but arbitrary values can be set.
+For a full list of possible values, see
+https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
+
+
+**Type:**::
+
+  JSON value
+
+
+**Default:**::
+
+  { }
 
 
 **Declared by**
@@ -230,50 +302,6 @@ See https://letsencrypt.org/docs/staging-environment/
 **Example:**::
 
   "https://acme-staging-v02.api.letsencrypt.org/directory"
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
-
-
-.. _configuration-options.yk8s.k8s-service-layer.cert-manager.namespace:
-
-``yk8s.k8s-service-layer.cert-manager.namespace``
-#################################################
-
-Configure in which namespace the cert-manager is run. The namespace is
-created automatically, but never deleted automatically.
-
-
-**Type:**::
-
-  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
-
-
-**Default:**::
-
-  "k8s-svc-cert-manager"
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/cert-manager.nix
-
-
-.. _configuration-options.yk8s.k8s-service-layer.cert-manager.release_name:
-
-``yk8s.k8s-service-layer.cert-manager.release_name``
-####################################################
-
-
-
-**Type:**::
-
-  Helm chart release name
-
-
-**Default:**::
-
-  "cert-manager"
 
 
 **Declared by**
