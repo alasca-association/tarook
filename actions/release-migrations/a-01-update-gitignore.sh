@@ -85,11 +85,9 @@ sed \
   --in-place \
   --expression="
     /^${start_marker}$/,/^${end_marker}$/{
-      /^${start_marker}$/{p
-        a # hint: You can override any rule in this block
-        a #       by copying it prefixed with '!' right after the end marker
+      /^${start_marker}$/{
         r ${lcm_defined_gitignore}
-      }; /^${end_marker}$/p
+      };
       d
     }
   " \
@@ -103,6 +101,6 @@ by running:
 git ls-files --ignored --cached --exclude-from=.gitignore -z \
 | xargs --no-run-if-empty --null git rm --cached -r"
 
-if git diff --quiet --exit-code -- .gitignore; then
+if ! git diff --quiet --exit-code -- .gitignore; then
   run git add .gitignore
 fi
