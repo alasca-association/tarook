@@ -47,7 +47,7 @@ in {
       '';
       type = ociImageTag;
       # renovate: datasource=helm depName=flux2 registryUrl=https://fluxcd-community.github.io/helm-charts
-      default = "2.15.0";
+      default = "2.17.0";
     };
     namespace = mkOption {
       description = ''
