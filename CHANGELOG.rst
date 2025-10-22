@@ -17,6 +17,15 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v11.0.1 (2025-10-21)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug in the migration script has been fixed (`!2175 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2175>`_)
+
+
 v11.0.0 (2025-10-17)
 --------------------
 
