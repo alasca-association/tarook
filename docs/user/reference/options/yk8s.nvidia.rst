@@ -66,7 +66,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "0.17.4"
+  "0.18.0"
 
 
 **Example:**::
