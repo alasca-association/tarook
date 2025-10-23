@@ -1,12 +1,12 @@
 ---
-- name: Connect to Kubernetes nodes
+- name: Connect to Frontend nodes
   import_playbook: "{{ ansible_k8s_core_dir }}/connect-to-nodes.yaml"
   vars:
-    target_hosts: masters:frontend
+    target_hosts: frontend
 
 - name: Fail if node got not bootstrapped once, yet
   any_errors_fatal: true
-  hosts: masters:frontend
+  hosts: frontend
   tasks:
   - name: Fail if node got not bootstrapped once, yet
     when: not ansible_local['bootstrap']['bootstrapped'] | default(False) | bool
