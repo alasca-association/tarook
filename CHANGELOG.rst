@@ -17,6 +17,31 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v11.0.2 (2025-10-23)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug in the migration script has been fixed that prevented use of Ansible playbooks directly after migration on OpenStack-based clusters. (`!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_)
+- Fixed the assertion that enforces either
+  the new :ref:`configuration-options.yk8s.infra.ansible_hosts`
+  or the old :ref:`configuration-options.yk8s.infra.hosts_file`
+  option is set. (`!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_)
+- Fixed a Nix config error
+  that prevented the use of :ref:`configuration-options.yk8s.infra.hosts_file`
+  (when :ref:`Terraform is disabled <configuration-options.yk8s.terraform.enabled>`). (`!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_)
+- A bug has been fixed which prevented cluster creation or adding new nodes to an existing cluster if :ref:`configuration-options.yk8s.ch-k8s-lbaas.enable_snat` got disabled. (`!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_)
+- A bug has been fixed which caused :ref:`apply-prepare-gw.sh <actions-references.apply-prepare-gwsh>` to fail after reconfiguring :ref:`configuration-options.yk8s.ch-k8s-lbaas.enable_snat` until :ref:`apply-k8s-supplements.sh <actions-references.apply-k8s-supplementssh>` (more specifically the ``install-ch-k8s-lbaas.yaml`` playbook) has been executed. (`!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_)
+- A file permission bug in a migration script has been fixed (`!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- `!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_
+
+
 v11.0.1 (2025-10-21)
 --------------------
 
