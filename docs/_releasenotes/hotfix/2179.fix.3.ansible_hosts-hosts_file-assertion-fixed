@@ -1,0 +1,4 @@
+Fixed the assertion that enforces either
+the new :ref:`configuration-options.yk8s.infra.ansible_hosts`
+or the old :ref:`configuration-options.yk8s.infra.hosts_file`
+option is set.
