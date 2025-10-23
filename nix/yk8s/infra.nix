@@ -158,9 +158,14 @@ in {
         '';
         default = null;
         apply = v:
-          if v == null && config.yk8s.terraform.enabled
-          then builtins.trace "INFO: infra.ansible_hosts is not yet set. Terraform stage needs to be run first." v
-          else applyGroupSubmoduleAttrs v;
+          if config.yk8s.terraform.enabled
+          then
+            (
+              if v == null
+              then builtins.trace "INFO: infra.ansible_hosts is not yet set. Terraform stage needs to be run first." v
+              else applyGroupSubmoduleAttrs v
+            )
+          else v;
         type = types.nullOr (types.submodule {
           freeformType = types.attrsOf groupSubmodule;
           options = {
