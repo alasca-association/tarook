@@ -51,28 +51,12 @@ New Features
   .. warning::
 
     Be aware that disabling SNAT'ing potentially has performance implications.
+    Have a look at :ref:`configuration-options.yk8s.ch-k8s-lbaas.enable_snat` for further information.
 
-  .. tabs::
+  .. warning::
 
-    .. tab:: Rollout immediately after release upgrade
-
-       When directly coming from a previous release and you want to disable SNAT'ing right away
-       without having done a full rollout yet,
-       you have to adjust the gateway nodes first.
-       In that case, rollout the necessary changes with:
-
-       .. code:: console
-
-         $ ./managed-k8s/actions/apply-prepare-gw.sh
-         $ ./managed-k8s/actions/apply-k8s-supplements.sh install-ch-k8s-lbaas.yaml
-
-    .. tab:: Rollout later
-
-       If you already did a rollout with the current release, it's sufficient to do:
-
-       .. code:: console
-
-         $ ./managed-k8s/actions/apply-k8s-supplements.sh install-ch-k8s-lbaas.yaml
+    Disabling :ref:`configuration-options.yk8s.ch-k8s-lbaas.enable_snat` can only be done after the release migration
+    including executing :ref:`apply-all.sh <actions-references.apply-allsh>` has been finished.
 
   . (`!1943 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1943>`_)
 - The functionality of :ref:`configuration-options.yk8s.kubernetes.apiserver.audit_logs.enabled` has been refined such that the settings take effect on cluster initialization already and modifications to the settings are not applied during Kubernetes upgrades only but on normal rollouts. The settings are also reflected in the ``kube-system/kubeadm-config`` ConfigMap in the cluster now which ensures freshly provisioned control-plane nodes have the setting right away. (`!1956 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1956>`_)

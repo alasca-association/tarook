@@ -86,22 +86,12 @@
     notify:
     - restart ch-k8s-lbaas-agent
 
-  - name: Setup no-SNAT configuration
-    template:
-      src: bird.no-snat.conf.j2
-      dest: /etc/bird.d/01-no-snat.conf
-      owner: root
-      group: bird
-      mode: "u=rw,g=r,o-rwx"
-    notify: restart bird
-    when: openstack_enabled and ipv4_enabled and not ch_k8s_lbaas_enable_snat
-
-  - name: Remove no-SNAT configuration
+  # Migration task, remove me with TAROOK v12
+  - name: Remove legacy no-SNAT configuration
     file:
       state: absent
       path: "/etc/bird.d/01-no-snat.conf"
     notify: restart bird
-    when: openstack_enabled and ipv4_enabled and ch_k8s_lbaas_enable_snat
 
   - name: Start service
     systemd:
