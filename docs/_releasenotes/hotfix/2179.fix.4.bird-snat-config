@@ -1,1 +1,0 @@
-A bug has been fixed which caused :ref:`apply-prepare-gw.sh <actions-references.apply-prepare-gwsh>` to fail after reconfiguring :ref:`configuration-options.yk8s.ch-k8s-lbaas.enable_snat` until :ref:`apply-k8s-supplements.sh <actions-references.apply-k8s-supplementssh>` (more specifically the ``install-ch-k8s-lbaas.yaml`` playbook) has been executed.

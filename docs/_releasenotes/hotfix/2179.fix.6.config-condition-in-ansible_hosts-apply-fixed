@@ -1,3 +1,0 @@
-Fixed a Nix config error
-that prevented the use of :ref:`configuration-options.yk8s.infra.hosts_file`
-(when :ref:`Terraform is disabled <configuration-options.yk8s.terraform.enabled>`).
