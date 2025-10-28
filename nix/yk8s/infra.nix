@@ -158,9 +158,14 @@ in {
         '';
         default = null;
         apply = v:
-          if v == null && config.yk8s.terraform.enabled
-          then builtins.trace "INFO: infra.ansible_hosts is not yet set. Terraform stage needs to be run first." v
-          else applyGroupSubmoduleAttrs v;
+          if config.yk8s.terraform.enabled
+          then
+            (
+              if v == null
+              then builtins.trace "INFO: infra.ansible_hosts is not yet set. Terraform stage needs to be run first." v
+              else applyGroupSubmoduleAttrs v
+            )
+          else v;
         type = types.nullOr (types.submodule {
           freeformType = types.attrsOf groupSubmodule;
           options = {
@@ -306,8 +311,8 @@ in {
       message = "config.yk8s.infra.hosts_file must not be set if config.yk8s.infra.ansible_hosts is used (which implicitly happens through Terraform).";
     }
     {
-      assertion = ! config.yk8s.terraform.enabled -> (cfg.ansible_hosts == null && cfg.hosts_file == null);
-      message = "One of config.yk8s.infra.hosts_file and config.yk8s.infra.ansible_hosts must be set";
+      assertion = ! config.yk8s.terraform.enabled -> ((cfg.ansible_hosts == null && cfg.hosts_file != null) || (cfg.ansible_hosts != null && cfg.hosts_file == null));
+      message = "Either config.yk8s.infra.hosts_file or config.yk8s.infra.ansible_hosts must be set";
     }
     {
       assertion =

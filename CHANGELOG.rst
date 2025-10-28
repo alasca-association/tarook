@@ -17,6 +17,31 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v11.0.2 (2025-10-23)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug in the migration script has been fixed that prevented use of Ansible playbooks directly after migration on OpenStack-based clusters. (`!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_)
+- Fixed the assertion that enforces either
+  the new :ref:`configuration-options.yk8s.infra.ansible_hosts`
+  or the old :ref:`configuration-options.yk8s.infra.hosts_file`
+  option is set. (`!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_)
+- Fixed a Nix config error
+  that prevented the use of :ref:`configuration-options.yk8s.infra.hosts_file`
+  (when :ref:`Terraform is disabled <configuration-options.yk8s.terraform.enabled>`). (`!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_)
+- A bug has been fixed which prevented cluster creation or adding new nodes to an existing cluster if :ref:`configuration-options.yk8s.ch-k8s-lbaas.enable_snat` got disabled. (`!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_)
+- A bug has been fixed which caused :ref:`apply-prepare-gw.sh <actions-references.apply-prepare-gwsh>` to fail after reconfiguring :ref:`configuration-options.yk8s.ch-k8s-lbaas.enable_snat` until :ref:`apply-k8s-supplements.sh <actions-references.apply-k8s-supplementssh>` (more specifically the ``install-ch-k8s-lbaas.yaml`` playbook) has been executed. (`!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_)
+- A file permission bug in a migration script has been fixed (`!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_)
+
+
+Other Tasks
+~~~~~~~~~~~
+
+- `!2179 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2179>`_
+
+
 v11.0.1 (2025-10-21)
 --------------------
 
@@ -51,28 +76,12 @@ New Features
   .. warning::
 
     Be aware that disabling SNAT'ing potentially has performance implications.
+    Have a look at :ref:`configuration-options.yk8s.ch-k8s-lbaas.enable_snat` for further information.
 
-  .. tabs::
+  .. warning::
 
-    .. tab:: Rollout immediately after release upgrade
-
-       When directly coming from a previous release and you want to disable SNAT'ing right away
-       without having done a full rollout yet,
-       you have to adjust the gateway nodes first.
-       In that case, rollout the necessary changes with:
-
-       .. code:: console
-
-         $ ./managed-k8s/actions/apply-prepare-gw.sh
-         $ ./managed-k8s/actions/apply-k8s-supplements.sh install-ch-k8s-lbaas.yaml
-
-    .. tab:: Rollout later
-
-       If you already did a rollout with the current release, it's sufficient to do:
-
-       .. code:: console
-
-         $ ./managed-k8s/actions/apply-k8s-supplements.sh install-ch-k8s-lbaas.yaml
+    Disabling :ref:`configuration-options.yk8s.ch-k8s-lbaas.enable_snat` can only be done after the release migration
+    including executing :ref:`apply-all.sh <actions-references.apply-allsh>` has been finished.
 
   . (`!1943 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1943>`_)
 - The functionality of :ref:`configuration-options.yk8s.kubernetes.apiserver.audit_logs.enabled` has been refined such that the settings take effect on cluster initialization already and modifications to the settings are not applied during Kubernetes upgrades only but on normal rollouts. The settings are also reflected in the ``kube-system/kubeadm-config`` ConfigMap in the cluster now which ensures freshly provisioned control-plane nodes have the setting right away. (`!1956 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1956>`_)
