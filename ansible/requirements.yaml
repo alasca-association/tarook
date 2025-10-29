@@ -1,7 +1,6 @@
 ---
 collections:
-  - name: 'devsec.hardening'
-    source: https://galaxy.ansible.com
+  - name: devsec.hardening
     version: 10.5.1
   - name: kubernetes.core
     version: 6.3.0
