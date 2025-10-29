@@ -5,20 +5,26 @@
   ...
 }: let
   cfg = config.yk8s.k8s-service-layer.cert-manager;
+  modules-lib = import ../lib/modules.nix {inherit lib;};
+  inherit (modules-lib) mkRenamedOptionModule;
   inherit (lib) mkEnableOption mkOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit (yk8s-lib.options) mkHelmChartVersionOption;
+  inherit (yk8s-lib.k8s) mkAffinity mkTolerations;
+  inherit (yk8s-lib.options) mkHelmReleaseOptions;
   inherit
     (yk8s-lib.types)
     emailAddress
-    helmChartReleaseName
-    helmChartRef
-    helmChartRepoUrl
     httpxHostPathUrl
     k8sLabel
-    k8sNamespaceName
     ;
 in {
+  imports = [
+    (mkRenamedOptionModule ["k8s-service-layer" "cert-manager" "namespace"] ["k8s-service-layer" "cert-manager" "helm" "release_namespace"])
+    (mkRenamedOptionModule ["k8s-service-layer" "cert-manager" "helm_repo_url"] ["k8s-service-layer" "cert-manager" "helm" "chart_repo_url"])
+    (mkRenamedOptionModule ["k8s-service-layer" "cert-manager" "release_name"] ["k8s-service-layer" "cert-manager" "helm" "release_name"])
+    (mkRenamedOptionModule ["k8s-service-layer" "cert-manager" "chart_version"] ["k8s-service-layer" "cert-manager" "helm" "chart_version"])
+    (mkRenamedOptionModule ["k8s-service-layer" "cert-manager" "chart_ref"] ["k8s-service-layer" "cert-manager" "helm" "chart_ref"])
+  ];
   options.yk8s.k8s-service-layer.cert-manager = mkTopSection {
     _docs.preface = ''
       The used Cert-Manager controller setup will be explained in more detail
@@ -32,14 +38,6 @@ in {
     '';
 
     enabled = mkEnableOption "management of a cert-manager.io instance";
-    namespace = mkOption {
-      description = ''
-        Configure in which namespace the cert-manager is run. The namespace is
-        created automatically, but never deleted automatically.
-      '';
-      type = k8sNamespaceName;
-      default = "k8s-svc-cert-manager";
-    };
     install = mkOption {
       description = ''
         Install or uninstall cert manager. If set to false, the cert-manager will be
@@ -48,22 +46,19 @@ in {
       type = types.bool;
       default = true;
     };
-    helm_repo_url = mkOption {
-      type = helmChartRepoUrl;
-      default = "https://charts.jetstack.io";
-    };
-    chart_ref = mkOption {
-      type = helmChartRef;
-      default = "cert-manager";
-    };
-    chart_version = mkHelmChartVersionOption {
+    helm = mkHelmReleaseOptions {
+      descriptionName = "cert-manager";
+      defaultRepoUrl = "https://charts.jetstack.io";
+      defaultChartRef = "cert-manager";
       # renovate: datasource=helm depName=cert-manager registryUrl=https://charts.jetstack.io
-      default = "1.19.1";
+      defaultChartVersion = "1.19.1";
+      defaultReleaseNamespace = "k8s-svc-cert-manager";
+      defaultReleaseName = "cert-manager";
+      valuesDocUrl = "https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml";
+      chartOptions = {
+      };
     };
-    release_name = mkOption {
-      type = helmChartReleaseName;
-      default = "cert-manager";
-    };
+
     scheduling_key = mkOption {
       description = ''
         Scheduling key for the cert manager instance and its resources. Has no
@@ -112,11 +107,32 @@ in {
       example = "https://acme-staging-v02.api.letsencrypt.org/directory";
     };
   };
+  config.yk8s.k8s-service-layer.cert-manager.helm.values = let
+    affinity = mkAffinity {inherit (cfg) scheduling_key;};
+    tolerations = mkTolerations {inherit (cfg) scheduling_key;};
+  in
+    {
+      installCRDs = true;
+      global.priorityClassName = "system-cluster-critical";
+      inherit affinity tolerations;
+      cainjector = {inherit affinity tolerations;};
+      webhook = {inherit affinity tolerations;};
+    }
+    // lib.optionalAttrs config.yk8s.kubernetes.monitoring.enabled {
+      prometheus = {
+        enabled = true;
+        servicemonitor.enabled = true;
+        servicemonitor.labels = config.yk8s.k8s-service-layer.prometheus.common_labels;
+      };
+    };
   config.yk8s._inventory_packages = [
     (
       mkGroupVarsFile {
         inherit cfg;
         only_if_enabled = true;
+        unflat = [
+          ["helm" "values"]
+        ];
         ansible_prefix = "k8s_cert_manager_";
         inventory_path = "all/cert-manager.yaml";
       }
