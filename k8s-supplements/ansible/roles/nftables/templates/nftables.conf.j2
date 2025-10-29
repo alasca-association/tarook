@@ -166,9 +166,23 @@ include "/etc/nft.d/*.conf"
 include "/var/lib/ch-k8s-lbaas-agent/nftables/*.conf"
 
 table ip nat {
+{% if ch_k8s_lbaas_enabled and not ch_k8s_lbaas_enable_snat %}
+    set wg_iifnames {
+        type ifname;
+        elements = {
+            {% for ep in wg_endpoints %}
+            {% if ep.enabled %}
+            wg{{ ep.id }},
+            {% endif %}
+            {% endfor %}
+        }
+    }
+{% endif %}
+
     chain postrouting {
 {% if ch_k8s_lbaas_enabled and not ch_k8s_lbaas_enable_snat %}
         ip saddr {{ priv_ip_cidr }} masquerade comment "Only SNAT internal traffic";
+        iifname @wg_iifnames oifname $wan ip daddr {{ priv_ip_cidr }} masquerade comment "SNAT incoming Wireguard traffic"
 {% else %}
         fib saddr type != local masquerade comment "SNAT all traffic";
 {% endif %}

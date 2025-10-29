@@ -145,6 +145,11 @@ in {
       for the Kubernetes nodes. They will propagate routes via BGP overwriting the default routes of
       Kubernetes nodes such that **all** traffic is routed via the VIP by default.
 
+      .. important:: Administrative Traffic
+
+        Traffic sent via Wireguard is still SNAT'ed as otherwise
+        freshly provisioned nodes can't be administered.
+
       .. warning:: Implications when running on OpenStack
 
         Disabling source-nat'ing has some implications:
