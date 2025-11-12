@@ -232,6 +232,12 @@
               rsync -rL --chmod 664 --delete ${referenceOptionsRST}/ docs/user/reference/options
               sphinx-build -W docs $out
             '';
+
+          # live reloading of docs for more efficient documentation
+          docs-dev = pkgs.mkShell {
+            nativeBuildInputs = [config.yk8s-env.environments.docs pkgs.sphinx-autobuild];
+            shellHook = ''sphinx-autobuild docs _build/html'';
+          };
         };
       });
   };
