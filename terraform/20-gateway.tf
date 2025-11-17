@@ -83,27 +83,6 @@ resource "openstack_networking_port_v2" "gateway" {
     ip_address = openstack_networking_floatingip_v2.gw_vip_fip.fixed_ip
   }
 
-  dynamic "allowed_address_pairs" {
-    for_each = var.ipv4_enabled ? [1] : []
-    content {
-      ip_address = "0.0.0.0/0"
-    }
-  }
-
-  dynamic "allowed_address_pairs" {
-    for_each = var.ipv6_enabled ? [1] : []
-    content {
-      ip_address = "::/0"
-    }
-  }
-
-  dynamic "allowed_address_pairs" {
-    for_each = var.ipv6_enabled ? [1] : []
-    content {
-      ip_address = var.subnet_v6_cidr
-    }
-  }
-
   depends_on = [
     openstack_networking_floatingip_v2.gw_vip_fip
   ]

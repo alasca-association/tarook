@@ -32,7 +32,7 @@ ipv4-addresses = [
 {% endif %}
 
 [agents]
-additional-address-pairs=[{% if ipv4_enabled %}{{ networking_fixed_ip | to_json }},"0.0.0.0/0",{% endif %}{% if ipv6_enabled %}{{ networking_fixed_ip_v6 | to_json }},"::/0"{% endif %}]
+additional-address-pairs=[{% if ipv4_enabled %}{{ networking_fixed_ip | to_json }},{% endif %}{% if ipv6_enabled %}{{ networking_fixed_ip_v6 | to_json }}{% endif %}]
 shared-secret={{ ch_k8s_lbaas_shared_secret | to_json }}
 token-lifetime=60
 
