@@ -8,7 +8,7 @@ actions_dir="$(dirname "$0")/.."
 
 if [ "${tf_usage:-true}" == 'true' ]; then
     notef "Removing obsolete state files..."
-    run git rm -rf "$terraform_state_dir/rendered"
+    run git rm --ignore-unmatch --force -r "$terraform_state_dir/rendered"
 
     notef "Running Terraform stage to create output files"
     run "$actions_dir/apply-terraform.sh"
