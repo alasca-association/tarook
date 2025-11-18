@@ -228,7 +228,7 @@ in {
       '';
       type = types.yk8s.vault.namespaceName;
       default = "yaook/${config.yk8s.vault.cluster_name}/kv";
-      defaultText = "yaook/\${config.yk8s.vault.cluster_name}/kv";
+      defaultText = lib.literalExpression "\"yaook/\${config.yk8s.vault.cluster_name}/kv\"";
     };
     vault_path = mkOption {
       description = ''
