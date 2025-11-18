@@ -1,0 +1,2 @@
+Fixed a bug which prevented the release migration script :ref:`migrate-to-release.sh<actions-references.migrate-to-releasesh>`
+from completing successfully with :ref:`Terraform disabled <configuration-options.yk8s.terraform.enabled>`.
