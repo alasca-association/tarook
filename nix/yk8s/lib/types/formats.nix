@@ -11,7 +11,7 @@
         (listOf valueType)
       ])
       // {
-        description = "JSON value";
+        description = "attribute set containing JSON compatible values";
       };
   in
     valueType;
