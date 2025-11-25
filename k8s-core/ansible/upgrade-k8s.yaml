@@ -149,15 +149,5 @@
     - role: update-system
     - role: kubeadm-upgrade-node
     - role: kubeadm-upgrade-kubelet
-  # The nvidia-device-plugin marks a GPU as unhealthy
-  # on systemctl daemon-reloads + kubelet restarts,
-  # but the Pod does not fail. We have to manually restart the Pod.
-  tasks:
-    - name: Restart nvidia-device-plugin Pod on node
-      include_role:
-        name: nvidia-device-plugin
-        tasks_from: restart_ndp_pod.yaml
-    - name: Uncordon the node
-      include_role:
-        name: kubeadm-uncordon-node
+    - role: kubeadm-uncordon-node
 ...
