@@ -4,6 +4,9 @@ yk8s.ch-k8s-lbaas
 ^^^^^^^^^^^^^^^^^
 
 
+``ch-k8s-lbaas`` is a LoadBalancing-solution for clusters running on OpenStack
+as well as clusters running on bare metal.
+Further information about it can be found here: :doc:`/user/explanation/services/ch-k8s-lbaas`.
 
 .. _configuration-options.yk8s.ch-k8s-lbaas.agent_port:
 
@@ -360,6 +363,11 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 ``yk8s.ch-k8s-lbaas.shared_secret``
 ###################################
 
+.. attention:: DEPRECATED
+
+   This option is going to be removed soon
+   since the shared secret is now stored in and automatically handled via Vault.
+
 A unique, random, base64-encoded secret.
 To generate such a secret, you can use the following command:
 $ dd if=/dev/urandom bs=16 count=1 status=none | base64
@@ -367,7 +375,12 @@ $ dd if=/dev/urandom bs=16 count=1 status=none | base64
 
 **Type:**::
 
-  Base64 encoded string
+  null or Base64 encoded string
+
+
+**Default:**::
+
+  null
 
 
 **Example:**::
