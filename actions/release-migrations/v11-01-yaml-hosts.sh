@@ -14,4 +14,5 @@ if [ "${tf_usage:?}" == 'true' ]; then
 
     notef "Running Terraform stage to create output files"
     run "$actions_dir/apply-terraform.sh"
+    run git add "$state_dir/terraform"
 fi
