@@ -200,7 +200,7 @@ in {
       # TODO: Eliminate config option and store secrets solely in Vault
       type = with types; nullOr relativePosixPath;
       default = null;
-      example = "./vault/backup_s3_config.yaml";
+      example = "vault/backup_s3_config.yaml";
     };
     backup_s3_addressing_style = mkOption {
       description = ''
