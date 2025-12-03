@@ -40,7 +40,8 @@ set_kubeconfig
 
 pushd "$ansible_k8s_core_dir"
 # Include k8s-core roles
-ansible_playbook -i "$ansible_inventory_host_file" \
-  -e "k8s_skip_upgrade_checks=${k8s_skip_upgrade_checks:-false}" \
-  update-kubernetes-nodes.yaml "$@"
+ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_custom_playbook_dir/roles" \
+    ansible_playbook -i "$ansible_inventory_host_file" \
+    -e "k8s_skip_upgrade_checks=${k8s_skip_upgrade_checks:-false}" \
+    update-kubernetes-nodes.yaml "$@"
 popd

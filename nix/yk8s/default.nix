@@ -41,6 +41,7 @@
           ./node-scheduling.nix
           ./testing.nix
           ./custom.nix
+          ./hooks.nix
           ./nvidia.nix
           ./miscellaneous.nix
           ./containerd.nix

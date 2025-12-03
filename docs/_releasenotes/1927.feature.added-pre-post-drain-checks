@@ -1,0 +1,1 @@
+It is now possible to add custom hooks for pre-drain and post-uncordon roles via :ref:`configuration-options.yk8s.hooks`.
