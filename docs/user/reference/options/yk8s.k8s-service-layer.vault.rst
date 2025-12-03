@@ -477,7 +477,7 @@ Note: The given path is interpreted as being relative to the cluster repo's conf
 
 **Example:**::
 
-  "./vault/backup_s3_config.yaml"
+  "vault/backup_s3_config.yaml"
 
 
 **Declared by**
