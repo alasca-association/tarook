@@ -11,7 +11,7 @@ function get_clustername() {
 }
 
 # Check if Vault policies are up-to-date
-# so that the orchestrator is able to create, read and update the ch-k8s-lbaas-shared-secret
+# so that the orchestrator is able to create, read, delete and update the ch-k8s-lbaas-shared-secret
 
 vault_token_kind="$( \
   { vault token lookup -non-interactive -format=json 2>/dev/null || true; } \
@@ -45,7 +45,12 @@ orchestrator_has_correct_cap="$( \
       notef "Got NO Vault token"
       echo '[]'
       ;;
-  esac | jq 'index("read") != null and index("update") != null and index("create") != null' \
+  esac | jq '
+        index("read")   != null
+    and index("update") != null
+    and index("create") != null
+    and index("delete") != null
+  ' \
 )"
 
 if $orchestrator_has_correct_cap; then

@@ -66,4 +66,46 @@
             You might need to complete the necessary steps
             outlined in the changelog at
             https://docs.tarook.cloud/release/v12.0/releasenotes.html
+
+- name: Delete shared secret from Vault
+  when: not ch_k8s_lbaas_enabled
+  become: false
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  run_once: true
+  block:
+  # NOTE: The lookup ahead is not technically needed, but makes output more
+  #       clear as the "community.hashi_vault.vault_kv2_delete" always marks
+  #       the task as changed even if the kv object already was deleted.
+  - name: Delete shared secret from Vault
+    environment:
+      ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
+      ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
+    block:
+    - name: Lookup shared secret in Vault  # noqa ignore-errors
+      no_log: true  # prevent secret from being exposed
+      ignore_errors: true
+      community.hashi_vault.vault_kv2_get:
+        path: "{{ ch_k8s_lbaas_shared_secret_vault_path }}"
+        engine_mount_point: "{{ ch_k8s_lbaas_shared_secret_vault_mount_point }}"
+        auth_method: "{{ vault_caller_auth_method }}"
+        mount_point: "{{ vault_caller_auth_mount_point }}"
+        token: "{{ vault_caller_token }}"
+        role_id: "{{ vault_caller_role_id }}"
+        secret_id: "{{ vault_caller_secret_id }}"
+        token_validate: false
+      register: shared_secret_lookup
+
+    # NOTE: We don't require explicit consent here as the deletion is not
+    #       actually destructive. Users are able to undelete.
+    - name: Delete shared secret from Vault  # noqa ignore-errors
+      when: shared_secret_lookup is not failed
+      community.hashi_vault.vault_kv2_delete:
+        path: "{{ ch_k8s_lbaas_shared_secret_vault_path }}"
+        engine_mount_point: "{{ ch_k8s_lbaas_shared_secret_vault_mount_point }}"
+        auth_method: "{{ vault_caller_auth_method }}"
+        mount_point: "{{ vault_caller_auth_mount_point }}"
+        token: "{{ vault_caller_token }}"
+        role_id: "{{ vault_caller_role_id }}"
+        secret_id: "{{ vault_caller_secret_id }}"
+        token_validate: false
 ...

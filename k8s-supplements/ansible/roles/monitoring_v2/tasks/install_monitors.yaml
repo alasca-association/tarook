@@ -44,14 +44,14 @@
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
 
-  - name: Create ch-k8s-LBaaS service monitors (frontend)
+  - name: "{{ ch_k8s_lbaas_enabled | ternary('Create', 'Delete') }} ch-k8s-LBaaS service monitors (frontend)"
     kubernetes.core.k8s:
       definition: "{{ lookup('template', 'lbaas-service-monitor.yaml.j2') }}"
       apply: true
+      state: "{{ ch_k8s_lbaas_enabled | ternary('present', 'absent') }}"
       validate:
         fail_on_error: true
         strict: true
-    when: ch_k8s_lbaas_enabled
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

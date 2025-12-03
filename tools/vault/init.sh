@@ -349,7 +349,7 @@ path "$common_path_prefix/+/kv/data/vault-backup-s3-config" {
 }
 
 path "$common_path_prefix/+/kv/data/ch-k8s-lbaas-shared-secret" {
-    capabilities = ["create", "update", "read"]
+    capabilities = ["create", "update", "read", "delete"]
 }
 EOF
 

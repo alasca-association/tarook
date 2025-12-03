@@ -250,7 +250,7 @@ in {
       inherit cfg;
       ansible_prefix = "ch_k8s_lbaas_";
       inventory_path = "all/ch-k8s-lbaas.yaml";
-      only_if_enabled = true;
+      only_if_enabled = false;
     })
   ];
 }

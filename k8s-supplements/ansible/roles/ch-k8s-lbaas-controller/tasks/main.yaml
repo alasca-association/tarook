@@ -1,42 +1,9 @@
 ---
-- name: Deploy LBaaS controller
-  block:
-  - name: Configure LBaaS controller
-    kubernetes.core.k8s:
-      apply: true
-      definition:
-        apiVersion: v1
-        kind: Secret
-        type: Opaque
-        data:
-          controller-config.toml: "{{ lookup('template', 'controller-config.toml.j2') | b64encode }}"
-        metadata:
-          name: ch-k8s-lbaas-controller-config
-          namespace: kube-system
-      validate:
-        fail_on_error: true
-        strict: true
-    notify:
-    - restart ch-k8s-lbaas-controller
-    # Retry this task on failures
-    register: k8s_apply
-    until: k8s_apply is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
+- name: Install ch-k8s-lbaas-controller
+  when: ch_k8s_lbaas_enabled
+  include_tasks: install.yaml
 
-  - name: Deploy LBaaS controller
-    kubernetes.core.k8s:
-      apply: true
-      definition: "{{ lookup('template', item) }}"
-      validate:
-        fail_on_error: true
-        strict: true
-    with_items:
-    - controller-rbac.yaml.j2
-    - controller.yaml.j2
-    # Retry this task on failures
-    register: k8s_apply
-    until: k8s_apply is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
+- name: Uninstall ch-k8s-lbaas-controller
+  when: not ch_k8s_lbaas_enabled
+  include_tasks: uninstall.yaml
 ...

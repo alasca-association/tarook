@@ -8,7 +8,7 @@ WantedBy=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/ch-k8s-lbaas-agent --config /etc/ch-k8s-lbaas-agent/config.toml
+ExecStart={{ ch_k8s_lbaas_agent_binary_path | quote }} --config {{ ch_k8s_lbaas_agent_config_directory | quote }}/config.toml
 User={{ ch_k8s_lbaas_agent_user }}
 Group={{ ch_k8s_lbaas_agent_user }}
 
