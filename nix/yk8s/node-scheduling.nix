@@ -6,13 +6,8 @@
   ...
 }: let
   cfg = config.yk8s.node-scheduling;
-  inherit (lib) mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit
-    (yk8s-lib.types)
-    k8sLabelStr
-    k8sTaintStr
-    ;
+  inherit (lib) mkOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
 in {
   options.yk8s.node-scheduling = mkTopSection {
     _docs.preface = ''
@@ -47,7 +42,7 @@ in {
       description = ''
         Labels are assigned to a node during LCM rollout only!
       '';
-      type = with types; attrsOf (listOf k8sLabelStr);
+      type = with types; attrsOf (listOf yk8s.k8s.labelStr);
       default = {};
       example = lib.options.literalExpression ''
         {
@@ -75,7 +70,7 @@ in {
       description = ''
         Taints are assigned to a node during LCM rollout only!
       '';
-      type = with types; attrsOf (listOf k8sTaintStr);
+      type = with types; attrsOf (listOf yk8s.k8s.taintStr);
       default = {};
       example = lib.options.literalExpression ''
         {

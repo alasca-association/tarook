@@ -8,18 +8,9 @@
   cfg = config.yk8s.wireguard;
   modules-lib = import ../../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule;
-  inherit (lib) mkOption types;
+  inherit (lib) mkOption;
   inherit (lib.attrsets) filterAttrs;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkJson;
-  inherit
-    (yk8s-lib.types)
-    ipv4Addr
-    ipv6Addr
-    ipv4Cidr
-    ipv6Cidr
-    posixFilename
-    wireguardKey
-    ;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkJson types;
   inherit (yk8s-lib) linkToPath;
   inherit
     (yk8s-lib.transform)
@@ -99,7 +90,7 @@ in {
               so that they can use all of their clusters at the same time without having
               to tear down tunnels.
             '';
-            type = ipv4Cidr;
+            type = types.yk8s.networking.ipv4Cidr;
           };
           ip_gw = mkOption {
             description = ''
@@ -109,7 +100,7 @@ in {
               so that they can use all of their clusters at the same time without having
               to tear down tunnels.
             '';
-            type = ipv4Cidr;
+            type = types.yk8s.networking.ipv4Cidr;
           };
           ipv6_cidr = mkOption {
             description = ''
@@ -119,7 +110,7 @@ in {
               so that they can use all of their clusters at the same time without having
               to tear down tunnels.
             '';
-            type = types.nullOr ipv6Cidr;
+            type = with types; nullOr yk8s.networking.ipv6Cidr;
             default = null;
             example = "fd01::/120";
           };
@@ -131,7 +122,7 @@ in {
               so that they can use all of their clusters at the same time without having
               to tear down tunnels.
             '';
-            type = types.nullOr ipv6Cidr;
+            type = with types; nullOr yk8s.networking.ipv6Cidr;
             default = null;
             example = "fd01::1/120";
           };
@@ -169,30 +160,30 @@ in {
             description = ''
               The public key of the peer created with `wg keygen`
             '';
-            type = wireguardKey;
+            type = types.yk8s.wireguard.key;
           };
           ident = mkOption {
             description = ''
               An identifier for the public key
             '';
             # NOTE: ident is used as part of a filename
-            type = posixFilename;
+            type = types.yk8s.posix.filename;
             example = "name.lastname";
           };
           ip = mkOption {
-            type = with types; nullOr ipv4Addr;
+            type = with types; nullOr yk8s.networking.ipv4Addr;
             default = null;
           };
           ips = mkOption {
-            type = with types; attrsOf (either ipv4Cidr ipv4Addr);
+            type = with types; attrsOf (either yk8s.networking.ipv4Cidr yk8s.networking.ipv4Addr);
             default = {};
           };
           ipv6 = mkOption {
-            type = with types; nullOr ipv6Addr;
+            type = with types; nullOr yk8s.networking.ipv6Addr;
             default = null;
           };
           ipsv6 = mkOption {
-            type = with types; attrsOf (either ipv6Cidr ipv6Addr);
+            type = with types; attrsOf (either yk8s.networking.ipv6Cidr yk8s.networking.ipv6Addr);
             default = {};
           };
         };

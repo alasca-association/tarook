@@ -1,5 +1,5 @@
 {lib}: let
-  yk8s-lib.types = import ./types.nix {inherit lib;};
+  types = import ./types {inherit lib;};
 in rec {
   /*
   Like nixpkgs.lib.options.mkEnableOption but with true as the default
@@ -9,7 +9,7 @@ in rec {
       default = true;
       example = false;
       description = "Whether to enable ${name}.";
-      type = lib.types.bool;
+      type = types.bool;
     };
   mkInternalOption = args:
     lib.mkOption ({
@@ -24,28 +24,28 @@ in rec {
   in ({
       _internal = {
         sectionType = mkInternalOption {
-          type = lib.types.str;
+          type = types.str;
           default = cfg.sectionType;
         };
         unflat = mkInternalOption {
-          type = with lib.types; listOf (listOf nonEmptyStr);
+          type = with types; listOf (listOf nonEmptyStr);
           default = [];
         };
         transformations = mkInternalOption {
-          type = with lib.types; listOf (functionTo attrs);
+          type = with types; listOf (functionTo attrs);
           default = [];
         };
         removedOptions = mkInternalOption {
-          type = with lib.types; listOf (listOf nonEmptyStr);
+          type = with types; listOf (listOf nonEmptyStr);
           default = [];
         };
         docs.preface = mkInternalOption {
           description = preface; # we're misusing the description here to expose the text to the docs renderer
-          type = lib.types.str;
+          type = types.str;
           default = "";
         };
         docs.order = mkInternalOption {
-          type = with lib.types; nullOr int;
+          type = with types; nullOr int;
           default = order;
         };
       };
@@ -116,8 +116,8 @@ in rec {
         '')
         + extraDescription;
       default = defaultValues;
-      type = lib.types.submodule {
-        freeformType = yk8s-lib.types.jsonValue;
+      type = types.submodule {
+        freeformType = types.yk8s.formats.jsonValue;
         options = chartOptions;
       };
     };
@@ -129,7 +129,7 @@ in rec {
 
           If the version shall be unpinned, set to: ``null``.
         '';
-        type = lib.types.nullOr yk8s-lib.types.helmChartVersion;
+        type = with types; nullOr yk8s.helm.chartVersion;
       }
       // (removeAttrs args ["descriptionName"]));
 
@@ -149,14 +149,14 @@ in rec {
       description = ''
         The URL to the Helm repository for the ${descriptionName} Helm chart.
       '';
-      type = yk8s-lib.types.helmChartRepoUrl;
+      type = types.yk8s.helm.chartRepoUrl;
       default = defaultRepoUrl;
     };
     chart_ref = lib.mkOption {
       description = ''
         The chart reference (relative to the repository) of the ${descriptionName} Helm chart.
       '';
-      type = yk8s-lib.types.helmChartRef;
+      type = types.yk8s.helm.chartRef;
       default = defaultChartRef;
     };
     chart_version = mkHelmChartVersionOption {
@@ -167,14 +167,14 @@ in rec {
       description = ''
         The namespace in which to install ${descriptionName}.
       '';
-      type = yk8s-lib.types.k8sNamespaceName;
+      type = types.yk8s.k8s.namespaceName;
       default = defaultReleaseNamespace;
     };
     release_name = lib.mkOption {
       description = ''
         The release name inside the cluster for ${descriptionName}.
       '';
-      type = lib.types.nonEmptyStr;
+      type = types.nonEmptyStr;
       default = defaultReleaseName;
     };
     values = mkHelmValuesOption {

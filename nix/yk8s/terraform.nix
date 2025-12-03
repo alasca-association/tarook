@@ -8,17 +8,10 @@
   cfg = config.yk8s.terraform;
   modules-lib = import ./lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule;
-  inherit (lib) mkEnableOption mkOption types;
+  inherit (lib) mkEnableOption mkOption;
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkDisableOption linkToPath mkJson;
-  inherit
-    (yk8s-lib.types)
-    gitlabProjectId
-    gitlabTerraformStateName
-    httpxHostPathUrl
-    terraformDurationStr
-    ;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkDisableOption linkToPath mkJson types;
   inherit (yk8s-lib.transform) filterNull removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
   tfvars_file_path = "terraform/config.tfvars.json";
@@ -131,7 +124,7 @@ in {
 
     timeout_time = mkOption {
       description = "Timeout duration for Terraform operations";
-      type = terraformDurationStr;
+      type = types.yk8s.terraform.durationStr;
       default = "30m";
     };
 
@@ -146,7 +139,7 @@ in {
       description = ''
         The base HTTP(s) URL of your GitLab instance.
       '';
-      type = with types; nullOr httpxHostPathUrl;
+      type = with types; nullOr yk8s.networking.httpxHostPathUrl;
       default = null;
       example = "https://gitlab.com";
     };
@@ -155,7 +148,7 @@ in {
       description = ''
         The unique ID of your GitLab project.
       '';
-      type = with types; nullOr gitlabProjectId;
+      type = with types; nullOr yk8s.gitlab.projectId;
       default = null;
       apply = v:
         if
@@ -171,7 +164,7 @@ in {
       description = ''
         The name of the Gitlab state object in which to store the Terraform state, e.g. 'tf-state'
       '';
-      type = with types; nullOr gitlabTerraformStateName;
+      type = with types; nullOr yk8s.gitlab.terraformStateName;
       default = null;
       example = "tf-state";
     };

@@ -7,25 +7,9 @@
   cfg = config.yk8s.k8s-service-layer.vault;
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule;
-  inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (lib) mkEnableOption mkOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
   inherit (yk8s-lib.options) mkHelmChartVersionOption;
-  inherit
-    (yk8s-lib.types)
-    helmChartRepoUrl
-    k8sIngressClassName
-    k8sIssuerName
-    k8sLabel
-    k8sNamespaceName
-    k8sQuantity
-    k8sServiceType
-    k8sStorageClassName
-    k8sObjectName
-    relativePosixPath
-    s3BucketName
-    subdomainName
-    vaultNamespaceName
-    ;
   inherit
     (yk8s-lib.transform)
     warnIfZero
@@ -54,7 +38,7 @@ in {
     '';
 
     helm_repo_url = mkOption {
-      type = helmChartRepoUrl;
+      type = types.yk8s.helm.chartRepoUrl;
       default = "https://helm.releases.hashicorp.com";
     };
 
@@ -65,12 +49,12 @@ in {
 
     ca_issuer = mkOption {
       # type as per https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec
-      type = k8sObjectName;
+      type = types.yk8s.k8s.objectName;
       default = "selfsigned-issuer";
     };
 
     backup_approle_path = mkOption {
-      type = vaultNamespaceName;
+      type = types.yk8s.vault.namespaceName;
       default = "yaook/vault_v1/approle";
     };
 
@@ -83,7 +67,7 @@ in {
         Namespace to deploy the vault in (will be created if it does not exist, but
         ever deleted).
       '';
-      type = k8sNamespaceName;
+      type = types.yk8s.k8s.namespaceName;
       default = "k8s-svc-vault";
     };
     dnsnames = mkOption {
@@ -92,7 +76,7 @@ in {
         NOTE: to work correctly, there must exist an ingress of class `nginx` and it
         must allow ssl passthrough.
       '';
-      type = with types; listOf subdomainName;
+      type = with types; listOf yk8s.networking.subdomainName;
       default = [];
     };
     management_cluster_integration = mkEnableOption ''
@@ -132,26 +116,26 @@ in {
       description = ''
         Scheduling key for the vault instance and its resources. Has no default.
       '';
-      type = with types; nullOr k8sLabel;
+      type = with types; nullOr yk8s.k8s.label;
       default = null;
     };
     storage_class = mkOption {
       description = ''
         Storage class for the vault file storage backend.
       '';
-      type = k8sStorageClassName;
+      type = types.yk8s.k8s.storageClassName;
       default = "csi-sc-cinderplugin";
     };
     storage_size = mkOption {
       description = ''
         Storage size for the vault file storage backend.
       '';
-      type = k8sQuantity;
+      type = types.yk8s.k8s.quantity;
       default = "8Gi";
     };
 
     external_ingress_class = mkOption {
-      type = k8sIngressClassName;
+      type = types.yk8s.k8s.ingressClassName;
       default = "nginx";
     };
 
@@ -161,7 +145,7 @@ in {
         for your ACME service.
       '';
       # type as per https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec
-      type = with types; nullOr k8sIssuerName;
+      type = with types; nullOr yk8s.k8s.issuerName;
       default = null;
       apply = v:
         if
@@ -198,7 +182,7 @@ in {
       '';
       # NOTE: Not using `pathInStore` here because the expected file contains secrets
       # TODO: Eliminate config option and store secrets solely in Vault
-      type = with types; nullOr relativePosixPath;
+      type = with types; nullOr yk8s.posix.relativePath;
       default = null;
       example = "./vault/backup_s3_config.yaml";
     };
@@ -226,7 +210,7 @@ in {
 
         Only relevant if :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable_backups` is set to ``true``.
       '';
-      type = s3BucketName;
+      type = types.yk8s.s3.bucketName;
       default = "vault-backup";
     };
     service_type = mkOption {
@@ -235,7 +219,7 @@ in {
         NOTE: You may set this to LoadBalancer, but note that this will still use the internal certificate.
         If you want to expose the Vault to the outside world, use the ingress config above.
       '';
-      type = k8sServiceType;
+      type = types.yk8s.k8s.serviceType;
       # TODO confliction values: role had
       # "{{ yaook_vault_management_cluster_integration | ternary('NodePort', 'ClusterIP') }}"
       # which is a setting that doesn't exist

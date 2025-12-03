@@ -1,9 +1,14 @@
 # adapted from https://raw.githubusercontent.com/NixOS/nixpkgs/master/nixos/modules/misc/assertions.nix
-{lib, ...}:
-with lib; {
+{lib, ...}: let
+  inherit
+    (lib)
+    mkOption
+    types
+    ;
+in {
   options.yk8s = {
     assertions = mkOption {
-      type = types.listOf types.unspecified;
+      type = with types; listOf unspecified;
       internal = true;
       default = [];
       example = [
@@ -22,7 +27,7 @@ with lib; {
     warnings = mkOption {
       internal = true;
       default = [];
-      type = types.listOf types.nonEmptyStr;
+      type = with types; listOf nonEmptyStr;
       example = ["The `foo' service is deprecated and will go away soon!"];
       description = ''
         This option allows modules to show warnings to users during

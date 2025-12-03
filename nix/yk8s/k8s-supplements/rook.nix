@@ -7,19 +7,9 @@
   cfg = config.yk8s.k8s-service-layer.rook;
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule mkRenamedResourceOptionModule mkMultiResourceOptionsModule;
-  inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection logIf mkGroupVarsFile mkMultiResourceOptions;
+  inherit (lib) mkEnableOption mkOption;
+  inherit (yk8s-lib) mkTopSection logIf mkGroupVarsFile mkMultiResourceOptions types;
   inherit (yk8s-lib.options) mkDisableOption mkHelmChartVersionOption;
-  inherit
-    (yk8s-lib.types)
-    helmChartReleaseName
-    k8sLabel
-    k8sNamespaceName
-    k8sObjectName
-    k8sQuantity
-    k8sStorageClassName
-    ociImageTag
-    ;
 in {
   imports = [
     (mkRemovedOptionModule ["k8s-service-layer" "rook" "use_helm"] "")
@@ -102,12 +92,12 @@ in {
     };
 
     helm_release_name_operator = mkOption {
-      type = helmChartReleaseName;
+      type = types.yk8s.helm.chartReleaseName;
       default = "rook-ceph";
     };
 
     helm_release_name_cluster = mkOption {
-      type = helmChartReleaseName;
+      type = types.yk8s.helm.chartReleaseName;
       default = "rook-ceph-cluster";
     };
 
@@ -117,12 +107,12 @@ in {
         Namespace to deploy the rook in (will be created if it does not exist, but
         never deleted).
       '';
-      type = k8sNamespaceName;
+      type = types.yk8s.k8s.namespaceName;
       default = "rook-ceph";
     };
 
     cluster_name = mkOption {
-      type = k8sObjectName;
+      type = types.yk8s.k8s.objectName;
       default = "rook-ceph";
     };
 
@@ -134,7 +124,7 @@ in {
         arbitrary Ceph version, but should stick to the
         rook-ceph-compatibility-matrix.
       '';
-      type = with types; nullOr ociImageTag;
+      type = with types; nullOr yk8s.oci.imageTag;
       default = null;
     };
 
@@ -161,7 +151,7 @@ in {
       description = ''
         Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuration.updating-immutable-options`)
       '';
-      type = k8sQuantity;
+      type = types.yk8s.k8s.quantity;
       default = "10Gi";
     };
 
@@ -174,7 +164,7 @@ in {
 
         Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuration.updating-immutable-options`)
       '';
-      type = k8sStorageClassName;
+      type = types.yk8s.k8s.storageClassName;
       default = config.yk8s.kubernetes.local_storage.dynamic.storageclass_name;
       defaultText = "\${kubernetes.local_storage.dynamic.storageclass_name}";
     };
@@ -206,7 +196,7 @@ in {
         If no scheduling key is defined for a service, it will run on any untainted
         node.
       '';
-      type = with types; nullOr k8sLabel;
+      type = with types; nullOr yk8s.k8s.label;
       default = null;
       example = lib.options.literalExpression "\"\${scheduling_key_prefix}/storage\"";
     };
@@ -217,7 +207,7 @@ in {
         NOTE: Rook does not merge scheduling rules set in 'all' and the ones in 'mon' and 'mgr',
         but will use the most specific one for scheduling.
       '';
-      type = with types; nullOr k8sLabel;
+      type = with types; nullOr yk8s.k8s.label;
       default = null;
       example = lib.options.literalExpression "\"\${scheduling_key_prefix}/rook-mon\"";
     };
@@ -229,7 +219,7 @@ in {
         but will use the most specific one for scheduling.
       '';
       # TODO: but we could do the merging here if we wanted to
-      type = with types; nullOr k8sLabel;
+      type = with types; nullOr yk8s.k8s.label;
       default = null;
       example = lib.options.literalExpression "\"\${scheduling_key_prefix}/rook-mgr\"";
     };
@@ -280,7 +270,7 @@ in {
     };
 
     osd_storage_class = mkOption {
-      type = k8sStorageClassName;
+      type = types.yk8s.k8s.storageClassName;
       description = ''
         Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuration.updating-immutable-options`)
       '';
@@ -293,7 +283,7 @@ in {
 
         Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuration.updating-immutable-options`)
       '';
-      type = k8sQuantity;
+      type = types.yk8s.k8s.quantity;
       default = "90Gi";
     };
 
@@ -309,7 +299,7 @@ in {
     ceph_fs = mkEnableOption "the CephFS shared filesystem";
 
     ceph_fs_name = mkOption {
-      type = k8sObjectName;
+      type = types.yk8s.k8s.objectName;
       default = "ceph-fs";
     };
 
@@ -326,7 +316,7 @@ in {
       type = types.listOf (types.submodule {
         options = {
           name = mkOption {
-            type = k8sObjectName;
+            type = types.yk8s.k8s.objectName;
             example = "data";
           };
           create_storage_class = mkOption {
@@ -400,7 +390,7 @@ in {
       type = types.listOf (types.submodule {
         options = {
           name = mkOption {
-            type = k8sObjectName;
+            type = types.yk8s.k8s.objectName;
           };
           config = mkOption {
             type = types.attrs;

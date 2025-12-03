@@ -7,15 +7,10 @@
   cfg = config.yk8s.k8s-service-layer.ingress;
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule mkResourceOptionModule;
-  inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
+  inherit (lib) mkEnableOption mkOption;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
   inherit (yk8s-lib.k8s) mkAffinity mkTolerations;
   inherit (yk8s-lib.options) mkHelmReleaseOptions;
-  inherit
-    (yk8s-lib.types)
-    k8sLabel
-    k8sServiceType
-    ;
   inherit
     (yk8s-lib.transform)
     warnIfZero
@@ -72,7 +67,7 @@ in {
         Scheduling key for the cert manager instance and its resources. Has no
         default.
       '';
-      type = with types; nullOr k8sLabel;
+      type = with types; nullOr yk8s.k8s.label;
       default = null;
     };
     helm = mkHelmReleaseOptions {
@@ -91,7 +86,7 @@ in {
               description = ''
                 Service type for the frontend Kubernetes service.
               '';
-              type = k8sServiceType;
+              type = types.yk8s.k8s.serviceType;
               default = "LoadBalancer";
             };
 

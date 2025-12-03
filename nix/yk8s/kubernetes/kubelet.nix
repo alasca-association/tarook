@@ -7,13 +7,8 @@
   cfg = config.yk8s.kubernetes.kubelet;
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule;
-  inherit (lib) mkOption mkEnableOption types;
-  inherit (yk8s-lib) mkSubSection;
-  inherit
-    (yk8s-lib.types)
-    k8sDurationStr
-    k8sThreshold
-    ;
+  inherit (lib) mkOption mkEnableOption;
+  inherit (yk8s-lib) mkSubSection types;
 in {
   imports = [
     (mkRenamedOptionModule ["kubernetes" "kubelet" "pod_limit"] ["kubernetes" "kubelet" "pod_limit_worker"])
@@ -56,7 +51,7 @@ in {
         Config for soft eviction values.
         Note: To change this value you have to release the Kraken
       '';
-      type = k8sDurationStr;
+      type = types.yk8s.k8s.durationStr;
       default = "1m30s";
     };
     evictionhard_nodefs_available = mkOption {
@@ -64,7 +59,7 @@ in {
         Config for hard eviction values.
         Note: To change this value you have to release the Kraken
       '';
-      type = k8sThreshold;
+      type = types.yk8s.k8s.threshold;
       default = "10%";
     };
     evictionhard_nodefs_inodesfree = mkOption {
@@ -72,7 +67,7 @@ in {
         Config for hard eviction values.
         Note: To change this value you have to release the Kraken
       '';
-      type = k8sThreshold;
+      type = types.yk8s.k8s.threshold;
       default = "5%";
     };
   };
