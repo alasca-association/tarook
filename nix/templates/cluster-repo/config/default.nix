@@ -55,7 +55,7 @@ in {
         #       management which keeps the Kubernetes version up-to-date with
         #       renovate-bot. Safe to remove.
         # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-        version = "1.33.5";
+        version = "1.33.6";
       };
       wireguard = {
         enabled = true;
