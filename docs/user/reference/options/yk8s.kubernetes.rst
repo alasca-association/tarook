@@ -496,12 +496,12 @@ Kubernetes version
 
 **Type:**::
 
-  Kubernetes version (one of: 1.31.x, 1.32.x, 1.33.x)
+  Kubernetes version (one of: 1.31.x, 1.32.x, 1.33.x, 1.34.x)
 
 
 **Default:**::
 
-  "1.33.5"
+  "1.34.1"
 
 
 **Declared by**
