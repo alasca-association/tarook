@@ -1,0 +1,19 @@
+---
+- name: Configure 'net.netfilter.nf_conntrack_buckets'
+  become: true
+  ansible.posix.sysctl:
+    name: net.netfilter.nf_conntrack_buckets
+    state: present
+    reload: true
+    value: "65536"
+
+- name: Configure 'net.netfilter.nf_conntrack_max'
+  become: true
+  ansible.posix.sysctl:
+    name: net.netfilter.nf_conntrack_max
+    state: present
+    reload: true
+    # Should be four times higher than 'net.netfilter.nf_conntrack_buckets'
+    # https://www.kernel.org/doc/Documentation/networking/nf_conntrack-sysctl.txt
+    value: "262144"
+...

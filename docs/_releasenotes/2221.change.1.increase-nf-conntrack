@@ -1,0 +1,1 @@
+Tasks have been added which set ``net.netfilter.nf_conntrack_buckets`` to ``65536`` and ``net.netfilter.nf_conntrack_max`` to ``262144`` on frontend nodes (see #837).
