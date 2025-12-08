@@ -36,6 +36,15 @@
       type = with types; nullOr yk8s.openstack.volumeTypeName;
       default = null;
     };
+    create_root_disk_on_volume = mkOption {
+      description = ''
+        Enable creation of root disk volume.
+        If true, create block volume for instances by default and boot from there.
+        Equivalent to ``openstack server create --boot-from-volume […]``.
+      '';
+      type = with types; nullOr types.bool;
+      default = null;
+    };
   };
   # NOTE: Some options are not used by Ansible but other parts of the LCM,
   #       such as Terraform. Therefore they are filtered out.
@@ -183,7 +192,7 @@ in {
     };
 
     create_root_disk_on_volume = mkEnableOption ''
-      creation of root disk volumes.
+      creation of root disk volumes for all instances.
       If true, create block volume for each instance and boot from there.
       Equivalent to ``openstack server create --boot-from-volume […]``.
     '';
@@ -229,10 +238,19 @@ in {
         type = types.str;
         default = "gw-";
       };
+      create_root_disk_on_volume.description = ''
+        Enable creation of root disk volume for gateways.
+        If true, create block volume for all gateways and boot from there.
+        Equivalent to ``openstack server create --boot-from-volume […]``.
+      '';
     };
 
     master_defaults = recursiveUpdate commonNodeDefaultOptions {
-      root_disk_size.default = 50;
+      create_root_disk_on_volume.description = ''
+        Enable creation of root disk volume for masters by default.
+        If true, create block volume for masters by default and boot from there.
+        Equivalent to ``openstack server create --boot-from-volume […]``.
+      '';
     };
 
     worker_defaults = recursiveUpdate commonNodeDefaultOptions {
@@ -245,6 +263,11 @@ in {
         type = with types; nullOr yk8s.openstack.serverGroupName;
         default = null;
       };
+      create_root_disk_on_volume.description = ''
+        Enable creation of root disk volume for workers by default.
+        If true, create block volume for workers by default and boot from there.
+        Equivalent to ``openstack server create --boot-from-volume […]``.
+      '';
     };
 
     nodes = mkOption {
@@ -282,6 +305,15 @@ in {
           };
           root_disk_volume_type = mkOption {
             type = with types; nullOr yk8s.openstack.volumeTypeName;
+            default = null;
+          };
+          create_root_disk_on_volume = mkOption {
+            description = ''
+              Enable creation of root disk volume for this instance.
+              If true, create block volume for this instance and boot from there.
+              Equivalent to ``openstack server create --boot-from-volume […]``.
+            '';
+            type = with types; nullOr types.bool;
             default = null;
           };
           anti_affinity_group = mkOption {
