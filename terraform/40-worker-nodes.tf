@@ -2,15 +2,24 @@ locals {
   # NOTE: coalesce() is used to provide non-null default values from the templates
   worker_nodes = {
     for name, values in var.nodes :
-        "${local.nodes_prefix}${name}" => {
-          image                    = coalesce(values.image, var.worker_defaults.image)
-          flavor                   = coalesce(values.flavor, var.worker_defaults.flavor)
-          az                       = values.az  # default: null
-          volume_name              = "${var.cluster_name}-worker-volume-${name}"
-          root_disk_size           = coalesce(values.root_disk_size, var.worker_defaults.root_disk_size)
-          root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.worker_defaults.root_disk_volume_type
-          anti_affinity_group      = values.anti_affinity_group != null ? values.anti_affinity_group : var.worker_defaults.anti_affinity_group
-        } if values.role == "worker"
+      "${local.nodes_prefix}${name}" => {
+        image                      = coalesce(values.image, var.worker_defaults.image)
+        flavor                     = coalesce(values.flavor, var.worker_defaults.flavor)
+        az                         = values.az  # default: null
+        volume_name                = "${var.cluster_name}-worker-volume-${name}"
+        root_disk_size             = coalesce(values.root_disk_size, var.worker_defaults.root_disk_size)
+        root_disk_volume_type      = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.worker_defaults.root_disk_volume_type
+        anti_affinity_group        = values.anti_affinity_group != null ? values.anti_affinity_group : var.worker_defaults.anti_affinity_group
+        create_root_disk_on_volume = coalesce(
+                                       values.create_root_disk_on_volume,
+                                       var.worker_defaults.create_root_disk_on_volume,
+                                       var.create_root_disk_on_volume
+                                     )
+    } if values.role == "worker"
+  }
+  worker_nodes_with_volumes = {
+    for k, v in local.worker_nodes : k => v
+    if v.create_root_disk_on_volume == true
   }
 }
 
@@ -58,7 +67,7 @@ data "openstack_images_image_v2" "worker" {
 }
 
 resource "openstack_blockstorage_volume_v3" "worker-volume" {
-  for_each = var.create_root_disk_on_volume == true ? local.worker_nodes : {}
+  for_each = local.worker_nodes_with_volumes
   name        = each.value.volume_name
   size        = (data.openstack_compute_flavor_v2.worker[each.key].disk > 0) ? data.openstack_compute_flavor_v2.worker[each.key].disk : each.value.root_disk_size
   image_id    = data.openstack_images_image_v2.worker[each.key].id
@@ -81,7 +90,7 @@ resource "openstack_compute_instance_v2" "worker" {
 
   availability_zone = each.value.az
   flavor_id         = data.openstack_compute_flavor_v2.worker[each.key].id
-  image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.worker[each.key].id : null
+  image_id          = each.value.create_root_disk_on_volume == false ? data.openstack_images_image_v2.worker[each.key].id : null
   key_pair          = var.keypair
   config_drive      = true
 
@@ -97,7 +106,7 @@ resource "openstack_compute_instance_v2" "worker" {
   dynamic block_device {
     # Abusing 'for_each' as a conditional
     # It's not working as a loop. The outer `each.key` is "passed" into the inner `for_each`
-    for_each = var.create_root_disk_on_volume == true ? [each.key] : []
+    for_each = each.value.create_root_disk_on_volume == true ? ["dummy"] : []
       content {
         uuid                  = openstack_blockstorage_volume_v3.worker-volume[each.key].id
         source_type           = "volume"
