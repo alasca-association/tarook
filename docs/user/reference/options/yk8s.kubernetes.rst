@@ -501,7 +501,7 @@ Kubernetes version
 
 **Default:**::
 
-  "1.34.1"
+  "1.34.2"
 
 
 **Declared by**
