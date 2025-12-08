@@ -7,7 +7,7 @@ locals {
           flavor                   = coalesce(values.flavor, var.master_defaults.flavor)
           az                       = values.az  # default: null
           volume_name              = "${var.cluster_name}-master-volume-${name}"
-          root_disk_size           = coalesce(values.root_disk_size, var.master_defaults.root_disk_size)
+          root_disk_size           = values.root_disk_size != null ? values.root_disk_size : var.worker_defaults.root_disk_size != null ? var.worker_defaults.root_disk_size : null
           root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.master_defaults.root_disk_volume_type
           create_root_disk_on_volume = coalesce(
                                         values.create_root_disk_on_volume,
@@ -60,7 +60,7 @@ resource "openstack_blockstorage_volume_v3" "master-volume" {
   for_each = local.master_nodes_with_volumes
 
   name        = each.value.volume_name
-  size        = (data.openstack_compute_flavor_v2.master[each.key].disk > 0) ? data.openstack_compute_flavor_v2.master[each.key].disk : each.value.root_disk_size
+  size        = each.value.root_disk_size != null ? each.value.root_disk_size : (data.openstack_compute_flavor_v2.worker[each.key].disk > 0) ? data.openstack_compute_flavor_v2.worker[each.key].disk : null
   image_id    = data.openstack_images_image_v2.master[each.key].id
   volume_type = each.value.root_disk_volume_type
   availability_zone = each.value.az

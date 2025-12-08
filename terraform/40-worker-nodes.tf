@@ -7,7 +7,7 @@ locals {
           flavor                   = coalesce(values.flavor, var.worker_defaults.flavor)
           az                       = values.az  # default: null
           volume_name              = "${var.cluster_name}-worker-volume-${name}"
-          root_disk_size           = coalesce(values.root_disk_size, var.worker_defaults.root_disk_size)
+          root_disk_size           = values.root_disk_size != null ? values.root_disk_size : var.worker_defaults.root_disk_size != null ? var.worker_defaults.root_disk_size : null
           root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.worker_defaults.root_disk_volume_type
           anti_affinity_group      = values.anti_affinity_group != null ? values.anti_affinity_group : var.worker_defaults.anti_affinity_group
           create_root_disk_on_volume = coalesce(
@@ -69,7 +69,7 @@ data "openstack_images_image_v2" "worker" {
 resource "openstack_blockstorage_volume_v3" "worker-volume" {
   for_each = local.worker_nodes_with_volumes
   name        = each.value.volume_name
-  size        = (data.openstack_compute_flavor_v2.worker[each.key].disk > 0) ? data.openstack_compute_flavor_v2.worker[each.key].disk : each.value.root_disk_size
+  size        = each.value.root_disk_size != null ? each.value.root_disk_size : (data.openstack_compute_flavor_v2.worker[each.key].disk > 0) ? data.openstack_compute_flavor_v2.worker[each.key].disk : null
   image_id    = data.openstack_images_image_v2.worker[each.key].id
   volume_type = each.value.root_disk_volume_type
   availability_zone = each.value.az

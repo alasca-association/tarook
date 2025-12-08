@@ -25,8 +25,10 @@
     root_disk_size = mkOption {
       description = ''
         Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
+        If null, the disk size of the configured flavor will be used.
       '';
-      type = types.ints.positive;
+      type = with types; nullOr types.ints.positive;
+      default = null;
     };
     root_disk_volume_type = mkOption {
       description = ''
@@ -233,7 +235,6 @@ in {
     };
 
     gateway_defaults = recursiveUpdate commonNodeDefaultOptions {
-      root_disk_size.default = 10;
       common_name = mkOption {
         type = types.str;
         default = "gw-";
@@ -254,8 +255,6 @@ in {
     };
 
     worker_defaults = recursiveUpdate commonNodeDefaultOptions {
-      root_disk_size.default = 50;
-
       anti_affinity_group = mkOption {
         description = ''
           Leaving this empty means to not join any anti affinity group
