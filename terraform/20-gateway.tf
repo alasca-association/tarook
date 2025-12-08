@@ -137,7 +137,7 @@ resource "openstack_blockstorage_volume_v3" "gateway-volume" {
   for_each    = local.gateway_nodes_with_volumes
 
   name        = each.value.volume_name
-  size        = (data.openstack_compute_flavor_v2.gateway.disk > 0) ? data.openstack_compute_flavor_v2.gateway.disk : each.value.root_disk_size
+  size        = coalesce(each.value.root_disk_size, data.openstack_compute_flavor_v2.gateway.disk)
   image_id    = data.openstack_images_image_v2.gateway.id
   volume_type = each.value.root_disk_volume_type
   availability_zone = each.value.az
@@ -149,6 +149,10 @@ resource "openstack_blockstorage_volume_v3" "gateway-volume" {
 
   lifecycle {
     ignore_changes = [image_id]
+    precondition {
+       condition = coalesce(each.value.root_disk_size, data.openstack_compute_flavor_v2.gateway.disk) > 0
+       error_message = "An invalid disk size has been supplied. You probably have to explicitly configure a 'root_disk_size'"
+    }
   }
 }
 

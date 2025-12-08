@@ -100,7 +100,7 @@ variable "gateway_defaults" {
     common_name                = string
     image                      = string
     flavor                     = string
-    root_disk_size             = number
+    root_disk_size             = optional(number)
     root_disk_volume_type      = optional(string)
     create_root_disk_on_volume = optional(bool)
   })
@@ -110,7 +110,7 @@ variable "master_defaults" {
   type = object({              # --- template spec ---
     image                      = string
     flavor                     = string
-    root_disk_size             = number
+    root_disk_size             = optional(number)
     root_disk_volume_type      = optional(string)
     create_root_disk_on_volume = optional(bool)
   })
@@ -120,7 +120,7 @@ variable "worker_defaults" {
   type = object({              # --- template spec ---
     image                      = string
     flavor                     = string
-    root_disk_size             = number
+    root_disk_size             = optional(number)
     root_disk_volume_type      = optional(string)
     anti_affinity_group        = optional(string)
     create_root_disk_on_volume = optional(bool)

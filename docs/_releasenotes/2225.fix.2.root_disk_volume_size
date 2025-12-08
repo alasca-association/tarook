@@ -1,0 +1,1 @@
+A bug has been fixed which prevented :ref:`configuration-options.yk8s.openstack.nodes.<name>.root_disk_size` from taking effect.
