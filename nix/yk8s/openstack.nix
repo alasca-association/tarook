@@ -43,6 +43,11 @@
         Enable creation of root disk volume.
         If true, create block volume for instances by default and boot from there.
         Equivalent to ``openstack server create --boot-from-volume […]``.
+
+        This option is inferior to
+        :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume`,
+        but takes precedence over
+        :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
       '';
       type = with types; nullOr types.bool;
       default = null;
@@ -311,6 +316,13 @@ in {
               Enable creation of root disk volume for this instance.
               If true, create block volume for this instance and boot from there.
               Equivalent to ``openstack server create --boot-from-volume […]``.
+
+              This option takes precedence over
+              :ref:`configuration-options.yk8s.openstack.gateway_defaults.create_root_disk_on_volume`,
+              :ref:`configuration-options.yk8s.openstack.master_defaults.create_root_disk_on_volume`,
+              :ref:`configuration-options.yk8s.openstack.worker_defaults.create_root_disk_on_volume`,
+              and
+              :ref:``.
             '';
             type = with types; nullOr types.bool;
             default = null;
