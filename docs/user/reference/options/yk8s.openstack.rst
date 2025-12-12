@@ -671,6 +671,13 @@ Enable creation of root disk volume for this instance.
 If true, create block volume for this instance and boot from there.
 Equivalent to ``openstack server create --boot-from-volume […]``.
 
+This option takes precedence over
+:ref:`configuration-options.yk8s.openstack.gateway_defaults.create_root_disk_on_volume`,
+:ref:`configuration-options.yk8s.openstack.master_defaults.create_root_disk_on_volume`,
+:ref:`configuration-options.yk8s.openstack.worker_defaults.create_root_disk_on_volume`,
+and
+:ref:``.
+
 
 **Type:**::
 
