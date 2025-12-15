@@ -17,6 +17,18 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v11.0.3 (2025-12-09)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- Fixed a bug which prevented the release migration script :ref:`migrate-to-release.sh<actions-references.migrate-to-releasesh>`
+  from completing successfully with :ref:`Terraform disabled <configuration-options.yk8s.terraform.enabled>`. (`!2209 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2209>`_)
+- Fixed a bug in the release migration that left new Terraform state uncommitted. (`!2209 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2209>`_)
+- Fixed a bug which prevented to rerun the release migration script :ref:`migrate-to-release.sh<actions-references.migrate-to-releasesh>`. (`!2209 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2209>`_)
+
+
 v11.0.2 (2025-10-23)
 --------------------
 
