@@ -13,6 +13,10 @@
   inherit (yk8s-lib.transform) filterNull;
   inherit (lib) mkEnableOption mkOption;
 in {
+  imports = [
+    (mkRemovedOptionModule ["infra" "hosts_file"] "Use infra.ansible_hosts instead")
+  ];
+
   options.yk8s.infra = mkTopSection {
     _docs.preface = ''
       This section contains various configuration options necessary for all
@@ -89,15 +93,6 @@ in {
         if v == null && config.yk8s.terraform.enabled
         then builtins.trace "INFO: config.yk8s.infra.networking_floating_ip is not yet set. Terraform stage needs to be run first." v
         else v;
-    };
-
-    hosts_file = mkOption {
-      description = ''
-        A custom hosts file. This option is deprecated. Use :ref:`configuration-options.yk8s.infra.ansible_hosts` instead.
-      '';
-      type = with types; nullOr pathInStore;
-      default = null;
-      example = lib.options.literalExpression "./hosts";
     };
 
     ansible_hosts = let
@@ -296,14 +291,6 @@ in {
       message = "config.yk8s.infra.networking_floating_ip must be set if Wireguard or IPsec is used.";
     }
     {
-      assertion = cfg.ansible_hosts != null -> cfg.hosts_file == null;
-      message = "config.yk8s.infra.hosts_file must not be set if config.yk8s.infra.ansible_hosts is used (which implicitly happens through Terraform).";
-    }
-    {
-      assertion = ! config.yk8s.terraform.enabled -> ((cfg.ansible_hosts == null && cfg.hosts_file != null) || (cfg.ansible_hosts != null && cfg.hosts_file == null));
-      message = "Either config.yk8s.infra.hosts_file or config.yk8s.infra.ansible_hosts must be set";
-    }
-    {
       assertion =
         (cfg.ansible_hosts != null)
         -> builtins.all (host: (host.ansible_connection or "") != "local" -> host.ansible_host != null) (builtins.attrValues cfg.final_hosts.all.hosts);
@@ -322,15 +309,12 @@ in {
       message = "local_ipv6_address must be set for all hosts in config.yk8s.infra.ansible_hosts.k8s_nodes";
     }
   ];
-  config.yk8s.warnings = lib.optional (cfg.hosts_file != null) "config.yk8s.infra.hosts_file is deprecated. Use config.yk8s.infra.ansible_hosts instead.";
-  config.yk8s._inventory_packages =
-    (lib.optional (cfg.ansible_hosts != null) (mkYamlAtPath "hosts" (filterNull cfg.ansible_hosts)))
-    ++ (lib.optional (cfg.hosts_file != null) (linkToPath cfg.hosts_file "hosts"))
-    ++ [
-      (mkGroupVarsFile {
-        inherit cfg;
-        inventory_path = "all/infra.yaml";
-        transformations = [(c: removeAttrs c ["hosts_file" "ansible_hosts" "final_hosts"])];
-      })
-    ];
+  config.yk8s._inventory_packages = [
+    (mkYamlAtPath "hosts" (filterNull cfg.ansible_hosts))
+    (mkGroupVarsFile {
+      inherit cfg;
+      inventory_path = "all/infra.yaml";
+      transformations = [(c: removeAttrs c ["ansible_hosts" "final_hosts"])];
+    })
+  ];
 }
