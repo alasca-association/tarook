@@ -26,7 +26,6 @@ in {
     (mkRenamedOptionModule ["miscellaneous" "subnet_cidr"] ["infra" "subnet_cidr"])
     (mkRenamedOptionModule ["miscellaneous" "networking_fixed_ip"] ["infra" "networking_fixed_ip"])
     (mkRenamedOptionModule ["miscellaneous" "networking_fixed_ip_v6"] ["infra" "networking_fixed_ip_v6"])
-    (mkRenamedOptionModule ["miscellaneous" "hosts_file"] ["infra" "hosts_file"])
     (mkRenamedOptionModule ["miscellaneous" "k8s_network_ipv4_nat_outgoing"] ["kubernetes" "network" "ipv4_nat_outgoing"])
     (mkRenamedOptionModule ["miscellaneous" "k8s_network_ipv6_nat_outgoing"] ["kubernetes" "network" "ipv6_nat_outgoing"])
     (mkRemovedOptionModule ["miscellaneous" "openstack_connect_use_helm"] "Helm is now always used to deploy the CCM and the cinder CSI plugin")
