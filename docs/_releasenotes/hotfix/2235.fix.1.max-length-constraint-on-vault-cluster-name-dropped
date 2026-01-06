@@ -1,0 +1,2 @@
+Dropped the max length constraint on the :ref:`configuration-options.yk8s.vault.cluster_name`
+that was errorneously introduced with release v10.0.0.
