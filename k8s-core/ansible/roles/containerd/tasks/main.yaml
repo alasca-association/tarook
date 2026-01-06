@@ -85,6 +85,18 @@
     mode: 0640
   register: configuration_update
 
+# Starting with containerd 2.0 this option has been removed and the default is used:
+# https://github.com/containerd/containerd/blob/main/docs/containerd-2.0.md#limitnofile-configuration-has-been-removed
+- name: Ensure limit-nofile drop-in
+  become: true
+  copy:
+    src: limit-nofile.conf
+    dest: /etc/systemd/system/containerd.service.d/limit-nofile.conf
+    owner: root
+    group: root
+    mode: 0640
+  register: configuration_update
+
 - name: Configure crictl
   become: true
   copy:
