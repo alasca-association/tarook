@@ -1,0 +1,7 @@
+Explicitly set the limit of open file descriptors (LimitNOFILE) for containerd after it has been removed since version 2.0 (see https://github.com/containerd/containerd/blob/main/docs/containerd-2.0.md#limitnofile-configuration-has-been-removed).
+
+This change will not immediately affect existing nodes as containerd has to be restarted to take effect.
+Restarting containerd is only save to do if the node has been drained in advance.
+A node is drained and rebooted automatically during :doc:`Kubernetes upgrades </user/guide/kubernetes/upgrading-kubernetes>`
+or when updating the host OS packages via :ref:`update-kubernetes-nodes.sh<actions-references.update-kubernetes-nodessh>`.
+If you require ``LimitNOFILE`` to be set immediately, please execute one of these.
