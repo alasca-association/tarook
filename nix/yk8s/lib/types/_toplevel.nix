@@ -81,22 +81,21 @@
               elemType.check x
               && (
                 let
-                  type_ = builtins.typeOf x;
-                  length =
-                    if type_ == "string"
+                  length_ =
+                    if lib.isString x
                     then builtins.stringLength x
-                    else if type_ == "list"
+                    else if lib.isList x
                     then builtins.length x
                     else throw "withLimitedLength can only be used with string/list option types";
                 in
                   (
                     if min != null
-                    then length >= min
+                    then length_ >= min
                     else true
                   )
                   && (
                     if max != null
-                    then length <= max
+                    then length_ <= max
                     else true
                   )
               );
