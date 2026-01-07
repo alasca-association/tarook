@@ -251,8 +251,7 @@ in {
 
     nmgrs = mkOption {
       description = ''
-        Number of mgrs to run. Default is 1 and can be extended to 2
-        and achieve high-availability.
+        Number of mgrs to run. Two are required to achieve high-availability.
         The count of mgrs is adjustable since rook v1.6 and does not work with older versions.
       '';
       type = types.ints.between 1 2;
