@@ -1,6 +1,8 @@
 {lib}: let
   types = (import ./.) {inherit lib;};
 
+  inherit (lib.options) mergeEqualOption;
+
   inherit
     (types.yk8s.strings)
     _mkRegexStrOptionType
@@ -373,6 +375,7 @@ in rec {
 
       Allowed ranges: 64512-65534, 4200000000-4294967294'';
     descriptionClass = "noun";
+    merge = mergeEqualOption;
     check = x:
       builtins.isInt x
       && (

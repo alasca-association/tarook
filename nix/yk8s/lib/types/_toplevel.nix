@@ -77,6 +77,7 @@
               else "${builtins.toString min} to ${builtins.toString max}"
             } characters";
             descriptionClass = "composite";
+            inherit (elemType) merge;
             check = x:
               elemType.check x
               && (
