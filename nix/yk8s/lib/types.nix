@@ -1,6 +1,7 @@
 {lib}: let
   transform = import ./transform.nix {inherit lib;};
   inherit (transform) matchesRegex;
+  inherit (lib.options) mergeEqualOption;
 
   # as per POSIX.1-2024
   posix1-2024 = {
@@ -429,6 +430,7 @@
         name = name;
         description = description;
         descriptionClass = "noun";
+        merge = mergeEqualOption;
         check = x:
           builtins.isString x
           && (
@@ -617,6 +619,7 @@ in rec {
         (elemType.descriptionClass == "noun")
         "withLimitedLength can only be used with noun class option types";
           lib.mkOptionType rec {
+            inherit (elemType) merge;
             name = "${elemType.name}WithLimitedLength";
             description = "${elemType.description} with ${
               if (min == null || max == null)
@@ -822,6 +825,7 @@ in rec {
 
       Allowed ranges: 64512-65534, 4200000000-4294967294'';
     descriptionClass = "noun";
+    merge = mergeEqualOption;
     check = x:
       builtins.isInt x
       && (
@@ -1093,6 +1097,7 @@ in rec {
     name = "k8sLabelAttrs";
     description = "attribute set of Kubernetes label-value pairs";
     descriptionClass = "noun";
+    merge = mergeEqualOption;
     check = x:
       builtins.isAttrs x
       && (
