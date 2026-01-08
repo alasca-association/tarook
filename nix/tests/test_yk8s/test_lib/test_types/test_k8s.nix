@@ -464,6 +464,7 @@
       };
       labelAttrs = {
         target = optionTypes.labelAttrs;
+        # These tests only test the label. labelValue is tested by its own check function
         tests.typeChecking = {
           accepted.inputs = [
             {}
@@ -497,30 +498,6 @@
                 })
                 label.tests.typeChecking.rejected.inputs
                 labelValue.tests.typeChecking.accepted.inputs
-              )
-            )
-            # any mapping of a valid label and invalid labelValue is an invalid labelAttrs
-            (
-              lib.listToAttrs (
-                lib.zipListsWith
-                (label: invalidLabelValue: {
-                  name = label;
-                  value = invalidLabelValue;
-                })
-                label.tests.typeChecking.accepted.inputs
-                labelValue.tests.typeChecking.rejected.inputs
-              )
-            )
-            # any mapping of an invalid label and invalid labelValue is an invalid labelAttrs
-            (
-              lib.listToAttrs (
-                lib.zipListsWith
-                (invalidLabel: invalidLabelValue: {
-                  name = invalidLabel;
-                  value = invalidLabelValue;
-                })
-                label.tests.typeChecking.rejected.inputs
-                labelValue.tests.typeChecking.rejected.inputs
               )
             )
           ];

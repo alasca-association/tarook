@@ -368,21 +368,15 @@ in rec {
   };
 
   # as per IETF RFC 6996 section 5
-  privateUseAutonomousSystemNumber = lib.mkOptionType {
-    name = "privateUseAutonomousSystemNumber";
-    description = ''
-      Autonomous system number reserved for private use
+  privateUseAutonomousSystemNumber =
+    (lib.types.either (lib.types.ints.between 64512 65534) (lib.types.ints.between 4200000000 4294967294))
+    // {
+      name = "privateUseAutonomousSystemNumber";
+      description = ''
+        Autonomous system number reserved for private use
 
-      Allowed ranges: 64512-65534, 4200000000-4294967294'';
-    descriptionClass = "noun";
-    merge = mergeEqualOption;
-    check = x:
-      builtins.isInt x
-      && (
-        (x >= 64512 && x <= 65534)
-        || (x >= 4200000000 && x <= 4294967294)
-      );
-  };
+        Allowed ranges: 64512-65534, 4200000000-4294967294'';
+    };
   subdomainLabel = _mkRfc1123SubdomainLabelType {};
   subdomainName = _mkRfc1123SubdomainNameType {};
 

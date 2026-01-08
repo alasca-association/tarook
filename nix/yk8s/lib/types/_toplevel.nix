@@ -29,7 +29,8 @@
         assert lib.assertMsg
         (elemType.descriptionClass == "noun")
         "withLimitedLength can only be used with noun class option types";
-          lib.mkOptionType {
+          elemType
+          // {
             name = "${elemType.name}WithLimitedLength";
             description = "${elemType.description} with ${
               if (min == null || max == null)
@@ -42,7 +43,6 @@
               else "${builtins.toString min} to ${builtins.toString max}"
             } characters";
             descriptionClass = "composite";
-            inherit (elemType) merge;
             check = x:
               elemType.check x
               && (
