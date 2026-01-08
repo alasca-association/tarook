@@ -14,6 +14,15 @@ Information about unreleased changes can be found
 
 .. towncrier release notes start
 
+v10.0.7 (2026-01-08)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug was fixed that caused issues when the same option was set in multiple places #846 (`!2246 <https://gitlab.com/yaook/k8s/-/merge_requests/2246>`_)
+
+
 v10.0.6 (2025-09-05)
 --------------------
 
