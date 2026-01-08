@@ -17,6 +17,15 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v11.0.4 (2026-01-08)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug was fixed that caused issues when the same option was set in multiple places #846 (`!2248 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2248>`_)
+
+
 v11.0.3 (2025-12-09)
 --------------------
 
