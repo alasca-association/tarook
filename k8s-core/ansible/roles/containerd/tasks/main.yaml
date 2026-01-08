@@ -8,53 +8,66 @@
     owner: root
     group: root
 
-- name: Add docker repository
+- name: Install containerd
   become: true
+  # Only do changes to the package if disruption is explicitly allowed
+  # or if Kubernetes is not initialized on the node, yet
+  when:
+  - |
+    _allow_disruption
+    or ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
   block:
-  - name: Ensure keyrings directory exists
-    # ftr: this is present by default on Debian...
-    file:
-      state: directory
-      path: /etc/apt/keyrings
-      owner: root
-      group: root
-      mode: u=rwx,go=rx
-
-  - name: Add GPG apt key
-    copy:
-      src: apt-key-{{ ansible_distribution | lower }}.gpg
-      dest: /etc/apt/keyrings/docker.gpg
-      owner: root
-      group: root
-      mode: u=rw,go=r
-
   - name: Add docker repository
-    apt_repository:
-      repo: "deb [signed-by=/etc/apt/keyrings/docker.gpg] {% if apt_proxy_url is not none %}http{% else %}https{% endif %}://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
-      state: present
-    register: apt_action
-    until: apt_action is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
+    block:
+    - name: Ensure keyrings directory exists
+      # ftr: this is present by default on Debian...
+      file:
+        state: directory
+        path: /etc/apt/keyrings
+        owner: root
+        group: root
+        mode: u=rwx,go=rx
 
-  - name: Update apt package cache
-    apt:
-      update_cache: true
-    register: apt_action
-    until: apt_action is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
+    - name: Add GPG apt key
+      copy:
+        src: apt-key-{{ ansible_distribution | lower }}.gpg
+        dest: /etc/apt/keyrings/docker.gpg
+        owner: root
+        group: root
+        mode: u=rw,go=r
 
-- name: Install 'containerd.io' package from docker repository
-  become: true
-  apt:
-    state: present
-    name:
-    - containerd.io
-  register: package_install
-  until: package_install is not failed
-  retries: "{{ error_retries }}"
-  delay: "{{ error_delay }}"
+    - name: Add docker repository
+      apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/docker.gpg] {% if apt_proxy_url is not none %}http{% else %}https{% endif %}://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+        state: present
+      register: apt_action
+      until: apt_action is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
+    - name: Update apt package cache
+      apt:
+        update_cache: true
+      register: apt_action
+      until: apt_action is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
+  - name: Install 'containerd.io' package from docker repository
+    block:
+    - name: Install 'containerd.io' package from docker repository
+      apt:
+        name:
+        - "containerd.io={{ containerd_version }}-*"
+        allow_downgrade: true
+        allow_change_held_packages: true
+      register: package_install
+      until: package_install is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
+    - name: Prevent the 'containerd.io' package from being updated automatically  # noqa no-changed-when
+      command: apt-mark hold containerd.io
 
 - name: Create containerd daemon configuration
   become: true
