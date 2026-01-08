@@ -8,41 +8,6 @@
       unsignedIntDurationStrRE = parseDuration.unsignedRE;
     };
   };
-  /*
-  Variant of nixpkgs.lib.types.attrsOf
-
-  An attribute set of where the values are of the type specified for their respective names in `ts`.
-
-  Example:
-    (attrsOf' {a = nonEmptyStr;}).check {a = "foo"; b = 1;} -> true
-    (attrsOf' {a = nonEmptyStr;}).check {a = ""; b = 1;} -> false
-    (attrsOf' {a = nonEmptyStr;}).check {b = 1;} -> true
-  */
-  attrsOf' = ts:
-    lib.mkOptionType {
-      name = "attrsOf'";
-      description = "attribute set with items of specific types (${
-        builtins.concatStringsSep ", " (
-          lib.attrsets.foldlAttrs (acc: n: v: acc ++ ["${n}: ${v.name}"]) [] ts
-        )
-      })";
-      check = x:
-        lib.types.attrs.check x
-        && lib.attrsets.foldlAttrs
-        (
-          acc: n: v:
-            acc
-            && (
-              if (builtins.hasAttr n ts)
-              then (builtins.getAttr n ts).check v
-              else true
-            )
-        )
-        true
-        x;
-      nestedTypes.elemType = lib.attrsets.attrValues ts;
-      inherit (lib.types.attrs) merge emptyValue;
-    };
 
   /*
   Composite type to constrain the input length of string/list option types
