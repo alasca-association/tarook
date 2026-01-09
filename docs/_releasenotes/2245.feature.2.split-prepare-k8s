@@ -1,0 +1,7 @@
+The preparation of Kubernetes nodes can now be separately triggered via
+
+.. code:: console
+
+   $ bash managed-k8s/actions/apply-k8s-core.sh prepare-k8s-nodes.yaml
+
+.
