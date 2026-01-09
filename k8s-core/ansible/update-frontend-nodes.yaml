@@ -34,9 +34,9 @@
     group_by:
       key: "{{ ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') }}_kubernetes_nodes"
 
-- name: Upgrade uninitialized frontend nodes
+- name: Upgrade all uninitialized frontend nodes
   gather_facts: true
-  hosts: not_initialized_frontend_nodes:&not_initialized_kubernetes_nodes
+  hosts: not_initialized_frontend_nodes
   vars_files:
   - vars/disruption.yaml
   - vars/retries.yaml
@@ -45,9 +45,9 @@
   - role: update-system
     tags: update-system
 
-- name: Upgrade initialized frontend nodes
+- name: Upgrade initialized frontend nodes which are not part of Kubernetes
   gather_facts: true
-  hosts: initialized_frontend_nodes
+  hosts: initialized_frontend_nodes:&not_initialized_kubernetes_nodes
   vars_files:
   - vars/disruption.yaml
   - vars/retries.yaml
@@ -56,5 +56,28 @@
   roles:
   - role: update-system
     tags: update-system
+    when: _allow_disruption
+
+- name: Upgrade initialized frontend nodes which are part of Kubernetes
+  gather_facts: true
+  hosts: initialized_frontend_nodes:&initialized_kubernetes_nodes
+  vars_files:
+  - vars/disruption.yaml
+  - vars/retries.yaml
+  serial: 1
+  tags: update-frontend-nodes
+  roles:
+  - role: cluster-health-verification
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    when:
+    - not (k8s_skip_upgrade_checks | bool)
+    - _allow_disruption
+  - role: kubeadm-drain-node
+    when: _allow_disruption
+  - role: containerd
+    when: _allow_disruption
+  - role: update-system
+    when: _allow_disruption
+  - role: kubeadm-uncordon-node
     when: _allow_disruption
 ...
