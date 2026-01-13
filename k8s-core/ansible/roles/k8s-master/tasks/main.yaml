@@ -60,6 +60,23 @@
   - /etc/kubernetes/pki/etcd
   - /var/lib/kubelet/pki
 
+- name: Ensure directory for TAROOK utilities exists
+  become: true
+  file:
+    path: "/usr/local/lib/tarook"
+    state: directory
+    mode: u=rwx,go=rx
+    recurse: true
+
+- name: Deploy restart-container.sh utility
+  become: true
+  template:
+    dest: /usr/local/lib/tarook/restart-container.sh
+    src: restart-container.sh.j2
+    owner: root
+    group: root
+    mode: 0750
+
 - name: Ensure availability of Kubernetes cluster root CA key in Vault
   delegate_to: "{{ groups['orchestrator'] | first }}"
   environment:

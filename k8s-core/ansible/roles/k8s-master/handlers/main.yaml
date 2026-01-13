@@ -16,9 +16,11 @@
 
 - name: Restart kube-apiserver  # noqa no-changed-when
   become: true
-  # We must use shell here, because crictl cannot restart things by name.
-  # We have to look up the ID of the Pod.
-  shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^kube-apiserver$' --no-trunc -q)
+  command:
+  args:
+    argv:
+    - /usr/local/lib/tarook/restart-container.sh
+    - kube-apiserver
   register: container_restart
   until: container_restart is not failed
   retries: "{{ error_retries }}"
@@ -26,9 +28,11 @@
 
 - name: Restart kube-scheduler  # noqa no-changed-when
   become: true
-  # We must use shell here, because crictl cannot restart things by name.
-  # We have to look up the ID of the Pod.
-  shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^kube-scheduler$' --no-trunc -q)
+  command:
+  args:
+    argv:
+    - /usr/local/lib/tarook/restart-container.sh
+    - kube-scheduler
   register: container_restart
   until: container_restart is not failed
   retries: "{{ error_retries }}"
@@ -36,9 +40,11 @@
 
 - name: Restart kube-controller-manager  # noqa no-changed-when
   become: true
-  # We must use shell here, because crictl cannot restart things by name.
-  # We have to look up the ID of the Pod.
-  shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^kube-controller-manager$' --no-trunc -q)
+  command:
+  args:
+    argv:
+    - /usr/local/lib/tarook/restart-container.sh
+    - kube-controller-manager
   register: container_restart
   until: container_restart is not failed
   retries: "{{ error_retries }}"
@@ -46,9 +52,11 @@
 
 - name: Restart etcd  # noqa no-changed-when
   become: true
-  # We must use shell here, because crictl cannot restart things by name.
-  # We have to look up the ID of the Pod.
-  shell: crictl --runtime-endpoint {{ k8s_cri_url | quote }} stop $(crictl --runtime-endpoint {{ k8s_cri_url | quote }} ps --name '^etcd$' --no-trunc -q)
+  command:
+  args:
+    argv:
+    - /usr/local/lib/tarook/restart-container.sh
+    - etcd
   register: container_restart
   until: container_restart is not failed
   retries: "{{ error_retries }}"
