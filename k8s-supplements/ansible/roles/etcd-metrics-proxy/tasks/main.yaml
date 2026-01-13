@@ -27,55 +27,6 @@
 # Rotation: There's no need to expire a certificate because there's no common CA. Just delete either of the
 # secrets and the LCM will create a fresh pair.
 
-# Drop this block along with release v9.0.0
-# For dual stack clusters which have been setup before release v9,
-# the certificates use 127.0.0.1 as CN, but the metrics proxy will
-# bind to :: starting with release v9. Connection will therefore be
-# refused unless we regenerate the certificates.
-- name: Migration tasks for dual stack clusters setup before v9.0.0
-  when: ipv4_enabled and ipv6_enabled
-  block:
-    - name: check mode - Deploy etcd-metrics-proxy DaemonSet
-      kubernetes.core.k8s:
-        state: present
-        apply: true
-        definition: "{{ lookup('template', 'ds-etcd-metrics-proxy.yaml.j2') }}"
-        validate:
-          fail_on_error: true
-          strict: true
-      register: ds_etcd_metrics_proxy
-      until: ds_etcd_metrics_proxy is not failed
-      retries: "{{ error_retries }}"
-      delay: "{{ error_delay }}"
-      check_mode: true
-
-    - name: Delete existing cert secrets  # noqa no-handler
-      when: ds_etcd_metrics_proxy.changed
-      block:
-        - name: Ensure etcd-metrics-proxy cert secret is absent (kube-system)
-          kubernetes.core.k8s:
-            api_version: v1
-            kind: Secret
-            namespace: kube-system
-            name: etcd-metrics-proxy
-            state: absent
-          register: k8s_apply
-          until: k8s_apply is not failed
-          retries: "{{ error_retries }}"
-          delay: "{{ error_delay }}"
-
-        - name: Ensure etcd-metrics-proxy cert secret is absent (monitoring)
-          kubernetes.core.k8s:
-            api_version: v1
-            kind: Secret
-            namespace: monitoring
-            name: etcd-metrics-proxy
-            state: absent
-          register: k8s_apply
-          until: k8s_apply is not failed
-          retries: "{{ error_retries }}"
-          delay: "{{ error_delay }}"
-
 - name: Check if the etcd-metrics-proxy cert secret already exists (kube-system)
   kubernetes.core.k8s_info:
     api_version: v1

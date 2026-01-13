@@ -89,10 +89,6 @@
     tags: k8s-master
   - role: cluster-health-verification
     delegate_to: "{{ groups['orchestrator'] | first }}"
-    # Drop this role along with release v9.0.0
-  - role: migrations/etcd-metrics-listen-patch
-    when: ipv4_enabled and ipv6_enabled
-    tags: migrations/etcd-metrics-listen-patch
 
 - name: Spawn and configure the K8s worker nodes
   hosts: workers
