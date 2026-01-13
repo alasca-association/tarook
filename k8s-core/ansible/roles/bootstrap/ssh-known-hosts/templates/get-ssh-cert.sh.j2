@@ -25,7 +25,7 @@ function revoke() {
 }
 
 trap revoke EXIT
-token="$(/usr/local/lib/yaook-k8s/vault-login.sh)"
+token="$(/usr/local/lib/tarook/vault-login.sh)"
 status=0
 for pubkey in /etc/ssh/ssh_host_*_key.pub; do
     certname="$(dirname "$pubkey")/$(basename "$pubkey" .pub)-cert.pub"

@@ -56,15 +56,22 @@
         group: root
         mode: ugo=r
 
-    - name: Ensure /usr/local/lib/yaook-k8s/ exists
+    # Migration task, remove me in a future release
+    - name: Ensure /usr/local/lib/yaook-k8s/ does not exist
       file:
         path: /usr/local/lib/yaook-k8s/
+        state: absent
+
+    - name: Ensure directory for TAROOK utilities exists
+      file:
+        path: "/usr/local/lib/tarook"
         state: directory
+        mode: u=rwx,go=rx
         recurse: true
 
     - name: Deploy vault login script
       copy:
-        dest: /usr/local/lib/yaook-k8s/vault-login.sh
+        dest: /usr/local/lib/tarook/vault-login.sh
         src: vault-login.sh
         owner: root
         group: root

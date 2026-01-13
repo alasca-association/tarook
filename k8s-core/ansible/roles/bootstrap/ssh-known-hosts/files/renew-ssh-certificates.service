@@ -7,4 +7,4 @@ RemainAfterExit=false
 User=root
 Group=root
 EnvironmentFile=/etc/vault/config
-ExecStart=/bin/bash /var/lib/yaook-k8s/get-ssh-cert.sh
+ExecStart=/bin/bash /usr/local/lib/tarook/get-ssh-cert.sh
