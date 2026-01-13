@@ -29,7 +29,8 @@ Overview
 - :ref:`update-frontend-nodes.sh<actions-references.update-frontend-nodessh>`
 - :ref:`update-kubernetes-nodes.sh<actions-references.update-kubernetes-nodessh>`
 - :ref:`upgrade.sh<actions-references.upgradesh>`
-- :ref:`verify-cluster-health.sh<actions-references.verify-cluster-healthsh>`
+- :ref:`verify-00-kubernetes-api.sh<actions-references.verify-00-kubernetes-apish>`
+- :ref:`verify-10-supplements-health.sh<actions-references.verify-10-supplements-healthsh>`
 
 **Additional development scripts**:
 
@@ -313,12 +314,20 @@ is healthy. These verification checks can be skipped by passing ``-s``.
 This script can be used to trigger a Kubernetes upgrade. More details
 about that can be found :doc:`here </user/guide/kubernetes/upgrading-kubernetes>`.
 
-.. _actions-references.verify-cluster-healthsh:
+.. _actions-references.verify-00-kubernetes-apish:
 
-``verify-cluster-health.sh``
-----------------------------
+``verify-00-kubernetes-api.sh``
+-------------------------------
 
-This script can be used to verify the Kubernetes cluster health.
+This script can be used to verify the healthiness of the Kubernetes API.
+It does some rudimentary calls against the Kubernetes API.
+
+.. _actions-references.verify-10-supplements-healthsh:
+
+``verify-10-supplements-health.sh``
+-----------------------------------
+
+This script can be used to verify the health of deployed supplements such as e.g. a rook/Ceph cluster.
 It triggers the k8s-supplements playbook ``verify-cluster-health.yaml``.
 
 .. _actions-references.wg-upsh:

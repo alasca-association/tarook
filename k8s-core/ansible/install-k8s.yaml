@@ -87,6 +87,8 @@
   - role: audit-logs
   - role: k8s-master
     tags: k8s-master
+  - role: cluster-health-verification
+    delegate_to: "{{ groups['orchestrator'] | first }}"
     # Drop this role along with release v9.0.0
   - role: migrations/etcd-metrics-listen-patch
     when: ipv4_enabled and ipv6_enabled
