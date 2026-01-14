@@ -7,7 +7,7 @@ locals {
           flavor                   = coalesce(values.flavor, var.master_defaults.flavor)
           az                       = values.az  # default: null
           volume_name              = "${var.cluster_name}-master-volume-${name}"
-          root_disk_size           = values.root_disk_size != null ? values.root_disk_size : var.worker_defaults.root_disk_size != null ? var.worker_defaults.root_disk_size : null
+          root_disk_size           = values.root_disk_size != null ? values.root_disk_size : var.master_defaults.root_disk_size != null ? var.master_defaults.root_disk_size : null
           root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.master_defaults.root_disk_volume_type
           create_root_disk_on_volume = coalesce(
                                         values.create_root_disk_on_volume,
