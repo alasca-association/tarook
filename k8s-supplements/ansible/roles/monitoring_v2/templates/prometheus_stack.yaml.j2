@@ -72,6 +72,8 @@ grafana:
           url: "http://thanos-query.{{ monitoring_namespace }}.svc:9090"
           version: 1
           editable: false
+          jsonData:
+            manageAlerts: false
 {% endif %}
   sidecar:
     dashboards:
