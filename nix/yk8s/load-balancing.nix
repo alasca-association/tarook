@@ -91,7 +91,7 @@ in {
         in
           warnHasPortZero
           (attr: "config.yk8s.load-balancing.lb_ports[${idx}]${
-            if builtins.typeOf attr == "string"
+            if lib.isString attr
             then ".${attr}"
             else ""
           }: should not be port zero")

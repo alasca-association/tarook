@@ -250,6 +250,7 @@ in rec {
     name = "k8sLabelAttrs";
     description = "attribute set of Kubernetes label-value pairs";
     descriptionClass = "noun";
+    inherit (lib.types.attrs) merge;
     check = x:
       builtins.isAttrs x
       && (

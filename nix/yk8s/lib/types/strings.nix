@@ -1,6 +1,7 @@
 {lib}: let
   transform = import ./../transform.nix {inherit lib;};
   inherit (transform) matchesRegex;
+  inherit (lib.options) mergeEqualOption;
 in rec {
   /*
   Create an option type that matches a given string value against a set of regular expressions
@@ -24,6 +25,7 @@ in rec {
         name = name;
         description = description;
         descriptionClass = "noun";
+        merge = mergeEqualOption;
         check = x:
           builtins.isString x
           && (
