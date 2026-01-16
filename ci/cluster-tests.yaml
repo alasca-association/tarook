@@ -264,8 +264,6 @@
     - cp /root/thanos.yaml ./config/thanos.yaml
     - bash ./managed-k8s/tools/vault/mkcluster-root.sh
     - export VAULT_TOKEN=$(cat $CI_PROJECT_DIR/root.key)
-      # Insert IPSec PSK
-    - vault kv put yaook/k8s.ci.yaook.cloud/kv/ipsec-eap-psk ipsec_eap_psk="$IPSEC_EAP_PSK"
       # Validate tools/vault/mkcsrs.sh
     - bash ./managed-k8s/tools/vault/mkcsrs.sh
     - for csr in k8s-cluster.csr k8s-etcd.csr k8s-front-proxy.csr; do openssl req -in $csr -noout -text; done

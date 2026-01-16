@@ -292,8 +292,8 @@ in {
       message = "config.yk8s.infra.networking_fixed_ip_v6 must be set if Terraform is not used";
     }
     {
-      assertion = (config.yk8s.wireguard.enabled || config.yk8s.ipsec.enabled) -> config.yk8s.terraform.enabled || cfg.networking_floating_ip != null;
-      message = "config.yk8s.infra.networking_floating_ip must be set if Wireguard or IPsec is used.";
+      assertion = (config.yk8s.wireguard.enabled) -> config.yk8s.terraform.enabled || cfg.networking_floating_ip != null;
+      message = "config.yk8s.infra.networking_floating_ip must be set if Wireguard used.";
     }
     {
       assertion = cfg.ansible_hosts != null -> cfg.hosts_file == null;

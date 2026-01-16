@@ -189,10 +189,6 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
 path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/wireguard/*" {
     capabilities = ["create", "update", "read"]
 }
-
-path "$common_path_prefix/+/kv/data/ipsec-eap-psk" {
-    capabilities = ["read"]
-}
 EOF
 
 write_policy gateway <<EOF
@@ -321,10 +317,6 @@ path "$common_path_prefix/+/kv/data/ipmi/*" {
 }
 
 path "$common_path_prefix/+/kv/data/etcdbackup" {
-    capabilities = ["read"]
-}
-
-path "$common_path_prefix/+/kv/data/ipsec-eap-psk" {
     capabilities = ["read"]
 }
 

@@ -760,34 +760,6 @@
           inherit nonStringValuesRejected;
         };
       };
-
-      ipsecProposalStr = {
-        target = optionTypes.ipsecProposalStr;
-        tests.typeChecking = {
-          accepted.inputs = [
-            "aes256gcm16-aes128gcm16"
-            "aes256gcm16-aes192gcm16-prfsha384-prfsha256-ecp384-modp3072"
-            "aes256gcm16-prfsha384-ecp384-aes192gcm16-prfsha256-modp3072"
-            "aes256gcm16"
-            "AES256GCM16"
-            "sha1_160"
-          ];
-          # The following ones should be invalid ipsec algorithm names but are currently accepted
-          invalidAlgosAccepted.inputs = [
-            "_sha1_160"
-            "1234"
-            "a"
-          ];
-          rejected.inputs = [
-            ""
-            " "
-            "aes256gcm16.invalid?foo"
-            "--"
-            "aes256gcm16--aes128gcm16"
-          ];
-          inherit nonStringValuesRejected;
-        };
-      };
     };
   };
 in

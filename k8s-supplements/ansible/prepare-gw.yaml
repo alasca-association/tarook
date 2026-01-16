@@ -20,9 +20,6 @@
   - vars/retries.yaml
   - vars/vault-config.yaml
   roles:
-  - role: ipsec-vpn
-    tags: ipsec-vpn
-    when: ipsec_enabled | bool
   - role: bird
     tags: bird
   - role: nftables

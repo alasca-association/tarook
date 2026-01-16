@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2024-09-26T14:27:55.357Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" version="24.1.0" etag="d7fInvzH4CxF0HhcmxeX" type="device">
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
   <diagram id="DBdWhv9lM9wdDVQ6ySdX" name="Page-1">
-    <mxGraphModel dx="1768" dy="1882" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="583" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1426" dy="1671" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="583" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -148,7 +148,7 @@
         <mxCell id="52x-R5pq0R9A27WMql1t-51" value="" style="shape=umlActor;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;html=1;outlineConnect=0;" parent="52x-R5pq0R9A27WMql1t-72" vertex="1">
           <mxGeometry y="3" width="30" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="52x-R5pq0R9A27WMql1t-55" value="&lt;div style=&quot;font-size: 8px&quot;&gt;SSH / wireguard&amp;nbsp;&lt;span&gt;/ IPSec&lt;/span&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;" parent="52x-R5pq0R9A27WMql1t-72" vertex="1">
+        <mxCell id="52x-R5pq0R9A27WMql1t-55" value="&lt;div style=&quot;font-size: 8px&quot;&gt;SSH / Wireguard&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;" parent="52x-R5pq0R9A27WMql1t-72" vertex="1">
           <mxGeometry x="39" y="8" width="51" height="20" as="geometry" />
         </mxCell>
         <mxCell id="52x-R5pq0R9A27WMql1t-64" value="Public-VIP / K8s-Endpoint" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 4;fontSize=8;" parent="52x-R5pq0R9A27WMql1t-72" vertex="1">

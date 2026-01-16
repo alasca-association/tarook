@@ -235,15 +235,6 @@ in rec {
       # Section 3.1
       portNumberRE = "(6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{1,5})|([0-9]{1,4})";
     };
-
-    # as per Strongswan documentation
-    strongswan = let
-      algoNameRE = "[A-Za-z0-9_]+"; # without matching any allowed algorithm names
-      # https://docs.strongswan.org/docs/latest/config/proposals.html#_general_proposal_format
-      ipsecProposalStrRE = "(${algoNameRE})([-](${algoNameRE}))*";
-    in {
-      inherit ipsecProposalStrRE;
-    };
   };
   _mkRfc1035SubdomainLabelType = {rejectCapitals ? false}:
     _mkRegexStrOptionType {
@@ -449,11 +440,5 @@ in rec {
     name = "emailAddress";
     description = "RFC5322 email address";
     matchAgainstAllOf = ["^(${rfc5322.emailAddressRE})$"];
-  };
-
-  ipsecProposalStr = _mkRegexStrOptionType {
-    name = "ipsecProposalStr";
-    description = "IPsec proposal string";
-    matchAgainstAllOf = ["^(${strongswan.ipsecProposalStrRE})$"];
   };
 }

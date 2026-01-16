@@ -10,7 +10,6 @@ Configuration Options
   yk8s.containerd
   yk8s.hooks
   yk8s.infra
-  yk8s.ipsec
   yk8s.k8s-service-layer.cert-manager
   yk8s.k8s-service-layer.etcd-backup
   yk8s.k8s-service-layer.fluxcd
@@ -41,8 +40,6 @@ Configuration Options
 :doc:`hooks <yk8s.hooks>`
 
 :doc:`infra <yk8s.infra>`
-
-:doc:`ipsec <yk8s.ipsec>`
 
 :doc:`k8s-service-layer.cert-manager <yk8s.k8s-service-layer.cert-manager>`
 
