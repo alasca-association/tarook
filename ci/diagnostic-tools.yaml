@@ -63,3 +63,4 @@ sonobuoy-tests:
     ci_cert_vaultchain_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultchain_crt]
     ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
     ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
+    RUNNER_AFTER_SCRIPT_TIMEOUT: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, RUNNER_AFTER_SCRIPT_TIMEOUT]
