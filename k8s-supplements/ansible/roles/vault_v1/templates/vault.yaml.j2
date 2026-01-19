@@ -61,6 +61,7 @@ server:
         # Todo: Is monitoring enabled?
         telemetry {
           prometheus_retention_time = "24h"
+          unauthenticated_metrics_access = true
         }
   dataStorage:
     enabled: true
