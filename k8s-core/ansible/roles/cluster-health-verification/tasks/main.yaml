@@ -1,6 +1,7 @@
 ---
 # This role triggers all "verify-*.sh" action scripts
 - name: Find all "verify-*.sh" scripts
+  run_once: true
   find:
     paths: "{{ playbook_dir }}/../../actions"
     patterns: "verify-*.sh"
@@ -8,11 +9,12 @@
 
 - name: Trigger all "verify-*.sh" scripts  # noqa no-changed-when
   command: "{{ item.path }}"
+  run_once: true
   args:
     chdir: "{{ playbook_dir }}/../../../"
   environment:
     ANSIBLE_PYTHON_INTERPRETER: "{{ ansible_playbook_python }}"
-  loop: "{{ script_list.files }}"
+  loop: "{{ script_list.files | sort(attribute='path') }}"
   loop_control:
     label: "{{ item.path }}"
 ...

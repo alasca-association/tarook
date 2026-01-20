@@ -61,33 +61,6 @@
       tags:
         - renew-pki
 
-# Drop this play along with release v9.0.0
-- name: Patch etcd for metrics gathering
-  hosts: masters
-  gather_facts: true
-  vars_files:
-    - vars/retries.yaml
-    - vars/vault-config.yaml
-  serial: 1
-  roles:
-    - role: migrations/etcd-metrics-listen-patch
-      when: ipv4_enabled and ipv6_enabled
-      tags: migrations/etcd-metrics-listen-patch
-
-- name: Patch kubelet ConfigMap
-  hosts: orchestrator
-  gather_facts: false
-  vars_files:
-    - vars/retries.yaml
-  roles:
-    # Drop me along with Kubernetes v1.31
-    - role: migrations/kubelet-config-map-patch
-      when:
-        - ipv4_enabled and ipv6_enabled
-        - next_k8s_version is version('1.32', '>=')
-        - next_k8s_version is version('1.33', '<')
-      tags: migrations/kubelet-config-map-patch
-
 - name: Renew PKI (Worker)
   hosts: workers
   gather_facts: true

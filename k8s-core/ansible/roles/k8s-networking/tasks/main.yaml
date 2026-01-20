@@ -39,12 +39,4 @@
       value: 1
     - key: net.bridge.bridge-nf-call-arptables
       value: 1
-
-# To get access to iptables-save
-# Using yum module as this task is only targeting CentOS hosts
-- name: Install the legacy network scripts
-  become: true
-  yum:
-    name: network-scripts
-  when: ansible_os_family == 'RedHat'
 ...

@@ -10,15 +10,22 @@
 - name: Deploy renew SSH certificate automation
   become: true
   block:
-  - name: Ensure /var/lib/yaook-k8s/ exists
+  # Migration task, remove me in a future release
+  - name: Ensure /var/lib/yaook-k8s/ does not exist
     file:
       path: /var/lib/yaook-k8s
+      state: absent
+
+  - name: Ensure directory for TAROOK utilities exists
+    file:
+      path: "/usr/local/lib/tarook"
       state: directory
+      mode: u=rwx,go=rx
       recurse: true
 
   - name: Deploy renew SSH certificate script
     template:
-      dest: /var/lib/yaook-k8s/get-ssh-cert.sh
+      dest: /usr/local/lib/tarook/get-ssh-cert.sh
       src: get-ssh-cert.sh.j2
       owner: root
       group: root

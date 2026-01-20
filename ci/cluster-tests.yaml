@@ -38,6 +38,7 @@
 .prepare_spawn_test_cleanup_k8s_cluster:
   image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   variables:
+    RUNNER_AFTER_SCRIPT_TIMEOUT: 30m
     TAROOK_NIX_FLAGS: "--impure"
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
@@ -305,16 +306,8 @@
   script:
     # Spawn and test cluster
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - tomlq --in-place --toml-output '.kubernetes.version = "1.31.14"' config/overrides.toml
-  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
-
-    # Upgrade cluster to k8s v1.32
-    # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.32.10
-    # Update k8s version
-    # renovate: datasource=github-releases packageName=kubernetes/kubernetes
   - tomlq --in-place --toml-output '.kubernetes.version = "1.32.10"' config/overrides.toml
-  - ./managed-k8s/actions/k8s-login.sh
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
 
     # Upgrade cluster to k8s v1.33
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
@@ -359,6 +352,7 @@ containerd:
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
     MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]
     TAROOK_NIX_FLAGS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, TAROOK_NIX_FLAGS]
+    RUNNER_AFTER_SCRIPT_TIMEOUT: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, RUNNER_AFTER_SCRIPT_TIMEOUT]
 
 # with dual stack
 containerd-ds:
@@ -378,6 +372,7 @@ containerd-ds:
     ANSIBLE_FORCE_COLOR: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ANSIBLE_FORCE_COLOR]
     MANAGED_K8S_LATEST_RELEASE: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, MANAGED_K8S_LATEST_RELEASE]
     TAROOK_NIX_FLAGS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, TAROOK_NIX_FLAGS]
+    RUNNER_AFTER_SCRIPT_TIMEOUT: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, RUNNER_AFTER_SCRIPT_TIMEOUT]
 
 # Spawn a cluster and test the k8s upgrade path (w/ calico)
 containerd-k8s-upgrade:
@@ -398,6 +393,7 @@ containerd-k8s-upgrade:
     ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
     ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
     TAROOK_NIX_FLAGS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, TAROOK_NIX_FLAGS]
+    RUNNER_AFTER_SCRIPT_TIMEOUT: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, RUNNER_AFTER_SCRIPT_TIMEOUT]
 
 # with dual stack
 containerd-ds-k8s-upgrade:
@@ -421,3 +417,4 @@ containerd-ds-k8s-upgrade:
     ci_cert_vault_key: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vault_key]
     ci_cert_vaultca_crt: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, ci_cert_vaultca_crt]
     TAROOK_NIX_FLAGS: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, TAROOK_NIX_FLAGS]
+    RUNNER_AFTER_SCRIPT_TIMEOUT: !reference [.prepare_spawn_test_cleanup_k8s_cluster, variables, RUNNER_AFTER_SCRIPT_TIMEOUT]
