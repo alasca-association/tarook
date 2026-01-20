@@ -22,7 +22,7 @@ in {
         This name must be unique within a single vault instance and cannot be
         reasonably changed after a cluster has been spawned.
       '';
-      type = withLimitedLength {max = 32;} vaultChildNamespaceNameSegment; # see bug#721
+      type = withLimitedLength {max = 64;} vaultChildNamespaceNameSegment; # see bug#721
       default = config.yk8s.infra.cluster_name;
       defaultText = "\${config.yk8s.infra.cluster_name}";
     };
