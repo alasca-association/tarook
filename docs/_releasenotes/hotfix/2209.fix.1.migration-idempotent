@@ -1,1 +1,0 @@
-Fixed a bug which prevented to rerun the release migration script :ref:`migrate-to-release.sh<actions-references.migrate-to-releasesh>`.

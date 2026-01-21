@@ -1,3 +1,0 @@
-Fixed two errors
-that prevented the :ref:`configuration-options.yk8s.load-balancing.lb_ports`
-config option from being applied at all. (regression of v10.0.0)
