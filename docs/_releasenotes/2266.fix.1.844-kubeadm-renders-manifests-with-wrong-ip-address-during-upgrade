@@ -1,0 +1,1 @@
+Added a task to the Kubernetes upgrade procedure that ensures that control plane components keep listening on the correct IP address. (`#844 <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/844>`_)

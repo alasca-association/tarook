@@ -1,0 +1,24 @@
+---
+- name: Slurp current kube-apiserver manifest
+  become: true
+  slurp:
+    src: /etc/kubernetes/manifests/kube-apiserver.yaml
+  register: apiserver_manifest
+- name: Patch advertise address annotation in kube-apiserver manifest
+  become: true
+  vars:
+    endpoint_value:
+      metadata:
+        annotations:
+          kubeadm.kubernetes.io/kube-apiserver.advertise-address.endpoint: "{% if ipv4_enabled %}{{ local_ipv4_address }}{% elif ipv6_enabled %}[{{ local_ipv6_address }}]{% endif %}:6443"
+  copy:
+    content: >
+      {{
+        (apiserver_manifest.content | b64decode | from_yaml)
+        | combine(endpoint_value, recursive=true)
+        | to_nice_yaml(indent=2, sort_keys=false)
+      }}
+    dest: /etc/kubernetes/manifests/kube-apiserver.yaml
+    owner: root
+    group: root
+    mode: 0600

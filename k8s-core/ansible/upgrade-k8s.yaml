@@ -96,6 +96,11 @@
     - role: kubeadm-upgrade-kubeadm
     - role: kubeadm-patches
 
+- name: Ensure correct advertise address for control plane components
+  hosts: masters
+  roles:
+    - role: kubeadm-upgrade-fix-annotation
+
 - name: Run kubeadm upgrade apply on the first control plane node
   hosts: masters[0]
   gather_facts: true
