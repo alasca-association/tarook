@@ -38,7 +38,7 @@ in {
         defaultRepoUrl = "https://nvidia.github.io/k8s-device-plugin";
         defaultChartRef = "nvidia-device-plugin";
         # renovate: datasource=helm depName=nvidia-device-plugin registryUrl=https://nvidia.github.io/k8s-device-plugin
-        defaultChartVersion = "0.18.0";
+        defaultChartVersion = "0.18.2";
         defaultReleaseNamespace = "k8s-nvidia-device-plugin";
         defaultReleaseName = "nvdp";
       };
