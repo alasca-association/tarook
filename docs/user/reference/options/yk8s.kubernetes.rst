@@ -323,7 +323,12 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 ``yk8s.kubernetes.apiserver.memory_limit``
 ##########################################
 
-Memory resources limit for the apiserver.
+Memory resources limit for the kube-apiserver.
+See `Requests and Limits <https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits>`_
+and `kube-apiserver <https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver>`_.
+
+If set, a respective patch file will be generated for
+:ref:`configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver`.
 
 
 **Type:**::
@@ -423,6 +428,816 @@ so that the driver and surrounding framework is deployed.
 
 **Declared by**
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment:
+
+``yk8s.kubernetes.kubeadm.patches.corednsdeployment``
+#####################################################
+
+Patches for corednsdeployment.
+
+Check out the Kubernetes Documentation
+`kubeadm: Customizing with patches <https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/control-plane-flags/#patches>`_
+for further information on how to configure.
+
+
+**Type:**::
+
+  list of (submodule)
+
+
+**Default:**::
+
+  [ ]
+
+
+**Example:**::
+
+  [
+    {
+      patch = [
+        {
+          op = "add";
+          path = "/spec/containers/0/command/-";
+          value = "--profiling=false";
+        }
+      ];
+      patchtype = "json";
+    }
+  ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.patch:
+
+``yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.patch``
+#############################################################
+
+The patch to be applied.
+
+You may use ``patch = yk8s-lib.importYAML ./path/to/patch.yaml;`` to import
+an existing manifest.
+
+.. note::
+
+   The YAML file has to be added to the git repository
+   in order to be evaluated by Nix.
+
+Alternatively, if you prefer to specify the patch in Nix directly, you may use
+`json2nix <https://github.com/cloudandheat/json2nix>`_
+to convert your existing patches to Nix.
+
+
+**Type:**::
+
+  attribute set containing JSON compatible values
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  [
+    {
+      op = "remove";
+      path = "/spec/containers/0/resources";
+    }
+  ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.patchtype:
+
+``yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.patchtype``
+#################################################################
+
+The type of the patch.
+
+For an explanation on each of them, see
+`Update API Objects in Place Using kubectl patch <https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch>`_
+
+
+**Type:**::
+
+  one of "strategic", "merge", "json"
+
+
+**Default:**::
+
+  "strategic"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.priority:
+
+``yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.priority``
+################################################################
+
+Higher priority means the patch will be applied later.
+
+The order in which patches with the same priority are applied is undefined.
+
+
+**Type:**::
+
+  signed integer
+
+
+**Default:**::
+
+  0
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd:
+
+``yk8s.kubernetes.kubeadm.patches.etcd``
+########################################
+
+Patches for etcd.
+
+Check out the Kubernetes Documentation
+`kubeadm: Customizing with patches <https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/control-plane-flags/#patches>`_
+for further information on how to configure.
+
+
+**Type:**::
+
+  list of (submodule)
+
+
+**Default:**::
+
+  [ ]
+
+
+**Example:**::
+
+  [
+    {
+      patch = [
+        {
+          op = "add";
+          path = "/spec/containers/0/command/-";
+          value = "--profiling=false";
+        }
+      ];
+      patchtype = "json";
+    }
+  ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd.*.patch:
+
+``yk8s.kubernetes.kubeadm.patches.etcd.*.patch``
+################################################
+
+The patch to be applied.
+
+You may use ``patch = yk8s-lib.importYAML ./path/to/patch.yaml;`` to import
+an existing manifest.
+
+.. note::
+
+   The YAML file has to be added to the git repository
+   in order to be evaluated by Nix.
+
+Alternatively, if you prefer to specify the patch in Nix directly, you may use
+`json2nix <https://github.com/cloudandheat/json2nix>`_
+to convert your existing patches to Nix.
+
+
+**Type:**::
+
+  attribute set containing JSON compatible values
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  [
+    {
+      op = "remove";
+      path = "/spec/containers/0/resources";
+    }
+  ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd.*.patchtype:
+
+``yk8s.kubernetes.kubeadm.patches.etcd.*.patchtype``
+####################################################
+
+The type of the patch.
+
+For an explanation on each of them, see
+`Update API Objects in Place Using kubectl patch <https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch>`_
+
+
+**Type:**::
+
+  one of "strategic", "merge", "json"
+
+
+**Default:**::
+
+  "strategic"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd.*.priority:
+
+``yk8s.kubernetes.kubeadm.patches.etcd.*.priority``
+###################################################
+
+Higher priority means the patch will be applied later.
+
+The order in which patches with the same priority are applied is undefined.
+
+
+**Type:**::
+
+  signed integer
+
+
+**Default:**::
+
+  0
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver:
+
+``yk8s.kubernetes.kubeadm.patches.kube-apiserver``
+##################################################
+
+Patches for kube-apiserver.
+
+Check out the Kubernetes Documentation
+`kubeadm: Customizing with patches <https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/control-plane-flags/#patches>`_
+for further information on how to configure.
+
+
+**Type:**::
+
+  list of (submodule)
+
+
+**Default:**::
+
+  [ ]
+
+
+**Example:**::
+
+  [
+    {
+      patch = [
+        {
+          op = "add";
+          path = "/spec/containers/0/command/-";
+          value = "--profiling=false";
+        }
+      ];
+      patchtype = "json";
+    }
+  ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.patch:
+
+``yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.patch``
+##########################################################
+
+The patch to be applied.
+
+You may use ``patch = yk8s-lib.importYAML ./path/to/patch.yaml;`` to import
+an existing manifest.
+
+.. note::
+
+   The YAML file has to be added to the git repository
+   in order to be evaluated by Nix.
+
+Alternatively, if you prefer to specify the patch in Nix directly, you may use
+`json2nix <https://github.com/cloudandheat/json2nix>`_
+to convert your existing patches to Nix.
+
+
+**Type:**::
+
+  attribute set containing JSON compatible values
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  [
+    {
+      op = "remove";
+      path = "/spec/containers/0/resources";
+    }
+  ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.patchtype:
+
+``yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.patchtype``
+##############################################################
+
+The type of the patch.
+
+For an explanation on each of them, see
+`Update API Objects in Place Using kubectl patch <https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch>`_
+
+
+**Type:**::
+
+  one of "strategic", "merge", "json"
+
+
+**Default:**::
+
+  "strategic"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.priority:
+
+``yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.priority``
+#############################################################
+
+Higher priority means the patch will be applied later.
+
+The order in which patches with the same priority are applied is undefined.
+
+
+**Type:**::
+
+  signed integer
+
+
+**Default:**::
+
+  0
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager:
+
+``yk8s.kubernetes.kubeadm.patches.kube-controller-manager``
+###########################################################
+
+Patches for kube-controller-manager.
+
+Check out the Kubernetes Documentation
+`kubeadm: Customizing with patches <https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/control-plane-flags/#patches>`_
+for further information on how to configure.
+
+
+**Type:**::
+
+  list of (submodule)
+
+
+**Default:**::
+
+  [ ]
+
+
+**Example:**::
+
+  [
+    {
+      patch = [
+        {
+          op = "add";
+          path = "/spec/containers/0/command/-";
+          value = "--profiling=false";
+        }
+      ];
+      patchtype = "json";
+    }
+  ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.patch:
+
+``yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.patch``
+###################################################################
+
+The patch to be applied.
+
+You may use ``patch = yk8s-lib.importYAML ./path/to/patch.yaml;`` to import
+an existing manifest.
+
+.. note::
+
+   The YAML file has to be added to the git repository
+   in order to be evaluated by Nix.
+
+Alternatively, if you prefer to specify the patch in Nix directly, you may use
+`json2nix <https://github.com/cloudandheat/json2nix>`_
+to convert your existing patches to Nix.
+
+
+**Type:**::
+
+  attribute set containing JSON compatible values
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  [
+    {
+      op = "remove";
+      path = "/spec/containers/0/resources";
+    }
+  ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.patchtype:
+
+``yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.patchtype``
+#######################################################################
+
+The type of the patch.
+
+For an explanation on each of them, see
+`Update API Objects in Place Using kubectl patch <https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch>`_
+
+
+**Type:**::
+
+  one of "strategic", "merge", "json"
+
+
+**Default:**::
+
+  "strategic"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.priority:
+
+``yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.priority``
+######################################################################
+
+Higher priority means the patch will be applied later.
+
+The order in which patches with the same priority are applied is undefined.
+
+
+**Type:**::
+
+  signed integer
+
+
+**Default:**::
+
+  0
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler:
+
+``yk8s.kubernetes.kubeadm.patches.kube-scheduler``
+##################################################
+
+Patches for kube-scheduler.
+
+Check out the Kubernetes Documentation
+`kubeadm: Customizing with patches <https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/control-plane-flags/#patches>`_
+for further information on how to configure.
+
+
+**Type:**::
+
+  list of (submodule)
+
+
+**Default:**::
+
+  [ ]
+
+
+**Example:**::
+
+  [
+    {
+      patch = [
+        {
+          op = "add";
+          path = "/spec/containers/0/command/-";
+          value = "--profiling=false";
+        }
+      ];
+      patchtype = "json";
+    }
+  ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.patch:
+
+``yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.patch``
+##########################################################
+
+The patch to be applied.
+
+You may use ``patch = yk8s-lib.importYAML ./path/to/patch.yaml;`` to import
+an existing manifest.
+
+.. note::
+
+   The YAML file has to be added to the git repository
+   in order to be evaluated by Nix.
+
+Alternatively, if you prefer to specify the patch in Nix directly, you may use
+`json2nix <https://github.com/cloudandheat/json2nix>`_
+to convert your existing patches to Nix.
+
+
+**Type:**::
+
+  attribute set containing JSON compatible values
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  [
+    {
+      op = "remove";
+      path = "/spec/containers/0/resources";
+    }
+  ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.patchtype:
+
+``yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.patchtype``
+##############################################################
+
+The type of the patch.
+
+For an explanation on each of them, see
+`Update API Objects in Place Using kubectl patch <https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch>`_
+
+
+**Type:**::
+
+  one of "strategic", "merge", "json"
+
+
+**Default:**::
+
+  "strategic"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.priority:
+
+``yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.priority``
+#############################################################
+
+Higher priority means the patch will be applied later.
+
+The order in which patches with the same priority are applied is undefined.
+
+
+**Type:**::
+
+  signed integer
+
+
+**Default:**::
+
+  0
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration:
+
+``yk8s.kubernetes.kubeadm.patches.kubeletconfiguration``
+########################################################
+
+Patches for kubeletconfiguration.
+
+Check out the Kubernetes Documentation
+`kubeadm: Customizing with patches <https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/control-plane-flags/#patches>`_
+for further information on how to configure.
+
+
+**Type:**::
+
+  list of (submodule)
+
+
+**Default:**::
+
+  [ ]
+
+
+**Example:**::
+
+  [
+    {
+      patch = [
+        {
+          op = "add";
+          path = "/spec/containers/0/command/-";
+          value = "--profiling=false";
+        }
+      ];
+      patchtype = "json";
+    }
+  ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.patch:
+
+``yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.patch``
+################################################################
+
+The patch to be applied.
+
+You may use ``patch = yk8s-lib.importYAML ./path/to/patch.yaml;`` to import
+an existing manifest.
+
+.. note::
+
+   The YAML file has to be added to the git repository
+   in order to be evaluated by Nix.
+
+Alternatively, if you prefer to specify the patch in Nix directly, you may use
+`json2nix <https://github.com/cloudandheat/json2nix>`_
+to convert your existing patches to Nix.
+
+
+**Type:**::
+
+  attribute set containing JSON compatible values
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  [
+    {
+      op = "remove";
+      path = "/spec/containers/0/resources";
+    }
+  ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.patchtype:
+
+``yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.patchtype``
+####################################################################
+
+The type of the patch.
+
+For an explanation on each of them, see
+`Update API Objects in Place Using kubectl patch <https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch>`_
+
+
+**Type:**::
+
+  one of "strategic", "merge", "json"
+
+
+**Default:**::
+
+  "strategic"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.priority:
+
+``yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.priority``
+###################################################################
+
+Higher priority means the patch will be applied later.
+
+The order in which patches with the same priority are applied is undefined.
+
+
+**Type:**::
+
+  signed integer
+
+
+**Default:**::
+
+  0
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions:

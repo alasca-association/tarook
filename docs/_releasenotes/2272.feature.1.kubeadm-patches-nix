@@ -1,0 +1,16 @@
+Control plane components can now be customized using patches, see:
+
+* :ref:`configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment`
+* :ref:`configuration-options.yk8s.kubernetes.kubeadm.patches.etcd`
+* :ref:`configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver`
+* :ref:`configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager`
+* :ref:`configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler`
+* :ref:`configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration`
+
+.. important::
+
+   Patch files manually added to ``/etc/kubernetes/kubeadm-patches`` on a node
+   will get **removed** on a rollout.
+
+For more information,
+refer to `kubeadm: Customizing with patches <https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/control-plane-flags/#patches>`_
