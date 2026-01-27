@@ -14,6 +14,32 @@ Information about unreleased changes can be found
 
 .. towncrier release notes start
 
+v10.0.7 (2026-01-27)
+--------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- Explicitly disable the open file descriptor limit (``LimitNOFILE=infinity``) for containerd since that setting is removed with version 2.0 (see https://github.com/containerd/containerd/blob/main/docs/containerd-2.0.md#limitnofile-configuration-has-been-removed).
+
+  This change will not immediately affect existing nodes as containerd has to be restarted to take effect.
+  Restarting containerd is only save to do if the node has been drained in advance.
+  A node is drained and rebooted automatically during :doc:`Kubernetes upgrades </user/guide/kubernetes/upgrading-kubernetes>`
+  or when updating the host OS packages via :ref:`update-kubernetes-nodes.sh<actions-references.update-kubernetes-nodessh>`.
+  If you require ``LimitNOFILE`` to be set immediately, please execute one of these. (`!2238 <https://gitlab.com/yaook/k8s/-/merge_requests/2238>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- Fixed two errors
+  that prevented the :ref:`configuration-options.yk8s.load-balancing.lb_ports`
+  config option from being applied at all. (regression of v10.0.0) (`!2238 <https://gitlab.com/yaook/k8s/-/merge_requests/2238>`_)
+- Dropped the max length constraint on the :ref:`configuration-options.yk8s.vault.cluster_name`
+  that was errorneously introduced with release v10.0.0. (`!2238 <https://gitlab.com/yaook/k8s/-/merge_requests/2238>`_)
+- A bug was fixed that caused issues when the same option was set in multiple places `#846 <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/846>`_ (`!2238 <https://gitlab.com/yaook/k8s/-/merge_requests/2238>`_)
+
+
 v10.0.6 (2025-09-05)
 --------------------
 
