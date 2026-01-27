@@ -125,6 +125,7 @@
       delegate_to: "{{ groups['orchestrator'] | first }}"
       when: not (k8s_skip_upgrade_checks | bool)
     - role: kubeadm-drain-node
+    - role: containerd
     - role: update-system
     - role: kubeadm-upgrade-kubelet
     - role: kubeadm-uncordon-node
@@ -143,6 +144,7 @@
       delegate_to: "{{ groups['orchestrator'] | first }}"
       when: not (k8s_skip_upgrade_checks | bool)
     - role: kubeadm-drain-node
+    - role: containerd
     - role: kubeadm-upgrade-kubeadm
     - role: update-system
     - role: kubeadm-upgrade-node

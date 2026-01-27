@@ -50,6 +50,8 @@
     - _allow_disruption
   - role: kubeadm-drain-node
     when: _allow_disruption
+  - role: containerd
+    when: _allow_disruption
   - role: update-system
     when: _allow_disruption
   - role: kubeadm-uncordon-node

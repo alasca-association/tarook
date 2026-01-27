@@ -70,6 +70,7 @@ readarray -d '\n' playbooks <  <(find "$ansible_k8s_core_dir" \
                                   \( \
                                   -name 'install-*.yaml' \
                                   -or -name 'bootstrap.yaml' \
+                                  -or -name 'prepare-*.yaml' \
                                   \) -type f -printf "%f\n" | sort)
 
 if [ "$command" == "list" ]; then

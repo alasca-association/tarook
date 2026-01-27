@@ -296,7 +296,8 @@ This triggers system updates of the Kubernetes nodes
 As this may be a disruptive action, you have to
 explicitly allow system updates by setting
 ``MANAGED_K8S_RELEASE_THE_KRAKEN`` (see
-:ref:`Environment Variables <environmental-variables.behavior-altering-variables>`.
+:ref:`Environment Variables <environmental-variables.behavior-altering-variables>`).
+
 Nodes will get updated one after another if they are already
 initialized. Between the node updates, it is verified that the cluster
 is healthy. These verification checks can be skipped by passing ``-s``.

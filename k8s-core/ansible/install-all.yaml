@@ -10,6 +10,12 @@
 - name: Update Kubernetes nodes
   import_playbook: "update-kubernetes-nodes.yaml"
 
+- name: Prepare Kubernetes nodes
+  import_playbook: "prepare-k8s-nodes.yaml"
+
+- name: Install frontend services
+  import_playbook: "install-frontend-services.yaml"
+
 - name: Spawn Kubernetes
   import_playbook: "install-k8s.yaml"
 ...

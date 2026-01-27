@@ -1,12 +1,10 @@
 ---
 - name: Initialize node connection
   import_playbook: "connect-to-nodes.yaml"
-  vars:
-    target_hosts: frontend
 
 - name: Fail if node got not bootstrapped once, yet
   any_errors_fatal: true
-  hosts: frontend
+  hosts: all:!orchestrator
   tasks:
   - name: Fail if node got not bootstrapped once, yet
     when: not ansible_local['bootstrap']['bootstrapped'] | default(False) | bool
@@ -22,44 +20,36 @@
         This is automatically done if the install-all
         playbook of either k8s-core or k8s-supplements is executed.
 
-- name: Configure sysctl on frontend nodes
-  hosts: frontend
-  gather_facts: false
-  roles:
-  - role: nf-conntrack
-    tags: nf-conntrack
-
-- name: Install & configure frontend services
-  hosts: frontend
+- name: Prepare the k8s nodes
+  hosts: k8s_nodes
   gather_facts: true
   vars_files:
+  - vars/etc.yaml
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
-  - vars/etc.yaml
   - vars/retries.yaml
   roles:
-  - role: keepalived
+  - role: k8s-networking
+    tags: k8s-networking
+  - role: nvidia-cuda-drivers
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool
     tags:
-    - keepalived
-    - frontend
-  - role: haproxy
+    - gpu-support
+    - nvidia-cuda-drivers
+  - role: nvidia-container-toolkit
+    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool
     tags:
-    - haproxy
-    - frontend
-
-- name: Set static fact that frontend node is initialized
-  hosts: frontend
-  gather_facts: false
-  tasks:
-  - name: Set static fact that frontend node is initialized
-    become: true
-    vars:
-      content:
-        frontend_install_status: "initialized"
-    copy:
-      dest: /etc/ansible/facts.d/frontend-initialized.fact
-      owner: root
-      group: root
-      mode: 0644
-      content: "{{ content | to_json }}"
+    - gpu-support
+    - nvidia-container-toolkit
+  - role: vgpu-support
+    tags: vgpu-support
+    when: k8s_virtualize_gpu and not k8s_is_gpu_cluster
+  - role: containerd
+    tags: containerd
+  - role: k8s-packages
+    tags: k8s-packages
+  - role: vm-max-map-count
+    tags: vm-max-map-count
+  - role: fs-inotify
+    tags: fs-inotify
 ...
