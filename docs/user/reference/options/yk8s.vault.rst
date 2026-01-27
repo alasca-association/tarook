@@ -18,7 +18,7 @@ reasonably changed after a cluster has been spawned.
 
 **Type:**::
 
-  Segment of a Hashicorp Vault namespace with up to 32 characters
+  Segment of a Hashicorp Vault namespace
 
 
 **Default:**::
