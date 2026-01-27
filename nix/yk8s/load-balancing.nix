@@ -85,12 +85,12 @@ in {
       apply = lib.imap0 (
         idx: port: let
           warnHasPortZero = mkMsg: p:
-            if types.port.check p
+            if lib.isInt p
             then warnIfZero (mkMsg null) p
-            else warnIfAttrZero mkMsg ["external" "nodeport"];
+            else warnIfAttrZero mkMsg ["external" "nodeport"] p;
         in
           warnHasPortZero
-          (attr: "config.yk8s.load-balancing.lb_ports[${idx}]${
+          (attr: "config.yk8s.load-balancing.lb_ports[${toString idx}]${
             if builtins.typeOf attr == "string"
             then ".${attr}"
             else ""
