@@ -9,6 +9,10 @@ actions_dir="$(pwd)/managed-k8s/actions"
 
 load_vault_container_name
 
+if ! which vault &>/dev/null && [ "$YAOOK_K8S_DIRENV_MANUAL" = "true" ]; then
+    yaook-direnv-reload
+fi
+
 # attempt to start vault right away
 if ! "$actions_dir/vault.sh"; then
     echo "Failed to ensure vault is up & running.."
