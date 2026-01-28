@@ -86,11 +86,6 @@ if [ -n "${wg_conf:-}" ] && [ -e "${wg_conf}" ]; then
     run wg-quick down "$wg_conf"
 fi
 
-# Purge wireguard keys of the gateway to ensure re-creation on new setup.
-# Otherwise the playbook would load the same keys.
-rm -f inventory/.etc/wg_gw_priv.key
-rm -f inventory/.etc/wg_gw_pub.key
-
 # Remove the tf_statefile from gitlab
 if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ] ; then
     GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" --request DELETE "$backend_address")
