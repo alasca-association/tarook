@@ -129,4 +129,13 @@ layout_yaook-k8s() {
   export HELM_CONFIG_HOME
   HELM_DATA_HOME="$(direnv_layout_dir)/helm/data"
   export HELM_DATA_HOME
+
+  KUBECONFIG="$(pwd)/etc/admin.conf"
+  export KUBECONFIG
+
+  if [ -f "$KUBECONFIG" ] && ! yq -r '.users[0].user."client-certificate-data"' "$KUBECONFIG" | base64 -d | openssl x509 -checkend 186400 -noout >/dev/null; then
+    echo "======="
+    echo "WARNING: Your kubeconfig is expired or will expire within the next 24h. Please run ./managed-k8s/actions/k8s-login.sh to renew it"
+    echo "======="
+  fi
 }
