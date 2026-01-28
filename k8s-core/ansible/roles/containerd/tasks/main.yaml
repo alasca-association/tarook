@@ -98,6 +98,18 @@
     mode: 0640
   register: configuration_update
 
+# Starting with containerd 2.0 this option has been removed and the default is used:
+# https://github.com/containerd/containerd/blob/main/docs/containerd-2.0.md#limitnofile-configuration-has-been-removed
+- name: Ensure limit-nofile drop-in
+  become: true
+  copy:
+    src: limit-nofile.conf
+    dest: /etc/systemd/system/containerd.service.d/limit-nofile.conf
+    owner: root
+    group: root
+    mode: 0640
+  register: configuration_update_limit_nofile
+
 - name: Configure crictl
   become: true
   copy:
@@ -148,7 +160,7 @@
   become: true
   # Only restart if something changed AND we're allowed to do the restart
   when:
-  - package_install.changed or configuration_update.changed
+  - package_install.changed or configuration_update.changed or configuration_update_limit_nofile.changed
   - |
     _allow_disruption
     or ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'

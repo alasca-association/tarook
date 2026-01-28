@@ -1,1 +1,0 @@
-Fixed a bug in the release migration that left new Terraform state uncommitted.
