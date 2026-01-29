@@ -20,12 +20,7 @@ Check the parts regarding YAML in the Ansible documentation: https://docs.ansibl
 
 **Type:**::
 
-  null or (attribute set of (submodule))
-
-
-**Default:**::
-
-  null
+  attribute set of (submodule)
 
 
 **Declared by**
@@ -331,33 +326,6 @@ and to name harbour infrastructure resources.
 **Type:**::
 
   non-empty string without spaces
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
-
-
-.. _configuration-options.yk8s.infra.hosts_file:
-
-``yk8s.infra.hosts_file``
-#########################
-
-A custom hosts file. This option is deprecated. Use :ref:`configuration-options.yk8s.infra.ansible_hosts` instead.
-
-
-**Type:**::
-
-  null or path in the Nix store
-
-
-**Default:**::
-
-  null
-
-
-**Example:**::
-
-  ./hosts
 
 
 **Declared by**
