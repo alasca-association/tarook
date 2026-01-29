@@ -15,6 +15,8 @@
   inherit (yk8s-lib.transform) filterNull removeObsoleteOptions filterInternal;
   inherit (builtins) fromJSON readFile pathExists length;
   tfvars_file_path = "terraform/config.tfvars.json";
+  tfOutputsPath = "terraform/outputs.json";
+  tfOutputsFullPath = "${config.yk8s.state_directory}/${tfOutputsPath}";
 
   openstackTerraformOptions = [
     "public_network"
@@ -169,14 +171,17 @@ in {
       example = "tf-state";
     };
 
+    outputs_ready = mkInternalOption {
+      readOnly = true;
+      type = types.bool;
+      default = config.yk8s.state_directory != null && builtins.pathExists tfOutputsFullPath;
+    };
+
     outputs = mkInternalOption {
       readOnly = true;
       type = types.attrs;
-      default = let
-        tfOutputsPath = "terraform/outputs.json";
-        tfOutputsFullPath = "${config.yk8s.state_directory}/${tfOutputsPath}";
-      in
-        if config.yk8s.state_directory != null && builtins.pathExists tfOutputsFullPath
+      default =
+        if cfg.outputs_ready
         then builtins.fromJSON (builtins.readFile tfOutputsFullPath)
         else throw "${tfOutputsPath} does not exist yet. Terraform stage needs to be run first.";
     };
