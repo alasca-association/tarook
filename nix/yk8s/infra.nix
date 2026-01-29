@@ -13,6 +13,10 @@
   inherit (yk8s-lib.transform) filterNull;
   inherit (lib) mkEnableOption mkOption;
 in {
+  imports = [
+    (mkRemovedOptionModule ["infra" "hosts_file"] "Use infra.ansible_hosts instead")
+  ];
+
   options.yk8s.infra = mkTopSection {
     _docs.preface = ''
       This section contains various configuration options necessary for all
@@ -64,8 +68,10 @@ in {
       type = with types; nullOr yk8s.networking.ipv4Addr;
       default = null;
       apply = v:
-        if cfg.ipv4_enabled && v == null && config.yk8s.terraform.enabled
-        then builtins.trace "INFO: config.yk8s.infra.networking_fixed_ip is not yet set. Terraform stage needs to be run first." v
+        if cfg.ipv4_enabled && v == null
+        then
+          throw
+          "config.yk8s.infra.networking_fixed_ip must be set if ipv4 is enabled"
         else v;
     };
 
@@ -73,8 +79,10 @@ in {
       type = with types; nullOr yk8s.networking.ipv6Addr;
       default = null;
       apply = v:
-        if cfg.ipv6_enabled && v == null && config.yk8s.terraform.enabled
-        then builtins.trace "INFO: config.yk8s.infra.networking_fixed_ip_v6 is not yet set. Terraform stage needs to be run first." v
+        if cfg.ipv6_enabled && v == null
+        then
+          throw
+          "config.yk8s.infra.networking_fixed_ip_v6 must be set if ipv6 is enabled"
         else v;
     };
 
@@ -85,19 +93,6 @@ in {
       '';
       type = with types; nullOr yk8s.networking.ipv4Addr;
       default = null;
-      apply = v:
-        if v == null && config.yk8s.terraform.enabled
-        then builtins.trace "INFO: config.yk8s.infra.networking_floating_ip is not yet set. Terraform stage needs to be run first." v
-        else v;
-    };
-
-    hosts_file = mkOption {
-      description = ''
-        A custom hosts file. This option is deprecated. Use :ref:`configuration-options.yk8s.infra.ansible_hosts` instead.
-      '';
-      type = with types; nullOr pathInStore;
-      default = null;
-      example = lib.options.literalExpression "./hosts";
     };
 
     ansible_hosts = let
@@ -145,17 +140,8 @@ in {
 
           Check the parts regarding YAML in the Ansible documentation: https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html
         '';
-        default = null;
-        apply = v:
-          if config.yk8s.terraform.enabled
-          then
-            (
-              if v == null
-              then builtins.trace "INFO: infra.ansible_hosts is not yet set. Terraform stage needs to be run first." v
-              else applyGroupSubmoduleAttrs v
-            )
-          else v;
-        type = types.nullOr (types.submodule {
+        apply = applyGroupSubmoduleAttrs;
+        type = types.submodule {
           freeformType = types.attrsOf groupSubmodule;
           options = {
             all.vars.ansible_python_interpreter = mkOption {
@@ -219,7 +205,7 @@ in {
               };
             };
           };
-        });
+        };
       };
 
     final_hosts = mkInternalOption {
@@ -230,107 +216,85 @@ in {
         * ``role``: One of ``master``, ``worker``, ``gateway`` or ``null``
       '';
       readOnly = true;
-      type = with types; nullOr attrs;
-      default =
-        if cfg.ansible_hosts == null
-        then null
-        else let
-          getHostsFromGroupAttrs = lib.foldlAttrs (
-            acc: groupName: groupValues: let
-              hosts = lib.recursiveUpdate (getHostsFromGroupAttrs (
-                lib.filterAttrs (n: _: builtins.elem n (builtins.attrNames (groupValues.children or {}))) cfg.ansible_hosts
-              )) (groupValues.hosts or {});
-            in
-              lib.recursiveUpdate acc (lib.mapAttrs (
-                  hostName: hostValues:
-                    hostValues
-                    // rec {
-                      group_names = lib.unique ((lib.attrByPath [hostName "group_names"] [] acc) ++ [groupName]);
-                      role = let
-                        relevantGroups = lib.intersectLists group_names ["masters" "workers" "gateways"];
-                      in
-                        assert lib.assertMsg ((builtins.length relevantGroups) <= 1) "${hostName} has more than one role assigned. Nodes can only be one of master, worker or gateway";
-                          if relevantGroups == []
-                          then null
-                          else lib.strings.removeSuffix "s" (builtins.head relevantGroups);
-                    }
-                )
-                hosts)
-          ) {};
-          allHosts = getHostsFromGroupAttrs cfg.ansible_hosts;
-          groupNames = lib.pipe allHosts [builtins.attrValues (map (v: v.group_names)) lib.flatten lib.unique];
-          allGroups = builtins.foldl' lib.recursiveUpdate cfg.ansible_hosts ([{all.hosts = allHosts;}]
-            ++ (map (group: {
-                ${group} = {
-                  children = cfg.ansible_hosts.${group}.children or {};
-                  vars = cfg.ansible_hosts.${group}.vars or {};
-                  hosts = lib.filterAttrs (_: v: builtins.elem group v.group_names) allHosts;
-                };
-              })
-              groupNames));
-          populateChildren = groupName: groupValues:
-            groupValues
-            // {children = lib.mapAttrs (childName: _: allGroups.${childName}) (groupValues.children or {});};
-        in
-          lib.mapAttrs populateChildren allGroups;
+      type = types.attrs;
+      default = let
+        getHostsFromGroupAttrs = lib.foldlAttrs (
+          acc: groupName: groupValues: let
+            hosts = lib.recursiveUpdate (getHostsFromGroupAttrs (
+              lib.filterAttrs (n: _: builtins.elem n (builtins.attrNames (groupValues.children or {}))) cfg.ansible_hosts
+            )) (groupValues.hosts or {});
+          in
+            lib.recursiveUpdate acc (lib.mapAttrs (
+                hostName: hostValues:
+                  hostValues
+                  // rec {
+                    group_names = lib.unique ((lib.attrByPath [hostName "group_names"] [] acc) ++ [groupName]);
+                    role = let
+                      relevantGroups = lib.intersectLists group_names ["masters" "workers" "gateways"];
+                    in
+                      assert lib.assertMsg ((builtins.length relevantGroups) <= 1) "${hostName} has more than one role assigned. Nodes can only be one of master, worker or gateway";
+                        if relevantGroups == []
+                        then null
+                        else lib.strings.removeSuffix "s" (builtins.head relevantGroups);
+                  }
+              )
+              hosts)
+        ) {};
+        allHosts = getHostsFromGroupAttrs cfg.ansible_hosts;
+        groupNames = lib.pipe allHosts [builtins.attrValues (map (v: v.group_names)) lib.flatten lib.unique];
+        allGroups = builtins.foldl' lib.recursiveUpdate cfg.ansible_hosts ([{all.hosts = allHosts;}]
+          ++ (map (group: {
+              ${group} = {
+                children = cfg.ansible_hosts.${group}.children or {};
+                vars = cfg.ansible_hosts.${group}.vars or {};
+                hosts = lib.filterAttrs (_: v: builtins.elem group v.group_names) allHosts;
+              };
+            })
+            groupNames));
+        populateChildren = groupName: groupValues:
+          groupValues
+          // {children = lib.mapAttrs (childName: _: allGroups.${childName}) (groupValues.children or {});};
+      in
+        lib.mapAttrs populateChildren allGroups;
     };
   };
 
   config.yk8s.assertions = [
     {
       assertion =
-        (cfg.ansible_hosts != null)
+        config.yk8s.terraform.outputs_ready
         -> (cfg.ansible_hosts.orchestrator.children or {}) == {} && (builtins.length (builtins.attrNames cfg.ansible_hosts.orchestrator.hosts)) == 1;
       message = "config.yk8s.infra.ansible_hosts.orchestrator must contain exactly one host and no children";
-    }
-    {
-      assertion = cfg.ipv4_enabled -> config.yk8s.terraform.enabled || cfg.networking_fixed_ip != null;
-      message = "config.yk8s.infra.networking_fixed_ip must be set if Terraform is not used";
-    }
-    {
-      assertion = cfg.ipv6_enabled -> config.yk8s.terraform.enabled || cfg.networking_fixed_ip_v6 != null;
-      message = "config.yk8s.infra.networking_fixed_ip_v6 must be set if Terraform is not used";
     }
     {
       assertion = (config.yk8s.wireguard.enabled || config.yk8s.ipsec.enabled) -> config.yk8s.terraform.enabled || cfg.networking_floating_ip != null;
       message = "config.yk8s.infra.networking_floating_ip must be set if Wireguard or IPsec is used.";
     }
     {
-      assertion = cfg.ansible_hosts != null -> cfg.hosts_file == null;
-      message = "config.yk8s.infra.hosts_file must not be set if config.yk8s.infra.ansible_hosts is used (which implicitly happens through Terraform).";
-    }
-    {
-      assertion = ! config.yk8s.terraform.enabled -> ((cfg.ansible_hosts == null && cfg.hosts_file != null) || (cfg.ansible_hosts != null && cfg.hosts_file == null));
-      message = "Either config.yk8s.infra.hosts_file or config.yk8s.infra.ansible_hosts must be set";
-    }
-    {
       assertion =
-        (cfg.ansible_hosts != null)
+        config.yk8s.terraform.outputs_ready
         -> builtins.all (host: (host.ansible_connection or "") != "local" -> host.ansible_host != null) (builtins.attrValues cfg.final_hosts.all.hosts);
       message = "ansible_host must be set for all hosts in config.yk8s.infra.ansible_hosts if ansible_connection!=local";
     }
     {
       assertion =
-        (cfg.ansible_hosts != null && cfg.ipv4_enabled)
+        (config.yk8s.terraform.outputs_ready && cfg.ipv4_enabled)
         -> builtins.all (host: host.local_ipv4_address != null) (builtins.attrValues cfg.final_hosts.k8s_nodes.hosts);
       message = "local_ipv4_address must be set for all hosts in config.yk8s.infra.ansible_hosts.k8s_nodes";
     }
     {
       assertion =
-        (cfg.ansible_hosts != null && cfg.ipv6_enabled)
+        (config.yk8s.terraform.outputs_ready && cfg.ipv6_enabled)
         -> builtins.all (host: host.local_ipv6_address != null) (builtins.attrValues cfg.final_hosts.k8s_nodes.hosts);
       message = "local_ipv6_address must be set for all hosts in config.yk8s.infra.ansible_hosts.k8s_nodes";
     }
   ];
-  config.yk8s.warnings = lib.optional (cfg.hosts_file != null) "config.yk8s.infra.hosts_file is deprecated. Use config.yk8s.infra.ansible_hosts instead.";
-  config.yk8s._inventory_packages =
-    (lib.optional (cfg.ansible_hosts != null) (mkYamlAtPath "hosts" (filterNull cfg.ansible_hosts)))
-    ++ (lib.optional (cfg.hosts_file != null) (linkToPath cfg.hosts_file "hosts"))
-    ++ [
-      (mkGroupVarsFile {
-        inherit cfg;
-        inventory_path = "all/infra.yaml";
-        transformations = [(c: removeAttrs c ["hosts_file" "ansible_hosts" "final_hosts"])];
-      })
-    ];
+  config.yk8s._targets.ansible.inventory_packages = [
+    (mkYamlAtPath "hosts" (filterNull cfg.ansible_hosts))
+    (mkGroupVarsFile {
+      inherit cfg;
+      inventory_path = "all/infra.yaml";
+      transformations = [(c: removeAttrs c ["ansible_hosts" "final_hosts"])];
+    })
+  ];
 }

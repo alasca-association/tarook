@@ -6,11 +6,10 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" conf_vars
 
 load_conf_vars
 
-check_conf_sanity
 
 require_vault_token
 
@@ -40,6 +39,8 @@ if [ "$#" -ne "$arg_num" ]; then
 fi
 
 check_vault_token_policy
+
+"$actions_dir/update-inventory.sh" ansible
 
 pushd "$ansible_k8s_core_dir"
 # Include k8s-core roles

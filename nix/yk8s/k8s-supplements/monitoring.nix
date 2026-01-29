@@ -554,7 +554,7 @@ in {
       message = "config.yk8s.k8s-service-layer.prometheus.internet_probe_targets[${idx}].module: ${x.module} is an IPv6-specific module but config.yk8s.infra.ipv6_enabled=false";
     })
     cfg.internet_probe_targets;
-  config.yk8s._inventory_packages = [
+  config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       ansible_prefix = "monitoring_";

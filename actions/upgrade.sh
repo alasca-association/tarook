@@ -6,11 +6,10 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 
 # Ensure that the latest config is deployed to the inventory
-"$actions_dir/update-inventory.sh"
+"$actions_dir/update-inventory.sh" conf_vars
 
 load_conf_vars
 
-check_conf_sanity
 
 check_venv
 
@@ -64,6 +63,8 @@ require_ansible_disruption
 "$actions_dir/wg-up.sh"
 
 set_kubeconfig
+
+"$actions_dir/update-inventory.sh" ansible
 
 pushd "$ansible_k8s_supplements_dir"
     ANSIBLE_ROLES_PATH="$ansible_k8s_core_dir/roles:$ansible_k8s_supplements_dir/roles:$ansible_k8s_custom_playbook_dir/roles" \

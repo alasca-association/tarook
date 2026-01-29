@@ -2,17 +2,13 @@
 set -euo pipefail
 
 cluster_repository="$(realpath ".")"
-group_vars_dir="${cluster_repository}/inventory/yaook-k8s/group_vars"
+vars_file="${cluster_repository}/inventory/vault/main.yaml"
 
 common_path_prefix="${YAOOK_K8S_VAULT_PATH_PREFIX:-yaook}"
 common_policy_prefix="${YAOOK_K8S_VAULT_POLICY_PREFIX:-yaook}"
 nodes_approle_name="${YAOOK_K8S_VAULT_NODES_APPROLE_NAME:-${common_path_prefix}/nodes}"
 nodes_approle_path="auth/$nodes_approle_name"
-k8s_controller_manager_enable_signing_requests="$(
-    yq '.k8s_controller_manager_enable_signing_requests
-           | if (.|type)=="boolean" then . else error("unset-or-invalid") end' \
-          "$group_vars_dir/all/kubernetes.yaml" 2>/dev/null
-)" || unset k8s_controller_manager_enable_signing_requests  # unset when unset, invalid or file missing
+k8s_controller_manager_enable_signing_requests="$(yq '.k8s_controller_manager_enable_signing_requests' "$vars_file" 2>/dev/null)"
 
 if [ -n "${cluster:-}" ]; then
     cluster_path="$common_path_prefix/$cluster"
@@ -67,7 +63,7 @@ function require_k8s_cluster_ca_backup_destruction {
 }
 
 function get_clustername() {
-    yq --raw-output '.vault_cluster_name // error("unset")' "${group_vars_dir}/all/vault-backend.yaml"
+    yq --raw-output '.vault_cluster_name' "${vars_file}"
 }
 
 function init_cluster_secrets_engines() {
@@ -467,9 +463,9 @@ function import_ipsec_eap_psk() {
 }
 
 function import_thanos_config() {
-    thanos_enabled="$(yq '.monitoring_use_thanos' "${group_vars_dir}/all/prometheus.yaml")"
-    manage_thanos_bucket="$(yq '.monitoring_manage_thanos_bucket' "${group_vars_dir}/all/prometheus.yaml")"
-    thanos_config_file="$(yq -r '.monitoring_thanos_objectstorage_config_file' "${group_vars_dir}/all/prometheus.yaml")"
+    thanos_enabled="$(yq '.thanos_enabled' "${vars_file}")"
+    manage_thanos_bucket="$(yq '.manage_thanos_bucket' "${vars_file}")"
+    thanos_config_file="$(yq -r '.thanos_config_file' "${vars_file}")"
 
     if ! "$thanos_enabled"; then
         echo "Thanos is disabled."
@@ -514,8 +510,8 @@ function import_thanos_config() {
 }
 
 function import_vault_backup_s3_config() {
-    vault_backup_s3_enabled="$(yq '.yaook_vault_enable_backups' "${group_vars_dir}/all/vault-svc.yaml")"
-    vault_backup_s3_config_file="$(yq -r '.yaook_vault_s3_config_file' "${group_vars_dir}/all/vault-svc.yaml")"
+    vault_backup_s3_enabled="$(yq '.vault_backup_s3_enabled' "${vars_file}")"
+    vault_backup_s3_config_file="$(yq -r '.vault_backup_s3_config_file' "${vars_file}")"
 
     if ! "$vault_backup_s3_enabled"; then
         echo "Vault S3 backup is disabled."

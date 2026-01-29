@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
+actions_dir="$(realpath "$(dirname "$0")")/../../actions"
+
+# Ensure that the latest config is deployed to the inventory
+"$actions_dir/update-inventory.sh" vault
 
 # shellcheck source=tools/vault/lib.sh
 . "$(dirname "$0")/lib.sh"
