@@ -33,7 +33,18 @@ ipv4-addresses = [
 
 [agents]
 additional-address-pairs=[{% if ipv4_enabled %}{{ networking_fixed_ip | to_json }},"0.0.0.0/0",{% endif %}{% if ipv6_enabled %}{{ networking_fixed_ip_v6 | to_json }},"::/0"{% endif %}]
-shared-secret={{ ch_k8s_lbaas_shared_secret | to_json }}
+shared-secret={{
+  lookup(
+    'community.hashi_vault.vault_kv2_get',
+    ch_k8s_lbaas_shared_secret_vault_path,
+    engine_mount_point=ch_k8s_lbaas_shared_secret_vault_mount_point,
+    auth_method=vault_caller_auth_method,
+    mount_point=vault_caller_auth_mount_point,
+    token=vault_caller_token,
+    role_id=vault_caller_role_id,
+    secret_id=vault_caller_secret_id
+  ).data.data.shared_secret | to_json
+}}
 token-lifetime=60
 
 {% if ch_k8s_lbaas_port_manager == "openstack" %}

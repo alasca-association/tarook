@@ -165,7 +165,7 @@ function log() {
     shift
     fmt="$1"
     shift
-    printf "%s%s:%s $fmt\n" "$(ccode "$colorcode")" "$level" "$(ccode '\x1b[0m')" "$@"
+    1>&2 printf "%s%s:%s $fmt\n" "$(ccode "$colorcode")" "$level" "$(ccode '\x1b[0m')" "$@"
 }
 
 function errorf() {

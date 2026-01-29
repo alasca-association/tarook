@@ -18,4 +18,6 @@ ch_k8s_lbaas_agent_binary_checksums:
   "0.8.0": "sha256:339605b3238066ad074522e893022ba94f09fc6b0a1623fafd1ad0f9c66e9a69"
   "0.9.0": "sha256:a9b6171078d41f415b11cf600700942ca714e2236fcac31460733fcb9a816cf9"
 ch_k8s_lbaas_agent_binary_checksum: "{{ ch_k8s_lbaas_agent_binary_checksums[ch_k8s_lbaas_version] | default('invalid checksum') }}"
+ch_k8s_lbaas_shared_secret_vault_mount_point: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv"
+ch_k8s_lbaas_shared_secret_vault_path: "ch-k8s-lbaas-shared-secret"
 ...

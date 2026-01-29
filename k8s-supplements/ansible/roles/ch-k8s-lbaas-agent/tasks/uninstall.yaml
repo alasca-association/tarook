@@ -1,0 +1,64 @@
+---
+- name: Remove LBaaS agent
+  become: true
+  block:
+  - name: Deconfigure firewall for agent access
+    file:
+      state: absent
+      path: "{{ ch_k8s_lbaas_agent_state_directory }}/nftables/access.conf"
+    notify: reload nftables
+    when: openstack_enabled
+
+  - name: Stop and disable service
+    block:
+    - name: Get service facts
+      ansible.builtin.service_facts:
+
+    - name: Stop and disable service
+      when: ansible_facts['services']['ch-k8s-lbaas-agent.service'] is defined
+      systemd:
+        name: ch-k8s-lbaas-agent
+        state: stopped
+        enabled: false
+
+  - name: Delete service definition
+    file:
+      state: absent
+      path: /etc/systemd/system/ch-k8s-lbaas-agent.service
+
+  - name: Deconfigure sudoers
+    file:
+      state: absent
+      path: /etc/sudoers.d/lbaas
+
+  - name: Delete configuration directory
+    file:
+      state: absent
+      path: "{{ ch_k8s_lbaas_agent_config_directory }}"
+
+  - name: Delete executable
+    file:
+      state: absent
+      path: "{{ ch_k8s_lbaas_agent_binary_path }}"
+
+  - name: Delete agent directory
+    file:
+      state: absent
+      path: "{{ ch_k8s_lbaas_agent_state_directory }}"
+
+  - name: Delete user
+    user:
+      name: "{{ ch_k8s_lbaas_agent_user }}"
+      state: absent
+      remove: false  # as we set home to /dev/null
+
+- name: Import dependency roles needed when running on OpenStack
+  when: openstack_enabled
+  block:
+  - name: Import bird
+    import_role:
+      name: bird
+  - name: Import nftables
+    import_role:
+      name: nftables
+...

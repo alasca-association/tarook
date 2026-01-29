@@ -24,17 +24,28 @@ in {
   ];
 
   options.yk8s.ch-k8s-lbaas = mkTopSection {
+    _docs.preface = ''
+      ``ch-k8s-lbaas`` is a LoadBalancing-solution for clusters running on OpenStack
+      as well as clusters running on bare metal.
+      Further information about it can be found here: :doc:`/user/explanation/services/ch-k8s-lbaas`.
+    '';
     enabled = mkEnableOption "our LBaas service";
     shared_secret = mkOption {
       description = ''
+        .. attention:: DEPRECATED
+
+           This option is going to be removed soon
+           since the shared secret is now stored in and automatically handled via Vault.
+
         A unique, random, base64-encoded secret.
         To generate such a secret, you can use the following command:
         $ dd if=/dev/urandom bs=16 count=1 status=none | base64
       '';
       # type as per https://pkg.go.dev/encoding/base64#StdEncoding
       #  (ch-k8s-lbaas uses that library)
-      type = types.yk8s.encoding.base64Str;
+      type = types.nullOr types.yk8s.encoding.base64Str;
       example = "Example+NZHrRAV9AAN83T7Hc6wVk9IGzPou6UjwWhL+4hu1I4XPj+YG/AgKiFIc1a1EzmQKax9VAj6P/oA45w==";
+      default = null;
     };
     version = mkOption {
       type = types.yk8s.oci.imageTag;
@@ -170,6 +181,21 @@ in {
         else v;
     };
   };
+  config.yk8s.warnings =
+    [
+    ]
+    ++ lib.optional (cfg.enabled && cfg.shared_secret != null) ''
+      config.yk8s.ch-k8s-lbaas.shared_secret: is deprecated.
+      The option will be removed in a future release.
+
+      You have two options:
+      a) You want to keep the currently configured shared secret.
+         The configured shared secret is automatically moved to Vault on a rollout.
+         After a rollout has been done, you can unset this option.
+      b) You do not care about the shared secret.
+         You can unset this option.
+         A shared secret will be automatically generated and stored in Vault on a rollout.
+    '';
   config.yk8s.assertions = [
     # Due to OVN support, require version >= 0.8.0 (warn only if not in semver2 format)
     (
@@ -224,7 +250,7 @@ in {
       inherit cfg;
       ansible_prefix = "ch_k8s_lbaas_";
       inventory_path = "all/ch-k8s-lbaas.yaml";
-      only_if_enabled = true;
+      only_if_enabled = false;
     })
   ];
 }

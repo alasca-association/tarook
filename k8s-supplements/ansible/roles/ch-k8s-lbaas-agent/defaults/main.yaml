@@ -1,0 +1,5 @@
+---
+ch_k8s_lbaas_agent_state_directory: "/var/lib/ch-k8s-lbaas-agent"
+ch_k8s_lbaas_agent_config_directory: "/etc/ch-k8s-lbaas-agent"
+ch_k8s_lbaas_agent_binary_path: "/usr/local/bin/ch-k8s-lbaas-agent"
+...
