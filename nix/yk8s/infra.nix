@@ -13,6 +13,10 @@
   inherit (yk8s-lib.transform) filterNull;
   inherit (lib) mkEnableOption mkOption;
 in {
+  imports = [
+    (mkRemovedOptionModule ["infra" "hosts_file"] "Use infra.ansible_hosts instead")
+  ];
+
   options.yk8s.infra = mkTopSection {
     _docs.preface = ''
       This section contains various configuration options necessary for all
