@@ -40,7 +40,7 @@ in {
       '';
       type = types.yk8s.oci.imageTag;
       # renovate: datasource=helm depName=flux2 registryUrl=https://fluxcd-community.github.io/helm-charts
-      default = "2.17.0";
+      default = "2.15.0";
     };
     namespace = mkOption {
       description = ''
