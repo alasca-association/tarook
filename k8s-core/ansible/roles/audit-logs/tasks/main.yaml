@@ -118,12 +118,12 @@
     delay: "{{ error_delay }}"
 
   - name: Create ClusterConfiguration file on host
-    copy:
+    template:
+      src: kubeadm-config.yaml.j2
       dest: /tmp/cluster-configuration.yaml
       owner: root
       group: root
-      mode: 0400
-      content: "{{ kubeadm_configmap.resources[0].data.ClusterConfiguration }}"
+      mode: 0600
 
   # needed for kubeadm init
   - name: Generate super admin kubeconfig

@@ -1,0 +1,3 @@
+A proper ``InitConfiguration`` is now passed to kubeadm when reconfiguring the kube-apiserver for audit logging
+since we noticed that under certain circumstances the ``kubeadm.kubernetes.io/kube-apiserver.advertise-address.endpoint`` annotation got altered
+to use an incorrect local IP as advertized endpoint (rel `#844 <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/844>`_).
