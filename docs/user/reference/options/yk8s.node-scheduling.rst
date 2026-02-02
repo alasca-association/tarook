@@ -20,10 +20,12 @@ More details about the labels and taints configuration can be found
 
 Labels are assigned to a node during LCM rollout only!
 
+Can be set to ``null`` in order to remove the label.
+
 
 **Type:**::
 
-  attribute set of list of Kubernetes label string
+  attribute set of ((list of Kubernetes label string) or attribute set of (null or Kubernetes label value))
 
 
 **Default:**::
@@ -34,24 +36,18 @@ Labels are assigned to a node during LCM rollout only!
 **Example:**::
 
   {
-    managed-k8s-worker-0 = [
-      "${scheduling_key_prefix}/storage=true"
-    ];
+    managed-k8s-worker-0 = {
+      "example.org/monitoring" = "true";
+      "example.org/storage" = "true";
+    };
     managed-k8s-worker-1 = [
-      "${scheduling_key_prefix}/monitoring=true"
+      "example.org/storage=true"
+      "example.org/monitoring=true"
     ];
-    managed-k8s-worker-2 = [
-      "${scheduling_key_prefix}/storage=true"
-    ];
-    managed-k8s-worker-3 = [
-      "${scheduling_key_prefix}/monitoring=true"
-    ];
-    managed-k8s-worker-4 = [
-      "${scheduling_key_prefix}/storage=true"
-    ];
-    managed-k8s-worker-5 = [
-      "${scheduling_key_prefix}/monitoring=true"
-    ];
+    managed-k8s-worker-2 = {
+      "example.org/monitoring" = null;
+      "example.org/storage" = null;
+    };
   }
 
 
@@ -94,10 +90,12 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/node-schedul
 
 Taints are assigned to a node during LCM rollout only!
 
+Can be set to ``null`` in order to remove the taint.
+
 
 **Type:**::
 
-  attribute set of list of Kubernetes taint string
+  attribute set of ((list of Kubernetes taint string) or attribute set of (null or (submodule)))
 
 
 **Default:**::
@@ -108,15 +106,18 @@ Taints are assigned to a node during LCM rollout only!
 **Example:**::
 
   {
-    managed-k8s-worker-0 = [
-      "${scheduling_key_prefix}/storage=true:NoSchedule"
-    ];
+    managed-k8s-worker-0 = {
+      "examply.org/storage" = {
+        effect = "NoSchedule";
+        value = "true";
+      };
+    };
     managed-k8s-worker-2 = [
-      "${scheduling_key_prefix}/storage=true:NoSchedule"
+      "example.org/storage=true:NoSchedule"
     ];
-    managed-k8s-worker-4 = [
-      "${scheduling_key_prefix}/storage=true:NoSchedule"
-    ];
+    managed-k8s-worker-4 = {
+      "examply.org/storage" = null;
+    };
   }
 
 
