@@ -1,0 +1,11 @@
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+{% if ipv4_enabled %}
+metricsBindAddress: "0.0.0.0:10249"
+{% elif ipv6_enabled %}
+metricsBindAddress: "[::]:10249"
+{% endif %}
+{% if ipv6_enabled %}
+mode: ipvs
+{% endif %}

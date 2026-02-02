@@ -1,33 +1,3 @@
-{{ _auto_generated_preamble }}
-
-apiVersion: kubeadm.k8s.io/v1beta4
-kind: InitConfiguration
-nodeRegistration:
-  kubeletExtraArgs:
-{% if openstack_enabled %}
-    - name: cloud-provider
-      value: "external"
-{% endif %}
-{% if ipv4_enabled and ipv6_enabled %}
-    - name: node-ip
-      value: {{ [local_ipv4_address, local_ipv6_address] | join(",") | to_json }}
-{% elif ipv4_enabled %}
-    - name: node-ip
-      value: {{ local_ipv4_address | to_json }}
-{% elif ipv6_enabled %}
-    - name: node-ip
-      value: {{ local_ipv6_address | to_json }}
-{% endif %}
-  name: {{ inventory_hostname }}
-
-localAPIEndpoint:
-{% if ipv4_enabled %}
-  advertiseAddress: {{ local_ipv4_address | to_json }}
-{% elif ipv6_enabled %}
-  advertiseAddress: {{ local_ipv6_address | to_json }}
-{% endif %}
-  bindPort: 6443
-
 ---
 apiVersion: kubeadm.k8s.io/v1beta4
 kind: ClusterConfiguration
@@ -112,16 +82,3 @@ scheduler:
       - name: bind-address
         value: "::"
 {% endif %}
-
----
-apiVersion: kubeproxy.config.k8s.io/v1alpha1
-kind: KubeProxyConfiguration
-{% if ipv4_enabled %}
-metricsBindAddress: "0.0.0.0:10249"
-{% elif ipv6_enabled %}
-metricsBindAddress: "[::]:10249"
-{% endif %}
-{% if ipv6_enabled %}
-mode: ipvs
-{% endif %}
-...

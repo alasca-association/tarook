@@ -34,7 +34,7 @@
   block:
   - name: Create kubeadm-join-config.yaml
     template:
-      src: kubeadm-join-config.yaml.j2
+      src: kubeadm-JoinConfiguration.yaml.j2
       dest: /tmp/kubeadm-join-config.yaml
       owner: root
       group: root
