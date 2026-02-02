@@ -140,7 +140,7 @@ Helm chart version of FluxCD to be deployed.
 
 **Default:**::
 
-  "2.17.2"
+  "2.16.4"
 
 
 **Declared by**
