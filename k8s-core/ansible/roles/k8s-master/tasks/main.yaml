@@ -194,9 +194,9 @@
   - name: Pull config images used by kubeadm from registry.k8s.io  # noqa no-changed-when
     command: kubeadm config images pull --kubernetes-version {{ k8s_version }}
 
-  - name: Create kubeadm-init-config.yaml
+  - name: Create bundled kubeadm-init-config.yaml
     template:
-      src: kubeadm-init-config.yaml.j2
+      src: kubeadm-init-config-bundle.yaml.j2
       dest: /tmp/kubeadm-init-config.yaml
       owner: root
       group: root
@@ -280,7 +280,7 @@
 
   - name: Create kubeadm-join-config.yaml
     template:
-      src: kubeadm-join-config.yaml.j2
+      src: kubeadm-JoinConfiguration.yaml.j2
       dest: /tmp/kubeadm-join-config.yaml
       owner: root
       group: root
