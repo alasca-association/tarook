@@ -1,0 +1,8 @@
+A proper ``InitConfiguration`` is now passed to kubeadm when reconfiguring the kube-apiserver for audit logging
+since we noticed that under certain circumstances the ``kubeadm.kubernetes.io/kube-apiserver.advertise-address.endpoint`` annotation got altered
+to contain an incorrect IP which then got used as advertized endpoint (rel `#844 <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/844>`_).
+
+The error has been observed especially in bare metal clusters.
+In affected clusters, at least :ref:`apply-k8s-core.sh <actions-references.apply-k8s-coresh>`
+or a full rollout via :ref:`apply-all.sh <actions-references.apply-allsh>`
+must be first executed before performing a Kubernetes upgrade.
