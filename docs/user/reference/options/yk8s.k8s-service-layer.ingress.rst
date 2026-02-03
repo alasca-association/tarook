@@ -99,7 +99,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "4.13.6"
+  "4.13.7"
 
 
 **Example:**::
