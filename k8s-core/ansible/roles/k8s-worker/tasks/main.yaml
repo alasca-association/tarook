@@ -117,7 +117,8 @@
             | ternary([{"key": "k8s.yaook.cloud/gpu-node", "value": "true", "effect": "NoSchedule"}], [])
           )
       }}
-  when: (node_taints | length) > 0
+  when:
+  - k8s_node_taints_present[inventory_hostname] | default([]) | length > 0
   kubernetes.core.k8s_taint:
     state: present
     name: "{{ inventory_hostname }}"
@@ -126,7 +127,7 @@
 - name: "Ensure absent K8s node taints"
   delegate_to: "{{ groups['orchestrator'] | first }}"
   when:
-  - k8s_node_taints_absent[inventory_hostname] | length > 0
+  - k8s_node_taints_absent[inventory_hostname] | default([]) | length > 0
   kubernetes.core.k8s_taint:
     state: absent
     name: "{{ inventory_hostname }}"
