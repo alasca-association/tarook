@@ -85,6 +85,4 @@
 
     - name: Reboot the system
       reboot:
-      retries: "{{ error_retries }}"
-      delay: "{{ error_delay }}"
 ...

@@ -112,8 +112,6 @@
         # not executed, we want to execute this one.
         - name: Reboot the system
           reboot:
-          retries: "{{ error_retries }}"
-          delay: "{{ error_delay }}"
 
     - name: Basic sanity check with nvidia-smi
       # nvidia-smi -L lists all detected cards.
