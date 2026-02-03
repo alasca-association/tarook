@@ -1,0 +1,2 @@
+A bug has been fixed which caused kubeadm not to consider patch files when reconfiguring the kube-apiserver manifests for audit logging.
+Patch files supplied in ``/etc/kubernetes/kubeadm-patches`` will now also be taken into account during cluster initialization already.

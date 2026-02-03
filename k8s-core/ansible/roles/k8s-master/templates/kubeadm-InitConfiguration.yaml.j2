@@ -26,3 +26,6 @@ localAPIEndpoint:
   advertiseAddress: {{ local_ipv6_address | to_json }}
 {% endif %}
   bindPort: 6443
+
+patches:
+  directory: "/etc/kubernetes/kubeadm-patches"
