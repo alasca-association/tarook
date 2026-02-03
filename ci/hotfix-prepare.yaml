@@ -28,6 +28,8 @@ add-hotfix-information:
       else
         echo "The target branch is the default branch."
         echo "Not creating changelogs therefore."
+        echo "Deleting notes from docs/_releasenotes/hotfix/"
+        rm -rf docs/_releasenotes/hotfix/*
       fi
     # push changes
     - |
