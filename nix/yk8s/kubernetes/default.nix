@@ -75,10 +75,7 @@ in {
       memory_limit = mkOption {
         description = ''
           Memory resources limit for the apiserver.
-
-          .. note::
-
-            Modifications to this setting only apply on an upgrade of Kubernetes.'';
+        '';
         type = with types; nullOr yk8s.k8s.quantity;
         default = null;
         example = "1Gi";

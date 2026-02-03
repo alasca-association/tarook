@@ -1,0 +1,2 @@
+kubeadm manifest patch files supplied in ``/etc/kubernetes/kubeadm-patches``
+are now applied on cluster initialization as well rather than Kubernetes upgrades only.

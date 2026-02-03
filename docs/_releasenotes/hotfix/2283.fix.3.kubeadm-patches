@@ -1,0 +1,4 @@
+Fixed a regression that was introduced with the refined kube-apiserver audit logging in v11.0.0
+(`!1956 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1956>`_)
+which caused kubeadm to not consider manifest patch files
+which are e.g. used to configure :ref:`configuration-options.yk8s.kubernetes.apiserver.memory_limit`.
