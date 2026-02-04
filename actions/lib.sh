@@ -214,7 +214,7 @@ function validate_wireguard() {
 }
 
 function ansible_playbook() {
-    ansible_flags="${AFLAGS:---diff -f42}"
+    ansible_flags="${TAROOK_ANSIBLE_FLAGS:-} --diff -f42 ${AFLAGS:-}"
 
     if ansible_disruption_allowed; then
         warningf 'allowing ansible to perform disruptive actions' >&2
