@@ -259,7 +259,7 @@ https://gitlab.com/yaook/operator/-/blob/devel/yaook/helm_builder/Charts/etcdbac
 
 **Type:**::
 
-  attribute set containing JSON compatible values
+  open submodule of (attribute set containing JSON compatible values)
 
 
 **Default:**::

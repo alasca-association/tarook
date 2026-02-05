@@ -84,7 +84,7 @@ Note that this option is not type checked by Nix, so make sure that it it's a va
 
 **Type:**::
 
-  attribute set containing JSON compatible values
+  open submodule of (attribute set containing JSON compatible values)
 
 
 **Default:**::
@@ -453,7 +453,7 @@ or role:
 
 **Type:**::
 
-  attribute set of (attribute set containing JSON compatible values)
+  open submodule of attribute set of (attribute set containing JSON compatible values)
 
 
 **Default:**::
@@ -614,7 +614,7 @@ Overrides default configuration.
 
 **Type:**::
 
-  attribute set of (attribute set containing JSON compatible values)
+  open submodule of attribute set of (attribute set containing JSON compatible values)
 
 
 **Default:**::
@@ -780,7 +780,7 @@ Overrides default and role-specific configurations.
 
 **Type:**::
 
-  attribute set of (attribute set of (attribute set containing JSON compatible values))
+  attribute set of (open submodule of attribute set of (attribute set containing JSON compatible values))
 
 
 **Default:**::
@@ -946,7 +946,7 @@ Overrides default configuration.
 
 **Type:**::
 
-  attribute set of (attribute set containing JSON compatible values)
+  open submodule of attribute set of (attribute set containing JSON compatible values)
 
 
 **Default:**::

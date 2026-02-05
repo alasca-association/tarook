@@ -296,7 +296,7 @@ https://github.com/kubernetes/cloud-provider-openstack/blob/master/charts/cinder
 
 **Type:**::
 
-  attribute set containing JSON compatible values
+  open submodule of (attribute set containing JSON compatible values)
 
 
 **Default:**::
@@ -463,7 +463,7 @@ https://github.com/kubernetes/cloud-provider-openstack/blob/master/charts/openst
 
 **Type:**::
 
-  attribute set containing JSON compatible values
+  open submodule of (attribute set containing JSON compatible values)
 
 
 **Default:**::
