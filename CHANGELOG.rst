@@ -17,6 +17,33 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v11.0.5 (2026-02-05)
+--------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- kubeadm manifest patch files supplied in ``/etc/kubernetes/kubeadm-patches``
+  are now applied on cluster initialization as well rather than Kubernetes upgrades only. (`!2277 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2277>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- A proper ``InitConfiguration`` is now passed to kubeadm when reconfiguring the kube-apiserver for audit logging
+  since we noticed that under certain circumstances the ``kubeadm.kubernetes.io/kube-apiserver.advertise-address.endpoint`` annotation got altered
+  to contain an incorrect IP which then got used as advertized endpoint (rel `#844 <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/844>`_).
+
+  The error has been observed especially in bare metal clusters.
+  In affected clusters, at least :ref:`apply-k8s-core.sh <actions-references.apply-k8s-coresh>`
+  or a full rollout via :ref:`apply-all.sh <actions-references.apply-allsh>`
+  must be first executed before performing a Kubernetes upgrade. (`!2277 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2277>`_)
+- Fixed a regression that was introduced with the refined kube-apiserver audit logging in v11.0.0
+  (`!1956 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1956>`_)
+  which caused kubeadm to not consider manifest patch files
+  which are e.g. used to configure :ref:`configuration-options.yk8s.kubernetes.apiserver.memory_limit`. (`!2277 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2277>`_)
+
+
 v11.0.4 (2026-01-27)
 --------------------
 
