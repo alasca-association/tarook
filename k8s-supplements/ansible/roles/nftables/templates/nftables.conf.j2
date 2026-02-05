@@ -135,11 +135,17 @@ table inet filter {
         {% if ipv4_enabled %}
         iifname @wg_iifnames oifname $wan ip daddr {{ priv_ip_cidr }} ct state new counter accept;
         iifname $wan oifname $wan ip saddr {{ priv_ip_cidr }} ct state new counter accept;
+
+        iifname @wg_iifnames oifname $wan ip daddr {{ k8s_network_pod_subnet }} ct state new counter accept comment "Forward IPv4 traffic from Wireguard to Kubernetes Pod network";
+        iifname @wg_iifnames oifname $wan ip daddr {{ k8s_network_service_subnet }} ct state new counter accept comment "Forward IPv4 traffic from Wireguard to Kubernetes Service network";
         {% endif %}
 
         {% if ipv6_enabled %}
         iifname @wg_iifnames oifname $wan ip6 daddr {{ subnet_v6_cidr }} ct state new counter accept comment "Forward IPv6 traffic from Wireguard to internal";
         iifname $wan oifname $wan ip6 saddr {{ subnet_v6_cidr }} ct state new counter accept comment "Forward IPv6 traffic from internal to Wireguard";
+
+        iifname @wg_iifnames oifname $wan ip6 daddr {{ k8s_network_pod_subnet_v6 }} ct state new counter accept comment "Forward IPv6 traffic from Wireguard to Kubernetes Pod network";
+        iifname @wg_iifnames oifname $wan ip6 daddr {{ k8s_network_service_subnet_v6 }} ct state new counter accept comment "Forward IPv6 traffic from Wireguard to Kubernetes Service network";
 
         iifname @wg_iifnames oifname $wan meta l4proto { icmp, ipv6-icmp } limit rate 5/second accept comment "Forward ICMPv6 traffic over Wireguard to internal";
         iifname $wan oifname @wg_iifnames meta l4proto { icmp, ipv6-icmp } limit rate 5/second accept comment "Forward internal ICMPv6 traffic over Wireguard";
