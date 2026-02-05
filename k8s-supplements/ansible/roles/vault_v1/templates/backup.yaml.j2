@@ -57,7 +57,7 @@ spec:
           value: "https://vault-active.{{ yaook_vault_namespace }}.svc.cluster.local:8200"
         - name: VAULT_CAPATH
           value: /vault/ca.crt
-        image: registry.yaook.cloud/yaook/backup-creator:devel
+        image: registry.yaook.cloud/yaook/backup-creator:2.0.179
         imagePullPolicy: IfNotPresent
         name: backup-creator
         volumeMounts:
@@ -67,6 +67,10 @@ spec:
           subPath: ca.crt
           name: vault-ca
       - env:
+        - name: AWS_REQUEST_CHECKSUM_CALCULATION
+          value: when_required
+        - name: AWS_RESPONSE_CHECKSUM_VALIDATION
+          value: when_required
         - name: YAOOK_BACKUP_SHIFTER_WORK_DIR
           value: /backup
         - name: YAOOK_BACKUP_SHIFTER_S3_FILE_PREFIX
@@ -96,7 +100,7 @@ spec:
           value: {{ yaook_vault_backup_s3_addressing_style }}
         - name: YAOOK_BACKUP_SHIFTER_METRICS_PORT
           value: "19100"
-        image: registry.yaook.cloud/yaook/backup-shifter:1.0.166
+        image: registry.yaook.cloud/yaook/backup-shifter:1.0.329
         imagePullPolicy: IfNotPresent
         name: backup-shifter
         resources: {}
