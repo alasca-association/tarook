@@ -34,7 +34,7 @@
         label: "{{ item.item.name }}"
       when: not item.resources  # that means k8s doesn't about a node of that name
       vars:
-        member_id: "{{ '%x' % item.item.ID }}"
+        member_id: "{{ '%s' % item.item.ID }}"
       kubernetes.core.k8s_exec:
         namespace: kube-system
         pod: "etcd-{{ inventory_hostname }}"
