@@ -140,7 +140,6 @@ resource "openstack_blockstorage_volume_v3" "gateway-volume" {
   size        = coalesce(each.value.root_disk_size, data.openstack_compute_flavor_v2.gateway.disk)
   image_id    = data.openstack_images_image_v2.gateway.id
   volume_type = each.value.root_disk_volume_type
-  availability_zone = each.value.az
 
   timeouts {
     create = var.timeout_time
