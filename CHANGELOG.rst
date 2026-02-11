@@ -52,11 +52,16 @@ Changed functionality
 
 - Explicitly disable the open file descriptor limit (``LimitNOFILE=infinity``) for containerd since that setting is removed with version 2.0 (see https://github.com/containerd/containerd/blob/main/docs/containerd-2.0.md#limitnofile-configuration-has-been-removed).
 
-  This change will not immediately affect existing nodes as containerd has to be restarted to take effect.
-  Restarting containerd is only save to do if the node has been drained in advance.
-  A node is drained and rebooted automatically during :doc:`Kubernetes upgrades </user/guide/kubernetes/upgrading-kubernetes>`
-  or when updating the host OS packages via :ref:`update-kubernetes-nodes.sh<actions-references.update-kubernetes-nodessh>`.
-  If you require ``LimitNOFILE`` to be set immediately, please execute one of these. (`!2235 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2235>`_)
+  This change will take effect as soon as containerd is restarted.
+  Restarting containerd is safe in general. It does at most affect incoming requests from kubelet, but not running workload.
+  Note that containerd sets the limit on container creation and won't update existing containers.
+
+  You can ensure that all containers use the infinite limit
+  by running :ref:`update-kubernetes-nodes.sh<actions-references.update-kubernetes-nodessh>`
+  or doing a :doc:`Kubernetes upgrade </user/guide/kubernetes/upgrading-kubernetes>`.
+  Both drains all nodes and restart containerd.
+
+  (`!2235 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2235>`_)
 
 
 Bugfixes
