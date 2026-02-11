@@ -35,11 +35,34 @@ Whether to enable Flux management.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
 
 
-.. _configuration-options.yk8s.k8s-service-layer.fluxcd.helm_repo_url:
+.. _configuration-options.yk8s.k8s-service-layer.fluxcd.helm.chart_ref:
 
-``yk8s.k8s-service-layer.fluxcd.helm_repo_url``
-###############################################
+``yk8s.k8s-service-layer.fluxcd.helm.chart_ref``
+################################################
 
+The chart reference (relative to the repository) of the fluxcd Helm chart.
+
+
+**Type:**::
+
+  RFC3986 relative URL path
+
+
+**Default:**::
+
+  "flux2"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.fluxcd.helm.chart_repo_url:
+
+``yk8s.k8s-service-layer.fluxcd.helm.chart_repo_url``
+#####################################################
+
+The URL to the Helm repository for the fluxcd Helm chart.
 
 
 **Type:**::
@@ -50,6 +73,105 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 **Default:**::
 
   "https://fluxcd-community.github.io/helm-charts"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.fluxcd.helm.chart_version:
+
+``yk8s.k8s-service-layer.fluxcd.helm.chart_version``
+####################################################
+
+Version of the fluxcd Helm chart to be used.
+
+If the version shall be unpinned, set to: ``null``.
+
+
+**Type:**::
+
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
+
+
+**Default:**::
+
+  "2.16.4"
+
+
+**Example:**::
+
+  "1.2.3"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.fluxcd.helm.release_name:
+
+``yk8s.k8s-service-layer.fluxcd.helm.release_name``
+###################################################
+
+The release name inside the cluster for fluxcd.
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "flux2"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.fluxcd.helm.release_namespace:
+
+``yk8s.k8s-service-layer.fluxcd.helm.release_namespace``
+########################################################
+
+The namespace in which to install fluxcd.
+
+
+**Type:**::
+
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
+
+
+**Default:**::
+
+  "k8s-svc-flux-system"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.fluxcd.helm.values:
+
+``yk8s.k8s-service-layer.fluxcd.helm.values``
+#############################################
+
+Helm values for the fluxcd helm chart.
+
+Some values are set by default through Tarook, but arbitrary values can be set.
+For a full list of possible values, see
+https://github.com/fluxcd-community/helm-charts/blob/main/charts/flux2/values.yaml
+
+
+**Type:**::
+
+  JSON value
+
+
+**Default:**::
+
+  { }
 
 
 **Declared by**
@@ -79,29 +201,6 @@ FALSE, FLUXCD2 WILL BE DELETED WITHOUT CHECKING FOR DISRUPTION.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
 
 
-.. _configuration-options.yk8s.k8s-service-layer.fluxcd.namespace:
-
-``yk8s.k8s-service-layer.fluxcd.namespace``
-###########################################
-
-Namespace to deploy the flux-system in (will be created if it does not exist, but
-never deleted).
-
-
-**Type:**::
-
-  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
-
-
-**Default:**::
-
-  "k8s-svc-flux-system"
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
-
-
 .. _configuration-options.yk8s.k8s-service-layer.fluxcd.scheduling_key:
 
 ``yk8s.k8s-service-layer.fluxcd.scheduling_key``
@@ -119,28 +218,6 @@ default.
 **Default:**::
 
   null
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/fluxcd.nix
-
-
-.. _configuration-options.yk8s.k8s-service-layer.fluxcd.version:
-
-``yk8s.k8s-service-layer.fluxcd.version``
-#########################################
-
-Helm chart version of FluxCD to be deployed.
-
-
-**Type:**::
-
-  OCI image tag
-
-
-**Default:**::
-
-  "2.16.4"
 
 
 **Declared by**
