@@ -1,0 +1,5 @@
+{{ _auto_generated_preamble }}
+
+{{ kubeadm_configmap.resources[0].data.ClusterConfiguration }}
+
+{{ lookup('template', 'kubeadm-InitConfiguration.yaml.j2') }}
