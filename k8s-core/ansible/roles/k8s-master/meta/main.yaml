@@ -6,4 +6,5 @@ dependencies:
 - config/k8s-config
 - helpers/vault-approle
 - helpers/vault-orchestrator-roles
+- kubeadm-patches
 ...
