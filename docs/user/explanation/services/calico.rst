@@ -35,7 +35,7 @@ has been tested on. E.g., for Calico v3.25 this section can be found
 
 If not manually adjusted, the Calico version to be deployed is the one
 mapped to the Kubernetes version in
-`k8s-config <https://gitlab.com/alasca.cloud/tarook/tarook/-/blob/devel/k8s-base/roles/k8s-config/defaults/main.yaml>`__.
+`version-map <https://gitlab.com/alasca.cloud/tarook/tarook/-/blob/devel/k8s-supplements/ansible/roles/config/version-map/defaults/main.yaml>`__.
 
 However, it is possible to configure a custom version with
 the :ref:`configuration-options.yk8s.kubernetes.network.calico.custom_version` config option.
