@@ -32,6 +32,8 @@ else
   rm "$release_migration_lock"
 fi
 
-run git commit --author "Tarook v${version_major_minor} release release migration script <>" --message "Migrate cluster repository to v${version_major_minor}"
+if ! (git diff-index --quiet HEAD); then
+  run git commit --author "Tarook v${version_major_minor} release release migration script <>" --message "Migrate cluster repository to v${version_major_minor}"
+fi
 
 notef "Migration successful. You may continue to use your cluster now."
