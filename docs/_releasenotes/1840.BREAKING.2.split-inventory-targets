@@ -1,8 +1,0 @@
-:ref:`update-inventory.sh <actions-references.update-inventorysh>` now differentiates between multiple targets. If you directly use ``update-inventory.sh`` in your automation, you must adapt your scripts.
-Run
-
-.. code:: console
-
-   $ ./managed-k8s/actions/update-inventory.sh help
-
-for details.

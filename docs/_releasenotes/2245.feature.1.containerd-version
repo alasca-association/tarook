@@ -1,3 +1,0 @@
-An option to manage the containerd version on Kubernetes nodes has been introduced: :ref:`configuration-options.yk8s.containerd.version`.
-
-Previously, the latest available version has been installed which caused issues.

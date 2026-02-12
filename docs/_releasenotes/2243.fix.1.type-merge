@@ -1,1 +1,0 @@
-`Bug #846 <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/846>`_ was fixed which caused values to be mangled when the same option was set in multiple places.

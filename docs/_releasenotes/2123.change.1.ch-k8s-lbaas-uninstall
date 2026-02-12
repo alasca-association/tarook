@@ -1,1 +1,0 @@
-It is now ensured that all components of ch-k8s-lbaas are deconfigured and absent if the option :ref:`configuration-options.yk8s.ch-k8s-lbaas.enabled` is ``false``.

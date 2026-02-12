@@ -1,2 +1,0 @@
-In the vault-backup deployment, the version of ``yaook/backup-shifter`` has been bumped to ``1.0.329`` and the version of ``yaook/backup-creator`` has been pinned to ``2.0.179``.
-This makes it possible to scrape backup metrics via IPv6.
