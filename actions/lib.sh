@@ -235,10 +235,19 @@ function load_gitlab_vars() {
 # true: HTTP/200 response; false: HTTP/404; exit: HTTP/*
 function check_return_code () {
     local gitlab_response="$1"
+    # Terraform http backend returns 200 when serving an non empty state
+    # or if the backend has not been initialized, yet
     if [ "$gitlab_response" == "200" ]; then
         return 0
+    # Terraform http backend returns 204 when serving an empty state.
+    # This might be the case after Terraform failing to initialize resources
+    # for the first time.
+    elif [ "$gitlab_response" == "204" ]; then
+        return 0
+    # Terraform http backend returns 404 when the respective project can't be found
     elif [ "$gitlab_response" == "404" ]; then
         return 1
+    # Terraform http backend returns 401 if authorization fails
     elif [ "$gitlab_response" == "401" ]; then
         echo
         notef "HTTP 401. The provided GitLab credentials seem to be invalid."
