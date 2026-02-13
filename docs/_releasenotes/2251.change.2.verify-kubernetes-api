@@ -1,5 +1,0 @@
-The script to verify Kubernetes supplements has been renamed to :ref:`verify-10-supplements-health.sh<actions-references.verify-10-supplements-healthsh>`.
-
-An additional script to verify the healthiness of the Kubernetes API has been introduced: :ref:`verify-00-kubernetes-api.sh<actions-references.verify-00-kubernetes-apish>`.
-
-It is now checked that the Kubernetes API is healthy after configuring the control plane nodes.
