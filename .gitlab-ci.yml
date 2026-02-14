@@ -63,7 +63,7 @@ include:
 
 tflint:
   image:
-    name: "ghcr.io/terraform-linters/tflint:v0.60.0"
+    name: "ghcr.io/terraform-linters/tflint:v0.61.0"
     entrypoint: ["/bin/sh", "-c"]
   stage: lint
   script:
@@ -74,6 +74,7 @@ tflint:
     - !reference [.default_lint_rules, rules]
     - changes:
       - 'terraform/**/*'
+      - 'docs/_releasenotes/*ghcr.io-terraform-linters-tflint*'
       if: $SKIP_LINT != "true"
       when: on_success
     - when: never
