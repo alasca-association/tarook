@@ -93,42 +93,6 @@
           inherit nonStringValuesRejected;
         };
       };
-      relabelConfig = {
-        target = optionTypes.relabelConfig;
-        tests.typeChecking = {
-          accepted.inputs = [
-            {
-              sourceLabels = ["foo" "bar"];
-              targetLabel = "baz";
-            }
-            {
-              action = "Replace";
-              arbitaryKey = null;
-            }
-            {
-              sourceLabels = [];
-              separator = ",";
-              targetLabel = "foo";
-              regex = "bar";
-              modulus = 4;
-              replacement = "baz";
-              action = "Replace";
-            }
-          ];
-          rejected.inputs = [
-            {
-              sourceLabels = "string";
-              separator = 1;
-              targetLabel = "";
-              regex = "";
-              modulus = -4;
-              replacement = "";
-              action = "";
-            }
-          ];
-          inherit nonAttrsValuesRejected;
-        };
-      };
     };
   };
 in

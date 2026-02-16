@@ -246,22 +246,17 @@ in rec {
       "^([^/=]{0,253}[/])?([^/=]{0,63})[=]([^=]{0,63})$"
     ];
   };
-  labelAttrs = lib.mkOptionType {
-    name = "k8sLabelAttrs";
-    description = "attribute set of Kubernetes label-value pairs";
-    descriptionClass = "noun";
-    inherit (lib.types.attrs) merge;
-    check = x:
-      builtins.isAttrs x
-      && (
-        lib.attrsets.foldlAttrs (
-          acc: l: v:
-            acc && label.check l && labelValue.check v
-        )
-        true
-        x
-      );
-  };
+  labelAttrs = let
+    baseType = lib.types.attrsOf labelValue;
+  in
+    baseType
+    // {
+      name = "k8sLabelAttrs";
+      description = "attribute set of Kubernetes label-value pairs";
+      check = x:
+        baseType.check x
+        && lib.all label.check (lib.attrNames x);
+    };
 
   taintStr = _mkRegexStrOptionType {
     name = "k8sTaintStr";

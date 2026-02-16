@@ -209,7 +209,39 @@ in {
                   A list of RelabelConfigs, see
                   https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#monitoring.coreos.com/v1.RelabelConfig
                 '';
-                type = with types; listOf yk8s.prometheus.relabelConfig;
+                type = with types;
+                  listOf (submodule {
+                    options = {
+                      sourceLabels = mkOption {
+                        default = null;
+                        type = nullOr (listOf yk8s.prometheus.labelName);
+                      };
+                      separator = mkOption {
+                        default = null;
+                        type = nullOr str;
+                      };
+                      targetLabel = mkOption {
+                        default = null;
+                        type = nullOr yk8s.prometheus.labelName;
+                      };
+                      regex = mkOption {
+                        default = null;
+                        type = nullOr nonEmptyStr;
+                      };
+                      modulus = mkOption {
+                        default = null;
+                        type = nullOr ints.unsigned;
+                      };
+                      replacement = mkOption {
+                        default = null;
+                        type = nullOr nonEmptyStr;
+                      };
+                      action = mkOption {
+                        default = null;
+                        type = nullOr nonEmptyStr;
+                      };
+                    };
+                  });
                 example = [
                   {
                     targetLabel = "prometheus";

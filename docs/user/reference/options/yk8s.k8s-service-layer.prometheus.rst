@@ -1578,7 +1578,7 @@ https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentati
 
 **Type:**::
 
-  list of (attribute set with items of specific types (action: nonEmptyStr, modulus: unsignedInt, regex: nonEmptyStr, replacement: nonEmptyStr, separator: str, sourceLabels: listOf, targetLabel: prometheusLabelName))
+  list of (submodule)
 
 
 **Example:**::
@@ -1593,6 +1593,153 @@ https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentati
       targetLabel = "cluster";
     }
   ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.action:
+
+``yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.action``
+####################################################################################
+
+
+
+**Type:**::
+
+  null or non-empty string
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.modulus:
+
+``yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.modulus``
+#####################################################################################
+
+
+
+**Type:**::
+
+  null or (unsigned integer, meaning >=0)
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.regex:
+
+``yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.regex``
+###################################################################################
+
+
+
+**Type:**::
+
+  null or non-empty string
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.replacement:
+
+``yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.replacement``
+#########################################################################################
+
+
+
+**Type:**::
+
+  null or non-empty string
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.separator:
+
+``yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.separator``
+#######################################################################################
+
+
+
+**Type:**::
+
+  null or string
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.sourceLabels:
+
+``yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.sourceLabels``
+##########################################################################################
+
+
+
+**Type:**::
+
+  null or (list of Prometheus label name)
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/monitoring.nix
+
+
+.. _configuration-options.yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.targetLabel:
+
+``yk8s.k8s-service-layer.prometheus.remote_writes.*.write_relabel_configs.*.targetLabel``
+#########################################################################################
+
+
+
+**Type:**::
+
+  null or Prometheus label name
+
+
+**Default:**::
+
+  null
 
 
 **Declared by**

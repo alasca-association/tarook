@@ -1,7 +1,6 @@
 {lib}: let
   transform = import ./../transform.nix {inherit lib;};
   inherit (transform) matchesRegex;
-  inherit (lib.options) mergeEqualOption;
 in rec {
   /*
   Create an option type that matches a given string value against a set of regular expressions
@@ -21,13 +20,11 @@ in rec {
     assert lib.assertMsg
     (!(matchAgainstAllOf == matchAgainstNoneOf))
     "positive and negative regex sets must no be equal";
-      lib.mkOptionType {
-        name = name;
-        description = description;
-        descriptionClass = "noun";
-        merge = mergeEqualOption;
+      lib.types.str
+      // {
+        inherit name description;
         check = x:
-          builtins.isString x
+          lib.types.str.check x
           && (
             builtins.all (
               regex: matchesRegex regex x
