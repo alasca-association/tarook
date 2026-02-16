@@ -6,7 +6,7 @@
       apiVersion: v1
       kind: Namespace
       metadata:
-        name: "{{ fluxcd_namespace }}"
+        name: "{{ fluxcd_helm_release_namespace }}"
         labels:
           app.kubernetes.io/instance: flux-system
           app.kubernetes.io/part-of: flux
@@ -22,14 +22,12 @@
   delay: "{{ error_delay }}"
 
 - name: Install fluxcdv2
-  vars:
-    scheduling_key: "{{ fluxcd_scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_repo_url: "{{ fluxcd_helm_repo_url }}"
-    chart_ref: flux2
-    release_namespace: "{{ fluxcd_namespace }}"
-    release_name: flux2
+    chart_repo_url: "{{ fluxcd_helm_chart_repo_url }}"
+    chart_ref: "{{ fluxcd_helm_chart_ref }}"
+    release_namespace: "{{ fluxcd_helm_release_namespace }}"
+    release_name: "{{ fluxcd_helm_release_name }}"
     release_state: "{{ fluxcd_install | ternary('present', 'absent') }}"
-    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
-    chart_version: "{{ fluxcd_version }}"
+    values: "{{ fluxcd_helm_values | to_json }}"
+    chart_version: "{{ fluxcd_helm_chart_version }}"
 ...
