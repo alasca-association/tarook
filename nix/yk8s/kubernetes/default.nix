@@ -43,9 +43,10 @@ in {
         [1 32]
         [1 33]
         [1 34]
+        [1 35]
       ];
       # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-      default = "1.34.5";
+      default = "1.35.1";
     };
 
     cri_url = mkInternalOption {
