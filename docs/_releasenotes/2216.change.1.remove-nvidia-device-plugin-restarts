@@ -1,0 +1,2 @@
+In clusters using GPU worker nodes, the nvidia-device-plugin Pod running on a node is not force restarted after a Kubernetes upgrade anymore.
+This was previously necessary as the nvidia-device-plugin marked a GPU as unhealthy on ``systemctl reload`` with a following restart of kubelet.
