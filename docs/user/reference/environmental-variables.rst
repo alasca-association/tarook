@@ -190,56 +190,65 @@ Environment Variable    Default     Description
 VPN Configuration
 -----------------
 
-=========================== ======================= =======================
-Environment Variable        Default                 Description
-=========================== ======================= =======================
-``wg_conf_name``            ``"wg0"``               This variable defines the name
-                                                    of the WireGuard interface to
-                                                    create. The interface name
-                                                    must match wg-quick's regex
-                                                    ``[a-zA-Z0-9_=+.-]{1,15}``
-                                                    and should start with ``wg``.
-                                                    Examples: ``wg0``, ``wg-k8s-dev``.
-                                                    This variable is used by the
-                                                    ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
-``wg_endpoint``             ``0``                   The ID of the wireguard endpoint to use when connecting
-                                                    to the VPN, as configured with
-                                                    :ref:`configuration-options.yk8s.wireguard.endpoints`.
-``wg_private_key_command``                          Command to retrieve a WireGuard private key from
-                                                    a safe place, for example by using ``pass``.
-                                                    This variable is used by the
-                                                    ``wg-up.sh``-:ref:`script <actions-references.wg-upsh>`.
-                                                    The key is injected via ``wg set`` to
-                                                    prevent leakage.
+============================= ======================= =======================
+Environment Variable          Default                 Description
+============================= ======================= =======================
+``wg_conf_name``              ``"wg0"``               This variable defines the name
+                                                      of the WireGuard interface to
+                                                      create. The interface name
+                                                      must match wg-quick's regex
+                                                      ``[a-zA-Z0-9_=+.-]{1,15}``
+                                                      and should start with ``wg``.
+                                                      Examples: ``wg0``, ``wg-k8s-dev``.
+                                                      This variable is used by the
+                                                      ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
+``wg_endpoint``               ``0``                   The ID of the wireguard endpoint to use when connecting
+                                                      to the VPN, as configured with
+                                                      :ref:`configuration-options.yk8s.wireguard.endpoints`.
+``wg_private_key_command``                            Command to retrieve a WireGuard private key from
+                                                      a safe place, for example by using ``pass``.
+                                                      This variable is used by the
+                                                      ``wg-up.sh``-:ref:`script <actions-references.wg-upsh>`.
+                                                      The key is injected via ``wg set`` to
+                                                      prevent leakage.
 
-                                                    Note that the command is called with an empty environment,
-                                                    so any variables that it may need, have to be specified explicitly.
+                                                      Note that the command is called with an empty environment,
+                                                      so any variables that it may need, have to be specified explicitly.
 
-                                                    You **MUST** adjust this variable.
+                                                      You **MUST** adjust this variable.
 
-                                                    Example: ``export wg_private_key_command='PASSWORD_STORE_DIR='"'$PASSWORD_STORE_DIR'"' pass my-wg-key'``.
+                                                      Example: ``export wg_private_key_command='PASSWORD_STORE_DIR='"'$PASSWORD_STORE_DIR'"' pass my-wg-key'``.
 
-``wg_private_key_file``     ``"$(pwd)/../privkey"`` Path to your WireGuard private key
-                                                    file. This is not copied to any
-                                                    remote machine, but needed to
-                                                    generate the local configuration
-                                                    locally and to bring the VPN tunnel
-                                                    up.
-                                                    (DEPRECATED. Use ``wg_private_key_command``
-                                                    instead.)
-``wg_private_key``                                  Alternatively you can directly
-                                                    export your WireGuard private key
-                                                    if neither ``wg_private_key_command``
-                                                    nor ``wg_private_key_file`` is set.
-                                                    (DEPRECATED. Use ``wg_private_key_command``
-                                                    instead.)
-``wg_user``                 ``"firstnamelastname"`` Your WireGuard user name as
-                                                    defined in the :ref:`wireguard configuration<configuration-options.yk8s.wireguard>`
-                                                    (or, if enabled, ``wg_user`` `repository <https://gitlab.cloudandheat.com/lcm/wg_user>`__).
-                                                    You **MUST** adjust this variable.
-                                                    This variable is used by the
-                                                    ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
-=========================== ======================= =======================
+``wg_private_key_file``       ``"$(pwd)/../privkey"`` Path to your WireGuard private key
+                                                      file. This is not copied to any
+                                                      remote machine, but needed to
+                                                      generate the local configuration
+                                                      locally and to bring the VPN tunnel
+                                                      up.
+                                                      (DEPRECATED. Use ``wg_private_key_command``
+                                                      instead.)
+``wg_private_key``                                    Alternatively you can directly
+                                                      export your WireGuard private key
+                                                      if neither ``wg_private_key_command``
+                                                      nor ``wg_private_key_file`` is set.
+                                                      (DEPRECATED. Use ``wg_private_key_command``
+                                                      instead.)
+``wg_user``                   ``"firstnamelastname"`` Your WireGuard user name as
+                                                      defined in the :ref:`wireguard configuration<configuration-options.yk8s.wireguard>`
+                                                      (or, if enabled, ``wg_user`` `repository <https://gitlab.cloudandheat.com/lcm/wg_user>`__).
+                                                      You **MUST** adjust this variable.
+                                                      This variable is used by the
+                                                      ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
+``wg_user``                   ``"firstnamelastname"`` Your WireGuard user name as
+                                                      defined in the :ref:`wireguard configuration<configuration-options.yk8s.wireguard>`
+                                                      (or, if enabled, ``wg_user`` `repository <https://gitlab.cloudandheat.com/lcm/wg_user>`__).
+                                                      You **MUST** adjust this variable.
+                                                      This variable is used by the
+                                                      ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
+``TAROOK_WG_TO_K8S_NETWORKS``                         If set to ``true``, a tunnel to the Kubernetes Pod and Services network will be established as well.
+                                                      This variable is used by the
+                                                      ``wg-up.sh``:ref:`-script <actions-references.wg-upsh>`.
+============================= ======================= =======================
 
 .. _environmental-variables.ssh-configuration:
 

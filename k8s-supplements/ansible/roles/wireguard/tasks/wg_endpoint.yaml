@@ -151,6 +151,20 @@
         keyfile_name: "wg{{ endpoint.id }}.key"
       loop: "{{ wg_peers }}"
 
+    - name: "Create a wg{{ endpoint.id }}_with_k8s.conf template for each peer"
+      become: false
+      delegate_to: "{{ groups['orchestrator'] | first }}"
+      run_once: true
+      template:
+        src: wg_client_with_k8s.conf.j2
+        dest: "{{ wg_client_path }}"
+        mode: '0640'
+      vars:
+        wg_client_path: "{{ etc_dir }}/wireguard/wg{{ endpoint.id }}/wg{{ endpoint.id }}_{{ item['ident'] }}_with_k8s.conf"
+        vip_port: vip-port
+        keyfile_name: "wg{{ endpoint.id }}.key"
+      loop: "{{ wg_peers }}"
+
     - name: Notify user about auto-generated wg.conf
       delegate_to: "{{ groups['orchestrator'] | first }}"
       become: false

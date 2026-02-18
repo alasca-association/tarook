@@ -337,16 +337,32 @@ It triggers the k8s-supplements playbook ``verify-cluster-health.yaml``.
 ------------
 
 For clusters running on top of OpenStack,
-access to the Kubernetes nodes is provided by
+access to the Kubernetes nodes as well as the Kubernetes API is provided by
 establishing a Wireguard tunnel to the gateway nodes.
+
+Additional access to the Kubernetes Pod and Service networks can be established
+by supplying ``--with-kubernetes-networks``
+or setting ``TAROOK_WG_TO_K8S_NETWORKS=true`` in your environment.
 
 When the Wireguard tunnel needs to be up, it is automatically setup by
 all ``apply-*.sh``-scripts.
 
 This script brings up the WireGuard VPN connection to the cluster.
-
 It tries to be smart about not doing anything stupid and ensuring that
 you’re really connected to the correct cluster.
+
+.. code::
+
+   wg-up.sh - Action Script to establish a Wireguard tunnel to the Cluster
+
+   Usage: wg-up.sh [--help|--with-kubernetes-networks]
+
+   Flags:
+   --help                        Print this help message
+   --with-kubernetes-networks    Establish a tunnel to the Kubernetes Pod
+                                 and Service network as well
+                                 This can be persistently configured by setting
+                                 'TAROOK_WG_TO_K8S_NETWORKS' to 'true'
 
 .. _actions-references.manage_rolespy:
 
