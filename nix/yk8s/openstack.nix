@@ -7,12 +7,13 @@
 }: let
   cfg = config.yk8s.openstack;
   modules-lib = import ./lib/modules.nix {inherit lib;};
-  inherit (modules-lib) mkRemovedOptionModule;
+  inherit (modules-lib) mkRenamedOptionModule;
   inherit (lib) mkEnableOption mkOption;
   inherit (lib.attrsets) filterAttrs recursiveUpdate;
   inherit (lib.trivial) pipe;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkDisableOption linkToPath types;
   inherit (yk8s-lib.transform) removeObsoleteOptions filterInternal;
+  inherit (yk8s-lib.options) mkHelmReleaseOptions;
   inherit (builtins) fromJSON readFile pathExists length;
   tfvars_file_path = "terraform/config.tfvars.json";
   commonNodeDefaultOptions = {
@@ -55,6 +56,10 @@
     "nodes"
   ];
 in {
+  imports = [
+    (mkRenamedOptionModule ["openstack" "cinder_enable_topology"] ["openstack" "cinder" "enable_topology"])
+    (mkRenamedOptionModule ["openstack" "cinder_volume_type"] ["openstack" "cinder" "volume_type"])
+  ];
   options.yk8s.openstack = mkTopSection {
     _docs.order = 1;
     _docs.preface = ''
@@ -311,7 +316,7 @@ in {
       example = lib.options.literalExpression "\"\${config.yk8s.infra.cluster_name}-network\"";
     };
 
-    cinder_enable_topology = mkEnableOption ''
+    cinder.enable_topology = mkEnableOption ''
       cinder topology.
       This flag enables the topology feature gate of the cinder controller plugin.
       Its purpose is to allocate volumes from cinder which are in the same AZ as
@@ -319,7 +324,7 @@ in {
       Important: Cinder must support AZs and the AZs must match the AZs used by nova!
     '';
 
-    cinder_volume_type = mkOption {
+    cinder.volume_type = mkOption {
       description = ''
         Use a specific volume type for the csi-sc-cinderplugin StorageClass.
         If unset, no volume type is explicitly set and the default volume type
@@ -327,6 +332,17 @@ in {
       '';
       type = with types; nullOr yk8s.openstack.volumeTypeName;
       default = null;
+    };
+
+    cinder.helm = mkHelmReleaseOptions {
+      descriptionName = "Cinder CSI driver plugin";
+      defaultRepoUrl = "https://kubernetes.github.io/cloud-provider-openstack";
+      defaultChartRef = "openstack-cinder-csi";
+      # renovate: datasource=helm depName=openstack-cinder-csi registryUrl=https://kubernetes.github.io/cloud-provider-openstack
+      defaultChartVersion = "2.34.1";
+      defaultReleaseNamespace = "kube-system";
+      defaultReleaseName = "cinder-csi";
+      valuesDocUrl = "https://github.com/kubernetes/cloud-provider-openstack/blob/master/charts/cinder-csi-plugin/values.yaml";
     };
 
     cloud_controller_manager.helm = mkHelmReleaseOptions {
@@ -351,6 +367,31 @@ in {
   };
   config.yk8s = lib.mkMerge [
     {
+      openstack.cinder.helm.values = {
+        storageClass = {
+          enabled = false;
+        };
+        secret = {
+          enabled = true;
+          create = false;
+          name = "cloud-config";
+        };
+        csi = {
+          provisioner = {
+            topology =
+              if cfg.cinder.enable_topology
+              then "true"
+              else "false";
+          };
+          plugin = {
+            nodePlugin = {
+              dnsPolicy = "ClusterFirst";
+            };
+          };
+        };
+        priorityClassName = "system-node-critical";
+      };
+
       openstack.cloud_controller_manager.helm.values = {
         cloudConfig = {
           loadBalancer = {
@@ -376,6 +417,7 @@ in {
           ansible_prefix = "openstack_";
           only_if_enabled = true;
           unflat = [
+            ["cinder" "helm" "values"]
             ["cloud_controller_manager" "helm" "values"]
           ];
           transformations = [(c: builtins.removeAttrs c nonAnsibleOptions)];

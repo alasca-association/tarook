@@ -43,13 +43,13 @@
 
   - name: Deploy Cinder CSI driver plugin chart
     kubernetes.core.helm:
-      chart_repo_url: "{{ openstack_helm_repo_url }}"
-      chart_ref: openstack-cinder-csi
-      chart_version: "{{ image_versions.openstack.cinder_csi_plugin_chart }}"
-      release_namespace: kube-system
-      release_name: cinder-csi
+      chart_repo_url: "{{ openstack_cinder_helm_chart_repo_url }}"
+      chart_ref: "{{ openstack_cinder_helm_chart_ref }}"
+      chart_version: "{{ openstack_cinder_helm_chart_version }}"
+      release_namespace: "{{ openstack_cinder_helm_release_namespace }}"
+      release_name: "{{ openstack_cinder_helm_release_name }}"
       release_state: present
-      values: "{{ lookup('template', 'csi-cinder-plugin-values.yaml.j2') | from_yaml }}"
+      values: "{{ openstack_cinder_helm_values | to_json }}"
       wait: false
 
   - name: Create cinder storage class (hdd)

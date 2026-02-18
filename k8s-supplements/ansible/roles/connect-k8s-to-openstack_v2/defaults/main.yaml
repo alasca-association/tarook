@@ -2,6 +2,4 @@
 # Create the StorageClass `csi-sc-cinderplugin-nvme` in k8s. Note that you have
 # to add the volume type `three_times_replicated_nvme` to your OpenStack project.
 openstack_cinder_nvme: false
-
-openstack_helm_repo_url: "https://kubernetes.github.io/cloud-provider-openstack"
 ...
