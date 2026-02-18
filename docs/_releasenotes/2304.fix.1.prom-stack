@@ -1,0 +1,4 @@
+Affinity and tolerations have been fixed for all components of the prometheus-stack
+such that it can be installed in clusters where all nodes are tainted if a proper
+:ref:`configuration-options.yk8s.k8s-service-layer.prometheus.scheduling_key`
+is configured.
