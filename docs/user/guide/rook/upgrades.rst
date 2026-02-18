@@ -213,22 +213,6 @@ Read the corresponding upgrade page at the
       upgrade
    -  Execute the smoke tests
 
-Adding support for a new ceph release
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you notice that a new ceph release is available, I do not recommend
-modifying/updating the mapped ceph version of an already existing rook
-release in ``k8s-config``. This would trigger existing clusters to
-perform a ceph upgrade once the change is merged.
-
-Rook is getting patch releases on a relatively frequent basis. If a new
-patch version of rook is released, you can add it to the supported
-releases map in ``k8s-config`` along with the new ceph version you want
-to have support for. Patch version upgrades of rook do not require
-additional steps. In other words: Once a ceph release is bound to a rook
-release, do not change that. This way we ensure that existing clusters
-will not be accidentally upgraded (to a new ceph release).
-
 References
 ----------
 

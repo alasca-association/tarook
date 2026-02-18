@@ -8,7 +8,7 @@
         api_version: v1
         kind: Deployment
         name: tigera-operator
-        namespace: tigera-operator
+        namespace: "{{ k8s_network_calico_helm_release_namespace }}"
       register: tigera_operator_deployment
 
     - name: Set fact if tigera-operator Deployment exists
@@ -26,7 +26,7 @@
           apiVersion: v1
           kind: Namespace
           metadata:
-            name: tigera-operator
+            name: "{{ k8s_network_calico_helm_release_namespace }}"
         validate:
           fail_on_error: true
           strict: true
@@ -38,13 +38,13 @@
 
     - name: Deploy Tigera operator chart
       kubernetes.core.helm:
-        chart_repo_url: "{{ calico_helm_repo_url }}"
-        chart_ref: tigera-operator
-        chart_version: "{{ image_versions.calico_version }}"
-        release_namespace: "tigera-operator"
-        release_name: "calico"
+        chart_repo_url: "{{ k8s_network_calico_helm_chart_repo_url }}"
+        chart_version: "{{ k8s_network_calico_helm_chart_version }}"
+        chart_ref: "{{ k8s_network_calico_helm_chart_ref }}"
+        release_namespace: "{{ k8s_network_calico_helm_release_namespace }}"
+        release_name: "{{ k8s_network_calico_helm_release_name }}"
         release_state: present
-        values: "{{ lookup('template', calico_values_file_path) | from_yaml }}"
+        values: "{{ lookup('file', k8s_network_calico_values_file_path) | from_yaml }}"
 
     # Give the operator some time to create the CRDs
     - name: Pause for 20s
@@ -55,7 +55,7 @@
 - name: Install calicoctl
   become: true
   get_url:
-    url: "{{ calico_calicoctl_binary_source }}/v{{ image_versions.calico_version }}/calicoctl-linux-amd64"
+    url: "{{ calico_calicoctl_binary_source }}/v{{ k8s_network_calico_helm_chart_version }}/calicoctl-linux-amd64"
     dest: /usr/local/bin/calicoctl
     owner: root
     group: root

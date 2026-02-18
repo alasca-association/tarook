@@ -73,21 +73,10 @@ Kubernetes Component Versioning
 General Information
 ~~~~~~~~~~~~~~~~~~~
 
-In general, we’re mapping the versions of components which are essential
-for Kubernetes to properly work to the Kubernetes version in the
-``k8s-config`` `role <https://gitlab.com/alasca.cloud/tarook/tarook/-/blob/devel/k8s-base/roles/k8s-config/defaults/main.yaml#L31>`__.
+We’re mapping the versions of some components to the Kubernetes version in
+``version-map`` `role <https://gitlab.com/alasca.cloud/tarook/tarook/-/blob/devel/k8s-supplements/ansible/roles/config/version-map/defaults/main.yaml>`__.
 
-All versions of non-essential components are not mapped to the
-Kubernetes version, i.e. all components/services above the Kubernetes
-layer itself.
-
-Calico
-~~~~~~
-
-The calico version is mapped to the Kubernetes version and calico is
-updated to the mapped version during Kubernetes upgrades. However, it is
-possible to manually update calico to another version. That procedure is
-describe in :doc:`calico </user/explanation/services/calico>`.
+All other components use the latest available version and are kept up-to-date by a renovate bot.
 
 PKI Renewal
 -----------

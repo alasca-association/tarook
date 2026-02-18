@@ -46,6 +46,17 @@ in {
       # renovate: datasource=github-releases packageName=kubernetes/kubernetes
       default = "1.34.4";
     };
+
+    version_minor = mkInternalOption {
+      readOnly = true;
+      default = lib.versions.majorMinor cfg.version;
+    };
+
+    cri_url = mkInternalOption {
+      type = types.yk8s.networking.urlWith {schemeRE = "unix";};
+      default = "unix:///var/run/containerd/containerd.sock";
+    };
+
     is_gpu_cluster = mkOption {
       description = ''
         Set this variable if this cluster contains worker with GPU access
@@ -165,14 +176,18 @@ in {
       message = "config.yk8s.kubernetes.is_gpu_cluster: is mutually exlusive with config.yk8s.kubernetes.virtualize_gpu";
     }
   ];
+  config.yk8s.warnings = lib.optional (yk8s-lib.transform.matchesRegex "^(${types.yk8s.networking._regexes.rfc3986.schemeRE})://[^/].*$" cfg.cri_url) "config.yk8s.kubernetes.cri_url uses a relative path which may lead to unintended behavior.";
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
       ansible_prefix = "k8s_";
       inventory_path = "all/kubernetes.yaml";
       transformations = [
-        # `apiserver.audit_logs.policy` is removed because it is proxied by `apiserver.audit_logs.policy_file`
-        (cfg: yk8s-lib.transform.removeAttrByPath cfg ["apiserver" "audit_logs" "policy"])
+        (cfg:
+          yk8s-lib.transform.removeAttrsByPath cfg [
+            ["apiserver" "audit_logs" "policy"] # proxied by apiserver.audit_logs.policy_file
+            ["network" "calico" "helm" "values"] # proxied by network.calico.values_file_path
+          ])
       ];
     })
   ];

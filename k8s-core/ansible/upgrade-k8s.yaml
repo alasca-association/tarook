@@ -32,9 +32,6 @@
   serial:
     - 1
     - "100%"
-  roles:
-    - name: Include config/k8s-config
-      role: config/k8s-config
   tasks:
     - name: Obtain CAs (CP)
       include_role:
@@ -68,9 +65,6 @@
     - vars/etc.yaml
     - vars/retries.yaml
     - vars/vault-config.yaml
-  roles:
-    - name: Include config/k8s-config
-      role: config/k8s-config
   tasks:
     - name: Obtain CAs (Worker)
       include_role:

@@ -112,8 +112,8 @@
 
 - name: Configure crictl
   become: true
-  copy:
-    src: crictl.yaml
+  template:
+    src: crictl.yaml.j2
     dest: /etc/crictl.yaml
     owner: root
     group: root
