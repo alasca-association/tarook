@@ -1,0 +1,2 @@
+Affinity and tolerations have been added to the snapshot-controller
+such that it is ensured to be running on a control plane node.
