@@ -553,7 +553,7 @@ in {
     (lib.mkIf cfg.enabled {
       terraform.enabled = true;
 
-      assertions = let
+      _targets.ansible.assertions = let
         inherit (builtins) all any length filter attrValues;
         inherit (yk8s-lib.transform) partitionAttrs;
       in

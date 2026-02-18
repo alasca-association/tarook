@@ -575,7 +575,7 @@ in {
       };
     };
   };
-  config.yk8s.assertions =
+  config.yk8s._targets.ansible.assertions =
     []
     # check that no IPv6 module is configured in any probe if yk8s.infra.ipv6_enabled is disabled
     ++ lib.imap0

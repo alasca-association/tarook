@@ -327,11 +327,9 @@ in {
     };
   };
 
-  config.yk8s.assertions = [
+  config.yk8s._targets.ansible.assertions = [
     {
-      assertion =
-        config.yk8s.terraform.outputs_ready
-        -> (cfg.ansible_hosts.orchestrator.children or {}) == {} && (builtins.length (builtins.attrNames cfg.ansible_hosts.orchestrator.hosts)) == 1;
+      assertion = (cfg.ansible_hosts.orchestrator.children or {}) == {} && (builtins.length (builtins.attrNames cfg.ansible_hosts.orchestrator.hosts)) == 1;
       message = "config.yk8s.infra.ansible_hosts.orchestrator must contain exactly one host and no children";
     }
     {
@@ -339,20 +337,18 @@ in {
       message = "config.yk8s.infra.networking_floating_ip must be set if Wireguard or IPsec is used.";
     }
     {
-      assertion =
-        config.yk8s.terraform.outputs_ready
-        -> builtins.all (host: (host.ansible_connection or "") != "local" -> host.ansible_host != null) (builtins.attrValues cfg.final_hosts.all.hosts);
+      assertion = builtins.all (host: (host.ansible_connection or "") != "local" -> host.ansible_host != null) (builtins.attrValues cfg.final_hosts.all.hosts);
       message = "ansible_host must be set for all hosts in config.yk8s.infra.ansible_hosts if ansible_connection!=local";
     }
     {
       assertion =
-        (config.yk8s.terraform.outputs_ready && cfg.ipv4_enabled)
+        cfg.ipv4_enabled
         -> builtins.all (host: host.local_ipv4_address != null) (builtins.attrValues cfg.final_hosts.k8s_nodes.hosts);
       message = "local_ipv4_address must be set for all hosts in config.yk8s.infra.ansible_hosts.k8s_nodes";
     }
     {
       assertion =
-        (config.yk8s.terraform.outputs_ready && cfg.ipv6_enabled)
+        cfg.ipv6_enabled
         -> builtins.all (host: host.local_ipv6_address != null) (builtins.attrValues cfg.final_hosts.k8s_nodes.hosts);
       message = "local_ipv6_address must be set for all hosts in config.yk8s.infra.ansible_hosts.k8s_nodes";
     }

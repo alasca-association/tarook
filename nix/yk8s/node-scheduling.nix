@@ -86,14 +86,14 @@ in {
         }'';
     };
   };
-  config.yk8s.warnings =
+  config.yk8s._targets.ansible.warnings =
     (builtins.foldl' (acc: e:
       acc
-      ++ lib.optional (config.yk8s.terraform.outputs_ready && ! builtins.hasAttr e (config.yk8s.infra.final_hosts.all.hosts or {}))
+      ++ lib.optional (! builtins.hasAttr e (config.yk8s.infra.final_hosts.all.hosts or {}))
       "config.yk8s.node-scheduling.labels: label defined for ${e}, but node not found in config.yk8s.infra.ansible_hosts") [] (builtins.attrNames cfg.labels))
     ++ (builtins.foldl' (acc: e:
       acc
-      ++ lib.optional (config.yk8s.terraform.outputs_ready && ! builtins.hasAttr e (config.yk8s.infra.final_hosts.all.hosts or {}))
+      ++ lib.optional (! builtins.hasAttr e (config.yk8s.infra.final_hosts.all.hosts or {}))
       "config.yk8s.node-scheduling.taints: taint defined for ${e}, but node not found in config.yk8s.infra.ansible_hosts") [] (builtins.attrNames cfg.taints));
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {

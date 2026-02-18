@@ -247,8 +247,8 @@ in {
         })
       ];
     _targets.ansible.state_packages = lib.lists.optional cfg.enabled (linkToPath "${wireguard_helper_output}/${ipam_path}" ipam_path);
-    warnings = lib.optional (cfg.enabled && (builtins.length cfg.peers) == 0) "config.yk8s.wireguard.peers: is empty";
-    assertions = let
+    _targets.ansible.warnings = lib.optional (cfg.enabled && (builtins.length cfg.peers) == 0) "config.yk8s.wireguard.peers: is empty";
+    _targets.ansible.assertions = let
       inherit (builtins) length;
       inherit (lib.lists) unique;
       allUnique = l: (length (unique l)) == length l;

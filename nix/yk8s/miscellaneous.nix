@@ -155,7 +155,7 @@ in {
       default = null;
     };
   };
-  config.yk8s.assertions = [
+  config.yk8s._targets.ansible.assertions = [
     {
       assertion = cfg.cluster_behind_proxy -> cfg.http_proxy != null;
       message = "config.yk8s.miscellaneous.http_proxy: must be set because config.yk8s.miscellaneous.cluster_behind_proxy=true";

@@ -33,7 +33,7 @@ in {
       enforce rebooting of nodes after every system update
     '';
   };
-  config.yk8s.assertions = let
+  config.yk8s._targets.ansible.assertions = let
     inherit (builtins) all attrNames elem filter length;
     inherit (lib.strings) concatStringsSep;
     openstackNodesWithPrefix = map (n: "${config.yk8s.infra.cluster_name}-${n}") (attrNames config.yk8s.openstack.nodes);

@@ -220,7 +220,7 @@ in {
       # whisker configures the Calico Whisker observability UI.
       whisker.enabled = false;
     };
-  config.yk8s.warnings =
+  config.yk8s._targets.ansible.warnings =
     lib.optional (options.yk8s.kubernetes.network.calico.values_file_path.highestPrio < 1500) # priority of option defaults
     
     "config.yk8s.kubernetes.network.calico.values_file_path: is deprecated. Please use config.yk8s.kubernetes.network.calico.helm.values instead.";
