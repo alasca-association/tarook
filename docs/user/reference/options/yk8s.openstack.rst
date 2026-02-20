@@ -480,9 +480,18 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 ``yk8s.openstack.create_root_disk_on_volume``
 #############################################
 
-Whether to enable creation of root disk volumes.
+Whether to enable creation of root disk volumes for all instances.
 If true, create block volume for each instance and boot from there.
+
 Equivalent to ``openstack server create --boot-from-volume […]``.
+
+This is option is inferior to:
+
+- :ref:`configuration-options.yk8s.openstack.gateway_defaults.create_root_disk_on_volume`
+- :ref:`configuration-options.yk8s.openstack.master_defaults.create_root_disk_on_volume`
+- :ref:`configuration-options.yk8s.openstack.worker_defaults.create_root_disk_on_volume`
+- :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume`
+
 .
 
 **Type:**::
@@ -596,6 +605,36 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
 
 
+.. _configuration-options.yk8s.openstack.gateway_defaults.create_root_disk_on_volume:
+
+``yk8s.openstack.gateway_defaults.create_root_disk_on_volume``
+##############################################################
+
+Enable creation of root disk volume for gateways.
+If true, create block volume for all gateways and boot from there.
+
+Equivalent to ``openstack server create --boot-from-volume […]``
+
+This option takes precedence over:
+
+- :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+
+
+
+**Type:**::
+
+  null or boolean
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
 .. _configuration-options.yk8s.openstack.gateway_defaults.flavor:
 
 ``yk8s.openstack.gateway_defaults.flavor``
@@ -633,17 +672,17 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 ``yk8s.openstack.gateway_defaults.root_disk_size``
 ##################################################
 
-Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
+If null, the disk size of the configured flavor will be used.
 
 
 **Type:**::
 
-  positive integer, meaning >0
+  null or (positive integer, meaning >0)
 
 
 **Default:**::
 
-  10
+  null
 
 
 **Declared by**
@@ -655,7 +694,6 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 ``yk8s.openstack.gateway_defaults.root_disk_volume_type``
 #########################################################
 
-Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
 If null, the default of the IaaS environment will be used.
 
 
@@ -686,6 +724,40 @@ Will most of the time be set via the environment variable TF_VAR_keypair
 **Type:**::
 
   null or non-empty string
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.master_defaults.create_root_disk_on_volume:
+
+``yk8s.openstack.master_defaults.create_root_disk_on_volume``
+#############################################################
+
+Enable creation of root disk volume for masters by default.
+If true, create block volume for masters by default and boot from there.
+
+Equivalent to ``openstack server create --boot-from-volume […]``
+
+This option takes precedence over:
+
+- :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+
+but is inferior to:
+
+- :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume`
+
+
+
+**Type:**::
+
+  null or boolean
 
 
 **Default:**::
@@ -734,17 +806,25 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 ``yk8s.openstack.master_defaults.root_disk_size``
 #################################################
 
-Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
+If null, the disk size of the configured flavor will be used.
+
+This will only take effect if one of the following
+
+- :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+- :ref:`configuration-options.yk8s.openstack.master_defaults.create_root_disk_on_volume`
+- :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume` (for each master node)
+
+is set to ``true``.
 
 
 **Type:**::
 
-  positive integer, meaning >0
+  null or (positive integer, meaning >0)
 
 
 **Default:**::
 
-  50
+  null
 
 
 **Declared by**
@@ -756,7 +836,6 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 ``yk8s.openstack.master_defaults.root_disk_volume_type``
 ########################################################
 
-Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
 If null, the default of the IaaS environment will be used.
 
 
@@ -898,6 +977,39 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
 
 
+.. _configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume:
+
+``yk8s.openstack.nodes.<name>.create_root_disk_on_volume``
+##########################################################
+
+Enable creation of root disk volume for this instance.
+If true, create block volume for this instance and boot from there.
+
+Equivalent to ``openstack server create --boot-from-volume […]``.
+
+This option takes precedence over:
+
+- :ref:`configuration-options.yk8s.openstack.gateway_defaults.create_root_disk_on_volume`
+- :ref:`configuration-options.yk8s.openstack.master_defaults.create_root_disk_on_volume`
+- :ref:`configuration-options.yk8s.openstack.worker_defaults.create_root_disk_on_volume`
+- :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+
+
+
+**Type:**::
+
+  null or boolean
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
 .. _configuration-options.yk8s.openstack.nodes.<name>.flavor:
 
 ``yk8s.openstack.nodes.<name>.flavor``
@@ -961,6 +1073,18 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 ``yk8s.openstack.nodes.<name>.root_disk_size``
 ##############################################
 
+If null, the disk size of the configured flavor will be used.
+
+This will only take effect if one of the following
+
+- :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+- :ref:`configuration-options.yk8s.openstack.worker_defaults.create_root_disk_on_volume`
+  (if :ref:`configuration-options.yk8s.openstack.nodes.<name>.role` is ``worker``)
+- :ref:`configuration-options.yk8s.openstack.master_defaults.create_root_disk_on_volume`
+  (if :ref:`configuration-options.yk8s.openstack.nodes.<name>.role` is ``master``)
+- :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume`
+
+is set to ``true``.
 
 
 **Type:**::
@@ -1089,6 +1213,40 @@ Leaving this empty means to not join any anti affinity group
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
 
 
+.. _configuration-options.yk8s.openstack.worker_defaults.create_root_disk_on_volume:
+
+``yk8s.openstack.worker_defaults.create_root_disk_on_volume``
+#############################################################
+
+Enable creation of root disk volume for workers by default.
+If true, create block volume for workers by default and boot from there.
+
+Equivalent to ``openstack server create --boot-from-volume […]``.
+
+This option takes precedence over:
+
+- :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+
+but is inferior to:
+
+- :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume`
+
+
+
+**Type:**::
+
+  null or boolean
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
 .. _configuration-options.yk8s.openstack.worker_defaults.flavor:
 
 ``yk8s.openstack.worker_defaults.flavor``
@@ -1126,17 +1284,25 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 ``yk8s.openstack.worker_defaults.root_disk_size``
 #################################################
 
-Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
+If null, the disk size of the configured flavor will be used.
+
+This will only take effect if one of the following
+
+- :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+- :ref:`configuration-options.yk8s.openstack.worker_defaults.create_root_disk_on_volume`
+- :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume` (for each worker node)
+
+is set to ``true``.
 
 
 **Type:**::
 
-  positive integer, meaning >0
+  null or (positive integer, meaning >0)
 
 
 **Default:**::
 
-  50
+  null
 
 
 **Declared by**
@@ -1148,7 +1314,6 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 ``yk8s.openstack.worker_defaults.root_disk_volume_type``
 ########################################################
 
-Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
 If null, the default of the IaaS environment will be used.
 
 
