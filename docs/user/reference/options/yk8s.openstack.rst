@@ -134,9 +134,9 @@ to true.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
 
 
-.. _configuration-options.yk8s.openstack.cinder_enable_topology:
+.. _configuration-options.yk8s.openstack.cinder.enable_topology:
 
-``yk8s.openstack.cinder_enable_topology``
+``yk8s.openstack.cinder.enable_topology``
 #########################################
 
 Whether to enable cinder topology.
@@ -165,9 +165,152 @@ Important: Cinder must support AZs and the AZs must match the AZs used by nova!
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
 
 
-.. _configuration-options.yk8s.openstack.cinder_volume_type:
+.. _configuration-options.yk8s.openstack.cinder.helm.chart_ref:
 
-``yk8s.openstack.cinder_volume_type``
+``yk8s.openstack.cinder.helm.chart_ref``
+########################################
+
+The chart reference (relative to the repository) of the Cinder CSI driver plugin Helm chart.
+
+
+**Type:**::
+
+  RFC3986 relative URL path
+
+
+**Default:**::
+
+  "openstack-cinder-csi"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cinder.helm.chart_repo_url:
+
+``yk8s.openstack.cinder.helm.chart_repo_url``
+#############################################
+
+The URL to the Helm repository for the Cinder CSI driver plugin Helm chart.
+
+
+**Type:**::
+
+  RFC3986 HTTP(S) URL
+
+
+**Default:**::
+
+  "https://kubernetes.github.io/cloud-provider-openstack"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cinder.helm.chart_version:
+
+``yk8s.openstack.cinder.helm.chart_version``
+############################################
+
+Version of the Cinder CSI driver plugin Helm chart to be used.
+
+If the version shall be unpinned, set to: ``null``.
+
+
+**Type:**::
+
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
+
+
+**Default:**::
+
+  "2.34.1"
+
+
+**Example:**::
+
+  "1.2.3"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cinder.helm.release_name:
+
+``yk8s.openstack.cinder.helm.release_name``
+###########################################
+
+The release name inside the cluster for Cinder CSI driver plugin.
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "cinder-csi"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cinder.helm.release_namespace:
+
+``yk8s.openstack.cinder.helm.release_namespace``
+################################################
+
+The namespace in which to install Cinder CSI driver plugin.
+
+
+**Type:**::
+
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
+
+
+**Default:**::
+
+  "kube-system"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cinder.helm.values:
+
+``yk8s.openstack.cinder.helm.values``
+#####################################
+
+Helm values for the Cinder CSI driver plugin helm chart.
+
+Some values are set by default through Tarook, but arbitrary values can be set.
+For a full list of possible values, see
+https://github.com/kubernetes/cloud-provider-openstack/blob/master/charts/cinder-csi-plugin/values.yaml
+
+
+**Type:**::
+
+  JSON value
+
+
+**Default:**::
+
+  { }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cinder.volume_type:
+
+``yk8s.openstack.cinder.volume_type``
 #####################################
 
 Use a specific volume type for the csi-sc-cinderplugin StorageClass.
@@ -183,6 +326,149 @@ of the IaaS-layer is used.
 **Default:**::
 
   null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cloud_controller_manager.helm.chart_ref:
+
+``yk8s.openstack.cloud_controller_manager.helm.chart_ref``
+##########################################################
+
+The chart reference (relative to the repository) of the Openstack Cloud Controller Manager Helm chart.
+
+
+**Type:**::
+
+  RFC3986 relative URL path
+
+
+**Default:**::
+
+  "openstack-cloud-controller-manager"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cloud_controller_manager.helm.chart_repo_url:
+
+``yk8s.openstack.cloud_controller_manager.helm.chart_repo_url``
+###############################################################
+
+The URL to the Helm repository for the Openstack Cloud Controller Manager Helm chart.
+
+
+**Type:**::
+
+  RFC3986 HTTP(S) URL
+
+
+**Default:**::
+
+  "https://kubernetes.github.io/cloud-provider-openstack"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cloud_controller_manager.helm.chart_version:
+
+``yk8s.openstack.cloud_controller_manager.helm.chart_version``
+##############################################################
+
+Version of the Openstack Cloud Controller Manager Helm chart to be used.
+
+If the version shall be unpinned, set to: ``null``.
+
+
+**Type:**::
+
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
+
+
+**Default:**::
+
+  "2.34.1"
+
+
+**Example:**::
+
+  "1.2.3"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cloud_controller_manager.helm.release_name:
+
+``yk8s.openstack.cloud_controller_manager.helm.release_name``
+#############################################################
+
+The release name inside the cluster for Openstack Cloud Controller Manager.
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "openstack-cloud-controller-manager"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cloud_controller_manager.helm.release_namespace:
+
+``yk8s.openstack.cloud_controller_manager.helm.release_namespace``
+##################################################################
+
+The namespace in which to install Openstack Cloud Controller Manager.
+
+
+**Type:**::
+
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
+
+
+**Default:**::
+
+  "kube-system"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+
+
+.. _configuration-options.yk8s.openstack.cloud_controller_manager.helm.values:
+
+``yk8s.openstack.cloud_controller_manager.helm.values``
+#######################################################
+
+Helm values for the Openstack Cloud Controller Manager helm chart.
+
+Some values are set by default through Tarook, but arbitrary values can be set.
+For a full list of possible values, see
+https://github.com/kubernetes/cloud-provider-openstack/blob/master/charts/openstack-cloud-controller-manager/values.yaml
+
+
+**Type:**::
+
+  JSON value
+
+
+**Default:**::
+
+  { }
 
 
 **Declared by**
