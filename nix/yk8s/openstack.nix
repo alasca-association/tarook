@@ -339,7 +339,7 @@ in {
       defaultRepoUrl = "https://kubernetes.github.io/cloud-provider-openstack";
       defaultChartRef = "openstack-cinder-csi";
       # renovate: datasource=helm depName=openstack-cinder-csi registryUrl=https://kubernetes.github.io/cloud-provider-openstack
-      defaultChartVersion = "2.34.1";
+      defaultChartVersion = "2.34.3";
       defaultReleaseNamespace = "kube-system";
       defaultReleaseName = "cinder-csi";
       valuesDocUrl = "https://github.com/kubernetes/cloud-provider-openstack/blob/master/charts/cinder-csi-plugin/values.yaml";
