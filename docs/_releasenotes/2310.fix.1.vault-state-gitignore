@@ -1,0 +1,3 @@
+For clusters using the :doc:`Vault development setup </developer/explanation/vault>`,
+the state directory of the local Vault container is now automatically added to ``.gitignore``.
+If not ignored, the state directory potentially causes issues due to its ownership and restrictive permissions.

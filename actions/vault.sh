@@ -15,6 +15,10 @@ mkdir -p "$vault_dir/config"
 mkdir -p "$vault_dir/data"
 cd "$vault_dir"
 
+# Add vault_dir to .gitignore
+relative_vault_dir="$(realpath --relative-to="$cluster_repository" "$vault_dir")"
+grep -qxF "$relative_vault_dir" "$cluster_repository/.gitignore" || printf "# USE_VAULT_IN_DOCKER is enabled, ignoring state directory:\n%s\n" "$relative_vault_dir" >> "$cluster_repository/.gitignore"
+
 # Copy Vault config template; don't overwrite (--no-clobber); check for existence to avoid stopping here
 # Coreutils v9.2 changed the behaviour of --no-clobber[1].
 # [1] https://github.com/coreutils/coreutils/blob/df4e4fbc7d4605b7e1c69bff33fd6af8727cf1bf/NEWS#L88
