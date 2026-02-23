@@ -192,7 +192,6 @@ build-docs-check:
   stage: lint
   image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
   script:
-    - towncrier build --version x.x.x --keep
     - out=$(nix build --print-out-paths --no-link .#docs)
     - rsync --recursive --copy-links "${out}" public
   artifacts:
