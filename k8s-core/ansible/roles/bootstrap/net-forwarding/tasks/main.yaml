@@ -2,6 +2,9 @@
 - name: Enable IP forwarding
   become: true
   block:
+    - name: Load ipv4 interface
+      include_vars: vars/network_interfaces.yaml
+
     - name: Create /etc/sysctl.d/forward.conf
       template:
         src: forward.conf.j2

@@ -41,7 +41,7 @@ vrrp_sync_group VGG {
 {% if ipv4_enabled %}
 vrrp_instance VIP_1 {
     state BACKUP
-    interface {{ ansible_default_ipv4.interface }}
+    interface {{ ipv4_interface }}
     # All VRRP instances belonging to the same cluster must share this id
     virtual_router_id 47
     priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}

@@ -1,0 +1,13 @@
+---
+ipv4_interface: >-
+  {{
+    hostvars[inventory_hostname].ansible_default_ipv4.interface | default(
+      hostvars[inventory_hostname].ansible_interfaces
+      | map('regex_replace', '^(.*)$', 'ansible_\1')
+      | map('extract', hostvars[inventory_hostname])
+      | selectattr('ipv4.address', 'defined')
+      | selectattr('ipv4.address', 'equalto', hostvars[inventory_hostname].local_ipv4_address)
+      | map(attribute='device')
+      | first
+    )
+  }}

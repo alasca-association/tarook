@@ -1,0 +1,1 @@
+Switched to custom ipv4_interface lookup because `ansible_default_ipv4` is undefined on nodes lacking an IPv4 default gateway. The new logic falls back to matching the inventory's `local_ipv4_address` against all host interfaces.

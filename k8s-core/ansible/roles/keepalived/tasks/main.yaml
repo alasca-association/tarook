@@ -10,6 +10,9 @@
   retries: "{{ error_retries }}"
   delay: "{{ error_delay }}"
 
+- name: Load ipv4 interface
+  include_vars: vars/network_interfaces.yaml
+
 - name: Create keepalived configuration
   become: true
   template:
