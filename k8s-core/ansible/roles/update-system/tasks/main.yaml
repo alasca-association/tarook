@@ -51,9 +51,14 @@
       or ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
       or ansible_local['frontend-initialized']['frontend_install_status'] | default('not_initialized') != 'initialized'
 
+- name: Check if reboot is required
+  ansible.builtin.stat:
+    path: /run/reboot-required
+  register: reboot_required_file
+
 - name: Reboot block  # noqa no-handler
   become: true
-  when: (upgrade_apt is changed) or (testing_force_reboot_nodes | default(false))
+  when: reboot_required_file.stat.exists or (testing_force_reboot_nodes | default(false))
   block:
 
     - name: Reboot the system (cloud-init run)  # noqa no-changed-when
