@@ -290,7 +290,7 @@ in {
     };
     prometheus_adapter_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=prometheus-adapter registryUrl=https://prometheus-community.github.io/helm-charts
-      default = "5.2.1";
+      default = "5.3.0";
     };
 
     namespace = mkOption {
