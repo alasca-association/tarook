@@ -140,7 +140,6 @@ in {
 
           Check the parts regarding YAML in the Ansible documentation: https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html
         '';
-        apply = applyGroupSubmoduleAttrs;
         type = types.submodule {
           freeformType = types.attrsOf groupSubmodule;
           options = {
@@ -157,7 +156,6 @@ in {
             gateways = mkOption {
               visible = "shallow"; # Otherwise the submodule's options are repeated here
               type = groupSubmodule;
-              default = {};
             };
             k8s_nodes = mkInternalOption {
               readOnly = true;
@@ -184,7 +182,6 @@ in {
             workers = mkOption {
               visible = "shallow"; # Otherwise the submodule's options are repeated here
               type = groupSubmodule;
-              default = {};
               example = {
                 hosts = {
                   devcluster-worker-1 = {
