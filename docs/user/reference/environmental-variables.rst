@@ -296,8 +296,8 @@ Environment Variable                        Default     Description
 .. note::
 
    You should not use the ``AFLAGS``-mechanism to pass
-   sustained variables to Ansible. These variables should be set in your
-   Ansible configuration file or hosts file(s).
+   sustained variables to Ansible.
+   See :ref:`cluster-configuration.custom-configuration` instead.
 
 .. note::
 

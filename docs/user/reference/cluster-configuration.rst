@@ -59,6 +59,8 @@ variables are only available to stages/layers which need them.
 
 For all available options see :doc:`options/index`
 
+.. _cluster-configuration.custom-configuration:
+
 Custom Configuration
 --------------------
 
