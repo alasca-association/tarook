@@ -96,7 +96,6 @@ in {
     };
 
     ansible_hosts = let
-      applyGroupSubmoduleAttrs = lib.mapAttrs (_: lib.filterAttrs (_: a: a != {}));
       hostsSubmodule = types.submodule {
         freeformType = types.yk8s.formats.jsonValue;
         options = {
@@ -120,7 +119,6 @@ in {
             visible = "shallow"; # Otherwise renderDocs chokes on the recursive submodule
             type = types.attrsOf groupSubmodule;
             default = {};
-            apply = applyGroupSubmoduleAttrs;
           };
           hosts = mkOption {
             type = types.attrsOf hostsSubmodule;
@@ -140,7 +138,6 @@ in {
 
           Check the parts regarding YAML in the Ansible documentation: https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html
         '';
-        apply = applyGroupSubmoduleAttrs;
         type = types.submodule {
           freeformType = types.attrsOf groupSubmodule;
           options = {
@@ -289,8 +286,19 @@ in {
       message = "local_ipv6_address must be set for all hosts in config.yk8s.infra.ansible_hosts.k8s_nodes";
     }
   ];
-  config.yk8s._targets.ansible.inventory_packages = [
-    (mkYamlAtPath "hosts" (filterNull cfg.ansible_hosts))
+  config.yk8s._targets.ansible.inventory_packages = let
+    trimEmptySubmoduleAttrs = lib.mapAttrs (_: submodule:
+      lib.pipe submodule [
+        (lib.filterAttrs (_: v: v != {}))
+        (lib.mapAttrs (
+          n: v:
+            if n == "children"
+            then trimEmptySubmoduleAttrs v
+            else v
+        ))
+      ]);
+  in [
+    (mkYamlAtPath "hosts" (lib.pipe cfg.ansible_hosts [trimEmptySubmoduleAttrs filterNull]))
     (mkGroupVarsFile {
       inherit cfg;
       inventory_path = "all/infra.yaml";
