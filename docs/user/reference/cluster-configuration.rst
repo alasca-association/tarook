@@ -17,9 +17,12 @@ The cluster repository layout
    your_cluster_repo
    ├── config/                           # All user configuration now resides in this directory
    │   └── default.nix                   # Nix-based cluster configuration
-   ├── inventory/yaook-k8s/              # Ansible inventory is now completely generated and MAY be excluded from version control
-   │   ├── group-vars/                   # Variables passed to Ansible
-   │   └── hosts                         # Ansible hosts file, generated from config even for bare-metal
+   ├── inventory/
+   │   ├── yaook-k8s/                    # Ansible inventory (completely generated and MAY be excluded from version control)
+   │   │   ├── group-vars/               # Variables passed to Ansible
+   │   │   └── hosts                     # Ansible hosts file, generated from config even for bare-metal
+   │   ├── vault/main.yaml               # Variables used by scripts in tools/vault/ (not an Ansible inventory!)
+   │   └── conf_vars/main.yaml           # Variables used by scripts in actions/ (not an Ansible inventory!)
    ├── state/                            # Auto-generated files that need to be preserved. MUST be checked into version control
    │   ├── wireguard/
    │   │   └── ipam.toml                 # WireGuard IP address management
