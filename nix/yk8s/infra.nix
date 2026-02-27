@@ -12,6 +12,8 @@
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkDisableOption linkToPath mkYamlAtPath mkInternalOption types;
   inherit (yk8s-lib.transform) filterNull;
   inherit (lib) mkEnableOption mkOption;
+
+  applyGroupSubmoduleAttrs = lib.mapAttrs (_: lib.filterAttrs (_: a: a != {}));
 in {
   imports = [
     (mkRemovedOptionModule ["infra" "hosts_file"] "Use infra.ansible_hosts instead")
@@ -96,7 +98,6 @@ in {
     };
 
     ansible_hosts = let
-      applyGroupSubmoduleAttrs = lib.mapAttrs (_: lib.filterAttrs (_: a: a != {}));
       hostsSubmodule = types.submodule {
         freeformType = types.yk8s.formats.jsonValue;
         options = {
@@ -287,7 +288,7 @@ in {
     }
   ];
   config.yk8s._targets.ansible.inventory_packages = [
-    (mkYamlAtPath "hosts" (filterNull cfg.ansible_hosts))
+    (mkYamlAtPath "hosts" (filterNull (applyGroupSubmoduleAttrs cfg.ansible_hosts)))
     (mkGroupVarsFile {
       inherit cfg;
       inventory_path = "all/infra.yaml";
