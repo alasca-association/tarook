@@ -45,7 +45,7 @@ in {
         [1 34]
       ];
       # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-      default = "1.34.4";
+      default = "1.34.5";
     };
 
     version_minor = mkInternalOption {
