@@ -3,6 +3,27 @@
 apiVersion: kubeadm.k8s.io/v1beta4
 kind: JoinConfiguration
 nodeRegistration:
+
+node_taints: >
+      {{
+        (
+          k8s_node_taints[inventory_hostname] | default([])
+          | map('regex_replace', '^([^:=]+)([=]([^:]+))?([:](.+))?', '{"key": "\1", "value": "\3", "effect": "\5"}')
+          | map('regex_replace', ', "value": ""', '')
+          | map('regex_replace', '"effect": ""', '"effect": "NoExecute"')
+          | map('from_json')
+        )
+      }}
+
+{% if node_taints | length > 0 %}
+  taints:
+{% for taint in node_taints %}
+    - key: {{ taint["key"] }}
+      value: {{ taint["value"] }}
+      effect: {{ taint["effect"] }}
+{% endfor %}
+{% endif %}
+
   ignorePreflightErrors:
   - FileAvailable--etc-kubernetes-kubelet.conf
   kubeletExtraArgs:
