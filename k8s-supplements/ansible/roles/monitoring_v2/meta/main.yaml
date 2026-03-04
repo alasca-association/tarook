@@ -4,5 +4,4 @@ galaxy_info:
   author: Tarook Authors
 dependencies:
 - config/common_defaults_v1
-- config/version-map
 ...

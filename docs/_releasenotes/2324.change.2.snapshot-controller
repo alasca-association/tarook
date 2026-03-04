@@ -1,0 +1,3 @@
+The volume-snapshot-controller version is not mapped to Kubernetes versions anymore.
+This means that the volume-snapshot-controller will be updated in clusters that are not on the latest supported Kubernetes version.
+The volume-snapshot-controller is internally managed and tested against all supported Kubernetes versions.
