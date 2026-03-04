@@ -1,7 +1,6 @@
 ---
+# Deploy apt repository for next_k8s_version
 - name: Update the Kubernetes community-owned repository
-  vars:
-    k8s_version: "{{ next_k8s_version }}"
   include_role:
     name: k8s-packages
     tasks_from: configure-package-repo.yaml
