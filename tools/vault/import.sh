@@ -28,7 +28,6 @@ fi
 # Ensure that the latest config is deployed to the inventory
 "$actions_dir/update-inventory.sh" vault
 
-cluster="$(get_clustername)"
 mode="$1"
 
 import_roots=1
@@ -48,9 +47,7 @@ case "$mode" in
         ;;
 esac
 
-# reload the lib to update the vars after initializing the clustername
-# shellcheck source=tools/vault/lib.sh
-. "$(dirname "$0")/lib.sh"
+load_vars
 scriptdir="$(dirname "$0")"
 
 inventory_etc=etc

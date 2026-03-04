@@ -8,9 +8,12 @@ common_path_prefix="${YAOOK_K8S_VAULT_PATH_PREFIX:-yaook}"
 common_policy_prefix="${YAOOK_K8S_VAULT_POLICY_PREFIX:-yaook}"
 nodes_approle_name="${YAOOK_K8S_VAULT_NODES_APPROLE_NAME:-${common_path_prefix}/nodes}"
 nodes_approle_path="auth/$nodes_approle_name"
-k8s_controller_manager_enable_signing_requests="$(yq '.k8s_controller_manager_enable_signing_requests' "$vars_file" 2>/dev/null)"
 
-if [ -n "${cluster:-}" ]; then
+function load_vars() {
+    # All the things with side-effects should go here
+    k8s_controller_manager_enable_signing_requests="$(yq '.k8s_controller_manager_enable_signing_requests' "$vars_file" 2>/dev/null)"
+    cluster="$(yq --raw-output '.vault_cluster_name' "${vars_file}" 2>/dev/null)"
+
     cluster_path="$common_path_prefix/$cluster"
 
     year="$(date +%Y)"
@@ -22,10 +25,10 @@ if [ -n "${cluster:-}" ]; then
     k8s_pki_path="$cluster_path/k8s-pki"
     k8s_front_proxy_pki_path="$cluster_path/k8s-front-proxy-pki"
     etcd_pki_path="$cluster_path/etcd-pki"
-fi
 
-# If we can't find the approle accessor, that's ok
-nodes_approle_accessor=$(vault read -field="$nodes_approle_name/" -format=json sys/auth | jq -r .accessor) || unset nodes_approle_accessor
+    # If we can't find the approle accessor, that's ok
+    nodes_approle_accessor=$(vault read -field="$nodes_approle_name/" -format=json sys/auth | jq -r .accessor) || unset nodes_approle_accessor
+}
 
 function require_vault_token() {
     if [ -z ${VAULT_TOKEN+x} ]; then
@@ -60,10 +63,6 @@ function require_k8s_cluster_ca_backup_destruction {
         # the destruction is done by the orchestrator hence one must provide a vault token
         require_vault_token
     fi
-}
-
-function get_clustername() {
-    yq --raw-output '.vault_cluster_name' "${vars_file}"
 }
 
 function init_cluster_secrets_engines() {
