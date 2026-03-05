@@ -17,13 +17,30 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v12.0.1 (2026-03-04)
+--------------------
+
+Changes in the Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- The description of :ref:`configuration-options.yk8s.infra.ansible_hosts` has been improved. (`!2326 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2326>`_)
+
+
 v12.0.0 (2026-02-12)
 --------------------
 
 Breaking changes
 ~~~~~~~~~~~~~~~~
 
-- The deprecated option ``infra.hosts_file`` has been removed. Use :ref:`configuration-options.yk8s.infra.ansible_hosts` instead. (`!1840 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1840>`_)
+- The deprecated option ``infra.hosts_file`` has been removed.
+  Use :ref:`configuration-options.yk8s.infra.ansible_hosts` instead.
+
+  .. note::
+
+    Migrating to the new option requires manual steps for bare-metal clusters.
+    Take a look at :ref:`configuration-options.yk8s.infra.ansible_hosts`.
+
+  (`!1840 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1840>`_)
 - :ref:`update-inventory.sh <actions-references.update-inventorysh>` now differentiates between multiple targets. If you directly use ``update-inventory.sh`` in your automation, you must adapt your scripts.
   Run
 
