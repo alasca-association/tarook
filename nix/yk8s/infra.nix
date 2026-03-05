@@ -138,6 +138,77 @@ in {
           Entries to the Ansible hosts file. Will be rendered to a YAML-based file into the inventory.
           This option is mandatory for bare-metal clusters and is automatically managed if Terraform is used.
 
+          Migrating from ``yk8s.infra.hosts_file``
+          """"""""""""""""""""""""""""""""""""""""
+
+          Bare-metal clusters which previously used a self-managed ini-based inventory file
+          must migrate their inventory file and either configure the Ansible hosts directly in their configuration
+          or migrate the ini-based file to a YAML- or JSON-based file
+          and then import that file in their configuration.
+
+          It is recommended to configure the Ansible hosts directly in the configuration
+          via the suboptions listed below.
+
+          However, the following gives a baseline for the conversion:
+
+          1. Convert the ini-based host file to YAML
+
+             .. code::
+
+                ansible-inventory -i <PATH_TO_CURRENT_HOSTS_FILE> --yaml --list --export --output config/hosts.yaml
+
+          2. Edit the file structure of ``config/hosts.yaml``
+             such that the file can be properly imported into the configuration.
+             It must follow the structure of this example:
+
+             .. code:: yaml
+
+                frontend:
+                  children:
+                    masters: {}
+                masters:
+                  hosts:
+                    example-master-0:
+                      ansible_host: 192.0.2.10
+                      local_ipv4_address: 192.0.2.10
+                    example-master-1:
+                      ansible_host: 192.0.2.11
+                      local_ipv4_address: 192.0.2.11
+                    example-master-2:
+                      ansible_host: 192.0.2.12
+                      local_ipv4_address: 192.0.2.12
+                workers:
+                  hosts:
+                    example-worker-0:
+                      ansible_host: 192.0.2.20
+                      local_ipv4_address: 192.0.2.20
+                    example-worker-1:
+                      ansible_host: 192.0.2.21
+                      local_ipv4_address: 192.0.2.21
+                    example-worker-2:
+                      ansible_host: 192.0.2.22
+                      local_ipv4_address: 192.0.2.22
+                # NOTE: Since this block matches Tarook's default,
+                #       it can be omitted.
+                orchestrator:
+                  hosts:
+                    localhost:
+                      ansible_connection: local
+                      ansible_python_interpreter: '{{ ansible_playbook_python }}'
+                # NOTE: Since this block matches Tarook's default,
+                #       it can be omitted.
+                all:
+                  vars:
+                    ansible_python_interpreter: /usr/bin/python3
+
+
+          3. You may then set ``yk8s.infra.ansible_hosts = yk8s-lib.importYAML ./hosts.yaml;``
+             to import the file in your configuration.
+
+             .. attention::
+
+                The file has to be added to the git repository in order to be evaluated by Nix.
+
           Check the parts regarding YAML in the Ansible documentation: https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html
         '';
         apply = applyGroupSubmoduleAttrs;
