@@ -393,7 +393,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "2.34.2"
+  "2.35.0"
 
 
 **Example:**::
