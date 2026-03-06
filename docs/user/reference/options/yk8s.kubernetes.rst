@@ -84,7 +84,7 @@ Note that this option is not type checked by Nix, so make sure that it it's a va
 
 **Type:**::
 
-  JSON value
+  attribute set containing JSON compatible values
 
 
 **Default:**::

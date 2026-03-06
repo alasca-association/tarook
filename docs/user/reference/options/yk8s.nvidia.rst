@@ -136,7 +136,7 @@ https://github.com/NVIDIA/k8s-device-plugin/blob/main/deployments/helm/nvidia-de
 
 **Type:**::
 
-  JSON value
+  attribute set containing JSON compatible values
 
 
 **Default:**::

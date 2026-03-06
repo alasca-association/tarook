@@ -208,7 +208,7 @@ https://github.com/projectcalico/calico/blob/master/charts/tigera-operator/value
 
 **Type:**::
 
-  JSON value
+  attribute set containing JSON compatible values
 
 
 **Default:**::
