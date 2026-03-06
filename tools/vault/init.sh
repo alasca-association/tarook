@@ -20,9 +20,7 @@ if [ -z "${nodes_approle_accessor:-}" ]; then
     vault auth enable -path="$nodes_approle_name" approle
 fi
 
-# reload the lib to update the vars after initializing the approle
-# shellcheck source=tools/vault/lib.sh
-. "$(dirname "$0")/lib.sh"
+load_vars
 
 function define() {
     declare -g "${1}"

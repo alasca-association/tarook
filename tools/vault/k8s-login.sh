@@ -35,7 +35,7 @@ if [ "$#" -ne "$arg_num" ]; then
     exit 2
 fi
 
-cluster="$(get_clustername)"
+load_vars
 kubernetes_server="$1"
 username="vault:$(vault token lookup -format=json | jq -r .data.path)"
 

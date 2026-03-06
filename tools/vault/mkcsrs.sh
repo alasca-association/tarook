@@ -13,10 +13,7 @@ if [ "$#" -ne "$arg_num" ]; then
     exit 2
 fi
 
-cluster="$(get_clustername)"
-# reload the lib to update the vars after initializing the clustername
-# shellcheck source=tools/vault/lib.sh
-. "$(dirname "$0")/lib.sh"
+load_vars
 
 pki_intermediate_ttl=13176h  # 1.5 years
 mkcsrs "$pki_intermediate_ttl"
