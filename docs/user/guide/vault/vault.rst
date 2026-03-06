@@ -21,13 +21,6 @@ for additional environment variables accepted by these tools.
    control over vault implies permanent (until the Root CAs have been
    exchanged) control over the Kubernetes cluster.
 
--  ``tools/vault/import.sh``: Prepare a new cluster inside
-   Vault by importing existing secrets from ``etc/``.
-   Conceptually, this setup is identical to the setup provided by
-   ``mkcluster-root.sh``. Please see
-   :ref:`Migrating an existing cluster to Vault <vault.migrating-an-existing-cluster-to-vault>`
-   for details.
-
 -  ``tools/vault/mkcluster-intermediate.sh``: Prepare a new
    cluster inside Vault, with intermediate CAs only. This setup is not
    immediately usable, because the intermediate CAs first need to be
@@ -103,85 +96,6 @@ You are welcome to use `k8s-login.sh` as an inspiration for your own tools.
 Likely, you can make thing more specific to your environment and thus simpler
 to use.
 
-.. _vault.migrating-an-existing-cluster-to-vault:
-
-Migrating an existing cluster to an existing Vault
---------------------------------------------------
-
-Before starting the migration, you must ensure that
-:ref:`your environment <environmental-variables.vault-tooling-variables>`
-has been setup properly **and** you initialized policies and approles in
-the corresponding vault instance via ``tools/vault/init.sh`` (see
-above).
-
-There are two choices to migrate your cluster to Vault:
-
--  Root CA only
--  With Intermediate CA
-
-.. tabs::
-
-   .. tab:: Root CA only
-
-      In this mode, the existing root CA keys will be copied into Vault. This
-      is the simplest mode of operation, but may not be compliant with your
-      security requirements, as the root CA keys are held “online” within
-      Vault.
-
-      Conceptually, this mode is similar to running ``mkcluster-root.sh`` (see
-      above).
-
-      To run a migration in this mode, call:
-
-      .. code:: console
-
-         $ managed-k8s/tools/vault/import.sh no-intermediates
-
-      In addition, this mode takes care that the root CA files are actually
-      usable as CAs (this is not ensured by the pre-vault LCM but somehow
-      nothing cared).
-
-   .. tab:: With Intermediate CA
-
-      In this mode, a fresh intermediate CA key pair is created within Vault.
-      The root CA keys are *not* imported into Vault. The import script
-      generates Certificate Sign Requests for each intermediate CA. Before the
-      cluster can be managed with Vault, it is thus required to sign the CSRs
-      and load the signed certificates using ``load-signed-intermediates.sh``.
-
-      Conceptually, this mode is similar to running
-      ``mkcluster-intemediate.sh`` (see above).
-
-      To start a migration in this mode, call:
-
-      .. code:: console
-
-         $ managed-k8s/tools/vault/import.sh with-intermediates
-
-      This will print a message indicating that the CSRs have been written and
-      to which files they have been written.
-
-      In addition, like the ``no-intermediates`` mode, this mode takes care
-      that the root CA files are actually usable as CAs (this is not ensured
-      by the pre-vault LCM but somehow nothing cared).
-
-      You now must use the CA key and certificates stored in ``inventory/`` to
-      sign the respective CAs. How you do this is out of scope for this
-      document, as it’ll highly depend on your organizations security policy
-      requirements.
-
-      Please see the documentation of ``load-signed-intermediates.sh`` above
-      for details on the files expected by that script in order to load the
-      signed certificates.
-
-      Once you have provided the files, run:
-
-      .. code:: console
-
-         $ managed-k8s/tools/vault/load-signed-intermediates.sh
-
-      to load the signed intermediate CA certificates into Vault.
-
 Pivoting a cluster to host its own vault
 ----------------------------------------
 
@@ -207,14 +121,7 @@ this is an expressly supported use-case.
 Terminology
 ~~~~~~~~~~~
 
-Pivoting has two sub-scenarios, depending on whether the cluster which
-is to be pivoted is already onboarded in a Vault or not. If the cluster
-is already onboarded in a Vault instance (either productive or the local
-docker-based development Vault), we call that *Case 1*. If the cluster
-is not already onboarded in a Vault instance (i.e. a legacy cluster) we
-call that *Case 2*.
-
-In *Case 1*, we have to distinguish two Vault instances. We will call
+We have to distinguish two Vault instances. We will call
 the Vault instance with which the cluster has been deployed up to now
 the *source Vault*. The Vault instance which we will spawn inside the
 cluster and onto which the cluster will be pivoted will be called the
@@ -226,21 +133,14 @@ Prerequisites and Caveats
 In order to migrate a cluster to host its own vault, the following
 prerequisites are necessary:
 
--  Case 1: Migrating from a development or other Vault
+-  The cluster has been deployed or migrated to use another Vault
+   (the *source Vault*). This can be the development Vault setup
+   provided with Tarook.
 
-   -  The cluster has been deployed or migrated to use another Vault
-      (the *source Vault*). This can be the development Vault setup
-      provided with Tarook.
+-  The *source Vault* instance uses Raft.
 
-   -  The *source Vault* instance uses Raft.
-
-   -  A sufficient amount of unseal key shares to unseal the *source
-      Vault* are known.
-
--  Case 2: Migrating a cluster which is not upgraded to use Vault yet to
-   use itself as Vault.
-
-   -  The cluster has not been upgraded to use Vault yet.
+-  A sufficient amount of unseal key shares to unseal the *source
+   Vault* are known.
 
 -  No Vault has been deployed with Tarook inside the cluster yet.
 
@@ -259,30 +159,18 @@ prerequisites are necessary:
    instance to avoid leaking data into the cluster you’d rather not have
    there.
 
-.. note::
-
-   An exception to the above rule exists if the cluster has been
-   migrated and the original CA files still exist. In that case, it can be
-   migrated *again* into the Vault it hosts itself. In this case, you may
-   pretend you were doing *Case 2*, except that you need to trick the
-   migration scripts. How to do that is left as an exercise to the reader.
-
 Procedure
 ~~~~~~~~~
 
-1. (Case 1 only) Obtain the number of unseal shares and the threshold
+1. Obtain the number of unseal shares and the threshold
    for unsealing of the *source Vault*.
 
-2. Enable ``k8s-service-layer.vault``, configure the backup and any
+2. Enable :ref:`k8s-service-layer.vault <configuration-options.yk8s.k8s-service-layer.vault>`, configure the backup and any
    other options you may need. Set the ``service_type`` to ``NodePort``
    and set the ``active_node_port`` to ``32048``.
 
-   If Case 1 applies, set the number of unseal shares and the threshold
+   Set ``init_key_shares`` and ``init_key_threshold``
    to the same values as the *source Vault*.
-
-   If Case 2 applies, you may choose an arbitrary number of unseal
-   shares and an arbitrary threshold, in compliance with your security
-   requirements.
 
 3. Deploy the Vault by (re-)running `k8s-supplements`.
 
@@ -291,214 +179,163 @@ Procedure
    with the IP of any worker or control plane node. (You should get some
    HTML back.)
 
-.. tabs::
+5. Take a raft snapshot of your *source Vault* by running
+   ``vault operator raft snapshot save foo.snap`` with a sufficiently
+   privileged token.
 
-   .. tab:: Case 1: Migrating from a development or other Vault
+   Optionally, stop the *source Vault* to avoid accidentally
+   interacting with it further.
 
-      1. Take a raft snapshot of your *source Vault* by running
-         ``vault operator raft snapshot save foo.snap`` with a sufficiently
-         privileged token.
+   .. note::
 
-         Optionally, stop the *source Vault* to avoid accidentally
-         interacting with it further.
+      Continued use of the *source Vault* after taking a
+      snapshot which is later loaded into the *target Vault* may or may
+      not have security implications (serial number or token ID reuse or
+      similar).
 
-         .. note::
+6. Obtain the CA of the *target Vault* from Kubernetes using:
 
-            Continued use of the *source Vault* after taking a
-            snapshot which is later loaded into the *target Vault* may or may
-            not have security implications (serial number or token ID reuse or
-            similar).
+   .. code:: console
 
-      2. Obtain the CA of the *target Vault* from Kubernetes using:
+      $ kubectl -n k8s-svc-vault get secret vault-cert-internal -o json | jq -r '.data["ca.crt"]' | base64 -d > vault-ca.crt
 
-         .. code:: console
+7. Configure access to the *target Vault*:
 
-            $ kubectl -n k8s-svc-vault get secret vault-cert-internal -o json | jq -r '.data["ca.crt"]' | base64 -d > vault-ca.crt
+   .. code:: console
 
-      3. Configure access to the *target Vault*:
+      $ export VAULT_ADDR=https://$nodeip:32048
+      $ export VAULT_CACERT="$(pwd)/vault-ca.crt"
+      $ unset VAULT_TOKEN
 
-         .. code:: console
+   Verify connectivity using: ``vault status``.
 
-            $ export VAULT_ADDR=https://$nodeip:32048
-            $ export VAULT_CACERT="$(pwd)/vault-ca.crt"
-            $ unset VAULT_TOKEN
+   You should see something like:
 
-         Verify connectivity using: ``vault status``.
+   ::
 
-         You should see something like:
+      Key                     Value
+      ---                     -----
+      Seal Type               shamir
+      Initialized             true
+      Sealed                  false
+      Total Shares            1
+      Threshold               1
+      Version                 1.12.1
+      Build Date              2022-10-27T12:32:05Z
+      Storage Type            raft
+      Cluster Name            vault-cluster-4a491f8a
+      Cluster ID              40dfd4ea-76ac-b2d0-bb9a-5a35c0a9bc9d
+      HA Enabled              true
+      HA Cluster              https://vault-0.vault-internal:8201
+      HA Mode                 active
+      Active Since            2023-03-01T18:42:41.824499649Z
+      Raft Committed Index    44
+      Raft Applied Index      44
 
-         ::
+   .. tip::
 
-            Key                     Value
-            ---                     -----
-            Seal Type               shamir
-            Initialized             true
-            Sealed                  false
-            Total Shares            1
-            Threshold               1
-            Version                 1.12.1
-            Build Date              2022-10-27T12:32:05Z
-            Storage Type            raft
-            Cluster Name            vault-cluster-4a491f8a
-            Cluster ID              40dfd4ea-76ac-b2d0-bb9a-5a35c0a9bc9d
-            HA Enabled              true
-            HA Cluster              https://vault-0.vault-internal:8201
-            HA Mode                 active
-            Active Since            2023-03-01T18:42:41.824499649Z
-            Raft Committed Index    44
-            Raft Applied Index      44
+      Verify that you're talking to the *target Vault* by checking
+      the *Active Since* timestamp.
 
-         .. tip::
+8. Obtain a root token for the *target Vault* instance. As you have
+   just freshly installed it with Tarook, the root token will be in
+   ``etc/vault_root_token``.
 
-            Verify that you're talking to the *target Vault* by checking
-            the *Active Since* timestamp.
+9. Scale the vault down to one replica.
 
-      4. Obtain a root token for the *target Vault* instance. As you have
-         just freshly installed it with Tarook, the root token will be in
-         ``etc/vault_root_token``.
+10. Delete the PVCs of the other replicas.
 
-      5. Scale the vault down to one replica.
+   .. note::
 
-      6. Delete the PVCs of the other replicas.
+      We are entering the danger zone now. Double-check always
+      that you are operating on the correct cluster and with the correct
+      vault.
 
-         .. note::
+11.
+   .. danger::
+      **THIS WILL IRREVERSIBLY DELETE THE DATA IN THE** *target
+      Vault*. Double-check you are talking to the correct vault! Take a
+      snapshot or whatever!
 
-            We are entering the danger zone now. Double-check always
-            that you are operating on the correct cluster and with the correct
-            vault.
+   Restore the snapshot from the *source Vault* in the *target Vault*.
 
-      7.
-         .. danger::
-            **THIS WILL IRREVERSIBLY DELETE THE DATA IN THE** *target
-            Vault*. Double-check you are talking to the correct vault! Take a
-            snapshot or whatever!
+   .. code:: console
 
-         Restore the snapshot from the *source Vault* in the *target Vault*.
+      $ vault operator raft snapshot restore -force foo.snap
 
-         .. code:: console
+12. Manually unseal the *target Vault*:
 
-            $ vault operator raft snapshot restore -force foo.snap
+   .. code:: console
 
-      8. Manually unseal the *target Vault*:
+      $ kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- vault operator unseal
 
-         .. code:: console
+   You now need to supply unseal key shares from the *source Vault*.
 
-            $ kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- vault operator unseal
+13. Force vault to reset whatever it thinks about the cluster state.
 
-         You now need to supply unseal key shares from the *source Vault*.
+   This is done by triggering a Raft recovery by placing a magic
+   ``peers.json`` file in the raft data directory.
 
-      9. Force vault to reset whatever it thinks about the cluster state.
-         This is done by triggering a Raft recovery by placing a magic
-         ``peers.json`` file in the raft data directory.
+   First, we need to find the node ID:
 
-         First, we need to find the node ID:
+   .. code:: console
 
-         .. code:: console
+      $ kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- cat /vault/data/node-id; echo
 
-            $ kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- cat /vault/data/node-id; echo
+   Then create the ``peers.json`` file:
 
-         Then create the ``peers.json`` file:
+   .. code:: json
 
-         .. code:: json
+      [
+         {
+            "id": "...",
+            "address": "vault-0.vault-internal:8201",
+            "non_voter": false
+         }
+      ]
 
-            [
-               {
-                  "id": "...",
-                  "address": "vault-0.vault-internal:8201",
-                  "non_voter": false
-               }
-            ]
+   (fill in the ``id`` field with the ID you found above)
 
-         (fill in the ``id`` field with the ID you found above)
+   Upload the ``peers.json`` into the Vault node:
 
-         Upload the ``peers.json`` into the Vault node:
+   .. code:: console
 
-         .. code:: console
+      $ kubectl -n k8s-svc-vault cp -c vault peers.json vault-0:/vault/data/raft/
 
-            $ kubectl -n k8s-svc-vault cp -c vault peers.json vault-0:/vault/data/raft/
+   Restart the Vault node:
 
-         Restart the Vault node:
+   .. code:: console
 
-         .. code:: console
+      $ kubectl -n k8s-svc-vault delete pod vault-0
 
-            $ kubectl -n k8s-svc-vault delete pod vault-0
+   Once it comes up, unseal it again:
 
-         Once it comes up, unseal it again:
+   .. code:: console
 
-         .. code:: console
+      $ kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- vault operator unseal
 
-            $ kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- vault operator unseal
+   This should now show the ``HA Mode`` as active.
 
-         This should now show the ``HA Mode`` as active.
+14. Scale the cluster back up.
 
-      10. Scale the cluster back up.
+   .. code:: console
 
-          .. code:: console
+      $ kubectl -n k8s-svc-vault scale sts vault --replicas=3
 
-            $ kubectl -n k8s-svc-vault scale sts vault --replicas=3
+15. Unseal the other replicas:
 
-      11. Unseal the other replicas:
+   .. code:: console
 
-          .. code:: console
+      $ kubectl -n k8s-svc-vault exec -it vault-1 -c vault -- vault operator unseal
+      $ kubectl -n k8s-svc-vault exec -it vault-2 -c vault -- vault operator unseal
 
-            $ kubectl -n k8s-svc-vault exec -it vault-1 -c vault -- vault operator unseal
-            $ kubectl -n k8s-svc-vault exec -it vault-2 -c vault -- vault operator unseal
+      Congrats! You now have the data inside the K8s cluster.
 
-          Congrats! You now have the data inside the K8s cluster.
+16. To test that Tarook is able to talk to the Vault instance,
+      you can now run any `k8s-core` with ``AFLAGS="-t vault-onboarded"``.
 
-      12. To test that Tarook is able to talk to the Vault instance,
-          you can now run any `k8s-core` with ``AFLAGS="-t vault-onboarded"``.
+17. Done!
 
-      13. Done!
-
-   .. tab:: Case 2: Migrating a cluster which is not upgraded to use Vault yet to use itself as Vault
-
-      1. Obtain the CA of the Vault from Kubernetes using:
-
-         .. code:: console
-
-            $ kubectl -n k8s-svc-vault get secret vault-cert-internal -o json | jq -r '.data["ca.crt"]' | base64 -d > vault-ca.crt
-
-
-      2. Configure access to the Vault:
-
-         .. code:: shell
-
-            export VAULT_ADDR=https://$nodeip:32048
-            export VAULT_CACERT="$(pwd)/vault-ca.crt"
-            export VAULT_TOKEN=$(cat etc/vault_root_token)
-
-         Verify connectivity using: ``vault status``.
-
-         You should see something like:
-
-         ::
-
-            Key                     Value
-            ---                     -----
-            Seal Type               shamir
-            Initialized             true
-            Sealed                  false
-            Total Shares            1
-            Threshold               1
-            Version                 1.12.1
-            Build Date              2022-10-27T12:32:05Z
-            Storage Type            raft
-            Cluster Name            vault-cluster-4a491f8a
-            Cluster ID              40dfd4ea-76ac-b2d0-bb9a-5a35c0a9bc9d
-            HA Enabled              true
-            HA Cluster              https://vault-0.vault-internal:8201
-            HA Mode                 active
-            Active Since            2023-03-01T18:42:41.824499649Z
-            Raft Committed Index    44
-            Raft Applied Index      44
-
-      3. Run ``managed-k8s/tools/vault/init.sh``
-
-      4. Run ``managed-k8s/tools/vault/import.sh`` with the appropriate
-         parameters.
-
-      5. Done.
 
 .. _vault.importing-new-intermediates:
 
