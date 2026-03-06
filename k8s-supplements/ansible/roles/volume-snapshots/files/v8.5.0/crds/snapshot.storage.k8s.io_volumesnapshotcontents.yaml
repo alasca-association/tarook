@@ -1,4 +1,4 @@
-# https://github.com/kubernetes-csi/external-snapshotter/blob/f21cb02763e7cd6a7fc84846f106b83119b5371d/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml
+# https://github.com/kubernetes-csi/external-snapshotter/blob/5aab051d1af135e2c852f6fb7fc27fa709d877bf/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
