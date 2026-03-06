@@ -80,7 +80,11 @@ function load_conf_vars() {
         wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
         wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
         wg_endpoint="${wg_endpoint:-0}"
-        ansible_wg_template="$etc_directory/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}.conf"
+        if [ "${with_kubernetes_networks:-}" = 'true' ] || [ "${TAROOK_WG_TO_K8S_NETWORKS:-}" = 'true' ]; then
+            ansible_wg_template="$etc_directory/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}_with_k8s.conf"
+        else
+            ansible_wg_template="$etc_directory/wireguard/wg${wg_endpoint}/wg${wg_endpoint}_${wg_user}.conf"
+        fi
         wg_subnet="$(yq -r .wg_subnet "$conf_vars_file")"
         wg_subnet_v6="$(yq -r .wg_subnet_v6 "$conf_vars_file")"
     fi

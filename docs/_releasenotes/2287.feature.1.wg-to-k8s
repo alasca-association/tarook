@@ -1,0 +1,2 @@
+The :ref:`wg-up.sh<actions-references.wg-upsh>` action script has been extended by the possibility
+to establish a tunnel to the Kubernetes Pod and Service networks in addition.

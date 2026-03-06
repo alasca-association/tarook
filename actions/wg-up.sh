@@ -6,8 +6,57 @@ actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
+# Available arguments
+declare -a arguments=("--with-kubernetes-networks" "--help")
+
 # Ensure that the latest config is deployed to the inventory
 "$actions_dir/update-inventory.sh" conf_vars
+
+# print help message
+function helpf() {
+  action_name=${0##*/}
+  printf "%s - Action Script to establish a Wireguard tunnel to the Cluster\n\n" "$action_name"
+  printf "Usage: %s [--help|--with-kubernetes-networks]\n\n" "$action_name"
+  printf "Flags:"
+  printf "\n--help                        Print this help message"
+  printf "\n--with-kubernetes-networks    Establish a tunnel to the Kubernetes Pod\n"
+  printf "                              and Service network as well\n"
+  printf "                              This can be persistently configured by setting\n"
+  printf "                              'TAROOK_WG_TO_K8S_NETWORKS' to 'true'\n"
+}
+
+# Check for valid number of arguments (<=1)
+arg_num=1
+if [ "$#" -gt "$arg_num" ]; then
+    errorf "ERROR: Expecting at most $arg_num argument(s), but $# were given"
+    echo
+    helpf
+    exit 2
+fi
+
+# Verify supplied argument
+if [ "$#" -eq $arg_num ]; then
+    argument="$1"
+    if [ "$argument" == "--help" ]; then
+        helpf
+        exit 0
+    fi
+    # Check if argument is valid
+    # shellcheck disable=SC2068
+    for i in ${arguments[@]}; do
+        if [[ "$i" == "$argument" ]]; then
+            valid_argument=true
+        fi
+    done
+    if [ -z "${valid_argument:-}" ]; then
+        errorf "$argument is not a valid argument\n" >&2
+        helpf
+        exit 2
+    fi
+    if [ "$argument" == "--with-kubernetes-networks" ]; then
+        with_kubernetes_networks=true
+    fi
+fi
 
 load_conf_vars
 
@@ -73,4 +122,9 @@ if [ "${wg_usage:-true}" == "true" ]; then
             sudo ip l set mtu "$wg_mtu" dev "$wg_conf_name"
         fi
     fi
+else
+    notef "You called this script although Wireguard is disabled."
+    notef "It is assumed this happened by accident."
+    notef "Failing gracefully."
+    exit 1
 fi
