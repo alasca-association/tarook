@@ -63,6 +63,9 @@
 
       docs = {
         description = "Dependencies needed to built the documentation";
+        packages = with pkgs; [
+          git # for towncrier
+        ];
         pythonPackages = ps:
           with ps; [
             sphinx
