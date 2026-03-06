@@ -48,11 +48,6 @@ in {
       default = "1.34.5";
     };
 
-    version_minor = mkInternalOption {
-      readOnly = true;
-      default = lib.versions.majorMinor cfg.version;
-    };
-
     cri_url = mkInternalOption {
       type = types.yk8s.networking.urlWith {schemeRE = "unix";};
       default = "unix:///var/run/containerd/containerd.sock";

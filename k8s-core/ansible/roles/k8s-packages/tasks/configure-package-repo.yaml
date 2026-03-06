@@ -27,14 +27,18 @@
       register: drop_google_repo
 
     - name: Add Kubernetes community-owned repository to sources.list
+      vars:
+        # If "next_k8s_version" is set, we assume we're in the Kubernetes upgrade procedure.
+        # In that case, we want to switch to the next version.
+        repo_version: '{{ next_k8s_version | default(k8s_version) | regex_replace("^v?(\d+\.\d+)(\.\d+)?$", "\1") }}'
       copy:
         dest: /etc/apt/sources.list.d/kubernetes-community.list
         content: |
           {{ _auto_generated_preamble }}
           {% if apt_proxy_url is not none %}
-          deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] http://pkgs.k8s.io/core:/stable:/v{{ k8s_version_minor }}/deb/ /
+          deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] http://pkgs.k8s.io/core:/stable:/v{{ repo_version }}/deb/ /
           {% else %}
-          deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] https://pkgs.k8s.io/core:/stable:/v{{ k8s_version_minor }}/deb/ /
+          deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] https://pkgs.k8s.io/core:/stable:/v{{ repo_version }}/deb/ /
           {% endif %}
         owner: root
         group: root
