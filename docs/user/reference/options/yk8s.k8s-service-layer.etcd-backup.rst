@@ -189,7 +189,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "1.3.0"
+  "1.4.0"
 
 
 **Example:**::
