@@ -26,15 +26,14 @@ dependencies locked to specific versions so everybody can produce the same ident
 
          Follow the `Nix documentation <https://nixos.org/download.html#download-nix>`__ on how to install.
 
-      .. tab:: From Ubuntu repositories
+      .. tab:: From Debian/Ubuntu repositories
 
-         Nix can also be installed from the Ubuntu repositories.
-         The following has been tested on an Ubuntu 24.04 LTS system:
+         Nix can also be installed from the Debian/Ubuntu repositories.
 
          .. code:: console
 
             $ # Run installation for debian managed nix multi-user package
-            $ sudo apt update && sudo apt install nix-setup-systemd
+            $ sudo apt update && sudo apt install git nix-setup-systemd
 
             $ # Add current user to nix group
             $ sudo adduser $(whoami) nix-users
@@ -43,6 +42,15 @@ dependencies locked to specific versions so everybody can produce the same ident
          ``newgrp nix-users``. Note that the ``newgrp`` command starts a new shell and will only have
          effect within that shell.
 
+         The Nix version provided by Debian/Ubuntu is quite old and (at the time of writing) has known vulnerabilities that don't get patched.
+         Tarook provides Nix packages that are up-to-date with what we use in our CI.
+         To upgrade to our Nix package, run
+
+         .. code:: console
+
+            $ nix run --extra-experimental-features "nix-command flakes" git+https://gitlab.com/alasca.cloud/tarook/nix#upgrade
+
+         This will build and install our version of the `nix-bin` package.
 2. `Enable Flake support <https://nixos.wiki/wiki/Flakes#Permanent>`__ by adding the following line to either ``~/.config/nix/nix.conf`` or ``/etc/nix/nix.conf``.
 
    .. code:: ini

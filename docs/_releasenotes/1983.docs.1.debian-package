@@ -1,0 +1,1 @@
+We now provide a script to upgrade Nix on Debian-based systems to the version tested in our CI. The script can be run with ``nix run git+https://gitlab.com/alasca.cloud/tarook/nix#upgrade``.
