@@ -45,7 +45,7 @@ in {
       defaultRepoUrl = "https://charts.jetstack.io";
       defaultChartRef = "cert-manager";
       # renovate: datasource=helm depName=cert-manager registryUrl=https://charts.jetstack.io
-      defaultChartVersion = "1.19.4";
+      defaultChartVersion = "1.20.0";
       defaultReleaseNamespace = "k8s-svc-cert-manager";
       defaultReleaseName = "cert-manager";
       valuesDocUrl = "https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml";
