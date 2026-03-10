@@ -11,6 +11,7 @@
   inherit (lib) mkOption;
   inherit (yk8s-lib) mkSubSection types;
   inherit (yk8s-lib.options) mkHelmReleaseOptions;
+  inherit (yk8s-lib.k8s) mkAffinity;
 in {
   imports = [
     (mkRemovedOptionModule ["kubernetes" "network" "calico" "use_tigera_operator"] "")
@@ -163,6 +164,7 @@ in {
         enabled = true;
         nodeMetricsPort = 9092;
         typhaMetricsPort = 9093;
+        typhaAffinity = mkAffinity {scheduling_key = "node-role.kubernetes.io/control-plane";};
         controlPlaneNodeSelector."node-role.kubernetes.io/control-plane" = "";
         nonPrivileged = "True";
         calicoNetwork = {
