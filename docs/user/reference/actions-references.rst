@@ -229,9 +229,8 @@ of the gateway nodes in front of the Kubernetes cluster.
 The ``apply-terraform.sh``-script creates and updates the underlying
 harbour infrastructure layer as defined by the
 :doc:`configuration </user/reference/cluster-configuration>`. It also creates
-and updates the inventory files for ansible (``inventory/*/hosts``) and
-creates some variables in the inventory (all files created have the
-``terraform_`` prefix).
+``state/terraform/outputs.json`` which is fed back into the Nix Terraform
+module at ``yk8s.terraform.outputs``.
 
 .. _actions-references.testsh:
 

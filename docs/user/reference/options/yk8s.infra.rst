@@ -127,7 +127,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 **Type:**::
 
-  attribute set of (JSON value)
+  attribute set of (attribute set containing JSON compatible values)
 
 
 **Default:**::
@@ -207,7 +207,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 **Type:**::
 
-  attribute set of (JSON value)
+  attribute set of (attribute set containing JSON compatible values)
 
 
 **Default:**::

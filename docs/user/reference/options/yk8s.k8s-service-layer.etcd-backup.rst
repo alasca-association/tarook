@@ -259,7 +259,7 @@ https://gitlab.com/yaook/operator/-/blob/devel/yaook/helm_builder/Charts/etcdbac
 
 **Type:**::
 
-  JSON value
+  attribute set containing JSON compatible values
 
 
 **Default:**::
@@ -473,7 +473,7 @@ recommended.
 
 **Default:**::
 
-  "yaook/\${config.yk8s.vault.cluster_name}/kv"
+  "yaook/${config.yk8s.vault.cluster_name}/kv"
 
 
 **Declared by**

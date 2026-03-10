@@ -96,6 +96,8 @@ You are welcome to use `k8s-login.sh` as an inspiration for your own tools.
 Likely, you can make thing more specific to your environment and thus simpler
 to use.
 
+.. _vault.pivoting:
+
 Pivoting a cluster to host its own vault
 ----------------------------------------
 
@@ -241,100 +243,36 @@ Procedure
    just freshly installed it with Tarook, the root token will be in
    ``etc/vault_root_token``.
 
-9. Scale the vault down to one replica.
+9. Restore the snapshot from the *source Vault* in the *target Vault*.
 
-10. Delete the PVCs of the other replicas.
-
-   .. note::
-
-      We are entering the danger zone now. Double-check always
-      that you are operating on the correct cluster and with the correct
-      vault.
-
-11.
    .. danger::
       **THIS WILL IRREVERSIBLY DELETE THE DATA IN THE** *target
       Vault*. Double-check you are talking to the correct vault! Take a
       snapshot or whatever!
 
-   Restore the snapshot from the *source Vault* in the *target Vault*.
 
    .. code:: console
 
       $ vault operator raft snapshot restore -force foo.snap
 
-12. Manually unseal the *target Vault*:
+10. Trigger a restart of the target Vault
+
+   .. code:: console
+
+      $ kubectl rollout restart statefulset -n k8s-svc-vault vault
+
+11. Manually unseal the *target Vault* instances as they come up. You'll need to supply unseal key shares from the *source Vault*.
 
    .. code:: console
 
       $ kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- vault operator unseal
-
-   You now need to supply unseal key shares from the *source Vault*.
-
-13. Force vault to reset whatever it thinks about the cluster state.
-
-   This is done by triggering a Raft recovery by placing a magic
-   ``peers.json`` file in the raft data directory.
-
-   First, we need to find the node ID:
-
-   .. code:: console
-
-      $ kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- cat /vault/data/node-id; echo
-
-   Then create the ``peers.json`` file:
-
-   .. code:: json
-
-      [
-         {
-            "id": "...",
-            "address": "vault-0.vault-internal:8201",
-            "non_voter": false
-         }
-      ]
-
-   (fill in the ``id`` field with the ID you found above)
-
-   Upload the ``peers.json`` into the Vault node:
-
-   .. code:: console
-
-      $ kubectl -n k8s-svc-vault cp -c vault peers.json vault-0:/vault/data/raft/
-
-   Restart the Vault node:
-
-   .. code:: console
-
-      $ kubectl -n k8s-svc-vault delete pod vault-0
-
-   Once it comes up, unseal it again:
-
-   .. code:: console
-
-      $ kubectl -n k8s-svc-vault exec -it vault-0 -c vault -- vault operator unseal
-
-   This should now show the ``HA Mode`` as active.
-
-14. Scale the cluster back up.
-
-   .. code:: console
-
-      $ kubectl -n k8s-svc-vault scale sts vault --replicas=3
-
-15. Unseal the other replicas:
-
-   .. code:: console
-
       $ kubectl -n k8s-svc-vault exec -it vault-1 -c vault -- vault operator unseal
       $ kubectl -n k8s-svc-vault exec -it vault-2 -c vault -- vault operator unseal
 
-      Congrats! You now have the data inside the K8s cluster.
-
-16. To test that Tarook is able to talk to the Vault instance,
+12. To test that Tarook is able to talk to the Vault instance,
       you can now run any `k8s-core` with ``AFLAGS="-t vault-onboarded"``.
 
-17. Done!
+13. Done!
 
 
 .. _vault.importing-new-intermediates:

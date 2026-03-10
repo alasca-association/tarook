@@ -166,7 +166,7 @@ https://github.com/fluxcd-community/helm-charts/blob/main/charts/flux2/values.ya
 
 **Type:**::
 
-  JSON value
+  attribute set containing JSON compatible values
 
 
 **Default:**::

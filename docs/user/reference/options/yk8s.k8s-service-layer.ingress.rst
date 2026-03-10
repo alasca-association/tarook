@@ -169,7 +169,7 @@ https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/value
 
 **Type:**::
 
-  JSON value
+  attribute set containing JSON compatible values
 
 
 **Default:**::
