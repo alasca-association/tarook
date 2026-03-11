@@ -96,7 +96,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "2.16.4"
+  "2.18.0"
 
 
 **Example:**::
