@@ -32,7 +32,7 @@ ansible_k8s_custom_playbook_dir="$cluster_repository/k8s-custom"
 ansible_k8s_custom_playbook="$ansible_k8s_custom_playbook_dir/main.yaml"
 ansible_k8s_custom_inventory="$cluster_repository/k8s-custom/inventory"
 
-vault_dir="${VAULT_DIR:-$state_dir/vault}"
+vault_dir="$state_dir/vault"
 
 if [ "${MANAGED_K8S_COLOR_OUTPUT:-}" = 'true' ]; then
     use_color='true'
