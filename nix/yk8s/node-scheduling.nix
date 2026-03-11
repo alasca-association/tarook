@@ -86,6 +86,7 @@ in {
         }'';
     };
   };
+  config.yk8s._targets.ansible.assertions = [];
   config.yk8s._targets.ansible.warnings =
     (builtins.foldl' (acc: e:
       acc

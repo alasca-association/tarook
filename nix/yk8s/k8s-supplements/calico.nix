@@ -220,6 +220,8 @@ in {
       # whisker configures the Calico Whisker observability UI.
       whisker.enabled = false;
     };
+
+  config.yk8s._targets.ansible.assertions = [];
   config.yk8s._targets.ansible.warnings =
     lib.optional (options.yk8s.kubernetes.network.calico.values_file_path.highestPrio < 1500) # priority of option defaults
     

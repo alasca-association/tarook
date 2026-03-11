@@ -353,6 +353,7 @@ in {
       message = "local_ipv6_address must be set for all hosts in config.yk8s.infra.ansible_hosts.k8s_nodes";
     }
   ];
+  config.yk8s._targets.ansible.warnings = [];
   config.yk8s._targets.ansible.inventory_packages = let
     trimEmptySubmoduleAttrs = lib.mapAttrs (_: submodule:
       lib.pipe submodule [

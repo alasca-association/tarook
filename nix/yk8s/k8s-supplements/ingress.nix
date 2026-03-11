@@ -167,6 +167,9 @@ in {
         };
       };
   };
+
+  config.yk8s._targets.ansible.assertions = [];
+  config.yk8s._targets.ansible.warnings = [];
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

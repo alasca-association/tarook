@@ -181,6 +181,8 @@ in {
     };
   };
   config.yk8s = {
+    _targets.terraform.assertions = [];
+    _targets.terraform.warnings = [];
     _targets.terraform.state_packages = lib.optional cfg.enabled (
       let
         filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["outputs"]];

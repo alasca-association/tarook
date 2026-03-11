@@ -68,4 +68,7 @@ in {
       defaultText = "\${config.yk8s.kubernetes.storage.nodeplugin_toleration}";
     };
   };
+
+  config.yk8s._targets.ansible.assertions = [];
+  config.yk8s._targets.ansible.warnings = [];
 }
