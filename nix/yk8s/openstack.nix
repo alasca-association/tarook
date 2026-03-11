@@ -25,16 +25,35 @@
     };
     root_disk_size = mkOption {
       description = ''
-        Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
+        If null, the disk size of the configured flavor will be used.
       '';
-      type = types.ints.positive;
+      type = with types; nullOr types.ints.positive;
+      default = null;
     };
     root_disk_volume_type = mkOption {
       description = ''
-        Only applies if :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume` is set to ``true``
         If null, the default of the IaaS environment will be used.
       '';
       type = with types; nullOr yk8s.openstack.volumeTypeName;
+      default = null;
+    };
+    create_root_disk_on_volume = mkOption {
+      description = ''
+        Enable creation of root disk volume.
+        If true, create block volume for instances by default and boot from there.
+
+        Equivalent to ``openstack server create --boot-from-volume […]``.
+
+        This option is inferior to
+
+        - :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume`
+
+        but takes precedence over
+
+        - :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+
+      '';
+      type = with types; nullOr types.bool;
       default = null;
     };
   };
@@ -188,9 +207,18 @@ in {
     };
 
     create_root_disk_on_volume = mkEnableOption ''
-      creation of root disk volumes.
+      creation of root disk volumes for all instances.
       If true, create block volume for each instance and boot from there.
+
       Equivalent to ``openstack server create --boot-from-volume […]``.
+
+      This is option is inferior to:
+
+      - :ref:`configuration-options.yk8s.openstack.gateway_defaults.create_root_disk_on_volume`
+      - :ref:`configuration-options.yk8s.openstack.master_defaults.create_root_disk_on_volume`
+      - :ref:`configuration-options.yk8s.openstack.worker_defaults.create_root_disk_on_volume`
+      - :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume`
+
     '';
 
     network_mtu = mkOption {
@@ -229,20 +257,53 @@ in {
     };
 
     gateway_defaults = recursiveUpdate commonNodeDefaultOptions {
-      root_disk_size.default = 10;
       common_name = mkOption {
         type = types.str;
         default = "gw-";
       };
+      create_root_disk_on_volume.description = ''
+        Enable creation of root disk volume for gateways.
+        If true, create block volume for all gateways and boot from there.
+
+        Equivalent to ``openstack server create --boot-from-volume […]``
+
+        This option takes precedence over:
+
+        - :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+
+      '';
     };
 
     master_defaults = recursiveUpdate commonNodeDefaultOptions {
-      root_disk_size.default = 50;
+      create_root_disk_on_volume.description = ''
+        Enable creation of root disk volume for masters by default.
+        If true, create block volume for masters by default and boot from there.
+
+        Equivalent to ``openstack server create --boot-from-volume […]``
+
+        This option takes precedence over:
+
+        - :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+
+        but is inferior to:
+
+        - :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume`
+
+      '';
+      root_disk_size.description = ''
+        If null, the disk size of the configured flavor will be used.
+
+        This will only take effect if one of the following
+
+        - :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+        - :ref:`configuration-options.yk8s.openstack.master_defaults.create_root_disk_on_volume`
+        - :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume` (for each master node)
+
+        is set to ``true``.
+      '';
     };
 
     worker_defaults = recursiveUpdate commonNodeDefaultOptions {
-      root_disk_size.default = 50;
-
       anti_affinity_group = mkOption {
         description = ''
           Leaving this empty means to not join any anti affinity group
@@ -250,6 +311,32 @@ in {
         type = with types; nullOr yk8s.openstack.serverGroupName;
         default = null;
       };
+      create_root_disk_on_volume.description = ''
+        Enable creation of root disk volume for workers by default.
+        If true, create block volume for workers by default and boot from there.
+
+        Equivalent to ``openstack server create --boot-from-volume […]``.
+
+        This option takes precedence over:
+
+        - :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+
+        but is inferior to:
+
+        - :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume`
+
+      '';
+      root_disk_size.description = ''
+        If null, the disk size of the configured flavor will be used.
+
+        This will only take effect if one of the following
+
+        - :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+        - :ref:`configuration-options.yk8s.openstack.worker_defaults.create_root_disk_on_volume`
+        - :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume` (for each worker node)
+
+        is set to ``true``.
+      '';
     };
 
     nodes = mkOption {
@@ -284,9 +371,41 @@ in {
           root_disk_size = mkOption {
             type = with types; nullOr ints.positive;
             default = null;
+            description = ''
+              If null, the disk size of the configured flavor will be used.
+
+              This will only take effect if one of the following
+
+              - :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+              - :ref:`configuration-options.yk8s.openstack.worker_defaults.create_root_disk_on_volume`
+                (if :ref:`configuration-options.yk8s.openstack.nodes.<name>.role` is ``worker``)
+              - :ref:`configuration-options.yk8s.openstack.master_defaults.create_root_disk_on_volume`
+                (if :ref:`configuration-options.yk8s.openstack.nodes.<name>.role` is ``master``)
+              - :ref:`configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume`
+
+              is set to ``true``.
+            '';
           };
           root_disk_volume_type = mkOption {
             type = with types; nullOr yk8s.openstack.volumeTypeName;
+            default = null;
+          };
+          create_root_disk_on_volume = mkOption {
+            description = ''
+              Enable creation of root disk volume for this instance.
+              If true, create block volume for this instance and boot from there.
+
+              Equivalent to ``openstack server create --boot-from-volume […]``.
+
+              This option takes precedence over:
+
+              - :ref:`configuration-options.yk8s.openstack.gateway_defaults.create_root_disk_on_volume`
+              - :ref:`configuration-options.yk8s.openstack.master_defaults.create_root_disk_on_volume`
+              - :ref:`configuration-options.yk8s.openstack.worker_defaults.create_root_disk_on_volume`
+              - :ref:`configuration-options.yk8s.openstack.create_root_disk_on_volume`
+
+            '';
+            type = with types; nullOr types.bool;
             default = null;
           };
           anti_affinity_group = mkOption {
@@ -428,61 +547,117 @@ in {
       terraform.enabled = true;
 
       assertions = let
-        inherit (builtins) all length filter attrValues;
-      in [
-        {
-          assertion =
-            all (node: node.role != "worker" -> node.anti_affinity_group == null)
-            (attrValues cfg.nodes);
-          message = "config.yk8s.openstack.nodes.[].anti_affinity_group: must not be set for master nodes";
-        }
-        {
-          assertion = (length (filter (node: node.role == "master") (attrValues cfg.nodes))) > 0;
-          message = "config.yk8s.openstack.nodes: at least one node with role=master must be given.";
-        }
-        {
-          assertion = config.yk8s.infra.ipv4_enabled;
-          message = "config.yk8s.openstack: Tarook Terraform does not yet support IPv6-only, see #685";
-        }
-        (let
-          current_config_file =
-            if config.yk8s.state_directory != null
-            then "${config.yk8s.state_directory}/${tfvars_file_path}"
-            else null;
-          current_config = fromJSON (readFile current_config_file);
-          cluster_exists =
-            if current_config_file == null
-            then false
-            else pathExists current_config_file;
-          current_cluster_name =
-            current_config.cluster_name
+        inherit (builtins) all any length filter attrValues;
+        inherit (yk8s-lib.transform) partitionAttrs;
+      in
+        [
+          {
+            assertion =
+              all (node: node.role != "worker" -> node.anti_affinity_group == null)
+              (attrValues cfg.nodes);
+            message = "config.yk8s.openstack.nodes.[].anti_affinity_group: must not be set for master nodes";
+          }
+          {
+            assertion = (length (filter (node: node.role == "master") (attrValues cfg.nodes))) > 0;
+            message = "config.yk8s.openstack.nodes: at least one node with role=master must be given.";
+          }
+          {
+            assertion = config.yk8s.infra.ipv4_enabled;
+            message = "config.yk8s.openstack: Tarook Terraform does not yet support IPv6-only, see #685";
+          }
+          (let
+            current_config_file =
+              if config.yk8s.state_directory != null
+              then "${config.yk8s.state_directory}/${tfvars_file_path}"
+              else null;
+            current_config = fromJSON (readFile current_config_file);
+            cluster_exists =
+              if current_config_file == null
+              then false
+              else pathExists current_config_file;
+            current_cluster_name =
+              current_config.cluster_name
             or
             # hard-coding this value here as it was the default at the time of writing this module. This ensures that
             # old clusters that have been set up with an empty value (and hence have been using the old default) will
             # be compared to the old default value
             "managed-k8s";
+          in {
+            assertion = cluster_exists -> (config.yk8s.infra.cluster_name == current_cluster_name);
+            message = ''
+              config.yk8s.infra.cluster_name:
+              Will not update terraform config because there is a mismatch between the deployed and future cluster_name. This would cause death and destruction.
+              Set `config.yk8s.infra.cluster_name` back to ${current_cluster_name}. Your suggested change ${config.yk8s.infra.cluster_name} is unacceptable.
+            '';
+          })
+          {
+            # although IPv4 technically works with lower MTUs, 576 Bytes is the recommended minimum size of datagrams
+            # https://datatracker.ietf.org/doc/html/rfc791
+            assertion = config.yk8s.infra.ipv4_enabled -> cfg.network_mtu >= 576;
+            message = "config.yk8s.openstack.network_mtu: must be at least 576 Bytes to support IPv4.";
+          }
+          {
+            # 1280 Bytes is the technical minimum MTU for IPv6 to work
+            # https://datatracker.ietf.org/doc/html/rfc8200#section-5
+            assertion = config.yk8s.infra.ipv6_enabled -> cfg.network_mtu >= 1280;
+            message = "config.yk8s.openstack.network_mtu: must be at least 1280 Bytes to support IPv6.";
+          }
+        ]
+        ++ map (x_defaults: let
+          x = lib.removeSuffix "_defaults" x_defaults;
+          x_nodes = lib.pipe cfg.nodes [
+            (lib.filterAttrs (_: node: node.role == x))
+            (partitionAttrs (_: node: node.create_root_disk_on_volume == true))
+          ];
         in {
-          assertion = cluster_exists -> (config.yk8s.infra.cluster_name == current_cluster_name);
+          assertion =
+            (cfg."${x_defaults}".root_disk_size != null)
+            -> any (v: v == true) [
+              cfg.create_root_disk_on_volume
+              cfg."${x_defaults}".create_root_disk_on_volume
+              (x_nodes.right != {} && x_nodes.wrong == {})
+            ];
           message = ''
-            config.yk8s.infra.cluster_name:
-            Will not update terraform config because there is a mismatch between the deployed and future cluster_name. This would cause death and destruction.
-            Set `config.yk8s.infra.cluster_name` back to ${current_cluster_name}. Your suggested change ${config.yk8s.infra.cluster_name} is unacceptable.
+            config.yk8s.openstack.${x_defaults}.root_disk_size:
+              is set, but will not have any effect for at least one ${x} node
+              because none of the following options is enabled:
+                - config.yk8s.openstack.create_root_disk_on_volume
+                - config.yk8s.openstack.${x_defaults}.create_root_disk_on_volume
+                ${lib.optionalString (x_nodes.wrong != {})
+              ''
+                - config.yk8s.openstack.nodes.<node>.create_root_disk_on_volume
+                      where <node> is: ${lib.concatMapAttrsStringSep ", " (n: _: n) x_nodes.wrong}
+              ''}
+              Set at least one of these to `true`
+              or unset config.yk8s.openstack.${x_defaults}.root_disk_size.
           '';
         })
-        {
-          # although IPv4 technically works with lower MTUs, 576 Bytes is the recommended minimum size of datagrams
-          # https://datatracker.ietf.org/doc/html/rfc791
-          assertion = config.yk8s.infra.ipv4_enabled -> cfg.network_mtu >= 576;
-          message = "config.yk8s.openstack.network_mtu: must be at least 576 Bytes to support IPv4.";
-        }
-        {
-          # 1280 Bytes is the technical minimum MTU for IPv6 to work
-          # https://datatracker.ietf.org/doc/html/rfc8200#section-5
-          assertion = config.yk8s.infra.ipv6_enabled -> cfg.network_mtu >= 1280;
-          message = "config.yk8s.openstack.network_mtu: must be at least 1280 Bytes to support IPv6.";
-        }
-      ];
+        # Detect *_defaults
+        (lib.pipe cfg [
+          (lib.filterAttrs (n: _: lib.hasSuffix "_defaults" n))
+          (lib.mapAttrsToList (n: _: n))
+        ])
+        ++ lib.mapAttrsToList (nodeName: nodeOptions: {
+          assertion =
+            (nodeOptions.root_disk_size != null)
+            -> any (v: v == true) [
+              cfg.create_root_disk_on_volume
+              cfg."${nodeOptions.role}_defaults".create_root_disk_on_volume
+              nodeOptions.create_root_disk_on_volume
+            ];
+          message = ''
+            config.yk8s.openstack.nodes.${nodeName}.root_disk_size:
+              is set, but will not have any effect
+              because none of the following options is enabled:
+                - config.yk8s.openstack.nodes.${nodeName}.create_root_disk_on_volume
+                - config.yk8s.openstack.${nodeOptions.role}_defaults.create_root_disk_on_volume
+                - config.yk8s.openstack.create_root_disk_on_volume
 
+              Set at least one of these to `true`
+              or unset config.yk8s.openstack.nodes.${nodeName}.root_disk_size.
+          '';
+        })
+        cfg.nodes;
       infra = {
         networking_floating_ip = config.yk8s.terraform.outputs.networking_floating_ip.value;
         networking_fixed_ip = config.yk8s.terraform.outputs.networking_fixed_ip.value or null;

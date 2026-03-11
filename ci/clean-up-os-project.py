@@ -87,6 +87,13 @@ def main():
             if os_region == "f1d":
                 if network['id'] == "086e6f62-8da8-47c3-afef-627ef5057ce4":
                     continue
+            if os_region == "dd8a":
+                if network['id'] in [
+                        "a9247cf7-47e9-4799-81a1-2507a2500391",
+                        "dcb89c2f-e853-4b25-9299-7dca5e9b4749",
+                        "f4e9d44f-430e-45ef-bfc6-d8ca59dd7943"
+                ]:
+                    continue
             # getattr(network, "subnets", default=getattr(network, "subnet_ids"))
             # throws an exception, the getattr method is overwritten by the class
             # and therefore providing default is not working as expected.

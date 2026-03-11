@@ -2,13 +2,21 @@ locals {
   gateway_nodes = {
     for idx in range(var.gateway_count) :
       "${local.nodes_prefix}${var.gateway_defaults.common_name}${idx}" => {
-        image                    = var.gateway_defaults.image
-        flavor                   = var.gateway_defaults.flavor
-        az                       = var.spread_gateways_across_azs ? tolist(var.azs)[idx % length(var.azs)] : null
-        volume_name              = "${local.nodes_prefix}${var.gateway_defaults.common_name}${idx}-volume"
-        root_disk_size           = var.gateway_defaults.root_disk_size
-        root_disk_volume_type    = var.gateway_defaults.root_disk_volume_type
+        image                      = var.gateway_defaults.image
+        flavor                     = var.gateway_defaults.flavor
+        az                         = var.spread_gateways_across_azs ? tolist(var.azs)[idx % length(var.azs)] : null
+        volume_name                = "${local.nodes_prefix}${var.gateway_defaults.common_name}${idx}-volume"
+        root_disk_size             = var.gateway_defaults.root_disk_size
+        root_disk_volume_type      = var.gateway_defaults.root_disk_volume_type
+        create_root_disk_on_volume = coalesce(
+                                       var.gateway_defaults.create_root_disk_on_volume,
+                                       var.create_root_disk_on_volume
+                                     )
       }
+  }
+  gateway_nodes_with_volumes = {
+    for k, v in local.gateway_nodes : k => v
+    if v.create_root_disk_on_volume == true
   }
 }
 
@@ -126,12 +134,12 @@ resource "openstack_networking_port_v2" "gateway" {
 }
 
 resource "openstack_blockstorage_volume_v3" "gateway-volume" {
-  for_each = var.create_root_disk_on_volume == true ? local.gateway_nodes : {}
+  for_each    = local.gateway_nodes_with_volumes
+
   name        = each.value.volume_name
-  size        = (data.openstack_compute_flavor_v2.gateway.disk > 0) ? data.openstack_compute_flavor_v2.gateway.disk : each.value.root_disk_size
+  size        = coalesce(each.value.root_disk_size, data.openstack_compute_flavor_v2.gateway.disk)
   image_id    = data.openstack_images_image_v2.gateway.id
   volume_type = each.value.root_disk_volume_type
-  availability_zone = each.value.az
 
   timeouts {
     create = var.timeout_time
@@ -140,6 +148,10 @@ resource "openstack_blockstorage_volume_v3" "gateway-volume" {
 
   lifecycle {
     ignore_changes = [image_id]
+    precondition {
+       condition = coalesce(each.value.root_disk_size, data.openstack_compute_flavor_v2.gateway.disk) > 0
+       error_message = "An invalid disk size has been supplied. You probably have to explicitly configure a 'root_disk_size'"
+    }
   }
 }
 
@@ -148,20 +160,21 @@ resource "openstack_compute_instance_v2" "gateway" {
 
   name              = each.key
   flavor_id         = data.openstack_compute_flavor_v2.gateway.id
-  image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.gateway.id : null
+  image_id          = each.value.create_root_disk_on_volume == false ? data.openstack_images_image_v2.gateway.id : null
   key_pair          = var.keypair
   availability_zone = each.value.az
   config_drive      = true
 
   dynamic block_device {
-    # Using "for_each" for check the conditional "create_root_disk_on_volume". It's not working as a loop. "dummy" should make this just more visible.
-    for_each = var.create_root_disk_on_volume == true ? ["dummy"] : []
+    # Abusing 'for_each' as a conditional
+    # It's not working as a loop. The outer `each.key` is "passed" into the inner `for_each`
+    for_each = each.value.create_root_disk_on_volume == true ? ["dummy"] : []
       content {
-      uuid                  = openstack_blockstorage_volume_v3.gateway-volume[each.key].id
-      source_type           = "volume"
-      boot_index            = 0
-      destination_type      = "volume"
-      delete_on_termination = true
+        uuid                  = openstack_blockstorage_volume_v3.gateway-volume[each.key].id
+        source_type           = "volume"
+        boot_index            = 0
+        destination_type      = "volume"
+        delete_on_termination = true
       }
   }
 

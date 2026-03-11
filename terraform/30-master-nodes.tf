@@ -2,14 +2,23 @@ locals {
   # NOTE: coalesce() is used to provide non-null default values from the templates
   master_nodes = {
     for name, values in var.nodes :
-        "${local.nodes_prefix}${name}" => {
-          image                    = coalesce(values.image, var.master_defaults.image)
-          flavor                   = coalesce(values.flavor, var.master_defaults.flavor)
-          az                       = values.az  # default: null
-          volume_name              = "${var.cluster_name}-master-volume-${name}"
-          root_disk_size           = coalesce(values.root_disk_size, var.master_defaults.root_disk_size)
-          root_disk_volume_type    = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.master_defaults.root_disk_volume_type
-        } if values.role == "master"
+      "${local.nodes_prefix}${name}" => {
+        image                      = coalesce(values.image, var.master_defaults.image)
+        flavor                     = coalesce(values.flavor, var.master_defaults.flavor)
+        az                         = values.az  # default: null
+        volume_name                = "${var.cluster_name}-master-volume-${name}"
+        root_disk_size             = values.root_disk_size != null ? values.root_disk_size : var.master_defaults.root_disk_size
+        root_disk_volume_type      = values.root_disk_volume_type != null ? values.root_disk_volume_type : var.master_defaults.root_disk_volume_type
+        create_root_disk_on_volume = coalesce(
+                                       values.create_root_disk_on_volume,
+                                       var.master_defaults.create_root_disk_on_volume,
+                                       var.create_root_disk_on_volume
+                                     )
+      } if values.role == "master"
+    }
+  master_nodes_with_volumes = {
+    for k, v in local.master_nodes : k => v
+    if v.create_root_disk_on_volume == true
   }
 }
 
@@ -48,13 +57,12 @@ data "openstack_images_image_v2" "master" {
 }
 
 resource "openstack_blockstorage_volume_v3" "master-volume" {
-  for_each = var.create_root_disk_on_volume == true ? local.master_nodes : {}
+  for_each = local.master_nodes_with_volumes
 
   name        = each.value.volume_name
-  size        = (data.openstack_compute_flavor_v2.master[each.key].disk > 0) ? data.openstack_compute_flavor_v2.master[each.key].disk : each.value.root_disk_size
   image_id    = data.openstack_images_image_v2.master[each.key].id
+  size        = coalesce(each.value.root_disk_size,data.openstack_compute_flavor_v2.master[each.key].disk)
   volume_type = each.value.root_disk_volume_type
-  availability_zone = each.value.az
 
   timeouts {
     create = var.timeout_time
@@ -63,6 +71,10 @@ resource "openstack_blockstorage_volume_v3" "master-volume" {
 
   lifecycle {
     ignore_changes = [image_id]
+    precondition {
+       condition = coalesce(each.value.root_disk_size,data.openstack_compute_flavor_v2.master[each.key].disk) > 0
+       error_message = "An invalid disk size has been supplied. You probably have to explicitly configure a 'root_disk_size'"
+    }
   }
 }
 
@@ -73,13 +85,13 @@ resource "openstack_compute_instance_v2" "master" {
   availability_zone = each.value.az
   config_drive      = true
   flavor_id         = data.openstack_compute_flavor_v2.master[each.key].id
-  image_id          = var.create_root_disk_on_volume == false ? data.openstack_images_image_v2.master[each.key].id : null
+  image_id          = each.value.create_root_disk_on_volume == false ? data.openstack_images_image_v2.master[each.key].id : null
   key_pair          = var.keypair
 
   dynamic block_device {
     # Abusing 'for_each' as a conditional
     # It's not working as a loop. The outer `each.key` is "passed" into the inner `for_each`
-    for_each = var.create_root_disk_on_volume == true ? [each.key] : []
+    for_each = each.value.create_root_disk_on_volume == true ? ["dummy"] : []
       content {
         uuid                  = openstack_blockstorage_volume_v3.master-volume[each.key].id
         source_type           = "volume"

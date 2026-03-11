@@ -42,6 +42,27 @@
       attrs;
 
   /*
+  Given a predicate function `pred`,
+  this function returns an attrset containing an attrset named `right`,
+  containing the elements in attrset for which `pred` returned `true`,
+  and an attrset named `wrong`,
+  containing the elements for which it returned `false`.
+  For example,
+
+  partitionAttrs (n: v: v.k > 10) { a={k=1;}; b={k=23;}; c={k=9;}; d={k=3;}; e={k=42;}; }
+
+  evaluates to
+
+  { right = {b={k=23;}; e={k=42;};}; wrong = {a={k=1;}; c={k=9;}; d={k=3;};}; }
+  */
+  partitionAttrs = pred: attrs:
+    lib.pipe attrs [
+      (lib.mapAttrsToList (n: v: lib.nameValuePair n v))
+      (lib.partition (item: pred item.name item.value))
+      (lib.mapAttrs (_: v: lib.listToAttrs v))
+    ];
+
+  /*
   Remove the attribute "_internal" (and all its children) from attributeset
   */
   filterInternal = lib.attrsets.filterAttrsRecursive (n: _: n != "_internal");
