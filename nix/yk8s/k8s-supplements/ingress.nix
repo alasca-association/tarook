@@ -152,6 +152,9 @@ in {
         };
         priorityClassName = "system-cluster-critical";
         image.allowPrivilegeEscalation = false;
+        admissionWebhooks.patch = {
+          inherit tolerations;
+        };
       }
       // lib.optionalAttrs config.yk8s.kubernetes.monitoring.enabled {
         metrics = {

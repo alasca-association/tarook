@@ -14,6 +14,7 @@
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkDisableOption linkToPath types;
   inherit (yk8s-lib.transform) removeObsoleteOptions filterInternal;
   inherit (yk8s-lib.options) mkHelmReleaseOptions;
+  inherit (yk8s-lib.k8s) mkAffinity mkTolerations;
   inherit (builtins) fromJSON readFile pathExists length;
   tfvars_file_path = "terraform/config.tfvars.json";
   commonNodeDefaultOptions = {
@@ -505,6 +506,12 @@ in {
           plugin = {
             nodePlugin = {
               dnsPolicy = "ClusterFirst";
+            };
+            controllerPlugin = let 
+              scheduling_key = "node-role.kubernetes.io/control-plane";
+            in {
+              affinity = mkAffinity {inherit scheduling_key;};
+              tolerations = mkTolerations {inherit scheduling_key;};
             };
           };
         };
