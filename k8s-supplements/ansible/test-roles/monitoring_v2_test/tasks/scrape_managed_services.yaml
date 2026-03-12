@@ -190,7 +190,7 @@
     kubernetes.core.k8s_exec:
       namespace: "{{ check_prometheus_scraping_namespace }}"
       pod: prometheus-test-scraper
-      command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="vault"}'
+      command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="vault-active"}'
     register: metrics
     until: |
       metrics.failed == false and
