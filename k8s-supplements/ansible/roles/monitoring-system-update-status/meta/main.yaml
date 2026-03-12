@@ -2,6 +2,4 @@
 galaxy_info:
   license: Apache-2.0
   author: Tarook Authors
-dependencies:
-- monitoring-system-update-status-common
 ...
