@@ -507,7 +507,7 @@ in {
             nodePlugin = {
               dnsPolicy = "ClusterFirst";
             };
-            controllerPlugin = let 
+            controllerPlugin = let
               scheduling_key = "node-role.kubernetes.io/control-plane";
             in {
               affinity = mkAffinity {inherit scheduling_key;};
