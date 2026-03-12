@@ -1,2 +1,0 @@
-Affinity and tolerations have been added to the cinder-csi-controllerplugin
-such that it is ensured to be running on a control plane node.

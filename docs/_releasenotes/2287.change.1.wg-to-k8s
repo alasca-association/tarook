@@ -1,1 +1,0 @@
-For clusters running on top of OpenStack, firewall rules have been added which allow traffic flow to the Kubernetes Pod and Service network via the Wireguard tunnel.

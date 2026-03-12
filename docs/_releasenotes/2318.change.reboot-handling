@@ -1,2 +1,0 @@
-The operating system restart behavior has been improved.
-Nodes are only rebooted if a package requires it.

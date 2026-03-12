@@ -1,1 +1,0 @@
-The helm chart for the Cloud Controller Manager can now be configured with arbitrary values through :ref:`configuration-options.yk8s.openstack.cloud_controller_manager.helm.values`.

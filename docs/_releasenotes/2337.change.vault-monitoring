@@ -1,1 +1,0 @@
-Vault ServiceMonitor will now only scrape the active(leading) instance. This has been adopted to match the official helm chart behaviour.
