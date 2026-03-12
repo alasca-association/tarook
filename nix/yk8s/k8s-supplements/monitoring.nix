@@ -364,7 +364,7 @@ in {
 
     thanos_chart_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=thanos registryUrl=https://charts.bitnami.com/bitnami
-      default = "17.2.3";
+      default = "17.2.6";
     };
 
     thanos_storage_class = mkOption {
