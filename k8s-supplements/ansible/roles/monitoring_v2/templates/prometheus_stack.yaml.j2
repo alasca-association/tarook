@@ -9,6 +9,16 @@ commonLabels:
 
 priorityClassName: "system-cluster-critical"
 
+## Since 68.4.0 it is possible to use crds.upgradeJob.enabled for upgrading the CRDs
+##
+crds:
+  ## The CRD upgrade job mitigates the limitation of helm not being able to upgrade CRDs.
+  ## The job will apply the CRDs to the cluster before the operator is deployed, using helm hooks.
+  ## It deploy a corresponding clusterrole, clusterrolebinding and serviceaccount to apply the CRDs.
+  upgradeJob:
+    enabled: true
+    forceConflicts: true
+
 ##
 defaultRules:
   create: true

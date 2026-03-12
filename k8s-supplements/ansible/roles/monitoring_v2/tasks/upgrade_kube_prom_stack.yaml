@@ -29,6 +29,8 @@
     # NOTE: range(start, end) follows Python conventitons where the end value is exclusive
     loop: "{{ range(prom_stack_depl_major_version | int + 1, prom_stack_conf_major_version | int + 1) | list }}"
     include_tasks: apply_crds.yaml
+    # NOTE: Since chart version 68.4.0 it is possible to use crds.upgradeJob.enabled for upgrading the CRDs
+    when: prom_stack_conf_version is version('68.3.3', operator='<=') or prom_stack_depl_version is version('68.3.3', operator='<=')
 
   # Remove the admission controllers associated with the old prometheus-operator installation
   # issue ref: https://github.com/helm/charts/issues/19928
