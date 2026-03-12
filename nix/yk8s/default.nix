@@ -31,7 +31,6 @@
           };
         };
         imports = [
-          ./assertions.nix
           ./conf-vars.nix
           ./infra.nix
           ./terraform.nix
@@ -50,7 +49,36 @@
           (mkRemovedOptionModule ["passwordstore"] "Passwordstore has been replaced by Vault.")
           (mkRemovedOptionModule ["cah-users"] "")
         ];
-        options.yk8s = {
+        options.yk8s = let
+          assertions = mkOption {
+            type = with types; listOf unspecified;
+            internal = true;
+            default = [];
+            example = [
+              {
+                assertion = false;
+                message = "you can't enable this for that reason";
+              }
+            ];
+            description = ''
+              This option allows modules to express conditions that must
+              hold for the evaluation of the system configuration to
+              succeed, along with associated error messages for the user.
+            '';
+          };
+          warnings = mkOption {
+            internal = true;
+            default = [];
+            type = with types; listOf nonEmptyStr;
+            example = ["The `foo' service is deprecated and will go away soon!"];
+            description = ''
+              This option allows modules to show warnings to users during
+              the evaluation of the system configuration.
+            '';
+          };
+        in {
+          inherit assertions warnings;
+
           state_directory = mkOption {
             description = ''
               The path to the cluster's state directory relative to the Nix file
@@ -81,6 +109,8 @@
             type = with types;
               attrsOf (submodule {
                 options = {
+                  inherit assertions warnings;
+
                   inventory_subdir = mkInternalOption {
                     description = ''
                       The directory inside _inventory_base_path in which inventory packages are to be created.
@@ -125,26 +155,29 @@
         in
           acc
           // {
-            "yk8s-outputs-${targetName}" = builtins.seq (baseSystemAssertWarn config.yk8s) pkgs.buildEnv {
-              name = "yk8s-outputs-${targetName}";
-              paths = let
-                inventoryPath = "${cfg._inventory_base_path}/${targetOptions.inventory_subdir}";
-              in
-                [
-                  (pkgs.writeTextDir ".path-info"
-                    ''
-                      inventory=${
-                        if hasInventory
-                        then inventoryPath
-                        else ""
-                      }
-                      state=${cfg._state_base_path}
-                    '')
-                  (linkToPath state-dir cfg._state_base_path)
-                ]
-                ++ lib.optional hasInventory
-                (linkToPath inventory inventoryPath);
-            };
+            "yk8s-outputs-${targetName}" =
+              builtins.seq (baseSystemAssertWarn config.yk8s)
+              builtins.seq (baseSystemAssertWarn targetOptions)
+              pkgs.buildEnv {
+                name = "yk8s-outputs-${targetName}";
+                paths = let
+                  inventoryPath = "${cfg._inventory_base_path}/${targetOptions.inventory_subdir}";
+                in
+                  [
+                    (pkgs.writeTextDir ".path-info"
+                      ''
+                        inventory=${
+                          if hasInventory
+                          then inventoryPath
+                          else ""
+                        }
+                        state=${cfg._state_base_path}
+                      '')
+                    (linkToPath state-dir cfg._state_base_path)
+                  ]
+                  ++ lib.optional hasInventory
+                  (linkToPath inventory inventoryPath);
+              };
           }) {}
         cfg._targets;
       });

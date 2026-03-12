@@ -575,7 +575,7 @@ in {
       };
     };
   };
-  config.yk8s.assertions =
+  config.yk8s._targets.ansible.assertions =
     []
     # check that no IPv6 module is configured in any probe if yk8s.infra.ipv6_enabled is disabled
     ++ lib.imap0
@@ -586,6 +586,7 @@ in {
       message = "config.yk8s.k8s-service-layer.prometheus.internet_probe_targets[${idx}].module: ${x.module} is an IPv6-specific module but config.yk8s.infra.ipv6_enabled=false";
     })
     cfg.internet_probe_targets;
+  config.yk8s._targets.ansible.warnings = [];
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

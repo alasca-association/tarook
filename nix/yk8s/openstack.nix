@@ -507,7 +507,7 @@ in {
             nodePlugin = {
               dnsPolicy = "ClusterFirst";
             };
-            controllerPlugin = let 
+            controllerPlugin = let
               scheduling_key = "node-role.kubernetes.io/control-plane";
             in {
               affinity = mkAffinity {inherit scheduling_key;};
@@ -553,7 +553,7 @@ in {
     (lib.mkIf cfg.enabled {
       terraform.enabled = true;
 
-      assertions = let
+      _targets.ansible.assertions = let
         inherit (builtins) all any length filter attrValues;
         inherit (yk8s-lib.transform) partitionAttrs;
       in
@@ -665,6 +665,7 @@ in {
           '';
         })
         cfg.nodes;
+      _targets.ansible.warnings = [];
       infra = {
         networking_floating_ip = config.yk8s.terraform.outputs.networking_floating_ip.value;
         networking_fixed_ip = config.yk8s.terraform.outputs.networking_fixed_ip.value or null;

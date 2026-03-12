@@ -184,7 +184,7 @@ in {
         else v;
     };
   };
-  config.yk8s.warnings =
+  config.yk8s._targets.ansible.warnings =
     [
     ]
     ++ lib.optional (cfg.enabled && cfg.shared_secret != null) ''
@@ -199,7 +199,7 @@ in {
          You can unset this option.
          A shared secret will be automatically generated and stored in Vault on a rollout.
     '';
-  config.yk8s.assertions = [
+  config.yk8s._targets.ansible.assertions = [
     # Due to OVN support, require version >= 0.8.0 (warn only if not in semver2 format)
     (
       let

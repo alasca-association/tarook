@@ -171,22 +171,18 @@ in {
       example = "tf-state";
     };
 
-    outputs_ready = mkInternalOption {
-      readOnly = true;
-      type = types.bool;
-      default = config.yk8s.state_directory != null && builtins.pathExists tfOutputsFullPath;
-    };
-
     outputs = mkInternalOption {
       readOnly = true;
       type = types.attrs;
       default =
-        if cfg.outputs_ready
+        if config.yk8s.state_directory != null && builtins.pathExists tfOutputsFullPath
         then builtins.fromJSON (builtins.readFile tfOutputsFullPath)
         else throw "${tfOutputsPath} does not exist yet. Terraform stage needs to be run first.";
     };
   };
   config.yk8s = {
+    _targets.terraform.assertions = [];
+    _targets.terraform.warnings = [];
     _targets.terraform.state_packages = lib.optional cfg.enabled (
       let
         filteredTerraformCfg = yk8s-lib.removeAttrsByPath config.yk8s.terraform [["enabled"] ["outputs"]];

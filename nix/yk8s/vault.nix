@@ -41,6 +41,8 @@ in {
       inventory_path = "all/vault-backend.yaml";
     })
   ];
+  config.yk8s._targets.vault.assertions = [];
+  config.yk8s._targets.vault.warnings = [];
   config.yk8s._targets.vault = {
     inventory_subdir = "vault";
     inventory_packages = [

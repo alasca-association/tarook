@@ -237,7 +237,7 @@ in {
         warnIfZero "config.yk8s.k8s-service-layer.vault.service_active_node_port: should not be port zero" v;
     };
   };
-  config.yk8s.assertions = [
+  config.yk8s._targets.ansible.assertions = [
     {
       assertion = cfg.enabled -> config.yk8s.k8s-service-layer.cert-manager.enabled;
       message = lib.strings.concatStrings [
@@ -248,6 +248,7 @@ in {
       ];
     }
   ];
+  config.yk8s._targets.ansible.warnings = [];
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

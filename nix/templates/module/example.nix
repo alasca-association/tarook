@@ -41,6 +41,13 @@ in {
       example = ["some value" "some other value"];
     };
   };
+  config.yk8s._targets.ansible.assertions = [
+    # {
+    #   assertion = a -> b != null;
+    #   message = "If a is true, then b must be configured.";
+    # }
+  ];
+  # config.yk8s._targets.ansible.warnings = lib.optional (c && d) "Both c and d are configured, this can lead to issues.";
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
