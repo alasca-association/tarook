@@ -270,6 +270,10 @@ in {
         message = "config.yk8s.wireguard.endpoints.[].id: must be unique";
       }
       {
+        assertion = cfg.enabled -> allUnique (map (p: p.port) cfg.endpoints);
+        message = "config.yk8s.wireguard.endpoints.[].port: must be unique";
+      }
+      {
         # 636 = 576 (reasonable minimum MTU for IPv4) + 20 (IPv4 Header) + 8 (UDP Header) + 32 (Wireguard Header)
         assertion = cfg.enabled && config.yk8s.infra.ipv4_enabled && config.yk8s.openstack.enabled -> config.yk8s.openstack.network_mtu >= 636;
         message = "config.yk8s.openstack.network_mtu: must be at least 636 Bytes to support Wireguard on IPv4";
