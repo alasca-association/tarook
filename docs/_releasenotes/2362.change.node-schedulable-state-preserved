@@ -1,0 +1,2 @@
+Nodes already being cordoned before a rollout
+are not automatically uncordoned on system or Kubernetes upgrades anymore.

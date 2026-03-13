@@ -66,18 +66,28 @@
   - vars/retries.yaml
   serial: 1
   tags: update-frontend-nodes
-  roles:
-  - role: cluster-health-verification
-    delegate_to: "{{ groups['orchestrator'] | first }}"
-    when:
-    - not (k8s_skip_upgrade_checks | bool)
-    - _allow_disruption
-  - role: kubeadm-drain-node
-    when: _allow_disruption
-  - role: containerd
-    when: _allow_disruption
-  - role: update-system
-    when: _allow_disruption
-  - role: kubeadm-uncordon-node
-    when: _allow_disruption
+  tasks:
+  - when: _allow_disruption
+    block:
+    - include_role:
+        name: cluster-health-verification
+      when: not (k8s_skip_upgrade_checks | bool)
+    - name: "Get info of Kubernetes node {{ inventory_hostname }}"
+      delegate_to: "{{ groups['orchestrator'] | first }}"
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Node
+        name: "{{ inventory_hostname }}"
+      register: _k8s_node_info
+    - include_role:
+        name: kubeadm-drain-node
+    - include_role:
+        name: containerd
+    - include_role:
+        name: update-system
+    always:
+    - include_role:
+        name: kubeadm-uncordon-node
+      # Only uncordon node if it was previously uncordoned
+      when: not (_k8s_node_info.resources[0].spec.unschedulable | default(false) | bool)
 ...
