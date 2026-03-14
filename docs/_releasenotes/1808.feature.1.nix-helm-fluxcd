@@ -1,1 +1,0 @@
-The helm chart for FluxCD can now be configured with arbitrary values through :ref:`configuration-options.yk8s.k8s-service-layer.fluxcd.helm.values`.

@@ -1,1 +1,0 @@
-An affinity has been added to Calico/Typha such that is scheduled to the control plane by default.

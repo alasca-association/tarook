@@ -1,8 +1,0 @@
-The Thanos datasource has been made editable inside of Grafana.
-This does only effect clusters having
-:ref:`configuration-options.yk8s.kubernetes.monitoring.enabled`
-as well as
-:ref:`configuration-options.yk8s.k8s-service-layer.prometheus.use_thanos`
-and
-:ref:`configuration-options.yk8s.k8s-service-layer.prometheus.use_grafana`
-enabled.

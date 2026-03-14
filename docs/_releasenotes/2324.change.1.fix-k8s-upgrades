@@ -1,1 +1,0 @@
-We now use the same version of Calico for all supported Kubernetes versions. This means that Calico will be updated in Clusters that are not on the latest supported Kubernetes version.
