@@ -5,8 +5,8 @@ User References
     :maxdepth: 2
     :hidden:
 
-    services/index
     actions-references
+    vault-tools-references
     cluster-configuration
     options/index
     cluster-repository

@@ -8,6 +8,7 @@ hidden: true
 
 services/index
 vpn/index
+vault
 abstraction-layers
 architecture-overview
 backups
