@@ -161,7 +161,7 @@ in {
           type = types.port;
           default = 19100;
           apply = v:
-            warnIfZero "config.yk8s.k8s-service-layer.etcd-backup.metrics_port: should not be port zero" v;
+            warnIfZero "config.yk8s.k8s-service-layer.etcd-backup.helm.values.metrics_port: should not be port zero" v;
         };
         targets.s3 = {
           endpoint = mkOption {

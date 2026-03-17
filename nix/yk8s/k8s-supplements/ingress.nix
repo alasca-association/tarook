@@ -98,7 +98,7 @@ in {
                 type = types.port;
                 default = 32080;
                 apply = v:
-                  warnIfZero "config.yk8s.k8s-service-layer.ingress.nodeport_http: should not be port zero" v;
+                  warnIfZero "config.yk8s.k8s-service-layer.ingress.helm.values.controller.service.nodePorts.http: should not be port zero" v;
               };
               https = mkOption {
                 description = ''
@@ -107,7 +107,7 @@ in {
                 type = types.port;
                 default = 32443;
                 apply = v:
-                  warnIfZero "config.yk8s.k8s-service-layer.ingress.nodeport_https: should not be port zero" v;
+                  warnIfZero "config.yk8s.k8s-service-layer.ingress.helm.values.controller.service.nodePorts.https: should not be port zero" v;
               };
             };
           };

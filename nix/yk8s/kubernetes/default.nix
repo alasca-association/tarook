@@ -77,7 +77,7 @@ in {
         type = types.port;
         default = 8888;
         apply = v:
-          warnIfZero "config.yk8s.kubernetes.apiserver: should not be port zero" v;
+          warnIfZero "config.yk8s.kubernetes.apiserver.frontend_port: should not be port zero" v;
       };
       memory_limit = mkOption {
         description = ''

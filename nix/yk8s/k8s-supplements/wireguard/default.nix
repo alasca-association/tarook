@@ -133,7 +133,7 @@ in {
           warnHasPortZero = mkMsg: warnIfAttrZero mkMsg ["port"];
         in
           warnHasPortZero
-          (attr: "config.yk8s.wireguard.endpoints[${idx}].${attr}: should not be port zero")
+          (attr: "config.yk8s.wireguard.endpoints[${toString idx}].${attr}: should not be port zero")
           port
       );
     };
