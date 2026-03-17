@@ -356,21 +356,6 @@ in {
         ];
       };
     };
-    ipsec = {
-      enabled = true;
-      test_enabled = true;
-      proposals = [
-        "aes256-sha256-modp2048"
-      ];
-      peer_networks = [
-        "172.20.150.0/24"
-      ];
-      remote_addrs = [
-        "185.128.117.230"
-      ];
-      remote_name = "185.128.117.230";
-      remote_private_addrs = ["172.20.150.154"];
-    };
     miscellaneous = {
       custom_chrony_configuration = true;
       custom_ntp_servers = [

@@ -125,20 +125,6 @@
     - test-dualstack
     when: k8s_network_calico_enabled | bool
 
-- name: Validate IPSec
-  hosts: orchestrator
-  gather_facts: false
-  vars_files:
-  - vars/retries.yaml
-  roles:
-  - role: check-ipsec
-    tags:
-    - check-ipsec
-    - test-ipsec
-    when:
-    - ipsec_enabled | bool
-    - ipsec_test_enabled | bool
-
 - name: Test Nvidia GPU Support
   hosts: orchestrator
   vars_files:

@@ -77,9 +77,9 @@ in {
     };
 
     networking_floating_ip = mkInternalOption {
-      # TODO: move to yk8s.wireguard when ipsec gets removed
+      # TODO: move to yk8s.wireguard
       description = ''
-        Address that is used by Wireguard and IPsec to connect to the active gateway node.
+        Address that is used by Wireguard to connect to the active gateway node.
       '';
       type = with types; nullOr yk8s.networking.ipv4Addr;
       default = null;
@@ -331,8 +331,8 @@ in {
       message = "config.yk8s.infra.ansible_hosts.orchestrator must contain exactly one host and no children";
     }
     {
-      assertion = (config.yk8s.wireguard.enabled || config.yk8s.ipsec.enabled) -> config.yk8s.terraform.enabled || cfg.networking_floating_ip != null;
-      message = "config.yk8s.infra.networking_floating_ip must be set if Wireguard or IPsec is used.";
+      assertion = config.yk8s.wireguard.enabled -> config.yk8s.terraform.enabled || cfg.networking_floating_ip != null;
+      message = "config.yk8s.infra.networking_floating_ip must be set if Wireguard is used.";
     }
     {
       assertion = builtins.all (host: (host.ansible_connection or "") != "local" -> host.ansible_host != null) (builtins.attrValues cfg.final_hosts.all.hosts);
