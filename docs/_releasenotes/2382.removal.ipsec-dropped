@@ -1,0 +1,16 @@
+Removed support for IPSec after it has been deprecated since release v10.0.0.
+
+.. attention:: Potential action required
+
+   In case you still have IPSec enabled (``config.yk8s.ipsec.enabled = true``),
+   you need to undeploy it **before** upgrading to this release.
+
+   .. code:: console
+
+      $ edit config/default.nix  # set `config.yk8s.ipsec.enabled = false`
+      $ VAULT_TOKEN=${vault_root_token:?} ./managed-k8s/actions/apply-prepare-gw.sh
+      ......
+      $ edit config/default.nix  # remove `config.yk8s.ipsec.*`
+      $
+
+_
