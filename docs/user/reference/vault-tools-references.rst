@@ -61,8 +61,7 @@ for additional environment variables accepted by these tools.
 - ``tools/vault/update.sh``: Reinitializes the PKI engines, checks for
   leftovers inside vault and tries to reimport configurations for
   :ref:`etcd-backup <configuration-options.yk8s.k8s-service-layer.etcd-backup>`,
-  :ref:`Thanos <thanos.custom-bucket-management>`
-  and the :ref:`IPSec PSK <ipsec.upload-psk-to-vault>`.
+  and :ref:`Thanos <thanos.custom-bucket-management>`
 
 - ``rotate-root-ca-intermediate.sh``: Needed for Root CA rotation by clusters
   which have been bootstrapped using ``mkcluster-intermediate.sh``, or equivalent.

@@ -217,10 +217,6 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     capabilities = ["create", "update", "read"]
 }
 
-path "$common_path_prefix/+/kv/data/ipsec-eap-psk" {
-    capabilities = ["read"]
-}
-
 path "$common_path_prefix/+/kv/data/ch-k8s-lbaas-shared-secret" {
     capabilities = ["read"]
 }
@@ -360,10 +356,6 @@ path "$common_path_prefix/+/kv/data/ipmi/*" {
 }
 
 path "$common_path_prefix/+/kv/data/etcdbackup" {
-    capabilities = ["read"]
-}
-
-path "$common_path_prefix/+/kv/data/ipsec-eap-psk" {
     capabilities = ["read"]
 }
 

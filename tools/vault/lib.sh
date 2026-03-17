@@ -454,24 +454,6 @@ function import_etcd_backup_config() {
     fi
 }
 
-function import_ipsec_eap_psk() {
-    if [ -f etc/passwordstore/ipsec_eap_psk.gpg ]; then
-        if ! vault kv get "$cluster_path"/kv/ipsec-eap-psk > /dev/null; then
-            vault kv put "$cluster_path/kv/ipsec-eap-psk" "ipsec_eap_psk=$(PASSWORD_STORE_DIR=etc/passwordstore pass show ipsec_eap_psk)"
-            echo "Successfully imported IPSec PSK into vault."
-            echo "Removing IPSec PSK from passwordstore."
-            rm etc/passwordstore/ipsec_eap_psk.gpg
-        else
-            echo "An IPSec PSK already has been stored in vault."
-            echo "Please manually remove the existing data from vault,"
-            echo "if you want to import the PSK from the passwordstore."
-        fi
-    else
-        echo "Failed to find IPSEC EAP PSK in passwordstore." >&2
-        echo "Ignoring, as those are optional." >&2
-    fi
-}
-
 function import_thanos_config() {
     thanos_enabled="$(yq '.thanos_enabled' "${vars_file}")"
     manage_thanos_bucket="$(yq '.manage_thanos_bucket' "${vars_file}")"
