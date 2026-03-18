@@ -11,10 +11,6 @@
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
   inherit (yk8s-lib.k8s) mkAffinity mkTolerations;
   inherit (yk8s-lib.options) mkHelmReleaseOptions;
-  inherit
-    (yk8s-lib.transform)
-    warnIfZero
-    ;
 in {
   imports = [
     (mkRenamedOptionModule ["k8s-service-layer" "ingress" "cpu_request"] ["k8s-service-layer" "ingress" "helm" "values" "controller" "resources" "cpu" "request"])
@@ -97,8 +93,6 @@ in {
                 '';
                 type = types.port;
                 default = 32080;
-                apply = v:
-                  warnIfZero "config.yk8s.k8s-service-layer.ingress.helm.values.controller.service.nodePorts.http: should not be port zero" v;
               };
               https = mkOption {
                 description = ''
@@ -106,8 +100,6 @@ in {
                 '';
                 type = types.port;
                 default = 32443;
-                apply = v:
-                  warnIfZero "config.yk8s.k8s-service-layer.ingress.helm.values.controller.service.nodePorts.https: should not be port zero" v;
               };
             };
           };
@@ -169,7 +161,12 @@ in {
   };
 
   config.yk8s._targets.ansible.assertions = [];
-  config.yk8s._targets.ansible.warnings = [];
+  config.yk8s._targets.ansible.warnings =
+    []
+    ++ lib.optional (cfg.helm.values.controller.service.nodePorts.http == 0)
+    "config.yk8s.k8s-service-layer.ingress.helm.values.controller.service.nodePorts.http: should not be port zero"
+    ++ lib.optional (cfg.helm.values.controller.service.nodePorts.https == 0)
+    "config.yk8s.k8s-service-layer.ingress.helm.values.controller.service.nodePorts.https: should not be port zero";
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

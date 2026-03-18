@@ -10,10 +10,6 @@
   inherit (lib) mkEnableOption mkOption;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
   inherit (yk8s-lib.options) mkHelmChartVersionOption;
-  inherit
-    (yk8s-lib.transform)
-    warnIfZero
-    ;
   # as per https://cert-manager.io/docs/reference/api-docs/#cert-manager.io%2fv1
   certManagerIssuerKind = types.enum [
     "Issuer"
@@ -235,8 +231,6 @@ in {
       '';
       type = types.port;
       default = 32048;
-      apply = v:
-        warnIfZero "config.yk8s.k8s-service-layer.vault.service_active_node_port: should not be port zero" v;
     };
   };
   config.yk8s._targets.ansible.assertions = [
@@ -250,7 +244,10 @@ in {
       ];
     }
   ];
-  config.yk8s._targets.ansible.warnings = [];
+  config.yk8s._targets.ansible.warnings =
+    []
+    ++ lib.optional (cfg.service_active_node_port == 0)
+    "config.yk8s.k8s-service-layer.vault.service_active_node_port: should not be port zero";
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

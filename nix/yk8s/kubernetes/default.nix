@@ -12,7 +12,6 @@
   inherit (yk8s-lib.options) mkHelmReleaseOptions;
   inherit
     (yk8s-lib.transform)
-    warnIfZero
     filterNull
     ;
 in {
@@ -76,8 +75,6 @@ in {
       frontend_port = mkOption {
         type = types.port;
         default = 8888;
-        apply = v:
-          warnIfZero "config.yk8s.kubernetes.apiserver.frontend_port: should not be port zero" v;
       };
       memory_limit = mkOption {
         description = ''
@@ -172,7 +169,13 @@ in {
       message = "config.yk8s.kubernetes.is_gpu_cluster: is mutually exlusive with config.yk8s.kubernetes.virtualize_gpu";
     }
   ];
-  config.yk8s.warnings = lib.optional (yk8s-lib.transform.matchesRegex "^(${types.yk8s.networking._regexes.rfc3986.schemeRE})://[^/].*$" cfg.cri_url) "config.yk8s.kubernetes.cri_url uses a relative path which may lead to unintended behavior.";
+  config.yk8s.warnings =
+    []
+    ++ lib.optional
+    (yk8s-lib.transform.matchesRegex "^(${types.yk8s.networking._regexes.rfc3986.schemeRE})://[^/].*$" cfg.cri_url)
+    "config.yk8s.kubernetes.cri_url uses a relative path which may lead to unintended behavior."
+    ++ lib.optional (cfg.apiserver.frontend_port == 0)
+    "config.yk8s.kubernetes.apiserver.frontend_port: should not be port zero";
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

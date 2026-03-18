@@ -9,10 +9,6 @@
   inherit (modules-lib) mkRenamedResourceOptionModule mkResourceOptionModule;
   inherit (lib) mkOption mkEnableOption;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkResourceOption mkDisableOption mkInternalOption types;
-  inherit
-    (yk8s-lib.transform)
-    warnIfZero
-    ;
 in {
   imports = [
     (mkRenamedResourceOptionModule ["ch-k8s-lbaas"] ["controller"])
@@ -58,8 +54,6 @@ in {
       '';
       type = types.port;
       default = 15203;
-      apply = v:
-        warnIfZero "config.yk8s.ch-k8s-lbaas.agent_port: should not be port zero" v;
     };
     port_manager = mkOption {
       description = ''
@@ -198,7 +192,9 @@ in {
       b) You do not care about the shared secret.
          You can unset this option.
          A shared secret will be automatically generated and stored in Vault on a rollout.
-    '';
+    ''
+    ++ lib.optional (cfg.agent_port == 0)
+    "config.yk8s.ch-k8s-lbaas.agent_port: should not be port zero";
   config.yk8s._targets.ansible.assertions = [
     # Due to OVN support, require version >= 0.8.0 (warn only if not in semver2 format)
     (

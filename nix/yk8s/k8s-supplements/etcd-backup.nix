@@ -9,10 +9,6 @@
   inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule;
   inherit (lib) mkEnableOption mkOption;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
-  inherit
-    (yk8s-lib.transform)
-    warnIfZero
-    ;
   inherit (yk8s-lib.options) mkHelmReleaseOptions;
 in {
   imports = [
@@ -160,8 +156,6 @@ in {
           '';
           type = types.port;
           default = 19100;
-          apply = v:
-            warnIfZero "config.yk8s.k8s-service-layer.etcd-backup.helm.values.metrics_port: should not be port zero" v;
         };
         targets.s3 = {
           endpoint = mkOption {
@@ -255,7 +249,10 @@ in {
   };
 
   config.yk8s._targets.ansible.assertions = [];
-  config.yk8s._targets.ansible.warnings = [];
+  config.yk8s._targets.ansible.warnings =
+    []
+    ++ lib.optional (cfg.helm.values.metrics_port == 0)
+    "config.yk8s.k8s-service-layer.etcd-backup.helm.values.metrics_port: should not be port zero";
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

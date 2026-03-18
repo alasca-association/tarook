@@ -16,7 +16,6 @@
     (yk8s-lib.transform)
     filterInternal
     removeObsoleteOptions
-    warnIfAttrZero
     ;
   inherit (pkgs.stdenv) mkDerivation;
   inherit (builtins) foldl' elem fromJSON readFile toString;
@@ -128,14 +127,6 @@ in {
           };
         };
       });
-      apply = lib.imap0 (
-        idx: port: let
-          warnHasPortZero = mkMsg: warnIfAttrZero mkMsg ["port"];
-        in
-          warnHasPortZero
-          (attr: "config.yk8s.wireguard.endpoints[${toString idx}].${attr}: should not be port zero")
-          port
-      );
     };
     peers = mkOption {
       description = ''
@@ -247,7 +238,16 @@ in {
         })
       ];
     _targets.ansible.state_packages = lib.lists.optional cfg.enabled (linkToPath "${wireguard_helper_output}/${ipam_path}" ipam_path);
-    _targets.ansible.warnings = lib.optional (cfg.enabled && (builtins.length cfg.peers) == 0) "config.yk8s.wireguard.peers: is empty";
+    _targets.ansible.warnings =
+      []
+      ++ lib.optional (cfg.enabled && (builtins.length cfg.peers) == 0)
+      "config.yk8s.wireguard.peers: is empty"
+      ++ lib.pipe cfg.endpoints [
+        # enumerate endpoints
+        (lib.imap0 (index: endpoint: {inherit index endpoint;}))
+        (lib.filter (x: x.endpoint.port == 0))
+        (lib.map (x: "config.yk8s.wireguard.endpoints[${toString (x.index)}].port: should not be port zero"))
+      ];
     _targets.ansible.assertions = let
       inherit (builtins) length;
       inherit (lib.lists) unique;
