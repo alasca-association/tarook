@@ -121,12 +121,13 @@
       vars:
         wg_config_dir_path: "{{ etc_dir }}/wireguard/wg{{ endpoint.id }}"
         peers: "{{ wg_peers | map(attribute='ident') | flatten | map('regex_replace', '(.+)', 'wg' ~ endpoint.id ~ '_\\1.conf') | list }}"
+        peers_with_k8s: "{{ wg_peers | map(attribute='ident') | flatten | map('regex_replace', '(.+)', 'wg' ~ endpoint.id ~ '_\\1_with_k8s.conf') | list }}"
       block:
         - name: Find no longer needed wg.conf files
           find:
             file_type: file
             paths: "{{ wg_config_dir_path }}"
-            exclude: "{{ peers }}"
+            exclude: "{{ peers + peers_with_k8s }}"
             recurse: true
           register: unused_config_files
         - name: Delete unused wg.conf files
