@@ -67,23 +67,11 @@ in {
     networking_fixed_ip = mkOption {
       type = with types; nullOr yk8s.networking.ipv4Addr;
       default = null;
-      apply = v:
-        if cfg.ipv4_enabled && v == null
-        then
-          throw
-          "config.yk8s.infra.networking_fixed_ip must be set if ipv4 is enabled"
-        else v;
     };
 
     networking_fixed_ip_v6 = mkOption {
       type = with types; nullOr yk8s.networking.ipv6Addr;
       default = null;
-      apply = v:
-        if cfg.ipv6_enabled && v == null
-        then
-          throw
-          "config.yk8s.infra.networking_fixed_ip_v6 must be set if ipv6 is enabled"
-        else v;
     };
 
     networking_floating_ip = mkInternalOption {
@@ -351,6 +339,14 @@ in {
         cfg.ipv6_enabled
         -> builtins.all (host: host.local_ipv6_address != null) (builtins.attrValues cfg.final_hosts.k8s_nodes.hosts);
       message = "local_ipv6_address must be set for all hosts in config.yk8s.infra.ansible_hosts.k8s_nodes";
+    }
+    {
+      assertion = cfg.ipv4_enabled -> (cfg.networking_fixed_ip != null);
+      message = "config.yk8s.infra.networking_fixed_ip: must be set if config.yk8s.infra.ipv4_enabled=true";
+    }
+    {
+      assertion = cfg.ipv6_enabled -> (cfg.networking_fixed_ip_v6 != null);
+      message = "config.yk8s.infra.networking_fixed_ip_v6: must be set if config.yk8s.infra.ipv6_enabled=true";
     }
     (let
       hostnames = lib.attrNames cfg.final_hosts.all.hosts;

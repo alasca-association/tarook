@@ -241,12 +241,6 @@ in {
       '';
       type = types.ints.positive;
       default = 3;
-      apply = v: let
-        isEven = num: (num - 2 * (num / 2)) == 0;
-      in
-        if (v < 3) || (isEven v)
-        then throw "k8s-service-layer.rook.nmons must be an odd number >= 3"
-        else v;
     };
 
     nmgrs = mkOption {
@@ -380,12 +374,6 @@ in {
         See :doc:`/user/guide/rook/custom-storage`
       '';
       default = [];
-      apply = v:
-        if v != [] && cfg.use_all_available_nodes
-        then
-          throw
-          "config.yk8s.k8s-service-layer.rook.nodes: conflicts with config.yk8s.k8s-service-layer.rook.nodes.use_all_available_nodes=true"
-        else v;
       type = types.listOf (types.submodule {
         options = {
           name = mkOption {
@@ -412,7 +400,22 @@ in {
     };
   };
 
-  config.yk8s._targets.ansible.assertions = [];
+  config.yk8s._targets.ansible.assertions = [
+    {
+      assertion = let
+        isOdd = num: (num - 2 * (num / 2)) != 0;
+      in
+        (isOdd cfg.nmons) && (cfg.nmons >= 3);
+      message = "k8s-service-layer.rook.nmons: must be an odd number >= 3";
+    }
+    {
+      assertion = cfg.use_all_available_nodes -> (cfg.nodes == []);
+      message = lib.concatStrings [
+        "config.yk8s.k8s-service-layer.rook.nodes:"
+        " conflicts with config.yk8s.k8s-service-layer.rook.nodes.use_all_available_nodes=true"
+      ];
+    }
+  ];
   config.yk8s._targets.ansible.warnings = [];
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {

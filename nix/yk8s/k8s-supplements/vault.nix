@@ -144,15 +144,6 @@ in {
       # type as per https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec
       type = with types; nullOr yk8s.k8s.issuerName;
       default = null;
-      apply = v:
-        if
-          cfg.ingress
-          && cfg.dnsnames != []
-          && v == null
-        then
-          throw
-          "config.yk8s.k8s-service-layer.vault.external_ingress_issuer_name: must be set because config.yk8s.k8s-service-layer.vault.ingress=true and config.yk8s.k8s-service-layer.vault.dnsnames!=[]"
-        else v;
     };
     external_ingress_issuer_kind = mkOption {
       description = ''
@@ -241,6 +232,14 @@ in {
         " requires `config.yk8s.k8s-service-layer.cert-manager.enabled=true`"
         " when true"
         " because Vault's internal PKI is created with cert-manager."
+      ];
+    }
+    {
+      assertion =
+        (cfg.ingress && cfg.dnsnames != []) -> (cfg.external_ingress_issuer_name != null);
+      message = lib.concatStrings [
+        "config.yk8s.k8s-service-layer.vault.external_ingress_issuer_name:"
+        " must be set because config.yk8s.k8s-service-layer.vault.ingress=true and config.yk8s.k8s-service-layer.vault.dnsnames!=[]"
       ];
     }
   ];

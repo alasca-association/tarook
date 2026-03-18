@@ -24,16 +24,6 @@ in {
       '';
       type = types.yk8s.k8s.storageClassName;
       default = "local-storage";
-      apply = with config.yk8s.kubernetes.local_storage;
-        v:
-          if
-            static.enabled
-            && dynamic.enabled
-            && static.storageclass_name == v
-          then
-            throw
-            "config.yk8s.kubernetes.local_storage.dynamic.storageclass_name: must not match config.yk8s.kubernetes.local_storage.static.storageclass_name='${static.storageclass_name}'"
-          else v;
     };
     namespace = mkOption {
       description = ''
@@ -69,6 +59,18 @@ in {
     };
   };
 
-  config.yk8s._targets.ansible.assertions = [];
+  config.yk8s._targets.ansible.assertions = [
+    (let
+      cfg_static = config.yk8s.kubernetes.local_storage.static;
+    in {
+      assertion =
+        (cfg.enabled && cfg_static.enabled)
+        -> (cfg.storageclass_name != cfg_static.storageclass_name);
+      message = lib.concatStrings [
+        "config.yk8s.kubernetes.local_storage.dynamic.storageclass_name:"
+        " must not match config.yk8s.kubernetes.local_storage.static.storageclass_name='${cfg_static.storageclass_name}'"
+      ];
+    })
+  ];
   config.yk8s._targets.ansible.warnings = [];
 }
