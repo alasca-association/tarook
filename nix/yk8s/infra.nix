@@ -1,4 +1,5 @@
 {
+  options,
   config,
   pkgs,
   lib,
@@ -6,6 +7,7 @@
   ...
 }: let
   cfg = config.yk8s.infra;
+  opts = options.yk8s.infra;
   modules-lib = import ./lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (pkgs.stdenv) mkDerivation;
@@ -357,7 +359,18 @@ in {
       message = "yk8s.infra.ansible_hosts: The following hostnames contain invalid characters:\n" + lib.concatLines (map (n: "  * ${n}") invalidHostnames);
     })
   ];
-  config.yk8s._targets.ansible.warnings = [];
+  config.yk8s._targets.ansible.warnings =
+    []
+    # Produce warning if option is used when ipv4_enabled=false
+    ++ lib.optional (
+      (! cfg.ipv4_enabled) && (opts.subnet_cidr.highestPrio < 1500) # priority of option defaults
+    )
+    "config.yk8s.infra.subnet_cidr: is ignored because yk8s.infra.ipv4_enabled=false"
+    # Produce warning if option is used when ipv6_enabled=false
+    ++ lib.optional (
+      (! cfg.ipv6_enabled) && (opts.subnet_v6_cidr.highestPrio < 1500) # priority of option defaults
+    )
+    "config.yk8s.infra.subnet_v6_cidr: is ignored because yk8s.infra.ipv6_enabled=false";
   config.yk8s._targets.ansible.inventory_packages = let
     trimEmptySubmoduleAttrs = lib.mapAttrs (_: submodule:
       lib.pipe submodule [

@@ -1,0 +1,5 @@
+Added warnings for
+:ref:`configuration-options.yk8s.infra.subnet_cidr`/:ref:`configuration-options.yk8s.infra.subnet_v6_cidr`
+being ignored if
+:ref:`configuration-options.yk8s.infra.ipv4_enabled`/:ref:`configuration-options.yk8s.infra.ipv6_enabled`
+is ``false``.
