@@ -36,6 +36,34 @@ recommended approach for companies and organizations.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
 
 
+.. _configuration-options.yk8s.wireguard.endpoint_defaults.ip:
+
+``yk8s.wireguard.endpoint_defaults.ip``
+#######################################
+
+IPv4 address of the Wireguard endpoint on a gateway node.
+
+For a high-available gateway plane
+this IPv4 address should be managed by a load-balancer solution.
+
+
+**Type:**::
+
+  null or IPv4 address in four-octets decimal notation
+
+
+**Default:**::
+
+  if :ref:`configuration-options.yk8s.terraform.enabled`
+  then *<floating IPv4 address associated with the VRRP port>*
+  else ``null``
+  
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+
+
 .. _configuration-options.yk8s.wireguard.endpoints:
 
 ``yk8s.wireguard.endpoints``
@@ -98,6 +126,31 @@ An ID unique to this endpoint
 **Example:**::
 
   0
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/wireguard
+
+
+.. _configuration-options.yk8s.wireguard.endpoints.*.ip:
+
+``yk8s.wireguard.endpoints.*.ip``
+#################################
+
+IPv4 address of the Wireguard endpoint on a gateway node.
+
+For a high-available gateway plane
+this IPv4 address should be managed by a load-balancer solution.
+
+
+**Type:**::
+
+  null or IPv4 address in four-octets decimal notation
+
+
+**Default:**::
+
+  :ref:`configuration-options.yk8s.wireguard.endpoint_defaults.ip`
 
 
 **Declared by**

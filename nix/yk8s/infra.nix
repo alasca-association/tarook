@@ -76,15 +76,6 @@ in {
       default = null;
     };
 
-    networking_floating_ip = mkInternalOption {
-      # TODO: move to yk8s.wireguard
-      description = ''
-        Address that is used by Wireguard to connect to the active gateway node.
-      '';
-      type = with types; nullOr yk8s.networking.ipv4Addr;
-      default = null;
-    };
-
     ansible_hosts = let
       hostsSubmodule = types.submodule {
         freeformType = types.yk8s.formats.jsonValue;
@@ -329,10 +320,6 @@ in {
     {
       assertion = (cfg.ansible_hosts.orchestrator.children or {}) == {} && (builtins.length (builtins.attrNames cfg.ansible_hosts.orchestrator.hosts)) == 1;
       message = "config.yk8s.infra.ansible_hosts.orchestrator must contain exactly one host and no children";
-    }
-    {
-      assertion = config.yk8s.wireguard.enabled -> config.yk8s.terraform.enabled || cfg.networking_floating_ip != null;
-      message = "config.yk8s.infra.networking_floating_ip must be set if Wireguard is used.";
     }
     {
       assertion = builtins.all (host: (host.ansible_connection or "") != "local" -> host.ansible_host != null) (builtins.attrValues cfg.final_hosts.all.hosts);
