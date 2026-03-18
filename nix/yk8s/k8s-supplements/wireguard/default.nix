@@ -1,4 +1,5 @@
 {
+  options,
   config,
   lib,
   yk8s-lib,
@@ -6,6 +7,7 @@
   ...
 }: let
   cfg = config.yk8s.wireguard;
+  opts = options.yk8s.wireguard;
   modules-lib = import ../../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule;
   inherit (lib) mkOption;
@@ -52,6 +54,27 @@ in {
       default = true;
     };
 
+    endpoint_defaults = {
+      ip = mkOption {
+        description = ''
+          IPv4 address of the Wireguard endpoint on a gateway node.
+
+          For a high-available gateway plane
+          this IPv4 address should be managed by a load-balancer solution.
+        '';
+        type = with types; nullOr yk8s.networking.ipv4Addr;
+        default =
+          if config.yk8s.terraform.enabled
+          then config.yk8s.terraform.outputs.networking_floating_ip.value
+          else null;
+        defaultText = lib.options.literalExpression ''
+          if :ref:`configuration-options.yk8s.terraform.enabled`
+          then *<floating IPv4 address associated with the VRRP port>*
+          else ``null``
+        '';
+      };
+    };
+
     endpoints = mkOption {
       description = ''
         Defines a WireGuard endpoint/server.
@@ -75,6 +98,13 @@ in {
             type = types.ints.unsigned;
             apply = toString; # JSON/YAML/TOML only allow strings as keys
             example = 0;
+          };
+          ip = mkOption {
+            inherit (opts.endpoint_defaults.ip) description type;
+            default = cfg.endpoint_defaults.ip;
+            defaultText =
+              lib.options.literalExpression
+              ":ref:`configuration-options.yk8s.wireguard.endpoint_defaults.ip`";
           };
           port = mkOption {
             description = ''
@@ -191,6 +221,7 @@ in {
       removeObsoleteOptions
       filterInternal
       (filterAttrs (name: _: ! elem name legacy_options))
+      (filterAttrs (name: _: ! lib.hasSuffix "_defaults" name))
     ];
     wireguard_helper = mkDerivation rec {
       name = "yaook-k8s-wireguard-helper";
@@ -254,45 +285,57 @@ in {
       inherit (builtins) length;
       inherit (lib.lists) unique;
       allUnique = l: (length (unique l)) == length l;
-    in [
-      {
-        assertion = cfg.enabled -> (length (lib.attrNames config.yk8s.infra.final_hosts.gateways.hosts)) != 0;
-        message = lib.concatStrings [
-          "config.yk8s.wireguard.enabled:"
-          " cannot be true when no gateway nodes are configured."
-          " Wireguard is currently only supported in combination with a gateway-plane."
-        ];
-      }
-      {
-        assertion = cfg.enabled -> (length cfg.endpoints) != 0;
-        message = "config.yk8s.wireguard.endpoints: must not be empty";
-      }
-      {
-        assertion = cfg.enabled -> allUnique (map (p: p.ident) cfg.peers);
-        message = "config.yk8s.wireguard.peers.[].ident: must be unique";
-      }
-      {
-        assertion = cfg.enabled -> allUnique (map (p: p.pub_key) cfg.peers);
-        message = "config.yk8s.wireguard.peers.[].pub_key: must be unique";
-      }
-      {
-        assertion = cfg.enabled -> allUnique (map (p: p.id) cfg.endpoints);
-        message = "config.yk8s.wireguard.endpoints.[].id: must be unique";
-      }
-      {
-        assertion = cfg.enabled -> allUnique (map (p: p.port) cfg.endpoints);
-        message = "config.yk8s.wireguard.endpoints.[].port: must be unique";
-      }
-      {
-        # 636 = 576 (reasonable minimum MTU for IPv4) + 20 (IPv4 Header) + 8 (UDP Header) + 32 (Wireguard Header)
-        assertion = cfg.enabled && config.yk8s.infra.ipv4_enabled && config.yk8s.openstack.enabled -> config.yk8s.openstack.network_mtu >= 636;
-        message = "config.yk8s.openstack.network_mtu: must be at least 636 Bytes to support Wireguard on IPv4";
-      }
-      {
-        # 1360 = 1280 (technical minimum MTU for IPv6) + 40 (IPv6 Header) + 8 (UDP Header) + 32 (Wireguard Header)
-        assertion = cfg.enabled && config.yk8s.infra.ipv6_enabled && config.yk8s.openstack.enabled -> config.yk8s.openstack.network_mtu >= 1360;
-        message = "config.yk8s.openstack.network_mtu: must be at least 1360 Bytes to support Wireguard on IPv6";
-      }
-    ];
+    in
+      [
+        {
+          assertion = cfg.enabled -> (length (lib.attrNames config.yk8s.infra.final_hosts.gateways.hosts)) != 0;
+          message = lib.concatStrings [
+            "config.yk8s.wireguard.enabled:"
+            " cannot be true when no gateway nodes are configured."
+            " Wireguard is currently only supported in combination with a gateway-plane."
+          ];
+        }
+        {
+          assertion = cfg.enabled -> (length cfg.endpoints) != 0;
+          message = "config.yk8s.wireguard.endpoints: must not be empty";
+        }
+        {
+          assertion = cfg.enabled -> allUnique (map (p: p.ident) cfg.peers);
+          message = "config.yk8s.wireguard.peers.[].ident: must be unique";
+        }
+        {
+          assertion = cfg.enabled -> allUnique (map (p: p.pub_key) cfg.peers);
+          message = "config.yk8s.wireguard.peers.[].pub_key: must be unique";
+        }
+        {
+          assertion = cfg.enabled -> allUnique (map (p: p.id) cfg.endpoints);
+          message = "config.yk8s.wireguard.endpoints.[].id: must be unique";
+        }
+        {
+          assertion = cfg.enabled -> allUnique (map (p: p.port) cfg.endpoints);
+          message = "config.yk8s.wireguard.endpoints.[].port: must be unique";
+        }
+        {
+          # 636 = 576 (reasonable minimum MTU for IPv4) + 20 (IPv4 Header) + 8 (UDP Header) + 32 (Wireguard Header)
+          assertion = cfg.enabled && config.yk8s.infra.ipv4_enabled && config.yk8s.openstack.enabled -> config.yk8s.openstack.network_mtu >= 636;
+          message = "config.yk8s.openstack.network_mtu: must be at least 636 Bytes to support Wireguard on IPv4";
+        }
+        {
+          # 1360 = 1280 (technical minimum MTU for IPv6) + 40 (IPv6 Header) + 8 (UDP Header) + 32 (Wireguard Header)
+          assertion = cfg.enabled && config.yk8s.infra.ipv6_enabled && config.yk8s.openstack.enabled -> config.yk8s.openstack.network_mtu >= 1360;
+          message = "config.yk8s.openstack.network_mtu: must be at least 1360 Bytes to support Wireguard on IPv6";
+        }
+      ]
+      ++ lib.imap0 (idx: ep: {
+        assertion = cfg.enabled -> (ep.ip != null);
+        message =
+          "config.yk8s.wireguard.endpoints[${toString idx}].ip: must not be null"
+          # if endpoint_defaults.ip was not set by the user
+          #  (1500 is the priority of option defaults)
+          #  add a hint
+          + lib.optionalString (opts.endpoint_defaults.ip.highestPrio >= 1500)
+          "\n  (You might want to set config.yk8s.wireguard.endpoint_defaults.ip instead)";
+      })
+      cfg.endpoints;
   };
 }

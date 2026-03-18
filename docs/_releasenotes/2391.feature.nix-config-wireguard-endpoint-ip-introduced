@@ -1,0 +1,2 @@
+Added :ref:`configuration-options.yk8s.wireguard.endpoint_defaults.ip`
+and :ref:`configuration-options.yk8s.wireguard.endpoints.*.ip`
