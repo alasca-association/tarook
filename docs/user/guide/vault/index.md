@@ -7,6 +7,7 @@ hidden: true
 ---
 
 vault
+automatic-backups
 vault-ca-rotation
 ```
 
@@ -15,6 +16,12 @@ vault-ca-rotation
 :link: /user/guide/vault/vault
 :link-type: doc
 :::
+:::{grid-item-card} Automatic backups of HashiCorp Vault
+:link: /user/guide/vault/automatic-backups
+:link-type: doc
+:::
+::::
+::::{grid} 2
 :::{grid-item-card} Root Certificate Authority Rotation
 :link: /user/guide/vault/vault-ca-rotation
 :link-type: doc

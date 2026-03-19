@@ -181,6 +181,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 If `true`, then an additional backup service will be deployed which creates snapshots and stores
 them in an S3 bucket.
 
+See also :doc:`/user/guide/vault/automatic-backups`.
 
 **Type:**::
 
