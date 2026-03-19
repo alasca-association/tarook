@@ -184,7 +184,21 @@ in {
           yk8s-lib.transform.removeAttrsByPath cfg [
             ["apiserver" "audit_logs" "policy"] # proxied by apiserver.audit_logs.policy_file
             ["network" "calico" "helm" "values"] # proxied by network.calico.values_file_path
+            ["kubelet" "masterOptions"] # merged into kubelet.finalNodeOptions
+            ["kubelet" "nodeOptions"] # merged into kubelet.finalNodeOptions
+            ["kubelet" "workerOptions"] # merged into kubelet.finalNodeOptions
           ])
+        # recusively filter null values on kubelet subset
+        (lib.updateManyAttrsByPath [
+          {
+            path = ["kubelet"];
+            update = yk8s-lib.transform.filterNull;
+          }
+        ])
+      ];
+      unflat = [
+        ["kubelet" "defaultOptions"]
+        ["kubelet" "finalNodeOptions"]
       ];
     })
   ];

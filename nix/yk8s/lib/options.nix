@@ -11,6 +11,12 @@ in rec {
       description = "Whether to enable ${name}.";
       type = types.bool;
     };
+  mkOptional = args:
+    lib.mkOption (args
+      // {
+        type = lib.types.nullOr args.type;
+        default = null;
+      });
   mkInternalOption = args:
     lib.mkOption ({
         internal = true;

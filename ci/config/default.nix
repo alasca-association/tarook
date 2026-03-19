@@ -173,9 +173,23 @@ in {
       is_gpu_cluster = true;
       virtualize_gpu = false;
       kubelet = {
-        evictionsoft_memory_period = "1m25s";
-        evictionhard_nodefs_available = "12%";
-        evictionhard_nodefs_inodesfree = "7%";
+        defaultOptions = {
+          maxPods = 110;
+        };
+        workerOptions = {
+          evictionSoft = {
+            "memory.available" = "384Mi";
+          };
+          evictionSoftGracePeriod = {
+            "memory.available" = "1m25s";
+          };
+          evictionHard = {
+            "memory.available" = "256Mi";
+            "nodefs.available" = "12%";
+            "imagefs.available" = "15%";
+            "nodefs.inodesFree" = "7%";
+          };
+        };
       };
       apiserver = {
         frontend_port = 8888;

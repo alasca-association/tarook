@@ -250,11 +250,13 @@
       value: 1
       state: present
 
+  - name: Login to the Kubernetes cluster as orchestrator
+    include_role:
+      name: k8s-login
+
   - name: Configure kubelet
     include_role:
       name: kubelet-configuration
-    vars:
-      _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
 
   - name: Set static fact that kubernetes is initialized
     vars:
@@ -306,8 +308,6 @@
   - name: Configure kubelet
     include_role:
       name: kubelet-configuration
-    vars:
-      _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
 
   - name: Set static fact that kubernetes is initialized
     vars:

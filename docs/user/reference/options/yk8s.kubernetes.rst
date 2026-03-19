@@ -425,6 +425,670 @@ so that the driver and surrounding framework is deployed.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
+.. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions:
+
+``yk8s.kubernetes.kubelet.defaultOptions``
+##########################################
+
+Default kubelet configuration applied to all nodes.
+
+All options can be found in the official documentation:
+https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/#kubelet-config-k8s-io-v1beta1-KubeletConfiguration
+
+Overrides can be specified per node:
+
+- :ref:`configuration-options.yk8s.kubernetes.kubelet.nodeOptions`
+
+or role:
+
+- :ref:`configuration-options.yk8s.kubernetes.kubelet.workerOptions`
+- :ref:`configuration-options.yk8s.kubernetes.kubelet.masterOptions`.
+
+.. warning::
+
+  It is not validated whether the supplied configuration
+  is a valid kubelet configuration.
+
+
+
+**Type:**::
+
+  attribute set of (attribute set containing JSON compatible values)
+
+
+**Default:**::
+
+  { }
+
+
+**Example:**::
+
+  {
+    evictionHard = {
+      "imagefs.available" = "15%";
+      "memory.available" = "256Mi";
+      "nodefs.available" = "12%";
+      "nodefs.inodesFree" = "7%";
+    };
+    evictionSoft = {
+      "memory.available" = "384Mi";
+    };
+    evictionSoftGracePeriod = {
+      "memory.available" = "1m25s";
+    };
+    imageGCHighThresholdPercent = 85;
+    imageGCLowThresholdPercent = 80;
+    maxPods = 110;
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions.evictionHard:
+
+``yk8s.kubernetes.kubelet.defaultOptions.evictionHard``
+#######################################################
+
+A map of signal names to quantities that defines hard eviction thresholds. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  {
+    "memory.available" = "100Mi";
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions.evictionSoft:
+
+``yk8s.kubernetes.kubelet.defaultOptions.evictionSoft``
+#######################################################
+
+A map of signal names to quantities that defines soft eviction thresholds. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  {
+    "memory.available" = "300Mi";
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions.evictionSoftGracePeriod:
+
+``yk8s.kubernetes.kubelet.defaultOptions.evictionSoftGracePeriod``
+##################################################################
+
+A map of signal names to quantities that defines grace periods for each soft eviction signal. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  {
+    "memory.available" = "30s";
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions.maxPods:
+
+``yk8s.kubernetes.kubelet.defaultOptions.maxPods``
+##################################################
+
+The maximum number of Pods that can run on this Kubelet. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (positive integer, meaning >0)
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  110
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.masterOptions:
+
+``yk8s.kubernetes.kubelet.masterOptions``
+#########################################
+
+Kubelet configuration for master nodes.
+All options can be found in the official documentation: https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/#kubelet-config-k8s-io-v1beta1-KubeletConfiguration
+Overrides default configuration.
+
+.. warning::
+
+  It is not validated whether the supplied configuration
+  is a valid kubelet configuration.
+
+
+
+**Type:**::
+
+  attribute set of (attribute set containing JSON compatible values)
+
+
+**Default:**::
+
+  { }
+
+
+**Example:**::
+
+  {
+    evictionHard = {
+      "imagefs.available" = "15%";
+      "memory.available" = "256Mi";
+      "nodefs.available" = "12%";
+      "nodefs.inodesFree" = "7%";
+    };
+    evictionSoft = {
+      "memory.available" = "384Mi";
+    };
+    evictionSoftGracePeriod = {
+      "memory.available" = "1m25s";
+    };
+    imageGCHighThresholdPercent = 85;
+    imageGCLowThresholdPercent = 80;
+    maxPods = 110;
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.masterOptions.evictionHard:
+
+``yk8s.kubernetes.kubelet.masterOptions.evictionHard``
+######################################################
+
+A map of signal names to quantities that defines hard eviction thresholds. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  {
+    "memory.available" = "100Mi";
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.masterOptions.evictionSoft:
+
+``yk8s.kubernetes.kubelet.masterOptions.evictionSoft``
+######################################################
+
+A map of signal names to quantities that defines soft eviction thresholds. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  {
+    "memory.available" = "300Mi";
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.masterOptions.evictionSoftGracePeriod:
+
+``yk8s.kubernetes.kubelet.masterOptions.evictionSoftGracePeriod``
+#################################################################
+
+A map of signal names to quantities that defines grace periods for each soft eviction signal. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  {
+    "memory.available" = "30s";
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.masterOptions.maxPods:
+
+``yk8s.kubernetes.kubelet.masterOptions.maxPods``
+#################################################
+
+The maximum number of Pods that can run on this Kubelet. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (positive integer, meaning >0)
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  110
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.nodeOptions:
+
+``yk8s.kubernetes.kubelet.nodeOptions``
+#######################################
+
+Node-specific kubelet configuration.
+All options can be found in the official documentation: https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/#kubelet-config-k8s-io-v1beta1-KubeletConfiguration
+Overrides default and role-specific configurations.
+
+.. attention::
+
+  If :ref:`configuration-options.yk8s.openstack.enabled` is enabled,
+  the full node name prefixed with :ref:`configuration-options.yk8s.infra.cluster_name` must be supplied.
+
+.. warning::
+
+  It is not validated whether the supplied configuration
+  is a valid kubelet configuration.
+
+
+
+**Type:**::
+
+  attribute set of (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  { }
+
+
+**Example:**::
+
+  {
+    cluster-master-2 = {
+      maxPods = 25;
+    };
+    cluster-worker-1 = {
+      evictionHard = {
+        "imagefs.available" = "15%";
+        "memory.available" = "256Mi";
+        "nodefs.available" = "12%";
+        "nodefs.inodesFree" = "7%";
+      };
+      evictionSoft = {
+        "memory.available" = "384Mi";
+      };
+      evictionSoftGracePeriod = {
+        "memory.available" = "1m25s";
+      };
+      imageGCHighThresholdPercent = 85;
+      imageGCLowThresholdPercent = 80;
+      maxPods = 110;
+    };
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.nodeOptions.<name>.evictionHard:
+
+``yk8s.kubernetes.kubelet.nodeOptions.<name>.evictionHard``
+###########################################################
+
+A map of signal names to quantities that defines hard eviction thresholds. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  {
+    "memory.available" = "100Mi";
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.nodeOptions.<name>.evictionSoft:
+
+``yk8s.kubernetes.kubelet.nodeOptions.<name>.evictionSoft``
+###########################################################
+
+A map of signal names to quantities that defines soft eviction thresholds. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  {
+    "memory.available" = "300Mi";
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.nodeOptions.<name>.evictionSoftGracePeriod:
+
+``yk8s.kubernetes.kubelet.nodeOptions.<name>.evictionSoftGracePeriod``
+######################################################################
+
+A map of signal names to quantities that defines grace periods for each soft eviction signal. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  {
+    "memory.available" = "30s";
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.nodeOptions.<name>.maxPods:
+
+``yk8s.kubernetes.kubelet.nodeOptions.<name>.maxPods``
+######################################################
+
+The maximum number of Pods that can run on this Kubelet. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (positive integer, meaning >0)
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  110
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.workerOptions:
+
+``yk8s.kubernetes.kubelet.workerOptions``
+#########################################
+
+Kubelet configuration for worker nodes.
+All options can be found in the official documentation: https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/#kubelet-config-k8s-io-v1beta1-KubeletConfiguration
+Overrides default configuration.
+
+.. warning::
+
+  It is not validated whether the supplied configuration
+  is a valid kubelet configuration.
+
+
+
+**Type:**::
+
+  attribute set of (attribute set containing JSON compatible values)
+
+
+**Default:**::
+
+  { }
+
+
+**Example:**::
+
+  {
+    evictionHard = {
+      "imagefs.available" = "15%";
+      "memory.available" = "256Mi";
+      "nodefs.available" = "12%";
+      "nodefs.inodesFree" = "7%";
+    };
+    evictionSoft = {
+      "memory.available" = "384Mi";
+    };
+    evictionSoftGracePeriod = {
+      "memory.available" = "1m25s";
+    };
+    imageGCHighThresholdPercent = 85;
+    imageGCLowThresholdPercent = 80;
+    maxPods = 110;
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.workerOptions.evictionHard:
+
+``yk8s.kubernetes.kubelet.workerOptions.evictionHard``
+######################################################
+
+A map of signal names to quantities that defines hard eviction thresholds. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  {
+    "memory.available" = "100Mi";
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.workerOptions.evictionSoft:
+
+``yk8s.kubernetes.kubelet.workerOptions.evictionSoft``
+######################################################
+
+A map of signal names to quantities that defines soft eviction thresholds. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  {
+    "memory.available" = "300Mi";
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.workerOptions.evictionSoftGracePeriod:
+
+``yk8s.kubernetes.kubelet.workerOptions.evictionSoftGracePeriod``
+#################################################################
+
+A map of signal names to quantities that defines grace periods for each soft eviction signal. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (attribute set of (attribute set containing JSON compatible values))
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  {
+    "memory.available" = "30s";
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubelet.workerOptions.maxPods:
+
+``yk8s.kubernetes.kubelet.workerOptions.maxPods``
+#################################################
+
+The maximum number of Pods that can run on this Kubelet. If unset, the kubeadm/kubelet default will be used.
+
+**Type:**::
+
+  null or (positive integer, meaning >0)
+
+
+**Default:**::
+
+  null
+
+
+**Example:**::
+
+  110
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
+
+
 .. _configuration-options.yk8s.kubernetes.monitoring.enabled:
 
 ``yk8s.kubernetes.monitoring.enabled``

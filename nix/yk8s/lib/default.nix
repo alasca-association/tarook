@@ -12,6 +12,7 @@
     (options)
     mkDisableOption
     mkInternalOption
+    mkOptional
     mkTopSection
     mkSubSection
     ;
