@@ -311,25 +311,25 @@
 
     # Upgrade cluster to k8s v1.33
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.33.9
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.33.10
     # Update k8s version
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - tomlq --in-place --toml-output '.kubernetes.version = "1.33.9"' config/overrides.toml
+  - tomlq --in-place --toml-output '.kubernetes.version = "1.33.10"' config/overrides.toml
   - ./managed-k8s/actions/k8s-login.sh
 
     # Upgrade cluster to k8s v1.34
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.34.5
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.34.6
     # Update k8s version
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - tomlq --in-place --toml-output '.kubernetes.version = "1.34.5"' config/overrides.toml
+  - tomlq --in-place --toml-output '.kubernetes.version = "1.34.6"' config/overrides.toml
   - ./managed-k8s/actions/k8s-login.sh
 
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.35.2
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.35.3
     # Update k8s version
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - tomlq --in-place --toml-output '.kubernetes.version = "1.35.2"' config/overrides.toml
+  - tomlq --in-place --toml-output '.kubernetes.version = "1.35.3"' config/overrides.toml
   - ./managed-k8s/actions/k8s-login.sh
 
     # Shuffle once more
