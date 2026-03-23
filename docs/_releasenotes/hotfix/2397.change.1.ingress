@@ -1,0 +1,2 @@
+Updated default version of helm chart ingress-nginx of https://github.com/kubernetes/ingress-nginx from 4.13.7 to 4.13.9
+due to recently published `CVE-2026-4342 <https://www.cve.org/cverecord?id=CVE-2026-4342>`__

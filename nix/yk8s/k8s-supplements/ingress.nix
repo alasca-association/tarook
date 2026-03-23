@@ -75,7 +75,7 @@ in {
       defaultRepoUrl = "https://kubernetes.github.io/ingress-nginx";
       defaultChartRef = "ingress-nginx";
       # renovate: datasource=helm depName=ingress-nginx registryUrl=https://kubernetes.github.io/ingress-nginx
-      defaultChartVersion = "4.13.7";
+      defaultChartVersion = "4.13.9";
       defaultReleaseNamespace = "k8s-svc-ingress";
       defaultReleaseName = "ingress";
       valuesDocUrl = "https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml";
