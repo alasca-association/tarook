@@ -51,6 +51,7 @@ in {
     };
   };
 
+  config.yk8s.warnings = lib.optional (cfg.enabled) "config.yk8s.kubernetes.local_storage.static is deprecated. Support for it will be dropped in a release after v13.0.0";
   config.yk8s._targets.ansible.assertions = [];
   config.yk8s._targets.ansible.warnings = [];
 }
