@@ -121,17 +121,23 @@ in rec {
         options = chartOptions;
       };
     };
-  mkHelmChartVersionOption = args @ {descriptionName ? null, ...}:
+  mkHelmChartVersionOption = args @ {
+    descriptionName ? null,
+    extraDescription ? null,
+    ...
+  }:
     lib.mkOption ({
         example = "1.2.3";
-        description = ''
-          Version of the${lib.optionalString (descriptionName != null) " ${descriptionName}"} Helm chart to be used.
+        description =
+          ''
+            Version of the${lib.optionalString (descriptionName != null) " ${descriptionName}"} Helm chart to be used.
 
-          If the version shall be unpinned, set to: ``null``.
-        '';
+            If the version shall be unpinned, set to: ``null``.
+          ''
+          + lib.optionalString (extraDescription != null) "\n${extraDescription}\n";
         type = with types; nullOr yk8s.helm.chartVersion;
       }
-      // (removeAttrs args ["descriptionName"]));
+      // (removeAttrs args ["descriptionName" "extraDescription"]));
 
   mkHelmReleaseOptions = {
     descriptionName,

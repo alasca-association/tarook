@@ -167,8 +167,9 @@ Procedure
 1. Obtain the number of unseal shares and the threshold
    for unsealing of the *source Vault*.
 
-2. Enable :ref:`k8s-service-layer.vault <configuration-options.yk8s.k8s-service-layer.vault>`, configure the backup and any
-   other options you may need. Set the ``service_type`` to ``NodePort``
+2. Enable :ref:`k8s-service-layer.vault <configuration-options.yk8s.k8s-service-layer.vault>`,
+   configure :doc:`automatic backups </user/guide/vault/automatic-backups>`
+   and any other options you may need. Set the ``service_type`` to ``NodePort``
    and set the ``active_node_port`` to ``32048``.
 
    Set ``init_key_shares`` and ``init_key_threshold``

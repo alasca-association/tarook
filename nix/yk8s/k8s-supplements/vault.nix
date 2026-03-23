@@ -60,7 +60,8 @@ in {
 
     chart_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=vault registryUrl=https://helm.releases.hashicorp.com
-      default = "0.23.0";
+      extraDescription = "See also :doc:`/user/guide/vault/upgrade`.";
+      default = "0.25.0";
     };
     namespace = mkOption {
       description = ''
@@ -169,7 +170,8 @@ in {
       description = ''
         If `true`, then an additional backup service will be deployed which creates snapshots and stores
         them in an S3 bucket.
-      '';
+
+        See also :doc:`/user/guide/vault/automatic-backups`.'';
       type = types.bool;
       default = true;
     };

@@ -1,0 +1,12 @@
+Updated default version of helm chart vault of https://helm.releases.hashicorp.com from 0.23.0 to 0.25.0.
+This results in an upgrade of HashiCorp Vault from 1.12.1 to 1.14.0.
+
+.. attention:: Action required
+
+   Rolling out the new Helm chart version
+   only updates the ``vault`` StatefulSet,
+   but **not** the replica Pods.
+
+   Refer to :doc:`/user/guide/vault/upgrade` for the additional steps necessary.
+
+_
