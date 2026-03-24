@@ -1,0 +1,12 @@
+Common names for certificates issued by HashiCorp Vault
+are now prevented from being treated as domain names during validation.
+
+This change requires a Vault policy update (backwards-compatible).
+
+.. attention:: Action required
+
+   .. code:: shell
+
+      VAULT_TOKEN=${vault_root_token:?} ./managed-k8s/tools/vault/init.sh
+
+_

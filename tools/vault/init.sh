@@ -52,7 +52,9 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     allowed_parameters = {
         "ttl" = [],
         # common name is enforced by the PKI role config
-        "common_name" = []
+        "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = []
     }
 }
 
@@ -62,7 +64,9 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     allowed_parameters = {
         "ttl" = [],
         # common name is enforced by the PKI role config
-        "common_name" = []
+        "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = []
     }
 }
 
@@ -72,7 +76,9 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     allowed_parameters = {
         "ttl" = [],
         # common name is enforced by the PKI role config
-        "common_name" = []
+        "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = []
     }
 }
 
@@ -82,7 +88,9 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     allowed_parameters = {
         "ttl" = [],
         # common name is enforced by the PKI role config
-        "common_name" = []
+        "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = []
     }
 }
 
@@ -92,6 +100,8 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     allowed_parameters = {
         "ttl" = [],
         "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = [],
         "alt_names" = [],
         "ip_sans" = []
     }
@@ -103,6 +113,8 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     allowed_parameters = {
         "ttl" = [],
         "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = [],
         "alt_names" = [],
         "ip_sans" = []
     }
@@ -114,6 +126,8 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     allowed_parameters = {
         "ttl" = [],
         "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = [],
         "alt_names" = [],
         "ip_sans" = []
     }
@@ -125,6 +139,8 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     allowed_parameters = {
         "ttl" = [],
         "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = [],
         "alt_names" = [],
         "ip_sans" = []
     }
@@ -136,6 +152,8 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     allowed_parameters = {
         "ttl" = [],
         "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = [],
         "alt_names" = [],
         "ip_sans" = []
     }
@@ -147,6 +165,8 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     allowed_parameters = {
         "ttl" = [],
         "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = []
     }
 }
 EOF
@@ -166,7 +186,9 @@ path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.met
     allowed_parameters = {
         "ttl" = [],
         # common name is enforced by the PKI role config
-        "common_name" = []
+        "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = []
     }
 }
 
@@ -262,7 +284,9 @@ path "$common_path_prefix/+/k8s-pki/issue/any-master" {
         # common name is not restricted; the orchestrator role is able to
         # create approles which in turn have policies which allow the creation
         # of an admin credential -> this is only a shortcut, not a gap.
-        "common_name" = []
+        "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = []
     }
 }
 path "$common_path_prefix/+/k8s-pki/issuer/+/issue/any-master" {
@@ -273,7 +297,9 @@ path "$common_path_prefix/+/k8s-pki/issuer/+/issue/any-master" {
         # common name is not restricted; the orchestrator role is able to
         # create approles which in turn have policies which allow the creation
         # of an admin credential -> this is only a shortcut, not a gap.
-        "common_name" = []
+        "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = []
     }
 }
 
@@ -285,7 +311,9 @@ path "$common_path_prefix/+/k8s-pki/issue/any-cluster-admin" {
         # common name is not restricted; the orchestrator role is able to
         # create approles which in turn have policies which allow the creation
         # of an admin credential -> this is only a shortcut, not a gap.
-        "common_name" = []
+        "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = []
     }
 }
 path "$common_path_prefix/+/k8s-pki/issuer/+/issue/any-cluster-admin" {
@@ -296,7 +324,9 @@ path "$common_path_prefix/+/k8s-pki/issuer/+/issue/any-cluster-admin" {
         # common name is not restricted; the orchestrator role is able to
         # create approles which in turn have policies which allow the creation
         # of an admin credential -> this is only a shortcut, not a gap.
-        "common_name" = []
+        "common_name" = [],
+        # common name is usually not a domain name
+        "exclude_cn_from_sans" = []
     }
 }
 

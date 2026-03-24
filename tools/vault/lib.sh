@@ -272,6 +272,7 @@ function generate_ca_issuer() {
         if [ "${k8s_controller_manager_enable_signing_requests:-false}" == "true" ]; then
             vault write -format=json "$k8s_pki_path/root/generate/exported" \
                 common_name="Kubernetes Cluster Root CA $year" \
+                exclude_cn_from_sans=true \
                 ou="$ou" \
                 organization="$organization" \
                 country="$country" \
@@ -285,6 +286,7 @@ function generate_ca_issuer() {
         else
             vault write -format=json "$k8s_pki_path/root/generate/internal" \
                 common_name="Kubernetes Cluster Root CA $year" \
+                exclude_cn_from_sans=true \
                 ou="$ou" \
                 organization="$organization" \
                 country="$country" \
@@ -303,6 +305,7 @@ function generate_ca_issuer() {
 
         vault write "$etcd_pki_path/root/generate/internal" \
             common_name="Kubernetes etcd Root CA $year" \
+            exclude_cn_from_sans=true \
             ou="$ou" \
             organization="$organization" \
             country="$country" \
@@ -312,6 +315,7 @@ function generate_ca_issuer() {
 
         vault write "$k8s_front_proxy_pki_path/root/generate/internal" \
             common_name="Kubernetes Front Proxy Root CA $year" \
+            exclude_cn_from_sans=true \
             ou="$ou" \
             organization="$organization" \
             country="$country" \
@@ -322,6 +326,7 @@ function generate_ca_issuer() {
         if [ "${k8s_controller_manager_enable_signing_requests:-false}" == "true" ]; then
             vault write -format=json "$k8s_pki_path/root/generate/exported" \
                 common_name="Kubernetes Cluster Root CA $year" \
+                exclude_cn_from_sans=true \
                 ou="$ou" \
                 organization="$organization" \
                 country="$country" \
@@ -334,6 +339,7 @@ function generate_ca_issuer() {
         else
             vault write -format=json "$k8s_pki_path/root/generate/internal" \
                 common_name="Kubernetes Cluster Root CA $year" \
+                exclude_cn_from_sans=true \
                 ou="$ou" \
                 organization="$organization" \
                 country="$country" \
@@ -351,6 +357,7 @@ function generate_ca_issuer() {
 
         vault write "$etcd_pki_path/root/generate/internal" \
             common_name="Kubernetes etcd Root CA $year" \
+            exclude_cn_from_sans=true \
             ou="$ou" \
             organization="$organization" \
             country="$country" \
@@ -359,6 +366,7 @@ function generate_ca_issuer() {
 
         vault write "$k8s_front_proxy_pki_path/root/generate/internal" \
             common_name="Kubernetes Front Proxy Root CA $year" \
+            exclude_cn_from_sans=true \
             ou="$ou" \
             organization="$organization" \
             country="$country" \
@@ -372,6 +380,7 @@ function mkcsrs() {
 
     vault write -field=csr "$k8s_pki_path/intermediate/generate/internal" \
         common_name="Kubernetes Cluster Intermediate CA $year" \
+        exclude_cn_from_sans=true \
         ou="$ou" \
         organization="$organization" \
         country="$country" \
@@ -380,6 +389,7 @@ function mkcsrs() {
 
     vault write -field=csr "$etcd_pki_path/intermediate/generate/internal" \
         common_name="Kubernetes etcd Intermediate CA $year" \
+        exclude_cn_from_sans=true \
         ou="$ou" \
         organization="$organization" \
         country="$country" \
@@ -388,6 +398,7 @@ function mkcsrs() {
 
     vault write -field=csr "$k8s_front_proxy_pki_path/intermediate/generate/internal" \
         common_name="Kubernetes Front Proxy Intermediate CA $year" \
+        exclude_cn_from_sans=true \
         ou="$ou" \
         organization="$organization" \
         country="$country" \

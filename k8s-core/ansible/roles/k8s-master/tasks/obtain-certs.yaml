@@ -96,6 +96,7 @@
       get_cert_owner: root
       get_cert_vault_data:
         common_name: "kube-apiserver"
+        exclude_cn_from_sans: true  # common_name is not a domain name
         alt_names: "{{ inventory_hostname }},{{ inventory_hostname }}.node.{{ vault_cluster_name }},kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.{{ vault_cluster_name }},kubernetes.default.svc.cluster.local"
         ip_sans: "{% if ipv4_enabled %}{{ networking_fixed_ip }},{{ k8s_network_service_subnet | ansible.utils.nthhost(1) }},{% endif %}{% if ipv6_enabled %}{{ networking_fixed_ip_v6 }},{{ k8s_network_service_subnet_v6 | ansible.utils.nthhost(1) }},{% endif %}{% if local_ipv4_address is defined %}{{ local_ipv4_address }},{% endif %}{% if local_ipv6_address is defined %}{{ local_ipv6_address }},{% endif %}127.0.0.1,::1"
         ttl: 8784h
@@ -115,6 +116,7 @@
       get_cert_owner: root
       get_cert_vault_data:
         common_name: "apiserver:{{ inventory_hostname }}.node.{{ vault_cluster_name }}"
+        exclude_cn_from_sans: true  # common_name is not a domain name
         ttl: 8784h
       get_cert_notify: Restart kube-apiserver
 
@@ -132,5 +134,6 @@
       get_cert_owner: root
       get_cert_vault_data:
         common_name: "front-proxy-client"
+        exclude_cn_from_sans: true  # common_name is not a domain name
         ttl: 8784h
       get_cert_notify: Restart kube-apiserver
