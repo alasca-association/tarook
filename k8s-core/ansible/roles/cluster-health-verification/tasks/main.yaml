@@ -1,6 +1,7 @@
 ---
 # This role triggers all "verify-*.sh" action scripts
 - name: Find all "verify-*.sh" scripts
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   find:
     paths: "{{ playbook_dir }}/../../actions"
@@ -8,6 +9,7 @@
   register: script_list
 
 - name: Trigger all "verify-*.sh" scripts  # noqa no-changed-when
+  delegate_to: "{{ groups['orchestrator'] | first }}"
   command: "{{ item.path }}"
   run_once: true
   args:
