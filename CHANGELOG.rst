@@ -17,6 +17,16 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v12.0.2 (2026-03-23)
+--------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- Updated default version of helm chart ingress-nginx of https://github.com/kubernetes/ingress-nginx from 4.13.7 to 4.13.9
+  due to recently published `CVE-2026-4342 <https://www.cve.org/cverecord?id=CVE-2026-4342>`__ (`!2397 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2397>`_)
+
+
 v12.0.1 (2026-03-04)
 --------------------
 
