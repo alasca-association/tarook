@@ -89,7 +89,7 @@
         provider: selfsigned
         csr_content: "{{ server_csr.csr }}"
         privatekey_content: "{{ server_key.privatekey }}"
-        entrust_not_after: "+10000d" # See the comment at the top about rotation
+        selfsigned_not_after: "+10000d" # See the comment at the top about rotation
       register: server_cert
 
     - name: Create the x509 key of the client
@@ -112,7 +112,7 @@
         provider: selfsigned
         csr_content: "{{ client_csr.csr }}"
         privatekey_content: "{{ client_key.privatekey }}"
-        entrust_not_after: "+10000d" # See the comment at the top about rotation
+        selfsigned_not_after: "+10000d" # See the comment at the top about rotation
       register: client_cert
 
     - name: Create the secret for the etcd-metrics-proxy endpoint
