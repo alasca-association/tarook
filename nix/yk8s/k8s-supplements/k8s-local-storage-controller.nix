@@ -52,6 +52,16 @@ in {
   };
 
   config.yk8s.warnings = lib.optional (cfg.enabled) "config.yk8s.kubernetes.local_storage.static is deprecated. Support for it will be dropped in a release after v13.0.0";
-  config.yk8s._targets.ansible.assertions = [];
+  config.yk8s._targets.ansible.assertions = [
+    {
+      assertion = cfg.enabled && config.yk8s.kubernetes.local_storage.dynamic.enabled -> cfg.storageclass_name != config.yk8s.kubernetes.local_storage.dynamic.storageclass_name;
+      message = ''
+        If config.yk8s.kubernetes.local_storage.static.enabled
+          and config.yk8s.kubernetes.local_storage.dynamic.enabled are both true,
+          config.yk8s.kubernetes.local_storage.static.storageclass_name and
+          config.yk8s.kubernetes.local_storage.dynamic.storageclass_name must differ.
+      '';
+    }
+  ];
   config.yk8s._targets.ansible.warnings = [];
 }
