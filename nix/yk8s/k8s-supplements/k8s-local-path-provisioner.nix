@@ -69,6 +69,9 @@ in {
     };
   };
 
-  config.yk8s._targets.ansible.assertions = [];
-  config.yk8s._targets.ansible.warnings = [];
+  config.yk8s._targets.ansible.warnings = lib.optional (cfg.enabled) ''
+    config.yk8s.kubernetes.local_storage.dynamic is deprecated.
+      Support for it will be dropped in a release after v13.0.0.
+      You must migrate existing PersistentVolumes to another StorageClass.
+  '';
 }
