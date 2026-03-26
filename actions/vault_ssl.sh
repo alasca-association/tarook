@@ -41,6 +41,7 @@ openssl req \
     -x509 \
     -subj "/O=VAULT CA" \
     -keyout "./ca/vaultca.key" \
+    -addext "keyUsage=critical,digitalSignature,keyCertSign" \
     -out "./ca/vaultca.crt"
 
 # Create certificate key and set read permission for Vault container
