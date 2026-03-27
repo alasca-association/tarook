@@ -15,12 +15,15 @@ if [ "$#" -ne "$arg_num" ]; then
     exit 2
 fi
 
+load_vars
+
 if [ -z "${nodes_approle_accessor:-}" ]; then
     echo "approle auth at $nodes_approle_name not initialized yet, creating"
     vault auth enable -path="$nodes_approle_name" approle
-fi
 
-load_vars
+    # reread vars to populate nodes_approle_accessor
+    load_vars
+fi
 
 function define() {
     declare -g "${1}"
