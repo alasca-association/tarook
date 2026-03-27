@@ -13,8 +13,7 @@
 
 - name: Run kubeadm command on worker node
   become: true
-  when:
-  - "'workers' in group_names"
+  when: "'workers' in group_names"
   block:
   - name: "Running '{{ kubeadm_expression | map('quote') | join(' ') }}' on worker"  # noqa no-changed-when
     shell: "umask 077 && {{ kubeadm_expression | map('quote') | join(' ') }}"
@@ -23,8 +22,7 @@
 
 - name: Run kubeadm command on control plane node
   become: true
-  when:
-  - "'masters' in group_names"
+  when: "'masters' in group_names"
   block:
   - include_tasks: hide-ca-key.yaml
   - block:

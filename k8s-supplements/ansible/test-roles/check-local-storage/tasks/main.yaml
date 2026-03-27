@@ -53,7 +53,7 @@
       name: writer-test
       namespace: "{{ check_local_storage_namespace }}"
     register: writer_state
-    until: "writer_state.resources and (writer_state.resources[0].status | default(False)) and (writer_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
+    until: (writer_state.resources[0].status.phase | default('')) in ['Succeeded', 'Failed']
     delay: 1
     retries: 60
 
@@ -84,7 +84,7 @@
       name: reader-test
       namespace: "{{ check_local_storage_namespace }}"
     register: reader_state
-    until: "reader_state.resources and (reader_state.resources[0].status | default(False)) and (reader_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
+    until: (reader_state.resources[0].status.phase | default('')) in ['Succeeded', 'Failed']
     delay: 1
     retries: 60
 
@@ -122,7 +122,7 @@
     - test-cleanup
 
   - name: delete PV
-    when: "(pvc_info.resources | length) > 0"
+    when: (pvc_info.resources | length) > 0
     kubernetes.core.k8s:
       api_version: v1
       kind: PersistentVolume

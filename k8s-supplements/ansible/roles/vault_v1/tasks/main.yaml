@@ -20,7 +20,7 @@
   import_tasks: internal_pki.yaml
 
 - name: Create the external PKI
-  when: yaook_vault_ingress
+  when: yaook_vault_ingress | bool
   import_tasks: external_pki.yaml
 
 - name: Deploy Vault

@@ -1,7 +1,7 @@
 ---
 - name: Run kubeadm upgrade node on CP node  # noqa no-changed-when
   when:
-    - do_upgrade
+    - do_upgrade | bool
     - "'masters' in group_names"
   vars:
     kubeadm_expression:
@@ -16,7 +16,7 @@
 
 - name: Run kubeadm upgrade node on worker node  # noqa no-changed-when
   when:
-    - do_upgrade
+    - do_upgrade | bool
     - "'workers' in group_names"
   vars:
     kubeadm_expression:

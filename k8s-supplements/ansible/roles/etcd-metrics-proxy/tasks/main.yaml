@@ -53,7 +53,11 @@
 # and a "client" certificate for the prometheus scraper.
 # TODO: Replace me with cert-manager / vault
 - name: Create the certs if they don't exist yet
-  when: not (server_cert_state.resources and client_cert_state.resources)
+  when: |
+    not (
+      ((server_cert_state.resources | default([]) | length) > 0)
+      and ((client_cert_state.resources | default([]) | length) > 0)
+    )
   block:
     - name: Get the controller nodes
       kubernetes.core.k8s_info:
@@ -183,7 +187,7 @@
           delay: "{{ error_delay }}"
 
         - name: Restart prometheus  # noqa no-changed-when
-          when: prometheus.resources
+          when: (prometheus.resources | default([]) | length) > 0
           command: "kubectl rollout restart statefulset -n monitoring prometheus-prometheus-stack-kube-prom-prometheus"
 
     - name: Restart etcd-metrics-proxy
@@ -199,7 +203,7 @@
           delay: "{{ error_delay }}"
 
         - name: Restart etcd-metrics-proxy  # noqa no-changed-when
-          when: etcd_metrics_proxy.resources
+          when: (etcd_metrics_proxy.resources | default([]) | length) > 0
           command: "kubectl rollout restart daemonset -n kube-system etcd-metrics-proxy"
 
 - name: Deploy etcd-metrics-proxy DaemonSet

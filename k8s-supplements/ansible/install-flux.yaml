@@ -6,7 +6,7 @@
   - vars/retries.yaml
   roles:
   - role: fluxcd2_v2
-    when: fluxcd_enabled
+    when: fluxcd_enabled | bool
     tags:
     - fluxcd
     - fluxcd2_v2

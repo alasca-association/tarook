@@ -42,11 +42,7 @@
       - app=echo
       namespace: "{{ check_networkpolicy_namespace }}"
     register: service_pods
-    until: |
-      (service_pods.resources | default(False) and
-       not service_pods.resources | rejectattr('status') | list and
-       not service_pods.resources | map(attribute='status') | rejectattr('phase', 'eq', 'Running') | list and
-       not service_pods.resources | map(attribute='status') | rejectattr('podIP') | list)
+    until: (service_pods.resources | default([]) | map(attribute='status') | rejectattr('phase', 'eq', 'Running') | length) == 0
     retries: 60
     delay: 1
 
@@ -76,14 +72,14 @@
       name: blocked-test
       namespace: "{{ check_networkpolicy_namespace }}"
     register: blocked_test_state
-    until: "blocked_test_state.resources and (blocked_test_state.resources[0].status | default(False)) and (blocked_test_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
+    until: (blocked_test_state.resources[0].status.phase | default('')) in ['Succeeded', 'Failed']
     delay: 1
     retries: 60
 
   - name: check blocked-test pod failure
     debug:
       msg: "Blocked test pod is in condition {{ blocked_test_state.resources[0].status.phase }}"
-    failed_when: 'blocked_test_state.resources[0].status.phase != "Failed"'
+    failed_when: blocked_test_state.resources[0].status.phase != "Failed"
 
   - name: unblock for sources from the same namespace
     kubernetes.core.k8s:
@@ -120,14 +116,14 @@
       name: unblocked-test
       namespace: "{{ check_networkpolicy_namespace }}"
     register: blocked_test_state
-    until: "blocked_test_state.resources and (blocked_test_state.resources[0].status | default(False)) and (blocked_test_state.resources[0].status.phase | default('') in ['Succeeded', 'Failed'])"
+    until: (blocked_test_state.resources[0].status.phase | default('')) in ['Succeeded', 'Failed']
     delay: 1
     retries: 60
 
   - name: check unblocked-test pod succeeded
     debug:
       msg: "Blocked test pod is in condition {{ blocked_test_state.resources[0].status.phase }}"
-    failed_when: 'blocked_test_state.resources[0].status.phase == "Failed"'
+    failed_when: blocked_test_state.resources[0].status.phase == "Failed"
 
 - name: check service is unreachable from the node
   # In SingleNode setups, the node will be able to connect to the service

@@ -1,6 +1,6 @@
 ---
 - name: Generate a shared secret if not configured
-  when: ch_k8s_lbaas_enabled
+  when: ch_k8s_lbaas_enabled | bool
   become: false
   delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
@@ -28,7 +28,9 @@
     # the configuration, the when-condition should be changed to
     #   when: shared_secret_lookup is failed
     - name: Generate shared secret if none exists, yet
-      when: shared_secret_lookup is failed and ch_k8s_lbaas_shared_secret is none
+      when:
+      - shared_secret_lookup is failed
+      - ch_k8s_lbaas_shared_secret is none
       set_fact:
         ch_k8s_lbaas_shared_secret_gen: "{{ lookup('pipe', 'dd if=/dev/urandom bs=30 count=1 status=none | base64') }}"
 
@@ -68,7 +70,7 @@
             https://docs.tarook.cloud/release/v12.0/releasenotes.html
 
 - name: Delete shared secret from Vault
-  when: not ch_k8s_lbaas_enabled
+  when: not (ch_k8s_lbaas_enabled | bool)
   become: false
   delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true

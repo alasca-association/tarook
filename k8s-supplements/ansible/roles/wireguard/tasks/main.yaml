@@ -17,7 +17,7 @@
           2.) Remove the key file (/etc/wireguard/wg_gw.key) from all gateways.
           3.) Re-run the playbook
           This task is only relevant for existing clusters.
-      when: "wg_gw.stat.exists"
+      when: wg_gw.stat.exists
 
 - name: Remove old service
   become: true
@@ -63,7 +63,7 @@
         owner: root
         group: bird
         mode: 0750
-      when: ipv4_enabled
+      when: ipv4_enabled | bool
 
     - name: Ensure that drop-in directory for bird configs exist (IPv6)
       file:
@@ -72,7 +72,7 @@
         owner: root
         group: bird
         mode: 0750
-      when: ipv6_enabled
+      when: ipv6_enabled | bool
 
     - name: Create bird config for IPv4 wireguard routes
       template:
@@ -82,7 +82,7 @@
         group: bird
         mode: 0640
       notify: restart bird
-      when: ipv4_enabled
+      when: ipv4_enabled | bool
 
     - name: Create bird config for IPv6 wireguard routes
       template:
@@ -91,6 +91,6 @@
         owner: bird
         group: bird
         mode: 06400
-      when: ipv6_enabled
+      when: ipv6_enabled | bool
       notify: restart bird6
 ...

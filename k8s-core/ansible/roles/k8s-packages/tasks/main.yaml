@@ -15,7 +15,9 @@
   when: ansible_pkg_mgr == 'apt'
 
 - name: Expand NO_PROXY configuration on Ubuntu machines
-  when: cluster_behind_proxy and ansible_distribution == 'Ubuntu'
+  when:
+    - cluster_behind_proxy | bool
+    - ansible_distribution == 'Ubuntu'
   become: true
   lineinfile:
     path: /etc/environment

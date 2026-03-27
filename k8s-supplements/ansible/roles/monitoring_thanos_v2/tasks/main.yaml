@@ -2,7 +2,7 @@
 - name: Determine Thanos object storage configuration
   block:
   - name: Read S3 config from Vault
-    when: not monitoring_manage_thanos_bucket | bool
+    when: not (monitoring_manage_thanos_bucket | bool)
     environment:
       ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
       ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
@@ -67,7 +67,7 @@
   until: k8s_apply is not failed
   retries: "{{ error_retries }}"
   delay: "{{ error_delay }}"
-  when: monitoring_use_thanos
+  when: monitoring_use_thanos | bool
 
 - name: Create thanos secret
   kubernetes.core.k8s:

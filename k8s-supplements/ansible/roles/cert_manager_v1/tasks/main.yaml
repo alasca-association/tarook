@@ -1,6 +1,6 @@
 ---
 - name: Create namespace
-  when: k8s_cert_manager_install
+  when: k8s_cert_manager_install | bool
   kubernetes.core.k8s:
     apply: true
     definition:

@@ -34,7 +34,7 @@
 
 - name: Restart kubelet
   become: true
-  when: kubelet_config_apply.changed or _require_kubelet_restart | default(false)
+  when: kubelet_config_apply.changed or (_require_kubelet_restart | default(False) | bool)
   systemd:
     state: restarted
     daemon_reload: true

@@ -12,7 +12,7 @@
 - name: Drain this node
   changed_when: true
   delegate_to: "{{ groups['orchestrator'] | first }}"
-  when: _allow_disruption
+  when: _allow_disruption | bool
   command:
   args:
     argv:

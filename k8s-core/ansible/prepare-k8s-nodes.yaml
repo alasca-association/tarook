@@ -7,7 +7,7 @@
   hosts: all:!orchestrator
   tasks:
   - name: Fail if node got not bootstrapped once, yet
-    when: not ansible_local['bootstrap']['bootstrapped'] | default(False) | bool
+    when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)
     fail:
       msg: |
         ERROR
@@ -32,18 +32,24 @@
   - role: k8s-networking
     tags: k8s-networking
   - role: nvidia-cuda-drivers
-    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool
+    when:
+    - (k8s_is_gpu_cluster | bool)
+    - not ((k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu']) | bool)
     tags:
     - gpu-support
     - nvidia-cuda-drivers
   - role: nvidia-container-toolkit
-    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool
+    when:
+    - (k8s_is_gpu_cluster | bool)
+    - not ((k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu']) | bool)
     tags:
     - gpu-support
     - nvidia-container-toolkit
   - role: vgpu-support
     tags: vgpu-support
-    when: k8s_virtualize_gpu and not k8s_is_gpu_cluster
+    when:
+    - (k8s_virtualize_gpu | bool)
+    - not (k8s_is_gpu_cluster | bool)
   - role: containerd
     tags: containerd
   - role: k8s-packages

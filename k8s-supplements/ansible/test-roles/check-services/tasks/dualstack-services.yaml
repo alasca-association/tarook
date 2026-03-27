@@ -1,6 +1,8 @@
 ---
 - name: Check dual stack service functionality
-  when: ipv6_enabled and ipv4_enabled
+  when:
+  - ipv6_enabled | bool
+  - ipv4_enabled | bool
   block:
   - name: Apply the nginx+service manifest (DualStack)
     kubernetes.core.k8s:
@@ -29,14 +31,14 @@
       nginx_service_cluster_ips: "{{ nginx_dual_stack_service_info['resources'][0]['spec']['clusterIPs'] }}"
     fail:
       msg: "The DualStack service does not have an IPv4 Address"
-    when: nginx_service_cluster_ips | ipv4 | length==0
+    when: (nginx_service_cluster_ips | ansible.utils.ipv4 | length) == 0
 
   - name: Fail if the DualStack service has no IPv6 address
     vars:
       nginx_service_cluster_ips: "{{ nginx_dual_stack_service_info['resources'][0]['spec']['clusterIPs'] }}"
     fail:
       msg: "The DualStack service does not have an IPv6 Address"
-    when: nginx_service_cluster_ips | ipv6 | length==0
+    when: (nginx_service_cluster_ips | ansible.utils.ipv6 | length) == 0
 
   - name: Check the connection to the DualStack service (IPv4)
     vars:
@@ -69,7 +71,7 @@
     delay: "{{ error_delay }}"
 
 - name: Check SingleStack IPv4 service functionality
-  when: ipv4_enabled
+  when: ipv4_enabled | bool
   block:
   - name: Apply the nginx+service manifest (SingleStack IPv4)
     kubernetes.core.k8s:
@@ -98,14 +100,14 @@
       nginx_service_cluster_ips: "{{ nginx_single_stack_v4_service_info['resources'][0]['spec']['clusterIPs'] }}"
     fail:
       msg: "The SingleStack IPv4 service does not have an IPv4 Address"
-    when: nginx_service_cluster_ips | ipv4 | length==0
+    when: (nginx_service_cluster_ips | ansible.utils.ipv4 | length) == 0
 
   - name: Fail if the SingleStack IPv4 service has an IPv6 address
     vars:
       nginx_service_cluster_ips: "{{ nginx_single_stack_v4_service_info['resources'][0]['spec']['clusterIPs'] }}"
     fail:
       msg: "The SingleStack IPv4 service has an IPv6 Address"
-    when: nginx_service_cluster_ips | ipv6 | length>0
+    when: (nginx_service_cluster_ips | ansible.utils.ipv6 | length) > 0
 
   - name: Check the connection to the SingleStack IPv4 service
     vars:
@@ -130,7 +132,7 @@
     delay: "{{ error_delay }}"
 
 - name: Check SingleStack IPv6 service functionality
-  when: ipv6_enabled
+  when: ipv6_enabled | bool
   block:
   - name: Apply the nginx+service manifest (SingleStack IPv6)
     kubernetes.core.k8s:
@@ -159,14 +161,14 @@
       nginx_service_cluster_ips: "{{ nginx_single_stack_v6_service_info['resources'][0]['spec']['clusterIPs'] }}"
     fail:
       msg: "The SingleStack IPv6 service has an IPv4 Address"
-    when: nginx_service_cluster_ips | ipv4 | length>0
+    when: (nginx_service_cluster_ips | ansible.utils.ipv4 | length) > 0
 
   - name: Fail if the SingleStack IPv6 service has no IPv6 address
     vars:
       nginx_service_cluster_ips: "{{ nginx_single_stack_v6_service_info['resources'][0]['spec']['clusterIPs'] }}"
     fail:
       msg: "The SingleStack IPv6 does not have an IPv6 Address"
-    when: nginx_service_cluster_ips | ipv6 | length==0
+    when: (nginx_service_cluster_ips | ansible.utils.ipv6 | length) == 0
 
   - name: Check the connection to the SingleStack IPv6 service
     vars:

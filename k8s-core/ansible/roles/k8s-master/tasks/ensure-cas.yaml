@@ -91,7 +91,7 @@
       content: "{{ k8s_ca_cert if not extra_ca else ([k8s_prev_ca_cert, k8s_ca_cert] | join('')) }}"
 
   - name: Copy Kubernetes cluster root CA key from Vault
-    when: k8s_controller_manager_enable_signing_requests
+    when: k8s_controller_manager_enable_signing_requests | bool
     no_log: true  # prevent private_key from being exposed
     block:
     - name: Fetch Kubernetes cluster root CA key from Vault
@@ -108,7 +108,7 @@
         secret_id: "{{ vault_secret_id }}"
         token_validate: false
       register: get_ca_key
-      failed_when: >
+      failed_when: |
         (get_ca_key is failed)
         or ((get_ca_key.data.data.private_key | default("")) == "")
 
@@ -126,7 +126,7 @@
 
   - name: Removal of Kubernetes cluster root CA key
     become: true
-    when: not k8s_controller_manager_enable_signing_requests
+    when: not (k8s_controller_manager_enable_signing_requests | bool)
     block:
     - name: Ensure Kubernetes cluster root CA key file is absent
       file:

@@ -107,7 +107,7 @@
     - calico-service-monitor
 
   - name: Create a pod monitor for fluxcd
-    when: fluxcd_enabled
+    when: fluxcd_enabled | bool
     kubernetes.core.k8s:
       state: present
       apply: true

@@ -40,7 +40,7 @@
   hosts: k8s_nodes
   tasks:
   - name: Fail if node got not bootstrapped once, yet
-    when: not ansible_local['bootstrap']['bootstrapped'] | default(False) | bool
+    when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)
     fail:
       msg: |
         ERROR
@@ -100,7 +100,9 @@
   - role: check-ch-k8s-lbaas
     tags:
     - check-ch-k8s-lbaas
-    when: ch_k8s_lbaas_enabled and ch_k8s_lbaas_port_manager == 'openstack'
+    when:
+    - ch_k8s_lbaas_enabled | bool
+    - ch_k8s_lbaas_port_manager == 'openstack'
 
 - name: Test Calico CNI Support
   hosts: k8s_nodes
@@ -114,7 +116,7 @@
     - test-calico
     - check-dualstack
     - test-dualstack
-    when: k8s_network_calico_enabled
+    when: k8s_network_calico_enabled | bool
 
 - name: Validate IPSec
   hosts: orchestrator
@@ -126,7 +128,9 @@
     tags:
     - check-ipsec
     - test-ipsec
-    when: ipsec_enabled and ipsec_test_enabled
+    when:
+    - ipsec_enabled | bool
+    - ipsec_test_enabled | bool
 
 - name: Test Nvidia GPU Support
   hosts: orchestrator
@@ -134,7 +138,9 @@
   - vars/retries.yaml
   roles:
   - role: check-nvidia-device-plugin
-    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    when:
+    - k8s_is_gpu_cluster | bool
+    - not (k8s_virtualize_gpu | bool)
     tags:
     - test-nvidia-device-plugin
     - check-nvidia-device-plugin
@@ -193,7 +199,7 @@
     - check-loadbalancer-service
     - test-dualstack
     - check-dualstack
-    when: openstack_lbaas or ch_k8s_lbaas_enabled
+    when: (openstack_lbaas | bool) or (ch_k8s_lbaas_enabled | bool)
 
 - name: Test enforcement of NetworkPolicies
   hosts: k8s_nodes[-1]
@@ -237,14 +243,16 @@
     vars:
       block_storage_class: csi-sc-cinderplugin
       volume_snapshot_class: csi-cinder-snapclass
-    when: openstack_enabled
+    when: openstack_enabled | bool
     tags:
     - test-block-storage-cinder
     - check-block-storage-cinder
   - role: check-shared-fs
     vars:
       fs_storage_class: rook-ceph-cephfs
-    when: "(rook_enabled | bool) and (rook_ceph_fs | bool)"
+    when:
+    - rook_enabled | bool
+    - rook_ceph_fs | bool
     tags:
     - test-ceph-shared-filesystem
     - check-ceph-shared-filesystem
@@ -253,14 +261,14 @@
   - role: check-local-storage
     vars:
       storageclass: "{{ k8s_local_storage_static_storageclass_name }}"
-    when: k8s_local_storage_static_enabled
+    when: k8s_local_storage_static_enabled | bool
     tags:
     - test-local-storage-static
     - check-local-storage-static
   - role: check-local-storage
     vars:
       storageclass: "{{ k8s_local_storage_dynamic_storageclass_name }}"
-    when: k8s_local_storage_dynamic_enabled
+    when: k8s_local_storage_dynamic_enabled | bool
     tags:
     - test-local-storage-dynamic
     - check-local-storage-dynamic

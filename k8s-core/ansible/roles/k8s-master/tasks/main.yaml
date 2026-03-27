@@ -112,7 +112,7 @@
         {{ k8s_controller_manager_enable_signing_requests | ternary('en', 'dis') }}abled.
 
   - name: "Ensure CA key is unavailable in Vault when signing requests are disabled"
-    when: not k8s_controller_manager_enable_signing_requests
+    when: not (k8s_controller_manager_enable_signing_requests | bool)
     block:
     # NOTE: We don't require explicit consent here as the deletion is not
     #       actually destructive. Users are able to undelete.
@@ -120,7 +120,7 @@
       no_log: true  # prevent private key from being exposed
       # NOTE: We only attempt to delete when there is actually something to delete
       #       so that a Vault root token only needs to be present in this case.
-      when: k8s_ca_key_avail_in_vault
+      when: k8s_ca_key_avail_in_vault | bool
       community.hashi_vault.vault_kv2_delete:
         path: k8s-pki/cluster-root-ca
         engine_mount_point: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv"
@@ -143,12 +143,12 @@
           This is done by the orchestrator and requires a Vault root token.
 
   - name: "Ensure CA key is available in Vault when signing requests are enabled"
-    when: k8s_controller_manager_enable_signing_requests
+    when: k8s_controller_manager_enable_signing_requests | bool
     block:
     - name: "Require CA key to be available in Vault"
       fail:  # noop task, lookup is already done above
       # NOTE: ansible.builtin.meta: noop supports no conditionals
-      failed_when: not k8s_ca_key_avail_in_vault
+      failed_when: not (k8s_ca_key_avail_in_vault | bool)
     rescue:
     - name: "Require CA key to be available in Vault: Hint failure reason"
       fail:
@@ -186,7 +186,10 @@
     mode: u=rwx,go-rwx
 
 - name: Spawn K8s cluster with 'kubeadm init'
-  when: "local_kube_apiserver_status is failed and lb_kube_apiserver_status is failed and not ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') == 'initialized'"
+  when:
+  - local_kube_apiserver_status is failed
+  - lb_kube_apiserver_status is failed
+  - not ((ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized')) == 'initialized')
   tags:
   - spawn
   become: true
@@ -270,7 +273,10 @@
       content: "{{ content | to_json }}"
 
 - name: Join the K8s control plane
-  when: "local_kube_apiserver_status is failed and not lb_kube_apiserver_status is failed and not ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') == 'initialized'"
+  when:
+  - local_kube_apiserver_status is failed
+  - not (lb_kube_apiserver_status is failed)
+  - not ((ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized')) == 'initialized')
   become: true
   environment:
     ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
@@ -343,8 +349,7 @@
           | combine(_managed_node_labels['masters'])
         )
       }}
-  when:
-  - node_labels | length > 0
+  when: node_labels | length > 0
   kubernetes.core.k8s:
     state: patched
     api_version: v1
@@ -370,8 +375,7 @@
           | map('from_json')
         )
       }}
-  when:
-  - node_taints | length > 0
+  when: node_taints | length > 0
   kubernetes.core.k8s_taint:
     state: present
     name: "{{ inventory_hostname }}"

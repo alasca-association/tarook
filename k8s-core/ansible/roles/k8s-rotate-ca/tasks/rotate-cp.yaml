@@ -11,7 +11,7 @@
     name: k8s-master
     tasks_from: obtain-certs.yaml
   vars:
-    force_renewal: "{{ complete_rotation | bool | ternary(True, False) }}"
+    force_renewal: "{{ complete_rotation | bool | ternary(True, False) | bool }}"
 
 - name: Trigger restart etcd
   block:
@@ -48,7 +48,7 @@
 # https://github.com/kubernetes/kubeadm/issues/1350
 - name: Remove workaround for bug in controller-manager
   become: true
-  when: not append_next_issuer | bool
+  when: not (append_next_issuer | bool)
   block:
   - name: Drop new k8s CA file
     file:

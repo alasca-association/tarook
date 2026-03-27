@@ -51,11 +51,11 @@
     fail_msg: "IP address of VIP port was not configured inside LBaaS controller-config in agents.additional-address-pairs"
     that:
     - ipv4_enabled | bool | ternary(
-        (hostvars[inventory_hostname]['networking_fixed_ip']) in additional_address_pairs,
+        (hostvars[inventory_hostname]['networking_fixed_ip'] | string) in additional_address_pairs,
         True
       )
     - ipv6_enabled | bool | ternary(
-        (hostvars[inventory_hostname]['networking_fixed_ip_v6']) in additional_address_pairs,
+        (hostvars[inventory_hostname]['networking_fixed_ip_v6'] | string) in additional_address_pairs,
         True
       )
   # TODO: we will need to add proper support for IPv6-only later

@@ -5,11 +5,11 @@
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='{{ monitoring_prometheus_stack_release_name }}-kube-prom-prometheus'}"
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
@@ -19,41 +19,41 @@
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{service='{{ monitoring_prometheus_stack_release_name }}-kube-prom-alertmanager'}"
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
 - name: Check grafana endpoint status
-  when: monitoring_use_grafana
+  when: monitoring_use_grafana | bool
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{service='{{ monitoring_prometheus_stack_release_name }}-grafana'}"
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
 - name: Check k8s API endpoints status
-  when: monitoring_use_grafana
+  when: monitoring_use_grafana | bool
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='apiserver',service='kubernetes',instance='kubernetes.default.svc:443'}"
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
@@ -63,11 +63,11 @@
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='kubelet',node='{{ item }}'}"
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
   loop: "{{ groups['k8s_nodes'] }}"
@@ -78,11 +78,11 @@
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='kube-controller-manager',nodename='{{ item }}'}"
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
   loop: "{{ groups['masters'] }}"
@@ -93,11 +93,11 @@
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='coredns',service='{{ monitoring_prometheus_stack_release_name }}-kube-prom-coredns'}"
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
@@ -107,11 +107,11 @@
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='kube-scheduler',nodename='{{ item }}'}"
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
   loop: "{{ groups['masters'] }}"
@@ -122,11 +122,11 @@
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='kube-proxy',nodename='{{ item }}'}"
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
   loop: "{{ groups['k8s_nodes'] }}"
@@ -137,11 +137,11 @@
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='kube-state-metrics'}"
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
@@ -151,11 +151,11 @@
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='node-exporter',nodename='{{ item }}'}"
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
   loop: "{{ groups['k8s_nodes'] }}"
@@ -166,11 +166,11 @@
     pod: prometheus-test-scraper
     command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='kube-etcd'}"
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
@@ -181,22 +181,22 @@
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job={{ item.job | to_json }},container={{ item.container | to_json }}}'
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
   loop:
-    # Look for both job and container. The thanos-sidecar is to blame because I don't consider 'prometheus-stack-kube-prom-thanos-discovery'
-    # to be a descriptive name for a ServiceMonitor :)
-    - job: thanos-compactor
-      container: compactor
-    - job: thanos-query
-      container: query
-    - job: thanos-storegateway
-      container: storegateway
-    - job: prometheus-stack-kube-prom-thanos-discovery
-      container: thanos-sidecar
+  # Look for both job and container. The thanos-sidecar is to blame because I don't consider 'prometheus-stack-kube-prom-thanos-discovery'
+  # to be a descriptive name for a ServiceMonitor :)
+  - job: thanos-compactor
+    container: compactor
+  - job: thanos-query
+    container: query
+  - job: thanos-storegateway
+    container: storegateway
+  - job: prometheus-stack-kube-prom-thanos-discovery
+    container: thanos-sidecar
 ...

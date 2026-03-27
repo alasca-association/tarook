@@ -8,7 +8,9 @@
   register: rook_ns
 
 - name: Wait for Ceph to become healthy
-  when: rook_ns.resources is defined and rook_ns.resources | length != 0
+  when:
+  - rook_ns.resources is defined
+  - (rook_ns.resources | length) != 0
   block:
   - name: Set retry count
     set_fact:
@@ -38,7 +40,7 @@
       namespace: "{{ rook_namespace }}"
       name: "{{ rook_cluster_name }}"
       api_version: ceph.rook.io/v1
-    failed_when: "(ceph_cluster_info.resources | length) == 0"
+    failed_when: "(ceph_cluster_info.resources | default([]) | length) == 0"
     register: ceph_cluster_info
 
   - name: Verify the ceph cluster status information

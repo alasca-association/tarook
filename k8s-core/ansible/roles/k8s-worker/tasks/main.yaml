@@ -92,7 +92,7 @@
           | combine(_managed_node_labels['workers'])
         )
       }}
-  when: node_labels | length > 0
+  when: (node_labels | length) > 0
   kubernetes.core.k8s:
     state: patched
     api_version: v1
@@ -123,8 +123,7 @@
             | ternary([{"key": "k8s.yaook.cloud/gpu-node", "value": "true", "effect": "NoSchedule"}], [])
           )
       }}
-  when:
-  - node_taints | length > 0
+  when: (node_taints | length) > 0
   kubernetes.core.k8s_taint:
     state: present
     name: "{{ inventory_hostname }}"

@@ -13,7 +13,7 @@
 
     - name: Set fact if tigera-operator Deployment exists
       set_fact:
-        tigera_operator_exists: "{{ tigera_operator_deployment.resources | length >= 1 | bool }}"
+        tigera_operator_exists: "{{ (tigera_operator_deployment.resources | default([]) | length) >= 1 }}"
 
 - name: Deploy tigera-operator
   delegate_to: "{{ groups['orchestrator'] | first }}"
@@ -48,7 +48,7 @@
 
     # Give the operator some time to create the CRDs
     - name: Pause for 20s
-      when: not tigera_operator_exists
+      when: not (tigera_operator_exists | bool)
       pause:
         seconds: 20
 

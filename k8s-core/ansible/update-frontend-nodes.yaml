@@ -9,7 +9,7 @@
   hosts: frontend
   tasks:
   - name: Fail if node got not bootstrapped once, yet
-    when: not ansible_local['bootstrap']['bootstrapped'] | default(False) | bool
+    when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)
     fail:
       msg: |
         ERROR
@@ -56,7 +56,7 @@
   roles:
   - role: update-system
     tags: update-system
-    when: _allow_disruption
+    when: _allow_disruption | bool
 
 - name: Upgrade initialized frontend nodes which are part of Kubernetes
   gather_facts: true
@@ -67,7 +67,7 @@
   serial: 1
   tags: update-frontend-nodes
   tasks:
-  - when: _allow_disruption
+  - when: _allow_disruption | bool
     block:
     - include_role:
         name: cluster-health-verification

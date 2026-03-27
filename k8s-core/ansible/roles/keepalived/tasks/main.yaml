@@ -55,7 +55,7 @@
     name: net.ipv4.ip_nonlocal_bind
     value: "1"
     state: present
-  when: ipv4_enabled
+  when: ipv4_enabled | bool
 
 - name: Enable ipv6.ip_nonlocal_bind
   become: true
@@ -63,7 +63,7 @@
     name: net.ipv6.ip_nonlocal_bind
     value: "1"
     state: present
-  when: ipv6_enabled
+  when: ipv6_enabled | bool
 
 - name: Start the keepalived service
   become: true

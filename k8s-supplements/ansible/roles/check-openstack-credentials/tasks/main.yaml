@@ -1,6 +1,8 @@
 ---
 - name: Check OpenStack credentials
-  when: (openstack_enabled | bool) and (openstack_check_credentials | bool)
+  when:
+  - openstack_enabled | bool
+  - openstack_check_credentials | bool
   delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
   become: false

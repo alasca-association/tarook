@@ -6,11 +6,11 @@
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="prometheus-keepalived",instance="{{ hostvars[item]["local_ipv4_address"] }}:9650"}'
   register: metrics
   loop: "{{ groups['frontend'] }}"
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
@@ -21,11 +21,11 @@
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="prometheus-haproxy",instance="{{ hostvars[item]["local_ipv4_address"] }}:9101"}'
   register: metrics
   loop: "{{ groups['frontend'] }}"
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
@@ -36,16 +36,16 @@
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="rook-ceph-mgr"}'
   register: metrics
   when: rook_enabled | bool
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
 - name: Check ch-k8s-lbaas
-  when: ch_k8s_lbaas_enabled
+  when: ch_k8s_lbaas_enabled | bool
   block:
   - name: Check LBaaS controller scrape endpoint status
     kubernetes.core.k8s_exec:
@@ -53,11 +53,11 @@
       pod: prometheus-test-scraper
       command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="ch-k8s-lbaas-controller"}'
     register: metrics
-    until: |
-      metrics.failed == false and
-      metrics.rc == 0 and
-      metrics.stdout | from_json | json_query('status') == "success" and
-      metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+    until:
+    - metrics is not failed
+    - metrics.rc == 0
+    - metrics.stdout | from_json | json_query('status') == "success"
+    - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
     retries: 60
     delay: 3
 
@@ -68,32 +68,32 @@
       command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="ch-k8s-lbaas-agent",instance="{{ hostvars[item]["local_ipv4_address"] }}:{{ ch_k8s_lbaas_agent_port }}"}'
     register: metrics
     loop: "{{ groups['frontend'] }}"
-    until: |
-      metrics.failed == false and
-      metrics.rc == 0 and
-      metrics.stdout | from_json | json_query('status') == "success" and
-      metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+    until:
+    - metrics is not failed
+    - metrics.rc == 0
+    - metrics.stdout | from_json | json_query('status') == "success"
+    - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
     retries: 60
     delay: 3
 
 - name: Check node-exporter (gateway-frontend) endpoint status
-  when: "groups['gateways'] | default([]) | length > 0"
+  when: (groups['gateways'] | default([]) | length) > 0
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="prometheus-frontend-node-exporter",instance="{{ hostvars[item]["local_ipv4_address"] }}:9100"}'
   register: metrics
   loop: "{{ groups['frontend'] }}"
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
 - name: Do we have any gpu nodes?
-  when: k8s_is_gpu_cluster
+  when: k8s_is_gpu_cluster | bool
   kubernetes.core.k8s_info:
     api_version: v1
     kind: Node
@@ -102,22 +102,24 @@
   register: gpu_nodes
 
 - name: Check dcgm-gpu-exporter endpoint status
-  when: "k8s_is_gpu_cluster and ((gpu_nodes.resources | length) > 0)"
+  when:
+  - k8s_is_gpu_cluster | bool
+  - (gpu_nodes.resources | default([]) | length) > 0
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="nvidia-dcgm-exporter"}'
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
 - name: Check blackbox-exporter endpoint status
-  when: monitoring_internet_probe
+  when: monitoring_internet_probe | bool
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
@@ -126,11 +128,11 @@
   loop: "{{ monitoring_internet_probe_targets }}"
   loop_control:
     label: "{{ item.name }} - {{ item.url }}"
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
@@ -141,26 +143,26 @@
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{service="etcd-backup",job="etcd-backup"}'
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
 - name: Check calico's monitoring endpoints (operator-based)
-  when: k8s_network_calico_enabled
+  when: k8s_network_calico_enabled | bool
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job={{ item | to_json }}}'
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   loop:
   - calico-kube-controllers-metrics
   - felix-metrics-svc
@@ -168,7 +170,7 @@
   delay: 3
 
 - name: Check fluxcd's monitoring endpoints
-  when: fluxcd_enabled
+  when: fluxcd_enabled | bool
   vars:
     job_name: "{{ fluxcd_helm_release_namespace }}/flux-system"
   kubernetes.core.k8s_exec:
@@ -176,11 +178,11 @@
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job={{ job_name | to_json }}}'
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   delay: 3
 
 - name: Check vault
@@ -192,11 +194,11 @@
       pod: prometheus-test-scraper
       command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="vault-active"}'
     register: metrics
-    until: |
-      metrics.failed == false and
-      metrics.rc == 0 and
-      metrics.stdout | from_json | json_query('status') == "success" and
-      metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+    until:
+    - metrics is not failed
+    - metrics.rc == 0
+    - metrics.stdout | from_json | json_query('status') == "success"
+    - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
     delay: 3
   - name: Check vault-backup's endpoint
     when: yaook_vault_enable_backups | bool
@@ -205,11 +207,11 @@
       pod: prometheus-test-scraper
       command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="vault-backup-monitoring"}'
     register: metrics
-    until: |
-      metrics.failed == false and
-      metrics.rc == 0 and
-      metrics.stdout | from_json | json_query('status') == "success" and
-      metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+    until:
+    - metrics is not failed
+    - metrics.rc == 0
+    - metrics.stdout | from_json | json_query('status') == "success"
+    - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
     delay: 3
 
 - name: Check cert-manager endpoint status
@@ -219,11 +221,11 @@
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="cert-manager",service="cert-manager"}'
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 
@@ -234,11 +236,11 @@
     pod: prometheus-test-scraper
     command: curl -g 'http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job="ingress-ingress-nginx-controller-metrics",service="ingress-ingress-nginx-controller-metrics"}'
   register: metrics
-  until: |
-    metrics.failed == false and
-    metrics.rc == 0 and
-    metrics.stdout | from_json | json_query('status') == "success" and
-    metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
+  until:
+  - metrics is not failed
+  - metrics.rc == 0
+  - metrics.stdout | from_json | json_query('status') == "success"
+  - metrics.stdout | from_json | json_query('data.result[0].value | [1]') == '1'
   retries: 60
   delay: 3
 ...
