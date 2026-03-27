@@ -18,7 +18,6 @@ Configuration Options
   yk8s.k8s-service-layer.prometheus
   yk8s.k8s-service-layer.rook
   yk8s.k8s-service-layer.vault
-  yk8s.kubernetes.kubelet
   yk8s.kubernetes.local_storage.dynamic
   yk8s.kubernetes.local_storage.static
   yk8s.kubernetes.network.calico
@@ -57,8 +56,6 @@ Configuration Options
 :doc:`k8s-service-layer.rook <yk8s.k8s-service-layer.rook>`
 
 :doc:`k8s-service-layer.vault <yk8s.k8s-service-layer.vault>`
-
-:doc:`kubernetes.kubelet <yk8s.kubernetes.kubelet>`
 
 :doc:`kubernetes.local_storage.dynamic <yk8s.kubernetes.local_storage.dynamic>`
 

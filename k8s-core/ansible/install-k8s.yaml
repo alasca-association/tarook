@@ -64,10 +64,10 @@
     tags: k8s-worker
 
 - name: Configure Kubelet of K8s nodes
-  hosts: workers,masters
+  hosts: k8s_nodes
   gather_facts: true
   vars_files:
-  - vars/disruption.yaml
+  - vars/retries.yaml
   roles:
   - role: kubelet-configuration
     tags: kubelet-configuration

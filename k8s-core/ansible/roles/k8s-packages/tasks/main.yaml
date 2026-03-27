@@ -43,15 +43,14 @@
     file: configure-package-repo.yaml
 
 - name: Install kubelet, kubeadm and kubectl
+  become: true
   block:
     - name: Remove hold of packages if migration needed  # noqa no-changed-when no-handler
       when: drop_google_repo.changed | default(False)
-      become: true
       command: apt-mark unhold kubelet kubeadm kubectl
 
     - name: Install kubelet, kubeadm and kubectl
       # Note: check available version with `apt-cache policy <package name>`
-      become: true
       package:
         state: present
         name:
@@ -62,13 +61,7 @@
       until: task_result is not failed
       retries: "{{ error_retries }}"
       delay: "{{ error_delay }}"
-      notify: Restart kubelet
 
     - name: Prevent the k8s packages for being updated  # noqa no-changed-when
-      become: true
       command: apt-mark hold kubelet kubeadm kubectl
-
-# kubelet should be restarted immediately
-- name: Force restart of kubelet at this point
-  meta: flush_handlers
 ...

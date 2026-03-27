@@ -3,3 +3,7 @@
 {{ lookup('template', 'kubeadm-ClusterConfiguration.yaml.j2') }}
 
 {{ lookup('template', 'kubeadm-KubeProxyConfiguration.yaml.j2') }}
+
+{% if k8s_kubelet_defaultOptions != {} %}
+{{ lookup('template', 'kubeadm-KubeletConfiguration.yaml.j2') }}
+{% endif %}

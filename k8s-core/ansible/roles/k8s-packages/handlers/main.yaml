@@ -1,9 +1,0 @@
----
-- name: Restart kubelet
-  become: true
-  systemd:
-    state: restarted
-    daemon_reload: true
-    enabled: true
-    name: kubelet
-...

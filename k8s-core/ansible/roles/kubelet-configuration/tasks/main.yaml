@@ -1,66 +1,116 @@
 ---
-- name: Determine pod limit to use for master nodes
-  set_fact:
-    kubelet_pod_limit: "{{ k8s_kubelet_pod_limit_master }}"
-  when: "'masters' in group_names"
+# The ConfigMap contains settings supplied by kubeadm should not be removed
+- name: Retrieve global KubeletConfiguration from ConfigMap
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  run_once: true
+  become: false
+  kubernetes.core.k8s_info:
+    kind: ConfigMap
+    name: kubelet-config
+    namespace: kube-system
+  register: kubelet_cluster_config
+  until: kubelet_cluster_config is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
-- name: Determine pod limit to use for worker nodes
-  set_fact:
-    kubelet_pod_limit: "{{ k8s_kubelet_pod_limit_worker }}"
-  when: "'workers' in group_names"
+- name: Backup previous KubeletConfiguration file
+  become: true
+  copy:
+    remote_src: true
+    src: "/var/lib/kubelet/config.yaml"
+    dest: "/var/lib/kubelet/config.yaml.bak~"
+    mode: 0400
 
-- name: Configure and restart kubelet
-  when: >
-    ( _allow_disruption | default(False)
-        or do_upgrade | default(False)
-        or _init_cluster | default(False))
+# This merges the global KubeletConfig with the node-specific configured options
+- name: Write merged KubeletConfiguration to file
+  become: true
+  copy:
+    content: "{{ kubelet_cluster_config.resources[0].data.kubelet | from_yaml  | combine(k8s_kubelet_finalNodeOptions[inventory_hostname]) | to_nice_yaml }}"
+    dest: /var/lib/kubelet/config.yaml
+    owner: root
+    group: root
+    mode: 0600
+  register: kubelet_config_apply
+
+- name: Restart kubelet
+  become: true
+  when: kubelet_config_apply.changed or _require_kubelet_restart | default(false)
+  systemd:
+    state: restarted
+    daemon_reload: true
+    enabled: true
+    name: kubelet
+
+# Unfortunately the previous task succeeds even if the kubelet
+# service is stuck in activating or failed completely
+# We have to workaround that via service_facts
+- name: Verify that kubelet is running
   become: true
   block:
-  - name: Set the maximum number of Pods
-    lineinfile:
-      path: /var/lib/kubelet/config.yaml
-      regexp: 'maxPods:(\s+)([0-9]+)(\s*)\n?$'
-      line: "maxPods: {{ kubelet_pod_limit }}"
-      state: present
-      owner: root
-      group: root
-      mode: 0600
-    notify: restart kubelet
+  - name: Gather service facts
+    service_facts:
 
-  - name: Patch kubelet config for eviction values
-    when: "'workers' in group_names"
-    block:
-    - name: Slurp current kubelet config
-      slurp:
-        src: /var/lib/kubelet/config.yaml
-      register: kubelet_config
-    - name: Patch kubelet config for eviction values
-      vars:
-        eviction_values:
-          evictionSoft:
-            memory.available: "384Mi"
-          evictionSoftGracePeriod:
-            memory.available: "{{ k8s_kubelet_evictionsoft_memory_period }}"
-          evictionHard:
-            memory.available: "256Mi"
-            nodefs.available: "{{ k8s_kubelet_evictionhard_nodefs_available }}"
-            imagefs.available: "15%"
-            nodefs.inodesFree: "{{ k8s_kubelet_evictionhard_nodefs_inodesfree }}"
-      copy:
-        content: "{{ (kubelet_config.content | b64decode | from_yaml) | combine(eviction_values) | to_nice_yaml }}"
-        dest: /var/lib/kubelet/config.yaml
-        owner: root
-        group: root
-        mode: 0600
-      notify: restart kubelet
+  - name: Check if kubelet is running
+    fail:
+      msg: "kubelet is not running"
+    when:
+    - "'kubelet.service' in ansible_facts.services"
+    - "ansible_facts.services['kubelet.service']['state'] != 'running'"
+  # In case the kubelet service isn't running, we want to restore
+  # the previous configuration such that the node is not broken
+  # and can continue to serve until a proper configuration is passed
+  rescue:
+  - name: Move previous KubeletConfiguration file back in place
+    copy:
+      remote_src: true
+      src: "/var/lib/kubelet/config.yaml.bak~"
+      dest: "/var/lib/kubelet/config.yaml"
+      mode: 0400
 
-- name: Force restart of kubelet if requested
-  debug:
-    msg: It IS requested!
-  changed_when: true
-  notify: restart kubelet
-  when: _require_kubelet_restart | default(False)
+  - name: Remove previous KubeletConfiguration backup file
+    file:
+      state: absent
+      path: "/var/lib/kubelet/config.yaml.bak~"
 
-- name: Flush handlers
-  meta: flush_handlers
+  - name: Restart kubelet
+    systemd:
+      state: restarted
+      daemon_reload: true
+      enabled: true
+      name: kubelet
+
+  - name: Fail due to invalid KubeletConfiguration passed
+    fail:
+      msg: |
+        The kubelet service could not be restarted with the supplied KubeletConfiguration.
+        The supplied KubeletConfiguration is most certainly invalid.
+        The previous KubeletConfiguration has been moved back into place.
+        Please verify your configuration and retry.
+
+- name: Remove previous KubeletConfiguration backup file
+  become: true
+  file:
+    state: absent
+    path: "/var/lib/kubelet/config.yaml.bak~"
+
+# We do not validate the supplied options to be a valid KubeletConfiguartion
+# However, after successfully starting kubelet on a node with the configured values
+# we can assume it is safe to patch the ConfigMap
+- name: Patch kubelet-config ConfigMap
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  run_once: true
+  become: false
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: kubelet-config
+        namespace: kube-system
+      data:
+        kubelet: "{{ kubelet_cluster_config.resources[0].data.kubelet | from_yaml  | combine(k8s_kubelet_defaultOptions) | to_nice_yaml }}"
+  register: kubelet_configmap_patched
+  until: kubelet_configmap_patched is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 ...

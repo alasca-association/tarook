@@ -60,8 +60,6 @@
   - name: Configure kubelet
     include_role:
       name: kubelet-configuration
-    vars:
-      _init_cluster: true  # needs to be passed so that kubelet is configured & restarted
 
   - name: Set static fact that kubernetes is initialized
     vars:
