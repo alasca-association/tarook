@@ -54,6 +54,9 @@
         api_version: v1
         kind: Node
         name: "{{ inventory_hostname }}"
+      until: _k8s_node_info is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
       register: _k8s_node_info
     - include_role:
         name: kubeadm-drain-node

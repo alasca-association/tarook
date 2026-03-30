@@ -358,6 +358,10 @@
     definition:
       metadata:
         labels: "{{ node_labels }}"
+  register: node_labels_patched
+  until: node_labels_patched is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: "Ensure K8s node taints"
   delegate_to: "{{ groups['orchestrator'] | first }}"
@@ -380,4 +384,8 @@
     state: present
     name: "{{ inventory_hostname }}"
     taints: "{{ node_taints }}"
+  register: node_taints_patched
+  until: node_taints_patched is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 ...

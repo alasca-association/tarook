@@ -79,6 +79,9 @@
         kind: Node
         name: "{{ inventory_hostname }}"
       register: _k8s_node_info
+      until: _k8s_node_info is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
     - include_role:
         name: kubeadm-drain-node
     - include_role:

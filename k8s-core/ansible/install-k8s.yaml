@@ -24,6 +24,8 @@
   hosts: masters
   gather_facts: true
   serial: 1
+  vars_files:
+  - vars/retries.yaml
   roles:
   - role: etcd-clean-stale-members
     when: (ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized')) == 'initialized'

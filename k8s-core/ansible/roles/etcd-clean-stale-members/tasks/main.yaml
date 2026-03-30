@@ -21,6 +21,9 @@
         kind: Node
         name: "{{ item.name }}"
       register: skeleton_candidates
+      until: skeleton_candidates is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
     - name: Inform the user of any deletion
       loop: "{{ skeleton_candidates.results }}"
       loop_control:

@@ -5,6 +5,9 @@
     kind: Node
     name: "{{ inventory_hostname }}"
   register: k8s_node_info
+  until: k8s_node_info is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Validate that the k8s node has an internal IPv4 and IPv6 address
   vars:

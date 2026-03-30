@@ -100,6 +100,9 @@
     label_selectors:
     - k8s.yaook.cloud/gpu-node=true
   register: gpu_nodes
+  until: gpu_nodes is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Check dcgm-gpu-exporter endpoint status
   when:

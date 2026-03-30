@@ -7,6 +7,9 @@
     name: vault-metrics-token-renewer
   register: cronjob_info
   ignore_errors: true
+  until: cronjob_info is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Create the yaook/prometheus policy
   vars:

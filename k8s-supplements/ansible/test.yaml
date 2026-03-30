@@ -57,6 +57,8 @@
   hosts: k8s_nodes
   become: false
   gather_facts: false
+  vars_files:
+  - vars/retries.yaml
   tasks:
   - name: Get node info
     delegate_to: "{{ groups['orchestrator'] | first }}"
@@ -64,6 +66,9 @@
       kind: node
       name: "{{ inventory_hostname }}"
     register: result
+    until: result is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
     tags:
     - test-ccm
 
@@ -85,6 +90,8 @@
 
 - name: Validate Kubernetes network configuration
   hosts: k8s_nodes
+  vars_files:
+  - vars/retries.yaml
   roles:
   - role: check-network-configuration
     tags:
@@ -151,6 +158,8 @@
   gather_facts: false
   tags:
   - label
+  vars_files:
+  - vars/retries.yaml
   tasks:
   - name: Label testing nodes
     kubernetes.core.k8s:
@@ -161,6 +170,10 @@
         metadata:
           labels:
             k8s.yaook.cloud/test-node: "true"
+    register: testing_node_labels_patched
+    until: testing_node_labels_patched is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
     loop: "{{ testing_nodes }}"
     when: testing_nodes | length > 0
     tags:

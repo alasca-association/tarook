@@ -27,8 +27,8 @@
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
-  retries: 20
-  delay: 15
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Create another API endpoint
   # Retry this task on failures

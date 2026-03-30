@@ -24,6 +24,9 @@
       - operator=rook
       - storage-backend=ceph
     register: rook_operator_info
+    until: rook_operator_info is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
     ignore_errors: true
 
 - name: Sanity checks

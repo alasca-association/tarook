@@ -10,6 +10,9 @@
         name: tigera-operator
         namespace: "{{ k8s_network_calico_helm_release_namespace }}"
       register: tigera_operator_deployment
+      until: tigera_operator_deployment is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
     - name: Set fact if tigera-operator Deployment exists
       set_fact:

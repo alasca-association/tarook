@@ -25,6 +25,9 @@
       name: nginx-service-dual-stack
       namespace: "{{ check_services_namespace }}"
     register: nginx_dual_stack_service_info
+    until: nginx_dual_stack_service_info is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Fail if the DualStack service has no IPv4 address
     vars:
@@ -94,6 +97,9 @@
       name: nginx-service-single-stack-v4
       namespace: "{{ check_services_namespace }}"
     register: nginx_single_stack_v4_service_info
+    until: nginx_single_stack_v4_service_info is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Fail if the SingleStack IPv4 service has no IPv4 address
     vars:
@@ -155,6 +161,9 @@
       name: nginx-service-single-stack-v6
       namespace: "{{ check_services_namespace }}"
     register: nginx_single_stack_v6_service_info
+    until: nginx_single_stack_v6_service_info is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Fail if the SingleStack IPv6 service has an IPv4 address
     vars:

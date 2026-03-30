@@ -33,6 +33,9 @@
     name: "{{ monitoring_grafana_admin_secret_name }}"
     namespace: "{{ monitoring_namespace }}"
   register: grafana_admin
+  until: grafana_admin is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Create default admin secret for Grafana
   when: (grafana_admin.resources | default([]) | length) == 0
@@ -128,6 +131,7 @@
   register: gpu_nodes
   until: gpu_nodes is not failed
   retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: NVIDIA DCGM Exporter
   when: (gpu_nodes.resources | length) > 0

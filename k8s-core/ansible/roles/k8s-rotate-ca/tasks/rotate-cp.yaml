@@ -148,6 +148,9 @@
     kubernetes.core.k8s_info:
       kind: Namespace
     register: gather_namespaces
+    until: gather_namespaces is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Restart (almost) everything (╯°□°)╯︵ ┻━┻  # noqa no-changed-when
     with_nested:
@@ -190,6 +193,10 @@
     kubernetes.core.k8s:
       state: present
       definition: "{{ lookup('template', 'cluster-info-cm.yaml.j2') | from_yaml }}"
+    register: kubernetes_apply
+    until: kubernetes_apply is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
 - name: Provide CA certificates as ConfigMap
   include_role:

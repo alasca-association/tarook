@@ -7,6 +7,9 @@
       namespace: kube-system
       name: kube-proxy
     register: kube_proxy_configmap_old
+    until: kube_proxy_configmap_old is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Patch the kube-proxy ConfigMap
     vars:

@@ -9,7 +9,11 @@
       label_selectors:
       - k8s-app=tigera-operator
     register: pod_info
-    failed_when: ( pod_info.resources[0].status.phase != "Running" ) and ( pod_info.resources[0].status.containerStatuses[0].ready != true )
+    until:
+    - (pod_info.resources[0].status.phase | default("")) == "Running"
+    - (pod_info.resources[0].status.containerStatuses[0].ready | default(False)) | bool
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Check running and readiness status of calico pods
     kubernetes.core.k8s_info:
@@ -17,7 +21,11 @@
       label_selectors:
       - app.kubernetes.io/name={{ item }}
     register: pod_info
-    failed_when: ( pod_info.resources[0].status.phase != "Running" ) and ( pod_info.resources[0].status.containerStatuses[0].ready != true )
+    until:
+    - (pod_info.resources[0].status.phase | default("")) == "Running"
+    - (pod_info.resources[0].status.containerStatuses[0].ready | default(False)) | bool
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
     with_items:
     - calico-node
     - calico-typha

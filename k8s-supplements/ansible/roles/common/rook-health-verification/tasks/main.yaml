@@ -6,6 +6,9 @@
     kind: Namespace
     name: "{{ rook_namespace }}"
   register: rook_ns
+  until: rook_ns is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Wait for Ceph to become healthy
   when:
@@ -23,6 +26,9 @@
       label_selectors:
       - app = rook-ceph-tools
     register: rook_ceph_tools_pod_info
+    until: rook_ceph_tools_pod_info is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Gather ceph cluster status information via the rook-ceph-tools Pod
     kubernetes.core.k8s_exec:
@@ -30,6 +36,9 @@
       pod: "{{ rook_ceph_tools_pod_info.resources[0].metadata.name }}"
       command: ceph status -f json
     register: ceph_cluster_status
+    until: ceph_cluster_status is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   # Sadly the ceph status output varies from version to version.
   # The following tasks check the cluster health depending on the deployed
@@ -40,8 +49,10 @@
       namespace: "{{ rook_namespace }}"
       name: "{{ rook_cluster_name }}"
       api_version: ceph.rook.io/v1
-    failed_when: "(ceph_cluster_info.resources | default([]) | length) == 0"
     register: ceph_cluster_info
+    until: (ceph_cluster_info.resources | default([]) | length) > 0
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Verify the ceph cluster status information
     vars:

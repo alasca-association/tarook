@@ -42,7 +42,9 @@
     kind: Pod
     label_selectors: app.kubernetes.io/instance=vault,app.kubernetes.io/name=vault,component=server
   register: vault_pods
-  failed_when: "(vault_pods.resources | length) == 0"
+  # replicas are hardcoded to 3
+  # https://gitlab.com/alasca.cloud/tarook/tarook/-/blob/304abd9609951c278a5000969d704feb5005553f/k8s-supplements/ansible/roles/vault_v1/templates/vault.yaml.j2#L32
+  until: (vault_pods.resources | default([]) | length) == 3
   retries: 10
   delay: 5
 
