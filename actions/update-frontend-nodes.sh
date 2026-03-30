@@ -33,7 +33,9 @@ shift $(( OPTIND - 1 ))
 install_prerequisites
 
 # Bring the wireguard interface up if configured so
-"$actions_dir/wg-up.sh"
+if [ "${wg_usage:-true}" == "true" ]; then
+    "$actions_dir/wg-up.sh"
+fi
 
 set_kubeconfig
 
