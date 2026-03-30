@@ -1,7 +1,6 @@
 ---
 haproxy_service_config_map:
   Debian: /etc/default/haproxy
-  RedHat: /etc/sysconfig/haproxy
 
 haproxy_global_maxconn: 60000
 ...

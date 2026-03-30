@@ -26,18 +26,6 @@
     - NO_PROXY
     - no_proxy
 
-- name: Expand NO_PROXY configuration on RHEL machines
-  when: cluster_behind_proxy and ansible_distribution == 'Red Hat Enterprise Linux'
-  become: true
-  lineinfile:
-    path: /etc/profile.d/proxy.sh
-    regexp: "^(.*{{ item }}.*)$"
-    line: "{{ item }}={{ no_proxy | join(',') }},{{ k8s_network_pod_subnet }},{{ k8s_network_service_subnet }},{{ subnet_cidr }},{{ networking_fixed_ip }}"
-    state: present
-  loop:
-    - NO_PROXY
-    - no_proxy
-
 - name: Include package repository configuration
   include_tasks:
     file: configure-package-repo.yaml
