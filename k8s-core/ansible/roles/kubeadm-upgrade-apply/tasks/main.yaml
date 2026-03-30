@@ -29,4 +29,11 @@
           - "/etc/kubernetes/kubeadm-patches"
       include_role:
         name: helpers/kubeadm-command
+
+# Running kubeadm upgrade apply potentially resets
+# the KubeletConfiguration on the node
+# We have to reconfigure it before continuing therefore
+- name: Configure and restart kubelet
+  include_role:
+    name: kubelet-configuration
 ...
