@@ -219,6 +219,10 @@ in {
     };
   };
 
+  config.yk8s.kubernetes.kubelet.defaultOptions = {
+    containerRuntimeEndpoint = lib.mkDefault "${config.yk8s.kubernetes.cri_url}";
+  };
+
   config.yk8s._targets.ansible.assertions =
     lib.mapAttrsToList (
       nodeName: _: {
