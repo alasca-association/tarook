@@ -25,7 +25,7 @@
 - name: Write merged KubeletConfiguration to file
   become: true
   copy:
-    content: "{{ kubelet_cluster_config.resources[0].data.kubelet | from_yaml  | combine(k8s_kubelet_finalNodeOptions[inventory_hostname]) | to_nice_yaml }}"
+    content: "{{ kubelet_cluster_config.resources[0].data.kubelet | from_yaml | combine(k8s_kubelet_finalNodeOptions[inventory_hostname]) | to_nice_yaml }}"
     dest: /var/lib/kubelet/config.yaml
     owner: root
     group: root
@@ -108,7 +108,7 @@
         name: kubelet-config
         namespace: kube-system
       data:
-        kubelet: "{{ kubelet_cluster_config.resources[0].data.kubelet | from_yaml  | combine(k8s_kubelet_defaultOptions) | to_nice_yaml }}"
+        kubelet: "{{ kubelet_cluster_config.resources[0].data.kubelet | from_yaml | combine(k8s_kubelet_defaultOptions) | to_nice_yaml }}"
   register: kubelet_configmap_patched
   until: kubelet_configmap_patched is not failed
   retries: "{{ error_retries }}"

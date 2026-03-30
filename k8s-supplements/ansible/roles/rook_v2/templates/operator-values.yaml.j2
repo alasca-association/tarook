@@ -7,19 +7,19 @@ nodeSelector:
   {{ rook_scheduling_key | to_json }}: "true"
 {% endif %}
 
-tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
+tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
 
 monitoring:
   enabled: {{ k8s_monitoring_enabled | bool }}
 
 discover:
   priorityClassName: system-cluster-critical
-  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
-  nodeAffinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2')['nodeAffinity'] | default(dict()) | to_json }}
+  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
+  nodeAffinity: {{ (lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json).nodeAffinity | default({}) }}
 
 agent:
   priorityClassName: system-cluster-critical
-  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
+  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
 
 pspEnable: false
 
@@ -31,8 +31,8 @@ csi:
   enableRBDSnapshotter: "{{ rook_csi_plugins }}"
   #rbdFSGroupPolicy: "ReadWriteOnceWithFSType"
   #cephFSFSGroupPolicy: "ReadWriteOnceWithFSType"
-  provisionerTolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
-  provisionerNodeAffinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2')['nodeAffinity'] | default(dict()) | to_json }}
+  provisionerTolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
+  nodeAffinity: {{ (lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json).nodeAffinity | default({}) }}
 
   pluginTolerations:
 {% if rook_nodeplugin_toleration == True %}

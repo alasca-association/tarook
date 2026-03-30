@@ -31,7 +31,7 @@
         config_vars | default({}) | combine(
           {
             item.split('=', 1)[0] + (
-              agent_id if (agent_id | default(-1) | int) > -1 else ''
+              (agent_id | string) if (agent_id | default(-1) | int) > -1 else ''
             ):
             item.split('=', 1)[1]
           }

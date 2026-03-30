@@ -18,8 +18,8 @@ compactor:
   retentionResolution5m: {{ monitoring_thanos_retention_resolution_5m | quote }}
   retentionResolution1h: {{ monitoring_thanos_retention_resolution_1h | quote }}
   resources: {{ monitoring_thanos_compact_resources | to_json }}
-  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
-  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | to_json }}
+  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
+  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json }}
   persistence:
     enabled: {{ monitoring_thanos_storage_class is not none }}
 {% if monitoring_thanos_compactor_size is not none %}
@@ -33,8 +33,8 @@ storegateway:
   - "--index-cache-size={{ monitoring_thanos_store_in_memory_max_size }}"
 {% endif %}
   resources: {{ monitoring_thanos_store_resources | to_json }}
-  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
-  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | to_json }}
+  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
+  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json }}
   pdb:
     create: false
   replicaCount: 1
@@ -51,8 +51,8 @@ query:
     enabled: true
     sidecarsService: "prometheus-operated"
     sidecarsNamespace: "{{ monitoring_namespace }}"
-  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | to_json }}
-  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
+  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json }}
+  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
   pdb:
     create: false
   replicaCount: 1
