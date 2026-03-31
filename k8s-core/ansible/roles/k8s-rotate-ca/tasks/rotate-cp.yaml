@@ -39,11 +39,20 @@
       mode: ugo=r
       content: "{{ k8s_ca_cert }}"
 
-  - name: Point kube-controller-manager to separate CA file
-    replace:
-      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-      regexp: '^(\s*-\s*--client-ca-file=).*'
-      replace: '\1/etc/kubernetes/pki/ca-new.crt'
+  - name: Point kube-controller-manager to separate CA and cert file
+    block:
+    - name: Point kube-controller-manager '--client-ca-file' to separate CA file
+      replace:
+        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+        regexp: '^(\s*-\s*--client-ca-file=).*'
+        replace: '\1/etc/kubernetes/pki/ca-new.crt'
+
+    - name: Point kube-controller-manager '--cluster-signing-cert-file' to separate CA file
+      when: k8s_controller_manager_enable_signing_requests | bool
+      replace:
+        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+        regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
+        replace: '\1/etc/kubernetes/pki/ca-new.crt'
 
 # https://github.com/kubernetes/kubeadm/issues/1350
 - name: Remove workaround for bug in controller-manager
@@ -55,11 +64,20 @@
       path: /etc/kubernetes/pki/ca-new.crt
       state: absent
 
-  - name: Point kube-controller-manager to default CA file
-    replace:
-      path: /etc/kubernetes/manifests/kube-controller-manager.yaml
-      regexp: '^(\s*-\s*--client-ca-file=).*'
-      replace: '\1/etc/kubernetes/pki/ca.crt'
+  - name: Point kube-controller-manager to default CA and cert file
+    block:
+    - name: Point kube-controller-manager '--cluster-signing-cert-file' back to CA file
+      replace:
+        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+        regexp: '^(\s*-\s*--client-ca-file=).*'
+        replace: '\1/etc/kubernetes/pki/ca.crt'
+
+    - name: Point kube-controller-manager '--cluster-signing-cert-file' back to CA file
+      when: k8s_controller_manager_enable_signing_requests | bool
+      replace:
+        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+        regexp: '^(\s*-\s*--cluster-signing-cert-file=).*'
+        replace: '\1/etc/kubernetes/pki/ca.crt'
 
 - name: Trigger restart kube-controller-manager
   block:
