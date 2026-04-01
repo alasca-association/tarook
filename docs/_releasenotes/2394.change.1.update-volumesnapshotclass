@@ -1,0 +1,5 @@
+For clusters running on OpenStack,
+the VolumeSnapshotClass `csi-cinder-snapclass` has been adapted such that
+snapshots of attached (in-use) Cinder volumes are allowed.
+It is still highly recommended to snapshot detached volumes only,
+as snapshots of attached volumes are not guaranteed to be application-consistent.
