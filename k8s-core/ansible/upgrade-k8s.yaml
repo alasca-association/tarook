@@ -94,6 +94,8 @@
   hosts: masters[0]
   gather_facts: true
   any_errors_fatal: true
+  vars_files:
+    - vars/retries.yaml
   roles:
     - role: kubeadm-upgrade-apply
 
@@ -102,6 +104,8 @@
   serial: 1
   gather_facts: true
   any_errors_fatal: true
+  vars_files:
+    - vars/retries.yaml
   roles:
     - role: kubeadm-upgrade-node
 
