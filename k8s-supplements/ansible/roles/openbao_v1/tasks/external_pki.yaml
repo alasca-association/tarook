@@ -1,11 +1,4 @@
 ---
-- name: Ensure we have a (Cluster)Issuer set
-  when: openbao_on_k8s_external_ingress_issuer_name is none
-  fail:
-    msg: |
-      `openbao_on_k8s_v1` has been configured to create an external (a public) ingress.
-      Please set `external_ingress_issuer_name` s.t. the role can fetch a TLS certificate for you.
-
 - name: Set openbao server DNS names
   set_fact:
     openbao_on_k8s_dnsnames_complete: |

@@ -243,6 +243,16 @@ in {
         warnIfZero "config.yk8s.k8s-service-layer.openbao.service_active_node_port: should not be port zero" v;
     };
   };
+  config.yk8s._targets.vault.assertions = [
+    {
+      assertion = cfg.enabled && cfg.ingress -> cfg.external_ingress_issuer_name != null;
+      message = lib.concatStrings [
+        "config.yk8s.k8s-service-layer.openbao.external_ingress_issuer_name:"
+        " must be set when"
+        " config.yk8s.k8s-service-layer.openbao.ingress==true"
+      ];
+    }
+  ];
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
