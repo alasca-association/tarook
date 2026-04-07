@@ -39,7 +39,12 @@ dependencies locked to specific versions so everybody can produce the same ident
             $ sudo adduser $(whoami) nix-users
 
          Re-login to your seat (desktop session) or run the following command to use Nix right away:
-         ``newgrp nix-users``. Note that the ``newgrp`` command starts a new shell and will only have
+
+         .. code:: console
+
+            $ newgrp nix-users
+
+         Note that the ``newgrp`` command starts a new shell and will only have
          effect within that shell.
 
          The Nix version provided by Debian/Ubuntu is quite old and (at the time of writing) has known vulnerabilities that don't get patched.
