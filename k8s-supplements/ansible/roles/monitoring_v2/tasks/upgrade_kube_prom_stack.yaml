@@ -26,7 +26,8 @@
   # The base version is 33.x consider only versions newer than 33.x
   - name: Trigger the version-specific CRDs update
     # NOTE: range(start, end) produces an empty array when start >= end
-    loop: "{{ range(prom_stack_depl_major_version | int + 1, prom_stack_conf_major_version | int) }}"
+    # NOTE: range(start, end) follows Python conventitons where the end value is exclusive
+    loop: "{{ range(prom_stack_depl_major_version | int + 1, prom_stack_conf_major_version | int + 1) | list }}"
     include_tasks: apply_crds.yaml
 
   # Remove the admission controllers associated with the old prometheus-operator installation
