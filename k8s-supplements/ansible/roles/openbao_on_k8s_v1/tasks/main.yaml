@@ -1,0 +1,9 @@
+---
+- name: Deploy OpenBao on Kubernetes
+  include_tasks: deploy.yaml
+  when: openbao_on_k8s.enabled
+
+- name: Undeploy OpenBao on Kubernetes
+  include_tasks: undeploy.yaml
+  when: not openbao_on_k8s.enabled
+...

@@ -1,0 +1,41 @@
+---
+# TODO: Generate manifest with Nix
+- name: Ensure Kubernetes namespace for OpenBao
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ openbao_on_k8s.helm.release_namespace }}"
+    apply: true
+    validate:
+      fail_on_error: true
+      strict: true
+  register: _k8s_create_namespace
+  until: _k8s_create_namespace is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
+
+- name: Deploy OpenBao Helm chart
+  kubernetes.core.helm:
+    chart_repo_url: "{{ openbao_on_k8s.helm.repo_url }}"
+    chart_ref: "{{ openbao_on_k8s.helm.chart_ref }}"
+    chart_version: "{{ openbao_on_k8s.helm.chart_version }}"
+    release_namespace: "{{ openbao_on_k8s.helm.release_namespace }}"
+    release_name: "{{ openbao_on_k8s.helm.release_name }}"
+    release_state: present
+    values: "{{ openbao_on_k8s.helm.values | to_json }}"
+
+- name: Setup backups for OpenBao on Kubernetes
+  include_tasks: setup-backups.yaml
+  when: openbao_on_k8s.backups.enabled
+
+# TODO: Replace with trigger of monitoring role
+#
+#       This task depends on the monitoring to be deployed already.
+#       A more robust approach would be to hand the task over to the monitoring role
+#       and only trigger it from here.
+- name: Setup monitoring for OpenBao on Kubernetes
+  include_tasks: setup-monitoring.yaml
+  when: k8s_monitoring_enabled
+...

@@ -264,4 +264,22 @@
         then warnIfZero (mkMessage name) value
         else value
     );
+
+  # TODO: Add description
+  updateManyAttrsByPathIf = updates: attrs:
+    lib.updateManyAttrsByPath (
+      lib.foldl (
+        acc: update:
+          acc
+          ++ lib.optional (
+            if lib.hasAttr "updateIf" update
+            then update.updateIf update attrs
+            else true
+          )
+          update
+      )
+      []
+      updates
+    )
+    attrs;
 }
