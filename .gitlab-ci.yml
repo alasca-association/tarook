@@ -169,6 +169,7 @@ render-options:
     - !reference [.default_lint_rules, rules]
     - changes:
       - nix/yk8s/**/*
+      - flake.*
       if: $SKIP_HOUSEKEEPING != "true"
       when: on_success
     - when: never
