@@ -100,7 +100,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "1.20.0"
+  "1.20.1"
 
 
 **Example:**::
