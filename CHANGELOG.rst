@@ -17,6 +17,15 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v12.1.2 (2026-04-10)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- A minor bug in ``tools/vault/init.sh`` has been fixed. (`!2427 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2427>`_)
+
+
 v12.1.1 (2026-03-23)
 --------------------
 
