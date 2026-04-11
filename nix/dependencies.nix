@@ -34,12 +34,16 @@
         description = "Will be used by direnv by default";
         includes = ["minimal"];
         packages = [
+          (wrapHelm kubernetes-helm {
+            plugins = with pkgs.kubernetes-helmPlugins; [
+              helm-diff
+            ];
+          })
           coreutils
           curl
           gnugrep
           gnused
           gzip
-          kubernetes-helm
           moreutils
           openssh
           openssl
