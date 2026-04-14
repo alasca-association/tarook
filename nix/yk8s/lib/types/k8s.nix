@@ -249,13 +249,10 @@ in rec {
   labelAttrs = let
     baseType = lib.types.attrsOf labelValue;
   in
-    baseType
+    lib.types.addCheck baseType (x: lib.all label.check (lib.attrNames x))
     // {
       name = "k8sLabelAttrs";
       description = "attribute set of Kubernetes label-value pairs";
-      check = x:
-        baseType.check x
-        && lib.all label.check (lib.attrNames x);
     };
 
   taintStr = _mkRegexStrOptionType {

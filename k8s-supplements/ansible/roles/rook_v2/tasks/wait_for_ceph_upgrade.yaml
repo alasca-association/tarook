@@ -14,6 +14,9 @@
       label_selectors:
       - rook_cluster = {{ rook_namespace }}
     register: rook_deployments_info
+    until: rook_deployments_info is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Print ceph version and replica information of Deployments
     debug:

@@ -91,7 +91,7 @@ Check the parts regarding YAML in the Ansible documentation: https://docs.ansibl
 
 **Type:**::
 
-  attribute set of (submodule)
+  open submodule of attribute set of (submodule)
 
 
 **Declared by**
@@ -127,7 +127,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 **Type:**::
 
-  attribute set of (attribute set containing JSON compatible values)
+  attribute set of (open submodule of (attribute set containing JSON compatible values))
 
 
 **Default:**::

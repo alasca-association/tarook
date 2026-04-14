@@ -3,7 +3,7 @@
   delegate_to: "{{ groups['orchestrator'] | first }}"
   retries: 5
   delay: 10
-  when: _allow_disruption
+  when: _allow_disruption | bool
   command:
   args:
     argv:

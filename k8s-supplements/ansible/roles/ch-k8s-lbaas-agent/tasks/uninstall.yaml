@@ -7,7 +7,7 @@
       state: absent
       path: "{{ ch_k8s_lbaas_agent_state_directory }}/nftables/access.conf"
     notify: reload nftables
-    when: openstack_enabled
+    when: openstack_enabled | bool
 
   - name: Stop and disable service
     block:
@@ -53,7 +53,7 @@
       remove: false  # as we set home to /dev/null
 
 - name: Import dependency roles needed when running on OpenStack
-  when: openstack_enabled
+  when: openstack_enabled | bool
   block:
   - name: Import bird
     import_role:

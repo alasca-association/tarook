@@ -24,6 +24,9 @@
       - operator=rook
       - storage-backend=ceph
     register: rook_operator_info
+    until: rook_operator_info is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
     ignore_errors: true
 
 - name: Sanity checks
@@ -47,9 +50,11 @@
     - name: Check for disruption if it is needed
       assert:
         that: >
-          (rook_version is version(rook_ceph_info.status.app_version, operator="eq")
-          and rook_version is version(rook_ceph_cluster_info.status.app_version, operator="eq"))
-          or _allow_disruption | default(False)
+          (
+            (rook_version is version(rook_ceph_info.status.app_version, operator="eq"))
+            and (rook_version is version(rook_ceph_cluster_info.status.app_version, operator="eq"))
+          )
+          or (_allow_disruption | default(False) | bool)
         fail_msg: |
           Configured and deployed versions differ, but no disruption is allowed.
           Please use MANAGED_K8S_RELEASE_THE_KRAKEN=true if you want to proceed.

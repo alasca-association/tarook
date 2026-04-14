@@ -1,9 +1,9 @@
 ---
 - name: Install ch-k8s-lbaas-agent
-  when: ch_k8s_lbaas_enabled
+  when: ch_k8s_lbaas_enabled | bool
   include_tasks: install.yaml
 
 - name: Uninstall ch-k8s-lbaas-agent
-  when: not ch_k8s_lbaas_enabled
+  when: not (ch_k8s_lbaas_enabled | bool)
   include_tasks: uninstall.yaml
 ...

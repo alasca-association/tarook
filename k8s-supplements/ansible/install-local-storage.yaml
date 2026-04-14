@@ -9,7 +9,7 @@
   hosts: k8s_nodes
   tasks:
   - name: Fail if node got not bootstrapped once, yet
-    when: not ansible_local['bootstrap']['bootstrapped'] | default(False) | bool
+    when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)
     fail:
       msg: |
         ERROR
@@ -32,10 +32,10 @@
     tags:
     - k8s-local-storage-controller
     - local-storage
-    when: k8s_local_storage_static_enabled
+    when: k8s_local_storage_static_enabled | bool
   - role: k8s-local-path-provisioner
     tags:
     - k8s-local-path-provisioner
     - local-storage
-    when: k8s_local_storage_dynamic_enabled
+    when: k8s_local_storage_dynamic_enabled | bool
 ...

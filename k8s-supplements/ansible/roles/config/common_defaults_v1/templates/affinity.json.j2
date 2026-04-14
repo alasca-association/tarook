@@ -1,34 +1,40 @@
-{ {% if scheduling_key %}
-  "nodeAffinity": {
-    "requiredDuringSchedulingIgnoredDuringExecution": {
-      "nodeSelectorTerms": [
-        {
-          "matchExpressions": [
+{{
+  {} | combine(
+    ({
+      "nodeAffinity": {
+        "requiredDuringSchedulingIgnoredDuringExecution": {
+          "nodeSelectorTerms": [
             {
-              "key": {{ scheduling_key | to_json }},
-              "operator": "Exists"
+              "matchExpressions": [
+                {
+                  "key": scheduling_key,
+                  "operator": "Exists"
+                }
+              ]
             }
           ]
         }
-      ]
-    }
-  },{% endif %}
-  {% if pod_affinity_key is defined | default(False) %}
-  "podAffinity": {
-    "requiredDuringSchedulingIgnoredDuringExecution": [
-      {
-        "labelSelector":
-          {
-            "matchExpressions": [
-              {
-                "key": {{ pod_affinity_key | to_json }},
-                "operator": {{ pod_affinity_operator | default('Exists') | to_json }},
-                "values": {{ pod_affinity_values | default([]) | to_json }}
-              }
-            ]
-          },
-        "topologyKey": "kubernetes.io/hostname"
       }
-    ]
-  }{% endif %}
-}
+    } if (scheduling_key | default('') | length) > 0 else {}),
+    ({
+      "podAffinity": {
+        "requiredDuringSchedulingIgnoredDuringExecution": [
+          {
+            "labelSelector":
+              {
+                "matchExpressions": [
+                  {
+                    "key": pod_affinity_key,
+                    "operator": (pod_affinity_operator | default('Exists')),
+                    "values": (pod_affinity_values | default([]))
+                  }
+                ]
+              },
+            "topologyKey": "kubernetes.io/hostname"
+          }
+        ]
+      }
+    } if (pod_affinity_key | default('') | length) > 0 else {})
+  )
+  | to_json
+}}

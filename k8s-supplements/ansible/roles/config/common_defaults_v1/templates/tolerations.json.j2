@@ -1,4 +1,4 @@
-[{% if scheduling_key %}
+[{% if (scheduling_key | default('') | length) > 0 %}
   {
     "key": {{ scheduling_key | to_json }},
     "operator": "Exists",

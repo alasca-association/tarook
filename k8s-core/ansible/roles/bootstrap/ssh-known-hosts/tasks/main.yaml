@@ -9,11 +9,11 @@
     mode: 0755
 
 - name: Deploy automation
-  when: not use_vault_in_docker
+  when: not (use_vault_in_docker | bool)
   include_tasks: deploy-automation.yaml
 
 - name: Manual renewal
-  when: use_vault_in_docker
+  when: use_vault_in_docker | bool
   include_tasks: manual-renewal.yaml
 
 - name: Write SSH CA to etc directory

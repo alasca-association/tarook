@@ -43,7 +43,7 @@
     namespace: "{{ k8s_cert_manager_test_namespace }}"
     name: "test-issuer"
   register: issuer_state
-  until: "issuer_state.resources and (issuer_state.resources[0].status | default(False)) and (issuer_state.resources[0].status.conditions | default([])) and (issuer_state.resources[0].status.conditions[0].reason == 'IsReady')"
+  until: (issuer_state.resources[0].status.conditions[0].reason | default('')) == 'IsReady'
   delay: 5
   retries: 60
 

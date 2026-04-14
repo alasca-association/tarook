@@ -1,6 +1,6 @@
 ---
 - name: Generate short-lived kubeconfig if orchestrator
-  when: direct_generation or has_vault_orchestrator_role
+  when: (direct_generation | bool) or (has_vault_orchestrator_role | bool)
   become: false
   block:
   - name: Generate short-lived orchestrator kubeconfig

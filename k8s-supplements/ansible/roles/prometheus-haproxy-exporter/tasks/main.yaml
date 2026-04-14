@@ -2,7 +2,6 @@
 - name: Installation on Debian
   when: ansible_os_family == 'Debian'
   block:
-
     - name: Install prometheus-haproxy-exporter
       become: true
       apt:
@@ -29,89 +28,6 @@
         mode: u=rwx,g=rx,o-rwx
       register: phe_default_config
 
-
-- name: Install prometheus-haproxy-exporter
-  become: true
-  when: ansible_os_family == 'RedHat'
-  block:
-
-    - name: Register service user fact for prometheus-haproxy-exporter on CentOS/RedHat
-      set_fact:
-        phe_user: "{{ prometheus_haproxy_exporter_user }}"
-
-    - name: Create prometheus-haproxy-exporter user
-      user:
-        system: true
-        name: "{{ phe_user }}"
-        shell: /sbin/nologin
-        create_home: false
-
-    - name: Create configuration directory
-      file:
-        state: directory
-        path: /etc/prometheus-haproxy-exporter
-        owner: root
-        group: root
-        mode: u=rwx,g=rx,o-rwx
-
-    - name: Store version info
-      template:
-        src: archive_id_tag.j2
-        dest: /etc/prometheus-haproxy-exporter/version
-        owner: root
-        group: root
-        mode: ugo-rwx
-      register: phe_version
-
-    - name: Download and install prometheus-haproxy-exporter
-      vars:
-        phe_path: /var/cache/prometheus-haproxy-exporter
-      block:
-
-        - name: Create cache directory for archive/binary
-          file:
-            state: directory
-            path: "{{ phe_path }}"
-            owner: root
-            group: root
-            mode: u=rwx,g=rx,o-rwx
-
-        - name: Download prometheus-haproxy-exporter
-          get_url:
-            checksum: "{{ prometheus_haproxy_exporter_checksum }}"
-            dest: "{{ phe_path }}"
-            url: "{{ prometheus_haproxy_exporter_url }}"
-            force: "{{ (phe_version is changed) | ternary(True, False) }}"
-            owner: root
-            group: root
-            mode: ugo-rx
-          register: task_result
-          until: task_result is not failed
-          retries: "{{ error_retries }}"
-          delay: "{{ error_delay }}"
-
-        - name: Extract prometheus-haproxy-exporter
-          unarchive:
-            src: "{{ phe_path }}/{{ prometheus_haproxy_exporter_archive }}"
-            dest: "{{ phe_path }}"
-            remote_src: true
-
-        - name: Copy prometheus-haproxy-exporter to /usr/local/bin
-          copy:
-            src: "{{ phe_path }}/{{ prometheus_haproxy_exporter_extract_folder }}/haproxy_exporter"
-            dest: /usr/local/bin/prometheus-haproxy-exporter
-            owner: "{{ phe_user }}"
-            mode: u=rx,go-rwx
-            remote_src: true
-          register: phe_binary
-
-        - name: Create prometheus-haproxy-exporter service file
-          template:
-            src: prometheus-haproxy-exporter.service.j2
-            dest: /usr/lib/systemd/system/prometheus-haproxy-exporter.service
-            mode: 0640
-          register: phe_service
-
 - name: Add user prometheus to group haproxy to access admin sock
   become: true
   user:
@@ -124,7 +40,7 @@
   become: true
   systemd:
     name: prometheus-haproxy-exporter
-    state: "{{ ((phe_binary is changed) or (phe_service is changed) or (phe_default_config is changed)) | ternary('restarted', 'started') }}"
+    state: "{{ (phe_default_config is changed) | ternary('restarted', 'started') }}"
     enabled: true
     daemon-reload: true
 ...

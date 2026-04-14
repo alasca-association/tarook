@@ -27,8 +27,8 @@ alertmanager:
   alertmanagerSpec:
     priorityClassName: "system-cluster-critical"
     replicas: "{{ monitoring_alertmanager_replicas }}"
-    affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | to_json }}
-    tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
+    affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json }}
+    tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
 {% if monitoring_allow_external_rules %}
     alertmanagerConfigMatcherStrategy:
       type: None
@@ -54,11 +54,11 @@ grafana:
     userKey: admin-user
     passwordKey: admin-password
   resources: {{ monitoring_grafana_resources | to_json }}
-  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
+  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
 {% if monitoring_grafana_persistent_storage_class is not none %}
-  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2', template_vars=dict(pod_affinity_key="app.kubernetes.io/name", pod_affinity_operator="In", pod_affinity_values=["grafana"])) | to_json }}
+  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2', template_vars=dict(pod_affinity_key="app.kubernetes.io/name", pod_affinity_operator="In", pod_affinity_values=["grafana"])) | from_json }}
 {% else %}
-  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | to_json }}
+  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json }}
 {% endif %}
   datasources:
     datasources.yaml:
@@ -156,8 +156,8 @@ kubeApiServer:
   enabled: true
   admissionWebhooks:
     patch:
-      affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | to_json }}
-      tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
+      affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json }}
+      tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
   serviceMonitor:
     relabelings:
       - sourceLabels:
@@ -219,8 +219,8 @@ coreDNS:
         targetLabel: nodename
         replacement: $1
         action: replace
-  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | to_json }}
-  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
+  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json }}
+  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
 
 ##
 kubeEtcd:
@@ -307,8 +307,8 @@ kube-state-metrics:
 {% endif %}
   metricLabelsAllowlist:
     - namespaces=[*]
-  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | to_json }}
-  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
+  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json }}
+  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
 
 ##
 nodeExporter:
@@ -362,8 +362,8 @@ prometheusOperator:
   admissionWebhooks:
     patch:
       priorityClassName: "system-cluster-critical"
-      affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | to_json }}
-      tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
+      affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json }}
+      tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
   resources: {{ monitoring_operator_resources | to_json }}
   serviceMonitor:
     relabelings:
@@ -373,8 +373,8 @@ prometheusOperator:
         targetLabel: nodename
         replacement: $1
         action: replace
-  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | to_json }}
-  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
+  affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json }}
+  tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
 
 ##
 prometheus:
@@ -447,8 +447,8 @@ prometheus:
         readinessProbe:
           failureThreshold: 1000
     resources: {{ monitoring_prometheus_resources | to_json }}
-    affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | to_json }}
-    tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | to_json }}
+    affinity: {{ lookup('template', 'roles/config/common_defaults_v1/templates/affinity.json.j2') | from_json }}
+    tolerations: {{ lookup('template', 'roles/config/common_defaults_v1/templates/tolerations.json.j2') | from_json }}
 {% if monitoring_allow_external_rules %}
     ruleSelectorNilUsesHelmValues: false
     ruleSelector: {}

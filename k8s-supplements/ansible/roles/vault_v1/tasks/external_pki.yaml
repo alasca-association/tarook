@@ -6,13 +6,6 @@
       `vault_v1` has been configured to create an external (a public) ingress.
       Please set `external_ingress_issuer_name` s.t. the role can fetch a TLS certificate for you.
 
-- name: Set vault server DNS names
-  set_fact:
-    yaook_vault_dnsnames_complete: |
-      [
-        {% for name in yaook_vault_dnsnames %} {{ name | to_json }}, {% endfor %}
-      ]
-
 - name: Create Vault Certificate (external)
   kubernetes.core.k8s:
     apply: true
@@ -27,15 +20,15 @@
           name: "{{ yaook_vault_external_ingress_issuer_name }}"
           kind: "{{ yaook_vault_external_ingress_issuer_kind }}"
         secretName: vault-cert-external
-        dnsNames: "{{ yaook_vault_dnsnames_complete }}"
+        dnsNames: "{{ yaook_vault_dnsnames }}"
     validate:
       fail_on_error: true
       strict: true
   # Retry this task on failures
   register: k8s_apply
   until: k8s_apply is not failed
-  retries: 20
-  delay: 15
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Create another API endpoint
   # Retry this task on failures

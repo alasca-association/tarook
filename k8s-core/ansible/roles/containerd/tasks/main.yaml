@@ -14,8 +14,8 @@
   # or if Kubernetes is not initialized on the node, yet
   when:
   - |
-    _allow_disruption
-    or ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
+    (_allow_disruption | bool)
+    or ((ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized')) != 'initialized')
   block:
   - name: Add docker repository
     block:
@@ -162,8 +162,8 @@
   when:
   - package_install.changed or configuration_update.changed or configuration_update_limit_nofile.changed
   - |
-    _allow_disruption
-    or ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
+    (_allow_disruption | bool)
+    or ((ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized')) != 'initialized')
   systemd:
     enabled: true
     state: restarted

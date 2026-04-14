@@ -54,8 +54,7 @@
         pythonPackages = ps:
           with ps; [
             kubernetes
-            # https://gitlab.com/yaook/k8s/-/merge_requests/1982#note_2669012669
-            (kubernetes-validate.overrideAttrs {inherit (inputs'.nixpkgs-unstable.legacyPackages.python3Packages.kubernetes-validate) src version;})
+            kubernetes-validate
             openshift
             loguru
             packaging
@@ -128,7 +127,7 @@
         ];
         pythonPackages = ps:
           with ps; [
-            GitPython
+            gitpython
             python-openstackclient
           ];
       };

@@ -78,7 +78,7 @@
         mode: 0740
 
   - name: Onboard node to vault
-    when: has_vault_orchestrator_role
+    when: has_vault_orchestrator_role | bool
     environment:
       ANSIBLE_HASHI_VAULT_URL: "{{ lookup('env', 'VAULT_ADDR') }}"
       ANSIBLE_HASHI_VAULT_CA_CERT: "{{ lookup('env', 'VAULT_CACERT') }}"
@@ -252,7 +252,10 @@
 
   - name: Write role-id from env if not written
     become: true
-    when: "not has_vault_orchestrator_role and vault_caller_role_id and vault_caller_secret_id"
+    when:
+    - not (has_vault_orchestrator_role | bool)
+    - (vault_caller_role_id | length) > 0
+    - (vault_caller_secret_id | length) > 0
     copy:
       dest: /etc/vault/role-id
       owner: root
@@ -262,7 +265,10 @@
 
   - name: Write secret-id from env if not written
     become: true
-    when: "not has_vault_orchestrator_role and vault_caller_role_id and vault_caller_secret_id"
+    when:
+    - not (has_vault_orchestrator_role | bool)
+    - (vault_caller_role_id | length) > 0
+    - (vault_caller_secret_id | length) > 0
     copy:
       dest: /etc/vault/secret-id
       owner: root
@@ -313,5 +319,5 @@
         are no valid approle credentials predeployed on the node.
 
         Token info: {{ token_info }}
-    when: token_info is failed or not (token_info.data.data.policies | default([]))
+    when: (token_info is failed) or (not ((token_info.data.data.policies | default([]) | length) > 0))
 ...

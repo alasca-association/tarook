@@ -21,7 +21,7 @@
       namespace: "{{ check_loadbalancer_service_namespace }}"
       name: "echo-service-dual-stack"
     register: service_state
-    until: "service_state.resources and (service_state.resources[0].status | default(False)) and (service_state.resources[0].status.loadBalancer | default(False)) and (service_state.resources[0].status.loadBalancer.ingress | default(False))"
+    until: service_state.resources[0].status.loadBalancer.ingress is defined
     delay: 5
     retries: 60
 
@@ -81,7 +81,7 @@
       namespace: "{{ check_loadbalancer_service_namespace }}"
       name: "echo-service-single-stack-v6"
     register: service_state
-    until: "service_state.resources and (service_state.resources[0].status | default(False)) and (service_state.resources[0].status.loadBalancer | default(False)) and (service_state.resources[0].status.loadBalancer.ingress | default(False))"
+    until: service_state.resources[0].status.loadBalancer.ingress is defined
     delay: 5
     retries: 60
 

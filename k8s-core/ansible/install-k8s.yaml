@@ -7,7 +7,7 @@
   hosts: all:!orchestrator
   tasks:
   - name: Fail if node got not bootstrapped once, yet
-    when: not ansible_local['bootstrap']['bootstrapped'] | default(False) | bool
+    when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)
     fail:
       msg: |
         ERROR
@@ -24,9 +24,11 @@
   hosts: masters
   gather_facts: true
   serial: 1
+  vars_files:
+  - vars/retries.yaml
   roles:
   - role: etcd-clean-stale-members
-    when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') == 'initialized'
+    when: (ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized')) == 'initialized'
     tags: etcd-clean-stale-members
 
 - name: Spawn the K8s control plane
@@ -78,7 +80,9 @@
   - vars/retries.yaml
   roles:
   - role: nvidia-device-plugin
-    when: k8s_is_gpu_cluster and not k8s_virtualize_gpu
+    when:
+    - k8s_is_gpu_cluster | bool
+    - not (k8s_virtualize_gpu | bool)
     tags:
     - gpu-support
     - nvidia-device-plugin

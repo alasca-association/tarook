@@ -33,9 +33,12 @@
     name: "{{ monitoring_grafana_admin_secret_name }}"
     namespace: "{{ monitoring_namespace }}"
   register: grafana_admin
+  until: grafana_admin is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: Create default admin secret for Grafana
-  when: not grafana_admin.resources
+  when: (grafana_admin.resources | default([]) | length) == 0
   kubernetes.core.k8s:
     state: present
     apply: true
@@ -66,7 +69,7 @@
   kubernetes.core.helm_info:
     release_name: "{{ monitoring_prometheus_stack_release_name }}"
     release_namespace: "{{ monitoring_namespace }}"
-  when: monitoring_install
+  when: monitoring_install | bool
   register: monitoring_stack_info
   ignore_errors: true
 
@@ -86,7 +89,7 @@
     when: prom_stack_conf_version is version(prom_stack_depl_version, operator='eq')
 
   - name: Trigger upgrade configured and deployed KSL monitoring version do not equal
-    when: not prom_stack_conf_version is version(prom_stack_depl_version, operator='eq')
+    when: not (prom_stack_conf_version is version(prom_stack_depl_version, operator='eq'))
     include_tasks: upgrade_kube_prom_stack.yaml
 
 # Install the prometheus stack
@@ -128,6 +131,7 @@
   register: gpu_nodes
   until: gpu_nodes is not failed
   retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
 
 - name: NVIDIA DCGM Exporter
   when: (gpu_nodes.resources | length) > 0
@@ -136,7 +140,7 @@
 - name: Install thanos with helm
   include_role:
     name: monitoring_thanos_v2
-  when: monitoring_use_thanos
+  when: monitoring_use_thanos | bool
 
 - name: "{{ monitoring_internet_probe | ternary('I', 'Uni') }}nstall blackbox-exporter"
   vars:

@@ -66,38 +66,4 @@
     until: k8s_apply is not failed
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
-
-- name: Dump instantiated manifests
-  become: false
-  delegate_to: "{{ groups['orchestrator'] | first }}"
-  run_once: true
-  when: "dump_k8s_manifests"
-  vars:
-    manifest_dir: "{{ etc_dir }}/manifests"
-  tags:
-  - dump-k8s-manifests
-  block:
-  - name: Create manifest directory
-    file:
-      state: directory
-      path: "{{ manifest_dir }}"
-      mode: 0755
-
-  - name: Create provisioner manifest
-    template:
-      src: 'provisioner.yaml.j2'
-      dest: "{{ manifest_dir }}/provisioner.yaml"
-      mode: 0664
-
-  - name: Create storage class manifest
-    template:
-      src: 'sc.yaml.j2'
-      dest: "{{ manifest_dir }}/sc.yaml"
-      mode: 0664
-
-  - name: Create service manifest
-    template:
-      src: 'service.yaml.j2'
-      dest: "{{ manifest_dir }}/service.yaml"
-      mode: 0664
 ...

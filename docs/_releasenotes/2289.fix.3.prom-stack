@@ -1,0 +1,1 @@
+An off-by-one-error in the kube-prometheus-stack upgrade procedure has been fixed.

@@ -67,7 +67,7 @@
     delay: "{{ error_delay }}"
 
   - name: Create cinder storage class (nvme)
-    when: openstack_cinder_nvme
+    when: openstack_cinder_nvme | bool
     kubernetes.core.k8s:
       state: present
       apply: true

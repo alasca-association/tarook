@@ -48,27 +48,6 @@
         state: restarted
         daemon_reload: true
 
-  - name: Configure chrony (RHEL like)
-    when: ansible_os_family == "RedHat"
-    block:
-
-    - name: Create custom configuration (RHEL like)
-      template:
-        src: chrony.conf.j2
-        dest: /etc/chrony.conf
-        owner: root
-        group: root
-        mode: 0644
-      register: configuration_update_rhel
-
-    - name: Restart chronyd  # noqa no-handler
-      when: configuration_update_rhel.changed
-      systemd:
-        name: chronyd
-        enabled: true
-        state: restarted
-        daemon_reload: true
-
 - name: ensure chrony is running
   become: true
   become_user: root

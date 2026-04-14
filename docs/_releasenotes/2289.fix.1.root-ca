@@ -1,0 +1,3 @@
+A bug has been fixed in the :doc:`/user/guide/vault/vault-ca-rotation`,
+which caused it to fail in phase 1 if :ref:`configuration-options.yk8s.kubernetes.controller_manager.enable_signing_requests`
+is enabled.

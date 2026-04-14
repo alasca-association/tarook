@@ -53,7 +53,11 @@
 # and a "client" certificate for the prometheus scraper.
 # TODO: Replace me with cert-manager / vault
 - name: Create the certs if they don't exist yet
-  when: not (server_cert_state.resources and client_cert_state.resources)
+  when: |
+    not (
+      ((server_cert_state.resources | default([]) | length) > 0)
+      and ((client_cert_state.resources | default([]) | length) > 0)
+    )
   block:
     - name: Get the controller nodes
       kubernetes.core.k8s_info:
@@ -89,7 +93,7 @@
         provider: selfsigned
         csr_content: "{{ server_csr.csr }}"
         privatekey_content: "{{ server_key.privatekey }}"
-        entrust_not_after: "+10000d" # See the comment at the top about rotation
+        selfsigned_not_after: "+10000d" # See the comment at the top about rotation
       register: server_cert
 
     - name: Create the x509 key of the client
@@ -112,7 +116,7 @@
         provider: selfsigned
         csr_content: "{{ client_csr.csr }}"
         privatekey_content: "{{ client_key.privatekey }}"
-        entrust_not_after: "+10000d" # See the comment at the top about rotation
+        selfsigned_not_after: "+10000d" # See the comment at the top about rotation
       register: client_cert
 
     - name: Create the secret for the etcd-metrics-proxy endpoint
@@ -183,7 +187,7 @@
           delay: "{{ error_delay }}"
 
         - name: Restart prometheus  # noqa no-changed-when
-          when: prometheus.resources
+          when: (prometheus.resources | default([]) | length) > 0
           command: "kubectl rollout restart statefulset -n monitoring prometheus-prometheus-stack-kube-prom-prometheus"
 
     - name: Restart etcd-metrics-proxy
@@ -199,7 +203,7 @@
           delay: "{{ error_delay }}"
 
         - name: Restart etcd-metrics-proxy  # noqa no-changed-when
-          when: etcd_metrics_proxy.resources
+          when: (etcd_metrics_proxy.resources | default([]) | length) > 0
           command: "kubectl rollout restart daemonset -n kube-system etcd-metrics-proxy"
 
 - name: Deploy etcd-metrics-proxy DaemonSet

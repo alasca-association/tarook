@@ -170,7 +170,7 @@ https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-mana
 
 **Type:**::
 
-  attribute set containing JSON compatible values
+  open submodule of (attribute set containing JSON compatible values)
 
 
 **Default:**::

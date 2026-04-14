@@ -61,7 +61,7 @@
 - name: fail if login detection did not work
   fail:
     msg: "failed to detect a valid login! tried: {{ detect_user_attempts }}"
-  when: "not ansible_user"
+  when: ansible_user is not defined
   check_mode: false
   tags:
   - detect-user

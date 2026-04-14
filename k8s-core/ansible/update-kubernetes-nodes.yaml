@@ -9,7 +9,7 @@
   hosts: k8s_nodes
   tasks:
   - name: Fail if node got not bootstrapped once, yet
-    when: not ansible_local['bootstrap']['bootstrapped'] | default(False) | bool
+    when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)
     fail:
       msg: |
         ERROR
@@ -43,7 +43,7 @@
   - vars/retries.yaml
   tags: update-kubernetes-nodes
   tasks:
-  - when: _allow_disruption
+  - when: _allow_disruption | bool
     block:
     - include_role:
         name: cluster-health-verification
@@ -54,6 +54,9 @@
         api_version: v1
         kind: Node
         name: "{{ inventory_hostname }}"
+      until: _k8s_node_info is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
       register: _k8s_node_info
     - include_role:
         name: kubeadm-drain-node

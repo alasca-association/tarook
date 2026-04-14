@@ -11,7 +11,7 @@
   hosts: k8s_nodes
   tasks:
     - name: Fail if node got not bootstrapped once, yet
-      when: not ansible_local['bootstrap']['bootstrapped'] | default(False) | bool
+      when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)
       fail:
         msg: |
           ERROR

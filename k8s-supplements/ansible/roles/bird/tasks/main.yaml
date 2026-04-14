@@ -40,13 +40,13 @@
     name: bird6
     enabled: false
     state: stopped
-  when: not ipv6_enabled
+  when: not (ipv6_enabled | bool)
   tags:
   - bird
 
 - name: Initialize config of bird6 for IPv6 support
   become: true
-  when: ipv6_enabled
+  when: ipv6_enabled | bool
   tags:
   - bird6
   block:
@@ -87,7 +87,7 @@
       group: bird
       mode: "u=rw,g=r,o-rwx"
     notify: restart bird
-    when: ipv4_enabled
+    when: ipv4_enabled | bool
 
   - name: Configure BIRD for calico (IPv6)
     template:
@@ -97,5 +97,5 @@
       group: bird
       mode: "u=rw,g=r,o-rwx"
     notify: restart bird6
-    when: ipv6_enabled
+    when: ipv6_enabled | bool
 ...

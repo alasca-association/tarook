@@ -94,7 +94,7 @@
     no_log: true  # prevent private key from being exposed
     # NOTE: We only attempt to delete when there is actually something to delete
     #       so that a Vault root token only needs to be present in this case.
-    when: ipsec_eap_psk_avail_in_vault
+    when: ipsec_eap_psk_avail_in_vault | bool
     community.hashi_vault.vault_kv2_delete:
       path: ipsec-eap-psk
       engine_mount_point: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv"

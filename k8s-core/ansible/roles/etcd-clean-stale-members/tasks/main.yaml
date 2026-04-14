@@ -21,20 +21,23 @@
         kind: Node
         name: "{{ item.name }}"
       register: skeleton_candidates
+      until: skeleton_candidates is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
     - name: Inform the user of any deletion
       loop: "{{ skeleton_candidates.results }}"
       loop_control:
         label: "{{ item.item.name }}"
-      when: not item.resources  # that means k8s doesn't about a node of that name
+      when: not ((item.resources | length) > 0) # that means k8s doesn't know about a node of that name
       debug:
         msg: "[WARNING] The LCM will remove {{ item.item.name }} as a stale entry from the etcd database."
     - name: Delete stale entries
       loop: "{{ skeleton_candidates.results }}"
       loop_control:
         label: "{{ item.item.name }}"
-      when: not item.resources  # that means k8s doesn't about a node of that name
+      when: not ((item.resources | length) > 0) # that means k8s doesn't know about a node of that name
       vars:
-        member_id: "{{ '%x' % item.item.ID }}"
+        member_id: "{{ '%s' % item.item.ID }}"
       kubernetes.core.k8s_exec:
         namespace: kube-system
         pod: "etcd-{{ inventory_hostname }}"

@@ -21,7 +21,7 @@
         '/etc/kubernetes/pki/ca.key' does not exist.
 
   - name: Check that /etc/kubernetes/pki/ca.key is absent if it should be
-    when: not k8s_controller_manager_enable_signing_requests | bool
+    when: not (k8s_controller_manager_enable_signing_requests | bool)
     assert:
       that:
       - not k8s_ca_key_file.stat.exists

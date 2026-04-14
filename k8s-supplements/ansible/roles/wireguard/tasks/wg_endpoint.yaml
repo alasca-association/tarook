@@ -1,6 +1,6 @@
 ---
 - name: Configure wireguard endpoint if enabled
-  when: endpoint.enabled
+  when: endpoint.enabled | bool
   block:
     - name: "Check existence of wg{{ endpoint.id }}.conf"
       become: true
@@ -29,11 +29,16 @@
           # Check if the key exists
           set_fact:
             wg_gw_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key }}"
-          when: wg_lookup is failed and endpoint.id == 0
+          when:
+            - wg_lookup is failed
+            - endpoint.id == 0
           register: wg_lookup_0
 
         - name: Store existing key under new name
-          when: endpoint.id == 0 and (wg_lookup_0 is succeeded and wg_lookup_0 is not skipped)
+          when:
+            - endpoint.id == 0
+            - wg_lookup_0 is succeeded
+            - wg_lookup_0 is not skipped
           community.hashi_vault.vault_write:
             path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv/data/wireguard/wg{{ endpoint.id }}-key"
             mount_point: "{{ vault_nodes_approle }}"
@@ -49,10 +54,15 @@
         - name: Create new wireguard private key of the gateway  # noqa no-changed-when
           command: wg genkey
           register: wg_genkey
-          when: "not wg_conf.stat.exists and wg_key_new_name is skipped and wg_lookup is failed"
+          when:
+            - not wg_conf.stat.exists
+            - wg_key_new_name is skipped
+            - wg_lookup is failed
 
         - name: Store generated key in vault
-          when: "wg_genkey is succeeded and wg_genkey is not skipped"
+          when:
+            - wg_genkey is succeeded
+            - wg_genkey is not skipped
           community.hashi_vault.vault_write:
             path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv/data/wireguard/wg{{ endpoint.id }}-key"
             mount_point: "{{ vault_nodes_approle }}"
@@ -197,7 +207,7 @@
             msg: "{{ ansible_failed_result }}"
 
 - name: Deconfigure wireguard endpoint if disabled
-  when: not endpoint.enabled
+  when: not (endpoint.enabled | bool)
   block:
     - name: Remove wireguard endpoint
       become: true

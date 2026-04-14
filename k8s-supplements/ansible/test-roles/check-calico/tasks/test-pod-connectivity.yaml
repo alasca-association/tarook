@@ -26,6 +26,9 @@
     kubernetes.core.k8s_info:
       kind: Node
     register: k8s_nodes_list
+    until: k8s_nodes_list is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Create ServiceAccount, RBAC, and Deployment for calico-busybox-test
     kubernetes.core.k8s:
@@ -51,6 +54,9 @@
       label_selectors:
       - k8s-app=calico-busybox-test
     register: calico_busybox_pod_information
+    until: calico_busybox_pod_information is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   # ping each Pod from each Pod with a nested loop
   - name: ping each BusyBox Pod from every BusyBox Pod (IPv4)
@@ -61,7 +67,7 @@
     with_nested:
     - "{{ calico_busybox_pod_information.resources }}"
     - "{{ calico_busybox_pod_information.resources }}"
-    when: ipv4_enabled
+    when: ipv4_enabled | bool
     loop_control:
       label: "{{ item[0].metadata.name }} --> {{ item[1].metadata.name }} ({{ item[1].status.podIP }})"
 
@@ -73,7 +79,7 @@
     with_nested:
     - "{{ calico_busybox_pod_information.resources }}"
     - "{{ calico_busybox_pod_information.resources }}"
-    when: ipv6_enabled
+    when: ipv6_enabled | bool
     loop_control:
       label: "{{ item[0].metadata.name }} --> {{ item[1].metadata.name }} ({{ item[1].status.podIPs[1]['ip'] | default('not defined') }})"
 

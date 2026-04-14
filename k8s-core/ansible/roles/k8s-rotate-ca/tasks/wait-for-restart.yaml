@@ -12,6 +12,9 @@
       namespace: "kube-system"
       name: "{{ pod_resource_name }}"
     register: pod_resource_info
+    until: pod_resource_info is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
 
   - name: Fail if Pod {{ pod_resource_name }} is not running, yet
     when: pod_resource_info.resources[0].status.phase != 'Running'
