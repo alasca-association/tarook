@@ -65,7 +65,7 @@ in {
     };
 
     public_fixed_ip = mkOption {
-      type = types.nullOr ipv4Addr;
+      type = with types; nullOr yk8s.networking.ipv4Addr;
       default = null;
       apply = v:
         if cfg.ipv4_enabled && v == null
@@ -76,7 +76,7 @@ in {
     };
 
     public_fixed_ip_v6 = mkOption {
-      type = with types; nullOr nonEmptyStr;
+      type = with types; nullOr yk8s.networking.ipv6Addr;
       default = null;
       apply = v:
         if cfg.ipv6_enabled && v == null
