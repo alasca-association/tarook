@@ -16,6 +16,9 @@
   retries: "{{ error_retries }}"
   delay: "{{ error_delay }}"
 
+- name: Create PKI for OpenBao's API
+  import_tasks: setup-pki.yaml
+
 - name: Deploy OpenBao Helm chart
   kubernetes.core.helm:
     chart_repo_url: "{{ openbao_on_k8s.helm.repo_url }}"

@@ -9,7 +9,7 @@
   opts = options.yk8s.k8s-service-layer.openbao;
 
   inherit (lib) mkEnableOption mkOption types;
-  inherit (yk8s-lib) mkGroupVarsFile mkTopSection;
+  inherit (yk8s-lib) mkGroupVarsFile mkTopSection mkYaml;
   inherit (yk8s-lib.options) mkHelmReleaseOptions mkInternalOption;
   inherit (yk8s-lib.transform) removeAttrsByPath updateManyAttrsByPathIf;
 in {
@@ -576,7 +576,9 @@ in {
     };
 
   config.yk8s._targets.ansible.warnings = [];
-  config.yk8s._targets.ansible.assertions = [];
+  config.yk8s._targets.ansible.assertions = [
+    # TODO: require cert-manager.enabled = true
+  ];
 
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
@@ -590,6 +592,97 @@ in {
           (c: (lib.recursiveUpdate c {helm.values = c.helm_finalValues;}))
           (c: (removeAttrsByPath c [["helm_finalValues"]]))
         ])
+        # Generate a Kubernetes manifest with the necessary cert-manager objects
+        # to satisfy the TLS setup configured through the Helm values.
+        # The manifest's file path is stored in pki.cert-manager.manifest.
+        (c: (lib.recursiveUpdate c {
+          pki.cert-manager.manifest_file_path = let
+            # TODO: Refine comments and implementation
+
+            # Names of the required TLS certificates
+            #  derived from the TLS paths of each OpenBao listener
+            certificateNames =
+              lib.pipe
+              (cfg.helm.values.server.ha.raft.config.listener or [])
+              [
+                # Flatten listener config
+                (lib.map (l: lib.attrValues l))
+                lib.flatten
+
+                # Turn each listener attrset into a list of TLS paths
+                (lib.map (l: lib.filterAttrs (n: v:
+                  lib.elem n ["tls_cert_file" "tls_key_file" "tls_ca_file"]
+                ) l))
+                (lib.map (l: lib.attrValues l))
+
+                # Select only sets with segmented paths
+                (lib.filter (l: lib.all (path: lib.isList path) l))
+                # Select only path sets that are compatible with cert-manager
+                #  meaning all paths in the set must...
+                #  - belong to the same secret (second segment)
+                #  - point to the files `ca.crt`, `tls.crt` or `tls.key` (last segment)
+                # TODO: Note down in helm.values description
+                (lib.filter (l: let
+                  # TODO: Move to yk8s-lib
+                  isUnaryList = list: (lib.length (lib.unique list)) == 1;
+
+                  secretNames = lib.map (pathSegs: lib.elemAt pathSegs 1) l;
+                  fileNames = lib.map (pathSegs: lib.lists.last pathSegs) l;
+                in
+                  (isUnaryList secretNames)
+                  && (lib.all (x: lib.elem x ["ca.crt" "tls.crt" "tls.key"]) fileNames)
+                ))
+
+                # Extract secret names
+                (lib.map (pathSet: lib.elemAt (lib.elemAt pathSet 0) 1))
+
+                # Deduplicate names
+                lib.unique
+              ];
+
+            certManagerManifest =
+              lib.flatten (lib.forEach certificateNames (name:
+                import ./pki-cert-manager-manifest.nix {
+                  namespace = c.helm.release_namespace;
+                  # NOTE: Since all cert-manager objects are deployed into the same namespace,
+                  #       there is no need for the "ClusterIssuer" kind here.
+                  # TODO: ClusterIssuer is not configurable here anymore,
+                  #       add mkRemovedOption and release note
+                  caIssuerKind = "Issuer";
+                  caName = "${name}-ca";
+                  certIssuerName = name;
+                  certName = name;
+                  # TODO: Generate these IP addresses
+                  #       - [x] Localhost IPs should always be included
+                  #       - [x] if helm_finalValues.server.service.type=NodePort add worker IPs
+                  #       - [ ] Do we need to support service.type=LoadBalancer here since its the internal PKI? Does the Helm chart support it?
+                  certIpAddresses = let
+                    workerIPs =
+                      lib.flatten (
+                        lib.mapAttrsToList (_: host:
+                          lib.optional config.yk8s.infra.ipv6_enabled host.local_ipv6_address
+                          ++ lib.optional config.yk8s.infra.ipv4_enabled host.local_ipv4_address
+                        )
+                        config.yk8s.infra.final_hosts.workers.hosts
+                      );
+                  in
+                    lib.optionals
+                      (c.helm.values.server.service.type == "NodePort")
+                      workerIPs
+                    ++ lib.optional config.yk8s.infra.ipv6_enabled "::1"
+                    ++ lib.optional config.yk8s.infra.ipv4_enabled "127.0.0.1";
+                  certDnsNames = [
+                    "openbao.${c.helm.release_namespace}.svc.cluster.local"
+                  ]
+                  ++ lib.optional c.helm.values.server.service.active.enabled
+                     "openbao-active.${c.helm.release_namespace}.svc.cluster.local"
+                  ++ lib.optional c.helm.values.server.service.standby.enabled
+                     "openbao-standby.${c.helm.release_namespace}.svc.cluster.local";
+                }
+              ));
+          in
+            mkYaml "tarook-openbao-pki-cert-manager.yaml" certManagerManifest;
+        }))
       ];
     })
   ];
