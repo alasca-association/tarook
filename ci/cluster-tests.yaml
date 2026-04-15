@@ -50,7 +50,7 @@
     _VAULT_CHAIN_CRT: $CI_VAULT_CHAIN_CRT
     _VAULT_CONFIG_HCL: $CI_VAULT_CONFIG_HCL
   services:
-  - name: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/hashicorp/vault:1.14.9"
+  - name: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/hashicorp/vault:2.0.0"
     alias: yaook-vault
     entrypoint: ["sh", "-c"]
     command:
