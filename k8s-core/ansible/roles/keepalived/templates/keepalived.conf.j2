@@ -46,10 +46,6 @@ vrrp_instance VIP_1 {
     virtual_router_id 47
     priority {{ vrrp_priorities[(groups['frontend'] | sort).index(inventory_hostname)] }}
     advert_int 1
-    authentication {
-        auth_type PASS
-        auth_pass {{ vrrp_password }}
-    }
     virtual_ipaddress {
         {{ public_fixed_ip }}
     }
