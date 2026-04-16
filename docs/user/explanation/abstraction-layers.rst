@@ -82,6 +82,11 @@ to a bunch of nodes ideally freshly set up.
 TAROOK on OpenStack
 ~~~~~~~~~~~~~~~~~~~~~~
 
+Tarook supports exactly one cluster per OpenStack project,
+and expects that all resources within the project are managed by it.
+The :ref:`LBaaS service layer component ch-k8s-lbaas<ch-k8s-lbaas>`, for example,
+is known to collide when multiple instances are managing resources in the same project.
+
 If the Kubernetes cluster runs on top of OpenStack,
 it has to be connected to the OpenStack layer.
 On each control plane node, an OpenStack cloud controller manager (CCM)

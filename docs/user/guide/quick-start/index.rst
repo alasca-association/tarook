@@ -14,6 +14,11 @@ Quickstart Guide
 To create a Tarook cluster on top of OpenStack, follow the steps below.
 You need to be able to spawn at minimum 3 instances in your OpenStack project,
 by default this guide uses 10 instances (with typical flavors ca. 17 vCPUs and 32 GiB of RAM) and 4 floating IP adresses.
+Note that
+each instance of Tarook expects
+the OpenStack project to be solely dedicated to it
+(one Tarook instance per OpenStack project and nothing else),
+so better start with an empty project.
 
 Alternatively setting up on bare metal requires additional preparations which are not covered by this guide.
 
