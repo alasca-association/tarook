@@ -60,7 +60,7 @@ fi
 
 load_conf_vars
 
-if [ "${wg_usage:-true}" == "true" ]; then
+if [ "${wg_usage:?}" == "true" ]; then
     validate_wireguard
 
     # the grep is there to ignore any routes going via the interface we're going to
