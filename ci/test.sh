@@ -6,8 +6,12 @@ actions_dir="$(dirname "$0")/../actions"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
+load_conf_vars
+
 # Bring the wireguard interface up if configured so
-"$actions_dir/wg-up.sh"
+if [ "${wg_usage:?}" == "true" ]; then
+    "$actions_dir/wg-up.sh"
+fi
 
 set_kubeconfig
 

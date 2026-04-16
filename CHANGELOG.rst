@@ -17,6 +17,16 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v12.1.3 (2026-04-16)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- A bug with :ref:`wg-up.sh<actions-references.wg-upsh>` has been fixed which prevented
+  action scripts to succeed if :ref:`configuration-options.yk8s.wireguard.enabled` is disabled. (`!2440 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2440>`_)
+
+
 v12.1.2 (2026-04-10)
 --------------------
 

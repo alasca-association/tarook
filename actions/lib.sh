@@ -73,10 +73,19 @@ function load_conf_vars() {
     # All the things with side-effects should go here
 
     terraform_prevent_disruption="$(if [ -e "$terraform_disruption_lock" ]; then echo "true"; else echo "false"; fi)"
-    tf_usage="$(yq '.tf_usage' "$conf_vars_file")"
-    wg_usage="$(yq '.wg_usage' "$conf_vars_file")"
 
-    if [ "${wg_usage:-true}" == "true" ]; then
+    tf_usage="$(yq '.tf_usage' "$conf_vars_file")"
+    if [[ ! ("${tf_usage:?}" == "true" || "${tf_usage:?}" == "false") ]]; then
+        errorf "Unexpected value of 'tf_usage' in $conf_vars_file"
+        exit 2
+    fi
+
+    wg_usage="$(yq '.wg_usage' "$conf_vars_file")"
+    if [[ ! ("${wg_usage:?}" == "true" || "${wg_usage:?}" == "false") ]]; then
+        errorf "Unexpected value of 'wg_usage' in $conf_vars_file"
+        exit 2
+    fi
+    if [ "${wg_usage:?}" == "true" ]; then
         wg_conf="${wg_conf:-$cluster_repository/${wg_conf_name}.conf}"
         wg_interface="$(basename "$wg_conf" | cut -d'.' -f1)"
         wg_endpoint="${wg_endpoint:-0}"
