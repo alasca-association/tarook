@@ -15,7 +15,7 @@
           ]
         }
       }
-    } if (scheduling_key | default('') | length) > 0 else {}),
+    } if (scheduling_key | default('', true) | length) > 0 else {}),
     ({
       "podAffinity": {
         "requiredDuringSchedulingIgnoredDuringExecution": [
@@ -34,7 +34,7 @@
           }
         ]
       }
-    } if (pod_affinity_key | default('') | length) > 0 else {})
+    } if (pod_affinity_key | default('', true) | length) > 0 else {})
   )
   | to_json
 }}
