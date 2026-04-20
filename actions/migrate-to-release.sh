@@ -23,7 +23,7 @@ export IGNORE_MIGRATION_LOCK=true
 run git add .gitmodules managed-k8s
 
 find "${actions_dir}/release-migrations" -type f -executable | sort | while read -r script; do
-  bash -euo pipefail "$script" || exit 1
+  run "$script" || exit 1
 done
 
 if (git ls-files --error-unmatch "$release_migration_lock" &> /dev/null); then
