@@ -1,6 +1,0 @@
-For development setups with a local Vault container,
-the Vault certificates must be removed and regenerated
-as newer Ansible versions enforce the usage of a key extension
-which was not included in the Vault development setup until now.
-
-The only clean way to achieve that is to setup a complete new cluster repository for your development setup.

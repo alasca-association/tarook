@@ -1,1 +1,0 @@
-Retries have been added to Kubernetes API calls to further improve resilience.

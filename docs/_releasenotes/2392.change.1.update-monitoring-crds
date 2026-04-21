@@ -1,2 +1,0 @@
-The kube-prometheus-stack Helm chart's automatic CRD upgrade job option has been enabled.
-It is now enforced that :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_stack_version` is set to at least ``68.4.0``.
