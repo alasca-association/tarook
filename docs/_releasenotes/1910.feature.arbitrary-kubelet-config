@@ -1,9 +1,0 @@
-Options for flexible kubelet configuration have been added.
-These options can be applied at various levels of granularity:
-
-* For all nodes: :ref:`configuration-options.yk8s.kubernetes.kubelet.defaultOptions`
-* For worker nodes only: :ref:`configuration-options.yk8s.kubernetes.kubelet.workerOptions`
-* For master nodes only: :ref:`configuration-options.yk8s.kubernetes.kubelet.masterOptions`
-* For specific nodes: :ref:`configuration-options.yk8s.kubernetes.kubelet.nodeOptions`
-
-.

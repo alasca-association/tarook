@@ -1,1 +1,0 @@
-kubelets are configured now such that up to three images are pulled in parallel by default.

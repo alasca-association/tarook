@@ -1,2 +1,0 @@
-The value of :ref:`configuration-options.yk8s.wireguard.endpoints.*.port`
-is now enforced to be unique across all Wireguard endpoints.

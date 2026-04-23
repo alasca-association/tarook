@@ -1,2 +1,0 @@
-Fixed a bug that prevented the cleanup of IPSec
-when :ref:`configuration-options.yk8s.ipsec.enabled` was set to ``false``.

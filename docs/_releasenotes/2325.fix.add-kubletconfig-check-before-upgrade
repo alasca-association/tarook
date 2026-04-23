@@ -1,1 +1,0 @@
-A bug has been fixed where, when running a Kubernetes upgrade, the maximum pod limit for control plane nodes was temporarily reset to 110.
