@@ -553,6 +553,16 @@ in {
     (lib.mkIf cfg.enabled {
       terraform.enabled = true;
 
+      _targets.terraform.assertions = [
+        (let
+          hostnames = lib.attrNames cfg.nodes;
+          check = v: (types.yk8s.k8s.objectName.check v) && (types.yk8s.networking.subdomainName.check v);
+          invalidHostnames = lib.filter (n: !check n) hostnames;
+        in {
+          assertion = lib.all check hostnames;
+          message = "yk8s.openstack.nodes: The following hostnames contain invalid characters:\n" + lib.concatLines (map (n: "  * ${n}") invalidHostnames);
+        })
+      ];
       _targets.ansible.assertions = let
         inherit (builtins) all any length filter attrValues;
         inherit (yk8s-lib.transform) partitionAttrs;
