@@ -230,8 +230,10 @@ function ansible_playbook() {
         ansible_flags="${ansible_flags} --extra-vars release_the_kraken=true"
     fi
 
+    set -f # disable glob expansion because we need to pass ansible_flags unquoted
     # shellcheck disable=SC2086
     (export ANSIBLE_CONFIG="$ansible_directory/ansible.cfg" && run ansible-playbook $ansible_flags "$@")
+    set +f
 }
 
 function load_gitlab_vars() {
