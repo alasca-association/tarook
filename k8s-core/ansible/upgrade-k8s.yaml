@@ -138,6 +138,10 @@
         - include_role:
             name: containerd
         - include_role:
+            name: nvidia-container-toolkit
+        - include_role:
+            name: nvidia-cuda-drivers
+        - include_role:
             name: update-system
         - include_role:
             name: kubeadm-upgrade-kubelet
@@ -175,6 +179,10 @@
             name: kubeadm-drain-node
         - include_role:
             name: containerd
+        - include_role:
+            name: nvidia-container-toolkit
+        - include_role:
+            name: nvidia-cuda-drivers
         - include_role:
             name: kubeadm-upgrade-kubeadm
         - include_role:
