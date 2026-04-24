@@ -49,7 +49,10 @@ bash -c "$hash_command" > "$nix_hash_file"
 EOF
   chmod +x "$bin_dir/$reload_command"
 
-  if [ "$(cat "$nix_hash_file" 2>/dev/null)" != "$nix_hashes" ]; then
+  if ! [ -L "$out_path" ] && ! [ -e "$out_path"  ]; then
+    echo "Initializing flake environment..."
+    "$reload_command"
+  elif [ "$(cat "$nix_hash_file" 2>/dev/null)" != "$nix_hashes" ]; then
     echo "========"
     echo "WARNING: Flake changed. Update environment by running $reload_command"
     echo "========"
