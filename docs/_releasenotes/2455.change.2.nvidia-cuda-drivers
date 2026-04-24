@@ -1,0 +1,6 @@
+The upstream repository URL for the Nvidia cuda drivers has been updated.
+The Nivida cuda drivers got bumped from 530 to 595.
+The packages will be updated on a
+:doc:`Kubernetes upgrade </user/guide/kubernetes/upgrading-kubernetes>`
+or
+:ref:`system update<actions-references.update-kubernetes-nodessh>`.

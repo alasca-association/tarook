@@ -21,6 +21,7 @@
       state: present
       name:
       - "linux-headers-{{ ansible_kernel }}"
+      - gcc
     register: task_result
     until: task_result is not failed
     retries: "{{ error_retries }}"
@@ -44,8 +45,10 @@
       mode: u=rw,go=r
 
   - name: Add nvidia cuda repository
+    vars:
+      distribution_string: "{{ '%s%s' | format(ansible_distribution | lower, ansible_distribution_version | replace('.', '')) }}"
     apt_repository:
-      repo: deb [signed-by=/etc/apt/keyrings/nvidia-cuda-driver.gpg] https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /
+      repo: "deb [signed-by=/etc/apt/keyrings/nvidia-cuda-driver.gpg] https://developer.download.nvidia.com/compute/cuda/repos/{{ distribution_string }}/x86_64/ /"
       state: present
       update_cache: true
     register: task_result
@@ -53,18 +56,25 @@
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
 
+  # We must install a supported version for datacenters
+  # https://docs.nvidia.com/datacenter/tesla/drivers/latest/supported-drivers-and-cuda-toolkit-versions.html
   - name: Install nvidia cuda drivers
     apt:
-      update_cache: false
+      update_cache: false  # this is done in the task before
       install_recommends: false
       autoremove: true
+      allow_change_held_packages: true
       name:
-      - nvidia-headless-530
-      - nvidia-utils-530
+      - nvidia-headless-595
+      - nvidia-utils-595
+
     register: installed_driver
     until: installed_driver is not failed
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
+
+  - name: Prevent the cuda-drivers from being updated automatically  # noqa no-changed-when
+    command: apt-mark hold nvidia-utils-595 nvidia-headless-595
 
   - name: Update initramfs  # noqa no-changed-when no-handler
     command: "update-initramfs -k {{ ansible_kernel }} -uv"
