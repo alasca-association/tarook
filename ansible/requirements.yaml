@@ -5,5 +5,5 @@ collections:
   - name: kubernetes.core
     version: 6.4.0
   - name: community.general
-    version: 12.5.0
+    version: 12.6.0
 ...
