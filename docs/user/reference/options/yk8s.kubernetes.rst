@@ -1157,7 +1157,7 @@ Kubernetes version
 
 **Type:**::
 
-  Kubernetes version (one of: 1.32.x, 1.33.x, 1.34.x, 1.35.x)
+  Kubernetes version (one of: 1.33.x, 1.34.x, 1.35.x)
 
 
 **Default:**::
