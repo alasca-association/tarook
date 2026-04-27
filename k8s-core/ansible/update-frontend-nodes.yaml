@@ -46,12 +46,15 @@
     tags: update-system
 
 - name: Upgrade initialized frontend nodes which are not part of Kubernetes
-  gather_facts: true
+  # Don't gather facts if disruption is not enabled
+  # as the play is then skipped anyway
+  gather_facts: "{{ (_allow_disruption | bool) }}"
   hosts: initialized_frontend_nodes:&not_initialized_kubernetes_nodes
   vars_files:
   - vars/disruption.yaml
   - vars/retries.yaml
-  serial: 1
+  # Skip in bulk if disruption is not enabled, otherwise updrade in serial
+  serial: "{{ (_allow_disruption | bool) | ternary('1', '100%')}}"
   tags: update-frontend-nodes
   roles:
   - role: update-system
@@ -59,13 +62,16 @@
     when: _allow_disruption | bool
 
 - name: Upgrade initialized frontend nodes which are part of Kubernetes
-  gather_facts: true
+  # Don't gather facts if disruption is not enabled
+  # as the play is then skipped anyway
+  gather_facts: "{{ (_allow_disruption | bool) }}"
   hosts: initialized_frontend_nodes:&initialized_kubernetes_nodes
   vars_files:
   - vars/disruption.yaml
   - vars/retries.yaml
   - vars/auto_generated_preamble.yaml
-  serial: 1
+  # Skip in bulk if disruption is not enabled, otherwise updrade in serial
+  serial: "{{ (_allow_disruption | bool) | ternary('1', '100%')}}"
   tags: update-frontend-nodes
   tasks:
   - when: _allow_disruption | bool

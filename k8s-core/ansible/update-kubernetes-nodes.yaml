@@ -36,8 +36,11 @@
 
 - name: Upgrade initialized k8s nodes
   hosts: initialized_kubernetes_nodes
-  gather_facts: true
-  serial: 1
+  # Don't gather facts if disruption is not enabled
+  # as the play is then skipped anyway
+  gather_facts: "{{ (_allow_disruption | bool) }}"
+  # Skip in bulk if disruption is not enabled, otherwise updrade in serial
+  serial: "{{ (_allow_disruption | bool) | ternary('1', '100%')}}"
   vars_files:
   - vars/disruption.yaml
   - vars/retries.yaml

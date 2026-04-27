@@ -1,0 +1,2 @@
+Runtime improvements have been made to the node system update logic of the
+:ref:`apply-k8s-core action <actions-references.apply-k8s-coresh>`.
