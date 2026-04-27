@@ -146,16 +146,8 @@
   script:
     # Spawn and test cluster
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - tomlq --in-place --toml-output '.kubernetes.version = "1.32.13"' config/overrides.toml
-  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
-
-    # Upgrade cluster to k8s v1.33
-    # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.33.11
-    # Update k8s version
-    # renovate: datasource=github-releases packageName=kubernetes/kubernetes
   - tomlq --in-place --toml-output '.kubernetes.version = "1.33.11"' config/overrides.toml
-  - ./managed-k8s/actions/k8s-login.sh
+  - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
 
     # Upgrade cluster to k8s v1.34
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
