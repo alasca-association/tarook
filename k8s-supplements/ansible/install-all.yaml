@@ -1,7 +1,4 @@
 ---
-- name: Trigger k8s-core
-  import_playbook: "{{ ansible_k8s_core_dir }}/install-all.yaml"
-
 - name: Install volume snapshot controller
   import_playbook: install-volume-snapshot-controller.yaml
 
@@ -53,5 +50,4 @@
     tags:
     - monitoring_v2
     - monitoring
-
 ...
