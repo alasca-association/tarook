@@ -15,7 +15,7 @@ CURRENT_VERSION=$4
 NEW_VERSION=$5
 IS_MAJOR=$6
 
-if [[ $DATASOURCE == 'helm' ]]; then
+if [[ $DATASOURCE == 'helm' || $DATASOURCE == 'github-releases' ]]; then
   if [[ $IS_MAJOR == 'true' ]]; then
     CATEGORY="BREAKING"
   else
@@ -38,6 +38,10 @@ if [[ $DATASOURCE == 'helm' ]]; then
   else
     echo "Updated default version of helm chart $DEP_NAME of $SOURCE_URL from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
   fi
+elif [[ $DEP_NAME == 'containerd' ]]; then
+  echo "Updated :ref:\`configuration-options.yk8s.containerd.version\` from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
+elif [[ $DEP_NAME == 'kubernetes' ]]; then
+  echo "Updated :ref:\`configuration-options.yk8s.kubernetes.version\` from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
 else
   touch "$RELEASENOTE_FILE"
 fi
