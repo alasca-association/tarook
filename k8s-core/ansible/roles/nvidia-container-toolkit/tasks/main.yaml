@@ -1,7 +1,11 @@
 ---
 - name: Install nvidia-container-toolkit
   become: true
-  when: ansible_local['gpu-node']['node_has_gpu'] | bool
+  when:
+  - ansible_local['gpu-node']['node_has_gpu'] | bool
+  - |
+    ((ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized')) != 'initialized')
+    or (_allow_disruption | bool)
   block:
   - name: Ensure keyrings directory exists
     file:
@@ -21,7 +25,7 @@
 
   - name: Add libnvidia-container repository
     apt_repository:
-      repo: "deb [signed-by=/etc/apt/keyrings/libnvidia-container.gpg] https://nvidia.github.io/libnvidia-container/stable/ubuntu18.04/$(ARCH) /"
+      repo: "deb [signed-by=/etc/apt/keyrings/libnvidia-container.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH) /"
       state: present
       filename: nvidia-container-toolkit
       update_cache: true
@@ -32,10 +36,20 @@
 
   - name: Install nvidia-container-toolkit package
     apt:
-      name: nvidia-container-toolkit
-      update_cache: true
+      update_cache: false  # this is done in the task before
+      install_recommends: false
+      autoremove: true
+      allow_change_held_packages: true
+      name:
+      - nvidia-container-toolkit
+      - nvidia-container-toolkit-base
+      - libnvidia-container-tools
+      - libnvidia-container1
     register: nvidia_container_toolkit_pkg
     until: nvidia_container_toolkit_pkg is not failed
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
+
+  - name: Prevent the cuda-drivers from being updated automatically  # noqa no-changed-when
+    command: apt-mark hold nvidia-container-toolkit nvidia-container-toolkit-base libnvidia-container-tools libnvidia-container1
 ...

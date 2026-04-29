@@ -41,6 +41,7 @@
   vars_files:
   - vars/disruption.yaml
   - vars/retries.yaml
+  - vars/auto_generated_preamble.yaml
   tags: update-kubernetes-nodes
   tasks:
   - when: _allow_disruption | bool
@@ -62,6 +63,10 @@
         name: kubeadm-drain-node
     - include_role:
         name: containerd
+    - include_role:
+        name: nvidia-container-toolkit
+    - include_role:
+        name: nvidia-cuda-drivers
     - include_role:
         name: update-system
     always:

@@ -1,0 +1,3 @@
+Nvidia packages on a Kubernetes node with GPU capability
+are installed or updated only if the node has not been fully initialized yet
+or with explicit consent.
