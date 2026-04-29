@@ -225,7 +225,14 @@ in {
     network_mtu = mkOption {
       type = types.ints.positive;
       default = 1450;
-      description = "MTU for the network used for the cluster.";
+      description = ''
+        MTU for the OpenStack network used for the cluster.
+
+        .. note::
+
+           Changes are ignored by Terraform once the network has been created.
+
+      '';
     };
 
     dns_nameservers_v4 = mkOption {

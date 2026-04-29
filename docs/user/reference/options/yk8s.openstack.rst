@@ -858,7 +858,13 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 ``yk8s.openstack.network_mtu``
 ##############################
 
-MTU for the network used for the cluster.
+MTU for the OpenStack network used for the cluster.
+
+.. note::
+
+   Changes are ignored by Terraform once the network has been created.
+
+
 
 **Type:**::
 
