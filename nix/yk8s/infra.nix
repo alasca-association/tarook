@@ -352,6 +352,14 @@ in {
         -> builtins.all (host: host.local_ipv6_address != null) (builtins.attrValues cfg.final_hosts.k8s_nodes.hosts);
       message = "local_ipv6_address must be set for all hosts in config.yk8s.infra.ansible_hosts.k8s_nodes";
     }
+    (let
+      hostnames = lib.attrNames cfg.final_hosts.all.hosts;
+      check = v: (types.yk8s.k8s.objectName.check v) && (types.yk8s.networking.subdomainName.check v);
+      invalidHostnames = lib.filter (n: !check n) hostnames;
+    in {
+      assertion = lib.all check hostnames;
+      message = "yk8s.infra.ansible_hosts: The following hostnames contain invalid characters:\n" + lib.concatLines (map (n: "  * ${n}") invalidHostnames);
+    })
   ];
   config.yk8s._targets.ansible.warnings = [];
   config.yk8s._targets.ansible.inventory_packages = let
