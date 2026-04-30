@@ -71,6 +71,7 @@ fi
 
 submodule_base="submodules"
 
+submodule_managed_k8s_name="managed-k8s"
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     if [ ! -d "$submodule_managed_k8s_name" ]; then
@@ -134,8 +135,8 @@ if [ ! -f "$ansible_k8s_custom_playbook" ]; then
 fi
 
 mkdir -p "$ansible_k8s_custom_playbook_dir/vars"
-ln -sf "../../managed-k8s/k8s-core/ansible/vars/" "$ansible_k8s_custom_playbook_dir/vars/k8s-core-vars"
-ln -sf "../../managed-k8s/k8s-supplements/ansible/vars/" "$ansible_k8s_custom_playbook_dir/vars/k8s-supplements-vars"
+ln -sf "../../$submodule_managed_k8s_name/k8s-core/ansible/vars/" "$ansible_k8s_custom_playbook_dir/vars/k8s-core-vars"
+ln -sf "../../$submodule_managed_k8s_name/k8s-supplements/ansible/vars/" "$ansible_k8s_custom_playbook_dir/vars/k8s-supplements-vars"
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
 	notef 'cluster repository initialised successfully!'
