@@ -1,5 +1,7 @@
 # shellcheck shell=bash
 
+TAROOK_CODE_PATH=${TAROOK_CODE_PATH:-"./managed-k8s"}
+
 layout_poetry() {
   echo
   echo "WARNING: Tarook no longer uses Poetry. Please remove all occurences of 'layout poetry' from your .envrc"
@@ -119,7 +121,7 @@ use_locale_archive_if_not_set() {
 }
 
 layout_yaook-k8s() {
-  flake_dir="$(realpath "${1:-managed-k8s}")"
+  flake_dir="$(realpath "${1:-$TAROOK_CODE_PATH}")"
   user_env="$HOME/.config/yaook-k8s/env"
   if [ -e "$user_env" ]; then
     source_env "$user_env"
@@ -145,7 +147,7 @@ layout_yaook-k8s() {
 
   if [ -f "$KUBECONFIG" ] && ! yq -r '.users[0].user."client-certificate-data"' "$KUBECONFIG" | base64 -d | openssl x509 -checkend 186400 -noout >/dev/null; then
     echo "======="
-    echo "WARNING: Your kubeconfig is expired or will expire within the next 24h. Please run ./managed-k8s/actions/k8s-login.sh to renew it"
+    echo "WARNING: Your kubeconfig is expired or will expire within the next 24h. Please run ${TAROOK_CODE_PATH}/actions/k8s-login.sh to renew it"
     echo "======="
   fi
 }
