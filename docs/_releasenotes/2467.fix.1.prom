@@ -1,0 +1,1 @@
+Affinity and tolerations for the CRD upgrade job of the kube-prometheus-stack have been fixed.
