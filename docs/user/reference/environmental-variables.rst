@@ -77,17 +77,19 @@ Details about these can be found below.
 General
 -------
 
-=============================   ========    =============
-Environment Variable            Default     Description
-=============================   ========    =============
-``MANAGED_K8S_COLOR_OUTPUT``                Boolean value which either force enables or
-                                            force disables coloured output of the
-                                            scripts. By default, the scripts check
-                                            whether they are running inside a tty. If
-                                            they are, they will use coloured output.
-                                            This environment variable can be set to
-                                            override the auto-detection.
-=============================   ========    =============
+=============================   ==============   =============
+Environment Variable            Default          Description
+=============================   ==============   =============
+``MANAGED_K8S_COLOR_OUTPUT``                     Boolean value which either force enables or
+                                                 force disables coloured output of the
+                                                 scripts. By default, the scripts check
+                                                 whether they are running inside a tty. If
+                                                 they are, they will use coloured output.
+                                                 This environment variable can be set to
+                                                 override the auto-detection.
+``TAROOK_CODE_PATH``            ./managed-k8s    The path to the Tarook code repository. By
+                                                 default this is a git submodule at ./managed-k8s
+=============================   ==============   =============
 
 .. _environmental-variables.openstack-credentials:
 
