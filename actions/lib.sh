@@ -13,8 +13,6 @@ release_migration_lock="$state_dir/release-migration-in-progress"
 
 version_major_minor=$(grep -Po '^[0-9]+\.[0-9]+' "$code_repository/version")
 
-submodule_managed_k8s_name="managed-k8s"
-
 nix_min_version="2.9.0"
 
 terraform_min_version="1.3.0"
