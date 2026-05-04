@@ -5,9 +5,11 @@
     name: bird
     state: restarted
 
+# TODO: @deprecated::debian12 This task can be dropped when removing support for Debian 12
 - name: restart bird6
   become: true
   service:
     name: bird6
     state: restarted
+  when: bird_package == "bird"
 ...

@@ -2,7 +2,7 @@
 - name: install bird
   become: true
   apt:
-    name: bird
+    name: "{{ bird_package }}"
     state: present
   register: task_result
   until: task_result is not failed
@@ -14,7 +14,7 @@
 - name: configure bird
   become: true
   template:
-    src: bird.conf.j2
+    src: "{{ bird_package }}.conf.j2"
     dest: /etc/bird/bird.conf
     owner: bird
     group: bird
@@ -34,19 +34,25 @@
   tags:
   - bird
 
+# TODO: @deprecated::debian12 This task can be dropped when removing support for Debian 12
 - name: disable bird6
   become: true
   service:
     name: bird6
     enabled: false
     state: stopped
-  when: not (ipv6_enabled | bool)
+  when:
+  - not (ipv6_enabled | bool)
+  - bird_package == "bird"
   tags:
   - bird
 
+# TODO: @deprecated::debian12 This task can be dropped when removing support for Debian 12
 - name: Initialize config of bird6 for IPv6 support
   become: true
-  when: ipv6_enabled | bool
+  when:
+  - ipv6_enabled | bool
+  - bird_package == "bird"
   tags:
   - bird6
   block:
@@ -72,6 +78,7 @@
       name: bird6
       enabled: true
       state: started
+    when: bird_package == "bird"
 
 - name: Setup BGP configuration for calico
   become: true
@@ -81,7 +88,7 @@
   block:
   - name: Configure BIRD for calico (IPv4)
     template:
-      src: bird-calico.conf.j2
+      src: "{{ bird_package }}-calico.conf.j2"
       dest: /etc/bird.d/10-k8s-calico.conf
       owner: root
       group: bird
@@ -89,6 +96,7 @@
     notify: restart bird
     when: ipv4_enabled | bool
 
+  # TODO: @deprecated::debian12 This task can be dropped when removing support for Debian 12
   - name: Configure BIRD for calico (IPv6)
     template:
       src: bird-calico-v6.conf.j2
@@ -97,5 +105,8 @@
       group: bird
       mode: "u=rw,g=r,o-rwx"
     notify: restart bird6
-    when: ipv6_enabled | bool
+    # bird3 has no seperate service for IPv6
+    when:
+    - ipv6_enabled | bool
+    - bird_package == "bird"
 ...

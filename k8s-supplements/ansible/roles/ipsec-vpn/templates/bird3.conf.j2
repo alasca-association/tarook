@@ -1,0 +1,60 @@
+{{ _auto_generated_preamble }}
+
+ipv4 table ipsec;
+
+attribute bool ipsec_route;
+
+protocol kernel ipsec_kernel {
+    ipv4 {
+        table ipsec;
+        import all;
+        export none;
+    };
+    # learn alien routes
+    learn;
+    scan time 60;
+    kernel table 220;
+}
+
+protocol pipe ipsec_to_master {
+    table ipsec;
+    peer table master4;
+    import none;
+    export filter {
+        /* We mark the IPsec routes to export */
+        /* to export to k8s and the VRRP backup gateways */
+        ipsec_route = true;
+        accept;
+    };
+}
+
+# Gateways need to exchange routes because only the VRRP master can reach the remote site
+
+{% for hostname in groups['frontend'] %}
+{% set peer = hostvars[hostname] %}
+{# No need to add oneself as a bgp peer. #}
+{% if not local_ipv4_address == peer.local_ipv4_address %}
+protocol bgp {{ hostname | replace('-', '_') }} {
+    ipv4 {
+        table master4;
+        import filter {
+            /* Set the gateway, i.e., the next hop to the VRRP master which has established the IPsec tunnel. */
+            gw = from;
+            /* Not sure if we need to add a label / check for a label here to not import too many routes. */
+            accept;
+        };
+        export filter {
+            /* Export only those routes to the other gateways that were introduced by IPsec. */
+            if !defined(ipsec_route) || !ipsec_route then {
+                reject;
+            }
+            accept;
+        };
+    };
+    local {{ local_ipv4_address }} as 65000;
+    neighbor {{ peer.local_ipv4_address }} as 65000;
+    multihop;
+}
+{% endif %}
+
+{% endfor %}

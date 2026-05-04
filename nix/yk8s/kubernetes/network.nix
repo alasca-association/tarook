@@ -58,7 +58,7 @@ in {
       type = types.yk8s.networking.ipv6Cidr;
     };
 
-    bgp_announce_service_ips = mkEnableOption ''
+    bgp_announce_service_ips = mkDisableOption ''
       announcement of the service cluster IP range to external
       BGP peers. By default, only per-node pod networks are announced.
     '';

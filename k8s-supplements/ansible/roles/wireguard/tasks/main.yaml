@@ -64,6 +64,7 @@
         mode: 0750
       when: ipv4_enabled | bool
 
+    # TODO: @deprecated::debian12 This task can be dropped when removing support for Debian 12
     - name: Ensure that drop-in directory for bird configs exist (IPv6)
       file:
         path: /etc/birdv6.d/
@@ -71,11 +72,13 @@
         owner: root
         group: bird
         mode: 0750
-      when: ipv6_enabled | bool
+      when:
+        - ipv6_enabled | bool
+        - bird_package == "bird"
 
     - name: Create bird config for IPv4 wireguard routes
       template:
-        src: wg_bird.conf.j2
+        src: "wg_{{ bird_package }}.conf.j2"
         dest: /etc/bird.d/00-wireguard.conf
         owner: bird
         group: bird
@@ -83,6 +86,7 @@
       notify: restart bird
       when: ipv4_enabled | bool
 
+    # TODO: @deprecated::debian12 This task can be dropped when removing support for Debian 12
     - name: Create bird config for IPv6 wireguard routes
       template:
         src: wg_bird_v6.conf.j2
@@ -90,6 +94,8 @@
         owner: bird
         group: bird
         mode: 06400
-      when: ipv6_enabled | bool
+      when:
+        - ipv6_enabled | bool
+        - bird_package == "bird"
       notify: restart bird6
 ...

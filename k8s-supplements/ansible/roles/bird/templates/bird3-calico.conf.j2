@@ -1,0 +1,81 @@
+{{ _auto_generated_preamble }}
+
+attribute bool scopeUniverse;
+
+{% if ch_k8s_lbaas_enabled and not ch_k8s_lbaas_enable_snat %}
+protocol static {
+    ipv4 { table master4; };
+    # Add routes to basically route everything via the VIP
+    route 0.0.0.0/1 via {{ networking_fixed_ip }};
+    route 128.0.0.0/1 via {{ networking_fixed_ip }};
+}
+
+# A function used to export the above routes to peers
+function filter_default_overwrite() {
+    if (net = 0.0.0.0/1) || (net = 128.0.0.0/1) then {
+        bgp_local_pref = 200;  # Set local preference to override default route on peers
+        bgp_next_hop = {{ networking_fixed_ip }};
+        return true;
+    }
+    return false;
+}
+{% endif %}
+
+filter k8s_worker {
+{% if ch_k8s_lbaas_enabled and not ch_k8s_lbaas_enable_snat %}
+    if filter_default_overwrite() then accept;
+{% endif %}
+{% if wg_enabled %}
+    if filter_wireguard() then accept;
+{% endif %}
+    if defined(scopeUniverse) && scopeUniverse then {
+        reject;
+    }
+    reject;
+}
+
+{% if ipv6_enabled %}
+filter k8s_worker_v6 {
+{% if wg_enabled %}
+    if filter_wireguard_v6() then accept;
+{% endif %}
+    if defined(scopeUniverse) && scopeUniverse then {
+        reject;
+    }
+    reject;
+}
+{% endif %}
+
+{% for hostname in groups['k8s_nodes'] %}
+{% set peer = hostvars[hostname] %}
+protocol bgp {{ hostname | replace('-', '_') }} {
+    ipv4 {
+        table master4;
+        import filter {
+            scopeUniverse = true; # adaptation of scope = SCOPE_UNIVERSE
+            accept;
+        };
+        export filter k8s_worker;
+    };
+    local {{ networking_fixed_ip }} as {{ k8s_network_bgp_gateway_as }};
+    neighbor {{ peer.local_ipv4_address }} as {{ k8s_network_bgp_worker_as }};
+    multihop;
+}
+
+{% if ipv6_enabled %}
+protocol bgp {{ "%s_v6" | format(hostname | replace('-', '_')) }} {
+    ipv6 {
+        table master6;
+        import filter {
+            scopeUniverse = true; # adaptation of scope = SCOPE_UNIVERSE
+            accept;
+        };
+        export filter k8s_worker_v6;
+    };
+    local {{ networking_fixed_ip_v6 | ansible.utils.ipaddr }} as {{ k8s_network_bgp_gateway_as }};
+    neighbor {{ peer.local_ipv6_address | ansible.utils.ipaddr }} as {{ k8s_network_bgp_worker_as }};
+    multihop;
+}
+{% endif %}
+
+{% endfor %}
