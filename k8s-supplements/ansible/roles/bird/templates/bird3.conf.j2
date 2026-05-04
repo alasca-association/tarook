@@ -1,0 +1,61 @@
+{{ _auto_generated_preamble }}
+router id {{ local_ipv4_address }};
+debug protocols all;
+
+attribute bool scopeHost;
+
+protocol kernel {
+    scan time 60;
+    ipv4 {
+        table master4;
+        import none;
+{% if ch_k8s_lbaas_enabled and not ch_k8s_lbaas_enable_snat %}
+        export filter {
+            if net = 0.0.0.0/1 || net = 128.0.0.0/1 then reject;
+            accept;
+        };
+{% else %}
+        export all;
+{% endif %}
+    };
+}
+
+{% if ipv6_enabled %}
+protocol kernel {
+    ipv6 {
+        table master6;
+        export all;
+        import none;
+    };
+    scan time 60;
+    learn;
+}
+{% endif %}
+
+protocol direct {
+    ipv4 {
+        table master4;
+        import filter {
+            scopeHost = true; # adaptation of scope = SCOPE_HOST
+            accept;
+        };
+        export none;
+    };
+{% if ipv6_enabled %}
+    ipv6 {
+        table master6;
+        import filter {
+            scopeHost = true; # adaptation of scope = SCOPE_HOST
+            accept;
+        };
+        export none;
+    };
+{% endif %}
+}
+
+protocol device {
+    scan time 60;
+}
+
+
+include "/etc/bird.d/*.conf";

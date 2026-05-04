@@ -34,6 +34,14 @@
     path: /etc/swanctl/swanctl.conf
     state: absent
 
+# TODO: Drop me in a release after v15
+- name: Remove legacy BIRD configuration
+  become: true
+  file:
+    state: absent
+    path: /etc/bird.d/10-ipsec-vpn.conf
+  notify: restart bird
+
 - name: Remove BIRD configuration
   become: true
   file:
