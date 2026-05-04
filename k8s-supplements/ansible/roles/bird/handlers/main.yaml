@@ -5,9 +5,12 @@
     name: bird
     state: restarted
 
+# TODO: @deprecated::debian12 @deprecated::ubuntu2404
+# This task can be dropped once Debian 12 and Ubuntu 24.04 reached EOL
 - name: restart bird6
   become: true
   service:
     name: bird6
     state: restarted
+  when: bird_package == "bird"
 ...

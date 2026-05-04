@@ -85,11 +85,19 @@
     enabled: false
     state: "{{ (swanctl_config.changed or charon_config.changed) | ternary('reloaded', 'started') }}"
 
+# TODO: Drop me in a release after v15
+- name: Remove legacy BIRD configuration
+  become: true
+  file:
+    state: absent
+    path: /etc/bird.d/10-ipsec-vpn.conf
+  notify: restart bird
+
 - name: Configure bird
   become: true
   template:
-    src: bird.conf.j2
-    dest: /etc/bird.d/10-ipsec-vpn.conf
+    src: "{{ bird_package }}.conf.j2"
+    dest: /etc/bird.d/20-ipsec-vpn.conf
     owner: root
     group: bird
     mode: "u=rw,g=r,o-rwx"
