@@ -6,16 +6,16 @@ yk8s.openstack
 
 .. note::
 
-   :ref:`configuration-options.yk8s.openstack.nodes`
-   allows you to configure
-   the k8s master and worker servers.
-   The ``role`` attribute must be used to distinguish both [1]_.
+    :ref:`configuration-options.yk8s.openstack.nodes`
+    allows you to configure
+    the Kubernetes master and worker servers.
+    The ``role`` attribute must be used to distinguish both [1]_.
 
-   The amount of gateway nodes can be controlled with
-   :ref:`configuration-options.yk8s.openstack.gateway_count`.
+    The amount of gateway nodes can be controlled with
+    :ref:`configuration-options.yk8s.openstack.gateway_count`.
 
 .. [1] Caveat: Changing the role of a Terraform node
-               will completely rebuild the node.
+                will completely rebuild the node.
 
 .. attention::
 
@@ -30,42 +30,40 @@ Consider the following example:
 
     openstack = {
 
-   -  gateway_count = 3;
-   +  gateway_count = 2;                 # <-- one gateway gets deleted
+    -  gateway_count = 3;
+    +  gateway_count = 2;                 # <-- one gateway gets deleted
 
-      nodes = {
+    nodes = {
         worker-0 = {
-          role = "worker";
-          flavor = "M";
-          image = "Debian 12 (bookworm)";
+        role = "worker";
+        flavor = "M";
+        image = "Debian 12 (bookworm)";
         };
-   -    worker-1 = {                     # <-- gets deleted
-   -      role = "worker";
-   -      flavor = "M";
-   -    };
+    -    worker-1 = {                     # <-- gets deleted
+    -      role = "worker";
+    -      flavor = "M";
+    -    };
         worker-2 = {
-          role = "worker";
-          flavor = "L";
+        role = "worker";
+        flavor = "L";
         };
-   +    mon1 = {                         # <-- gets created
-   +      role = "worker";
-   +      flavor = "S";
-   +      image = "Ubuntu 22.04 LTS x64";
-   +    };
-      };
-   };
+    +    mon1 = {                         # <-- gets created
+    +      role = "worker";
+    +      flavor = "S";
+    +      image = "Ubuntu 22.04 LTS x64";
+    +    };
+    };
+    };
 
 The name of an OpenStack node is composed from the following parts:
 
-- for master/worker nodes:
-  ``yk8s.infra.cluster_name`` ``<the nodes' key in yk8s.openstack.nodes>``
+- for master/worker nodes: ``yk8s.infra.cluster_name`` ``<the nodes' key in yk8s.openstack.nodes>``
 
-- for gateway nodes:
-  ``yk8s.infra.cluster_name`` ``yk8s.openstack.gateway_defaults.common_name`` ``<numeric-index>``
+- for gateway nodes: ``yk8s.infra.cluster_name`` ``yk8s.openstack.gateway_defaults.common_name`` ``<numeric-index>``
 
 .. code:: nix
 
-   openstack = {
+    openstack = {
 
     cluster_name = "yk8s";
     gateway_count = 1;
@@ -99,7 +97,7 @@ Availability zones of the underlying Openstack cloud to use for the creation of 
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.check_credentials:
@@ -131,7 +129,7 @@ to true.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cinder.enable_topology:
@@ -162,7 +160,7 @@ Important: Cinder must support AZs and the AZs must match the AZs used by nova!
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cinder.helm.chart_ref:
@@ -184,7 +182,7 @@ The chart reference (relative to the repository) of the Cinder CSI driver plugin
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cinder.helm.chart_repo_url:
@@ -206,7 +204,7 @@ The URL to the Helm repository for the Cinder CSI driver plugin Helm chart.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cinder.helm.chart_version:
@@ -235,7 +233,7 @@ If the version shall be unpinned, set to: ``null``.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cinder.helm.release_name:
@@ -257,7 +255,7 @@ The release name inside the cluster for Cinder CSI driver plugin.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cinder.helm.release_namespace:
@@ -279,7 +277,7 @@ The namespace in which to install Cinder CSI driver plugin.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cinder.helm.values:
@@ -305,7 +303,7 @@ https://github.com/kubernetes/cloud-provider-openstack/blob/master/charts/cinder
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cinder.volume_type:
@@ -329,7 +327,7 @@ of the IaaS-layer is used.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cloud_controller_manager.helm.chart_ref:
@@ -351,7 +349,7 @@ The chart reference (relative to the repository) of the Openstack Cloud Controll
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cloud_controller_manager.helm.chart_repo_url:
@@ -373,7 +371,7 @@ The URL to the Helm repository for the Openstack Cloud Controller Manager Helm c
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cloud_controller_manager.helm.chart_version:
@@ -402,7 +400,7 @@ If the version shall be unpinned, set to: ``null``.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cloud_controller_manager.helm.release_name:
@@ -424,7 +422,7 @@ The release name inside the cluster for Openstack Cloud Controller Manager.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cloud_controller_manager.helm.release_namespace:
@@ -446,7 +444,7 @@ The namespace in which to install Openstack Cloud Controller Manager.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.cloud_controller_manager.helm.values:
@@ -472,7 +470,7 @@ https://github.com/kubernetes/cloud-provider-openstack/blob/master/charts/openst
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.create_root_disk_on_volume:
@@ -510,7 +508,7 @@ This is option is inferior to:
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.dns_nameservers_v4:
@@ -531,7 +529,7 @@ A list of IPv4 addresses which will be configured as DNS nameservers of the IPv4
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.enabled:
@@ -553,7 +551,7 @@ Whether to build the cluster on top of Openstack.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.gateway_count:
@@ -581,7 +579,7 @@ in which case it will match the amount of availability zones by default.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.gateway_defaults.common_name:
@@ -602,7 +600,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.gateway_defaults.create_root_disk_on_volume:
@@ -623,16 +621,16 @@ This option takes precedence over:
 
 **Type:**::
 
-  null or boolean
+  boolean
 
 
 **Default:**::
 
-  null
+  false
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.gateway_defaults.flavor:
@@ -648,7 +646,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.gateway_defaults.image:
@@ -664,7 +662,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.gateway_defaults.root_disk_size:
@@ -686,7 +684,7 @@ If null, the disk size of the configured flavor will be used.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.gateway_defaults.root_disk_volume_type:
@@ -708,7 +706,7 @@ If null, the default of the IaaS environment will be used.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.keypair:
@@ -728,11 +726,11 @@ Will most of the time be set via the environment variable TF_VAR_keypair
 
 **Default:**::
 
-  null
+  "\${var.keypair}"
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.master_defaults.create_root_disk_on_volume:
@@ -757,16 +755,16 @@ but is inferior to:
 
 **Type:**::
 
-  null or boolean
+  boolean
 
 
 **Default:**::
 
-  null
+  false
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.master_defaults.flavor:
@@ -782,7 +780,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.master_defaults.image:
@@ -798,7 +796,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.master_defaults.root_disk_size:
@@ -828,7 +826,7 @@ is set to ``true``.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.master_defaults.root_disk_volume_type:
@@ -850,7 +848,7 @@ If null, the default of the IaaS environment will be used.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.network_mtu:
@@ -877,7 +875,7 @@ MTU for the OpenStack network used for the cluster.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.network_name:
@@ -909,7 +907,7 @@ because there might be situations where the CCM should not pick the managed netw
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.nodes:
@@ -924,6 +922,8 @@ At least one node with role=master must be given.
 You may also specify those attributes or a subset of them
 using :ref:`yk8s.openstack.{master,worker}_defaults <configuration-options.yk8s.openstack>`.
 
+Gateways are created automatically, and should not be explicitly added here.
+
 
 **Type:**::
 
@@ -936,7 +936,7 @@ using :ref:`yk8s.openstack.{master,worker}_defaults <configuration-options.yk8s.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.nodes.<name>.anti_affinity_group:
@@ -959,7 +959,7 @@ If left empty no anti affinity group will be joined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.nodes.<name>.az:
@@ -980,7 +980,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.nodes.<name>.create_root_disk_on_volume:
@@ -1013,7 +1013,7 @@ This option takes precedence over:
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.nodes.<name>.flavor:
@@ -1034,7 +1034,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.nodes.<name>.image:
@@ -1055,7 +1055,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.nodes.<name>.role:
@@ -1067,11 +1067,11 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 
 **Type:**::
 
-  one of "master", "worker"
+  one of "master", "worker", "gateway"
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.nodes.<name>.root_disk_size:
@@ -1104,7 +1104,7 @@ is set to ``true``.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.nodes.<name>.root_disk_volume_type:
@@ -1125,7 +1125,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.public_network:
@@ -1142,7 +1142,7 @@ Name of the Openstack provider network to use
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.spread_gateways_across_azs:
@@ -1163,7 +1163,7 @@ If true, spawn a gateway node in each availability zone listed in :ref:`configur
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.thanos_delete_container:
@@ -1194,7 +1194,7 @@ are switched off
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.worker_defaults.anti_affinity_group:
@@ -1216,7 +1216,7 @@ Leaving this empty means to not join any anti affinity group
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.worker_defaults.create_root_disk_on_volume:
@@ -1241,16 +1241,16 @@ but is inferior to:
 
 **Type:**::
 
-  null or boolean
+  boolean
 
 
 **Default:**::
 
-  null
+  false
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.worker_defaults.flavor:
@@ -1266,7 +1266,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.worker_defaults.image:
@@ -1282,7 +1282,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.ni
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.worker_defaults.root_disk_size:
@@ -1312,7 +1312,7 @@ is set to ``true``.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
 .. _configuration-options.yk8s.openstack.worker_defaults.root_disk_volume_type:
@@ -1334,5 +1334,5 @@ If null, the default of the IaaS environment will be used.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
