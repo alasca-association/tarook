@@ -503,6 +503,48 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 
+.. _configuration-options.yk8s.infra.public_fixed_ip:
+
+``yk8s.infra.public_fixed_ip``
+##############################
+
+
+
+**Type:**::
+
+  null or IPv4 address in four-octets decimal notation
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
+
+
+.. _configuration-options.yk8s.infra.public_fixed_ip_v6:
+
+``yk8s.infra.public_fixed_ip_v6``
+#################################
+
+
+
+**Type:**::
+
+  null or IPv6 address in colon-hexadecimal notation
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
+
+
 .. _configuration-options.yk8s.infra.subnet_cidr:
 
 ``yk8s.infra.subnet_cidr``
