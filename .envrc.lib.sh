@@ -80,6 +80,13 @@ use_flake_if_nix() {
     return
   fi
 
+  (
+    actions_dir="$flake_dir/actions"
+    # shellcheck source=actions/lib.sh
+    source "$actions_dir/lib.sh"
+    check_nix_version
+  ) || return
+
   if [ "${YAOOK_K8S_DIRENV_MANUAL:-false}" == "true" ]; then
     _nix_flake_manual "$flake_dir"
     watch_file "$flake_dir/nix"

@@ -65,6 +65,8 @@ if [ -z "${valid_target:-}" ]; then
   exit 2
 fi
 
+check_nix_version
+
 if [[ -e "state" ]]; then git add state; fi
 if [ -z "${TAROOK_NIX_FLAGS:-}" ]; then
     out=$(nix build --override-input yk8s "$code_repository" --print-out-paths --no-link ".#yk8s-outputs-$target")

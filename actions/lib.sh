@@ -14,6 +14,8 @@ version_major_minor=$(grep -Po '^[0-9]+\.[0-9]+' "$code_repository/version")
 
 submodule_managed_k8s_name="managed-k8s"
 
+nix_min_version="2.9.0"
+
 terraform_min_version="1.3.0"
 terraform_state_dir="$state_dir/terraform"
 terraform_disruption_lock="$terraform_state_dir/prevent_disruption.lock"
@@ -155,6 +157,18 @@ function check_vault_token_policy() {
     errorf 'Your vault token has insufficient policies for a KUBECONFIG generation'
     errorf 'The token must either be a root token or have the "yaook/orchestrator" policy'
     exit 2
+}
+
+function check_nix_version() {
+    nix_current_version=$(nix --version | head -n1)
+    nix_current_version=${nix_current_version##* }
+    if [ "$("$actions_dir/helpers/semver2.sh" "$nix_current_version" "$nix_min_version")" -lt 0 ]; then
+        errorf "Tarook requires Nix >= v$nix_min_version"
+        errorf "but you are only running v$nix_current_version."
+        errorf "You can do so by installing the Nix binary packaged by Tarook:"
+        errorf "./managed-k8s/tools/upgrade-nix.sh"
+        exit 5
+    fi
 }
 
 function ccode() {
