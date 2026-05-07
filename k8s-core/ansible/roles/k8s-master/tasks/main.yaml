@@ -287,6 +287,25 @@
       path: "/etc/kubernetes/pki/ca.crt"
 
   - name: Create kubeadm-join-config.yaml
+    vars:
+      # List of configured + gpu related node taints (as dicts) to apply after join
+      # (taint strings parsed to dict,
+      #  empty values are omitted, effect defaults to NoExecute)
+      node_taints: >
+        {{
+          (
+            k8s_node_taints[inventory_hostname] | default([])
+            | map('regex_replace', '^([^:=]+)([=]([^:]+))?([:](.+))?', '{"key": "\1", "value": "\3", "effect": "\5"}')
+            | map('regex_replace', ', "value": ""', '')
+            | map('regex_replace', '"effect": ""', '"effect": "NoExecute"')
+            | map('from_json')
+          )
+          +
+            (
+              (k8s_is_gpu_cluster and not k8s_virtualize_gpu and ansible_local['gpu-node']['node_has_gpu'] | bool)
+              | ternary([{"key": "k8s.yaook.cloud/gpu-node", "value": "true", "effect": "NoSchedule"}], [])
+            )
+        }}
     template:
       src: kubeadm-JoinConfiguration.yaml.j2
       dest: /tmp/kubeadm-join-config.yaml

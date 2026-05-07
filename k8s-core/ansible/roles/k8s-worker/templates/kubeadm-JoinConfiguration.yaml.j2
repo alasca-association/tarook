@@ -4,6 +4,14 @@ nodeRegistration:
   ignorePreflightErrors:
   - FileAvailable--etc-kubernetes-kubelet.conf
   - FileAvailable--etc-kubernetes-pki-ca.crt
+{% if node_taints | length > 0 %}
+  taints:
+{% for taint in node_taints %}
+    - key: {{ taint["key"] }}
+      value: "{{ taint["value"] }}"
+      effect: {{ taint["effect"] }}
+{% endfor %}
+{% endif %}
   kubeletExtraArgs:
 {% if openstack_enabled %}
     - name: cloud-provider
