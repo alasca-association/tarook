@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'TAROOK'
-copyright = '2020-2026, Tarook Authors'
+copyright = '2020–2026 The Tarook Authors'
 author = 'Tarook Authors'
 
 # -- General configuration ---------------------------------------------------
