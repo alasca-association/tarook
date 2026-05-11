@@ -17,6 +17,7 @@ in {
         wg_usage = config.yk8s.wireguard.enabled;
         wg_subnet = config.yk8s.infra.subnet_cidr;
         wg_subnet_v6 = config.yk8s.infra.subnet_v6_cidr;
+        use_gateways = config.yk8s.infra.final_hosts.gateways.hosts != {};
       })
     ];
   };

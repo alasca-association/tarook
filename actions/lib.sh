@@ -82,6 +82,12 @@ function load_conf_vars() {
         exit 2
     fi
 
+    use_gateways="$(yq '.use_gateways' "$conf_vars_file")"
+    if [[ ! ("${use_gateways:?}" == "true" || "${use_gateways:?}" == "false") ]]; then
+        errorf "Unexpected value of 'use_gateways' in $conf_vars_file"
+        exit 2
+    fi
+
     wg_usage="$(yq '.wg_usage' "$conf_vars_file")"
     if [[ ! ("${wg_usage:?}" == "true" || "${wg_usage:?}" == "false") ]]; then
         errorf "Unexpected value of 'wg_usage' in $conf_vars_file"

@@ -17,11 +17,8 @@ require_vault_token
 
 install_prerequisites
 
-if [ "${tf_usage:-true}" == 'false' ]; then
-  errorf "It seems like you're not running on top of OpenStack,"
-  errorf "because terraform.enabled is false."
-  errorf "Gateways are OpenStack-specific and must not be prepared"
-  errorf "for other use cases. You must not execute this action script."
+if [ "${use_gateways:-true}" == 'false' ]; then
+  errorf "No gateways are configured."
   exit 1
 fi
 

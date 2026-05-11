@@ -329,6 +329,10 @@ in {
 
   config.yk8s._targets.ansible.assertions = [
     {
+      assertion = !config.yk8s.openstack.enabled -> (cfg.final_hosts.gateways.hosts == {});
+      message = "Gateway hosts are currently only supported for OpenStack. Please remove all hosts from config.yk8s.infra.ansible_hosts.gateways";
+    }
+    {
       assertion = (cfg.ansible_hosts.orchestrator.children or {}) == {} && (builtins.length (builtins.attrNames cfg.ansible_hosts.orchestrator.hosts)) == 1;
       message = "config.yk8s.infra.ansible_hosts.orchestrator must contain exactly one host and no children";
     }

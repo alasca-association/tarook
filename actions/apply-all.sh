@@ -20,7 +20,7 @@ if [ "${tf_usage:-true}" == 'true' ]; then
 fi
 
 # Prepare Gateways, if configured
-if [ "${tf_usage:-true}" == 'true' ]; then
+if [ "${use_gateways:-true}" == 'true' ]; then
   run "$actions_dir/apply-prepare-gw.sh"
 fi
 
