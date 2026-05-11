@@ -101,6 +101,11 @@ function load_conf_vars() {
     fi
 }
 
+function gateway_nodes_configured() {
+   yq --exit-status ".gateways.hosts != {}" \
+      "$ansible_inventory_host_file" >/dev/null
+}
+
 function color_enabled() {
     [ "$use_color" = 'true' ]
 }

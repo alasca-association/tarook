@@ -5,7 +5,7 @@ actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
-# Ensure that the latest config is deployed to the inventory
+# Ensure that the latest config is deployed to inventory/conf_vars
 "$actions_dir/update-inventory.sh" conf_vars
 
 load_conf_vars
@@ -19,8 +19,12 @@ if [ "${tf_usage:-true}" == 'true' ]; then
   run "$actions_dir/apply-terraform.sh"
 fi
 
+# Ensure that the latest config is deployed to inventory/ansible
+# (required for gateway_nodes_config)
+"$actions_dir/update-inventory.sh" ansible
+
 # Prepare Gateways, if configured
-if [ "${tf_usage:-true}" == 'true' ]; then
+if gateway_nodes_configured; then
   run "$actions_dir/apply-prepare-gw.sh"
 fi
 

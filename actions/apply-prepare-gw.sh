@@ -17,15 +17,12 @@ require_vault_token
 
 install_prerequisites
 
-if [ "${tf_usage:-true}" == 'false' ]; then
-  errorf "It seems like you're not running on top of OpenStack,"
-  errorf "because terraform.enabled is false."
-  errorf "Gateways are OpenStack-specific and must not be prepared"
-  errorf "for other use cases. You must not execute this action script."
+"$actions_dir/update-inventory.sh" ansible
+
+if ! gateway_nodes_configured; then
+  errorf "No gateways are configured."
   exit 1
 fi
-
-"$actions_dir/update-inventory.sh" ansible
 
 # Prepare Gateways, if configured
 pushd "$ansible_k8s_supplements_dir"
