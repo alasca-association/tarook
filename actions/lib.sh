@@ -82,6 +82,12 @@ function load_conf_vars() {
         exit 2
     fi
 
+    gateway_nodes_configured="$(yq '.gateway_nodes_configured' "$conf_vars_file")"
+    if [[ ! ("${gateway_nodes_configured:?}" == "true" || "${gateway_nodes_configured:?}" == "false") ]]; then
+        errorf "Unexpected value of 'gateway_nodes_configured' in $conf_vars_file"
+        exit 2
+    fi
+
     wg_usage="$(yq '.wg_usage' "$conf_vars_file")"
     if [[ ! ("${wg_usage:?}" == "true" || "${wg_usage:?}" == "false") ]]; then
         errorf "Unexpected value of 'wg_usage' in $conf_vars_file"
