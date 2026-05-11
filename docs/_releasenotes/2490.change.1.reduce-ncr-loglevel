@@ -1,0 +1,5 @@
+In clusters with GPU worker nodes, the NVIDIA Container Runtime log level has been set to error.
+The change will be applied on a
+:doc:`Kubernetes upgrade </user/guide/kubernetes/upgrading-kubernetes>`
+or
+:ref:`system update<actions-references.update-kubernetes-nodessh>`.
