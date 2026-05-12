@@ -8,11 +8,11 @@ metadata:
     app.kubernetes.io/instance: openbao
     app.kubernetes.io/name: openbao-external
   name: openbao-external
-  namespace: {{ openbao_on_k8s_namespace }}
+  namespace: {{ openbao_on_k8s.namespace }}
 spec:
-  ingressClassName: {{ openbao_on_k8s_external_ingress_class | to_json }}
+  ingressClassName: {{ openbao_on_k8s.external_ingress_class | to_json }}
   rules:
-{% for name in openbao_on_k8s_dnsnames %}
+{% for name in openbao_on_k8s.dnsnames %}
   - host: {{ name | to_json }}
     http:
       paths:
@@ -26,7 +26,7 @@ spec:
 {% endfor %}
   tls:
   - hosts:
-{% for name in openbao_on_k8s_dnsnames %}
+{% for name in openbao_on_k8s.dnsnames %}
     - {{ name | to_json }}
 {% endfor %}
     secretName: openbao-cert-external

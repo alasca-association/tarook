@@ -9,10 +9,10 @@
     apply: true
     definition:
       apiVersion: cert-manager.io/v1
-      kind: "{{ openbao_on_k8s_ca_issuer_kind }}"
+      kind: "{{ openbao_on_k8s.ca_issuer_kind }}"
       metadata:
-        name: "{{ openbao_on_k8s_ca_issuer }}"
-        namespace: "{{ openbao_on_k8s_namespace }}"
+        name: "{{ openbao_on_k8s.ca_issuer }}"
+        namespace: "{{ openbao_on_k8s.namespace }}"
       spec:
         selfSigned: {}
     validate:
@@ -31,12 +31,12 @@
       apiVersion: cert-manager.io/v1
       kind: Certificate
       metadata:
-        namespace: "{{ openbao_on_k8s_namespace }}"
+        namespace: "{{ openbao_on_k8s.namespace }}"
         name: openbao-ca-internal
       spec:
         issuerRef:
-          kind: "{{ openbao_on_k8s_ca_issuer_kind }}"
-          name: "{{ openbao_on_k8s_ca_issuer }}"
+          kind: "{{ openbao_on_k8s.ca_issuer_kind }}"
+          name: "{{ openbao_on_k8s.ca_issuer }}"
         secretName: openbao-ca-internal
         commonName: openbao-ca-internal
         isCA: true
@@ -56,7 +56,7 @@
       apiVersion: cert-manager.io/v1
       kind: Issuer
       metadata:
-        namespace: "{{ openbao_on_k8s_namespace }}"
+        namespace: "{{ openbao_on_k8s.namespace }}"
         name: openbao-internal
       spec:
         ca:
@@ -83,8 +83,8 @@
   set_fact:
     openbao_on_k8s_dnsnames_complete: |
       [
-        {{ "openbao.%s.svc.cluster.local" | format(openbao_on_k8s_namespace) | to_json }},
-        {{ "openbao-active.%s.svc.cluster.local" | format(openbao_on_k8s_namespace) | to_json }},
+        {{ "openbao.%s.svc.cluster.local" | format(openbao_on_k8s.namespace) | to_json }},
+        {{ "openbao-active.%s.svc.cluster.local" | format(openbao_on_k8s.namespace) | to_json }},
       ]
 
 - name: Create Openbao Certificate (internal)
@@ -103,7 +103,7 @@
       apiVersion: cert-manager.io/v1
       kind: Certificate
       metadata:
-        namespace: "{{ openbao_on_k8s_namespace }}"
+        namespace: "{{ openbao_on_k8s.namespace }}"
         name: openbao-cert-internal
       spec:
         issuerRef:
@@ -111,7 +111,7 @@
         secretName: openbao-cert-internal
         duration: 72h
         renewBefore: 24h
-        ipAddresses: "{{ (openbao_on_k8s_service_type in ['NodePort', 'LoadBalancer']) | ternary(openbao_on_k8s_worker_ips, []) + ['127.0.0.1', '::1'] }}"
+        ipAddresses: "{{ (openbao_on_k8s.service_type in ['NodePort', 'LoadBalancer']) | ternary(openbao_on_k8s_worker_ips, []) + ['127.0.0.1', '::1'] }}"
         dnsNames: "{{ openbao_on_k8s_dnsnames_complete }}"
     validate:
       fail_on_error: true

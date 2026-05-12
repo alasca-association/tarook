@@ -40,7 +40,7 @@ server:
           tls_cert_file = "/openbao/userconfig/openbao-cert-internal/tls.crt"
           tls_key_file  = "/openbao/userconfig/openbao-cert-internal/tls.key"
         }
-{% if openbao_on_k8s_ingress %}
+{% if openbao_on_k8s.ingress %}
         listener "tcp" {
           address = "[::]:8250"
           tls_cert_file = "/openbao/userconfig/openbao-cert-external/tls.crt"
@@ -51,7 +51,7 @@ server:
           path = "/openbao/data"
           retry_join {
             leader_ca_cert_file = "/openbao/userconfig/openbao-cert-internal/ca.crt"
-            leader_api_addr = "https://openbao.{{ openbao_on_k8s_namespace }}.svc.cluster.local:8200"
+            leader_api_addr = "https://openbao.{{ openbao_on_k8s.namespace }}.svc.cluster.local:8200"
           }
         }
         # Enables openbao pods to expose their state via labels; requires HA
@@ -64,10 +64,10 @@ server:
         }
   dataStorage:
     enabled: true
-    size: "{{ openbao_on_k8s_storage_size }}"
-    storageClass: "{{ openbao_on_k8s_storage_class }}"
+    size: "{{ openbao_on_k8s.storage_size }}"
+    storageClass: "{{ openbao_on_k8s.storage_class }}"
   extraContainers:
-{% if openbao_on_k8s_ingress %}
+{% if openbao_on_k8s.ingress %}
   - name: service-reload-external
     image: registry.yaook.cloud/yaook/service-reload:devel
     volumeMounts:
@@ -96,13 +96,13 @@ server:
   extraVolumes:
   - type: secret
     name: openbao-cert-internal
-{% if openbao_on_k8s_ingress %}
+{% if openbao_on_k8s.ingress %}
   - type: secret
     name: openbao-cert-external
 {% endif %}
   service:
-    type: {{ openbao_on_k8s_service_type }}
-    activeNodePort: {{ openbao_on_k8s_service_active_node_port }}
+    type: {{ openbao_on_k8s.service_type }}
+    activeNodePort: {{ openbao_on_k8s.service_active_node_port }}
 serverTelemetry:
   # This service monitor comes without any means of authentication
   serviceMonitor:

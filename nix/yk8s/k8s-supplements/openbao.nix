@@ -256,8 +256,9 @@ in {
   config.yk8s._inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;
-      ansible_prefix = "openbao_on_k8s_";
+      ansible_prefix = "openbao_on_k8s";
       inventory_path = "all/openbao-svc.yaml";
+      unflat = "all";
     })
   ];
 }

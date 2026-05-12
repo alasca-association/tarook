@@ -3,7 +3,7 @@
   kubernetes.core.k8s_info:
     api_version: batch/v1
     kind: CronJob
-    namespace: "{{ openbao_on_k8s_namespace }}"
+    namespace: "{{ openbao_on_k8s.namespace }}"
     name: openbao-metrics-token-renewer
   register: cronjob_info
   ignore_errors: true
@@ -25,7 +25,7 @@
   kubernetes.core.k8s_info:
     api_version: v1
     kind: Secret
-    namespace: "{{ openbao_on_k8s_namespace }}"
+    namespace: "{{ openbao_on_k8s.namespace }}"
     name: prometheus-bearer-token
   # Retry this task on failures
   register: prometheus_secret
@@ -51,7 +51,7 @@
           apiVersion: v1
           kind: Secret
           metadata:
-            namespace: "{{ openbao_on_k8s_namespace }}"
+            namespace: "{{ openbao_on_k8s.namespace }}"
             name: prometheus-bearer-token
           data:
             token: "{{ prometheus_bearer_token }}"
@@ -84,7 +84,7 @@
       apiVersion: v1
       kind: Service
       metadata:
-        namespace: "{{ openbao_on_k8s_namespace }}"
+        namespace: "{{ openbao_on_k8s.namespace }}"
         name: openbao
         labels:
           tarook-openbao: "true"

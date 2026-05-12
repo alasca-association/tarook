@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/instance: openbao
     app.kubernetes.io/name: openbao
   name: openbao-external-active
-  namespace: "{{ openbao_on_k8s_namespace }}"
+  namespace: "{{ openbao_on_k8s.namespace }}"
 spec:
   internalTrafficPolicy: Cluster
 {% if ipv4_enabled and ipv6_enabled %}

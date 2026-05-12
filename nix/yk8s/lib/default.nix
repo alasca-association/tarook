@@ -54,9 +54,16 @@
         ]
         ++ cfg._internal.transformations or []
         ++ transformations
-        ++ [
+        ++ (
+          lib.optional (unflat != "all")
           (t.flatten {except = (cfg._internal.unflat or []) ++ unflat;})
-          (t.addPrefix ansible_prefix)
+        )
+        ++ [
+          (
+            if unflat == "all"
+            then (c: {"${ansible_prefix}" = c;})
+            else (t.addPrefix ansible_prefix)
+          )
         ]
       );
   in

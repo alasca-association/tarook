@@ -3,7 +3,7 @@
   set_fact:
     openbao_on_k8s_dnsnames_complete: |
       [
-        {% for name in openbao_on_k8s_dnsnames %} {{ name | to_json }}, {% endfor %}
+        {% for name in openbao_on_k8s.dnsnames %} {{ name | to_json }}, {% endfor %}
       ]
 
 - name: Create Openbao Certificate (external)
@@ -13,12 +13,12 @@
       apiVersion: cert-manager.io/v1
       kind: Certificate
       metadata:
-        namespace: "{{ openbao_on_k8s_namespace }}"
+        namespace: "{{ openbao_on_k8s.namespace }}"
         name: openbao-cert-external
       spec:
         issuerRef:
-          name: "{{ openbao_on_k8s_external_ingress_issuer_name }}"
-          kind: "{{ openbao_on_k8s_external_ingress_issuer_kind }}"
+          name: "{{ openbao_on_k8s.external_ingress_issuer_name }}"
+          kind: "{{ openbao_on_k8s.external_ingress_issuer_kind }}"
         secretName: openbao-cert-external
         dnsNames: "{{ openbao_on_k8s_dnsnames_complete }}"
     validate:

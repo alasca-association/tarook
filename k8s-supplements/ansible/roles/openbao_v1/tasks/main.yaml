@@ -6,7 +6,7 @@
       apiVersion: v1
       kind: Namespace
       metadata:
-        name: "{{ openbao_on_k8s_namespace }}"
+        name: "{{ openbao_on_k8s.namespace }}"
     validate:
       fail_on_error: true
       strict: true
@@ -20,17 +20,17 @@
   import_tasks: internal_pki.yaml
 
 - name: Create the external PKI
-  when: openbao_on_k8s_ingress
+  when: openbao_on_k8s.ingress
   import_tasks: external_pki.yaml
 
 - name: Deploy Openbao
   vars:
-    scheduling_key: "{{ openbao_on_k8s_scheduling_key | default(None) }}"
+    scheduling_key: "{{ openbao_on_k8s.scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_repo_url: "{{ openbao_on_k8s_helm_repo_url }}"
+    chart_repo_url: "{{ openbao_on_k8s.helm_repo_url }}"
     chart_ref: openbao
-    chart_version: "{{ openbao_on_k8s_chart_version }}"
-    release_namespace: "{{ openbao_on_k8s_namespace }}"
+    chart_version: "{{ openbao_on_k8s.chart_version }}"
+    release_namespace: "{{ openbao_on_k8s.namespace }}"
     release_name: openbao
     release_state: present
     values: "{{ lookup('template', 'openbao.yaml.j2') | from_yaml }}"
@@ -38,7 +38,7 @@
 - name: Find openbao pods
   kubernetes.core.k8s_info:
     api_version: v1
-    namespace: "{{ openbao_on_k8s_namespace }}"
+    namespace: "{{ openbao_on_k8s.namespace }}"
     kind: Pod
     label_selectors: app.kubernetes.io/instance=openbao,app.kubernetes.io/name=openbao,component=server
   register: openbao_pods
@@ -48,7 +48,7 @@
 
 - name: Obtain openbao status
   kubernetes.core.k8s_exec:
-    namespace: "{{ openbao_on_k8s_namespace }}"
+    namespace: "{{ openbao_on_k8s.namespace }}"
     pod: "{{ openbao_pods.resources[0].metadata.name }}"
     container: openbao
     command: bao status -format=json
@@ -65,10 +65,10 @@
   block:
   - name: Initialize Openbao
     kubernetes.core.k8s_exec:
-      namespace: "{{ openbao_on_k8s_namespace }}"
+      namespace: "{{ openbao_on_k8s.namespace }}"
       pod: "{{ openbao_pods.resources[0].metadata.name }}"
       container: openbao
-      command: 'bao operator init -key-shares={{ openbao_on_k8s_init_key_shares | quote }} -key-threshold={{ openbao_on_k8s_init_key_threshold | quote }} -format=json'
+      command: 'bao operator init -key-shares={{ openbao_on_k8s.init_key_shares | quote }} -key-threshold={{ openbao_on_k8s.init_key_threshold | quote }} -format=json'
     failed_when: 'openbao_init.rc != 0'
     register: openbao_init
 
@@ -107,7 +107,7 @@
 
 - name: Wait until all openbao instances have joined the cluster
   kubernetes.core.k8s_exec:
-    namespace: "{{ openbao_on_k8s_namespace }}"
+    namespace: "{{ openbao_on_k8s.namespace }}"
     pod: "{{ item.metadata.name }}"
     container: openbao
     command: bao status -format=json
@@ -138,7 +138,7 @@
 - name: Add backups
   include_tasks: backup.yaml
   when:
-  - openbao_on_k8s_enable_backups | bool
+  - openbao_on_k8s.enable_backups | bool
   - openbao_on_k8s_root_token is defined
   - openbao_on_k8s_root_token | length > 0
 ...

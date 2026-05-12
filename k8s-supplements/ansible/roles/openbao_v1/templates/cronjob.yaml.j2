@@ -3,7 +3,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: openbao-metrics-token-renewer
-  namespace: "{{ openbao_on_k8s_namespace }}"
+  namespace: "{{ openbao_on_k8s.namespace }}"
 spec:
   # The job to run at 1:00 PM (13:00) every Thursday
   schedule: "0 13 * * 4"
@@ -16,7 +16,7 @@ spec:
             image: alpine/k8s:{{ k8s_version }}
             env:
               - name: VAULT_ADDR
-                value: "openbao.{{ openbao_on_k8s_namespace }}.svc.cluster.local:8200"
+                value: "openbao.{{ openbao_on_k8s.namespace }}.svc.cluster.local:8200"
               - name: VAULT_TOKEN
                 valueFrom:
                   secretKeyRef:

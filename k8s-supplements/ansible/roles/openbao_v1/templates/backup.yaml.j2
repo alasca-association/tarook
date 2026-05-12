@@ -10,7 +10,7 @@ data:
 kind: Secret
 metadata:
   name: openbao-backup
-  namespace: {{ openbao_on_k8s_namespace | to_json }}
+  namespace: {{ openbao_on_k8s.namespace | to_json }}
 type: Opaque
 
 ---
@@ -18,7 +18,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: openbao-backup
-  namespace: {{ openbao_on_k8s_namespace | to_json }}
+  namespace: {{ openbao_on_k8s.namespace | to_json }}
 spec:
   replicas: 1
   selector:
@@ -54,7 +54,7 @@ spec:
               key: openbao_approle_path
               name: openbao-backup
         - name: VAULT_ADDR
-          value: "https://openbao-active.{{ openbao_on_k8s_namespace }}.svc.cluster.local:8200"
+          value: "https://openbao-active.{{ openbao_on_k8s.namespace }}.svc.cluster.local:8200"
         - name: VAULT_CAPATH
           value: /openbao/ca.crt
         image: registry.yaook.cloud/yaook/backup-creator:devel
@@ -79,7 +79,7 @@ spec:
               key: s3_endpoint
               name: openbao-backup
         - name: YAOOK_BACKUP_SHIFTER_S3_BUCKET
-          value: {{ openbao_on_k8s_backup_s3_bucket }}
+          value: {{ openbao_on_k8s.backup_s3_bucket }}
         - name: YAOOK_BACKUP_SHIFTER_S3_ACCESS_KEY
           valueFrom:
             secretKeyRef:
@@ -93,7 +93,7 @@ spec:
         - name: YAOOK_BACKUP_SHIFTER_S3_CACERT
           value: /openbao/s3_ca.crt
         - name: YAOOK_BACKUP_SHIFTER_S3_ADDRESSING_STYLE
-          value: {{ openbao_on_k8s_backup_s3_addressing_style }}
+          value: {{ openbao_on_k8s.backup_s3_addressing_style }}
         - name: YAOOK_BACKUP_SHIFTER_METRICS_PORT
           value: "19100"
         image: registry.yaook.cloud/yaook/backup-shifter:1.0.166
@@ -125,7 +125,7 @@ metadata:
   labels:
     yaook.cloud/component: openbao-backup
   name: openbao-backup-monitoring
-  namespace: {{ openbao_on_k8s_namespace | to_json }}
+  namespace: {{ openbao_on_k8s.namespace | to_json }}
 spec:
   ports:
   - port: 19100
@@ -140,7 +140,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: openbao-backup
-  namespace: {{ openbao_on_k8s_namespace | to_json }}
+  namespace: {{ openbao_on_k8s.namespace | to_json }}
 {% if monitoring_common_labels %}
   labels:
 {% for label_key, label_value in monitoring_common_labels.items() %}
@@ -150,7 +150,7 @@ metadata:
 spec:
   namespaceSelector:
     matchNames:
-      - {{ openbao_on_k8s_namespace }}
+      - {{ openbao_on_k8s.namespace }}
   selector:
     matchLabels:
       yaook.cloud/component: openbao-backup

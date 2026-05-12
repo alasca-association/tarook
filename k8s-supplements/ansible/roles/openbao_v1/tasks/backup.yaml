@@ -35,23 +35,23 @@
         auth_endpoints: "{{ bao_out.stdout | from_json }}"
     - name: Enable the app roles endpoint
       vars:
-        bao_expression: "bao auth enable -path={{ openbao_on_k8s_backup_approle_path | quote }} approle"
-      # NOTE: openbao_on_k8s_backup_approle_path never ends with a slash
+        bao_expression: "bao auth enable -path={{ openbao_on_k8s.backup_approle_path | quote }} approle"
+      # NOTE: openbao_on_k8s.backup_approle_path never ends with a slash
       #       whereas the keys in auth_endpoints may do
-      when: not openbao_on_k8s_backup_approle_path in (auth_endpoints.keys() | map('regex_replace', '[/]$', ''))
+      when: not openbao_on_k8s.backup_approle_path in (auth_endpoints.keys() | map('regex_replace', '[/]$', ''))
       include_tasks: bao_k8s_command.yaml
 
 - name: Create an AppRole for the backup-creator
   vars:
     bao_expression: |
-      bao write auth/{{ openbao_on_k8s_backup_approle_path | quote }}/role/yaook-backup-creator token_policies="sys/policies/acl/yaook/backup-creator" token_ttl=1h
+      bao write auth/{{ openbao_on_k8s.backup_approle_path | quote }}/role/yaook-backup-creator token_policies="sys/policies/acl/yaook/backup-creator" token_ttl=1h
   include_tasks: bao_k8s_command.yaml
 
 - name: Fetch the role_id
   block:
     - name: Fetch the role_id
       vars:
-        bao_expression: "bao read -format=json auth/{{ openbao_on_k8s_backup_approle_path | quote }}/role/yaook-backup-creator/role-id"
+        bao_expression: "bao read -format=json auth/{{ openbao_on_k8s.backup_approle_path | quote }}/role/yaook-backup-creator/role-id"
       include_tasks: bao_k8s_command.yaml
     - name: Save the role_id
       set_fact:
@@ -65,7 +65,7 @@
       vars:
         # `bao list` returns with code `2` if it doesn't find any secret id accessors.
         # Because of the way our `bao_command` task is designed, we need to work around by appending `|| true`
-        bao_expression: "bao list -format=json auth/{{ openbao_on_k8s_backup_approle_path }}/role/yaook-backup-creator/secret-id || true"
+        bao_expression: "bao list -format=json auth/{{ openbao_on_k8s.backup_approle_path }}/role/yaook-backup-creator/secret-id || true"
       include_tasks: bao_k8s_command.yaml
     # The command above either returns a list of secret ids (`["0xdeadbeef",…]`) or an empty dict (`{}').
     # `loop` cannot iterate over a dictionary (which makes sense).
@@ -75,11 +75,11 @@
       loop: "{{ (bao_out.stdout | from_json) | ternary((bao_out.stdout | from_json), []) }}"
       vars:
         bao_expression: |
-          bao write auth/{{ openbao_on_k8s_backup_approle_path | quote }}/role/yaook-backup-creator/secret-id-accessor/destroy secret_id_accessor={{ item | quote }}
+          bao write auth/{{ openbao_on_k8s.backup_approle_path | quote }}/role/yaook-backup-creator/secret-id-accessor/destroy secret_id_accessor={{ item | quote }}
       include_tasks: bao_k8s_command.yaml
     - name: Generate a secret_id
       vars:
-        bao_expression: "bao write -f -format=json auth/{{ openbao_on_k8s_backup_approle_path | quote }}/role/yaook-backup-creator/secret-id"
+        bao_expression: "bao write -f -format=json auth/{{ openbao_on_k8s.backup_approle_path | quote }}/role/yaook-backup-creator/secret-id"
       include_tasks: bao_k8s_command.yaml
     - name: Save the secret_id
       set_fact:
@@ -100,7 +100,7 @@
 
 # As we rotated the secret id, let's rollout the backup tooling and not bother with "has it really changed?"
 - name: Rollout the deployment
-  command: "kubectl rollout restart deployment -n {{ openbao_on_k8s_namespace }} openbao-backup"
+  command: "kubectl rollout restart deployment -n {{ openbao_on_k8s.namespace }} openbao-backup"
   changed_when: true
 
 # Notes:

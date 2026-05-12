@@ -2,7 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: openbao
-  namespace: "{{ openbao_on_k8s_namespace }}"
+  namespace: "{{ openbao_on_k8s.namespace }}"
 {% if monitoring_common_labels %}
   labels:
 {% for label_key, label_value in monitoring_common_labels.items() %}
@@ -29,7 +29,7 @@ spec:
       format:
       - prometheus
     tlsConfig:
-      serverName: "openbao.{{ openbao_on_k8s_namespace }}.svc.cluster.local"
+      serverName: "openbao.{{ openbao_on_k8s.namespace }}.svc.cluster.local"
       ca:
         secret:
           name: openbao-ca-internal
@@ -37,4 +37,4 @@ spec:
           optional: false
   namespaceSelector:
     matchNames:
-      - "{{ openbao_on_k8s_namespace }}"
+      - "{{ openbao_on_k8s.namespace }}"

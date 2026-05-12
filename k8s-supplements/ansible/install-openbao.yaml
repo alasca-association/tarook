@@ -7,7 +7,7 @@
   - vars/etc.yaml
   roles:
   - role: openbao_on_k8s_v1
-    when: openbao_on_k8s_enabled | bool
+    when: openbao_on_k8s.enabled | bool
     tags:
     - openbao_on_k8s_v1
     - openbao
