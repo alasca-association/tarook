@@ -153,7 +153,7 @@ in {
 
       '';
       type = types.pathInStore;
-      default = (yk8s-lib.mkYaml "yk8s-calico-values.yaml" cfg.helm.values).outPath;
+      default = (yk8s-lib.mkYaml "yk8s-calico-values.yaml" [cfg.helm.values]).outPath;
       defaultText = "Values given in :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.values`";
       example = lib.options.literalExpression "./calico/helm/values.yaml";
     };

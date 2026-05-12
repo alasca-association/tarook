@@ -366,7 +366,7 @@ in {
         ))
       ]);
   in [
-    (mkYamlAtPath "hosts" (lib.pipe cfg.ansible_hosts [trimEmptySubmoduleAttrs filterNull]))
+    (mkYamlAtPath "hosts" [(lib.pipe cfg.ansible_hosts [trimEmptySubmoduleAttrs filterNull])])
     (mkGroupVarsFile {
       inherit cfg;
       inventory_path = "all/infra.yaml";

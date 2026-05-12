@@ -47,16 +47,18 @@ in {
     inventory_subdir = "vault";
     inventory_packages = [
       (
-        mkYamlAtPath "main.yaml" {
-          wg_usage = config.yk8s.wireguard.enabled;
-          k8s_controller_manager_enable_signing_requests = config.yk8s.kubernetes.controller_manager.enable_signing_requests;
-          vault_cluster_name = cfg.cluster_name;
-          thanos_enabled = config.yk8s.k8s-service-layer.prometheus.use_thanos;
-          manage_thanos_bucket = config.yk8s.k8s-service-layer.prometheus.manage_thanos_bucket;
-          thanos_config_file = config.yk8s.k8s-service-layer.prometheus.thanos_objectstorage_config_file;
-          vault_backup_s3_enabled = config.yk8s.k8s-service-layer.vault.enable_backups;
-          vault_backup_s3_config_file = config.yk8s.k8s-service-layer.vault.s3_config_file;
-        }
+        mkYamlAtPath "main.yaml" [
+          {
+            wg_usage = config.yk8s.wireguard.enabled;
+            k8s_controller_manager_enable_signing_requests = config.yk8s.kubernetes.controller_manager.enable_signing_requests;
+            vault_cluster_name = cfg.cluster_name;
+            thanos_enabled = config.yk8s.k8s-service-layer.prometheus.use_thanos;
+            manage_thanos_bucket = config.yk8s.k8s-service-layer.prometheus.manage_thanos_bucket;
+            thanos_config_file = config.yk8s.k8s-service-layer.prometheus.thanos_objectstorage_config_file;
+            vault_backup_s3_enabled = config.yk8s.k8s-service-layer.vault.enable_backups;
+            vault_backup_s3_config_file = config.yk8s.k8s-service-layer.vault.s3_config_file;
+          }
+        ]
       )
     ];
   };

@@ -139,7 +139,7 @@ in {
         policy_file = mkInternalOption {
           readOnly = true;
           type = types.pathInStore;
-          default = toString (mkYaml "audit-policy.yaml" (filterNull cfg.apiserver.audit_logs.policy));
+          default = toString (mkYaml "audit-policy.yaml" [(filterNull cfg.apiserver.audit_logs.policy)]);
         };
       };
     };
