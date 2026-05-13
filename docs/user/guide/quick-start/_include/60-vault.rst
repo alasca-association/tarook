@@ -1,6 +1,3 @@
-Configure the Vault backend
-===========================
-
 1. Connecting the Vault backend
 
    If you are using the development Vault setup

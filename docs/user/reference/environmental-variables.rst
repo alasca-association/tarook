@@ -4,7 +4,7 @@ Environment Variable Reference
 The cluster management action scripts rely extensively on environment
 variables to interact with the cluster. A full overview of the variables
 is provided below. It is strongly recommended to read the whole document
-before starting to :doc:`initialize a cluster repository </user/guide/quick-start/initialization>`
+before starting to :doc:`initialize a cluster repository </user/guide/quick-start/index>`
 for the first time.
 
 .. tip::
@@ -146,6 +146,24 @@ Sample openrc for application credentials based authentication
    export OS_REGION_NAME="abcd"
    export OS_INTERFACE=public
    export OS_IDENTITY_API_VERSION=3
+
+Proxmox Credentials
+-------------------
+
+``PROXMOX_VE_ENDPOINT`` needs to be set to the endpoint of the Proxmox environment.
+
+For authentication, use:
+* Either ``PROXMOX_VE_USERNAME`` and ``PROXMOX_VE_PASSWORD``
+* or ``PROXMOX_VE_API_TOKEN`` (takes precedence).
+
+Sample env file
+~~~~~~~~~~~~~~~
+
+.. code:: shell
+
+   export PROXMOX_VE_ENDPOINT=https://example.org:8000
+   export PROXMOX_VE_USERNAME=myuser
+   export PROXMOX_VE_PASSWORD=mypassword
 
 External resources
 ------------------
@@ -377,7 +395,19 @@ YAOOK_K8S_DIRENV_MANUAL                     ``false``   If set to ``true``, the 
 Template
 --------
 
-The template file is located at ``nix/templates/cluster-repo/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
 
-.. literalinclude:: /templates/envrc.template.sh
-   :language: bash
+.. tabs::
+
+   .. tab:: OpenStack
+
+      The template file is located at ``nix/templates/cluster-repo/openstack/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
+
+      .. literalinclude:: /templates/envrc.openstack.template.sh
+         :language: bash
+
+   .. tab:: Proxmox
+
+      The template file is located at ``nix/templates/cluster-repo/proxmox/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
+
+      .. literalinclude:: /templates/envrc.proxmox.template.sh
+         :language: bash

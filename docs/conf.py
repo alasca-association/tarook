@@ -22,15 +22,21 @@ extensions = [
     'sphinx_tabs.tabs',
     "sphinx_design",
     'myst_parser',
-    'sphinx_copybutton'
+    'sphinx_copybutton',
+    'sphinx_jinja',
 ]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store',
                     '_releasenotes/*', 'README.md',
-                    ".terraform-doc-header.md"]
+                    ".terraform-doc-header.md", '**/_include/*',]
 
 myst_enable_extensions = ["colon_fence"]
+
+jinja_contexts = {
+    'openstack_ctx': {'target': 'openstack'},
+    'proxmox_ctx': {'target': 'proxmox'},
+}
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

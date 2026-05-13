@@ -1,1 +1,1 @@
-The behaviour of the initialization script has changed. Use -b to pass a custom branch name instead of passing it as the first argument, see :ref:`initialization.create-and-initialize-cluster-repository`
+The behaviour of the initialization script has changed. Use -b to pass a custom branch name instead of passing it as the first argument, see :ref:`initialization <initialization.create-and-initialize-cluster-repository>`
