@@ -1,176 +1,121 @@
-Use of HashiCorp Vault in TAROOK
-===================================
+HashiCorp Vault
+===============
 
-As of Summer 2023, Tarook exclusively supports
-`HashiCorp Vault <https://vaultproject.io>`__ as backend for storing secrets.
-Previously, passwordstore was used. Vault supports many different kinds
-of secrets and in particular its support for managing PKIs made it
-attractive for Tarook.
+The ``vault_v1`` role deploys a HashiCorp Vault instance in the
+Kubernetes cluster. This is not to be confused with
+support for :ref:`HashiCorp Vault<vault>` as secrets backend.
 
-A Vault instance can be the backend for one or more Tarook clusters;
-it is not required that each cluster has a separate Vault. It is also
-possible to use the Vault instance for something else in addition to
-hosting Tarook clusters, though this is not recommended to avoid
-accidental exposure of credentials.
-
-Vault primer
-------------
-
-If you are already familiar with Vault, you can skip this section.
-
-Vault is a secret storage engine. Secrets are organized in so-called
-secrets engines. Each engine manages a different type of secret. For
-Tarook, the three most important secret engines are:
-
--  `SSH CA/Certificate management <https://www.vaultproject.io/docs/secrets/ssh>`__
-   (``ssh``)
--  `Public-Key Infrastructure CA/Certificate management <https://www.vaultproject.io/docs/secrets/pki>`__
-   (``pki``)
--  `Generic Key/Value <https://www.vaultproject.io/docs/secrets/kv/kv-v2>`__
-   (``kv``, version 2)
-
-Secrets are accessed via HTTPS. Secrets engines are mounted at a URL
-path, so that everything at and below the mount point is handled by that
-secrets engine.
-
-For example, if we mount a ``kv`` engine at ``foo/`` and an ``ssh``
-engine at ``bar/`` then ``https://vault-server/foo/xyz`` is handled by
-the ``kv`` engine and ``https://vault-server/bar/baz`` is handled by the
-``ssh`` engine. Any other path would cause a 404 (with exceptions, see
-below).
-
-In addition to secrets engines you mounted, Vault also has some internal
-endpoints, as well as the ``auth/`` prefix under which authentication
-methods live.
-
-Authentication methods can, like secrets engines, be used in a very
-modular fashion. For Tarook, the
-`approle <https://www.vaultproject.io/docs/auth/approle>`__ method
-is most important. It allows to create role/secret pairs, which are
-functionally identical to a username/password pair. These are intended
-to be used by machine accounts and in Tarook they are used to give
-each node a unique credential.
-
-Access to data in Vault, including authentication configuration, happens
-via HTTPS calls. The actions on an item (create, update, delete) are
-distinguished using standard HTTP methods (GET, POST, DELETE). The
-access control is based on policies, which in turn grant access to
-specific HTTP methods on paths. That way, very fine grained access
-control is possible, even down into specific parts of a secret engine.
-
-Organization of Data in Vault
------------------------------
-
-All secrets engines used by Tarook are mounted below the ``yaook/``
-path prefix. (This prefix is configurable, but that is not well-tested.)
-Each cluster gets its own secrets engines, to improve the isolation
-between different clusters. The per-cluster secrets engines are mounted
-at ``yaook/$cluster_name/...``, where ``$cluster_name`` is configured with
-the :ref:`configuration-options.yk8s.vault.cluster_name` config option.
-
-The following six secrets engines are used:
-
--  ``yaook/$cluster_name/kv``, a KV2 engine for generic secrets
-   (wireguard key, service account signing key, …)
--  ``yaook/$cluster_name/k8s-pki``, a CA to issue identities within the
-   Kubernetes cluster (e.g. API server, nodes)
--  ``yaook/$cluster_name/k8s-front-proxy-pki``, a CA to prove the
-   identity of the Kubernetes API server for API extensions
--  ``yaook/$cluster_name/etcd-pki``, a CA to issue identities within the
-   etcd cluster (e.g. cluster peers, clients)
--  ``yaook/$cluster_name/ssh-ca``, an SSH certificate authority to allow
-   verifying node SSH keys without prior knowledge
-
-In addition to the secrets engines, Tarook has a shared ``approle``
-authentication method at ``yaook/nodes``. This auth method is used to
-provide credentials for the individual nodes of all clusters.
-
-Vault UI
---------
-
-Vault comes with a web user interface. In order to access the web
-interface, enter the cluster repository and run:
-
-.. code:: console
-
-   $ sensible-browser "$VAULT_ADDR/ui/"
-
-The ``VAULT_ADDR`` environment variable is automatically provided if you
-have ``actions/vault_env.sh`` sourced in your ``.envrc``, as is
-recommended. ``sensible-browser`` is a Debian-ism. On non-Debian
-distributions, you may want to ``echo "$VAULT_ADDR/ui/"`` instead and
-just open that link.
-
-After opening the web UI page, you need to log in. You can log in as
-root using the root token. The root token can be displayed using:
-
-.. code:: console
-
-   $ echo "$VAULT_TOKEN"
-
-Or copied into the (X) clipboard using (does not work on Wayland, most
-likely):
-
-.. code:: console
-
-   $ echo "$VAULT_TOKEN" | xsel -bi
-
-On the use of Ed25519 keys
---------------------------
-
-By default, all scripts in this repository generate Ed25519 key pairs
-for CA-level keys.
-
-The reason for this is that elliptic curve keys are generally smaller
-and thus easier to store offline, if your policies require such
-treatment. Ed25519 is preferred over NIST-ECDSA, simply because based on
-implementation issues in the recent years it seems to be the more robust
-algorithm for long-term must-not-be-exposed secrets.
-
-The downside is that this renders the setup incompatible with Ubuntu
-versions older than 20.04 LTS (and probably other operating systems) due
-to lack of support in the respective ``python3-cryptography`` package.
-
-.. _vault.on-policies:
-
-On policies
------------
-
-The ``vault/init.sh`` script (see below) creates Vault policies which
-are used for and by the LCM. There are separate policies for K8s nodes,
-K8s control plane nodes, gateway nodes, common nodes and the
-orchestrator.
-
-All except the orchestrator role are used by machines provisioned by the
-LCM. The orchestrator role is designed to be used to *run* and use the
-LCM. It has sufficient privileges to execute all scripts listed below,
-except the ``init.sh`` script, but including the ``mkcluster-*.sh`` and
-``import.sh`` scripts.
-
-Hence, this role is rather powerful, but it’s still better than a root
-token.
-
-Using a token or approle account with the orchestrator role is the
-recommended way to invoke the LCM. For development setups, the LCM
-defaults to running with the root token.
-
-To run the LCM with a custom token, set the ``VAULT_TOKEN`` environment
-variable. To run the LCM with a custom approle, set the
-``VAULT_AUTH_PATH``, ``VAULT_AUTH_METHOD=approle``, ``VAULT_ROLE_ID``
-and ``VAULT_SECRET_ID`` environment variables (see also
-:ref:`Vault tooling variables <environmental-variables.vault-tooling-variables>`).
-
-.. note::
-   Currently, only ``approle`` is supported as an auth method
-   besides ``token``. Additional auth methods could be implemented as
-   needed.
+For more details about the software, check out the
+`HashiCorp Vault <https://www.vaultproject.io/>`__
+website. The deployment happens
+via the
+`Vault Helm Chart <https://github.com/hashicorp/vault-helm/>`__.
 
 .. note::
 
-   The approle-related environment variables described above are
-   only supported by the ansible LCM. They are not supported by the
-   ``vault`` CLI tool or the vault scripts. To use different privileges
-   with those, manually log into Vault using the CLI and export the
-   resulting token via the ``VAULT_TOKEN`` environment variable.
+   The Vault integration is considered ready for production. It’s
+   deployed in a highly available fashion (n=3) and comes with support for
+   backups and monitoring. The initial unseal keys are written to the file
+   system and must be **rotated as soon as possible and the fresh keys then
+   stored appropriately**. Note that one can create a fresh root token as
+   long as one has the necessary unseal key(s).
 
-.. _vault.managing-clusters-in-vault:
+Backups
+-------
+
+Backups have become opt-out instead of opt-in because of their
+importance. The role deploys the
+`backup-creator and -shifter tandem <https://gitlab.com/yaook/images/backup-creator>`__
+which pushes an encrypted snapshot to an S3 bucket.
+
+If you want to use this built-in
+backup mechanism (which you should unless you have an alternative),
+create a copy of
+``managed-k8s/templates/vault_backup_s3_config.template.yaml``, place it
+as ``config/vault_backup_s3_config.yaml`` and fill in the gaps.
+
+.. _vault-backups.enable:
+
+Enable backups by setting :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable_backups` to ``true``.
+
+This configuration must be stored in your cluster key-value secrets engine
+under ``kv/data/vault-backup-s3-config``.
+
+Inserting the Vault backup S3 config into Vault can be automated by
+storing the configuration at ``config/vault/backup_s3_config.yaml``,
+setting :ref:`configuration-options.yk8s.k8s-service-layer.vault.s3_config_file` accordingly,
+then triggering the Vault update script:
+
+.. code:: console
+
+   $ ./managed-k8s/tools/vault/update.sh
+
+Alternatively, you can also manually insert your configuration into vault.
+
+Consider the
+`official docs <https://developer.hashicorp.com/vault/tutorials/standard-procedures/sop-restore>`__
+for restore instructions.
+
+.. _vault-backups.disable:
+
+If no backups are required, disable backups by setting :ref:`configuration-options.yk8s.k8s-service-layer.vault.enable_backups` to ``false``.
+
+Credential management
+---------------------
+
+Unseal key(s) and an initial root token are cached in the cluster
+repository (``etc/vault_unseal.key`` and
+``etc/vault_root_token``). It is up to you to rotate and
+store them securely. The role requires privileges to create certain
+policies and approles so for now we rely on using a root token (which is
+kind of ugly).
+
+-  The root token is either read from the file system
+   (``etc/vault_root_token``) or from the environment
+   variable ``VAULT_TOKEN``.
+-  If vault is sealed, then the role will attempt to read the unseal
+   keys from the file system (``etc/vault_unseal.key``). If
+   they cannot be found, ask the (human) operators to unlock vault for
+   you.
+
+Monitoring
+----------
+
+Vault offers metrics and the role deploys a corresponding service
+monitor including required means of authentication and authorization.
+
+The Prometheus-Vault integration leverages a long-lived periodic token to
+access the Vault metrics endpoint. This token is automatically generated
+and managed by a Kubernetes CronJob and Pod. The CronJob is scheduled to
+run every Thursday at 1:00 PM, creating a new Pod to renew the token.
+This automated process eliminates the need for manual renewal and reduces
+the risk of misconfiguration.
+
+No alerting rules have been defined yet but one probably wants to keep an
+eye on vault’s performance, response error rate and seal status.
+
+API endpoints and certificates
+------------------------------
+
+By default, vault listens on a cluster internal API endpoint whose
+authenticity is ensured by a self-signed PKI. If you need to use that
+endpoint you can find the certificate in the secret
+``vault-ca-internal``. The LCM does **not** fetch the certificate for
+you. Additionally, one can define external (or public) endpoints. Place
+the DNS names in the ``dnsnames`` list and ensure that the records and
+your ingress controller are properly configured. Furthermore you have to
+specify a ``(Cluster)Issuer`` in
+:ref:`configuration-options.yk8s.k8s-service-layer.vault.external_ingress_issuer_name`
+and, if required, change the value of
+:ref:`configuration-options.yk8s.k8s-service-layer.vault.external_ingress_issuer_kind`.
+
+Note: We cannot assume the existence of a publically available vault
+endpoint but must be able to interact with the vault cluster from the
+orchestrator. As a consequence we cannot make use of ansible’s built-in
+vault modules but instead we have to jump into the vault pods to execute
+commands as our second-best option.
+
+Vault Configuraton
+------------------
+
+See :ref:`configuration-options.yk8s.vault`
