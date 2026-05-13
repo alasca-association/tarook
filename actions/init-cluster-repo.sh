@@ -5,7 +5,31 @@ actions_dir="$(dirname "$0")"
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
+usage() {
+    echo "Usage: $0 <target>"
+}
+
+arg_num=1
+if [ "$#" -gt "$arg_num" ]; then
+    echo "ERROR: Expecting at maximum $arg_num argument(s), but $# were given" >&2
+    echo >&2
+    usage
+    exit 2
+fi
+
 check_nix_version
+
+target="${1:-openstack}"
+
+case "$target" in
+    openstack|proxmox)
+    ;;
+    *)
+    echo "Unsupported target."
+    echo "Currently supported targets: openstack, proxmox"
+    exit 1
+    ;;
+esac
 
 submodule_base="submodules"
 
@@ -53,7 +77,7 @@ if [ "$(realpath "$new_actions_dir")" != "$(realpath "$actions_dir")" ]; then
         # execute init from the cloned repository; it should not change anything
         # but it’ll provide a consistent state
         hintf 're-executing init-cluster-repo.sh from local submodule'
-        exec "$new_actions_dir/init-cluster-repo.sh"
+        exec "$new_actions_dir/init-cluster-repo.sh" "$target"
     else
         warningf "no executable init-cluster-repo.sh action in the $submodule_managed_k8s_name submodule"
         hintf "this means that the cloned $submodule_managed_k8s_name submodule is unexpectedly old"
@@ -62,7 +86,7 @@ if [ "$(realpath "$new_actions_dir")" != "$(realpath "$actions_dir")" ]; then
     fi
 fi
 
-run nix flake init -t "${code_repository}?shallow=1#cluster-repo" || true # not overriding existing files is ok
+run nix run "${code_repository}?shallow=1#template" "${target}"
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     # TODO foreach file: only add if not already tracked or in index
 	run git add flake.nix .gitignore config .envrc

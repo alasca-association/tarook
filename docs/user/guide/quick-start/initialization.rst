@@ -153,7 +153,7 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
       .. code:: console
 
-         $ nix run "git+https://gitlab.com/alasca.cloud/tarook/tarook?ref=<branch1>#init" <branch2>
+         $ nix run "git+https://gitlab.com/alasca.cloud/tarook/tarook?ref=<branch1>#init" -b <branch2>
 
       where ``<branch1>`` selects the branch or tag from which the init script is to be run (defaults to ``devel``)
       and ``<branch2>`` selects the branch or tag that will be checked out in the submodule (defaults to the latest version known to ``branch1``).
