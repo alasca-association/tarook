@@ -24,14 +24,29 @@ fi
 envrc = Path(".envrc")
 
 content = envrc.read_text()
-for block in blocks_to_remove:
-    content = content.replace(block, "")
+lines = content.splitlines()
+blocks_as_lines = [block.strip("\n").splitlines() for block in blocks_to_remove]
 
-lines = content.splitlines(True)
-lines = [l for l in lines if l.strip() not in lines_to_remove]  # noqa: E741
+filtered_lines = []
+idx = 0
+while idx < len(lines):
+    matched_block = False
+    for block in blocks_as_lines:
+        if lines[idx:idx + len(block)] == block:
+            idx += len(block)
+            matched_block = True
+            break
 
+    if matched_block:
+        continue
 
-if lines and lines[-1].strip() == "":
-    lines.pop()
+    if lines[idx].strip() not in lines_to_remove:
+        filtered_lines.append(lines[idx])
 
-envrc.write_text("".join(lines))
+    idx += 1
+
+new_content = "\n".join(filtered_lines).rstrip()
+if new_content:
+    new_content += "\n"
+
+envrc.write_text(new_content)
