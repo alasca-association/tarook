@@ -1,15 +1,81 @@
 #!/usr/bin/env bash
 set -euo pipefail
+submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/alasca.cloud/tarook/tarook.git}"
+
+###
+# Before doing anything else, we check whether a branch was passed via -b
+# If so, we run the init script from the specified branch instead,
+# passing all other arguments unaltered
+# NOTE: There should be no logic before this, in order to ensure compatibility with all branches that provide #init
+for arg in "$@"; do
+    if [[ "$arg" == -b ]]; then
+        # Branch was passed
+
+        branch=""
+        other_args=()
+
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                -b)
+                    branch="$2"
+                    shift 2
+                    ;;
+                *)
+                    other_args+=("$1")
+                    shift
+                    ;;
+            esac
+        done
+
+        looks_like_commit() {
+            [[ "$1" =~ ^[0-9a-f]{40}$ ]] || [[ "$1" =~ ^[0-9a-f]{7,}$ ]]
+        }
+
+        if looks_like_commit "$branch"; then
+            echo "NOTE: ${branch} will be interpreted as a commit id. If there exists a reference with this name, it is not accessible through this script."
+            url="git+${submodule_managed_k8s_url}?rev=${branch}"
+        else
+            url="git+${submodule_managed_k8s_url}?ref=${branch}"
+        fi
+        echo "Executing init script from ${url}"
+        export MANAGED_K8S_LATEST_RELEASE=false
+        export MANAGED_K8S_GIT_BRANCH="$branch"
+        exec nix run "${url}#init" -- "${other_args[@]}"
+    fi
+done
+#
+###
+
 actions_dir="$(dirname "$0")"
 
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
+usage() {
+    echo "Usage: $0 <template>"
+}
+
+arg_num=1
+if [ "$#" -ne "$arg_num" ]; then
+    echo "ERROR: Expecting $arg_num argument(s), but $# were given" >&2
+    echo >&2
+    usage
+    exit 2
+fi
+
 check_nix_version
+
+template="${1}"
+
+template_dir="${actions_dir}/../templates/cluster-repo/"
+if [[ "$arg" == */* || ! -e "${template_dir}/${arg}" ]]; then
+    echo "Unsupported template."
+    echo "Currently supported templates: $(ls ${template_dir} | paste -sd,)"
+    exit 1
+fi
 
 submodule_base="submodules"
 
-submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/alasca.cloud/tarook/tarook.git}"
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     if [ ! -d "$submodule_managed_k8s_name" ]; then
@@ -47,22 +113,7 @@ if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     run git submodule update --init --recursive
 fi
 
-new_actions_dir="$submodule_managed_k8s_name/actions"
-if [ "$(realpath "$new_actions_dir")" != "$(realpath "$actions_dir")" ]; then
-    if [ -x "$new_actions_dir/init-cluster-repo.sh" ]; then
-        # execute init from the cloned repository; it should not change anything
-        # but it’ll provide a consistent state
-        hintf 're-executing init-cluster-repo.sh from local submodule'
-        exec "$new_actions_dir/init-cluster-repo.sh"
-    else
-        warningf "no executable init-cluster-repo.sh action in the $submodule_managed_k8s_name submodule"
-        hintf "this means that the cloned $submodule_managed_k8s_name submodule is unexpectedly old"
-        hintf 'we will fail now.'
-        exit 1
-    fi
-fi
-
-run nix flake init -t "${code_repository}?shallow=1#cluster-repo" || true # not overriding existing files is ok
+rsync --verbose --chmod=644 --recursive --copy-links --ignore-existing "${template_dir}/${template}"/ .
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     # TODO foreach file: only add if not already tracked or in index
 	run git add flake.nix .gitignore config .envrc

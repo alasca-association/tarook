@@ -57,6 +57,10 @@ described :doc:`here </user/reference/cluster-repository>`. Except in very
 rare cases where a new feature requires it, you’ll need and should
 execute this script only once.
 
+The script supports arguments for specifying
+the branch of Tarook to checkout in the cluster repository
+and the flavor of initial configuration to setup.
+
 .. _actions-references.k8s-loginsh:
 
 ``k8s-login.sh``

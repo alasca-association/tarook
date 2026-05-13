@@ -19,7 +19,6 @@
       imports = [
         ./nix/renderDocs.nix
         ./nix/yk8s-env.nix
-        ./nix/templates
         ./ci/container-image
       ];
       perSystem = {
@@ -39,13 +38,12 @@
         packages = {
           init = pkgs.writeShellApplication {
             name = "init-cluster-repo";
-            runtimeInputs = [config.yk8s-env.environments.default];
+            runtimeInputs = with pkgs; [
+              rsync
+              git
+            ];
             text = ''
-              if [[ -n "''${1:-""}" ]]; then
-                export MANAGED_K8S_LATEST_RELEASE=false
-                export MANAGED_K8S_GIT_BRANCH="$1"
-              fi
-              ${./.}/actions/init-cluster-repo.sh
+              exec ${self}/actions/init-cluster-repo.sh "$@"
             '';
           };
           alejandra-tree = pkgs.writeShellApplication {

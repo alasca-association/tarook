@@ -80,8 +80,9 @@
     - git add flake.nix config
     - direnv allow
     - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
-    - ../actions/init-cluster-repo.sh
-    - ../actions/init-cluster-repo.sh # A second run to check idempotency
+    - ../actions/init-cluster-repo.sh openstack
+    - ../actions/init-cluster-repo.sh openstack # A second run to check idempotency
+    - ../actions/init-cluster-repo.sh # Check that init target is optional
     - cp res/custom-play.yaml k8s-custom/main.yaml
       # Note that this is basically a dummy keypair that is not used to protect any significant data
     - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
