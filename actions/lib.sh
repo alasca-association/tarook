@@ -7,6 +7,7 @@ group_vars_dir="${cluster_repository}/inventory/yaook-k8s/group_vars"
 conf_vars_file="${cluster_repository}/inventory/conf_vars/main.yaml"
 terraform_vars_dir="${cluster_repository}/inventory/terraform"
 state_dir="$cluster_repository/state"
+cluster_repo_template_dir="$code_repository/templates/cluster-repo"
 
 release_migration_lock="$state_dir/release-migration-in-progress"
 
@@ -430,4 +431,11 @@ function tf_init() {
             _tf_init
         fi
     fi
+}
+
+function cluster_repo_template_list() {
+    find "${cluster_repo_template_dir}" -mindepth 1 -maxdepth 1 -type d -printf '%f\0' \
+        | sort --zero-terminated \
+        | paste --zero-terminated --serial --delimiters=, \
+        | tr -d '\0'
 }

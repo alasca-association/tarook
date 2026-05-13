@@ -145,7 +145,7 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
    .. code:: console
 
-      $ nix run "git+https://gitlab.com/alasca.cloud/tarook/tarook#init"
+      $ nix run "git+https://gitlab.com/alasca.cloud/tarook/tarook#init" -- openstack
 
    .. hint::
 
@@ -153,12 +153,7 @@ serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
 
       .. code:: console
 
-         $ nix run "git+https://gitlab.com/alasca.cloud/tarook/tarook?ref=<branch1>#init" <branch2>
-
-      where ``<branch1>`` selects the branch or tag from which the init script is to be run (defaults to ``devel``)
-      and ``<branch2>`` selects the branch or tag that will be checked out in the submodule (defaults to the latest version known to ``branch1``).
-
-      Typically, you'll want to set both to the same value.
+         $ nix run "git+https://gitlab.com/alasca.cloud/tarook/tarook#init" -- -b <branch2> openstack
 
    This init script will:
 

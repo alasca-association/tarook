@@ -42,7 +42,7 @@
       "description": "Kubernetes version in nix cluster repository configuration template",
       "customType": "regex",
       "managerFilePatterns": [
-        "/^nix/templates/cluster-repo/config/default\\.nix$/"
+        "/^templates/cluster-repo/.+/config/default\\.nix$/"
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.*?) packageName=(?<packageName>.*?)\\n\\s*version\\s=\\s\"(?<currentValue>.*?)\";\\n"

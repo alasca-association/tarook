@@ -195,15 +195,6 @@ Environment Variable                    Default                                 
                                                                                                                 bootstrap the LCM (``Tarook``)
                                                                                                                 repository. Can be used to override
                                                                                                                 the repository to use another mirror.
-``MANAGED_K8S_LATEST_RELEASE``          ``true``                                                                If set to ``true``, ``init-cluster-repo.sh`` will checkout the
-                                                                                                                release version that is written in the ``version`` file
-                                                                                                                on the default branch of ``MANAGED_K8S_GIT``.
-
-                                                                                                                If set to ``false``, the default branch of
-                                                                                                                ``MANAGED_K8S_GIT`` is used (usually ``devel``).
-``MANAGED_K8S_GIT_BRANCH``                                                                                      If set and ``MANAGED_K8S_LATEST_RELEASE`` set to
-                                                                                                                ``false``, the specified branch will be checked out by
-                                                                                                                ``init-cluster-repo.sh``.
 ``TERRAFORM_MODULE_PATH``               ``../terraform``                                                        Path to the Terraform root module to
                                                                                                                 change the working directory for the
                                                                                                                 execution of the Terraform commands.
