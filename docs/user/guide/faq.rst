@@ -74,8 +74,8 @@ nodes <faq.how-do-i-ssh-into-my-cluster-nodes>` and/or by running:
 
    $ ./managed-k8s/actions/test.sh
 
-“How can I delete my Tarook-Cluster?”
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+“How can I delete my Tarook-Cluster on OpenStack?”
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can delete the Tarook-Cluster and all associated OpenStack resources
 by triggering the :ref:`destroy.sh <actions-references.destroysh>` script.

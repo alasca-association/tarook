@@ -1,0 +1,1 @@
+../../nix/templates/cluster-repo/openstack/.envrc

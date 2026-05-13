@@ -3,4 +3,4 @@ The behaviour of the initialization script has changed:
 * Use ``-b`` to pass a custom branch name instead of passing it as the first argument
 * The first positional argument now allows to select from one of the available templates (currently ``minimal``,``openstack``,``proxmox``)
 
-See :ref:`initialization.create-and-initialize-cluster-repository`
+See :ref:`Initialization (OpenStack) <quick-start.openstack.create-and-initialize-cluster-repository>` and :ref:`Initialization (Proxmox) <quick-start.proxmox.create-and-initialize-cluster-repository>`

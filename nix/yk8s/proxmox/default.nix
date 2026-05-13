@@ -175,11 +175,7 @@
 in {
   options.yk8s.proxmox = mkTopSection {
     _docs.preface = ''
-      The environment variable PROXMOX_VE_ENDPOINT needs to be set.
-
-      For authentication, use:
-      * Either PROXMOX_VE_USERNAME and PROXMOX_VE_PASSWORD
-      * or PROXMOX_VE_API_TOKEN (takes precedence).
+      See :ref:`Proxmox Credentials <environmental-variables.proxmox-credentials>` for the environment variables necessary for Proxmox.
     '';
     enabled = mkEnableOption "Proxmox Terraform support";
 

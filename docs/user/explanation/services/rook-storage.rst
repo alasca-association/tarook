@@ -13,7 +13,7 @@ Rook - General information
 
 .. todo::
 
-   needs updates (differentiate between on OpenStack and on Bare
+   needs updates (differentiate between on OpenStack, on Proxmox and on Bare
    Metal)
 
 For the usage of RWX (ReadWriteMany) volumes,

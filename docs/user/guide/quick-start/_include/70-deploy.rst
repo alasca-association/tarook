@@ -1,6 +1,3 @@
-Cluster Deployment
-==================
-
 Deploy your cluster by executing the :ref:`apply-all.sh <actions-references.apply-allsh>` script.
 
 .. code:: console

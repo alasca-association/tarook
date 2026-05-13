@@ -38,7 +38,7 @@ hide-doc: true
 :::{grid-item-card}
 :link: /introduction
 :link-type: doc
-**Tarook** is a holistic life-cycle management tool based on Ansible, Nix, and Terraform, designed to deploy a flexible, customizable, highly available, and scalable kubeadm-based Kubernetes distribution — on both OpenStack and bare-metal infrastructures.
+**Tarook** is a holistic life-cycle management tool based on Ansible, Nix, and Terraform, designed to deploy a flexible, customizable, highly available, and scalable kubeadm-based Kubernetes distribution — on OpenStack, Proxmox and bare-metal infrastructures.
 :::
 ::::
 
