@@ -1,3 +1,5 @@
+.. _ch-k8s-lbaas:
+
 ch-k8s-lbaas
 ============
 
