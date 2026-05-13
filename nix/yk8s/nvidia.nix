@@ -54,8 +54,12 @@ in {
     schedulingSettings
     // {
       # Subcharts
-      # https://github.com/NVIDIA/gpu-operator/tree/master/deployments/gpu-operator/charts/node-feature-discovery
-      nfd.worker = schedulingSettings;
+      # https://github.com/NVIDIA/k8s-device-plugin/blob/3c378193fcebf6e955f0d65bd6f2aeed099ad8ea/deployments/helm/nvidia-device-plugin/Chart.yaml#L10
+      # https://kubernetes-sigs.github.io/node-feature-discovery/master/deployment/helm.html
+      nfd = {
+        worker = schedulingSettings;
+        gc.tolerations = schedulingSettings.tolerations;
+      };
 
       # https://github.com/NVIDIA/gpu-feature-discovery
       gfd = {
