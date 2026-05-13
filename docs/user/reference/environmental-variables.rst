@@ -4,7 +4,7 @@ Environment Variable Reference
 The cluster management action scripts rely extensively on environment
 variables to interact with the cluster. A full overview of the variables
 is provided below. It is strongly recommended to read the whole document
-before starting to :doc:`initialize a cluster repository </user/guide/quick-start/initialization>`
+before starting to :doc:`initialize a cluster repository </user/guide/quick-start/index>`
 for the first time.
 
 .. tip::
@@ -53,7 +53,7 @@ minimally (sic!) adjust the following ones:
 2. Cluster-specific changes to the cluster environment ``.envrc``:
 
    - :ref:`OpenStack Credentials <environmental-variables.openstack-credentials>`
-      if the cluster shall be run on top of OpenStack.
+     if the cluster shall be run on top of OpenStack.
 
      It is recommended to place these into a separate file ``.openrc`` which then
      can be sourced in the ``.envrc``.
@@ -406,7 +406,19 @@ YAOOK_K8S_DIRENV_MANUAL                     ``false``   If set to ``true``, the 
 Template
 --------
 
-The template file is located at ``nix/templates/cluster-repo/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
 
-.. literalinclude:: /templates/envrc.template.sh
-   :language: bash
+.. tabs::
+
+   .. tab:: OpenStack
+
+      The template file is located at ``templates/cluster-repo/openstack/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
+
+      .. literalinclude:: /templates/envrc.openstack.template.sh
+         :language: bash
+
+   .. tab:: Proxmox
+
+      The template file is located at ``templates/cluster-repo/proxmox/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
+
+      .. literalinclude:: /templates/envrc.proxmox.template.sh
+         :language: bash

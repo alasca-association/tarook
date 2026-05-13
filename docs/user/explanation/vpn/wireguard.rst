@@ -5,7 +5,7 @@ Basic setup
 -----------
 
 1. Create a Wireguard keypair as described
-:ref:`here <initialization.required-system-resources>`.
+:ref:`here <quick-start.openstack.required-system-resources>`.
 
 2. Set your Wireguard user and path to the private key
 :ref:`as environment variable <environmental-variables.minimal-required-changes>`.

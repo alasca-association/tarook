@@ -81,6 +81,7 @@
             myst-parser
             sphinx-design
             sphinx-copybutton
+            sphinx-jinja
           ];
       };
 

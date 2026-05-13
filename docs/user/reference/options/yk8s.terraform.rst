@@ -165,7 +165,8 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/terraform.ni
 ##########################
 
 Whether to enable Terraform usage.
-If :ref:`configuration-options.yk8s.openstack.enabled` is true,
+If :ref:`configuration-options.yk8s.openstack.enabled`
+or :ref:`configuration-options.yk8s.proxmox.enabled` is true,
 Terraform is automatically used and must not be explicitly enabled.
 .
 

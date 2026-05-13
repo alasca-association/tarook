@@ -69,7 +69,7 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="Xc9OFvZ67c28g_YzAC6t-22" value="OpenStack&lt;br&gt;IaaS" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=22;dashed=1;dashPattern=1 1;" parent="1" vertex="1">
+                <mxCell id="Xc9OFvZ67c28g_YzAC6t-22" value="OpenStack / Proxmox&lt;br&gt;IaaS" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=22;dashed=1;dashPattern=1 1;" parent="1" vertex="1">
                     <mxGeometry x="679" y="742" width="200" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="Xc9OFvZ67c28g_YzAC6t-23" value="auto-controlled&lt;br&gt;Bare Metal" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=22;dashed=1;dashPattern=1 1;" parent="1" vertex="1">
