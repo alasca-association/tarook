@@ -172,6 +172,9 @@
         type = with types; attrsOf anything;
         default = {};
       };
+      extraCloudConfig = mkOption {
+        # TODO
+      }
     };
   };
 in {
@@ -213,6 +216,41 @@ in {
         The identifier for the datastore for root disks.
       '';
       type = types.nonEmptyStr;
+    };
+
+    cloud_config = {
+      enabled = mkEnableOption ''
+        usage of cloud-config.
+
+        This will allow to use the qemu-guest-agent.
+      '';
+      datastore_id = mkOption {
+        description = ''
+          The identifier for the datastore to upload cloud-config files.
+          Must be a node-local datastore that supports paths.
+          Requires the user to have SSH access to all nodes.
+        '';
+        type = types.nonEmptyStr;
+      };
+      extra_config = mkOption {
+        description = ''
+          Additional configuration compatible with https://docs.cloud-init.io/en/latest/reference/modules.html
+        '';
+        type = with types; attrsOf yk8s.formats.jsonValue;
+        default = {};
+        example = {
+          users = [
+            {
+              name = "testuser";
+              gecos = "Mr. Test";
+              homedir = "/local/testdir";
+              sudo = [
+                "ALL=(ALL) NOPASSWD:ALL"
+              ];
+            }
+          ];
+        };
+      };
     };
 
     clone.vm_id = mkOption {
