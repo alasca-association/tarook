@@ -6,14 +6,14 @@
     name: k8s-packages
     tasks_from: configure-package-repo.yaml
 
-- name: Upgrade kubelet on apt systems
+- name: Upgrade kubelet and kubectl on apt systems
   when: ansible_pkg_mgr == 'apt'
   become: true
   block:
-  - name: Remove the hold of kubelet  # noqa no-changed-when
+  - name: Remove the hold of kubelet and kubectl  # noqa no-changed-when
     command: apt-mark unhold kubelet kubectl
 
-  - name: Upgrade kubelet
+  - name: Upgrade kubelet and kubectl
     apt:
       name:
       - "kubelet={{ next_k8s_version }}-*"
@@ -23,7 +23,7 @@
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
 
-  - name: Re-hold kubelet  # noqa no-changed-when
+  - name: Re-hold kubelet and kubectl  # noqa no-changed-when
     command: apt-mark hold kubelet kubectl
 
 - name: Configure and restart kubelet
