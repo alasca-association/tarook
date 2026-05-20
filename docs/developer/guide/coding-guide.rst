@@ -98,12 +98,6 @@ your branch. Don't forget to ``git pull --rebase=true`` afterwards, if you make 
 
    leave your file empty, this will just leave a link to the corresponding MR.
 
-**Really nothing to add to releasenotes**
-
-   if you just correct a typo or something which really no user cares,
-   name your file ``+.misc.<random>``, this will not provide an entry in the releasenotes
-   (and no link to a MR)
-
 So the following file-names would be valid examples:
 
 .. code:: none
