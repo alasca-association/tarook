@@ -5,25 +5,32 @@
     name: k8s-packages
     tasks_from: configure-package-repo.yaml
 
-- name: Upgrade kubelet and kubectl on apt systems
+- name: Upgrade kubelet, kubectl and cri-tools on apt systems
   when: ansible_pkg_mgr == 'apt'
   become: true
   block:
-  - name: Remove the hold of kubelet and kubectl  # noqa no-changed-when
-    command: apt-mark unhold kubelet kubectl
+  - name: Remove the hold of kubelet, kubectl and cri-tools  # noqa no-changed-when
+    command: apt-mark unhold kubelet kubectl cri-tools
 
-  - name: Upgrade kubelet and kubectl
+  - name: Upgrade kubelet, kubectl and cri-tools
     apt:
       name:
       - "kubelet={{ next_k8s_version }}-*"
       - "kubectl={{ next_k8s_version }}-*"
+      # NOTE: cri-tools follows Kubernetes' release cycle but unlike
+      #       kubelet/kubectl only with respect to its minor version.
+      #       see https://github.com/kubernetes-sigs/cri-tools/blob/46c81013b00ea238cd39499df021441ae51ec65f/README.md#compatibility-matrix-cri-tools--kubernetes
+      - "cri-tools={{
+          next_k8s_version
+          | regex_replace('^(?P<maj>\\d+)[.](?P<min>\\d+)[.].*$', '\\g<maj>.\\g<min>')
+        }}.*"
     register: task_result
     until: task_result is not failed
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
 
-  - name: Re-hold kubelet and kubectl  # noqa no-changed-when
-    command: apt-mark hold kubelet kubectl
+  - name: Re-hold kubelet, kubectl and cri-tools  # noqa no-changed-when
+    command: apt-mark hold kubelet kubectl cri-tools
 
 - name: Configure and restart kubelet
   include_role:
