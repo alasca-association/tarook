@@ -166,6 +166,9 @@ Helm values for the cert-manager helm chart.
 Some values are set by default through Tarook, but arbitrary values can be set.
 For a full list of possible values, see
 https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
+If :ref:`configuration-options.yk8s.k8s-service-layer.envoy-gateway.enabled`
+is set to ``true``,
+the GatewayAPI integration will be enabled.
 
 
 **Type:**::

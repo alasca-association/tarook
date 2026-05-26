@@ -49,8 +49,12 @@ in {
       defaultReleaseNamespace = "k8s-svc-cert-manager";
       defaultReleaseName = "cert-manager";
       valuesDocUrl = "https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml";
-      chartOptions = {
-      };
+      extraValuesDescription = ''
+        If :ref:`configuration-options.yk8s.k8s-service-layer.envoy-gateway.enabled`
+        is set to ``true``,
+        the GatewayAPI integration will be enabled.
+      '';
+      chartOptions = {};
     };
 
     scheduling_key = mkOption {
@@ -117,7 +121,11 @@ in {
         enabled = true;
         servicemonitor.enabled = true;
         servicemonitor.labels = config.yk8s.k8s-service-layer.prometheus.common_labels;
-      };
+      } // lib.optionalAttrs config.yk8s.kubernetes.k8s-service-layer.envoy-gateway.enabled (
+        if lib.versionOlder config.yk8s.kubernetes.k8s-service-layer.envoy-gateway.helm.chart_version "1.21"
+        then {enableGatewayAPI = lib.mkDefault true;}
+        else {gatewayAPI.enabled = lib.mkDefault true;}
+      );
     };
 
   config.yk8s._targets.ansible.assertions = [];
