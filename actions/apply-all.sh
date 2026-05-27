@@ -24,7 +24,10 @@ if [ "${tf_usage:-true}" == 'true' ]; then
   run "$actions_dir/apply-prepare-gw.sh"
 fi
 
-# Invoke whole k8s-supplements (including k8s-core)
+# Invoke whole k8s-core
+run "$actions_dir/apply-k8s-core.sh"
+
+# Invoke whole k8s-supplements
 run "$actions_dir/apply-k8s-supplements.sh"
 
 # Invoke custom stage if it exists

@@ -179,17 +179,6 @@ the k8s-supplements functionality in whole by invoking
 its ``install-all.yaml`` playbook by default
 or another specific playbook.
 
-By default, this playbook takes the necessary preparations
-for the cluster if running on top of OpenStack
-and then invokes the k8s-core ``install-all.yaml`` playbook.
-After the Kubernetes cluster is created,
-it adds necessary and optional surroundings to the cluster.
-
-This script contains the following functionality as subsets:
-
-- :ref:`apply-prepare-gw.sh <actions-references.apply-prepare-gwsh>`
-- :ref:`apply-k8s-core.sh <actions-references.apply-k8s-coresh>`
-
 Usage:
 
 .. code::
