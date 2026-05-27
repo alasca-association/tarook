@@ -17,6 +17,17 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v12.0.3 (2026-05-21)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- It is now ensured that the ``cri-tools`` package is installed
+  which previously got pulled in as a dependency of the ``kubeadm`` package
+  (< 1.33.12-1.1, < 1.34.8-1.1, < 1.35.5-1.1). (`!2488 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2488>`_)
+
+
 v12.0.2 (2026-03-23)
 --------------------
 
