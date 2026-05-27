@@ -82,7 +82,7 @@ grafana:
           access: proxy
           orgId: 1
           url: "http://thanos-query.{{ monitoring_namespace }}.svc:9090"
-          version: 1
+          version: 2 # NOTE: This value needs to be increased every time something changes in this datasource definition
           editable: true
           jsonData:
             manageAlerts: false
