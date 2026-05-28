@@ -50,6 +50,20 @@
     retries: "{{ error_retries }}"
     delay: "{{ error_delay }}"
 
+  - name: Reduce nvidia-container-runtime log level # noqa no-changed-when
+    command:
+    args:
+      argv:
+      - nvidia-ctk
+      - config
+      - "--set"
+      - "nvidia-container-runtime.log-level=error"
+      - "--in-place"
+    register: nvidia_container_toolkit_level
+    until: nvidia_container_toolkit_level is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
+
   - name: Prevent the cuda-drivers from being updated automatically  # noqa no-changed-when
     command: apt-mark hold nvidia-container-toolkit nvidia-container-toolkit-base libnvidia-container-tools libnvidia-container1
 ...
