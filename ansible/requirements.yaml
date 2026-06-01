@@ -1,7 +1,7 @@
 ---
 collections:
   - name: devsec.hardening
-    version: 10.5.2
+    version: 10.6.0
   - name: kubernetes.core
     version: 6.4.0
   - name: community.general
