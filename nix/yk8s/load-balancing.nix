@@ -9,11 +9,6 @@
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkOption mkEnableOption types;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile;
-  inherit
-    (yk8s-lib.transform)
-    warnIfZero
-    warnIfAttrZero
-    ;
 
   explicitPorts = types.submodule {
     options = {
@@ -82,28 +77,11 @@ in {
       '';
       default = [];
       type = with types; listOf (either port explicitPorts);
-      apply = lib.imap0 (
-        idx: port: let
-          warnHasPortZero = mkMsg: p:
-            if lib.isInt p
-            then warnIfZero (mkMsg null) p
-            else warnIfAttrZero mkMsg ["external" "nodeport"] p;
-        in
-          warnHasPortZero
-          (attr: "config.yk8s.load-balancing.lb_ports[${toString idx}]${
-            if lib.isString attr
-            then ".${attr}"
-            else ""
-          }: should not be port zero")
-          port
-      );
     };
 
     deprecated_nodeport_lb_test_port = mkOption {
       type = with types; nullOr port;
       default = null;
-      apply = v:
-        warnIfZero "config.yk8s.load-balancing.deprecated_nodeport_lb_test_port: should not be port zero" v;
     };
 
     vrrp_priorities = mkOption {
@@ -127,8 +105,6 @@ in {
       '';
       type = types.port;
       default = 48981;
-      apply = v:
-        warnIfZero "config.yk8s.load-balancing.haproxy_stats_port: should not be port zero" v;
     };
     haproxy_frontend_k8s_api_maxconn = mkOption {
       type = types.ints.positive;
@@ -141,7 +117,45 @@ in {
     };
   };
   config.yk8s._targets.ansible.assertions = [];
-  config.yk8s._targets.ansible.warnings = [];
+  config.yk8s._targets.ansible.warnings =
+    []
+    ++ lib.pipe cfg.lb_ports [
+      # unify lb_ports for filtering
+      (lib.imap0 (
+        idx: lb_port:
+          if lib.isAttrs lb_port
+          then [
+            {
+              inherit idx;
+              subpath = ".external";
+              value = lb_port.external;
+            }
+            {
+              inherit idx;
+              subpath = ".nodeport";
+              value = lb_port.nodeport;
+            }
+          ]
+          else [
+            {
+              inherit idx;
+              subpath = "";
+              value = lb_port;
+            }
+          ]
+      ))
+      lib.flatten
+      # filter port zero
+      (lib.filter (x: x.value == 0))
+      # generate messages
+      (lib.map (
+        x: "config.yk8s.load-balancing.lb_ports[${toString x.idx}]${x.subpath}: should not be port zero"
+      ))
+    ]
+    ++ lib.optional (cfg.haproxy_stats_port == 0)
+    "config.yk8s.load-balancing.haproxy_stats_port: should not be port zero"
+    ++ lib.optional (cfg.deprecated_nodeport_lb_test_port == 0)
+    "config.yk8s.load-balancing.deprecated_nodeport_lb_test_port: should not be port zero";
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

@@ -9,10 +9,6 @@
   inherit (modules-lib) mkRenamedResourceOptionModule mkResourceOptionModule;
   inherit (lib) mkOption mkEnableOption;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkResourceOption mkDisableOption mkInternalOption types;
-  inherit
-    (yk8s-lib.transform)
-    warnIfZero
-    ;
 in {
   imports = [
     (mkRenamedResourceOptionModule ["ch-k8s-lbaas"] ["controller"])
@@ -58,8 +54,6 @@ in {
       '';
       type = types.port;
       default = 15203;
-      apply = v:
-        warnIfZero "config.yk8s.ch-k8s-lbaas.agent_port: should not be port zero" v;
     };
     port_manager = mkOption {
       description = ''
@@ -88,10 +82,6 @@ in {
       '';
       default = [];
       type = with types; listOf yk8s.networking.ipv4Addr;
-      apply = v:
-        if v == [] && cfg.port_manager == "static"
-        then throw "config.yk8s.ch-k8s-lbaas.static_ipv4_addresses: must not be empty when config.yk8s.ch-k8s-lbaas.port_manager='static'"
-        else v;
     };
     agent_urls = mkOption {
       description = ''
@@ -102,10 +92,6 @@ in {
       default = [];
       # NOTE: ch-k8s-lbaas ignores the HTTP URL path, its agents don't support TLS
       type = with types; listOf yk8s.networking.httpHostUrl;
-      apply = v:
-        if v == [] && cfg.port_manager == "static"
-        then throw "config.yk8s.ch-k8s-lbaas.agent_urls: must not be empty when config.yk8s.ch-k8s-lbaas.port_manager='static'"
-        else v;
     };
     use_floating_ips = mkDisableOption "the use of floating IPs";
     controller_repo = mkOption {
@@ -167,21 +153,10 @@ in {
     subnet_id = mkInternalOption {
       type = with types; nullOr nonEmptyStr;
       default = null;
-
-      apply = v:
-        if config.yk8s.openstack.enabled && v == null
-        then throw "ch-k8s-lbaas.subnet_id must be set if openstack is enabled"
-        else v;
     };
     floating_ip_network_id = mkInternalOption {
       type = with types; nullOr nonEmptyStr;
       default = null;
-      apply = v:
-        if config.yk8s.openstack.enabled && v == null
-        then
-          throw
-          "ch-k8s-lbaas.floating_ip_network_id must be set if openstack is enabled"
-        else v;
     };
   };
   config.yk8s._targets.ansible.warnings =
@@ -198,7 +173,9 @@ in {
       b) You do not care about the shared secret.
          You can unset this option.
          A shared secret will be automatically generated and stored in Vault on a rollout.
-    '';
+    ''
+    ++ lib.optional (cfg.agent_port == 0)
+    "config.yk8s.ch-k8s-lbaas.agent_port: should not be port zero";
   config.yk8s._targets.ansible.assertions = [
     # Due to OVN support, require version >= 0.8.0 (warn only if not in semver2 format)
     (
@@ -246,6 +223,22 @@ in {
     {
       assertion = (!config.yk8s.openstack.enabled) -> (cfg.subnet_id == null && cfg.floating_ip_network_id == null);
       message = "config.yk8s.ch-k8s-lbaas.subnet_id and config.yk8s.ch-k8s-lbaas.floating_ip_network_id must be null if config.yk8s.openstack.enabled==false";
+    }
+    {
+      assertion = (cfg.port_manager == "static") -> (cfg.static_ipv4_addresses != []);
+      message = "config.yk8s.ch-k8s-lbaas.static_ipv4_addresses: must not be empty when config.yk8s.ch-k8s-lbaas.port_manager='static'";
+    }
+    {
+      assertion = (cfg.port_manager == "static") -> (cfg.agent_urls != []);
+      message = "config.yk8s.ch-k8s-lbaas.agent_urls: must not be empty when config.yk8s.ch-k8s-lbaas.port_manager='static'";
+    }
+    {
+      assertion = config.yk8s.openstack.enabled -> (cfg.subnet_id != null);
+      message = "ch-k8s-lbaas.subnet_id: must be set if config.yk8s.openstack.enabled=true";
+    }
+    {
+      assertion = config.yk8s.openstack.enabled -> (cfg.floating_ip_network_id != null);
+      message = "ch-k8s-lbaas.floating_ip_network_id: must be set if config.yk8s.openstack.enabled=true";
     }
   ];
   config.yk8s._targets.ansible.inventory_packages = [

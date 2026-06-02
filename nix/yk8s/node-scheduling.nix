@@ -6,6 +6,7 @@
   ...
 }: let
   cfg = config.yk8s.node-scheduling;
+  opts = options.yk8s.node-scheduling;
   inherit (lib) mkOption;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
 in {
@@ -34,9 +35,6 @@ in {
       '';
       type = types.str;
       default = "scheduling.mk8s.cloudandheat.com";
-      # Output deprecation warning if used
-      apply = v:
-        lib.warn "config.yk8s.node-scheduling.scheduling_key_prefix: is deprecated. Please substitute with a let expression." v;
     };
     labels = mkOption {
       description = ''
@@ -95,7 +93,11 @@ in {
     ++ (builtins.foldl' (acc: e:
       acc
       ++ lib.optional (! builtins.hasAttr e (config.yk8s.infra.final_hosts.all.hosts or {}))
-      "config.yk8s.node-scheduling.taints: taint defined for ${e}, but node not found in config.yk8s.infra.ansible_hosts") [] (builtins.attrNames cfg.taints));
+      "config.yk8s.node-scheduling.taints: taint defined for ${e}, but node not found in config.yk8s.infra.ansible_hosts") [] (builtins.attrNames cfg.taints))
+    # Produce warning if option is used
+    ++ lib.optional
+      (opts.scheduling_key_prefix.highestPrio < 1500) # priority of option defaults
+      "config.yk8s.node-scheduling.scheduling_key_prefix: is deprecated. Please substitute with a let expression.";
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

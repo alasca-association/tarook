@@ -1,4 +1,5 @@
 {
+  options,
   config,
   pkgs,
   lib,
@@ -6,6 +7,7 @@
   ...
 }: let
   cfg = config.yk8s.infra;
+  opts = options.yk8s.infra;
   modules-lib = import ./lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (pkgs.stdenv) mkDerivation;
@@ -67,23 +69,11 @@ in {
     networking_fixed_ip = mkOption {
       type = with types; nullOr yk8s.networking.ipv4Addr;
       default = null;
-      apply = v:
-        if cfg.ipv4_enabled && v == null
-        then
-          throw
-          "config.yk8s.infra.networking_fixed_ip must be set if ipv4 is enabled"
-        else v;
     };
 
     networking_fixed_ip_v6 = mkOption {
       type = with types; nullOr yk8s.networking.ipv6Addr;
       default = null;
-      apply = v:
-        if cfg.ipv6_enabled && v == null
-        then
-          throw
-          "config.yk8s.infra.networking_fixed_ip_v6 must be set if ipv6 is enabled"
-        else v;
     };
 
     networking_floating_ip = mkInternalOption {
@@ -352,6 +342,14 @@ in {
         -> builtins.all (host: host.local_ipv6_address != null) (builtins.attrValues cfg.final_hosts.k8s_nodes.hosts);
       message = "local_ipv6_address must be set for all hosts in config.yk8s.infra.ansible_hosts.k8s_nodes";
     }
+    {
+      assertion = cfg.ipv4_enabled -> (cfg.networking_fixed_ip != null);
+      message = "config.yk8s.infra.networking_fixed_ip: must be set if config.yk8s.infra.ipv4_enabled=true";
+    }
+    {
+      assertion = cfg.ipv6_enabled -> (cfg.networking_fixed_ip_v6 != null);
+      message = "config.yk8s.infra.networking_fixed_ip_v6: must be set if config.yk8s.infra.ipv6_enabled=true";
+    }
     (let
       hostnames = lib.attrNames cfg.final_hosts.all.hosts;
       check = v: (types.yk8s.k8s.objectName.check v) && (types.yk8s.networking.subdomainName.check v);
@@ -361,7 +359,18 @@ in {
       message = "yk8s.infra.ansible_hosts: The following hostnames contain invalid characters:\n" + lib.concatLines (map (n: "  * ${n}") invalidHostnames);
     })
   ];
-  config.yk8s._targets.ansible.warnings = [];
+  config.yk8s._targets.ansible.warnings =
+    []
+    # Produce warning if option is used when ipv4_enabled=false
+    ++ lib.optional (
+      (! cfg.ipv4_enabled) && (opts.subnet_cidr.highestPrio < 1500) # priority of option defaults
+    )
+    "config.yk8s.infra.subnet_cidr: is ignored because yk8s.infra.ipv4_enabled=false"
+    # Produce warning if option is used when ipv6_enabled=false
+    ++ lib.optional (
+      (! cfg.ipv6_enabled) && (opts.subnet_v6_cidr.highestPrio < 1500) # priority of option defaults
+    )
+    "config.yk8s.infra.subnet_v6_cidr: is ignored because yk8s.infra.ipv6_enabled=false";
   config.yk8s._targets.ansible.inventory_packages = let
     trimEmptySubmoduleAttrs = lib.mapAttrs (_: submodule:
       lib.pipe submodule [
