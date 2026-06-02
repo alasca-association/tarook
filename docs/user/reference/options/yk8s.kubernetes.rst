@@ -1162,7 +1162,7 @@ Kubernetes version
 
 **Default:**::
 
-  "1.35.4"
+  "1.35.5"
 
 
 **Declared by**
