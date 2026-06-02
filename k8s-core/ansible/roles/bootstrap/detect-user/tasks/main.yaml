@@ -6,7 +6,7 @@
     host: "{{ ansible_host | default(inventory_hostname) }}"
     port: 22
     sleep: 5
-    timeout: 300
+    timeout: 900  # 15min
     state: started
   check_mode: false
   tags:
