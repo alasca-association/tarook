@@ -134,7 +134,7 @@ in {
       defaultRepoUrl = "https://charts.yaook.cloud/operator/stable/";
       defaultChartRef = "etcdbackup";
       # renovate: datasource=helm depName=etcdbackup registryUrl=https://charts.yaook.cloud/operator/stable/
-      defaultChartVersion = "2.0.3";
+      defaultChartVersion = "2.3.0";
       defaultReleaseNamespace = "kube-system";
       defaultReleaseName = "etcd-backup";
       valuesDocUrl = "https://gitlab.com/yaook/operator/-/blob/devel/yaook/helm_builder/Charts/etcdbackup/values-template.yaml.j2";
