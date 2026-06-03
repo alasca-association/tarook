@@ -35,6 +35,8 @@ in {
 
   options.yk8s.wireguard = mkTopSection {
     _docs.preface = ''
+      .. note:: Wireguard is currently only supported on gateway nodes.
+
       You **MUST** add yourself to the :doc:`wireguard </user/explanation/vpn/wireguard>`
       peers.
 
@@ -253,6 +255,14 @@ in {
       inherit (lib.lists) unique;
       allUnique = l: (length (unique l)) == length l;
     in [
+      {
+        assertion = cfg.enabled -> (length (lib.attrNames config.yk8s.infra.final_hosts.gateways.hosts)) != 0;
+        message = lib.concatStrings [
+          "config.yk8s.wireguard.enabled:"
+          " cannot be true when no gateway nodes are configured."
+          " Wireguard is currently only supported in combination with a gateway-plane."
+        ];
+      }
       {
         assertion = cfg.enabled -> (length cfg.endpoints) != 0;
         message = "config.yk8s.wireguard.endpoints: must not be empty";

@@ -4,6 +4,8 @@ yk8s.wireguard
 ^^^^^^^^^^^^^^
 
 
+.. note:: Wireguard is currently only supported on gateway nodes.
+
 You **MUST** add yourself to the :doc:`wireguard </user/explanation/vpn/wireguard>`
 peers.
 
