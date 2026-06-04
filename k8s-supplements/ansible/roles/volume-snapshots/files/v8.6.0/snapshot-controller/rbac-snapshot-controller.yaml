@@ -1,4 +1,4 @@
-# https://github.com/kubernetes-csi/external-snapshotter/blob/5aab051d1af135e2c852f6fb7fc27fa709d877bf/deploy/kubernetes/snapshot-controller/rbac-snapshot-controller.yaml
+# https://github.com/kubernetes-csi/external-snapshotter/blob/032bd76c29f3c80db20e50deac3e61897bfb45fb/deploy/kubernetes/snapshot-controller/rbac-snapshot-controller.yaml
 
 # RBAC file for the snapshot controller.
 #

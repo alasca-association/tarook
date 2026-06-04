@@ -2,7 +2,7 @@
 - name: Initialize Snapshots
   vars:
     # TODO: Track this version via Renovate Bot
-    files_folder: 'v8.5.0/'
+    files_folder: 'v8.6.0/'
   block:
   - name: Create Custom Snapshot Resource Definitions
     kubernetes.core.k8s:
