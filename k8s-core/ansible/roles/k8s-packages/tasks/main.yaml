@@ -42,14 +42,14 @@
   include_tasks:
     file: configure-package-repo.yaml
 
-- name: Install kubelet, kubeadm and kubectl
+- name: Install kubelet, kubeadm, kubectl and cri-tools
   block:
     - name: Remove hold of packages if migration needed  # noqa no-changed-when no-handler
       when: drop_google_repo.changed | default(False)
       become: true
-      command: apt-mark unhold kubelet kubeadm kubectl
+      command: apt-mark unhold kubelet kubeadm kubectl cri-tools
 
-    - name: Install kubelet, kubeadm and kubectl
+    - name: Install kubelet, kubeadm, kubectl and cri-tools
       # Note: check available version with `apt-cache policy <package name>`
       become: true
       package:
@@ -58,6 +58,13 @@
           - "kubelet={{ k8s_version }}-*"
           - "kubeadm={{ k8s_version }}-*"
           - "kubectl={{ k8s_version }}-*"
+          # NOTE: cri-tools follows Kubernetes' release cycle but unlike
+          #       kubelet/kubeadm/kubectl only with respect to its minor version.
+          #       see https://github.com/kubernetes-sigs/cri-tools/blob/46c81013b00ea238cd39499df021441ae51ec65f/README.md#compatibility-matrix-cri-tools--kubernetes
+          - "cri-tools={{
+              k8s_version
+              | regex_replace('^(?P<maj>\\d+)[.](?P<min>\\d+)[.].*$', '\\g<maj>.\\g<min>')
+            }}.*"
       register: task_result
       until: task_result is not failed
       retries: "{{ error_retries }}"
@@ -66,7 +73,7 @@
 
     - name: Prevent the k8s packages for being updated  # noqa no-changed-when
       become: true
-      command: apt-mark hold kubelet kubeadm kubectl
+      command: apt-mark hold kubelet kubeadm kubectl cri-tools
 
 # kubelet should be restarted immediately
 - name: Force restart of kubelet at this point
