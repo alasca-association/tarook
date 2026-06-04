@@ -127,6 +127,11 @@ A list of parent SA proposals to offer to the client.
   list of IPsec proposal string
 
 
+**Default:**::
+
+  [ ]
+
+
 **Declared by**
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/ipsec.nix
 
