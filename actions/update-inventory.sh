@@ -68,11 +68,10 @@ fi
 check_nix_version
 
 if [[ -e "state" ]]; then git add state; fi
-if [ -z "${TAROOK_NIX_FLAGS:-}" ]; then
-    out=$(nix build --override-input yk8s "$code_repository" --print-out-paths --no-link ".#yk8s-outputs-$target")
-else
-    out=$(nix build --override-input yk8s "$code_repository" --print-out-paths --no-link "${TAROOK_NIX_FLAGS}" ".#yk8s-outputs-$target")
-fi
+set -f # disable glob expansion because we need to pass TAROOK_NIX_FLAGS unquoted
+ # shellcheck disable=SC2086
+out=$(nix build --override-input yk8s "$code_repository" --print-out-paths --no-link ${TAROOK_NIX_FLAGS} ".#yk8s-outputs-$target")
+set +f
 # shellcheck disable=SC1091
 . "$out/.path-info"
 # shellcheck disable=SC2154
