@@ -34,15 +34,16 @@ in
       self = ctx.evaluator;
       path = ./.;
     }
-  ) && (
+  )
+  && (
     # Enforce that our set of test file is complete
     lib.traceIf
-      (missingTestFiles != [])
-      (lib.concatStrings [
-        "All files in ${toString ctx.importPath}"
-        " must have a corresponding test file in ${toString ./.}"
-        ", but the following are missing: "
-        (lib.strings.concatMapStringsSep ", " (x: "'${x}'") missingTestFiles)
-      ])
-      (missingTestFiles == [])
+    (missingTestFiles != [])
+    (lib.concatStrings [
+      "All files in ${toString ctx.importPath}"
+      " must have a corresponding test file in ${toString ./.}"
+      ", but the following are missing: "
+      (lib.strings.concatMapStringsSep ", " (x: "'${x}'") missingTestFiles)
+    ])
+    (missingTestFiles == [])
   )
