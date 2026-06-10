@@ -48,7 +48,7 @@ A list of parent SA proposals to offer to the client.
 
 **Default:**::
 
-  "\${cfg.proposals}"
+  config.yk8s.ipsec.proposals
 
 
 **Declared by**

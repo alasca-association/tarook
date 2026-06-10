@@ -18,7 +18,7 @@ in {
       '';
       type = with types; yk8s.vault.childNamespaceNameSegment;
       default = config.yk8s.infra.cluster_name;
-      defaultText = "\${config.yk8s.infra.cluster_name}";
+      defaultText = lib.literalExpression "config.yk8s.infra.cluster_name";
     };
 
     policy_prefix = mkOption {

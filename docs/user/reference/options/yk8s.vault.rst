@@ -23,7 +23,7 @@ reasonably changed after a cluster has been spawned.
 
 **Default:**::
 
-  "\${config.yk8s.infra.cluster_name}"
+  config.yk8s.infra.cluster_name
 
 
 **Declared by**

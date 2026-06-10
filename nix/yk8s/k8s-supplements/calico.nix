@@ -91,7 +91,10 @@ in {
           in
             mkOption {
               default = cp_replicas;
-              defaultText = "automatic";
+              # NOTE: We don't present the calculation of the default value here
+              #       because we believe that it's too complex to be helpful
+              #       and we'd need to keep it in sync with the actual implementation.
+              defaultText = lib.literalExpression "automatic";
             };
           calicoNetwork.mtu = mkOption {
             type = types.ints.positive;
@@ -99,7 +102,11 @@ in {
               if config.yk8s.openstack.enabled
               then config.yk8s.openstack.network_mtu
               else 1500;
-            defaultText = "\${if config.yk8s.openstack.enabled then config.yk8s.openstack.network_mtu else 1500}";
+            defaultText = lib.literalExpression ''
+              if config.yk8s.openstack.enabled
+              then config.yk8s.openstack.network_mtu
+              else 1500
+            '';
           };
         };
       };
@@ -154,7 +161,8 @@ in {
       '';
       type = types.pathInStore;
       default = (yk8s-lib.mkYaml "yk8s-calico-values.yaml" cfg.helm.values).outPath;
-      defaultText = "Values given in :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.values`";
+      defaultText = lib.literalExpression
+        ''(yk8s-lib.mkYaml "yk8s-calico-values.yaml" config.yk8s.kubernetes.network.calico.helm.values).outPath'';
       example = lib.options.literalExpression "./calico/helm/values.yaml";
     };
   };
@@ -224,6 +232,6 @@ in {
   config.yk8s._targets.ansible.assertions = [];
   config.yk8s._targets.ansible.warnings =
     lib.optional (options.yk8s.kubernetes.network.calico.values_file_path.highestPrio < 1500) # priority of option defaults
-    
+
     "config.yk8s.kubernetes.network.calico.values_file_path: is deprecated. Please use config.yk8s.kubernetes.network.calico.helm.values instead.";
 }
