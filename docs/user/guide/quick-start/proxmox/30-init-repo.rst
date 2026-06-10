@@ -1,4 +1,4 @@
-.. _quick-start.proxmox.create-and-initialize-cluster-repository-proxmox:
+.. _quick-start.proxmox.create-and-initialize-cluster-repository:
 
 Create and Initialize Cluster Repository
 ----------------------------------------

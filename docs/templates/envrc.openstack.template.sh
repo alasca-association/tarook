@@ -1,1 +1,1 @@
-../../nix/templates/cluster-repo/openstack/.envrc
+../../templates/cluster-repo/openstack/.envrc

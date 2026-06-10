@@ -131,7 +131,7 @@ Troubleshooting
 
 -  Follow the instructions on
    :ref:`how to connect to the cluster via ssh <faq.how-do-i-ssh-into-my-cluster-nodes>`.
--  Ensure that your ssh key is in :ref:`a supported format <initialization.appendix>`.
+-  Ensure that your ssh key is in :ref:`a supported format <ssh_algos>`.
 
 
 The ``Get certificate information task`` of the ``k8s-master`` fails

@@ -31,7 +31,7 @@ so better start with an empty project.
 +3. :doc:`Initialize a cluster repository </user/guide/quick-start/openstack/30-init-repo>`
 +4. :doc:`Initialize the Vault Backend </user/guide/quick-start/openstack/40-init-vault>`
 +5. :doc:`Configure Tarook </user/guide/quick-start/openstack/50-cluster>`
-+6. :doc:`Apply the configuration to the Vault Backend <docs/user/guide/quick-start/openstack/60-vault>`
++6. :doc:`Apply the configuration to the Vault Backend </user/guide/quick-start/openstack/60-vault>`
 +7. :doc:`Deploy the cluster </user/guide/quick-start/openstack/70-deploy>`
 +8. :doc:`Tear down the cluster </user/guide/quick-start/openstack/99-teardown>`
 

@@ -11,7 +11,7 @@ The key must be available in your Openstack project,
 therefore `create an Openstack keypair <https://docs.openstack.org/horizon/latest/user/configure-access-and-security-for-instances.html#add-a-key-pair>`__.
 Since the SSH configuration on the Kubernetes host nodes will be
 hardened, your key has to be generated using one of the supported cryptographic
-algorithm listed :ref:`here <initialization.appendix>`. Note that RSA keys are not supported.
+algorithm listed :ref:`here <ssh_algos>`. Note that RSA keys are not supported.
 
 Example:
 

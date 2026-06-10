@@ -1,1 +1,1 @@
-../../nix/templates/cluster-repo/proxmox/.envrc
+../../templates/cluster-repo/proxmox/.envrc

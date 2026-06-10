@@ -412,14 +412,14 @@ Template
 
    .. tab:: OpenStack
 
-      The template file is located at ``nix/templates/cluster-repo/openstack/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
+      The template file is located at ``templates/cluster-repo/openstack/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
 
       .. literalinclude:: /templates/envrc.openstack.template.sh
          :language: bash
 
    .. tab:: Proxmox
 
-      The template file is located at ``nix/templates/cluster-repo/proxmox/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
+      The template file is located at ``templates/cluster-repo/proxmox/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
 
       .. literalinclude:: /templates/envrc.proxmox.template.sh
          :language: bash
