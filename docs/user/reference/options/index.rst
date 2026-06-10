@@ -28,6 +28,7 @@ Configuration Options
   yk8s.node-scheduling
   yk8s.nvidia
   yk8s.openstack
+  yk8s.proxmox
   yk8s.terraform
   yk8s.testing
   yk8s.vault
@@ -76,6 +77,8 @@ Configuration Options
 :doc:`nvidia <yk8s.nvidia>`
 
 :doc:`openstack <yk8s.openstack>`
+
+:doc:`proxmox <yk8s.proxmox>`
 
 :doc:`terraform <yk8s.terraform>`
 
