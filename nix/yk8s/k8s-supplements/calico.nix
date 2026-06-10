@@ -90,6 +90,7 @@ in {
                 lib.min minimum_number_cp maximum_number_cp;
           in
             mkOption {
+              type = types.ints.positive;
               default = cp_replicas;
               # NOTE: We don't present the calculation of the default value here
               #       because we believe that it's too complex to be helpful

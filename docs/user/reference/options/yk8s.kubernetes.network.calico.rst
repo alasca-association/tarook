@@ -253,7 +253,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 
 **Type:**::
 
-  unspecified value
+  positive integer, meaning >0
 
 
 **Default:**::
