@@ -177,7 +177,12 @@ in {
     _docs.preface = ''
       See :ref:`Proxmox Credentials <environmental-variables.proxmox-credentials>` for the environment variables necessary for Proxmox.
     '';
-    enabled = mkEnableOption "Proxmox Terraform support";
+
+    enabled = mkOption {
+      description = "Whether to build the cluster on top of Proxmox";
+      type = types.bool;
+      default = true;
+    };
 
     ipv4_gateway_address = mkOption {
       description = ''
