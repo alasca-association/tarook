@@ -113,7 +113,7 @@ if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     run git submodule update --init --recursive
 fi
 
-rsync --verbose --chmod=644 --recursive --copy-links --ignore-existing "${template_dir}/${template}"/ .
+rsync --verbose --chmod=F644,D755 --recursive --links --copy-unsafe-links --ignore-existing "${template_dir}/${template}"/ .
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     # TODO foreach file: only add if not already tracked or in index
 	run git add flake.nix .gitignore config .envrc
