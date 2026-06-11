@@ -27,16 +27,7 @@ for arg in "$@"; do
             esac
         done
 
-        looks_like_commit() {
-            [[ "$1" =~ ^[0-9a-f]{40}$ ]] || [[ "$1" =~ ^[0-9a-f]{7,}$ ]]
-        }
-
-        if looks_like_commit "$branch"; then
-            echo "NOTE: ${branch} will be interpreted as a commit id. If there exists a reference with this name, it is not accessible through this script."
-            url="git+${submodule_managed_k8s_url}?rev=${branch}"
-        else
-            url="git+${submodule_managed_k8s_url}?ref=${branch}"
-        fi
+        url="git+${submodule_managed_k8s_url}?ref=${branch}"
         echo "Executing init script from ${url}"
         export MANAGED_K8S_LATEST_RELEASE=false
         export MANAGED_K8S_GIT_BRANCH="$branch"
