@@ -186,7 +186,7 @@ in {
 
     ipv4_gateway_address = mkOption {
       description = ''
-        The IPv4 address that should be configured as the default gateway on the node.
+        The IPv4 address that should be configured as the default gateway on each node.
 
         Must be set if config.yk8s.infra.ipv4_enabled==true
       '';
@@ -196,7 +196,7 @@ in {
 
     ipv6_gateway_address = mkOption {
       description = ''
-        The IPv6 address that should be configured as the default gateway on the node.
+        The IPv6 address that should be configured as the default gateway on each node.
 
         Must be set if config.yk8s.infra.ipv6_enabled==true
       '';
