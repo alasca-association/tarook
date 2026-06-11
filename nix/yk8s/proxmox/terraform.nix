@@ -100,7 +100,7 @@ in {
             lifecycle = [
               {
                 ignore_changes = [
-                  # This allows to change the update the template without affecting existing VMs
++                 # This allows changes to the template without affecting existing VMs
                   # changing the OS version should be done by destroying and re-creating the VM
                   "clone[0]"
                 ];
