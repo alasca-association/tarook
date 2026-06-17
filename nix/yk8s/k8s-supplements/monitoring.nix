@@ -8,8 +8,7 @@
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedOptionModule mkRemovedOptionModule mkRenamedResourceOptionModule mkMultiResourceOptionsModule;
   inherit (lib) mkEnableOption mkOption;
-  inherit (lib.attrsets) foldlAttrs;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkMultiResourceOptions types;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types isValidSemver2;
   inherit (yk8s-lib.options) mkHelmChartVersionOption;
 in {
   imports = [
@@ -577,35 +576,10 @@ in {
   };
   config.yk8s._targets.ansible.assertions =
     [
-      (
-        let
-          inherit (builtins) elemAt match typeOf;
-          inherit (lib.strings) toInt;
-          semver2RE = types.yk8s.version._regexes.semver.v2.versionStrRE;
-        in let
-          prometheus_stack_version = cfg.prometheus_stack_version;
-          matches = match semver2RE prometheus_stack_version;
-          isSemver2 =
-            if typeOf matches == "list"
-            then true
-            else false;
-        in {
-          assertion =
-            if isSemver2
-            then
-              (
-                (toInt (elemAt matches 0) > 68)
-                || ((toInt (elemAt matches 0) == 68) && (toInt (elemAt matches 1) >= 4))
-              )
-            else
-              lib.warn ''
-                config.yk8s.k8s-service-layer.prometheus.prometheus_stack_version: '${prometheus_stack_version}' not in semver2 format
-                Please make sure that '${prometheus_stack_version}' has a version level of at least 68.4.0.
-              ''
-              false;
-          message = "config.yk8s.k8s-service-layer.prometheus.prometheus_stack_version: '${prometheus_stack_version}' must be at least 68.4.0";
-        }
-      )
+      {
+        assertion = isValidSemver2 cfg.prometheus_stack_version -> lib.versionAtLeast cfg.prometheus_stack_version "68.4.0";
+        message = "config.yk8s.k8s-service-layer.prometheus.prometheus_stack_version: '${cfg.prometheus_stack_version}' must be at least 68.4.0";
+      }
     ]
     # check that no IPv6 module is configured in any probe if yk8s.infra.ipv6_enabled is disabled
     ++ lib.imap0
@@ -616,7 +590,12 @@ in {
       message = "config.yk8s.k8s-service-layer.prometheus.internet_probe_targets[${idx}].module: ${x.module} is an IPv6-specific module but config.yk8s.infra.ipv6_enabled=false";
     })
     cfg.internet_probe_targets;
-  config.yk8s._targets.ansible.warnings = [];
+  config.yk8s._targets.ansible.warnings =
+    []
+    ++ lib.optional (!(isValidSemver2 cfg.prometheus_stack_version)) ''
+      config.yk8s.k8s-service-layer.prometheus.prometheus_stack_version: '${cfg.prometheus_stack_version}' not in semver2 format
+      Please make sure that '${cfg.prometheus_stack_version}' has a version level of at least 68.4.0.
+    '';
   config.yk8s._targets.ansible.inventory_packages = [
     (mkGroupVarsFile {
       inherit cfg;

@@ -113,4 +113,6 @@
     name = lib.strings.removeSuffix ".yaml" file;
     value = importYAML "${dir}/${file}";
   }) (builtins.readDir dir));
+
+  isValidSemver2 = transform.matchesRegex types.yk8s.version._regexes.semver.v2.versionStrRE;
 }

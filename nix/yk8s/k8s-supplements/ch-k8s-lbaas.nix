@@ -8,7 +8,7 @@
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRenamedResourceOptionModule mkResourceOptionModule;
   inherit (lib) mkOption mkEnableOption;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkResourceOption mkDisableOption mkInternalOption types;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkDisableOption mkInternalOption types isValidSemver2;
 in {
   imports = [
     (mkRenamedResourceOptionModule ["ch-k8s-lbaas"] ["controller"])
@@ -175,51 +175,17 @@ in {
          A shared secret will be automatically generated and stored in Vault on a rollout.
     ''
     ++ lib.optional (cfg.agent_port == 0)
-    "config.yk8s.ch-k8s-lbaas.agent_port: should not be port zero";
+    "config.yk8s.ch-k8s-lbaas.agent_port: should not be port zero"
+    ++ lib.optional (!(isValidSemver2 cfg.version)) ''
+      config.yk8s.ch-k8s-lbaas.version: not in semver2 format
+      Please make sure that '${cfg.version}' has a version level of at least 0.8.0.
+    '';
   config.yk8s._targets.ansible.assertions = [
     # Due to OVN support, require version >= 0.8.0 (warn only if not in semver2 format)
-    (
-      let
-        inherit (builtins) elemAt match typeOf;
-        inherit (lib.strings) toInt;
-        semver2RE = lib.concatStrings [
-          "(0|[1-9][0-9]*)" # major
-          "[.]"
-          "(0|[1-9][0-9]*)" # minor
-          "[.]"
-          "(0|[1-9][0-9]*)" # patch
-          # optional pre-release
-          "(-("
-          "(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)"
-          "([.](0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*"
-          "))?"
-          # build metadata
-          "([+]([0-9a-zA-Z-]+([.][0-9a-zA-Z-]+)*))?"
-        ];
-      in let
-        cfg_version = cfg.version;
-        matches = match semver2RE cfg_version;
-        isSemver2 =
-          if typeOf matches == "list"
-          then true
-          else false;
-      in {
-        assertion =
-          if isSemver2
-          then
-            ! (
-              (toInt (elemAt matches 0) <= 0)
-              && (toInt (elemAt matches 1) < 8)
-            )
-          else
-            lib.warn ''
-              config.yk8s.ch-k8s-lbaas.version: not in semver2 format
-                                                Please make sure that '${cfg_version}' has a version level of at least 0.8.0.
-            ''
-            true;
-        message = "config.yk8s.ch-k8s-lbaas.version: must be at least 0.8.0";
-      }
-    )
+    {
+      assertion = isValidSemver2 cfg.version -> lib.versionAtLeast cfg.version "0.8.0";
+      message = "config.yk8s.ch-k8s-lbaas.version: must be at least 0.8.0";
+    }
     {
       assertion = (!config.yk8s.openstack.enabled) -> (cfg.subnet_id == null && cfg.floating_ip_network_id == null);
       message = "config.yk8s.ch-k8s-lbaas.subnet_id and config.yk8s.ch-k8s-lbaas.floating_ip_network_id must be null if config.yk8s.openstack.enabled==false";
