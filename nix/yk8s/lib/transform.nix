@@ -240,4 +240,20 @@
       ];
   in
     ignoreItemsOfTypeWithMsg msgPrefix ignoredTypes;
+
+  /*
+  Indent a (multi-line) string with given number of spaces.
+
+  Arguments:
+  - spaces: How many spaces should the text be indented
+  - text: The (multi-line) text to be indented
+  */
+  indent = spaces: text: let
+    pre = lib.concatStrings (lib.replicate spaces " ");
+  in
+    lib.pipe text [
+      (lib.splitString "\n")
+      (map (l: "${pre}${l}"))
+      lib.concatLines
+    ];
 }
