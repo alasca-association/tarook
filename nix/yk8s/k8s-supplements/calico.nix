@@ -113,6 +113,21 @@ in {
         };
       };
     };
+    crd.helm = mkHelmReleaseOptions {
+      descriptionName = "Calico CRDs";
+      defaultRepoUrl = "https://docs.tigera.io/calico/charts";
+      defaultChartRef = "crd.projectcalico.org.v1";
+      # TODO:
+      # At the time of writing, it's unclear whether the CRD chart version must be kept in sync
+      # with the operator chart version or not. After some time has passed,
+      # it should be decided whether synchronization of both chart versions must be enforced or not.
+      # See discussion in: https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2466#note_3464067306
+      # renovate: datasource=helm depName=crd.projectcalico.org.v1 registryUrl=https://docs.tigera.io/calico/charts
+      defaultChartVersion = "3.32.1";
+      defaultReleaseNamespace = "tigera-operator";
+      defaultReleaseName = "calico-crds";
+      valuesDocUrl = "https://github.com/projectcalico/calico/blob/master/charts/crd.projectcalico.org.v1/values.yaml";
+    };
 
     encapsulation = mkOption {
       description = ''
