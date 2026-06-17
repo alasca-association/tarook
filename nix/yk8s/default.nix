@@ -47,6 +47,7 @@
           ./miscellaneous.nix
           ./containerd.nix
           ./k8s-supplements
+          ./pythonIFD.nix
           (mkRemovedOptionModule ["passwordstore"] "Passwordstore has been replaced by Vault.")
           (mkRemovedOptionModule ["cah-users"] "")
         ];
