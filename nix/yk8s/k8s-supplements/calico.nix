@@ -45,7 +45,7 @@ in {
       defaultRepoUrl = "https://docs.tigera.io/calico/charts";
       defaultChartRef = "tigera-operator";
       # renovate: datasource=helm depName=tigera-operator registryUrl=https://docs.tigera.io/calico/charts
-      defaultChartVersion = "3.31.5";
+      defaultChartVersion = "3.31.6";
       defaultReleaseNamespace = "tigera-operator";
       defaultReleaseName = "calico";
       valuesDocUrl = "https://github.com/projectcalico/calico/blob/master/charts/tigera-operator/values.yaml";
