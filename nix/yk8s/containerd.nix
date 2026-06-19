@@ -34,7 +34,7 @@ in {
       '';
       type = types.yk8s.version.semver2VersionStr;
       # renovate: datasource=github-releases packageName=containerd/containerd
-      default = "2.1.5";
+      default = "2.1.9";
       example = "2.2.1";
     };
     mirrors = mkOption {
