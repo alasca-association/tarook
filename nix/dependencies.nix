@@ -76,7 +76,29 @@
             sphinx-tabs
             furo
             towncrier
-            sphinx-multiversion
+            (sphinx-multiversion.overridePythonAttrs (oldAttrs: {
+              patches =
+                (oldAttrs.patches or [])
+                ++ [
+                  # This patch is needed so the next patch (which was developed against master) applies to v0.2.4
+                  (builtins.toFile "sphinx-multiversion.patch" ''
+                    --- a/sphinx_multiversion/main.py
+                    +++ b/sphinx_multiversion/main.py
+                    @@ -34,3 +34,4 @@ def load_sphinx_config_worker(q, confpath, confoverrides, add_defaults):
+                                 current_config = sphinx_config.Config.read(
+                    -                confpath, confoverrides,
+                    +                confpath,
+                    +                confoverrides,
+                                 )
+                  '')
+                  # Patch from https://github.com/sphinx-contrib/multiversion/pull/202
+                  # to fix incompatibility with Sphinx v9
+                  (fetchpatch {
+                    url = "https://github.com/sphinx-contrib/multiversion/commit/8ccda58723f9a4a6f0b58836d2a77b391d80bbc4.patch";
+                    hash = "sha256-T+p0yHur0DB4a/F/qweXWSMYOoZBCfQfTpwSqdy/gzw=";
+                  })
+                ];
+            }))
             myst-parser
             sphinx-design
             sphinx-copybutton
