@@ -286,7 +286,7 @@ in {
     };
     prometheus_stack_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=kube-prometheus-stack registryUrl=https://prometheus-community.github.io/helm-charts
-      default = "83.7.0";
+      default = "87.0.0";
     };
     prometheus_adapter_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=prometheus-adapter registryUrl=https://prometheus-community.github.io/helm-charts
