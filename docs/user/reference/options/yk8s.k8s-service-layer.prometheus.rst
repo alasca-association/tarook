@@ -1493,7 +1493,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "84.3.0"
+  "84.5.0"
 
 
 **Example:**::
