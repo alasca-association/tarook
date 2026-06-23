@@ -297,6 +297,37 @@ Note that this option is not type checked by Nix, so make sure that it it's a va
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
+.. _configuration-options.yk8s.kubernetes.apiserver.event_ttl:
+
+``yk8s.kubernetes.apiserver.event_ttl``
+#######################################
+
+Event TTL for the kube-apiserver.
+See ``--event-ttl`` in `kube-apiserver options <https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/#options>`_.
+
+A respective patch file will be generated for
+:ref:`configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver`.
+
+
+**Type:**::
+
+  Kubernetes duration string
+
+
+**Default:**::
+
+  "1h0m0s"
+
+
+**Example:**::
+
+  "24h0m0s"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
+
+
 .. _configuration-options.yk8s.kubernetes.apiserver.frontend_port:
 
 ``yk8s.kubernetes.apiserver.frontend_port``

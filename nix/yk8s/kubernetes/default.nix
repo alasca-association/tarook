@@ -89,6 +89,18 @@ in {
         default = null;
         example = "1Gi";
       };
+      event_ttl = mkOption {
+        description = ''
+          Event TTL for the kube-apiserver.
+          See ``--event-ttl`` in `kube-apiserver options <https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/#options>`_.
+
+          A respective patch file will be generated for
+          :ref:`configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver`.
+        '';
+        type = with types; yk8s.k8s.durationStr;
+        default = "1h0m0s";
+        example = "24h0m0s";
+      };
       audit_logs = {
         enabled = mkEnableOption ''
           audit logs for the kube-apiserver.
@@ -183,7 +195,20 @@ in {
             value.memory = "${cfg.apiserver.memory_limit}";
           }
         ];
-      };
+      }
+      # Create a patch file for config.yk8s.kubernetes.apiserver.event_ttl
+      ++ [
+        {
+          patchtype = "json";
+          patch = [
+            {
+              op = "add";
+              path = "/spec/containers/0/command/-";
+              value = "--event-ttl=${cfg.apiserver.event_ttl}";
+            }
+          ];
+        }
+      ];
   };
   config.yk8s._targets.ansible.assertions = [
     {
