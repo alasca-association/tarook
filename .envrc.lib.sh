@@ -22,7 +22,7 @@ _nix_flake_manual() {
   mkdir -p "$layout_dir"
   nix_hash_file="$layout_dir/nix_flake.sha256"
   hash_command="echo '#' devshell: ${YAOOK_K8S_DEVSHELL}; find $flake_dir/nix -type f -exec sha256sum {} +"
-  reload_command="yaook-direnv-reload"
+  reload_command="tarook-direnv-reload"
   watch_file "$nix_hash_file"
   nix_hashes="$(bash -c "$hash_command")"
 
