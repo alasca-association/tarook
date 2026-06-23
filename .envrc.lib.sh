@@ -43,6 +43,10 @@ if [[ ! -d "$PWD" ]] || [[ "\$(realpath "\$(dirname \$0)/../..")" != "$PWD" ]]; 
   exit 1
 fi
 
+if [[ "$1" == "-f" ]]; then
+
+fi
+
 rm -f "$out_path" 2>/dev/null
 nix build "$flake_dir#yk8s-env-${YAOOK_K8S_DEVSHELL}" -o "$out_path"
 bash -c "$hash_command" > "$nix_hash_file"
