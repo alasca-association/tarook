@@ -11,6 +11,7 @@ actions_dir="$(dirname "$0")"
 load_conf_vars
 
 check_venv
+reload_lazy_env
 
 require_vault_token
 

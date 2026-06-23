@@ -88,6 +88,11 @@ use_flake_if_nix() {
   ) || return
 
   if [ "${YAOOK_K8S_DIRENV_MANUAL:-false}" == "true" ]; then
+    echo "YAOOK_K8S_DIRENV_MANUAL is deprecated. Use TAROOK_LAZY_ENV instead."
+    TAROOK_LAZY_ENV=true
+  fi
+
+  if [ "${TAROOK_LAZY_ENV:-false}" == "true" ]; then
     _nix_flake_manual "$flake_dir"
     watch_file "$flake_dir/nix"
   else

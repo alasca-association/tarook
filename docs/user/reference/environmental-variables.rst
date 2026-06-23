@@ -369,7 +369,7 @@ Environment Variable                        Default     Description
 =========================================== =========== ===================
 MINIMAL_ACCESS_VENV                         ``false``   Boolean value which defaults to ``false``. If set to ``true``, a minimal shell environment which contains barely enough packages to establish a connection to the cluster will be sourced when moving into the cluster repository.
 YAOOK_K8S_DEVSHELL                          ``default`` Selects the devShell to be loaded. Possible values can be found in ``nix/dependencies.nix`` (dependency group names: `minimal`, `default`, ...).
-YAOOK_K8S_DIRENV_MANUAL                     ``false``   If set to ``true``, the package environment is not updated automatically (e.g. when switching between branches) thus speeding up rebases etc. It can be manually updated with ``yaook-direnv-reload``.
+TAROOK_LAZY_ENV                             ``false``   If set to ``true``, the package environment is only updated when actions are run, but not automatically by direnv (e.g. when switching between branches) thus speeding up rebases etc. It can be manually updated with ``tarook-direnv-reload``.
 =========================================== =========== ===================
 
 .. _environmental-variables.template:

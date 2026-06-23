@@ -11,6 +11,7 @@ actions_dir="$(realpath "$(dirname "$0")")"
 load_conf_vars
 
 check_venv
+reload_lazy_env
 
 if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraform_version')" "$terraform_min_version")" -lt 0 ]; then
     errorf 'Please upgrade Terraform to at least v'"$terraform_min_version"

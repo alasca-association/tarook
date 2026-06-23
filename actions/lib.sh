@@ -310,6 +310,13 @@ function check_venv() {
     fi
 }
 
+function reload_lazy_env() {
+  if [ "${TAROOK_LAZY_ENV:-false}" == "true" ]; then
+    tarook-direnv-reload
+    export TAROOK_LAZY_ENV=false # set to false, so the environment is only reloaded once per run
+  fi
+}
+
 function tf_prepare() {
     mkdir -p "$terraform_state_dir"
     conf_file="${terraform_state_dir}/config.tf.json"

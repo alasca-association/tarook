@@ -12,6 +12,7 @@ load_conf_vars
 
 
 check_venv
+reload_lazy_env
 
 require_ansible_disruption
 

@@ -30,6 +30,7 @@ execute_playbook() {
 
   load_conf_vars
   check_venv
+  reload_lazy_env
   require_vault_token
   install_prerequisites
 

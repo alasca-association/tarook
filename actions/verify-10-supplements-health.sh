@@ -27,6 +27,7 @@ done
 shift $(( OPTIND - 1 ))
 
 check_venv
+reload_lazy_env
 
 set_kubeconfig
 

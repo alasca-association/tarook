@@ -13,6 +13,7 @@ load_conf_vars
 
 
 check_venv
+reload_lazy_env
 
 # Bring the wireguard interface up if configured so
 if [ "${wg_usage:?}" == "true" ]; then
