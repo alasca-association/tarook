@@ -1,4 +1,4 @@
-# https://github.com/kubernetes-csi/external-snapshotter/blob/5aab051d1af135e2c852f6fb7fc27fa709d877bf/deploy/kubernetes/snapshot-controller/setup-snapshot-controller.yaml
+# https://github.com/kubernetes-csi/external-snapshotter/blob/032bd76c29f3c80db20e50deac3e61897bfb45fb/deploy/kubernetes/snapshot-controller/setup-snapshot-controller.yaml
 
 # This YAML file shows how to deploy the snapshot controller
 
@@ -51,7 +51,7 @@ spec:
                     operator: Exists
       containers:
         - name: snapshot-controller
-          image: registry.k8s.io/sig-storage/snapshot-controller:v8.4.0
+          image: registry.k8s.io/sig-storage/snapshot-controller:v8.5.0
           args:
             - "--v=5"
             - "--leader-election=true"
