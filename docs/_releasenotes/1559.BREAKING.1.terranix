@@ -1,10 +1,10 @@
 Terraform is now configured using Terranix. The necessary state migration is automatically handled by the migration script.
 
-.. note::
+.. attention::
 
    Don't :ref:`switch the backend <configuration-options.yk8s.terraform>` before migrating
 
-.. note::
+.. attention::
 
    Ensure that :ref:`apply-terraform.sh <actions-references.apply-terraformsh>` completes successfully before attempting a release migration
 
