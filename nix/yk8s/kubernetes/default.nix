@@ -9,7 +9,6 @@
   inherit (modules-lib) mkRemovedOptionModule mkRenamedOptionModule;
   inherit (lib) mkOption mkEnableOption;
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile mkInternalOption mkYaml types;
-  inherit (yk8s-lib.options) mkHelmReleaseOptions;
   inherit
     (yk8s-lib.transform)
     filterNull
@@ -19,6 +18,7 @@ in {
     ./monitoring.nix
     ./network.nix
     ./kubelet.nix
+    ./kubeadm-patches.nix
     (mkRemovedOptionModule ["kubernetes" "use_podsecuritypolicies"] "")
     (mkRemovedOptionModule ["kubernetes" "continuous_join_key"] "")
     (mkRenamedOptionModule ["kubernetes" "monitoring" "alertmanager_config_secret"] ["k8s-service-layer" "prometheus" "alertmanager_config_secret"])
@@ -79,11 +79,28 @@ in {
       };
       memory_limit = mkOption {
         description = ''
-          Memory resources limit for the apiserver.
+          Memory resources limit for the kube-apiserver.
+          See `Requests and Limits <https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits>`_
+          and `kube-apiserver <https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver>`_.
+
+          If set, a respective patch file will be generated for
+          :ref:`configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver`.
         '';
         type = with types; nullOr yk8s.k8s.quantity;
         default = null;
         example = "1Gi";
+      };
+      event_ttl = mkOption {
+        description = ''
+          Event TTL for the kube-apiserver.
+          See ``--event-ttl`` in `kube-apiserver options <https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/#options>`_.
+
+          A respective patch file will be generated for
+          :ref:`configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver`.
+        '';
+        type = with types; yk8s.k8s.durationStr;
+        default = "1h0m0s";
+        example = "24h0m0s";
       };
       audit_logs = {
         enabled = mkEnableOption ''
@@ -164,6 +181,36 @@ in {
       to run on all nodes (ignoring all taints). This is often desirable.
     '';
   };
+  config.yk8s.kubernetes.kubeadm = {
+    patches.kube-apiserver =
+      []
+      # If config.yk8s.kubernetes.apiserver.memory_limit is set,
+      # add a patch file for it
+      ++ lib.optional (cfg.apiserver.memory_limit != null)
+      {
+        patchtype = "json";
+        patch = [
+          {
+            op = "add";
+            path = "/spec/containers/0/resources/limits";
+            value.memory = "${cfg.apiserver.memory_limit}";
+          }
+        ];
+      }
+      # Create a patch file for config.yk8s.kubernetes.apiserver.event_ttl
+      ++ [
+        {
+          patchtype = "json";
+          patch = [
+            {
+              op = "add";
+              path = "/spec/containers/0/command/-";
+              value = "--event-ttl=${cfg.apiserver.event_ttl}";
+            }
+          ];
+        }
+      ];
+  };
   config.yk8s._targets.ansible.assertions = [
     {
       assertion = ! (cfg.is_gpu_cluster && cfg.virtualize_gpu);
@@ -190,6 +237,7 @@ in {
             ["kubelet" "masterOptions"] # merged into kubelet.finalNodeOptions
             ["kubelet" "nodeOptions"] # merged into kubelet.finalNodeOptions
             ["kubelet" "workerOptions"] # merged into kubelet.finalNodeOptions
+            ["kubeadm" "patches"] # proxied by kubeadm.patches_dir
           ])
         # recusively filter null values on kubelet subset
         (lib.updateManyAttrsByPath [
