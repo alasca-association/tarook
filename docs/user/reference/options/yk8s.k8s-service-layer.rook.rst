@@ -898,7 +898,7 @@ Immutable when deployed. (See also :ref:`cluster-configuration.rook-configuratio
 
 **Default:**::
 
-  "\${kubernetes.local_storage.dynamic.storageclass_name}"
+  config.yk8s.kubernetes.local_storage.dynamic.storageclass_name
 
 
 **Declared by**

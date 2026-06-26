@@ -166,7 +166,7 @@ in {
       '';
       type = types.yk8s.k8s.storageClassName;
       default = config.yk8s.kubernetes.local_storage.dynamic.storageclass_name;
-      defaultText = "\${kubernetes.local_storage.dynamic.storageclass_name}";
+      defaultText = lib.literalExpression "config.yk8s.kubernetes.local_storage.dynamic.storageclass_name";
     };
 
     use_host_networking = mkEnableOption "usage of the host network.";

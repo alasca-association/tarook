@@ -234,7 +234,10 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 
 **Default:**::
 
-  "\${if config.yk8s.openstack.enabled then config.yk8s.openstack.network_mtu else 1500}"
+  if config.yk8s.openstack.enabled
+  then config.yk8s.openstack.network_mtu
+  else 1500
+  
 
 
 **Declared by**
@@ -250,12 +253,12 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 
 **Type:**::
 
-  unspecified value
+  positive integer, meaning >0
 
 
 **Default:**::
 
-  "automatic"
+  automatic
 
 
 **Declared by**
@@ -331,7 +334,7 @@ it is possible to link to self-maintained values file for the helm chart
 
 **Default:**::
 
-  "Values given in :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.values`"
+  (yk8s-lib.mkYaml "yk8s-calico-values.yaml" config.yk8s.kubernetes.network.calico.helm.values).outPath
 
 
 **Example:**::

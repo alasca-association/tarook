@@ -55,7 +55,8 @@ in {
       '';
       type = types.bool;
       default = config.yk8s.kubernetes.storage.nodeplugin_toleration;
-      defaultText = "\${config.yk8s.kubernetes.storage.nodeplugin_toleration}";
+      defaultText = lib.literalExpression
+        "config.yk8s.kubernetes.storage.nodeplugin_toleration";
     };
   };
 

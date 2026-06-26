@@ -94,7 +94,7 @@ to run on all nodes (ignoring all taints). This is often desirable.
 
 **Default:**::
 
-  "\${config.yk8s.kubernetes.storage.nodeplugin_toleration}"
+  config.yk8s.kubernetes.storage.nodeplugin_toleration
 
 
 **Declared by**

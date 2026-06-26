@@ -44,7 +44,7 @@ in {
       '';
       type = with types; listOf yk8s.networking.ipsecProposalStr;
       default = cfg.proposals;
-      defaultText = "\${cfg.proposals}";
+      defaultText = lib.literalExpression "config.yk8s.ipsec.proposals";
     };
     peer_networks = mkOption {
       description = ''

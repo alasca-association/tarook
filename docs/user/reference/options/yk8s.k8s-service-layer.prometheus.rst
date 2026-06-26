@@ -2007,7 +2007,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 
 **Default:**::
 
-  "\${config.yk8s.infra.cluster_name}-monitoring-thanos-data"
+  "${config.yk8s.infra.cluster_name}-monitoring-thanos-data"
 
 
 **Declared by**

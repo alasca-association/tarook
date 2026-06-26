@@ -437,7 +437,7 @@ in {
     thanos_objectstorage_container_name = mkOption {
       type = types.yk8s.openstack.swiftContainerName;
       default = "${config.yk8s.infra.cluster_name}-monitoring-thanos-data";
-      defaultText = "\${config.yk8s.infra.cluster_name}-monitoring-thanos-data";
+      defaultText = lib.literalExpression ''"''${config.yk8s.infra.cluster_name}-monitoring-thanos-data"'';
     };
     thanos_objectstorage_config_file = mkOption {
       description = ''
