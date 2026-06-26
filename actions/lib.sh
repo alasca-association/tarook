@@ -1,5 +1,6 @@
 # shellcheck shell=bash disable=SC2154,SC2034
 
+actions_dir="$(dirname -- "${BASH_SOURCE[0]}")"
 cluster_repository="$(realpath ".")"
 code_repository="$(realpath "$actions_dir/../")"
 etc_directory="$(realpath "etc")"
