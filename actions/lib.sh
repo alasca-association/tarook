@@ -74,6 +74,11 @@ function load_vault_container_name() {
 function load_conf_vars() {
     # All the things with side-effects should go here
 
+    if ! [ -f "$conf_vars_file" ]; then
+        errorf "load_conf_vars() requires file '$conf_vars_file', but it does not exist"
+        exit 1
+    fi
+
     terraform_prevent_disruption="$(if [ -e "$terraform_disruption_lock" ]; then echo "true"; else echo "false"; fi)"
 
     tf_usage="$(yq '.tf_usage' "$conf_vars_file")"
@@ -102,8 +107,13 @@ function load_conf_vars() {
 }
 
 function gateway_nodes_configured() {
-   yq --exit-status ".gateways.hosts != {}" \
-      "$ansible_inventory_host_file" >/dev/null
+    if ! [ -f "$ansible_inventory_host_file" ]; then
+        errorf "gateway_nodes_configured() requires file '$ansible_inventory_host_file', but it does not exist"
+        exit 1
+    fi
+
+    yq --exit-status ".gateways.hosts != {}" \
+       "$ansible_inventory_host_file" >/dev/null
 }
 
 function color_enabled() {
@@ -256,6 +266,15 @@ function ansible_playbook() {
 }
 
 function load_gitlab_vars() {
+    if ! [ -f "$terraform_vars_dir/config.tf.json" ]; then
+        errorf "load_gitlab_vars() requires file '$terraform_vars_dir/config.tf.json', but it does not exist"
+        exit 1
+    fi
+    if ! [ -f "$terraform_vars_dir/gitlab.yaml" ]; then
+        errorf "load_gitlab_vars() requires file '$terraform_vars_dir/config.tf.json', but it does not exist"
+        exit 1
+    fi
+
     gitlab_backend="$(jq -r '.terraform.backend | has("http")' "$terraform_vars_dir/config.tf.json")"
 
     gitlab_conf_file="$terraform_vars_dir/gitlab.yaml"
