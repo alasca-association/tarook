@@ -571,7 +571,7 @@ in {
       default = {
       };
       example = {
-        managed-by = "yaook-k8s";
+        "app.kubernetes.io/managed-by" = "tarook";
       };
     };
   };

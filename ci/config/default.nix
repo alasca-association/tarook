@@ -298,7 +298,7 @@ in {
           }
         ];
         common_labels = {
-          managed-by = "yaook-k8s";
+          "app.kubernetes.io/managed-by" = "tarook";
         };
       };
       cert-manager = {

@@ -311,7 +311,7 @@ The key can not be "release" as that one is already used by the Prometheus helm 
 **Example:**::
 
   {
-    managed-by = "yaook-k8s";
+    "app.kubernetes.io/managed-by" = "tarook";
   }
 
 
