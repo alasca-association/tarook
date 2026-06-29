@@ -1,0 +1,15 @@
+---
+- name: "Remove cert-manager resources of OpenBao's PKI"
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  kubernetes.core.k8s:
+    src: "{{ openbao_on_k8s.pki.cert-manager.manifest_file_path }}"
+    state: absent
+    apply: true
+    validate:
+      fail_on_error: true
+      strict: true
+  register: _k8s_remove_pki_cert-manager
+  until: _k8s_remove_pki_cert-manager is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
+...

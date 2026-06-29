@@ -6,7 +6,11 @@
   certName,
   certIpAddresses,
   certDnsNames,
-}: [
+}: let
+  common_labels = {
+    "managed-by": "tarook";
+  };
+in [
   {
     "apiVersion" = "cert-manager.io/v1";
     # TODO: Do we need kind=ClusterIssuer here?
@@ -14,6 +18,7 @@
     "metadata" = {
       "namespace" = namespace;
       "name" = caName;
+      "labels" = common_labels;
     };
     # TODO: Review spec
     "spec" = {
@@ -26,6 +31,7 @@
     "metadata" = {
       "namespace" = namespace;
       "name" = caName;
+      "labels" = common_labels;
     };
     # TODO: Review spec
     "spec" = {
@@ -44,6 +50,7 @@
     "metadata" = {
       "namespace" = namespace;
       "name" = certIssuerName;
+      "labels" = common_labels;
     };
     "spec" = {
       "ca" = {
@@ -57,6 +64,7 @@
     "metadata" = {
       "namespace" = namespace;
       "name" = certName;
+      "labels" = common_labels;
     };
     "spec" = {
       "issuerRef" = {
