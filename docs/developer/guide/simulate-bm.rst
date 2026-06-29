@@ -18,7 +18,7 @@ Steps
 Cluster repository initialization
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Follow the cluster :doc:`initialization documentation</user/guide/quick-start/initialization>`.
+Follow the cluster :ref:`initialization documentation for Openstack<user.guide.quick-start.openstack>`.
 
 Disable Wireguard,
 but enable Terraform because we want to use it to create

@@ -18,6 +18,7 @@
       }: let
         yk8s-lib = import ./yk8s/lib {inherit lib pkgs;};
         inherit (yk8s-lib) linkToPath;
+        indent2 = yk8s-lib.transform.indent 2;
       in {
         config.packages = let
           eval =
@@ -136,7 +137,6 @@
             ${lib.strings.concatStrings (lib.lists.replicate (builtins.stringLength text) symbol)}
           '';
           bold = text: "**${text}**";
-          indent = text: with lib.strings; concatLines (map (l: "  ${l}") (splitString "\n" text));
 
           rstDocStr = section: values: let
             options =
@@ -168,20 +168,20 @@
 
                     **Type:**::
 
-                    ${indent v.type}
+                    ${indent2 v.type}
 
                   ''
                   + lib.strings.optionalString (v ? "default" && v.default._type == "literalExpression") ''
                     **Default:**::
 
-                    ${indent v.default.text}
+                    ${indent2 v.default.text}
 
                   ''
                   + lib.strings.optionalString (v ? "example" && v.example._type == "literalExpression")
                   ''
                     **Example:**::
 
-                    ${indent v.example.text}
+                    ${indent2 v.example.text}
 
                   ''
                   + ''
@@ -209,7 +209,7 @@
                   :hidden:
 
               ''
-              + indent (lib.strings.concatLines sectionList)
+              + indent2 (lib.strings.concatLines sectionList)
               + lib.strings.concatLines (map (n: ''
                   :doc:`${lib.strings.removePrefix "yk8s." n} <${n}>`
                 '')

@@ -50,7 +50,7 @@ The ``config/default.nix`` configuration file
 ---------------------------------------------
 
 After
-:doc:`initializing a cluster repository </user/guide/quick-start/initialization>`,
+:ref:`initializing a cluster repository <quick-start.openstack.create-and-initialize-cluster-repository>`,
 ``config/default.nix`` contains a minimal configuration with default values.
 However, you’ll still need to adjust some of them before
 triggering cluster creation.

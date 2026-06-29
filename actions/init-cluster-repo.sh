@@ -1,31 +1,92 @@
 #!/usr/bin/env bash
 set -euo pipefail
+submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/alasca.cloud/tarook/tarook.git}"
+
+###
+# Before doing anything else, we check whether a branch was passed via -b
+# If so, we run the init script from the specified branch instead,
+# passing all other arguments unaltered
+# NOTE: There should be no logic before this, in order to ensure compatibility with all branches that provide #init
+for arg in "$@"; do
+    if [[ "$arg" == -b ]]; then
+        # Branch was passed
+
+        branch=""
+        other_args=()
+
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                -b)
+                    branch="$2"
+                    shift 2
+                    ;;
+                *)
+                    other_args+=("$1")
+                    shift
+                    ;;
+            esac
+        done
+
+        url="git+${submodule_managed_k8s_url}?ref=${branch}"
+        >&2 echo "Executing init script from ${url}"
+        export managed_k8s_latest_release=false
+        export managed_k8s_git_branch="$branch"
+        exec nix run "${url}#init" -- "${other_args[@]}"
+    fi
+done
+#
+###
+
 actions_dir="$(dirname "$0")"
 
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
+usage() {
+    >&2 echo "Usage: nix run <flake-url>#init [-b BRANCH] TEMPLATE"
+    >&2 echo ""
+    >&2 echo "Arguments:"
+    >&2 echo "    -b BRANCH   Tarook branch to checkout in git submodule"
+    >&2 echo "    TEMPLATE    Flavor of initial configuration to setup"
+    >&2 echo "                One of: $(cluster_repo_template_list)"
+}
+
+arg_num=1
+if [ "$#" -ne "$arg_num" ]; then
+    errorf "Expecting $arg_num argument(s), but $# were given"
+    echo >&2
+    usage
+    exit 2
+fi
+
 check_nix_version
+
+template="${1}"
+
+if [[ "$template" == */* || ! -e "${cluster_repo_template_dir:?}/${template:?}" ]]; then
+    errorf "Unsupported template."
+    hintf "Currently supported templates: $(cluster_repo_template_list)"
+    exit 1
+fi
 
 submodule_base="submodules"
 
-submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/alasca.cloud/tarook/tarook.git}"
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     if [ ! -d "$submodule_managed_k8s_name" ]; then
-        if [ "${MANAGED_K8S_LATEST_RELEASE:-true}"  == "true" ]; then
+        if [ "${managed_k8s_latest_release:-true}"  == "true" ]; then
             # Checkout latest release
             echo ''
             notef "Adding $submodule_managed_k8s_name submodule on release v$version_major_minor..."
 
             run git submodule add -b "release/v$version_major_minor" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
-        elif [ -n "${MANAGED_K8S_GIT_BRANCH:-}" ]; then
+        elif [ -n "${managed_k8s_git_branch:-}" ]; then
             # Checkout specified branch
 
             echo ''
-            notef "Adding $submodule_managed_k8s_name submodule on branch $MANAGED_K8S_GIT_BRANCH..."
+            notef "Adding $submodule_managed_k8s_name submodule on branch $managed_k8s_git_branch..."
 
-            run git submodule add -b "$MANAGED_K8S_GIT_BRANCH" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
+            run git submodule add -b "$managed_k8s_git_branch" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
         else
             run git submodule add "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
         fi
@@ -47,22 +108,9 @@ if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     run git submodule update --init --recursive
 fi
 
-new_actions_dir="$submodule_managed_k8s_name/actions"
-if [ "$(realpath "$new_actions_dir")" != "$(realpath "$actions_dir")" ]; then
-    if [ -x "$new_actions_dir/init-cluster-repo.sh" ]; then
-        # execute init from the cloned repository; it should not change anything
-        # but it’ll provide a consistent state
-        hintf 're-executing init-cluster-repo.sh from local submodule'
-        exec "$new_actions_dir/init-cluster-repo.sh"
-    else
-        warningf "no executable init-cluster-repo.sh action in the $submodule_managed_k8s_name submodule"
-        hintf "this means that the cloned $submodule_managed_k8s_name submodule is unexpectedly old"
-        hintf 'we will fail now.'
-        exit 1
-    fi
-fi
-
-run nix flake init -t "${code_repository}?shallow=1#cluster-repo" || true # not overriding existing files is ok
+# Copy template directory and dereference any symlinks pointing outside of it
+#  (namely symlinks from other templates into ../minimal/)
+rsync --verbose --chmod=F644,D755 --recursive --links --copy-unsafe-links --ignore-existing "${cluster_repo_template_dir:?}/${template}"/ .
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     # TODO foreach file: only add if not already tracked or in index
 	run git add flake.nix .gitignore config .envrc

@@ -1,0 +1,3 @@
+Support for deploying Tarook on Proxmox has been added.
+
+See :doc:`/user/guide/quick-start/proxmox/index` for a first impression.

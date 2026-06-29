@@ -58,6 +58,7 @@
             openshift
             loguru
             packaging
+            # TODO: Only include when `config.yk8s.openstack.enabled = true`
             python-openstackclient
             jsonschema
             hvac
@@ -102,6 +103,7 @@
             myst-parser
             sphinx-design
             sphinx-copybutton
+            sphinx-jinja
           ];
       };
 

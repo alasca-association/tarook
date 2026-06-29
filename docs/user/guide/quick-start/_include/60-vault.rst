@@ -1,10 +1,7 @@
-Configure the Vault backend
-===========================
-
 1. Connecting the Vault backend
 
    If you are using the development Vault setup
-   as suggested :ref:`earlier <initialization.initialize-vault-secrets-backend>`
+   as suggested :ref:`earlier <quick-start.openstack.initialize-vault-secrets-backend>`
    the ``VAULT_ADDR`` and ``VAULT_TOKEN`` variables are automatically set.
 
    Otherwise ``VAULT_ADDR`` should be set in your cluster repository's ``.envrc``

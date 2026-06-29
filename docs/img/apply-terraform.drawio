@@ -84,7 +84,7 @@
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="15" value="OpenStack&lt;br&gt;API" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;dashed=1;dashPattern=1 1;fontFamily=Courier New;verticalAlign=middle;opacity=40;fillColor=#FFFFFF;" parent="1" vertex="1">
+                <mxCell id="15" value="OpenStack / Proxmox&lt;br&gt;API" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;dashed=1;dashPattern=1 1;fontFamily=Courier New;verticalAlign=middle;opacity=40;fillColor=#FFFFFF;" parent="1" vertex="1">
                     <mxGeometry x="412.5" y="550" width="215" height="120" as="geometry"/>
                 </mxCell>
                 <mxCell id="19" style="edgeStyle=none;rounded=0;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Courier New;fillColor=#e51400;strokeColor=#B20000;" parent="1" source="4" target="9" edge="1">

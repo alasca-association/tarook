@@ -1,6 +1,3 @@
-Teardown
-========
-
 To tear down your cluster, remove the lock file ``./state/terraform/prevent_disruption.lock``.
 
 Then run:

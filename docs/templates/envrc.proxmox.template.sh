@@ -1,0 +1,1 @@
+../../templates/cluster-repo/proxmox/.envrc

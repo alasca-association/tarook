@@ -43,7 +43,7 @@
     TAROOK_NIX_FLAGS: "--impure"
     ANSIBLE_ANY_ERRORS_FATAL: "true"
     ANSIBLE_FORCE_COLOR: "true"
-    MANAGED_K8S_LATEST_RELEASE: "false"
+    managed_k8s_latest_release: "false"
     # CI/CD Variables are not available in services, so we have to bounce them
     # https://docs.gitlab.com/ci/services/#passing-cicd-variables-to-services
     _VAULT_CERT_KEY: $CI_VAULT_CERT_KEY
@@ -76,12 +76,12 @@
     - export MANAGED_K8S_GIT="$(realpath .)"
     - cd ci
     - git init
-    - cp ../nix/templates/cluster-repo/flake.nix .
+    - cp ../templates/cluster-repo/openstack/flake.nix .
     - git add flake.nix config
     - direnv allow
     - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
-    - ../actions/init-cluster-repo.sh
-    - ../actions/init-cluster-repo.sh # A second run to check idempotency
+    - ../actions/init-cluster-repo.sh openstack
+    - ../actions/init-cluster-repo.sh openstack # A second run to check idempotency
     - cp res/custom-play.yaml k8s-custom/main.yaml
       # Note that this is basically a dummy keypair that is not used to protect any significant data
     - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never

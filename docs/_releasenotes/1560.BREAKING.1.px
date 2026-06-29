@@ -1,0 +1,7 @@
+The behaviour of :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>` has changed:
+
+* The environment variables ``MANAGED_K8S_LATEST_RELEASE`` and ``MANAGED_K8S_GIT_BRANCH`` are not supported anymore
+* Use ``-b`` to pass a custom branch name instead of passing it as the first argument
+* The first positional argument now allows to select from one of the available templates (currently ``minimal``, ``openstack``, ``proxmox``)
+
+See :ref:`Initialization (OpenStack) <quick-start.openstack.create-and-initialize-cluster-repository>` and :ref:`Initialization (Proxmox) <quick-start.proxmox.create-and-initialize-cluster-repository>`

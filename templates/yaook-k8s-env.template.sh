@@ -30,6 +30,11 @@ export wg_user='firstnamelastname'
 # Does not affect existing instances.
 export TF_VAR_keypair='firstnamelastname-hostname-gendate'
 
+# Proxmox: The public key to use to bootstrap new instances.
+# Does not affect existing instances.
+TF_VAR_ssh_key="$(cat ~/.ssh/id_ed25519.pub)"
+export TF_VAR_ssh_key
+
 # Set to true if you are using rootless docker or podman
 #VAULT_IN_DOCKER_USE_ROOTLESS=true
 

@@ -22,13 +22,14 @@ extensions = [
     'sphinx_tabs.tabs',
     "sphinx_design",
     'myst_parser',
-    'sphinx_copybutton'
+    'sphinx_copybutton',
+    'sphinx_jinja',
 ]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store',
                     '_releasenotes/*', 'README.md',
-                    ".terraform-doc-header.md"]
+                    ".terraform-doc-header.md", '**/_*/*',]
 
 myst_enable_extensions = ["colon_fence"]
 

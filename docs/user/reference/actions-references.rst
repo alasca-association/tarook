@@ -49,13 +49,17 @@ Overview
 ------------------------
 
 The ``init-cluster-repo.sh``-script is used for the
-:doc:`Cluster Repository Initialization </user/guide/quick-start/initialization>`.
+:doc:`Cluster Repository Initialization </user/guide/quick-start/index>`.
 Before executing this script you **must** have configured your
 :doc:`environment variables </user/reference/environmental-variables>`.
 The script will create the basic cluster repository structure as
 described :doc:`here </user/reference/cluster-repository>`. Except in very
 rare cases where a new feature requires it, you’ll need and should
 execute this script only once.
+
+The script supports arguments for specifying
+the branch of Tarook to checkout in the cluster repository
+and the flavor of initial configuration to setup.
 
 .. _actions-references.k8s-loginsh:
 

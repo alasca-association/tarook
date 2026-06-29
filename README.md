@@ -1,6 +1,6 @@
 # TAROOK
 
-Tarook is an holistic life cycle management of Kubernetes clusters on bare metal or OpenStack.
+Tarook is an holistic life cycle management of Kubernetes clusters on bare metal, OpenStack or Proxmox VE.
 
 Tarook is an [ALASCA](https://alasca.cloud/) project. All related resources are publicly available under https://gitlab.com/alasca.cloud/tarook/tarook.
 

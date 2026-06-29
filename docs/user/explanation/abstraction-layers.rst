@@ -73,7 +73,7 @@ What we internally call harbor infrastructure layer is
 generally better known as undercloud and
 describes the system on which the Kubernetes is deployed.
 A Tarook-cluster can be built upon an already existing
-OpenStack deployment or directly on bare metal.
+OpenStack or Proxmox deployment or directly on bare metal.
 
 In general, network configuration aside,
 the Tarook-LCM requires layer 3 access
@@ -94,6 +94,17 @@ is running that acts as an interface between the cluster and OpenStack.
 ``kubelet`` is started with ``--cloud-provider=external``.
 Block storage can be dynamically provisioned by OpenStack Cinder via the
 Cinder Container Storage Interface (CSI) plugin.
+
+TAROOK on Proxmox
+~~~~~~~~~~~~~~~~~
+
+Similar to on OpenStack, Tarook on Proxmox uses Terraform to deploy VMs.
+In many other regards, however, Tarook on Proxmox is more similar to Tarook on Bare Metal.
+Network topology has to be setup and IP addresses need to be assigned manually.
+There is currently no support for gateway nodes.
+Thus, the master nodes act as frontends for the control plane and
+:ref:`LBaaS service layer component ch-k8s-lbaas<ch-k8s-lbaas>` is not available.
+Routing ingress traffic is the user's responsibility.
 
 TAROOK on Bare Metal
 ~~~~~~~~~~~~~~~~~~~~~~~

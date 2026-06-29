@@ -4,7 +4,7 @@ Environment Variable Reference
 The cluster management action scripts rely extensively on environment
 variables to interact with the cluster. A full overview of the variables
 is provided below. It is strongly recommended to read the whole document
-before starting to :doc:`initialize a cluster repository </user/guide/quick-start/initialization>`
+before starting to :doc:`initialize a cluster repository </user/guide/quick-start/index>`
 for the first time.
 
 .. tip::
@@ -44,14 +44,28 @@ minimally (sic!) adjust the following ones:
          -  ``wg_private_key_command`` (user specific)
          -  ``wg_user`` (user specific)
 
+   -  If you’re deploying on top of Proxmox:
+
+      -  :ref:`SSH Configuration<environmental-variables.ssh-configuration>`
+
+         -  ``TF_VAR_ssh_key`` (user specific)
+
 2. Cluster-specific changes to the cluster environment ``.envrc``:
 
    - :ref:`OpenStack Credentials <environmental-variables.openstack-credentials>`
-      if the cluster shall be run on top of OpenStack.
+     if the cluster shall be run on top of OpenStack.
 
      It is recommended to place these into a separate file ``.openrc`` which then
      can be sourced in the ``.envrc``.
      It is also highly recommended to not directly specify the ``OS_PASSWORD``,
+     but to dynamically retrieve it from a secure place.
+
+   - :ref:`Proxmox Credentials <environmental-variables.proxmox-credentials>`
+     if the cluster shall be run on top of Proxmox.
+
+     It is recommended to place these into a separate file ``.openrc`` which then
+     can be sourced in the ``.envrc``.
+     It is also highly recommended to not directly specify the ``PROXMOX_VE_PASSWORD``,
      but to dynamically retrieve it from a secure place.
 
    -  For potentially productive setups, setting
@@ -147,6 +161,29 @@ Sample openrc for application credentials based authentication
    export OS_INTERFACE=public
    export OS_IDENTITY_API_VERSION=3
 
+.. _environmental-variables.proxmox-credentials:
+
+Proxmox Credentials
+-------------------
+
+``PROXMOX_VE_ENDPOINT`` needs to be set to the endpoint of the Proxmox environment.
+
+For authentication, use:
+
+* Either ``PROXMOX_VE_USERNAME`` and ``PROXMOX_VE_PASSWORD``
+* or ``PROXMOX_VE_API_TOKEN`` (takes precedence).
+
+Sample env file
+~~~~~~~~~~~~~~~
+
+.. code:: shell
+
+   export PROXMOX_VE_ENDPOINT=https://example.org:8000
+   export PROXMOX_VE_USERNAME=myuser@pve
+   export PROXMOX_VE_PASSWORD=mypassword
+
+See `<https://registry.terraform.io/providers/bpg/proxmox/latest/docs#environment-variables-summary>`_ for further details.
+
 External resources
 ------------------
 
@@ -158,15 +195,6 @@ Environment Variable                    Default                                 
                                                                                                                 bootstrap the LCM (``Tarook``)
                                                                                                                 repository. Can be used to override
                                                                                                                 the repository to use another mirror.
-``MANAGED_K8S_LATEST_RELEASE``          ``true``                                                                If set to ``true``, ``init-cluster-repo.sh`` will checkout the
-                                                                                                                release version that is written in the ``version`` file
-                                                                                                                on the default branch of ``MANAGED_K8S_GIT``.
-
-                                                                                                                If set to ``false``, the default branch of
-                                                                                                                ``MANAGED_K8S_GIT`` is used (usually ``devel``).
-``MANAGED_K8S_GIT_BRANCH``                                                                                      If set and ``MANAGED_K8S_LATEST_RELEASE`` set to
-                                                                                                                ``false``, the specified branch will be checked out by
-                                                                                                                ``init-cluster-repo.sh``.
 ``TERRAFORM_MODULE_PATH``               ``../terraform``                                                        Path to the Terraform root module to
                                                                                                                 change the working directory for the
                                                                                                                 execution of the Terraform commands.
@@ -259,6 +287,7 @@ SSH Configuration
 Environment Variable        Default                                     Description
 =========================== =========================================== ====================
 ``TF_VAR_keypair``          ``"firstnamelastname-hostname-gendate"``    Defines the keypair name (in OpenStack) which will be used during the creation of new instances. Does not affect instances which have already been created. You **MUST** adjust this variable if you want to deploy on top of OpenStack. This variable is used by the ``apply-terraform.sh``:ref:`-script<actions-references.apply-terraformsh>`.
+``TF_VAR_ssh_key``                                                      The public SSH key which will be used during the creation of new Proxmox VMs. Does not affect instances which have already been created. This variable is used by the ``apply-terraform.sh``:ref:`-script<actions-references.apply-terraformsh>`.
 ``MANAGED_K8S_SSH_USER``                                                The SSH user to use to log into the machines. This variable *SHOULD* be set. By default, the Ansible automation is written such that it’ll auto-detect one of the default SSH users (``centos``, ``debian``, ``ubuntu``) to connect to the machines. This only works if the machines were created with a keypair of which you hold the private key (see ``TF_VAR_keypair``).
 =========================== =========================================== ====================
 
@@ -377,7 +406,19 @@ YAOOK_K8S_DIRENV_MANUAL                     ``false``   If set to ``true``, the 
 Template
 --------
 
-The template file is located at ``nix/templates/cluster-repo/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
 
-.. literalinclude:: /templates/envrc.template.sh
-   :language: bash
+.. tabs::
+
+   .. tab:: OpenStack
+
+      The template file is located at ``templates/cluster-repo/openstack/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
+
+      .. literalinclude:: /templates/envrc.openstack.template.sh
+         :language: bash
+
+   .. tab:: Proxmox
+
+      The template file is located at ``templates/cluster-repo/proxmox/.envrc`` and will be added to the cluster repository by :ref:`init-cluster-repo.sh <actions-references.init-cluster-reposh>`.
+
+      .. literalinclude:: /templates/envrc.proxmox.template.sh
+         :language: bash

@@ -36,6 +36,7 @@
           ./infra.nix
           ./terraform.nix
           ./openstack
+          ./proxmox
           ./vault.nix
           ./load-balancing.nix
           ./kubernetes
@@ -47,6 +48,7 @@
           ./miscellaneous.nix
           ./containerd.nix
           ./k8s-supplements
+          ./pythonIFD.nix
           (mkRemovedOptionModule ["passwordstore"] "Passwordstore has been replaced by Vault.")
           (mkRemovedOptionModule ["cah-users"] "")
         ];

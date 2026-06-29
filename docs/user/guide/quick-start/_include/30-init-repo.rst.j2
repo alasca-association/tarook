@@ -1,0 +1,49 @@
+To deploy a Tarook cluster, you need to create a git repository which will
+serve as your :doc:`cluster repository </user/reference/cluster-repository>`:
+
+1. Create an empty directory as your cluster repository:
+
+   .. code:: console
+
+      $ git init my-cluster-repository
+      $ cd my-cluster-repository
+
+2. Initialize the cluster repository:
+
+   .. code:: console
+
+      $ nix run "git+https://gitlab.com/alasca.cloud/tarook/tarook#init" -- {{ target }}
+
+   .. hint::
+
+      If you want to initialize Tarook from a specific branch or tag, do:
+
+      .. code:: console
+
+         $ nix run "git+https://gitlab.com/alasca.cloud/tarook/tarook#init" -- -b <branch> {{ target }}
+
+   This init script will:
+
+   -  Add all necessary submodules.
+   -  Copy a configuration template to ``./config/`` if no
+      config exists in the cluster repository yet.
+   -  Update ``.gitignore`` to current standards.
+   -  Add a ``.envrc`` template
+
+3. Setup your environment variables:
+
+   1. User specific variables (if not already exists):
+
+      Copy the template located at
+      ``managed-k8s/templates/yaook-k8s-env.template.sh``
+      to ``~/.config/yaook-k8s/env``.
+
+      .. code:: console
+
+         $ cp managed-k8s/templates/yaook-k8s-env.template.sh ~/.config/yaook-k8s/env
+
+   2. Make the cluster- and user-specific
+      :ref:`minimal changes <environmental-variables.minimal-required-changes>`
+      to ``./.envrc`` and ``~/.config/yaook-k8s/env``.
+
+   3. Make sure they have taken effect by running ``direnv allow``.
