@@ -463,7 +463,7 @@ in {
     };
     blackbox_version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=prometheus-blackbox-exporter registryUrl=https://prometheus-community.github.io/helm-charts
-      default = "11.13.0";
+      default = "11.14.0";
     };
     allow_external_rules = mkEnableOption ''
       external rules.
