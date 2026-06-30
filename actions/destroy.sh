@@ -14,6 +14,39 @@ check_venv
 
 require_ansible_disruption
 
+function destroy_terraform() {
+    require_harbour_disruption
+
+    "$actions_dir/update-inventory.sh" terraform
+
+
+    if [ "$("$actions_dir/helpers/semver2.sh" "$(terraform -v -json | jq -r '.terraform_version')" "$terraform_min_version")" -lt 0 ]; then
+        errorf 'Please upgrade Terraform to at least v'"$terraform_min_version"
+        exit 5
+    fi
+
+    load_gitlab_vars
+
+    cd "$terraform_state_dir"
+    export TF_DATA_DIR="$terraform_state_dir/.terraform"
+    run terraform init
+    # The following task will fail if a) thanos wrote data into a container and b) `MANAGED_K8S_NUKE_FROM_ORBIT` is not set
+    run terraform destroy --auto-approve || true
+
+    # Remove the tf_statefile from gitlab
+    if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ] ; then
+        GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" --request DELETE "$backend_address")
+        check_return_code "$GITLAB_RESPONSE"
+    fi
+
+    # Purge the remaining terraform directory. Its existence is a condition for additional disruption checks.
+    rm -fr "$terraform_state_dir"
+}
+
+function destroy_proxmox() {
+    destroy_terraform
+}
+
 function destroy_openstack() {
     require_harbour_disruption
 
@@ -71,12 +104,6 @@ function destroy_openstack() {
         run openstack port delete "${port_ids[@]}"
     fi
 
-    cd "$terraform_state_dir"
-    export TF_DATA_DIR="$terraform_state_dir/.terraform"
-    run terraform init
-    # The following task will fail if a) thanos wrote data into a container and b) `MANAGED_K8S_NUKE_FROM_ORBIT` is not set
-    run terraform destroy --auto-approve || true
-
     IFS=$'\n' read -r -d '' -a volume_ids < <( openstack volume list --project "$OS_PROJECT_ID" -f value -c ID && printf '\0' )
     if [ "${#volume_ids[@]}" != 0 ]; then
         run openstack volume delete "${volume_ids[@]}"
@@ -89,14 +116,7 @@ function destroy_openstack() {
         run wg-quick down "$wg_conf"
     fi
 
-    # Remove the tf_statefile from gitlab
-    if [ "$(jq -r .backend.type "$terraform_state_dir/.terraform/terraform.tfstate")" == 'http' ] ; then
-        GITLAB_RESPONSE=$(curl -Is --header "Private-Token: $TF_HTTP_PASSWORD" -o "/dev/null" -w "%{http_code}" --request DELETE "$backend_address")
-        check_return_code "$GITLAB_RESPONSE"
-    fi
-
-    # Purge the remaining terraform directory. Its existence is a condition for additional disruption checks.
-    rm -fr "$terraform_state_dir"
+    destroy_terraform
 }
 
 function destroy_baremetal() {
@@ -113,8 +133,12 @@ function destroy_baremetal() {
 }
 
 
-if [ "${tf_usage:-true}" == 'true' ]; then
-    destroy_openstack
-else
+if [ "${tf_usage:?}" == 'false' ]; then
     destroy_baremetal
+elif [ "${on_openstack:?}" == 'true' ]; then
+    destroy_openstack
+elif [ "${on_proxmox:?}" == 'true' ]; then
+    destroy_proxmox
+else
+    errorf "Unsupported platform"
 fi

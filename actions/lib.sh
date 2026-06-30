@@ -88,6 +88,18 @@ function load_conf_vars() {
         exit 2
     fi
 
+    on_openstack="$(yq '.on_openstack' "$conf_vars_file")"
+    if [[ ! ("${on_openstack:?}" == "true" || "${on_openstack:?}" == "false") ]]; then
+        errorf "Unexpected value of 'on_openstack' in $conf_vars_file"
+        exit 2
+    fi
+
+    on_proxmox="$(yq '.on_proxmox' "$conf_vars_file")"
+    if [[ ! ("${on_proxmox:?}" == "true" || "${on_proxmox:?}" == "false") ]]; then
+        errorf "Unexpected value of 'on_proxmox' in $conf_vars_file"
+        exit 2
+    fi
+
     wg_usage="$(yq '.wg_usage' "$conf_vars_file")"
     if [[ ! ("${wg_usage:?}" == "true" || "${wg_usage:?}" == "false") ]]; then
         errorf "Unexpected value of 'wg_usage' in $conf_vars_file"
