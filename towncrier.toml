@@ -8,7 +8,7 @@ underlines = ["-", "~", "^"]
 
 [[tool.towncrier.type]]
 directory = "BREAKING"
-name = "Breaking changes"
+name = "Breaking Changes"
 showcontent = true
 
 [[tool.towncrier.type]]
@@ -18,7 +18,12 @@ showcontent = true
 
 [[tool.towncrier.type]]
 directory = "change"
-name = "Changed functionality"
+name = "Changed Functionality"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "dependency"
+name = "Dependencies"
 showcontent = true
 
 [[tool.towncrier.type]]

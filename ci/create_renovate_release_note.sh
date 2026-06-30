@@ -15,14 +15,9 @@ CURRENT_VERSION=$4
 NEW_VERSION=$5
 IS_MAJOR=$6
 
-if [[ $DATASOURCE == 'helm' ]]; then
-  if [[ $IS_MAJOR == 'true' ]]; then
-    CATEGORY="BREAKING"
-  else
-    CATEGORY="change"
-  fi
-else
-  CATEGORY="chore"
+CATEGORY="dependency"
+if [[ $DATASOURCE == 'helm' && $IS_MAJOR == 'true' ]]; then
+  CATEGORY="BREAKING"
 fi
 
 RELEASENOTE_FILE="$RELEASENOTES_BASE_PATH/x.$CATEGORY.$DEP_NAME-updated-to-$NEW_VERSION"
@@ -38,6 +33,10 @@ if [[ $DATASOURCE == 'helm' ]]; then
   else
     echo "Updated default version of helm chart $DEP_NAME of $SOURCE_URL from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
   fi
+elif [[ $SOURCE_URL == 'https://github.com/containerd/containerd' ]]; then
+  echo "The default version of containerd has been bumped from $CURRENT_VERSION to $NEW_VERSION." > "$RELEASENOTE_FILE"
+elif [[ $SOURCE_URL == 'https://github.com/kubernetes/kubernetes' ]]; then
+  echo "The default Kubernetes version has been bumped from $CURRENT_VERSION to $NEW_VERSION." > "$RELEASENOTE_FILE"
 else
   touch "$RELEASENOTE_FILE"
 fi
