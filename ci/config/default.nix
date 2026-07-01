@@ -120,7 +120,10 @@ in {
         };
         worker-gpu-0 = {
           role = "worker";
-          flavor = "CH-8C:32:100s-GN:1xTeslaT4";
+          flavor = selectByRegion {
+            f1d = "CH-8C:32:100s-GN:1xA2";
+            f1a = "CH-8C:32:100s-GN:1xTeslaT4";
+          };
         };
         worker-cpu-2 = {
           role = "worker";
