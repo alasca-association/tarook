@@ -1,2 +1,0 @@
-The following option has been introduced to easily configure the event TTL for the kube-apiserver:
-:ref:`configuration-options.yk8s.kubernetes.apiserver.event_ttl`.
