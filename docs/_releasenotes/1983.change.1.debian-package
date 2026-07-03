@@ -1,1 +1,0 @@
-We now check whether the currently used Nix version is supported before invoking any Nix commands.

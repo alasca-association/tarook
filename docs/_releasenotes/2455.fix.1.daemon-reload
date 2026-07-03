@@ -1,3 +1,0 @@
-With the latest nvidia-container-toolkit a `bug <https://github.com/NVIDIA/nvidia-docker/issues/1730>`__ has been fixed
-which caused existing workload to lose access to the GPU
-on a ``systemctl daemon-reload``.

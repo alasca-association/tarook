@@ -1,3 +1,0 @@
-Increased the timeout of the initial SSH connection check against each node
-from 5 minutes to 15
-in order to support nodes and/or IaaS environments with longer OS bring-up durations.

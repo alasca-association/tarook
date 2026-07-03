@@ -1,3 +1,0 @@
-It is now required to configure gateway nodes
-when setting :ref:`configuration-options.yk8s.wireguard.enabled` to ``true``.
-Previously the option was silently ignored when no gateway nodes were present.

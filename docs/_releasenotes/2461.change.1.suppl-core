@@ -1,1 +1,0 @@
-Triggering the :ref:`apply-k8s-supplements action <actions-references.apply-k8s-supplementssh>` does not implicitly trigger the :ref:`apply-k8s-core action <actions-references.apply-k8s-coresh>` anymore.

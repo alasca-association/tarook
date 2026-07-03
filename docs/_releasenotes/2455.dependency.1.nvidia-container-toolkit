@@ -1,6 +1,0 @@
-The upstream repository URL for the nvidia-container-toolkit has been updated
-sucht that Kubernetes workers with GPU capability can fetch the latest package versions.
-The package will be updated on a
-:doc:`Kubernetes upgrade </user/guide/kubernetes/upgrading-kubernetes>`
-or
-:ref:`system update<actions-references.update-kubernetes-nodessh>`.

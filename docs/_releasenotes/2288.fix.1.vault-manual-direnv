@@ -1,1 +1,0 @@
-A bug has been fixed that resulted in a deadlock when using both ``USE_VAULT_IN_DOCKER=true`` and ``YAOOK_K8S_DIRENV_MANUAL=true``.
