@@ -118,7 +118,6 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 **Declared by**
 
 
-
 .. _configuration-options.yk8s.infra.ansible_hosts.<name>.hosts:
 
 ``yk8s.infra.ansible_hosts.<name>.hosts``
@@ -137,7 +136,6 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 
 **Declared by**
-
 
 
 .. _configuration-options.yk8s.infra.ansible_hosts.<name>.hosts.<name>.ansible_host:
@@ -160,7 +158,6 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 **Declared by**
 
 
-
 .. _configuration-options.yk8s.infra.ansible_hosts.<name>.hosts.<name>.local_ipv4_address:
 
 ``yk8s.infra.ansible_hosts.<name>.hosts.<name>.local_ipv4_address``
@@ -179,7 +176,6 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 
 **Declared by**
-
 
 
 .. _configuration-options.yk8s.infra.ansible_hosts.<name>.hosts.<name>.local_ipv6_address:
@@ -202,7 +198,6 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 **Declared by**
 
 
-
 .. _configuration-options.yk8s.infra.ansible_hosts.<name>.vars:
 
 ``yk8s.infra.ansible_hosts.<name>.vars``
@@ -221,7 +216,6 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/infra.nix
 
 
 **Declared by**
-
 
 
 .. _configuration-options.yk8s.infra.ansible_hosts.all.vars.ansible_python_interpreter:
