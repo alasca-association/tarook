@@ -1,0 +1,1 @@
+A bug has been fixed that caused the bootstrap role to fail if an interface contained a dot (e.g. ``bond1.1234``)
