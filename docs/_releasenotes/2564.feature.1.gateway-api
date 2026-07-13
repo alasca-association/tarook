@@ -1,0 +1,20 @@
+Envoy Gateway can now be installed as a supplement.
+
+To do so, set :ref:`configuration-options.yk8s.k8s-service-layer.envoy-gateway.enabled` and run `./managed-k8s/actions/apply-k8s-supplements.sh install-envoy-gateway.yaml`.
+
+.. note::
+
+   If you've previously used Gateway API with Tigera, this change is disruptive and you'll need to provide `MANAGED_K8S_RELEASE_THE_KRAKEN=true`.
+
+
+.. important::
+
+   The migration may take several (5-10) minutes during which workload is not reachable via the Gateway.
+
+.. important::
+
+   Existing Gateways may end up with a different external IP address after the migration. If you want to keep the address, manual steps are necessary that depend on the LBaaS in use and are not covered here.
+
+.. important::
+
+   The ``GatewayClass`` ``tigera-gateway-class`` may be lost during the migration. If so, existing Gateways must be adapted to reference the newly created ``envoy-gateway`` ``GatewayClass``.

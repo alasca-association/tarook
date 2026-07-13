@@ -26,6 +26,9 @@
 - name: Install Ingress controller
   import_playbook: install-ingress.yaml
 
+- name: Install Envoy Gateway
+  import_playbook: install-envoy-gateway.yaml
+
 - name: Install etcd-backup
   import_playbook: install-etcd-backup.yaml
 
