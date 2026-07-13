@@ -19,6 +19,7 @@ in {
     (mkRemovedOptionModule ["kubernetes" "network" "calico" "ipv6_autodetection_method"] "")
     (mkRemovedOptionModule ["kubernetes" "network" "calico" "calico_ip_autodetection_method"] "")
     (mkRemovedOptionModule ["kubernetes" "network" "calico" "calico_ipv6_autodetection_method"] "")
+    (mkRemovedOptionModule ["kubernetes" "network" "calico" "values_file_path"] "Please use :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.values` instead.")
 
     (mkRenamedOptionModule ["kubernetes" "network" "calico" "image_registry"] ["kubernetes" "network" "calico" "helm" "values" "installation" "registry"])
     (mkRenamedOptionModule ["kubernetes" "network" "calico" "mtu"] ["kubernetes" "network" "calico" "helm" "values" "installation" "calicoNetwork" "mtu"])
@@ -149,23 +150,6 @@ in {
       type = types.yk8s.networking.ipv4Addr;
       default = "244.0.0.1";
     };
-    values_file_path = mkOption {
-      description = ''
-        .. note:: DEPRECATED
-
-           This option is going to be removed.
-           Please use :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.values` instead.
-
-        For the operator-based installation,
-        it is possible to link to self-maintained values file for the helm chart
-
-      '';
-      type = types.pathInStore;
-      default = (yk8s-lib.mkYaml "yk8s-calico-values.yaml" cfg.helm.values).outPath;
-      defaultText = lib.literalExpression
-        ''(yk8s-lib.mkYaml "yk8s-calico-values.yaml" config.yk8s.kubernetes.network.calico.helm.values).outPath'';
-      example = lib.options.literalExpression "./calico/helm/values.yaml";
-    };
   };
   config.yk8s.kubernetes.network.calico.helm.values =
     {
@@ -231,8 +215,5 @@ in {
     };
 
   config.yk8s._targets.ansible.assertions = [];
-  config.yk8s._targets.ansible.warnings =
-    lib.optional (options.yk8s.kubernetes.network.calico.values_file_path.highestPrio < 1500) # priority of option defaults
-
-    "config.yk8s.kubernetes.network.calico.values_file_path: is deprecated. Please use config.yk8s.kubernetes.network.calico.helm.values instead.";
+  config.yk8s._targets.ansible.warnings = [];
 }

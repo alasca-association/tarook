@@ -1,0 +1,1 @@
+The option `yk8s.kubernetes.network.calico.values_file_path` has been removed. Please use :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.values` instead.
