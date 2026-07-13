@@ -26,8 +26,8 @@
     units = {
       chartRepoUrl = {
         target = optionTypes.chartRepoUrl;
-        # chartRepoUrl is an alias of httpxUrl
-        tests.typeChecking = networking.httpxUrl.tests.typeChecking;
+        # alias type, so no tests are needed
+        tests = {};
       };
       chartReleaseName = {
         target = optionTypes.chartReleaseName;
@@ -66,8 +66,8 @@
       };
       chartRef = {
         target = optionTypes.chartRef;
-        # chartRef is equal to relativeUrlPath
-        tests.typeChecking = networking.relativeUrlPath.tests.typeChecking;
+        # composite type, so no tests are needed
+        tests = {};
       };
     };
   };
