@@ -33,6 +33,8 @@ if [[ $DATASOURCE == 'helm' ]]; then
   else
     echo "Updated default version of helm chart $DEP_NAME of $SOURCE_URL from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
   fi
+elif [[ $DATASOURCE == 'galaxy-collection' ]]; then
+  echo "The Ansible Galaxy collection $DEP_NAME has been updated from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
 elif [[ $SOURCE_URL == 'https://github.com/containerd/containerd' ]]; then
   echo "The default version of containerd has been bumped from $CURRENT_VERSION to $NEW_VERSION." > "$RELEASENOTE_FILE"
 elif [[ $SOURCE_URL == 'https://github.com/kubernetes/kubernetes' ]]; then
