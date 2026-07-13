@@ -147,7 +147,7 @@ in rec {
 
   mkHelmReleaseOptions = {
     descriptionName,
-    defaultRepoUrl,
+    defaultRepoUrl ? null,
     defaultChartRef,
     defaultChartVersion,
     defaultReleaseNamespace,
@@ -161,7 +161,7 @@ in rec {
       description = ''
         The URL to the Helm repository for the ${descriptionName} Helm chart.
       '';
-      type = types.yk8s.helm.chartRepoUrl;
+      type = with types; nullOr yk8s.helm.chartRepoUrl;
       default = defaultRepoUrl;
     };
     chart_ref = lib.mkOption {
