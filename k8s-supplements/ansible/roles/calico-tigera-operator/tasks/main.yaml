@@ -47,7 +47,7 @@
         release_namespace: "{{ k8s_network_calico_helm_release_namespace }}"
         release_name: "{{ k8s_network_calico_helm_release_name }}"
         release_state: present
-        values: "{{ lookup('file', k8s_network_calico_values_file_path) | from_yaml }}"
+        values: "{{ k8s_network_calico_helm_values | to_json }}"
 
     # Give the operator some time to create the CRDs
     - name: Pause for 20s
