@@ -36,9 +36,9 @@ if [[ $DATASOURCE == 'helm' ]]; then
 elif [[ $DATASOURCE == 'galaxy-collection' ]]; then
   echo "The Ansible Galaxy collection $DEP_NAME has been updated from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
 elif [[ $SOURCE_URL == 'https://github.com/containerd/containerd' ]]; then
-  echo "The default version of containerd has been bumped from $CURRENT_VERSION to $NEW_VERSION." > "$RELEASENOTE_FILE"
+  echo "The default version of :ref:\`configuration-options.yk8s.containerd.version\` has been bumped from $CURRENT_VERSION to $NEW_VERSION." > "$RELEASENOTE_FILE"
 elif [[ $SOURCE_URL == 'https://github.com/kubernetes/kubernetes' ]]; then
-  echo "The default Kubernetes version has been bumped from $CURRENT_VERSION to $NEW_VERSION." > "$RELEASENOTE_FILE"
+  echo "The default version of :ref:\`configuration-options.yk8s.kubernetes.version\` has been bumped from $CURRENT_VERSION to $NEW_VERSION." > "$RELEASENOTE_FILE"
 else
   touch "$RELEASENOTE_FILE"
 fi
