@@ -151,6 +151,8 @@ in {
       default = "244.0.0.1";
     };
   };
+
+  config.yk8s.kubernetes.network.kube_proxy.enabled = false;
   config.yk8s.kubernetes.network.calico.helm.values =
     {
       installation = {
@@ -161,6 +163,7 @@ in {
         controlPlaneNodeSelector."node-role.kubernetes.io/control-plane" = "";
         nonPrivileged = "True";
         calicoNetwork = {
+          linuxDataplane = "BPF";
           ipPools = let
             common = {
               allowedUses = [
@@ -216,6 +219,10 @@ in {
       nodeSelector = {
         "kubernetes.io/os" = "linux";
         "node-role.kubernetes.io/control-plane" = "";
+      };
+      kubernetesServiceEndpoint = {
+        host = config.yk8s.infra.networking_fixed_ip;
+        port = config.yk8s.kubernetes.apiserver.frontend_port;
       };
     }
     // lib.optionalAttrs (lib.versionAtLeast cfg.helm.chart_version "3.30") {
