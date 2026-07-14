@@ -1,0 +1,2 @@
+Fixed the error handling of the SSH user detection
+so that failure is handled gracefully.
