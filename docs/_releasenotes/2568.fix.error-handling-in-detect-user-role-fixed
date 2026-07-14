@@ -1,2 +1,4 @@
 Fixed the error handling of the SSH user detection
 so that failure is handled gracefully.
+
+The error message now includes failure details.

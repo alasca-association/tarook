@@ -70,9 +70,18 @@
     - detect-user
     - always
 
-  - name: fail if login detection did not work
+  - name: fail if no login succeeded
     fail:
-      msg: "failed to detect a valid login! tried: {{ detect_user_attempts }}"
+      msg: |
+        Failed to find a usable login!
+        Tested users: {{ detect_user_attempts | join(', ') }}
+
+        Login attempts:
+        {% for login_attempt in login_results.results %}
+        $ {{ login_attempt.cmd | trim('\n') }}
+        {{ login_attempt.stderr }}
+        ---
+        {% endfor %}
     when: ansible_user is not defined
     check_mode: false
     tags:
