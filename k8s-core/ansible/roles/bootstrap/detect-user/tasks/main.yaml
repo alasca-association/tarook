@@ -37,7 +37,7 @@
       {{ ansible_ssh_extra_args | default("") }} \
       {{ item | quote }}@{{ ansible_host | default(inventory_hostname) | quote }} \
       true </dev/null
-  loop: "{{ detect_user_attempts }}"
+  loop: "{{ detect_user_attempts | unique }}"
   failed_when: false
   changed_when: false
   register: login_results
