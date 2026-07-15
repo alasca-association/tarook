@@ -235,7 +235,7 @@ in {
       then [(linkToPath "${wireguard_helper_output}/${inventory_path}" "group_vars/${inventory_path}")]
       else [
         (mkGroupVarsFile {
-          cfg = {enabled = false;};
+          cfg = {"${ansible_prefix}enabled" = false;};
           inherit inventory_path;
         })
       ];

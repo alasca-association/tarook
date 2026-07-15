@@ -28,4 +28,5 @@
     tags: nftables
   - role: wireguard
     tags: wireguard
+    when: wg_enabled
 ...

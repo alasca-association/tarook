@@ -41,31 +41,38 @@ table inet filter {
         {% endif %}
     }
 
+    {% if wg_enabled %}
     set udp_accepted {
         type inet_service; flags interval;
         elements = {
+            {% if wg_enabled %}
             {% for ep in wg_endpoints %}
             {% if ep.enabled %}
             {{ ep.port }},
             {% endif %}
             {% endfor %}
+            {% endif %}
         }
     }
+    {% endif %}
 
     {% if ipv4_enabled %}
     set ipv4_internal_accepted {
         type ipv4_addr; flags interval;
         elements = {
             {{ priv_ip_cidr }},
+            {% if wg_enabled %}
             {% for ep in wg_endpoints %}
             {% if ep.enabled and ep.ip_cidr is not none %}
             {{ ep.ip_cidr }},
             {% endif %}
             {% endfor %}
+            {% endif %}
         }
     }
     {% endif %}
 
+    {% if wg_enabled %}
     set wg_iifnames {
         type ifname;
         elements = {
@@ -76,17 +83,20 @@ table inet filter {
             {% endfor %}
         }
     }
+    {% endif %}
 
     {% if ipv6_enabled %}
     set ipv6_internal_accepted {
         type ipv6_addr; flags interval;
         elements = {
             {{ subnet_v6_cidr }},
+            {% if wg_enabled %}
             {% for ep in wg_endpoints %}
                 {% if ep.enabled and ep.ipv6_cidr is not none %}
                 {{ ep.ipv6_cidr }},
                 {% endif %}
             {% endfor %}
+            {% endif %}
         }
     }
     {% endif %}
@@ -110,7 +120,9 @@ table inet filter {
 
         tcp dport @tcp_mapped_accepted accept comment "Accept connections to nodeport mapped services from anywhere"
 
+        {% if wg_enabled %}
         udp dport @udp_accepted accept comment "Accept wireguard traffic from anywhere"
+        {% endif %}
 
         {% if ipv4_enabled %}
         ip protocol icmp counter accept
@@ -133,14 +145,19 @@ table inet filter {
         jump base_checks
 
         {% if ipv4_enabled %}
+        {% if wg_enabled %}
         iifname @wg_iifnames oifname $wan ip daddr {{ priv_ip_cidr }} ct state new counter accept;
+        {% endif %}
         iifname $wan oifname $wan ip saddr {{ priv_ip_cidr }} ct state new counter accept;
 
+        {% if wg_enabled %}
         iifname @wg_iifnames oifname $wan ip daddr {{ k8s_network_pod_subnet }} ct state new counter accept comment "Forward IPv4 traffic from Wireguard to Kubernetes Pod network";
         iifname @wg_iifnames oifname $wan ip daddr {{ k8s_network_service_subnet }} ct state new counter accept comment "Forward IPv4 traffic from Wireguard to Kubernetes Service network";
         {% endif %}
+        {% endif %}
 
         {% if ipv6_enabled %}
+        {% if wg_enabled %}
         iifname @wg_iifnames oifname $wan ip6 daddr {{ subnet_v6_cidr }} ct state new counter accept comment "Forward IPv6 traffic from Wireguard to internal";
         iifname $wan oifname $wan ip6 saddr {{ subnet_v6_cidr }} ct state new counter accept comment "Forward IPv6 traffic from internal to Wireguard";
 
@@ -149,6 +166,7 @@ table inet filter {
 
         iifname @wg_iifnames oifname $wan meta l4proto { icmp, ipv6-icmp } limit rate 5/second accept comment "Forward ICMPv6 traffic over Wireguard to internal";
         iifname $wan oifname @wg_iifnames meta l4proto { icmp, ipv6-icmp } limit rate 5/second accept comment "Forward internal ICMPv6 traffic over Wireguard";
+        {% endif %}
         {% endif %}
 
     }
@@ -176,11 +194,13 @@ table ip nat {
     set wg_iifnames {
         type ifname;
         elements = {
+            {% if wg_enabled %}
             {% for ep in wg_endpoints %}
             {% if ep.enabled %}
             wg{{ ep.id }},
             {% endif %}
             {% endfor %}
+            {% endif %}
         }
     }
 {% endif %}
@@ -188,7 +208,9 @@ table ip nat {
     chain postrouting {
 {% if ch_k8s_lbaas_enabled and not ch_k8s_lbaas_enable_snat %}
         ip saddr {{ priv_ip_cidr }} masquerade comment "Only SNAT internal traffic";
+        {% if wg_enabled %}
         iifname @wg_iifnames oifname $wan ip daddr {{ priv_ip_cidr }} masquerade comment "SNAT incoming Wireguard traffic"
+        {% endif %}
 {% else %}
         fib saddr type != local masquerade comment "SNAT all traffic";
 {% endif %}
