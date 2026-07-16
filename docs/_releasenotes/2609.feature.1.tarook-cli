@@ -1,0 +1,1 @@
+We now provide a CLI tool to operate Tarook clusters. Check it out with ``tarook --help``
