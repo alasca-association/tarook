@@ -10,6 +10,7 @@
 in {
   options.yk8s._pythonIFD = {
     functions = yk8s-lib.mkInternalOption {
+      default = {};
       type = types.attrsOf (types.submodule {
         options = {
           body = lib.mkOption {
