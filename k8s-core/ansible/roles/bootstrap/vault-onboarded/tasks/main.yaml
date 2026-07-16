@@ -139,7 +139,25 @@
           key_type: ca
           allow_host_certificates: "true"
           allow_bare_domains: "true"
-          allowed_domains: "{{ vault_node_name }},{{ inventory_hostname }}"
+          allowed_domains: >
+            {{
+              (
+                [
+                  vault_node_name,
+                  inventory_hostname,
+                  ansible_host
+                ]
+                + (
+                  (local_ipv4_address | default(none)) is not none
+                  | ternary([local_ipv4_address], [])
+                )
+                + (
+                  (local_ipv6_address | default(none)) is not none
+                  | ternary([local_ipv6_address], [])
+                )
+              )
+              | join(',')
+            }}
           ttl: "720h"
           algorithm_signer: "rsa-sha2-512"
 
