@@ -153,7 +153,7 @@ in rec {
   checkResources = absOpt: {config, ...}: let
     cpuLimit = attrByPath (absOpt ++ ["limits" "cpu"]) null config;
     memoryRequest = attrByPath (absOpt ++ ["requests" "memory"]) null config;
-    memoryLimit = attrByPath (absOpt ++ ["limits" "cpu"]) null config;
+    memoryLimit = attrByPath (absOpt ++ ["limits" "memory"]) null config;
     optLoc = concatStringsSep "." absOpt;
   in {
     config.yk8s.warnings =
