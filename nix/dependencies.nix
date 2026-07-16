@@ -34,6 +34,7 @@
         description = "Will be used by direnv by default";
         includes = ["minimal"];
         packages = [
+          (callPackage ./packages/tarook.nix {})
           (wrapHelm kubernetes-helm {
             plugins = with pkgs.kubernetes-helmPlugins; [
               helm-diff
