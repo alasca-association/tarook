@@ -1,0 +1,24 @@
+use thiserror::Error;
+
+#[derive(Error, Debug, PartialEq)]
+pub enum BashScriptError {
+    NonZeroExitCodeError { script: String, exit_code: i32 },
+    ExitedBySignalError { script: String },
+    CouldNotFindScriptError { script: String },
+}
+
+impl std::fmt::Display for BashScriptError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BashScriptError::NonZeroExitCodeError { script, exit_code } => {
+                write!(f, "{} exited with {}", script, exit_code)
+            }
+            BashScriptError::ExitedBySignalError { script } => {
+                write!(f, "{} terminated by signal", script)
+            }
+            BashScriptError::CouldNotFindScriptError { script } => {
+                write!(f, "Could not find script file {}", script)
+            }
+        }
+    }
+}
