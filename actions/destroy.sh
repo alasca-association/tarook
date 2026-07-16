@@ -104,6 +104,10 @@ function destroy_openstack() {
         run openstack port delete "${port_ids[@]}"
     fi
 
+    # We need to detach all volumes before attempting to delete them
+    notef "Detaching volumes..."
+    openstack volume attachment list --project "$OS_PROJECT_ID" -f value -c ID | xargs -rn1 openstack volume attachment delete
+
     IFS=$'\n' read -r -d '' -a volume_ids < <( openstack volume list --project "$OS_PROJECT_ID" -f value -c ID && printf '\0' )
     if [ "${#volume_ids[@]}" != 0 ]; then
         run openstack volume delete "${volume_ids[@]}"
