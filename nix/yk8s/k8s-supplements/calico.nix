@@ -161,29 +161,41 @@ in {
         controlPlaneNodeSelector."node-role.kubernetes.io/control-plane" = "";
         nonPrivileged = "True";
         calicoNetwork = {
-          ipPools =
+          ipPools = let
+            common = {
+              allowedUses = [
+                "Workload"
+                "Tunnel"
+              ];
+              assignmentMode = "Automatic";
+              disableBGPExport = false;
+              disableNewAllocations = false;
+              nodeSelector = "all()";
+              encapsulation = cfg.encapsulation;
+            };
+          in
             (lib.optional config.yk8s.infra.ipv4_enabled
-              {
-                blockSize = 26;
-                cidr = config.yk8s.kubernetes.network.pod_subnet;
-                natOutgoing =
-                  if config.yk8s.kubernetes.network.ipv4_nat_outgoing
-                  then "Enabled"
-                  else "Disabled";
-                nodeSelector = "all()";
-                encapsulation = cfg.encapsulation;
-              })
+              (common
+                // {
+                  name = "default-ipv4-ippool";
+                  blockSize = 26;
+                  cidr = config.yk8s.kubernetes.network.pod_subnet;
+                  natOutgoing =
+                    if config.yk8s.kubernetes.network.ipv4_nat_outgoing
+                    then "Enabled"
+                    else "Disabled";
+                }))
             ++ (lib.optional config.yk8s.infra.ipv6_enabled
-              {
-                blockSize = 122;
-                cidr = config.yk8s.kubernetes.network.pod_subnet_v6;
-                natOutgoing =
-                  if config.yk8s.kubernetes.network.ipv6_nat_outgoing
-                  then "Enabled"
-                  else "Disabled";
-                nodeSelector = "all()";
-                encapsulation = cfg.encapsulation;
-              });
+              (common
+                // {
+                  name = "default-ipv6-ippool";
+                  blockSize = 122;
+                  cidr = config.yk8s.kubernetes.network.pod_subnet_v6;
+                  natOutgoing =
+                    if config.yk8s.kubernetes.network.ipv6_nat_outgoing
+                    then "Enabled"
+                    else "Disabled";
+                }));
           nodeAddressAutodetectionV4 = lib.optionalAttrs config.yk8s.infra.ipv4_enabled {
             # This works because calico only uses the routing table and
             # does not actually do a reachability check on layer 3 or so.
