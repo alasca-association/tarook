@@ -1,1 +1,0 @@
-An incompatibility within action :ref:`destroy.sh<actions-references.destroysh>` has been fixed which caused it to fail in OpenStack environments where a lookup on an OpenStack project by name is forbidden.
