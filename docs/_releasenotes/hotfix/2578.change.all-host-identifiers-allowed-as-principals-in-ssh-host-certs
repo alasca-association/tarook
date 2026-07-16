@@ -1,0 +1,2 @@
+SSH host certificates may now also include
+the host's local and main/public IP addresses in addition to the hostname.
