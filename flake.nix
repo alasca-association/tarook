@@ -50,6 +50,7 @@
         };
         imports = [
           ./nix/test.nix
+          ./nix/packages
         ];
         packages = {
           init = pkgs.writeShellApplication {
