@@ -1,11 +1,17 @@
-{
+{localFlake}: {
   pkgs,
-  inputs',
+  system,
   ...
 }: {
   yk8s-env = {
     python = pkgs.python3;
     dependencies.groups = with pkgs; {
+      envrc = {
+        packages = lib.singleton (pkgs.runCommandLocal "envrc.lib.sh" {} ''
+          mkdir $out
+          ln -s ${localFlake}/.envrc.lib.sh $out/envrc.lib.sh
+        '');
+      };
       update-inventory = {
         description = "Dependencies needed by update-inventory.sh";
         packages = [
@@ -17,10 +23,22 @@
         description = "Will be used by direnv when MINIMAL_ACCESS_VENV=true";
         includes = ["update-inventory"];
         packages = [
+          (
+            pkgs.writeShellApplication {
+              name = "tarook";
+              runtimeInputs = [
+                localFlake.packages.${system}.tarook
+              ];
+              text = ''
+                export TAROOK_CODE_PATH=''${TAROOK_CODE_PATH-'${localFlake}'}
+                exec tarook  "$@"
+              '';
+            }
+          )
           iproute2 # for wg-up
           jq
           kubectl
-          inputs'.nixpkgs-vault1148.legacyPackages.vault
+          localFlake.inputs.nixpkgs-vault1148.legacyPackages.${system}.vault
           wireguard-tools
           yq
         ];
@@ -48,7 +66,7 @@
           openssh
           openssl
           pre-commit
-          inputs'.nixpkgs-terraform157.legacyPackages.terraform
+          localFlake.inputs.nixpkgs-terraform157.legacyPackages.${system}.terraform
           util-linux # for uuidgen
         ];
         pythonPackages = ps:

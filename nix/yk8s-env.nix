@@ -81,8 +81,6 @@
           };
         };
 
-        imports = [./dependencies.nix];
-
         config = {
           yk8s-env.dependencies.finalGroups = let
             mergedPackages = group:

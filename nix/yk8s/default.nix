@@ -5,6 +5,9 @@
   flake-parts-lib,
   ...
 }: {
+  imports = [
+    ../yk8s-env.nix
+  ];
   options = {
     perSystem =
       flake-parts-lib.mkPerSystemOption
@@ -32,6 +35,7 @@
           };
         };
         imports = [
+          (flake-parts-lib.importApply ../dependencies.nix {inherit localFlake;})
           ./conf-vars.nix
           ./infra.nix
           ./terraform.nix

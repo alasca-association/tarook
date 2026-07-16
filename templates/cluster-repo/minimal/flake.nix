@@ -1,5 +1,5 @@
 {
-  inputs.yk8s.url = "git+https://gitlab.com/alasca.cloud/tarook/tarook";
+  inputs.yk8s.url = "<tarookFlakeUrl>";
   inputs.nixpkgs.follows = "yk8s/nixpkgs";
   inputs.flake-parts.follows = "yk8s/flake-parts";
   inputs.systems.url = "github:nix-systems/x86_64-linux/2ecfcac5e15790ba6ce360ceccddb15ad16d08a8";

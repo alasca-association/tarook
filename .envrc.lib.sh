@@ -1,7 +1,5 @@
 # shellcheck shell=bash
 
-TAROOK_CODE_PATH=${TAROOK_CODE_PATH:-"./managed-k8s"}
-
 layout_poetry() {
   echo
   echo "WARNING: Tarook no longer uses Poetry. Please remove all occurences of 'layout poetry' from your .envrc"
@@ -82,21 +80,12 @@ use_flake_if_nix() {
     return
   fi
 
-  (
-    actions_dir="$flake_dir/actions"
-    # shellcheck source=actions/lib.sh
-    source "$actions_dir/lib.sh"
-    check_nix_version
-  ) || return
-
+  YAOOK_K8S_DIRENV_MANUAL=false
   if [ "${YAOOK_K8S_DIRENV_MANUAL:-false}" == "true" ]; then
     _nix_flake_manual "$flake_dir"
     watch_file "$flake_dir/nix"
   else
     _nix_flake_auto "$flake_dir"
-    # for auto-reload, only watch the file most likely to update dependencies
-    # otherwise the reload frequency would not be bearable
-    watch_file "$flake_dir/nix/dependencies.nix"
   fi
   export NIX_FLAKE_ACTIVE="${NIX_FLAKE_ACTIVE}:${flake_dir}"
 
@@ -121,7 +110,7 @@ use_locale_archive_if_not_set() {
 }
 
 layout_yaook-k8s() {
-  flake_dir="$(realpath "${1:-$TAROOK_CODE_PATH}")"
+  flake_dir="$(realpath "${1:-$PWD}")"
   user_env="$HOME/.config/yaook-k8s/env"
   if [ -e "$user_env" ]; then
     source_env "$user_env"

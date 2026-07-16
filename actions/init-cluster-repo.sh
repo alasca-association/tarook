@@ -71,51 +71,24 @@ fi
 
 submodule_base="submodules"
 
-submodule_managed_k8s_name="managed-k8s"
-
-if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
-    if [ ! -d "$submodule_managed_k8s_name" ]; then
-        if [ "${managed_k8s_latest_release:-true}"  == "true" ]; then
-            # Checkout latest release
-            echo ''
-            notef "Adding $submodule_managed_k8s_name submodule on release v$version_major_minor..."
-
-            run git submodule add -b "release/v$version_major_minor" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
-        elif [ -n "${managed_k8s_git_branch:-}" ]; then
-            # Checkout specified branch
-
-            echo ''
-            notef "Adding $submodule_managed_k8s_name submodule on branch $managed_k8s_git_branch..."
-
-            run git submodule add -b "$managed_k8s_git_branch" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
-        else
-            run git submodule add "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
-        fi
-    else
-        pushd "$cluster_repository/$submodule_managed_k8s_name" > /dev/null
-        run git remote set-url origin "$submodule_managed_k8s_url"
-        popd > /dev/null
-    fi
-else
-    echo ''
-    notef "Skipping $submodule_managed_k8s_name submodule.."
-    echo ''
-fi
-
 # Create submodule directory
 mkdir -p "$submodule_base"
-
-if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
-    run git submodule update --init --recursive
-fi
 
 # Copy template directory and dereference any symlinks pointing outside of it
 #  (namely symlinks from other templates into ../minimal/)
 rsync --verbose --chmod=F644,D755 --recursive --links --copy-unsafe-links --ignore-existing "${cluster_repo_template_dir:?}/${template}"/ .
-if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
-    # TODO foreach file: only add if not already tracked or in index
-	run git add flake.nix .gitignore config .envrc
+
+if [[ "${submodule_managed_k8s_url}" == /* ]]; then
+    tarook_flake_url="${submodule_managed_k8s_url}"
+else
+    tarook_flake_url="git+${submodule_managed_k8s_url}"
+    if [[ -n "${managed_k8s_git_branch:-}" ]]; then
+        tarook_flake_url="${tarook_flake_url}?ref=${managed_k8s_git_branch}"
+    fi
 fi
+sed -i "s|<tarookFlakeUrl>|${tarook_flake_url}|g" flake.nix
+# TODO foreach file: only add if not already tracked or in index
+run git add flake.nix .gitignore config .envrc
 
 nix flake lock
 
@@ -134,13 +107,9 @@ if [ ! -f "$ansible_k8s_custom_playbook" ]; then
     echo -e "$playbook_text" > "$ansible_k8s_custom_playbook"
 fi
 
-mkdir -p "$ansible_k8s_custom_playbook_dir/vars"
-ln -sf "../../$submodule_managed_k8s_name/k8s-core/ansible/vars/" "$ansible_k8s_custom_playbook_dir/vars/k8s-core-vars"
-ln -sf "../../$submodule_managed_k8s_name/k8s-supplements/ansible/vars/" "$ansible_k8s_custom_playbook_dir/vars/k8s-supplements-vars"
-
 notef 'cluster repository initialised successfully!'
 notef 'You should now update config/default.nix as needed and '
 notef 'then run git commit -v to check and commit your changes'
 
 notef 'Make sure to set your user specific variables in one'
-notef 'of the supported ways, see '"$submodule_managed_k8s_name"'/templates/yaook-k8s-env.template.sh'
+notef 'of the supported ways, see https://gitlab.com/alasca.cloud/tarook/tarook/-/blob/'"${managed_k8s_git_branch:-devel}"'/templates/yaook-k8s-env.template.sh?ref_type=heads'

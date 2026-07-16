@@ -29,6 +29,11 @@ export ANSIBLE_ROLES_PATH
 
 "$actions_dir/update-inventory.sh" ansible
 
+mkdir -p "$ansible_k8s_custom_playbook_dir/vars"
+rm "$ansible_k8s_custom_playbook_dir/vars/k8s-core-vars" "$ansible_k8s_custom_playbook_dir/vars/k8s-supplements-vars"
+ln -sf "$code_repository/k8s-core/ansible/vars/" "$ansible_k8s_custom_playbook_dir/vars/k8s-core-vars"
+ln -sf "$code_repository/k8s-supplements/ansible/vars/" "$ansible_k8s_custom_playbook_dir/vars/k8s-supplements-vars"
+
 pushd "$ansible_k8s_custom_dispatch_dir"
 ansible_playbook \
   -i "$ansible_inventory_host_file" \
