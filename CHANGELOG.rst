@@ -17,6 +17,21 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v14.0.1 (2026-07-16)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- An incompatibility within action :ref:`destroy.sh<actions-references.destroysh>` has been fixed which caused it to fail in OpenStack environments where a lookup on an OpenStack project by name is forbidden. (`!2558 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2558>`_)
+
+
+Misc
+~~~~
+
+- `!2558 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2558>`_
+
+
 v14.0.0 (2026-07-02)
 --------------------
 

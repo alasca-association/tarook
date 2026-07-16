@@ -297,18 +297,8 @@ pages-dry-run:
     paths:
       - private/
   rules:
-    - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
-      when: on_success
-    - changes:
-      - 'docs/**/*'
-      - 'docs/*'  # the above does not include files directly in docs/
-      - 'CHANGELOG.rst'
-      #  sphinx-multiversion may be updated
-      - nix/dependencies.nix
-      - flake.lock
-      # sphinx-multiversion always uses this file from the current branch, so changes may break other versions
-      - docs/conf.py
-      if: $SKIP_LINT != "true"
-      when: on_success
-    - when: manual
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != $YAOOK_K8S_DEFAULT_BRANCH
+      when: manual
       allow_failure: true
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $YAOOK_K8S_DEFAULT_BRANCH && $SKIP_LINT != "true"
+      when: on_success
