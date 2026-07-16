@@ -1,0 +1,3 @@
+Fixed SSH host key verification with certificates.
+SSH host certificates now include the hosts's name, private and main/public IP addresses
+which restores compatibility with OpenSSH 10.3/10.3p1.
