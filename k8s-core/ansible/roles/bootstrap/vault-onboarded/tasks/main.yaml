@@ -139,6 +139,9 @@
           key_type: ca
           allow_host_certificates: "true"
           allow_bare_domains: "true"
+          # NOTE: This definition should be matched in the ssh-known-hosts role
+          #       - k8s-core/ansible/roles/bootstrap/ssh-known-hosts/templates/get-ssh-cert.sh.j2
+          #       - k8s-core/ansible/roles/bootstrap/ssh-known-hosts/tasks/sign-host-key.yaml
           allowed_domains: >
             {{
               (

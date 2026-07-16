@@ -18,6 +18,26 @@
     data:
       cert_type: host
       public_key: "{{ host_key.content | b64decode }}"
+      # NOTE: This definition should match `allowed_domains` in the vault-onboarded role
+      #       - k8s-core/ansible/roles/bootstrap/vault-onboarded/tasks/main.yaml
+      valid_principals: >
+        {{
+          (
+            [
+              inventory_hostname,
+              ansible_host
+            ]
+            + (
+              (local_ipv4_address | default(none)) is not none
+              | ternary([local_ipv4_address], [])
+            )
+            + (
+              (local_ipv6_address | default(none)) is not none
+              | ternary([local_ipv6_address], [])
+            )
+          )
+          | join(',')
+        }}
   register: singed_host_key_data
 
 - name: "Write certificate for {{ host_key_path }}"
