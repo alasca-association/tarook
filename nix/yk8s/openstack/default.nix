@@ -571,8 +571,8 @@ in {
           }
           (let
             current_config_file =
-              if config.yk8s.state_directory != null
-              then "${config.yk8s.state_directory}/${tfvars_file_path}"
+              if config.yk8s._state_directory != null
+              then "${config.yk8s._state_directory}/${tfvars_file_path}"
               else null;
             current_config = fromJSON (readFile current_config_file);
             cluster_exists =

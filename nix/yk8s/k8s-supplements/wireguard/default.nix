@@ -216,8 +216,8 @@ in {
     ipam_path = "wireguard/ipam.toml";
     wireguard_helper_output = let
       current_ipam_file =
-        if config.yk8s.state_directory != null
-        then "${config.yk8s.state_directory}/${ipam_path}"
+        if config.yk8s._state_directory != null
+        then "${config.yk8s._state_directory}/${ipam_path}"
         else "";
     in
       pkgs.runCommandLocal "wireguard_helper_output" {} ''
