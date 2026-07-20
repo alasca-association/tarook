@@ -51,6 +51,17 @@
           ./pythonIFD.nix
           (mkRemovedOptionModule ["passwordstore"] "Passwordstore has been replaced by Vault.")
           (mkRemovedOptionModule ["cah-users"] "")
+          (mkRemovedOptionModule ["state_directory"] ''
+
+
+            # Don't change this except you know what you're doing
+            yk8s.state_directory =
+              if builtins.pathExists ./state
+              then ./state
+              else null;
+
+            ^^^ REMOVE this block from your flake.nix
+          '')
         ];
         options.yk8s = let
           assertions = mkOption {
@@ -82,28 +93,28 @@
         in {
           inherit assertions warnings;
 
-          state_directory = mkOption {
-            description = ''
-              The path to the cluster's state directory relative to the Nix file
-              in which it is defined. Must be set to ./state or _state_base_path
-              has to be adapted as well.
-
-              This is to be set in flake.nix.
-            '';
+          _state_directory = mkInternalOption {
+            readOnly = true;
             type = with types; nullOr pathInStore;
-            default = null;
-            example = lib.options.literalExpression "./state";
+            default = let
+              dir = "${self}/${cfg._state_base_path}";
+            in
+              if builtins.pathExists dir
+              then dir
+              else null;
           };
-          _inventory_base_path = mkOption {
+          _inventory_base_path = mkInternalOption {
+            readOnly = true;
             description = ''
-              Base path to the Ansible inventory. Files will get written here.
+              Base path to the Ansible inventory relative to the flake root. Files will get written here.
             '';
             type = types.yk8s.posix.relativePath;
             default = "inventory";
           };
-          _state_base_path = mkOption {
+          _state_base_path = mkInternalOption {
+            readOnly = true;
             description = ''
-              Base path to the state directory. Files will get written here.
+              Base path to the state directory relative to the flake root. Files will get written here.
             '';
             type = types.yk8s.posix.relativePath;
             default = "state";

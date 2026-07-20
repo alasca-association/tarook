@@ -13,7 +13,7 @@
   inherit (lib) mkEnableOption mkOption;
   inherit (yk8s-lib) mkTopSection mkInternalOption types;
   tfOutputsPath = "terraform/outputs.json";
-  tfOutputsFullPath = "${config.yk8s.state_directory}/${tfOutputsPath}";
+  tfOutputsFullPath = "${config.yk8s._state_directory}/${tfOutputsPath}";
 in {
   imports = [
     (mkRemovedOptionModule ["terraform" "haproxy_ports"] "")
@@ -157,7 +157,7 @@ in {
       readOnly = true;
       type = types.attrs;
       default =
-        if config.yk8s.state_directory != null && builtins.pathExists tfOutputsFullPath
+        if config.yk8s._state_directory != null && builtins.pathExists tfOutputsFullPath
         then builtins.fromJSON (builtins.readFile tfOutputsFullPath)
         else throw "${tfOutputsPath} does not exist yet. Terraform stage needs to be run first.";
     };

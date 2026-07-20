@@ -1,0 +1,1 @@
+The option ``yk8s.state_directory`` has been removed, so the assignment must be removed from ``flake.nix``. The migration script will try to handle that and in case of failure provide the manual migration steps.
