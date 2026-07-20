@@ -14,7 +14,6 @@
         inputs.yk8s.flakeModules.yk8s
       ];
       systems = import inputs.systems;
-      debug = true;
       perSystem = {
         system,
         pkgs,
