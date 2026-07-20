@@ -69,6 +69,7 @@ your branch. Don't forget to ``git pull --rebase=true`` afterwards, if you make 
    ``feature``                   new feature introduced
    ``change``                    old functionality changed/updated
    ``fix``                       any bugfixes
+   ``dependency``                updates of external dependencies
    ``removal``                   soon-to-be-removed and removed features
                                  (note our :doc:`policy on deprecation </user/explanation/deprecation-policy>`)
    ``docs``                      any changes in the documentation
