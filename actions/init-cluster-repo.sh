@@ -137,15 +137,9 @@ mkdir -p "$ansible_k8s_custom_playbook_dir/vars"
 ln -sf "../../managed-k8s/k8s-core/ansible/vars/" "$ansible_k8s_custom_playbook_dir/vars/k8s-core-vars"
 ln -sf "../../managed-k8s/k8s-supplements/ansible/vars/" "$ansible_k8s_custom_playbook_dir/vars/k8s-supplements-vars"
 
-if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
-	notef 'cluster repository initialised successfully!'
-	notef 'You should now update config/default.nix as needed and '
-	notef 'then run git commit -v to check and commit your changes'
-else
-	notef 'Preparations for standalone deployment completed'
-	notef 'You should now update config/default.nix as needed and '
-	notef 'inventory/02_trampoline/hosts with your server IPs'
-fi
+notef 'cluster repository initialised successfully!'
+notef 'You should now update config/default.nix as needed and '
+notef 'then run git commit -v to check and commit your changes'
 
 notef 'Make sure to set your user specific variables in one'
 notef 'of the supported ways, see '"$submodule_managed_k8s_name"'/templates/yaook-k8s-env.template.sh'
