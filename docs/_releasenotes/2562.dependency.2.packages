@@ -1,0 +1,5 @@
+Release notes for renovate updates of
+:ref:`configuration-options.yk8s.containerd.version`
+and
+:ref:`configuration-options.yk8s.kubernetes.version`
+now include a reference to the configuration options.
