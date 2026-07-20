@@ -21,12 +21,6 @@
       }: {
         formatter = inputs.yk8s.packages.${system}.alejandra-tree;
         imports = [./config];
-
-        # Don't change this except you know what you're doing
-        yk8s.state_directory =
-          if builtins.pathExists ./state
-          then ./state
-          else null;
       };
     };
 }
