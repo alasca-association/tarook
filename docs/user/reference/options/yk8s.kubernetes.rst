@@ -390,11 +390,15 @@ Whether to enable signing requests.
 
 Note: This currently means that the cluster CA key is copied to the control
 plane nodes which decreases security compared to storing the CA only in the Vault.
-IMPORTANT: Manual steps required when enabled after cluster creation
-The CA key is made available through Vault's kv store and fetched by Ansible.
-Due to Vault's security architecture this means
-you must run the CA rotation script
-(or manually upload the CA key from your backup to Vault's kv store).
+
+.. important::
+
+   Manual steps required when enabled after cluster creation.
+   The CA key is made available through Vault's kv store and fetched by Ansible.
+   Due to Vault's security architecture this means
+   you must run the CA rotation script (see :doc:`/user/guide/vault/vault-ca-rotation`)
+   or manually upload the CA key from your backup to Vault's kv store.
+
 .
 
 **Type:**::
