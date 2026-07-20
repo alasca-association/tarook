@@ -43,7 +43,7 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 
 usage() {
-    >&2 echo "Usage: nix run <flake-url>#init [-b BRANCH] TEMPLATE"
+    >&2 echo "Usage: nix run <flake-url>#init -- [-b BRANCH] TEMPLATE"
     >&2 echo ""
     >&2 echo "Arguments:"
     >&2 echo "    -b BRANCH   Tarook branch to checkout in git submodule"
