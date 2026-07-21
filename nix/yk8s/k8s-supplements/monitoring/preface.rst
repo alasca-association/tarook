@@ -1,13 +1,13 @@
-The used prometheus-based monitoring setup will be explained in more
-detail soon :)
+Tarook uses the Prometheus community's `kube-prometheus-stack <https://github.com/prometheus-community/helm-charts>`__
+Helm chart to deploy Kubernetes cluster monitoring.
 
 .. note::
 
-To enable prometheus,
-:ref:`configuration-options.yk8s.k8s-service-layer.prometheus.install`
-and
-:ref:`configuration-options.yk8s.kubernetes.monitoring.enabled`
-need to be set to ``true``.
+   To enable Prometheus,
+   :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.install`
+   and
+   :ref:`configuration-options.yk8s.kubernetes.monitoring.enabled`
+   need to be set to ``true``.
 
 
 Tweak Thanos Configuration
@@ -29,7 +29,7 @@ This can be prevented by tuning the following config options:
 Note that the value must be a decimal unit!
 Please also note that
 if no explicit memory limit is configured
-the helm chart default is used which is not optimal.
+the Helm chart default is used which is not optimal.
 You should configure both memory limit and request
 which are recommended to have the same value.
 

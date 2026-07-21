@@ -1,38 +1,30 @@
 Prometheus Stack
 ================
 
-Tarook uses the kube-prometheus-stack helm chart with an additional
-abstraction layer.
-To figure out the used version, you could use:
+Tarook deploys the Prometheus community's `kube-prometheus-stack <https://github.com/prometheus-community/helm-charts>`__
+Helm chart with an additional abstraction layer for Kubernetes cluster monitoring.
+The chart bundles Prometheus, Grafana, Alertmanager, node-exporter, kube-state-metrics
+and the Prometheus Operator into a single deployment.
+
+To figure out the used Helm chart version, you can use:
 
 .. code:: console
 
-    $ helm ls -n monitoring
+    $ helm ls -n monitoring -f prometheus-stack
 
-Take a look at the ``values.yaml`` files of
-the individual helm charts to see what you can (or can`t) potentially
-modify.
-Note that not all values might be exposed in the
-config. The data path is
-``config -> inventory/prometheus.yaml -> monitoring_v2 -> templates/prometheus_stack.yaml.j2``.
-If a field that you need isn’t listed in ``prometheus_stack.yaml`` or
-statically configured, please
-`open an issue <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues>`__
-or, even preferable,
-`submit a merge request :) <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests>`__.
-Tarook developer guide can be found
-`here <https://tarook.gitlab.io/meta/01-developing.html#workflow>`__.
+Values supported by the upstream chart `kube-prometheus-stack <https://github.com/prometheus-community/helm-charts>`_
+can be configured via :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.helm.values`.
 
 Tarook also allows the upgrade of the kube-prometheus-stack.
 You can adjust its version with
-the :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.prometheus_stack_version` config option
+the :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.helm.chart_version` config option
 or unset it to track the default of the current Tarook release.
 
 The upgrade routine can be triggered by running the following:
 
 .. code:: console
 
-    $ MANAGED_K8S_RELEASE_THE_KRAKEN=true AFLAGS="--diff -t monitoring" bash managed-k8s/actions/apply-k8s-supplements.sh
+    $ managed-k8s/actions/apply-k8s-supplements.sh install-monitoring.yaml
 
 Prometheus
 ----------
@@ -54,9 +46,9 @@ and is configured with ``[[k8s-service-layer.prometheus.remote_writes]]``.
 Grafana
 -------
 
-The LCM uses the
-`Grafana helm chart <https://github.com/grafana/helm-charts/tree/main/charts/grafana>`__
-with the version that comes with the current kube-prometheus-stack helm
+Tarook uses the
+`Grafana Helm chart <https://github.com/grafana-community/helm-charts/tree/main/charts/grafana>`__
+with the version that comes with the current kube-prometheus-stack Helm
 chart version.
 Grafana is not enabled by default,
 you can enable it in the
@@ -109,7 +101,7 @@ kept separate and can be injected by creating a ``AlertmanagerConfig``
 resource within the ``monitoring`` namespace. Other namespace are not
 considered without further configuration. For further information please
 refer to the
-`corresponding documentation. <https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/alerting.md>`__
+`corresponding documentation. <https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/developer/alerting.md>`__
 A silly example:
 
 .. code:: yaml
@@ -175,7 +167,7 @@ Thanos
 By default, it writes its metrics into a SWIFT object storage container
 that resides in the same OpenStack project.
 
-We're deploying the `Bitnami Thanos helm chart <https://github.com/bitnami/charts/tree/main/bitnami/thanos>`__
+We're deploying the `Bitnami Thanos Helm chart <https://github.com/bitnami/charts/tree/main/bitnami/thanos>`__
 with adjusted values by default.
 Please refer to its documentation for further details.
 
@@ -239,7 +231,7 @@ Background and motivation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The
-`prometheus-adapter <https://github.com/kubernetes-sigs/prometheus-adapter>`__
+`prometheus-adapter <https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-adapter>`__
 provides the
 `metrics API <https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/>`__
 by making use of existing prometheus metrics. In case of default
