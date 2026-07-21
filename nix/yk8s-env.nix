@@ -113,7 +113,10 @@
                 pkgs.buildEnv
                 {
                   name = "yk8s-env-${name}";
-                  paths = (group.packages) ++ [(cfg.python.withPackages (group.pythonPackages))];
+                  paths =
+                    group.packages
+                    ++ (lib.optional (group.pythonPackages pkgs.python3Packages != [])
+                      (cfg.python.withPackages (group.pythonPackages)));
                 }
             )
             cfg.dependencies.finalGroups;
