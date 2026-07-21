@@ -161,8 +161,11 @@ in {
       "config.yk8s.node-scheduling.taints: taint defined for ${e}, but node not found in config.yk8s.infra.ansible_hosts") [] (builtins.attrNames cfg.taints))
     # Produce warning if option is used
     ++ lib.optional
-      (opts.scheduling_key_prefix.highestPrio < 1500) # priority of option defaults
-      "config.yk8s.node-scheduling.scheduling_key_prefix: is deprecated. Please substitute with a let expression.";
+    (opts.scheduling_key_prefix.highestPrio < 1500) # priority of option defaults
+    
+    "config.yk8s.node-scheduling.scheduling_key_prefix: is deprecated. Please substitute with a let expression."
+    ++ (builtins.foldl' (acc: e:
+      acc
       ++ lib.optional (config.yk8s.terraform.outputs_ready && ! builtins.hasAttr e (config.yk8s.infra.final_hosts.all.hosts or {}))
       "config.yk8s.node-scheduling.taints: taint defined for ${e}, but node not found in config.yk8s.infra.ansible_hosts") [] (builtins.attrNames cfg.taints));
   config.yk8s.node-scheduling.labels =
