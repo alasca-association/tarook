@@ -6,9 +6,11 @@
 
 - name: System update Gateway nodes
   import_playbook: "{{ ansible_k8s_core_dir }}/update-frontend-nodes.yaml"
+  when: "'gateways' in group_names"
 
 - name: Install frontend services
   import_playbook: "{{ ansible_k8s_core_dir }}/install-frontend-services.yaml"
+  when: "'gateways' in group_names"
 
 - name: Configure load balancer and VPN on Gateways nodes
   hosts: gateways
