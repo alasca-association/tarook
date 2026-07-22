@@ -125,7 +125,7 @@ function gateway_nodes_configured() {
         exit 1
     fi
 
-    yq --exit-status ".gateways.hosts != {}" \
+    yq --exit-status '.gateways.hosts | type == "object" and length > 0' \
        "$ansible_inventory_host_file" >/dev/null
 }
 

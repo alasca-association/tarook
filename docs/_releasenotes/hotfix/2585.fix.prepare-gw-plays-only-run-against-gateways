@@ -1,2 +1,0 @@
-Fixed a bug that allowed Ansible run the `prepare-gw` playbook against non-gateway nodes
-(`#890 <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/890>`_)
