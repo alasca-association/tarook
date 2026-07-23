@@ -2008,7 +2008,7 @@ Kubernetes version
 
 **Default:**::
 
-  "1.36.2"
+  "1.36.3"
 
 
 **Declared by**
