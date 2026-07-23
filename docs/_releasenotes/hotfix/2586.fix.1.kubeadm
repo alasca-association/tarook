@@ -1,0 +1,2 @@
+``kubeadm`` patches introduced with v14.0.0 (`!2272 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2272>`_) have erroneously been synced to Kubernetes worker.
+This has been fixed.
