@@ -1,0 +1,2 @@
+It is now ensured that ``rsync`` is installed on Kubernetes control plane nodes.
+``rsync`` is required to synchronize ``kubeadm`` patches and may not be pre-installed on minimal OS images.
