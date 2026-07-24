@@ -8,7 +8,7 @@
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkOption mkEnableOption;
-  inherit (yk8s-lib) mkSubSection types;
+  inherit (yk8s-lib) mkSubSection types mkDisableOption;
 in {
   imports = [
     (mkRemovedOptionModule ["kubernetes" "network" "plugin_switch_restart_all_namespaces"] "")
@@ -16,6 +16,10 @@ in {
   ];
   options.yk8s.kubernetes.network = mkSubSection {
     _docs.order = 8;
+
+    kube_proxy.enabled = mkDisableOption ''
+      kube-proxy. Disable if you want to use a eBPF dataplane
+    '';
 
     pod_subnet = mkOption {
       description = ''

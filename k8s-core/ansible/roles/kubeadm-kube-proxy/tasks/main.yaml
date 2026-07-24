@@ -1,0 +1,46 @@
+---
+- name: Patch kubeadm ConfigMap ClusterConfiguration
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  run_once: true
+  block:
+  - name: Get current ConfigMap
+    kubernetes.core.k8s_info:
+      api_version: v1
+      kind: ConfigMap
+      name: kubeadm-config
+      namespace: kube-system
+    register: kubeadm_configmap
+    until: kubeadm_configmap is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
+
+  - name: Modify ClusterConfiguration
+    vars:
+      patch:
+        proxy:
+          disabled: "{{ not k8s_network_kube_proxy_enabled }}"
+    # block:
+    # - name: Set fact about current ClusterConfiguration
+    set_fact:
+      cluster_configuration: >-
+        {{
+          kubeadm_configmap.resources[0].data.ClusterConfiguration
+          | from_yaml
+          | combine(patch)
+        }}
+
+  - name: Patch kubeadm-config ConfigMap
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: kubeadm-config
+          namespace: kube-system
+        data:
+          ClusterConfiguration: "{{ cluster_configuration | to_nice_yaml(indent=2) }}"
+    register: kubeadm_configmap_patched
+    until: kubeadm_configmap_patched is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
+...

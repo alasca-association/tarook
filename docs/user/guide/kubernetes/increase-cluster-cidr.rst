@@ -15,7 +15,7 @@ Steps to change the cluster-cidr:
 
 1. Change podSubnet in kubeadm configmap: kube-system/kubeadm-config
 
-2. Change clusterCIDR in kube-proxy configmap: kube-system/kube-proxy
+2. (If kube-proxy is enabled) Change clusterCIDR in kube-proxy configmap: kube-system/kube-proxy
 
 3. Change cluster-cidr on every master node:
    ``/etc/kubernetes/manifests/kube-controller-manager.yaml``
