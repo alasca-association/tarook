@@ -282,7 +282,7 @@ kubeScheduler:
 
 ##
 kubeProxy:
-  enabled: true
+  enabled: {{ k8s_network_kube_proxy_enabled }}
   serviceMonitor:
     enabled: true
     relabelings:

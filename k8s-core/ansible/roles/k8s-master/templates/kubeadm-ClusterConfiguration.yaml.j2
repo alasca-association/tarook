@@ -17,6 +17,9 @@ networking:
     serviceSubnet: {{ k8s_network_service_subnet_v6 | to_json }}
 {% endif %}
 
+proxy:
+  disabled: {{ not k8s_network_kube_proxy_enabled }}
+
 apiServer:
   extraArgs:
     - name: service-account-issuer
