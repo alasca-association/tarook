@@ -69,6 +69,7 @@ your branch. Don't forget to ``git pull --rebase=true`` afterwards, if you make 
    ``feature``                   new feature introduced
    ``change``                    old functionality changed/updated
    ``fix``                       any bugfixes
+   ``dependency``                updates of external dependencies
    ``removal``                   soon-to-be-removed and removed features
                                  (note our :doc:`policy on deprecation </user/explanation/deprecation-policy>`)
    ``docs``                      any changes in the documentation
@@ -195,6 +196,65 @@ Example:
    eliminates ambiguity
    and make it clear from which config option they originate.
 
+.. _coding-guide.comments:
+
+Comments
+--------
+
+Comments should always be written as complete, grammatically correct sentences.
+The target audience of comments is other developers
+working on the codebase, not end users.
+
+Comments should be added only to convey context that cannot be expressed
+by other means such as naming or code structure.
+Avoid comments which go out of date quickly or restate what the code already says.
+
+Marking TODOs
+~~~~~~~~~~~~~
+
+Use ``TODO`` to mark work that is intentionally left unfinished or that
+should be revisited later.
+Every ``TODO`` must contain a complete sentence
+explaining what remains to be done and, wherever possible, a reference to a
+tracking issue so the task isn't lost.
+Example:
+
+.. code:: yaml
+
+   # TODO: Replace this hardcoded value with a proper configuration option. See issue #XYZ.
+
+A bare ``# TODO`` with no explanation is not sufficient - it gives future
+readers no way to judge urgency or scope.
+
+Marking deprecated code
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use the ``@deprecated`` tag inside a ``TODO`` comment to mark code
+that is still required for backward compatibility but is intended to be removed in
+the future.
+The comment must state the condition under which the code may be
+safely removed (e.g. dropping support for a component).
+Example:
+
+.. code:: yaml
+
+   # TODO: @deprecated The following block can be removed once support for
+   # component Foobar is dropped. See issue #XYZ.
+
+If changes leave several ``TODO``'s open which can be resolved collectively
+by addressing the same work item,
+append an identifying suffix to the ``@deprecated`` tag.
+This makes it possible to find and address all related occurrences together.
+Example:
+
+.. code:: yaml
+
+   # TODO: @deprecated::k8sv1.17 The following block can be removed once support for
+   # Kubernetes v1.17 is dropped. See issue #XYZ.
+
+Choose a short, stable suffix that clearly identifies the removal condition
+and reuse the exact same suffix in every comment tied to that condition,
+so they stay easy to find as a group.
 
 Ansible Styleguide
 ------------------
