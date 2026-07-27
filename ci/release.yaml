@@ -105,7 +105,11 @@ create-gitlab-release:
     tag_name: "v$(cat ./version)"
     tag_message: "Release v$(cat ./version)"
     description: "Please have a look at the [Releasenotes](${CI_PAGES_URL}/${YAOOK_K8S_RELEASE_BRANCH_PREFIX}$(cat $VERSION_MAJOR_MINOR_FILE)/releasenotes.html) for current changes."
-  needs: ["tag-release"]
+    assets:
+      links:
+        - name: "SBOM"
+          url: "${CI_JOB_URL}/artifacts/file/sbom-tarook.cdx.json"
+  needs: ["tag-release", "generate-sbom"]
   rules:
     - if: '$CI_COMMIT_BRANCH =~ $REGEX_RELEASE_BRANCH_PREFIX'
       when: on_success

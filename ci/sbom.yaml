@@ -1,0 +1,26 @@
+generate-sbom:
+  stage: sbom
+  image: "${YAOOK_K8S_CI_IMAGE_NAME}:${YAOOK_K8S_CI_IMAGE_TAG}"
+  needs:
+    - build_image
+  script:
+    - echo "Generating Nix package SBOMs..."
+    - nix build .#sbom-dev -o sbom-dev.cdx.json
+    - nix build .#sbom-ci -o sbom-ci.cdx.json
+    - cp -L sbom-dev.cdx.json tarook-sbom-dev.cdx.json
+    - cp -L sbom-ci.cdx.json tarook-sbom-ci.cdx.json
+    - ls -l
+  artifacts:
+    name: "tarook-sbom"
+    paths:
+      - tarook-sbom-dev.cdx.json
+      - tarook-sbom-ci.cdx.json
+    expire_in: 1 year
+    when: always
+  rules:
+    # TODO: adjust the rules
+    #- if: '$CI_COMMIT_BRANCH =~ /^release\/v/'
+    - when: manual
+      allow_failure: true
+  tags:
+    - docker

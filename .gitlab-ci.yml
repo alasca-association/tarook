@@ -43,6 +43,7 @@ stages:
 - hotfix-prepare
 - cluster-tests
 - diagnostic-tools
+- sbom
 - tag-image
 - release
 
@@ -52,6 +53,7 @@ include:
   - local: ci/hotfix-prepare.yaml
   - local: ci/cluster-tests.yaml
   - local: ci/diagnostic-tools.yaml
+  - local: ci/sbom.yaml
   - local: ci/release.yaml
 
 
