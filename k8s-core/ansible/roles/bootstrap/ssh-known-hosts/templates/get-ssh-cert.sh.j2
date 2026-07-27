@@ -29,7 +29,33 @@ token="$(/usr/local/lib/tarook/vault-login.sh)"
 status=0
 for pubkey in /etc/ssh/ssh_host_*_key.pub; do
     certname="$(dirname "$pubkey")/$(basename "$pubkey" .pub)-cert.pub"
-    if ! VAULT_TOKEN="$token" safe_redirect "$certname" vault write -field=signed_key "{{ vault_path_prefix }}/{{ vault_cluster_name }}/ssh-ca/sign/{{ vault_node_name }}" public_key=@"$pubkey" cert_type=host; then
+    if ! {
+      VAULT_TOKEN="$token" safe_redirect "$certname" \
+        vault write -field=signed_key \
+          "{{ vault_path_prefix }}/{{ vault_cluster_name }}/ssh-ca/sign/{{ vault_node_name }}" \
+          public_key=@"$pubkey" \
+          cert_type=host \
+          valid_principals='{#
+            NOTE: This definition should match `allowed_domains` in the vault-onboarded role
+                  - k8s-core/ansible/roles/bootstrap/vault-onboarded/tasks/main.yaml
+          #}{{
+            (
+              [
+                inventory_hostname,
+                ansible_host
+              ]
+              + (
+                (local_ipv4_address | default(none)) is not none
+                | ternary([local_ipv4_address], [])
+              )
+              + (
+                (local_ipv6_address | default(none)) is not none
+                | ternary([local_ipv6_address], [])
+              )
+            )
+            | join(",")
+          }}'
+    }; then
         printf 'failed to sign key %q\n' "$pubkey" >&2
         status=1
     fi

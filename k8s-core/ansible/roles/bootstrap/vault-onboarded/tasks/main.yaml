@@ -139,7 +139,28 @@
           key_type: ca
           allow_host_certificates: "true"
           allow_bare_domains: "true"
-          allowed_domains: "{{ vault_node_name }},{{ inventory_hostname }}"
+          # NOTE: This definition should be matched in the ssh-known-hosts role
+          #       - k8s-core/ansible/roles/bootstrap/ssh-known-hosts/templates/get-ssh-cert.sh.j2
+          #       - k8s-core/ansible/roles/bootstrap/ssh-known-hosts/tasks/sign-host-key.yaml
+          allowed_domains: >
+            {{
+              (
+                [
+                  vault_node_name,
+                  inventory_hostname,
+                  ansible_host
+                ]
+                + (
+                  (local_ipv4_address | default(none)) is not none
+                  | ternary([local_ipv4_address], [])
+                )
+                + (
+                  (local_ipv6_address | default(none)) is not none
+                  | ternary([local_ipv6_address], [])
+                )
+              )
+              | join(',')
+            }}
           ttl: "720h"
           algorithm_signer: "rsa-sha2-512"
 
