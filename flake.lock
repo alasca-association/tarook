@@ -1,5 +1,24 @@
 {
   "nodes": {
+    "bombon": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1785078642,
+        "narHash": "sha256-CLKqtRdxeW0edI77chSKlrxx8vr6xftRZOBVr7n86Ps=",
+        "ref": "refs/heads/main",
+        "rev": "bf77b6056dba8bb160a984b6822354a56302b6bd",
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/nikstur/bombon"
+      },
+      "original": {
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/nikstur/bombon"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": "nixpkgs-lib"
@@ -57,19 +76,18 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1785002762,
-        "narHash": "sha256-Y0BbgB3BLLHEUK88g4oSp3DerIx7rCX0iwICKJcY7/c=",
-        "ref": "nixos-26.05",
-        "rev": "f7a2e428f5d71c47a5a938a3c5ad7138bb291093",
-        "shallow": true,
-        "type": "git",
-        "url": "https://github.com/NixOS/nixpkgs"
+        "lastModified": 1782723713,
+        "narHash": "sha256-oPXCU/SSUokcGaJREHibG1CBX3+s/W7orDWQOZDsEeQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b5aa0fbd538984f6e3d201be0005b4463d8b09f8",
+        "type": "github"
       },
       "original": {
-        "ref": "nixos-26.05",
-        "shallow": true,
-        "type": "git",
-        "url": "https://github.com/NixOS/nixpkgs"
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
       }
     },
     "nixpkgs-lib": {
@@ -140,6 +158,23 @@
     },
     "nixpkgs_2": {
       "locked": {
+        "lastModified": 1785002762,
+        "narHash": "sha256-Y0BbgB3BLLHEUK88g4oSp3DerIx7rCX0iwICKJcY7/c=",
+        "ref": "nixos-26.05",
+        "rev": "f7a2e428f5d71c47a5a938a3c5ad7138bb291093",
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/NixOS/nixpkgs"
+      },
+      "original": {
+        "ref": "nixos-26.05",
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/NixOS/nixpkgs"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
         "lastModified": 1779959262,
         "narHash": "sha256-/CKe+ffKTLngHU8SVvIjYUo3qzAiB8XNghYQEJkACAQ=",
         "owner": "nixos",
@@ -155,8 +190,9 @@
     },
     "root": {
       "inputs": {
+        "bombon": "bombon",
         "flake-parts": "flake-parts",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
         "nixpkgs-terraform157": "nixpkgs-terraform157",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nixpkgs-vault1148": "nixpkgs-vault1148",
@@ -200,7 +236,7 @@
       "inputs": {
         "flake-parts": "flake-parts_2",
         "import-tree": "import-tree",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs_3",
         "systems": "systems_2"
       },
       "locked": {

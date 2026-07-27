@@ -6,6 +6,7 @@
   inputs.flake-parts.url = "git+https://github.com/hercules-ci/flake-parts?shallow=1";
   inputs.systems.url = "git+https://github.com/nix-systems/x86_64-linux?shallow=1&rev=2ecfcac5e15790ba6ce360ceccddb15ad16d08a8";
   inputs.terranix.url = "git+https://github.com/terranix/terranix?shallow=1";
+  inputs.bombon.url = "git+https://github.com/nikstur/bombon?shallow=1";
 
   outputs = inputs @ {
     self,
@@ -19,6 +20,7 @@
       imports = [
         ./nix/renderDocs.nix
         ./nix/yk8s-env.nix
+        ./nix/sbom.nix
         ./ci/container-image
       ];
       perSystem = {
@@ -32,6 +34,7 @@
         _module.args.pkgs = import nixpkgs {
           inherit system;
         };
+        _module.args.bombon = inputs.bombon;
         imports = [
           ./nix/test.nix
         ];
