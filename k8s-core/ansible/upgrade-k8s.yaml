@@ -5,7 +5,6 @@
     target_hosts: k8s_nodes
 
 - name: Fail if node got not bootstrapped once, yet
-  any_errors_fatal: true
   hosts: k8s_nodes
   tasks:
     - name: Fail if node got not bootstrapped once, yet
@@ -82,7 +81,6 @@
 - name: Upgrade kubeadm on all control plane nodes
   hosts: masters
   gather_facts: true
-  any_errors_fatal: true
   vars_files:
     - vars/retries.yaml
     - vars/auto_generated_preamble.yaml
@@ -93,7 +91,6 @@
 - name: Run kubeadm upgrade apply on the first control plane node
   hosts: masters[0]
   gather_facts: true
-  any_errors_fatal: true
   vars_files:
     - vars/retries.yaml
   roles:
@@ -103,7 +100,6 @@
   hosts: masters[1:]
   serial: 1
   gather_facts: true
-  any_errors_fatal: true
   vars_files:
     - vars/retries.yaml
   roles:
@@ -113,7 +109,6 @@
   hosts: masters
   serial: 1
   gather_facts: true
-  any_errors_fatal: true
   vars_files:
     - vars/disruption.yaml
     - vars/retries.yaml
@@ -154,7 +149,6 @@
 - name: Upgrade the worker nodes
   hosts: workers
   gather_facts: true
-  any_errors_fatal: true
   vars_files:
     - vars/disruption.yaml
     - vars/retries.yaml

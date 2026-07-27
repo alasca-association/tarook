@@ -5,7 +5,6 @@
     target_hosts: frontend
 
 - name: Fail if node got not bootstrapped once, yet
-  any_errors_fatal: true
   hosts: frontend
   tasks:
   - name: Fail if node got not bootstrapped once, yet
