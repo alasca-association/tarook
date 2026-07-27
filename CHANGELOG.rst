@@ -56,7 +56,7 @@ Breaking Changes
   * The first positional argument now allows to select from one of the available templates (currently ``minimal``, ``openstack``, ``proxmox``)
 
   See :ref:`Initialization (OpenStack) <quick-start.openstack.create-and-initialize-cluster-repository>` and :ref:`Initialization (Proxmox) <quick-start.proxmox.create-and-initialize-cluster-repository>` (`!1560 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1560>`_)
-- Updated default version of helm chart kube-prometheus-stack of https://github.com/prometheus-community/helm-charts from 83.4.0 to 84.3.0 (`!2453 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2453>`_)
+- Updated default version of helm chart kube-prometheus-stack of https://github.com/prometheus-community/helm-charts from 83.3.0 to 84.5.0 (`!2531 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2531>`_, `!2450 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2450>`_, `!2453 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2453>`_)
 
 
 New Features
@@ -113,11 +113,12 @@ Changed Functionality
 Dependencies
 ~~~~~~~~~~~~
 
-- Updated default version of helm chart dcgm-exporter of https://github.com/nvidia/dcgm-exporter from 4.6.0 to 4.8.1 (`!2296 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2296>`_)
+- Updated default version of helm chart dcgm-exporter of https://github.com/nvidia/dcgm-exporter from 4.6.0 to 4.8.2 (`!2296 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2296>`_, `!2475 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2475>`_)
 - Updated default version of helm chart nvidia-device-plugin of https://github.com/NVIDIA/k8s-device-plugin from 0.18.2 to 0.19.3 (`!2379 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2379>`_)
-- `!2418 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2418>`_, `!2449 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2449>`_, `!2451 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2451>`_, `!2458 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2458>`_, `!2471 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2471>`_, `!2473 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2473>`_, `!2480 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2480>`_, `!2498 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2498>`_, `!2499 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2499>`_, `!2505 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2505>`_, `!2512 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2512>`_, `!2518 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2518>`_, `!2520 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2520>`_, `!2521 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2521>`_, `!2533 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2533>`_, `!2537 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2537>`_
-- Updated default version of helm chart etcdbackup from 2.0.2 to 2.0.3 (`!2444 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2444>`_)
-- Updated default version of helm chart kube-prometheus-stack of https://github.com/prometheus-community/helm-charts from 83.4.0 to 83.7.0 (`!2450 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2450>`_)
+- Updated various Ansible Galaxy collections (`!2449 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2449>`_, `!2451 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2451>`_, `!2499 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2499>`_, `!2505 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2505>`_, `!2521 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2521>`_)
+- `!2418 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2418>`_, `!2458 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2458>`_, `!2471 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2471>`_, `!2480 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2480>`_, `!2512 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2512>`_, `!2520 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2520>`_, `!2537 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2537>`_
+- Updated the default of :ref:`configuration-options.yk8s.kubernetes.version` from 1.35.4 to 1.36.2 (`!2498 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2498>`_, `!2518 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2518>`_, `!2533 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2533>`_)
+- Updated default version of helm chart etcdbackup from 2.0.2 to 2.4.0 (`!2444 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2444>`_, `!2502 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2502>`_, `!2517 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2517>`_, `!2524 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2524>`_)
 - The upstream repository URL for the nvidia-container-toolkit has been updated
   sucht that Kubernetes workers with GPU capability can fetch the latest package versions.
   The package will be updated on a
@@ -130,21 +131,12 @@ Dependencies
   :doc:`Kubernetes upgrade </user/guide/kubernetes/upgrading-kubernetes>`
   or
   :ref:`system update<actions-references.update-kubernetes-nodessh>`. (`!2455 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2455>`_)
-- Updated default version of helm chart prometheus-blackbox-exporter of https://github.com/prometheus-community/helm-charts from 11.9.1 to 11.9.2 (`!2470 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2470>`_)
-- Updated default version of helm chart prometheus-blackbox-exporter of https://github.com/prometheus-community/helm-charts from 11.9.2 to 11.10.0 (`!2474 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2474>`_)
-- Updated default version of helm chart dcgm-exporter of https://github.com/nvidia/dcgm-exporter from 4.8.1 to 4.8.2 (`!2475 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2475>`_)
+- Updated default version of helm chart prometheus-blackbox-exporter of https://github.com/prometheus-community/helm-charts from 11.9.1 to 11.15.0 (`!2470 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2470>`_, `!2474 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2474>`_, `!2519 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2519>`_, `!2523 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2523>`_, `!2539 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2539>`_)
 - Updated default version of helm chart rook-ceph of https://github.com/rook/rook from v1.18.10 to v1.18.11 (`!2497 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2497>`_)
-- Updated default version of helm chart etcdbackup from 2.0.3 to 2.3.0 (`!2502 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2502>`_)
 - Updated default version of helm chart openstack-cinder-csi of https://github.com/kubernetes/cloud-provider-openstack from 2.35.0 to 2.36.0 (`!2503 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2503>`_)
 - Updated default version of helm chart openstack-cloud-controller-manager of https://github.com/kubernetes/cloud-provider-openstack from 2.35.0 to 2.36.0 (`!2504 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2504>`_)
 - The ``nixpkgs.url`` has been changed from 25.11 to 26.05. (`!2511 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2511>`_)
-- Updated default version of helm chart etcdbackup from 2.3.0 to 2.3.1 (`!2517 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2517>`_)
-- Updated default version of helm chart prometheus-blackbox-exporter of https://github.com/prometheus-community/helm-charts from 11.10.0 to 11.12.0 (`!2519 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2519>`_)
-- Updated default version of helm chart prometheus-blackbox-exporter of https://github.com/prometheus-community/helm-charts from 11.12.0 to 11.13.0 (`!2523 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2523>`_)
-- Updated default version of helm chart etcdbackup from 2.3.1 to 2.4.0 (`!2524 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2524>`_)
-- Updated default version of helm chart kube-prometheus-stack of https://github.com/prometheus-community/helm-charts from 84.3.0 to 84.5.0 (`!2531 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2531>`_)
 - Updated default version of helm chart cert-manager of https://github.com/cert-manager/cert-manager from v1.20.2 to v1.20.3 (`!2535 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2535>`_)
-- Updated default version of helm chart prometheus-blackbox-exporter of https://github.com/prometheus-community/helm-charts from 11.13.0 to 11.15.0 (`!2539 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2539>`_)
 
 
 Bugfixes
@@ -199,3 +191,4 @@ Misc
 ~~~~
 
 - `!2425 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2425>`_, `!2479 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2479>`_, `!2485 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2485>`_, `!2494 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2494>`_, `!2534 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2534>`_, `!2543 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2543>`_
+- `!2473 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2473>`_
