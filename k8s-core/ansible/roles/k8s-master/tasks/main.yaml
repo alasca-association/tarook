@@ -185,6 +185,10 @@
     state: directory
     mode: u=rwx,go-rwx
 
+- name: Synchronize kubeadm-patches
+  include_role:
+    name: kubeadm-patches
+
 - name: Spawn K8s cluster with 'kubeadm init'
   when:
   - local_kube_apiserver_status is failed

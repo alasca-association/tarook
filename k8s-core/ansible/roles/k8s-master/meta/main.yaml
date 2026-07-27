@@ -5,5 +5,4 @@ galaxy_info:
 dependencies:
 - helpers/vault-approle
 - helpers/vault-orchestrator-roles
-- kubeadm-patches
 ...
