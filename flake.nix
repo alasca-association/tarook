@@ -1,6 +1,6 @@
 {
   inputs.nixpkgs.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&ref=nixos-26.05";
-  inputs.nixpkgs-terraform157.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&rev=39ed4b64ba5929e8e9221d06b719a758915e619b";
+  inputs.nixpkgs-terraform157.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&rev=d10ce5fd5962dc368e2c4cc8df6c9c645fe8dc68";
   inputs.nixpkgs-vault1148.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&rev=7cf8d6878561e8b2e4b1186f79f1c0e66963bdac";
   inputs.nixpkgs-unstable.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&ref=nixos-unstable";
   inputs.flake-parts.url = "git+https://github.com/hercules-ci/flake-parts?shallow=1";
