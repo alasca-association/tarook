@@ -1,3 +1,0 @@
-Fixed two bugs that allowed Ansible to run tasks for gateways
-despite no gateway nodes being configured
-(`#890 <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/890>`_)

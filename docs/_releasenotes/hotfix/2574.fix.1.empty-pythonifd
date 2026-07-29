@@ -1,1 +1,0 @@
-A bug in the PythonIFD module has been fixed that caused inventory generation to fail under certain circumstances.
