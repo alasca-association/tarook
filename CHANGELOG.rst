@@ -30,17 +30,17 @@ Changed Functionality
 Bugfixes
 ~~~~~~~~
 
-- A bug in the PythonIFD module has been fixed that caused inventory generation to fail under certain circumstances. (`!2574 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2574>`_)
+- A bug in the PythonIFD module has been fixed that caused inventory generation to fail under certain circumstances. (`!2575 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2575>`_)
 - Fixed SSH host key verification with certificates.
   SSH host certificates now include the hosts's name, private and main/public IP addresses
-  which restores compatibility with OpenSSH 10.3/10.3p1. (`!2578 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2578>`_)
+  which restores compatibility with OpenSSH 10.3/10.3p1. (`#888 <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/888>`_) (`!2578 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2578>`_)
 - Fixed two bugs that allowed Ansible to run tasks for gateways
   despite no gateway nodes being configured
   (`#890 <https://gitlab.com/alasca.cloud/tarook/tarook/-/issues/890>`_) (`!2585 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2585>`_)
 - It is now ensured that ``rsync`` is installed on Kubernetes control plane nodes.
-  ``rsync`` is required to synchronize ``kubeadm`` patches and may not be pre-installed on minimal OS images. (`!2586 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2586>`_)
+  ``rsync`` is required to synchronize ``kubeadm`` patches and may not be pre-installed on minimal OS images. (`!2588 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2588>`_)
 - ``kubeadm`` patches introduced with v14.0.0 (`!2272 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2272>`_) have erroneously been synced to Kubernetes worker.
-  This has been fixed. (`!2586 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2586>`_)
+  This has been fixed. (`!2588 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2588>`_)
 
 
 v14.0.1 (2026-07-16)
