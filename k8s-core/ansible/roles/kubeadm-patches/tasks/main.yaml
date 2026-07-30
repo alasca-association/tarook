@@ -2,6 +2,12 @@
 - name: Prepare kubeadm-patches
   become: true
   block:
+    - name: Install rsync
+      apt:
+        state: present
+        name:
+          - rsync
+
     - name: Create kubeadm-patches folder
       file:
         path: /etc/kubernetes/kubeadm-patches
