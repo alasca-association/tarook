@@ -1,0 +1,2 @@
+The default for :ref:`configuration-options.yk8s.kubernetes.network.bgp_announce_service_ips` has been changed from ``false`` to ``true``
+such that routes to the Kubernetes Service IP range are announced to gateways by default.
