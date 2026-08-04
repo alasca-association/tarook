@@ -49,7 +49,7 @@ Enabling the fix
 
    .. code:: shell
 
-      ./managed-k8s/tools/vault/init.sh
+      tarook vault init
 
    ..
 
@@ -74,7 +74,7 @@ Enabling the fix
 
          .. code:: shell
 
-            ./managed-k8s/tools/vault/mkcluster-root.sh
+            tarook vault mkcluster-root
 
          ..
 
@@ -133,7 +133,7 @@ Enabling the fix
 
          .. code:: shell
 
-            AFLAGS="--tags k8s-master" ./managed-k8s/actions/apply-k8s-core.sh
+            AFLAGS="--tags k8s-master" tarook apply core
 
          This will copy and configure the Kubernetes cluster root CA key
          from Vault's kv2 store on all control plane nodes.
@@ -172,7 +172,7 @@ Disabling the fix
 
          .. code:: shell
 
-            AFLAGS="--tags k8s-master" ./managed-k8s/actions/apply-k8s-core.sh
+            AFLAGS="--tags k8s-master" tarook apply core
 
          This will delete and deconfigure the Kubernetes cluster root CA key
          on all control plane nodes
