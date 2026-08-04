@@ -99,25 +99,25 @@
     - jq .unseal_keys_b64[0] -c $CI_PROJECT_DIR/vault_init.out -r | tee $CI_PROJECT_DIR/unseal.key
     - vault operator unseal $(cat $CI_PROJECT_DIR/unseal.key)
     - vault login $(cat $CI_PROJECT_DIR/root.key)
-    - bash ./managed-k8s/tools/vault/init.sh
+    - tarook vault init
       # cp Thanos S3 config
     - cp /root/thanos.yaml ./config/thanos.yaml
-    - bash ./managed-k8s/tools/vault/mkcluster-root.sh
+    - tarook mkcluster-root
     - export VAULT_TOKEN=$(cat $CI_PROJECT_DIR/root.key)
       # Insert IPSec PSK
     - vault kv put yaook/k8s.ci.yaook.cloud/kv/ipsec-eap-psk ipsec_eap_psk="$IPSEC_EAP_PSK"
       # Validate tools/vault/mkcsrs.sh
-    - bash ./managed-k8s/tools/vault/mkcsrs.sh
+    - tarook vault mkcsrs.sh
     - for csr in k8s-cluster.csr k8s-etcd.csr k8s-front-proxy.csr; do openssl req -in $csr -noout -text; done
       # Create custom play
     - cp custom-play.yaml k8s-custom/main.yaml
     - export AFLAGS="-e ansible_ssh_private_key_file=/root/.ssh/id_rsa"
-    - ./managed-k8s/actions/apply-all.sh
-    - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-frontend-nodes.sh
-    - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/update-kubernetes-nodes.sh
-    - ./managed-k8s/actions/apply-custom.sh
+    - tarook apply all
+    - MANAGED_K8S_RELEASE_THE_KRAKEN=true tarook update frontend-nodes
+    - MANAGED_K8S_RELEASE_THE_KRAKEN=true tarook update kubernetes-nodes
+    - tarook apply custom
     - ./managed-k8s/ci/test.sh
-    - ./managed-k8s/actions/test.sh
+    - tarook test
   after_script:
     # artifacts are overridden by later stages, so we need to re-export the variable here
     # for context see https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/1175#note_1959887865
@@ -151,30 +151,30 @@
 
     # Upgrade cluster to k8s v1.34
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.34.10
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true tarook upgrade 1.34.10
     # Update k8s version
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
   - tomlq --in-place --toml-output '.kubernetes.version = "1.34.10"' config/overrides.toml
-  - ./managed-k8s/actions/k8s-login.sh
+  - tarook k8s-login
 
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.35.7
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true tarook upgrade 1.35.7
     # Update k8s version
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
   - tomlq --in-place --toml-output '.kubernetes.version = "1.35.7"' config/overrides.toml
-  - ./managed-k8s/actions/k8s-login.sh
+  - tarook k8s-login
 
    # renovate: datasource=github-releases packageName=kubernetes/kubernetes
-  - MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.36.3
+  - MANAGED_K8S_RELEASE_THE_KRAKEN=true tarook upgrade 1.36.3
     # Update k8s version
     # renovate: datasource=github-releases packageName=kubernetes/kubernetes
   - tomlq --in-place --toml-output '.kubernetes.version = "1.36.3"' config/overrides.toml
-  - ./managed-k8s/actions/k8s-login.sh
+  - tarook k8s-login
 
     # Shuffle once more
-  - ./managed-k8s/actions/apply-custom.sh
+  - tarook apply custom
   - ./managed-k8s/ci/test.sh
-  - ./managed-k8s/actions/test.sh
+  - tarook test
   after_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, after_script]
   artifacts: !reference [.prepare_spawn_test_cleanup_k8s_cluster, artifacts]
