@@ -1,0 +1,1 @@
+The scripts at ``./managed-k8s/actions`` and ``./managed-k8s/tools`` are deprecated and will be removed one by one in the future. Use the Tarook CLI instead (``tarook --help``)
