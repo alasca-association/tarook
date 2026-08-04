@@ -9,7 +9,7 @@
   script:
   # Spawn and test cluster
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
-  - ./managed-k8s/actions/k8s-login.sh
+  - tarook k8s-login
   - export KUBECONFIG="$(pwd)/etc/admin.conf"
   - kubectl taint node ci-worker-gpu-0 k8s.yaook.cloud/gpu-node=true:NoSchedule-
   - kubectl taint node ci-worker-storage-0 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-

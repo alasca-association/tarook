@@ -6,7 +6,7 @@ set -euo pipefail
 # We're accepting a failure here because I'm too lazy to check whether wireguard was already configured. Since
 # k8s-dump.sh can also fail gracefully -> no harm, no foul.
 export wg_conf_name="wg0"
-./managed-k8s/actions/wg-up.sh || true
+tarook wireguard up || true
 
 if [ -f "$PWD/etc/admin.conf" ]; then
     export KUBECONFIG="$PWD/etc/admin.conf"
@@ -19,4 +19,4 @@ fi
 # shellcheck disable=SC1091
 if [ -f /root/openrc.sh ] ; then source /root/openrc.sh; fi
 rm state/terraform/prevent_disruption.lock
-MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_DISRUPT_THE_HARBOUR=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
+MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_DISRUPT_THE_HARBOUR=true MANAGED_K8S_NUKE_FROM_ORBIT=true tarook destroy
