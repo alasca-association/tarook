@@ -74,14 +74,14 @@ Performing the TAROOK Upgrade
 
    .. code:: console
 
-      $ ./managed-k8s/actions/wg-up.sh
+      $ tarook wireguard up
 
 2. Ensure you have a :ref:`valid kubeconfig<actions-references.k8s-loginsh>`
    and access to the Kubernetes API:
 
    .. code:: console
 
-      $ ./managed-k8s/actions/k8s-login.sh
+      $ tarook k8s-login
 
       $ kubectl get nodes
 
@@ -131,7 +131,7 @@ Performing the TAROOK Upgrade
 
          .. code:: console
 
-            $ ./managed-k8s/actions/migrate-to-release.sh
+            $ tarook migrate-to-release
 
       .. tab:: Patch and Minor Release Upgrades
 
@@ -141,7 +141,7 @@ Performing the TAROOK Upgrade
 
    .. code:: console
 
-      $ ./managed-k8s/actions/apply-all.sh
+      $ tarook apply all
 
 6. Verify the upgrade.
    Confirm that the Kubernetes cluster is functioning as expected after the upgrade
@@ -149,7 +149,7 @@ Performing the TAROOK Upgrade
 
    .. code:: console
 
-      $ ./managed-k8s/actions/test.sh
+      $ tarook test
 
       $ kubectl get nodes -o wide
       $ kubectl get pods -A | grep -Ev "Running|Completed"

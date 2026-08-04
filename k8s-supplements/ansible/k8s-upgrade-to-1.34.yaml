@@ -60,6 +60,6 @@
           {{ next_k8s_version | to_json }}.
 
           You SHOULD refresh your kubeconfig
-          by running `./managed-k8s/actions/k8s-login.sh`.
+          by running `tarook k8s-login`.
       tags: always
 ...

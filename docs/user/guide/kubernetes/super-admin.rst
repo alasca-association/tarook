@@ -9,7 +9,7 @@ you can execute the following:
 
 .. code:: console
 
-  $ ./managed-k8s/actions/k8s-login.sh -s
+  $ tarook k8s-login -s
 
 Please also refer to
 `kubeadm implementation details <https://kubernetes.io/docs/reference/setup-tools/kubeadm/implementation-details/>`_

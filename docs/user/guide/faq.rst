@@ -21,7 +21,7 @@ You can login to the Tarook cluster with
 
 .. code:: console
 
-   $ ./managed-k8s/actions/k8s-login.sh
+   $ tarook k8s-login
 
 This will generate a kubeconfig that is valid for 8 days (by default). After that, you need to login again.
 
@@ -61,7 +61,7 @@ This will generate a kubeconfig that is valid for 8 days (by default). After tha
 
          .. code:: console
 
-            $ ./managed-k8s/actions/wg-up.sh
+            $ tarook wireguard up
 
 “How can I test my Tarook-Cluster?”
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -72,7 +72,7 @@ nodes <faq.how-do-i-ssh-into-my-cluster-nodes>` and/or by running:
 
 .. code:: console
 
-   $ ./managed-k8s/actions/test.sh
+   $ tarook test
 
 “How can I delete my Tarook-Cluster on OpenStack?”
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -92,7 +92,7 @@ by triggering the :ref:`destroy.sh <actions-references.destroysh>` script.
 .. code:: shell
 
    $ # Destroy the Tarook cluster and delete all OpenStack resources
-   $ MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_DISRUPT_THE_HARBOUR=true MANAGED_K8S_NUKE_FROM_ORBIT=true ./managed-k8s/actions/destroy.sh
+   $ MANAGED_K8S_RELEASE_THE_KRAKEN=true MANAGED_K8S_DISRUPT_THE_HARBOUR=true MANAGED_K8S_NUKE_FROM_ORBIT=true tarook destroy
 
 Troubleshooting
 ---------------
@@ -112,7 +112,7 @@ Troubleshooting
 
    .. code:: console
 
-      $ AFLAGS='-e ansible_ssh_private_key_file=/path/to/private_key_file' ./managed-k8s/actions/apply-all.sh
+      $ AFLAGS='-e ansible_ssh_private_key_file=/path/to/private_key_file' tarook apply all
 
 -  Further information is available `in the upstream documentation on
    Ansible connections <https://docs.ansible.com/ansible/latest/user_guide/connection_details.html>`__.

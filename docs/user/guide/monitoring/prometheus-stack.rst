@@ -227,7 +227,7 @@ and then triggering the vault update script:
 
 .. code:: console
 
-   $ ./managed-k8s/tools/vault/update.sh
+   $ tarook vault update
 
 Alternatively, you can also manually insert your configuration into vault.
 
