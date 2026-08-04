@@ -90,7 +90,7 @@ Phase 1
 
         .. code:: console
 
-          $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh prepare
+          $ tarook vault rotate-root-ca-root prepare
 
           $ # Verify
           $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
@@ -103,7 +103,7 @@ Phase 1
 
           .. code:: console
 
-            $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh prepare
+            $ tarook vault rotate-root-ca-intermediate prepare
 
         2. Sign the generated CSRs
 
@@ -111,7 +111,7 @@ Phase 1
 
           .. code:: console
 
-            $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh load-signed-intermediates
+            $ tarook vault rotate-root-ca-intermediate load-signed-intermediates
 
             $ # Verify
             $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
@@ -126,7 +126,7 @@ Phase 1
 
    .. code:: console
 
-     $ ./managed-k8s/tools/vault/init.sh
+     $ tarook vault init
 
 
 4. Run the rotation action to roll out both CAs in the cluster and create kubeconfigs
@@ -134,7 +134,7 @@ Phase 1
 
    .. code:: console
 
-     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-root-ca.sh -n
+     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true tarook vault rotate-root-ca -n
 
 5. Verify workload is able to come back up
 
@@ -144,7 +144,7 @@ Phase 1
 
    .. code:: console
 
-     $ ./managed-k8s/actions/test.sh
+     $ tarook test
 
 8. Distribute the renewed kubeconfig(s) to the clients that need them (e.g. customers).
    The kubeconfig in the cluster repo is updated automatically (you have to commit and push it, of course!).
@@ -163,7 +163,7 @@ After you spread the kubeconfigs, do the following:
 
         .. code:: console
 
-          $ ./managed-k8s/tools/vault/rotate-root-ca-root.sh apply
+          $ tarook vault rotate-root-ca-root apply
 
           $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
           Keys                                    is_default    issuer_name
@@ -179,7 +179,7 @@ After you spread the kubeconfigs, do the following:
 
         .. code:: console
 
-          $ ./managed-k8s/tools/vault/rotate-root-ca-intermediate.sh apply
+          $ tarook vault rotate-root-ca-intermediate apply
 
           $ vault list -detailed yaook/<clustername>/k8s-pki/issuers
           Keys                                    is_default    issuer_name
@@ -196,7 +196,7 @@ After you spread the kubeconfigs, do the following:
 
    .. code:: console
 
-     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/rotate-root-ca.sh -c
+     $ MANAGED_K8S_RELEASE_THE_KRAKEN=true tarook vault rotate-root-ca -c
 
 3. Verify workload is able to come back up
 
@@ -206,4 +206,4 @@ After you spread the kubeconfigs, do the following:
 
    .. code:: console
 
-     $ ./managed-k8s/actions/test.sh
+     $ tarook test

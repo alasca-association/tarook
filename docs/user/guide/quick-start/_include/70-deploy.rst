@@ -2,7 +2,7 @@ Deploy your cluster by executing the :ref:`apply-all.sh <actions-references.appl
 
 .. code:: console
 
-   $ ./managed-k8s/actions/apply-all.sh
+   $ tarook apply all
 
 Get yourself a hot beverage and joyfully watch as your Tarook cluster gets created.
 
@@ -37,7 +37,7 @@ Afterwards you may verify that it's functional by running our smoke tests.
 
 .. code:: console
 
-   $ ./managed-k8s/actions/test.sh
+   $ tarook test
 
 
 Start using your cluster.

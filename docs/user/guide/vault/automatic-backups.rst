@@ -74,7 +74,7 @@ Setup steps
    .. code:: shell
 
       VAULT_TOKEN=${vault_orchestrator_token:?} \
-        ./managed-k8s/actions/apply-k8s-supplements.sh install-vault.yaml
+        tarook apply supplements install-vault.yaml
 
 
 5. Verify backups are working

@@ -17,7 +17,7 @@
 
    .. code:: shell
 
-      ./managed-k8s/tools/vault/init.sh
+      tarook vault init
 
 3. Setup secret engines for the cluster
 
@@ -26,7 +26,7 @@
 
    .. code:: shell
 
-      ./managed-k8s/tools/vault/mkcluster-root.sh
+      tarook vault mkcluster-root
 
 
 More details about Vault as backend is provided at :doc:`/user/guide/vault/vault`.

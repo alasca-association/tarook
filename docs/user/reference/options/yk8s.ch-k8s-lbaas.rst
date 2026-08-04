@@ -252,7 +252,7 @@ After reconfiguring this option, execute the following:
 
 .. code::
 
-  $ ./managed-k8s/actions/apply-k8s-supplements.sh install-ch-k8s-lbaas.yaml
+  $ tarook apply supplements install-ch-k8s-lbaas.yaml
 
 to rollout necessary changes.
 
