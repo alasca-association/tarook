@@ -43,7 +43,7 @@ https://developer.hashicorp.com/vault/docs/v1.19.x/deploy/kubernetes/helm/run#up
 
      .. code:: shell
 
-        ./managed-k8s/actions/apply-k8s-supplements.sh install-vault.yaml
+        tarook apply supplements install-vault.yaml
 
 
 - Tarook configures the Vault Helm chart

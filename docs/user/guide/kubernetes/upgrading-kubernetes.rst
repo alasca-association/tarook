@@ -19,13 +19,13 @@ General procedure
 
    .. code:: console
 
-      $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh 1.x.y
+      $ MANAGED_K8S_RELEASE_THE_KRAKEN=true tarook upgrade 1.x.y
 
 3. Re-generate an administrative kubeconfig using our login script
 
    .. code::
 
-      $ ./managed-k8s/actions/k8s-login.sh
+      $ tarook k8s-login
 
 4. Once the upgrade executed successfully, update your config
    to point to the new K8s version:
@@ -53,7 +53,7 @@ version.
 .. code:: console
 
    $ # Triggering a Kubernetes upgrade and skip health verification tasks
-   $ MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/upgrade.sh -s 1.22.11
+   $ MANAGED_K8S_RELEASE_THE_KRAKEN=true tarook upgrade -s 1.22.11
 
 Adding custom pre- and post-drain tasks
 -----------------------------------------
