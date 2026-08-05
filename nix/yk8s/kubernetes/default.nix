@@ -240,7 +240,15 @@ in {
             ["kubelet" "masterOptions"] # merged into kubelet.finalNodeOptions
             ["kubelet" "nodeOptions"] # merged into kubelet.finalNodeOptions
             ["kubelet" "workerOptions"] # merged into kubelet.finalNodeOptions
+            ["network" "kube_proxy" "kubeProxyConfiguration"] # proxied by kubeadm.initConfigurationBundles
+            ["network" "kube_proxy" "extraKubeProxyConfiguration"] # merged into network.kube_proxy.kubeProxyConfiguration
+            ["kubeadm" "extraClusterConfiguration"] # merged into kubeadm.clusterConfiguration
+            ["kubeadm" "extraInitConfiguration"] # merged into kubeadm.initConfigurations
+            ["kubeadm" "extraJoinConfiguration"] # merged into kubeadm.joinConfigurations
             ["kubeadm" "patches"] # proxied by kubeadm.patches_dir
+            ["kubeadm" "clusterConfiguration"] # proxied by kubeadm.initConfigurationBundles
+            ["kubeadm" "initConfigurations"] # proxied by kubeadm.initConfigurationBundles and kubeadm.initConfigurationFiles
+            ["kubeadm" "joinConfigurations"] # proxied by kubeadm.joinConfigurationFiles
           ])
         # recusively filter null values on kubelet subset
         (lib.updateManyAttrsByPath [
@@ -251,6 +259,9 @@ in {
         ])
       ];
       unflat = [
+        ["kubeadm" "initConfigurationBundles"]
+        ["kubeadm" "initConfigurationFiles"]
+        ["kubeadm" "joinConfigurationFiles"]
         ["kubelet" "defaultOptions"]
         ["kubelet" "finalNodeOptions"]
         ["network" "calico" "helm" "values"]

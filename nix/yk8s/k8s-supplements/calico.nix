@@ -273,6 +273,18 @@ in {
           to another dataplane mode.
       '';
     }
+    {
+      assertion =
+        cfg.enabled
+        && config.yk8s.kubernetes.network.kube_proxy.enabled
+        -> ((cfg.helm.values.installation.calicoNetwork.linuxDataplane or null) == "Nftables")
+        == (config.yk8s.kubernetes.network.kube_proxy.mode == "nftables");
+      message = ''
+        config.yk8s.kubernetes.network.calico.helm.values.installation.calicoNetwork.linuxDataplane:
+          Calico's nftables dataplane requires kube-proxy to run in nftables mode
+          (config.yk8s.kubernetes.network.kube_proxy.mode) and vice versa.
+      '';
+    }
   ];
   config.yk8s._targets.ansible.warnings = [];
 }

@@ -9,7 +9,7 @@
       - "upgrade"
       - "node"
       - "--patches"
-      - "/etc/kubernetes/kubeadm-patches"
+      - "{{ k8s_kubeadm_patches_remote_dir }}"
       - "--certificate-renewal=false"
   include_role:
     name: helpers/kubeadm-command

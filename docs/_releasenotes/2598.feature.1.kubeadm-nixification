@@ -1,0 +1,6 @@
+The options
+:ref:`configuration-options.yk8s.kubernetes.kubeadm.extraClusterConfiguration`,
+:ref:`configuration-options.yk8s.kubernetes.kubeadm.extraInitConfiguration`
+and :ref:`configuration-options.yk8s.kubernetes.kubeadm.extraJoinConfiguration`
+have been added to allow for more flexible configuration of kubeadm.
+They are merged into the configuration that Tarook generates.

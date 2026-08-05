@@ -107,7 +107,7 @@ in {
     };
     patches_remote_dir = mkInternalOption {
       readOnly = true;
-      type = types.path;
+      type = types.yk8s.posix.absolutePath;
       default = "/etc/kubernetes/kubeadm-patches";
     };
   };
