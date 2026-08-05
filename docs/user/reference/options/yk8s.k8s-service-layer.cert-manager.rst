@@ -49,7 +49,7 @@ The chart reference (relative to the repository) of the cert-manager Helm chart.
 
 **Type:**::
 
-  RFC3986 relative URL path
+  RFC3986 relative URL path or RFC3986 URL
 
 
 **Default:**::
@@ -71,7 +71,7 @@ The URL to the Helm repository for the cert-manager Helm chart.
 
 **Type:**::
 
-  RFC3986 HTTP(S) URL
+  null or RFC3986 URL
 
 
 **Default:**::

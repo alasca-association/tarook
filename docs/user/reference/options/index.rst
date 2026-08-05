@@ -12,6 +12,7 @@ Configuration Options
   yk8s.infra
   yk8s.ipsec
   yk8s.k8s-service-layer.cert-manager
+  yk8s.k8s-service-layer.envoy-gateway
   yk8s.k8s-service-layer.etcd-backup
   yk8s.k8s-service-layer.fluxcd
   yk8s.k8s-service-layer.ingress
@@ -45,6 +46,8 @@ Configuration Options
 :doc:`ipsec <yk8s.ipsec>`
 
 :doc:`k8s-service-layer.cert-manager <yk8s.k8s-service-layer.cert-manager>`
+
+:doc:`k8s-service-layer.envoy-gateway <yk8s.k8s-service-layer.envoy-gateway>`
 
 :doc:`k8s-service-layer.etcd-backup <yk8s.k8s-service-layer.etcd-backup>`
 
