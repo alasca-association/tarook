@@ -32,13 +32,13 @@
   when: ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized') != 'initialized'
   become: true
   block:
-  - name: Create kubeadm-join-config.yaml
-    template:
-      src: kubeadm-JoinConfiguration.yaml.j2
+  - name: Upload kubeadm-join-config.yaml
+    copy:
+      src: "{{ k8s_kubeadm_joinConfigurationFiles[inventory_hostname] }}"
       dest: /tmp/kubeadm-join-config.yaml
       owner: root
       group: root
-      mode: 0640
+      mode: 0600
 
   - name: Join the k8s cluster as another worker
     vars:
