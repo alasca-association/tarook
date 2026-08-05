@@ -2,4 +2,4 @@
 
 {{ kubeadm_configmap.resources[0].data.ClusterConfiguration }}
 
-{{ lookup('template', 'kubeadm-InitConfiguration.yaml.j2') }}
+{{ lookup('file', k8s_kubeadm_initConfigurationFiles[inventory_hostname]) }}

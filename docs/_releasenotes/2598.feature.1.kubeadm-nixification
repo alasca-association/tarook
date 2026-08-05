@@ -1,0 +1,1 @@
+The options :ref:`configuration-options.yk8s.kubernetes.kubeadm.clusterConfiguration`, :ref:`configuration-options.yk8s.kubernetes.kubeadm.initConfigurations` and :ref:`configuration-options.yk8s.kubernetes.kubeadm.joinConfigurations` have been added to allow for more flexible configuration of kubeadm.

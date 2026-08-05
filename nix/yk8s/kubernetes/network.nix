@@ -17,15 +17,34 @@ in {
   options.yk8s.kubernetes.network = mkSubSection {
     _docs.order = 8;
 
-    kube_proxy.enabled = mkEnableOption ''
-      kube-proxy.
+    kube_proxy = {
+      enabled = mkEnableOption ''
+        kube-proxy.
 
-      .. warning::
+        .. warning::
 
-         kube-proxy interferes with Calico running in eBPF dataplane mode, which is the default.
-         Enable with care.
+           kube-proxy interferes with Calico running in eBPF dataplane mode, which is the default.
+           Enable with care.
 
-    '';
+      '';
+      mode = mkOption {
+        description = ''
+          Which proxy mode to use. Note that ``ipvs`` mode is deprecated.
+        '';
+        type = types.enum ["iptables" "nftables" "ipvs"];
+        default =
+          if config.yk8s.infra.ipv6_enabled
+          then "ipvs"
+          else "iptables";
+        defaultText = lib.literalExpression ''
+          if config.yk8s.infra.ipv6_enabled then "ipvs" else "iptables"
+        '';
+      };
+
+      kubeProxyConfiguration = mkOption {
+        type = types.yk8s.formats.jsonValue;
+      };
+    };
 
     pod_subnet = mkOption {
       description = ''
@@ -93,5 +112,14 @@ in {
       type = types.bool;
       default = false;
     };
+  };
+  config.yk8s.kubernetes.network.kube_proxy.kubeProxyConfiguration = {
+    apiVersion = "kubeproxy.config.k8s.io/v1alpha1";
+    kind = "KubeProxyConfiguration";
+    metricsBindAddress =
+      if config.yk8s.infra.ipv4_enabled
+      then "0.0.0.0:10249"
+      else "[::]:10249";
+    inherit (cfg.kube_proxy) mode;
   };
 }
