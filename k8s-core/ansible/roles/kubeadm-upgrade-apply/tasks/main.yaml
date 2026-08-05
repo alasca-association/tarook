@@ -26,7 +26,7 @@
           - "--certificate-renewal=false"
           - "--ignore-preflight-errors=CreateJob"
           - "--patches"
-          - "/etc/kubernetes/kubeadm-patches"
+          - "{{ k8s_kubeadm_patches_remote_dir }}"
       include_role:
         name: helpers/kubeadm-command
 
