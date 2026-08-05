@@ -10,7 +10,7 @@
 
     - name: Create kubeadm-patches folder
       file:
-        path: /etc/kubernetes/kubeadm-patches
+        path: "{{ k8s_kubeadm_patches_remote_dir }}"
         state: directory
         owner: root
         group: root
@@ -19,7 +19,7 @@
     - name: Synchronize kubeadm patch files
       ansible.posix.synchronize:
         src: "{{ k8s_kubeadm_patches_dir }}/"
-        dest: /etc/kubernetes/kubeadm-patches
+        dest: "{{ k8s_kubeadm_patches_remote_dir }}"
         owner: false
         copy_links: true
         perms: false
