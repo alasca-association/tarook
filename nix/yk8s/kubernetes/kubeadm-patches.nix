@@ -105,6 +105,11 @@ in {
       type = types.pathInStore;
       readOnly = true;
     };
+    patches_remote_dir = mkInternalOption {
+      readOnly = true;
+      type = types.path;
+      default = "/etc/kubernetes/kubeadm-patches";
+    };
   };
 
   config.yk8s.kubernetes.kubeadm = {

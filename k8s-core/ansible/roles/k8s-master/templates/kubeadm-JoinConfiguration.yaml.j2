@@ -38,4 +38,4 @@ controlPlane:
     bindPort: 6443
 
 patches:
-  directory: "/etc/kubernetes/kubeadm-patches"
+  directory: "{{ k8s_kubeadm_patches_remote_dir }}"
