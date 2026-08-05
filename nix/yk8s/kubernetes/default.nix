@@ -18,7 +18,7 @@ in {
     ./monitoring.nix
     ./network.nix
     ./kubelet.nix
-    ./kubeadm-patches.nix
+    ./kubeadm
     (mkRemovedOptionModule ["kubernetes" "use_podsecuritypolicies"] "")
     (mkRemovedOptionModule ["kubernetes" "continuous_join_key"] "")
     (mkRenamedOptionModule ["kubernetes" "monitoring" "alertmanager_config_secret"] ["k8s-service-layer" "prometheus" "alertmanager_config_secret"])
