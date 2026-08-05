@@ -8,7 +8,7 @@
   modules-lib = import ../lib/modules.nix {inherit lib;};
   inherit (modules-lib) mkRemovedOptionModule;
   inherit (lib) mkOption mkEnableOption;
-  inherit (yk8s-lib) mkSubSection types mkDisableOption;
+  inherit (yk8s-lib) mkSubSection types mkDisableOption mkInternalOption;
 in {
   imports = [
     (mkRemovedOptionModule ["kubernetes" "network" "plugin_switch_restart_all_namespaces"] "")
@@ -17,9 +17,28 @@ in {
   options.yk8s.kubernetes.network = mkSubSection {
     _docs.order = 8;
 
-    kube_proxy.enabled = mkDisableOption ''
-      kube-proxy. Disable if you want to use a eBPF dataplane
-    '';
+    kube_proxy = {
+      enabled = mkDisableOption ''
+        kube-proxy. Disable if you want to use a eBPF dataplane
+      '';
+      mode = mkOption {
+        description = ''
+          Which proxy mode to use. Note that ``ipvs`` mode is deprecated.
+        '';
+        type = types.enum ["iptables" "nftables" "ipvs"];
+        default =
+          if config.yk8s.infra.ipv6_enabled
+          then "ipvs"
+          else "iptables";
+        defaultText = lib.literalExpression ''
+          if config.yk8s.infra.ipv6_enabled then "ipvs" else "iptables"
+        '';
+      };
+
+      kubeProxyConfiguration = mkOption {
+        type = types.yk8s.formats.jsonValue;
+      };
+    };
 
     pod_subnet = mkOption {
       description = ''
@@ -87,5 +106,14 @@ in {
       type = types.bool;
       default = false;
     };
+  };
+  config.yk8s.kubernetes.network.kube_proxy.kubeProxyConfiguration = {
+    apiVersion = "kubeproxy.config.k8s.io/v1alpha1";
+    kind = "KubeProxyConfiguration";
+    metricsBindAddress =
+      if config.yk8s.infra.ipv4_enabled
+      then "0.0.0.0:10249"
+      else "[::]:10249";
+    inherit (cfg.kube_proxy) mode;
   };
 }
