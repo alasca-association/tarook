@@ -5,7 +5,6 @@
     target_hosts: all:!orchestrator
 
 - name: Fail if node got not bootstrapped once, yet
-  any_errors_fatal: true
   hosts: all:!orchestrator
   tasks:
   - name: Fail if node got not bootstrapped once, yet

@@ -337,6 +337,10 @@
 - name: Provide CA certificates as ConfigMap
   include_tasks: provide-ca-as-cm.yaml
 
+- name: Set ClusterConfiguration.proxy.disabled
+  include_role:
+    name: kubeadm-kube-proxy
+
 # See docs ref:cluster.node-labeling
 - name: "Ensure K8s node labels"
   delegate_to: "{{ groups['orchestrator'] | first }}"

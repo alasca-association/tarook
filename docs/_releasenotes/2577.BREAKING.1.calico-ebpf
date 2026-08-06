@@ -1,0 +1,3 @@
+Calico is now deployed in eBPF mode. For existing deployments running in iptables, ipvs or nftables mode, this is disruptive.
+
+Run ``MANAGED_K8S_RELEASE_THE_KRAKEN=true ./managed-k8s/actions/apply-k8s-supplements.sh install-envoy-gateway.yaml`` to perform the migration.

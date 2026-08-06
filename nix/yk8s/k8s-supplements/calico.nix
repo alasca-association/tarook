@@ -19,6 +19,7 @@ in {
     (mkRemovedOptionModule ["kubernetes" "network" "calico" "ipv6_autodetection_method"] "")
     (mkRemovedOptionModule ["kubernetes" "network" "calico" "calico_ip_autodetection_method"] "")
     (mkRemovedOptionModule ["kubernetes" "network" "calico" "calico_ipv6_autodetection_method"] "")
+    (mkRemovedOptionModule ["kubernetes" "network" "calico" "values_file_path"] "Please use :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.values` instead.")
 
     (mkRenamedOptionModule ["kubernetes" "network" "calico" "image_registry"] ["kubernetes" "network" "calico" "helm" "values" "installation" "registry"])
     (mkRenamedOptionModule ["kubernetes" "network" "calico" "mtu"] ["kubernetes" "network" "calico" "helm" "values" "installation" "calicoNetwork" "mtu"])
@@ -149,24 +150,9 @@ in {
       type = types.yk8s.networking.ipv4Addr;
       default = "244.0.0.1";
     };
-    values_file_path = mkOption {
-      description = ''
-        .. note:: DEPRECATED
-
-           This option is going to be removed.
-           Please use :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.values` instead.
-
-        For the operator-based installation,
-        it is possible to link to self-maintained values file for the helm chart
-
-      '';
-      type = types.pathInStore;
-      default = (yk8s-lib.mkYaml "yk8s-calico-values.yaml" cfg.helm.values).outPath;
-      defaultText = lib.literalExpression
-        ''(yk8s-lib.mkYaml "yk8s-calico-values.yaml" config.yk8s.kubernetes.network.calico.helm.values).outPath'';
-      example = lib.options.literalExpression "./calico/helm/values.yaml";
-    };
   };
+
+  config.yk8s.kubernetes.network.kube_proxy.enabled = false;
   config.yk8s.kubernetes.network.calico.helm.values =
     {
       installation = {
@@ -177,29 +163,42 @@ in {
         controlPlaneNodeSelector."node-role.kubernetes.io/control-plane" = "";
         nonPrivileged = "True";
         calicoNetwork = {
-          ipPools =
+          linuxDataplane = "BPF";
+          ipPools = let
+            common = {
+              allowedUses = [
+                "Workload"
+                "Tunnel"
+              ];
+              assignmentMode = "Automatic";
+              disableBGPExport = false;
+              disableNewAllocations = false;
+              nodeSelector = "all()";
+              encapsulation = cfg.encapsulation;
+            };
+          in
             (lib.optional config.yk8s.infra.ipv4_enabled
-              {
-                blockSize = 26;
-                cidr = config.yk8s.kubernetes.network.pod_subnet;
-                natOutgoing =
-                  if config.yk8s.kubernetes.network.ipv4_nat_outgoing
-                  then "Enabled"
-                  else "Disabled";
-                nodeSelector = "all()";
-                encapsulation = cfg.encapsulation;
-              })
+              (common
+                // {
+                  name = "default-ipv4-ippool";
+                  blockSize = 26;
+                  cidr = config.yk8s.kubernetes.network.pod_subnet;
+                  natOutgoing =
+                    if config.yk8s.kubernetes.network.ipv4_nat_outgoing
+                    then "Enabled"
+                    else "Disabled";
+                }))
             ++ (lib.optional config.yk8s.infra.ipv6_enabled
-              {
-                blockSize = 122;
-                cidr = config.yk8s.kubernetes.network.pod_subnet_v6;
-                natOutgoing =
-                  if config.yk8s.kubernetes.network.ipv6_nat_outgoing
-                  then "Enabled"
-                  else "Disabled";
-                nodeSelector = "all()";
-                encapsulation = cfg.encapsulation;
-              });
+              (common
+                // {
+                  name = "default-ipv6-ippool";
+                  blockSize = 122;
+                  cidr = config.yk8s.kubernetes.network.pod_subnet_v6;
+                  natOutgoing =
+                    if config.yk8s.kubernetes.network.ipv6_nat_outgoing
+                    then "Enabled"
+                    else "Disabled";
+                }));
           nodeAddressAutodetectionV4 = lib.optionalAttrs config.yk8s.infra.ipv4_enabled {
             # This works because calico only uses the routing table and
             # does not actually do a reachability check on layer 3 or so.
@@ -221,6 +220,10 @@ in {
         "kubernetes.io/os" = "linux";
         "node-role.kubernetes.io/control-plane" = "";
       };
+      kubernetesServiceEndpoint = {
+        host = config.yk8s.infra.networking_fixed_ip;
+        port = config.yk8s.kubernetes.apiserver.frontend_port;
+      };
     }
     // lib.optionalAttrs (lib.versionAtLeast cfg.helm.chart_version "3.30") {
       # https://www.tigera.io/blog/calico-whisker-your-new-ally-in-network-observability/
@@ -231,8 +234,5 @@ in {
     };
 
   config.yk8s._targets.ansible.assertions = [];
-  config.yk8s._targets.ansible.warnings =
-    lib.optional (options.yk8s.kubernetes.network.calico.values_file_path.highestPrio < 1500) # priority of option defaults
-
-    "config.yk8s.kubernetes.network.calico.values_file_path: is deprecated. Please use config.yk8s.kubernetes.network.calico.helm.values instead.";
+  config.yk8s._targets.ansible.warnings = [];
 }

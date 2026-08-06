@@ -18,7 +18,6 @@
     target_hosts: frontend:gateways
 
 - name: Fail if node got not bootstrapped once, yet
-  any_errors_fatal: true
   hosts: frontend:gateways
   tasks:
   - name: Fail if node got not bootstrapped once, yet

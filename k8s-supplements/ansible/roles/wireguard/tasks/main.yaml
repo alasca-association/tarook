@@ -1,7 +1,6 @@
 ---
 - name: Ensure private key consistency
   become: true
-  any_errors_fatal: true
   block:
     - name: Check for existence of private key in old location (LEGACY)
       stat:
