@@ -7,7 +7,7 @@
     ;
   inherit
     (types.yk8s.networking)
-    httpxUrl
+    url
     relativeUrlPath
     ;
   inherit (types.yk8s.version._regexes) semver;
@@ -31,7 +31,7 @@ in rec {
     };
   };
   # as per https://v3.helm.sh/docs/topics/chart_repository/
-  chartRepoUrl = httpxUrl;
+  chartRepoUrl = url;
   chartReleaseName = _mkRegexStrOptionType {
     name = "helmChartReleaseName";
     description = "Helm chart release name";
@@ -47,5 +47,5 @@ in rec {
     description = "Helm chart version (Semantic version 2 string or OCI image tag)";
     matchAgainstAllOf = ["^(${_regexes.v3.chartVersionRE})$"];
   };
-  chartRef = relativeUrlPath;
+  chartRef = types.either relativeUrlPath chartRepoUrl;
 }

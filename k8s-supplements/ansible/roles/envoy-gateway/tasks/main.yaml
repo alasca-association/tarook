@@ -1,0 +1,133 @@
+---
+- name: List all GatewayAPI resources
+  kubernetes.core.k8s_info:
+    api_version: operator.tigera.io/v1
+    kind: GatewayAPI
+  register: gatewayapi_check
+
+- name: Migrate from Tigera Gateway API
+  when: gatewayapi_check.resources | length > 0
+  block:
+  - name: Check for disruption
+    assert:
+      that:
+      - _allow_disruption | default(False) | bool
+      fail_msg: |
+        Envoy Gateway is enabled but Tigera Gateway exists.
+        Please use MANAGED_K8S_RELEASE_THE_KRAKEN=true if you
+        want to replace Tigera Gateway with Envoy Gatway.
+  - name: Ensure Tigera GatewayAPI resources are absent
+    kubernetes.core.k8s:
+      api_version: operator.tigera.io/v1
+      kind: GatewayAPI
+      name: "{{ item.metadata.name }}"
+      state: absent
+    loop: "{{ gatewayapi_check.resources }}"
+    loop_control:
+      label: "{{ item.metadata.name }}"
+  - name: Wait until Calico gateway Pods are gone
+    kubernetes.core.k8s_info:
+      kind: Pod
+      namespace: "tigera-gateway"
+    register: _ns_pods
+    until: _ns_pods.resources | length == 0
+    retries: 30
+    delay: 10
+  - name: Fail with details if pods remain
+    ansible.builtin.fail:
+      msg: >-
+        Namespace tigera-gateway still has pods after waiting:
+        {{ _ns_pods.resources | map(attribute='metadata.name') | list }}
+    when: _ns_pods.resources | length > 0
+
+- name: Create namespace for envoy-gateway
+  kubernetes.core.k8s:
+    apply: true
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ envoy_gateway_helm_release_namespace }}"
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
+
+- name: Render envoy-gateway CRDs and apply
+  when: envoy_gateway_enabled | bool # CRDs should never be deleted once applied
+  block:
+  # We need to template and then apply because `helm apply` tracks releases inside
+  # a secret which doesn't fit all the CRDs
+  - name: Render envoy-gateway CRDs
+    kubernetes.core.helm_template:
+      chart_repo_url: "{{ envoy_gateway_crds_helm_chart_repo_url }}"
+      chart_ref: "{{ envoy_gateway_crds_helm_chart_ref }}"
+      release_namespace: "{{ envoy_gateway_crds_helm_release_namespace }}"
+      release_name: "{{ envoy_gateway_crds_helm_release_name }}"
+      values: "{{ envoy_gateway_crds_helm_values | to_json }}"
+      chart_version: "{{ envoy_gateway_crds_helm_chart_version }}"
+    register: rendered
+    changed_when: false
+
+  # For some reason `helm template` prepends a document like
+  #
+  # Pulled: docker.io/envoyproxy/gateway-crds-helm:v1.8.1
+  # Digest: sha256:8ac15708adafa6660f77539b33bf215144ea29352c9a17127c1770d96eeaa661
+  # ---
+  #
+  # to stdout instead of using stderr for that. So we need to make sure
+  # that we only apply documents that look like valid Kubernetes manifests
+  - name: Filter for valid Kubernetes manifest documents
+    ansible.builtin.set_fact:
+      eg_crds_docs: >-
+        {{
+          rendered.stdout
+          | from_yaml_all
+          | selectattr('apiVersion', 'defined')
+          | selectattr('kind', 'defined')
+          | list
+        }}
+
+  - name: Apply envoy-gateway CRDs
+    kubernetes.core.k8s:
+      state: present
+      apply: true
+      server_side_apply:
+        field_manager: tarook-orchestrator
+        force_conflicts: true
+      definition: "{{ eg_crds_docs }}"
+
+- name: Install envoy-gateway
+  kubernetes.core.helm:
+    chart_repo_url: "{{ envoy_gateway_helm_chart_repo_url }}"
+    chart_ref: "{{ envoy_gateway_helm_chart_ref }}"
+    release_namespace: "{{ envoy_gateway_helm_release_namespace }}"
+    release_name: "{{ envoy_gateway_helm_release_name }}"
+    release_state: "{{ envoy_gateway_install | ternary('present', 'absent') }}"
+    values: "{{ envoy_gateway_helm_values | to_json }}"
+    chart_version: "{{ envoy_gateway_helm_chart_version }}"
+    skip_crds: true
+
+- name: Create default GatewayClass for envoy-gateway
+  kubernetes.core.k8s:
+    apply: true
+    definition:
+      apiVersion: gateway.networking.k8s.io/v1
+      kind: GatewayClass
+      metadata:
+        name: "{{ envoy_gateway_gateway_class_name }}"
+      spec:
+        controllerName: gateway.envoyproxy.io/gatewayclass-controller
+    validate:
+      fail_on_error: true
+      strict: true
+  # Retry this task on failures
+  register: k8s_apply
+  until: k8s_apply is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
+...

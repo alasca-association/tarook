@@ -984,7 +984,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 
 **Type:**::
 
-  RFC3986 HTTP(S) URL
+  RFC3986 URL
 
 
 **Default:**::
@@ -1219,7 +1219,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 
 **Type:**::
 
-  RFC3986 HTTP(S) URL
+  RFC3986 URL
 
 
 **Default:**::
@@ -1443,7 +1443,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 
 **Type:**::
 
-  RFC3986 relative URL path
+  RFC3986 relative URL path or RFC3986 URL
 
 
 **Default:**::
