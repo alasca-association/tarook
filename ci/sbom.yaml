@@ -7,14 +7,15 @@ generate-sbom:
     - echo "Generating Nix package SBOMs..."
     - nix build .#sbom-dev -o sbom-dev.cdx.json
     - nix build .#sbom-ci -o sbom-ci.cdx.json
-    - cp -L sbom-dev.cdx.json tarook-sbom-dev.cdx.json
-    - cp -L sbom-ci.cdx.json tarook-sbom-ci.cdx.json
-    - ls -l
+    #- cp -L sbom-dev.cdx.json tarook-sbom-dev.cdx.json
+    #- cp -L sbom-ci.cdx.json tarook-sbom-ci.cdx.json
+    - ls /bin | grep cyclonedx
+    - cyclonedx merge --input-files sbom-dev.cdx.json sbom-ci.cdx.json --output-file sbom.cdx.json
+    - cyclonedx validate --input-file sbom.cdx.json
   artifacts:
     name: "tarook-sbom"
     paths:
-      - tarook-sbom-dev.cdx.json
-      - tarook-sbom-ci.cdx.json
+      - sbom.cdx.json
     expire_in: 1 year
     when: always
   rules:
