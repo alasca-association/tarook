@@ -461,6 +461,69 @@ so that the driver and surrounding framework is deployed.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
+.. _configuration-options.yk8s.kubernetes.kubeadm.clusterConfiguration:
+
+``yk8s.kubernetes.kubeadm.clusterConfiguration``
+################################################
+
+
+
+**Type:**::
+
+  attribute set containing JSON compatible values
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/cluster-configuration.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.initConfigurations:
+
+``yk8s.kubernetes.kubeadm.initConfigurations``
+##############################################
+
+
+
+**Type:**::
+
+  attribute set of (attribute set containing JSON compatible values)
+
+
+**Default:**::
+
+  { }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/init-join-configuration.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.joinConfigurations:
+
+``yk8s.kubernetes.kubeadm.joinConfigurations``
+##############################################
+
+
+
+**Type:**::
+
+  attribute set of (attribute set containing JSON compatible values)
+
+
+**Default:**::
+
+  { }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/init-join-configuration.nix
+
+
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment:
 
 ``yk8s.kubernetes.kubeadm.patches.corednsdeployment``
@@ -500,7 +563,7 @@ for further information on how to configure.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.patch:
@@ -544,7 +607,7 @@ to convert your existing patches to Nix.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.patchtype:
@@ -569,7 +632,7 @@ For an explanation on each of them, see
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.priority:
@@ -593,7 +656,7 @@ The order in which patches with the same priority are applied is undefined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd:
@@ -635,7 +698,7 @@ for further information on how to configure.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd.*.patch:
@@ -679,7 +742,7 @@ to convert your existing patches to Nix.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd.*.patchtype:
@@ -704,7 +767,7 @@ For an explanation on each of them, see
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd.*.priority:
@@ -728,7 +791,7 @@ The order in which patches with the same priority are applied is undefined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver:
@@ -770,7 +833,7 @@ for further information on how to configure.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.patch:
@@ -814,7 +877,7 @@ to convert your existing patches to Nix.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.patchtype:
@@ -839,7 +902,7 @@ For an explanation on each of them, see
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.priority:
@@ -863,7 +926,7 @@ The order in which patches with the same priority are applied is undefined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager:
@@ -905,7 +968,7 @@ for further information on how to configure.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.patch:
@@ -949,7 +1012,7 @@ to convert your existing patches to Nix.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.patchtype:
@@ -974,7 +1037,7 @@ For an explanation on each of them, see
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.priority:
@@ -998,7 +1061,7 @@ The order in which patches with the same priority are applied is undefined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler:
@@ -1040,7 +1103,7 @@ for further information on how to configure.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.patch:
@@ -1084,7 +1147,7 @@ to convert your existing patches to Nix.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.patchtype:
@@ -1109,7 +1172,7 @@ For an explanation on each of them, see
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.priority:
@@ -1133,7 +1196,7 @@ The order in which patches with the same priority are applied is undefined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration:
@@ -1175,7 +1238,7 @@ for further information on how to configure.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.patch:
@@ -1219,7 +1282,7 @@ to convert your existing patches to Nix.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.patchtype:
@@ -1244,7 +1307,7 @@ For an explanation on each of them, see
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.priority:
@@ -1268,7 +1331,7 @@ The order in which patches with the same priority are applied is undefined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions:

@@ -150,6 +150,50 @@ Whether to enable kube-proxy. Disable if you want to use a eBPF dataplane
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 
+.. _configuration-options.yk8s.kubernetes.network.kube_proxy.kubeProxyConfiguration:
+
+``yk8s.kubernetes.network.kube_proxy.kubeProxyConfiguration``
+#############################################################
+
+
+
+**Type:**::
+
+  attribute set containing JSON compatible values
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
+
+
+.. _configuration-options.yk8s.kubernetes.network.kube_proxy.mode:
+
+``yk8s.kubernetes.network.kube_proxy.mode``
+###########################################
+
+Which proxy mode to use. Note that ``ipvs`` mode is deprecated.
+
+
+**Type:**::
+
+  one of "iptables", "nftables", "ipvs"
+
+
+**Default:**::
+
+  if config.yk8s.infra.ipv6_enabled then "ipvs" else "iptables"
+  
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
+
+
 .. _configuration-options.yk8s.kubernetes.network.pod_subnet:
 
 ``yk8s.kubernetes.network.pod_subnet``
