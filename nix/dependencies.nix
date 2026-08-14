@@ -149,6 +149,7 @@
           rsync
           sonobuoy
           cyclonedx-cli
+          syft
         ];
         pythonPackages = ps:
           with ps; [
