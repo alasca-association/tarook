@@ -1,0 +1,1 @@
+The :ref:`destroy.sh <actions-references.destroysh>` action now ensures that OpenStack volumes are detached before attempting to delete them.
