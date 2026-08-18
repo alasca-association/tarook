@@ -1,0 +1,2 @@
+Fixed invalid Terraform JSON syntax for OpenStack anti-affinity groups, which caused `apply-terraform.sh`
+to fail when :ref:`configuration-options.yk8s.openstack.nodes.<name>.anti_affinity_group` was set.

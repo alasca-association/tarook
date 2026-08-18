@@ -55,7 +55,7 @@ in {
             uuid = yk8s-lib.tfRef "openstack_blockstorage_volume_v3.${nodeName}.id";
           };
           scheduler_hints = lib.optional (nodeValues.anti_affinity_group != null) {
-            content = [{group = "\${openstack_compute_servergroup_v2.server_group[${nodeValues.anti_affinity_group}].id}";}];
+            group = "\${openstack_compute_servergroup_v2.${nodeValues.anti_affinity_group}.id}";
           };
           flavor_id = yk8s-lib.tfRef "data.openstack_compute_flavor_v2.${nodeName}.id";
           image_id =
