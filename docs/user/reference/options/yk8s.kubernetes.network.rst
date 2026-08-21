@@ -123,6 +123,33 @@ Enable outgoing IPv6 network address translation
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
 
 
+.. _configuration-options.yk8s.kubernetes.network.kube_proxy.enabled:
+
+``yk8s.kubernetes.network.kube_proxy.enabled``
+##############################################
+
+Whether to enable kube-proxy. Disable if you want to use an eBPF dataplane
+.
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  true
+
+
+**Example:**::
+
+  false
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/network.nix
+
+
 .. _configuration-options.yk8s.kubernetes.network.pod_subnet:
 
 ``yk8s.kubernetes.network.pod_subnet``
