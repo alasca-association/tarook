@@ -284,7 +284,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "v1.8.2"
+  "1.8.3"
 
 
 **Example:**::
