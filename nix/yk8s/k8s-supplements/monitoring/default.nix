@@ -32,6 +32,7 @@ in {
     (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "nvidia_dcgm_exporter_helm_version"] ["k8s-service-layer" "prometheus" "nvidia_dcgm_exporter" "helm" "chart_version"])
     (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_adapter_version"] ["k8s-service-layer" "prometheus" "prometheus_adapter" "helm" "chart_version"])
     (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "prometheus_adapter_release_name"] ["k8s-service-layer" "prometheus" "prometheus_adapter" "helm" "chart_version"])
+    (mkRenamedOptionModule ["k8s-service-layer" "prometheus" "blackbox_version"] ["k8s-service-layer" "prometheus" "blackbox_exporter" "helm" "chart_version"])
 
     (mkMultiResourceOptionsModule ["k8s-service-layer" "prometheus"] {
       description = ''
@@ -186,6 +187,18 @@ in {
       chartOptions = {};
     };
 
+    blackbox_exporter.helm = mkHelmReleaseOptions {
+      descriptionName = "blackbox-exporter";
+      defaultRepoUrl = "https://prometheus-community.github.io/helm-charts";
+      defaultChartRef = "prometheus-blackbox-exporter";
+      # renovate: datasource=helm depName=prometheus-blackbox-exporter registryUrl=https://prometheus-community.github.io/helm-charts
+      defaultChartVersion = "11.16.0";
+      defaultReleaseNamespace = "monitoring";
+      defaultReleaseName = "kms-blackbox";
+      valuesDocUrl = "https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-blackbox-exporter/values.yaml";
+      chartOptions = {};
+    };
+
     prometheus_adapter.helm = mkHelmReleaseOptions {
       descriptionName = "prometheus-adapter";
       defaultRepoUrl = "https://prometheus-community.github.io/helm-charts";
@@ -259,10 +272,6 @@ in {
       scraping external targets via blackbox exporter
       https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
     '';
-    blackbox_version = mkHelmChartVersionOption {
-      # renovate: datasource=helm depName=prometheus-blackbox-exporter registryUrl=https://prometheus-community.github.io/helm-charts
-      default = "11.16.0";
-    };
     allow_external_rules = mkEnableOption ''
       external rules.
       By default, prometheus and alertmanager only consider global rules from the monitoring
@@ -466,6 +475,274 @@ in {
     };
   };
 
+  config.yk8s.k8s-service-layer.prometheus.blackbox_exporter.helm = let
+    inherit (yk8s-lib.k8s) mkAffinity mkTolerations;
+    affinity = mkAffinity {inherit (cfg) scheduling_key;};
+    tolerations = mkTolerations {inherit (cfg) scheduling_key;};
+  in {
+    values = {
+      inherit affinity tolerations;
+      priorityClassName = "system-cluster-critical";
+
+      config = {
+        modules =
+          {
+            # IPv4 versions for each module
+            # Also needed in IPv6 or DualStack clusters, e.g. for
+            # external targets when internal communication uses IPv6.
+
+            http_2xx = {
+              prober = "http";
+              timeout = "5s";
+              http = {
+                valid_http_versions = [
+                  "HTTP/1.1"
+                  "HTTP/2.0"
+                ];
+                follow_redirects = true;
+                preferred_ip_protocol = "ip4";
+              };
+            };
+
+            http_api = {
+              prober = "http";
+              timeout = "5s";
+              http = {
+                valid_http_versions = [
+                  "HTTP/1.1"
+                  "HTTP/2.0"
+                ];
+                follow_redirects = true;
+                preferred_ip_protocol = "ip4";
+                valid_status_codes = [
+                  200
+                  300
+                  400
+                  401
+                ];
+              };
+            };
+
+            http_api_insecure = {
+              prober = "http";
+              timeout = "5s";
+              http = {
+                valid_http_versions = [
+                  "HTTP/1.1"
+                  "HTTP/2.0"
+                ];
+                follow_redirects = true;
+                preferred_ip_protocol = "ip4";
+                tls_config = {
+                  insecure_skip_verify = true;
+                };
+                valid_status_codes = [
+                  200
+                  300
+                  400
+                  401
+                ];
+              };
+            };
+
+            icmp = {
+              prober = "icmp";
+              timeout = "5s";
+              icmp = {
+                preferred_ip_protocol = "ip4";
+              };
+            };
+
+            tcp_connect = {
+              prober = "tcp";
+              timeout = "5s";
+              tcp = {
+                preferred_ip_protocol = "ip4";
+              };
+            };
+          }
+          // (
+            lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
+              # IPv6 versions for each module
+
+              http_2xx_v6 = {
+                prober = "http";
+                timeout = "5s";
+                http = {
+                  valid_http_versions = [
+                    "HTTP/1.1"
+                    "HTTP/2.0"
+                  ];
+                  follow_redirects = true;
+                  preferred_ip_protocol = "ip6";
+                };
+              };
+
+              http_api_v6 = {
+                prober = "http";
+                timeout = "5s";
+                http = {
+                  valid_http_versions = [
+                    "HTTP/1.1"
+                    "HTTP/2.0"
+                  ];
+                  follow_redirects = true;
+                  preferred_ip_protocol = "ip6";
+                  valid_status_codes = [
+                    200
+                    300
+                    400
+                    401
+                  ];
+                };
+              };
+
+              http_api_insecure_v6 = {
+                prober = "http";
+                timeout = "5s";
+                http = {
+                  valid_http_versions = [
+                    "HTTP/1.1"
+                    "HTTP/2.0"
+                  ];
+                  follow_redirects = true;
+                  preferred_ip_protocol = "ip6";
+                  tls_config = {
+                    insecure_skip_verify = true;
+                  };
+                  valid_status_codes = [
+                    200
+                    300
+                    400
+                    401
+                  ];
+                };
+              };
+
+              icmp_v6 = {
+                prober = "icmp";
+                timeout = "5s";
+                icmp = {
+                  preferred_ip_protocol = "ip6";
+                };
+              };
+
+              tcp_connect_v6 = {
+                prober = "tcp";
+                timeout = "5s";
+                tcp = {
+                  preferred_ip_protocol = "ip6";
+                };
+              };
+            }
+          );
+      };
+
+      serviceMonitor = {
+        enabled = true;
+
+        defaults =
+          {
+            additionalRelabeling = [
+              {
+                action = "replace";
+                regex = "^(.*)$";
+                replacement = "$1";
+                separator = ";";
+                sourceLabels = [
+                  "__meta_kubernetes_pod_node_name"
+                ];
+                targetLabel = "nodename";
+              }
+              {
+                action = "replace";
+                regex = "^(.*)$";
+                replacement = "$1";
+                separator = ";";
+                sourceLabels = [
+                  "__param_target"
+                ];
+                targetLabel = "target";
+              }
+              {
+                action = "replace";
+                regex = "^(.*)$";
+                replacement = "$1";
+                separator = ";";
+                sourceLabels = [
+                  "__param_module"
+                ];
+                targetLabel = "module";
+              }
+            ];
+          }
+          // lib.optionalAttrs (cfg.common_labels != {}) {
+            labels = cfg.common_labels;
+          };
+        targets =
+          map (
+            target: {
+              name = target.name;
+              url = target.url;
+              interval = target.interval;
+              scrapeTimeout = target.scrapeTimeout;
+              module = target.module or "http_2xx";
+            }
+          )
+          cfg.internet_probe_targets;
+      };
+      pspEnabled = false;
+
+      prometheusRule = {
+        enabled = true;
+        additionalLabels = {
+          "app.kubernetes.io/name" = "blackbox-exporter";
+          "app.kubernetes.io/instance" = "blackbox-exporter";
+          role = "alert-rules";
+        };
+        namespace = cfg.blackbox_exporter.helm.release_namespace;
+        rules = [
+          {
+            alert = "mk8s:internet-probe:target-unreachable";
+            expr = "probe_success < 1";
+            annotations = {
+              summary = "One of the internet probe targets could not be reached.";
+              description = ''
+                The blackbox exporter could not reach one or more of its targets.
+                That means that either the target is actually down or the egress
+                traffic is disrupted.
+              '';
+            };
+            for = "1m";
+            labels = {
+              severity = "warning";
+            };
+          }
+        ];
+      };
+
+      securityContext = {
+        runAsUser = 1000;
+        runAsGroup = 1000;
+        readOnlyRootFilesystem = true;
+        runAsNonRoot = true;
+        allowPrivilegeEscalation = false;
+        capabilities = {
+          drop = [
+            "ALL"
+          ];
+          # Add NET_RAW to enable ICMP
+          add = [
+            "NET_RAW"
+          ];
+        };
+      };
+      extraArgs = [
+        ''--log.level=debug''
+      ];
+    };
+  };
+
   config.yk8s._targets.ansible.assertions =
     [
       {
@@ -499,6 +776,7 @@ in {
         ["thanos" "helm" "values"]
         ["prometheus_adapter" "helm" "values"]
         ["nvidia_dcgm_exporter" "helm" "values"]
+        ["blackbox_exporter" "helm" "values"]
       ];
     })
   ];

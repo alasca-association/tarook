@@ -185,7 +185,7 @@ in {
     thanos.helm = mkHelmReleaseOptions {
       descriptionName = "Bitnami Thanos";
       defaultChartRef = "oci://registry-1.docker.io/bitnamicharts/thanos";
-      # renovate: datasource=helm depName=thanos registryUrl=oci://registry-1.docker.io/bitnamicharts
+      # renovate: datasource=docker depName=registry-1.docker.io/bitnamicharts/thanos
       defaultChartVersion = "17.2.3";
       defaultReleaseNamespace = "monitoring";
       defaultReleaseName = "thanos";

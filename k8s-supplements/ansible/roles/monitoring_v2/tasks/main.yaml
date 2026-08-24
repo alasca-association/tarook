@@ -111,15 +111,13 @@
   when: monitoring_use_thanos | bool
 
 - name: "{{ monitoring_internet_probe | ternary('I', 'Uni') }}nstall blackbox-exporter"
-  vars:
-    scheduling_key: "{{ monitoring_scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_repo_url: "{{ monitoring_helm_chart_repo_url }}"
-    chart_ref: prometheus-blackbox-exporter
-    chart_version: "{{ monitoring_blackbox_version }}"
-    release_namespace: "{{ monitoring_helm_release_namespace }}"
-    release_name: "kms-blackbox"
+    chart_repo_url: "{{ monitoring_blackbox_exporter_helm_chart_repo_url }}"
+    chart_ref: "{{ monitoring_blackbox_exporter_helm_chart_ref }}"
+    chart_version: "{{ monitoring_blackbox_exporter_helm_chart_version }}"
+    release_namespace: "{{ monitoring_blackbox_exporter_helm_release_namespace }}"
+    release_name: "{{ monitoring_blackbox_exporter_helm_release_name }}"
     release_state: "{{ monitoring_internet_probe | ternary('present', 'absent') }}"
-    values: "{{ lookup('template', 'blackbox_exporter.yaml.j2') | from_yaml }}"
+    values: "{{ monitoring_blackbox_exporter_helm_values | to_json }}"
     wait: true
 ...
