@@ -24,7 +24,7 @@ in {
       descriptionName = "envoy-gateway";
       defaultChartRef = "oci://docker.io/envoyproxy/gateway-helm";
       # renovate: datasource=docker depName=docker.io/envoyproxy/gateway-helm
-      defaultChartVersion = "v1.8.2";
+      defaultChartVersion = "1.8.3";
       defaultReleaseNamespace = "envoy-gateway-system";
       defaultReleaseName = "envoy-gateway";
       valuesDocUrl = "https://github.com/envoyproxy/gateway/blob/main/charts/gateway-helm/README.md";
