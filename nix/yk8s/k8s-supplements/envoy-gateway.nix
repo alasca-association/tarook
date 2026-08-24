@@ -23,7 +23,7 @@ in {
     helm = mkHelmReleaseOptions {
       descriptionName = "envoy-gateway";
       defaultChartRef = "oci://docker.io/envoyproxy/gateway-helm";
-      # renovate: datasource=helm depName=flux2 registryUrl=oci://docker.io/envoyproxy
+      # renovate: datasource=docker depName=docker.io/envoyproxy/gateway-helm
       defaultChartVersion = "v1.8.2";
       defaultReleaseNamespace = "envoy-gateway-system";
       defaultReleaseName = "envoy-gateway";
@@ -32,7 +32,7 @@ in {
     crds.helm = mkHelmReleaseOptions {
       descriptionName = "envoy-gateway-crds";
       defaultChartRef = "oci://docker.io/envoyproxy/gateway-crds-helm";
-      # renovate: datasource=helm depName=flux2 registryUrl=oci://docker.io/envoyproxy
+      # renovate: datasource=docker depName=docker.io/envoyproxy/gateway-crds-helm
       defaultChartVersion = "v1.8.2";
       defaultReleaseNamespace = "envoy-gateway-system";
       defaultReleaseName = "envoy-gateway-crds";
