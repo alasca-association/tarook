@@ -32,10 +32,9 @@
       "customType": "regex",
       "managerFilePatterns": ["/^nix/yk8s/.*\\.nix$/"],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?) registryUrl=(?<registryUrl>.*?)\\n\\s*default\\s=\\s\"(?<currentValue>.*?)\";\\n",
-        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?) registryUrl=(?<registryUrl>.*?)\\n\\s*defaultChartVersion\\s=\\s\"(?<currentValue>.*?)\";\\n"
+        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)(?: registryUrl=(?<registryUrl>.*?))?\\n\\s*default\\s=\\s\"(?<currentValue>.*?)\";\\n",
+        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)(?: registryUrl=(?<registryUrl>.*?))?\\n\\s*defaultChartVersion\\s=\\s\"(?<currentValue>.*?)\";\\n"
       ],
-      "datasourceTemplate": "helm",
       "versioningTemplate": "semver"
     },
     {
