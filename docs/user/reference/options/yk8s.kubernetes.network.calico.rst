@@ -311,37 +311,3 @@ https://docs.tigera.io/calico/latest/reference/resources/ippool#spec
 **Declared by**
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 
-
-.. _configuration-options.yk8s.kubernetes.network.calico.values_file_path:
-
-``yk8s.kubernetes.network.calico.values_file_path``
-###################################################
-
-.. note:: DEPRECATED
-
-   This option is going to be removed.
-   Please use :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.values` instead.
-
-For the operator-based installation,
-it is possible to link to self-maintained values file for the helm chart
-
-
-
-**Type:**::
-
-  path in the Nix store
-
-
-**Default:**::
-
-  (yk8s-lib.mkYaml "yk8s-calico-values.yaml" config.yk8s.kubernetes.network.calico.helm.values).outPath
-
-
-**Example:**::
-
-  ./calico/helm/values.yaml
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
-

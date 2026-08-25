@@ -5,7 +5,6 @@
     target_hosts: k8s_nodes
 
 - name: Fail if node got not bootstrapped once, yet
-  any_errors_fatal: true
   hosts: k8s_nodes
   tasks:
   - name: Fail if node got not bootstrapped once, yet

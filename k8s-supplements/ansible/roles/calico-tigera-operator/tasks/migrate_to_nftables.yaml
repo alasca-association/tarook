@@ -1,0 +1,62 @@
+---
+- name: Get kube-proxy ConfigMap
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: ConfigMap
+    name: kube-proxy
+    namespace: kube-system
+  register: kube_proxy_cm
+
+- name: Register whether kube-proxy is running in IPVS mode
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  ansible.builtin.set_fact:
+    kube_proxy_is_ipvs: >-
+      {{
+        kube_proxy_cm.resources | length > 0 and
+        (kube_proxy_cm.resources[0].data['config.conf'] | from_yaml).mode | default('iptables') == 'ipvs'
+      }}
+
+- name: Switch kube-proxy and Calico to nftables mode
+  when: kube_proxy_is_ipvs
+  block:
+  - name: Build updated config.conf with mode set to nftables
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    ansible.builtin.set_fact:
+      kube_proxy_config_updated: >-
+        {{
+          kube_proxy_cm.resources[0].data['config.conf']
+          | from_yaml
+          | combine({'mode': 'nftables'})
+          | to_nice_yaml
+        }}
+
+  - name: Patch kube-proxy ConfigMap to use nftables mode
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    kubernetes.core.k8s:
+      api_version: v1
+      kind: ConfigMap
+      name: kube-proxy
+      namespace: kube-system
+      state: patched
+      definition:
+        data:
+          config.conf: "{{ kube_proxy_config_updated }}"
+
+  - name: Restart kube-proxy daemonset (rollout restart)
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    kubernetes.core.k8s:
+      api_version: apps/v1
+      kind: DaemonSet
+      name: kube-proxy
+      namespace: kube-system
+      state: patched
+      wait: true
+      definition:
+        spec:
+          template:
+            metadata:
+              annotations:
+                kubectl.kubernetes.io/restartedAt: "{{ ansible_date_time.iso8601 }}"
+    when: kube_proxy_cm.resources | length > 0
+...

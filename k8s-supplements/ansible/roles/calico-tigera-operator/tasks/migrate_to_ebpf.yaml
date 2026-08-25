@@ -1,0 +1,56 @@
+---
+- name: Get Installation resource
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  kubernetes.core.k8s_info:
+    api_version: operator.tigera.io/v1
+    kind: Installation
+    name: default
+  register: installation_check
+
+- name: Register whether eBPF migration is necessary
+  ansible.builtin.set_fact:
+    ebpf_migration_necessary: >-
+      {{
+        installation_check.resources | length > 0 and
+        installation_check.resources[0].spec.calicoNetwork.linuxDataplane | default('') != 'BPF'
+      }}
+
+- name: Migrate to eBPF mode
+  when: ebpf_migration_necessary
+  block:
+  - name: Fail if disruption is not allowed
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    ansible.builtin.assert:
+      that: _allow_disruption | default(false) | bool
+      fail_msg: >-
+        Calico doesn't run in eBPF mode and switching it on would be disruptive.
+        Please use MANAGED_K8S_RELEASE_THE_KRAKEN=true if you want to enable Calico eBPF.
+      success_msg: "Disruption allowed. Continuing migration to eBPF mode"
+
+  - name: Include nftables migration
+    include_tasks: migrate_to_nftables.yaml
+
+  - name: Set ClusterConfiguration.proxy.disabled
+    include_role:
+      name: kubeadm-kube-proxy
+
+  - name: Ensure kube-proxy daemonset is absent
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    kubernetes.core.k8s:
+      api_version: apps/v1
+      kind: DaemonSet
+      name: kube-proxy
+      namespace: kube-system
+      state: absent
+
+  - name: Patch Calico Installation to enable eBPF dataplane
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    kubernetes.core.k8s:
+      api_version: operator.tigera.io/v1
+      kind: Installation
+      name: default
+      state: patched
+      definition:
+        spec:
+          calicoNetwork:
+            linuxDataplane: BPF
