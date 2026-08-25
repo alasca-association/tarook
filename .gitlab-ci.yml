@@ -24,6 +24,7 @@ variables:
     options:
     - "false"
     - "true"
+  CI_PAGES_URL_PRIMARY: "https://docs.tarook.cloud"
 
 # Pipelines run on devel branch, release-(prepare)-branches and merge requests
 workflow:
