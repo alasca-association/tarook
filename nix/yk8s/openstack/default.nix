@@ -359,7 +359,6 @@ in {
           };
           anti_affinity_group = mkOption {
             description = ''
-              Must not be set when role!="worker".
               If left empty no anti affinity group will be joined.
             '';
             type = with types; nullOr yk8s.openstack.serverGroupName;
@@ -555,12 +554,6 @@ in {
         inherit (yk8s-lib.transform) partitionAttrs;
       in
         [
-          {
-            assertion =
-              all (node: node.role != "worker" -> node.anti_affinity_group == null)
-              (attrValues cfg.nodes);
-            message = "config.yk8s.openstack.nodes.[].anti_affinity_group: must not be set for master nodes";
-          }
           {
             assertion = (length (filter (node: node.role == "master") (attrValues cfg.nodes))) > 0;
             message = "config.yk8s.openstack.nodes: at least one node with role=master must be given.";
