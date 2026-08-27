@@ -442,7 +442,7 @@ in {
       defaultRepoUrl = "https://kubernetes.github.io/cloud-provider-openstack";
       defaultChartRef = "openstack-cloud-controller-manager";
       # renovate: datasource=helm depName=openstack-cloud-controller-manager registryUrl=https://kubernetes.github.io/cloud-provider-openstack
-      defaultChartVersion = "2.36.1";
+      defaultChartVersion = "2.36.2";
       defaultReleaseNamespace = "kube-system";
       defaultReleaseName = "openstack-cloud-controller-manager";
       valuesDocUrl = "https://github.com/kubernetes/cloud-provider-openstack/blob/master/charts/openstack-cloud-controller-manager/values.yaml";
