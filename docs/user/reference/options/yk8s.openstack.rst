@@ -944,7 +944,6 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 ``yk8s.openstack.nodes.<name>.anti_affinity_group``
 ###################################################
 
-Must not be set when role!="worker".
 If left empty no anti affinity group will be joined.
 
 
