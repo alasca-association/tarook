@@ -1,11 +1,22 @@
 {
-  inputs.nixpkgs.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&ref=nixos-26.05";
-  inputs.nixpkgs-terraform157.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&rev=39ed4b64ba5929e8e9221d06b719a758915e619b";
-  inputs.nixpkgs-vault1148.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&rev=7cf8d6878561e8b2e4b1186f79f1c0e66963bdac";
-  inputs.nixpkgs-unstable.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&ref=nixos-unstable";
-  inputs.flake-parts.url = "git+https://github.com/hercules-ci/flake-parts?shallow=1";
-  inputs.systems.url = "git+https://github.com/nix-systems/x86_64-linux?shallow=1&rev=2ecfcac5e15790ba6ce360ceccddb15ad16d08a8";
-  inputs.terranix.url = "git+https://github.com/terranix/terranix?shallow=1";
+  inputs = {
+    nixpkgs.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&ref=nixos-26.05";
+    nixpkgs-terraform157.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&rev=39ed4b64ba5929e8e9221d06b719a758915e619b";
+    nixpkgs-vault1148.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&rev=7cf8d6878561e8b2e4b1186f79f1c0e66963bdac";
+    nixpkgs-unstable.url = "git+https://github.com/NixOS/nixpkgs?shallow=1&ref=nixos-unstable";
+    flake-parts.url = "git+https://github.com/hercules-ci/flake-parts?shallow=1";
+    flake-parts.inputs.nixpkgs-lib.url = "git+https://github.com/nix-community/nixpkgs.lib?shallow=1";
+    systems.url = "git+https://github.com/nix-systems/x86_64-linux?shallow=1&rev=2ecfcac5e15790ba6ce360ceccddb15ad16d08a8";
+    terranix = {
+      url = "git+https://github.com/terranix/terranix?shallow=1";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+        flake-parts.follows = "flake-parts";
+        import-tree.url = "git+https://github.com/vic/import-tree?shallow=1";
+      };
+    };
+  };
 
   outputs = inputs @ {
     self,
