@@ -89,6 +89,7 @@ in {
         };
         worker-cpu-0 = {
           role = "worker";
+          anti_affinity_group = "worker-node-anti-affinity";
           flavor = selectByRegion {
             f1d = "SCS-4T-8-50s";
             f1a = "L";
@@ -105,6 +106,7 @@ in {
         };
         worker-cpu-1 = {
           role = "worker";
+          anti_affinity_group = "worker-node-anti-affinity";
           flavor = selectByRegion {
             f1d = "SCS-4T-8-50s";
             f1a = "L";
@@ -127,6 +129,7 @@ in {
         };
         worker-cpu-2 = {
           role = "worker";
+          anti_affinity_group = "worker-node-anti-affinity";
         };
       };
       cinder_volume_type = selectByRegion {
