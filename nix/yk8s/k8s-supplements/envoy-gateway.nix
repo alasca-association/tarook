@@ -33,7 +33,7 @@ in {
       descriptionName = "envoy-gateway-crds";
       defaultChartRef = "oci://docker.io/envoyproxy/gateway-crds-helm";
       # renovate: datasource=docker depName=docker.io/envoyproxy/gateway-crds-helm
-      defaultChartVersion = "1.8.3";
+      defaultChartVersion = "1.8.4";
       defaultReleaseNamespace = "envoy-gateway-system";
       defaultReleaseName = "envoy-gateway-crds";
       valuesDocUrl = "https://github.com/envoyproxy/gateway/blob/main/charts/gateway-crds-helm/README.md";
