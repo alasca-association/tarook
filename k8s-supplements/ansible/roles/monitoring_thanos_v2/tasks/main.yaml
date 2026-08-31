@@ -34,7 +34,7 @@
       apiVersion: v1
       kind: Namespace
       metadata:
-        name: "{{ monitoring_namespace }}"
+        name: "{{ monitoring_thanos_helm_release_namespace }}"
     validate:
       fail_on_error: true
       strict: true
@@ -56,7 +56,7 @@
       kind: Secret
       metadata:
         name: thanos-sidecar-bucket-credentials-config
-        namespace: "{{ monitoring_namespace }}"
+        namespace: "{{ monitoring_thanos_helm_release_namespace }}"
       data:
         thanos.yaml: "{{ thanos_object_storage_config | b64encode }}"
     validate:
@@ -78,7 +78,7 @@
       kind: Secret
       metadata:
         name: "{{ monitoring_thanos_config_secret_name }}"
-        namespace: "{{ monitoring_namespace }}"
+        namespace: "{{ monitoring_thanos_helm_release_namespace }}"
       data:
         objstore.yml: "{{ thanos_object_storage_config | b64encode }}"
     validate:
@@ -95,16 +95,16 @@
 # For helm charts of Bitnami the OCI format must be used
 # https://community.broadcom.com/tanzu/blogs/carlos-rodriguez-hernandez/2025/01/14/bitnami-helm-charts-moving-to-oci
 - name: "{{ monitoring_use_thanos | ternary('I', 'Uni') }}nstall Thanos helm chart"
-  vars:
-    scheduling_key: "{{ monitoring_scheduling_key | default(None) }}"
   kubernetes.core.helm:
-    chart_ref: "{{ monitoring_thanos_helm_oci_url }}/{{ monitoring_thanos_chart_ref }}"
-    chart_version: "{{ monitoring_thanos_chart_version }}"
-    release_namespace: "{{ monitoring_namespace }}"
-    release_name: "{{ monitoring_thanos_release_name }}"
+    chart_repo_url: "{{ monitoring_thanos_helm_chart_repo_url }}"
+    chart_ref: "{{ monitoring_thanos_helm_chart_ref }}"
+    chart_version: "{{ monitoring_thanos_helm_chart_version }}"
+    release_namespace: "{{ monitoring_thanos_helm_release_namespace }}"
+    release_name: "{{ monitoring_thanos_helm_release_name }}"
     release_state: "{{ monitoring_use_thanos | ternary('present', 'absent') }}"
-    values: "{{ lookup('template', 'thanos_values.yaml.j2') | from_yaml }}"
+    values: "{{ monitoring_thanos_helm_values | to_json }}"
     wait: true
   tags:
   - thanos
+
 ...

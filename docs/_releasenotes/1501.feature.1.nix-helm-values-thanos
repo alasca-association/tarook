@@ -1,0 +1,1 @@
+The helm chart for Thanos can now be configured with arbitrary values through :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.thanos.helm.values`.

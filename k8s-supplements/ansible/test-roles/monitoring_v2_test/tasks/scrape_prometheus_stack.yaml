@@ -3,7 +3,7 @@
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
-    command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='{{ monitoring_prometheus_stack_release_name }}-kube-prom-prometheus'}"
+    command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='{{ monitoring_helm_release_name }}-kube-prom-prometheus'}"
   register: metrics
   until:
   - metrics is not failed
@@ -17,7 +17,7 @@
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
-    command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{service='{{ monitoring_prometheus_stack_release_name }}-kube-prom-alertmanager'}"
+    command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{service='{{ monitoring_helm_release_name }}-kube-prom-alertmanager'}"
   register: metrics
   until:
   - metrics is not failed
@@ -32,7 +32,7 @@
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
-    command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{service='{{ monitoring_prometheus_stack_release_name }}-grafana'}"
+    command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{service='{{ monitoring_helm_release_name }}-grafana'}"
   register: metrics
   until:
   - metrics is not failed
@@ -91,7 +91,7 @@
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper
-    command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='coredns',service='{{ monitoring_prometheus_stack_release_name }}-kube-prom-coredns'}"
+    command: curl -g "http://{{ prometheus_cluster_ip }}:{{ prometheus_web_port }}/api/v1/query?query=up{job='coredns',service='{{ monitoring_helm_release_name }}-kube-prom-coredns'}"
   register: metrics
   until:
   - metrics is not failed

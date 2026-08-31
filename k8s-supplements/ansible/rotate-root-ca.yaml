@@ -23,6 +23,6 @@
       - deployment
       - prometheus-adapter
       - --namespace
-      - "{{ monitoring_namespace }}"
+      - "{{ monitoring_helm_release_namespace }}"
     when: k8s_monitoring_enabled | bool
 ...

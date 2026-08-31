@@ -1,7 +1,7 @@
 # Monitoring
 
-This LCM uses the [helm-based monitoring stack](https://github.com/prometheus-community/helm-charts
-) provided by the Prometheus community.
+Tarook uses the Prometheus community's [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts)
+Helm chart to deploy Kubernetes cluster monitoring.
 
 ---
 
