@@ -17,6 +17,10 @@ generate-sbom:
     name: "tarook-sbom"
     paths:
       - sbom.cdx.json
+      - sbom-dev.cdx.json
+      - sbom-ci.cdx.json
+      - tarook-ci-image.cdx.json
+      - runtime-sbom.cdx.json
     expire_in: 1 year
     when: always
   rules:
