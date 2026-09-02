@@ -60,7 +60,7 @@ def getRequirementsHelmNix(path):
                     if not match:
                         continue
                     component = {"name": match.group(1), "repo": match.group(2)}
-                    for next_line in lines[i + 1 : i + 8]:
+                    for next_line in lines[i + 1:i + 8]:
                         match = re.search(versionPattern, next_line)
                         if not match:
                             continue
@@ -75,30 +75,33 @@ def generateComponents():
     """write a component"""
 
     components = []
-    col = getRequirementsAnsible(args.ansible)
-    for comp in col:
-        tmpDict = {
-            "type": "application",
-            "bom-ref": str(uuid4()),
-            "name": comp["name"],
-            "version": comp["version"],
-            "scope": "required",
-            "purl": f"pkg:ansible/{comp['name']}@{comp['version']}",
-        }
-        components.append(tmpDict)
 
-    col = getRequirementsHelmNix(args.nix_helm)
-    for comp in col:
-        tmpDict = {
-            "type": "application",
-            "bom-ref": str(uuid4()),
-            "name": comp["name"],
-            "version": comp["version"],
-            "scope": "required",
-            "purl": f"pkg:helm/{comp['name']}@{comp['version']}?"
-            f"repository_url={comp['repo']}",
-        }
-        components.append(tmpDict)
+    if args.ansible:
+        col = getRequirementsAnsible(args.ansible)
+        for comp in col:
+            tmpDict = {
+                "type": "application",
+                "bom-ref": str(uuid4()),
+                "name": comp["name"],
+                "version": comp["version"],
+                "scope": "required",
+                "purl": f"pkg:ansible/{comp['name']}@{comp['version']}",
+            }
+            components.append(tmpDict)
+
+    if args.nix_helm:
+        col = getRequirementsHelmNix(args.nix_helm)
+        for comp in col:
+            tmpDict = {
+                "type": "application",
+                "bom-ref": str(uuid4()),
+                "name": comp["name"],
+                "version": comp["version"],
+                "scope": "required",
+                "purl": f"pkg:helm/{comp['name']}@{comp['version']}?"
+                f"repository_url={comp['repo']}",
+            }
+            components.append(tmpDict)
 
     return components
 
