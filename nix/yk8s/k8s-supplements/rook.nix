@@ -130,7 +130,7 @@ in {
 
     version = mkHelmChartVersionOption {
       # renovate: datasource=helm depName=rook-ceph registryUrl=https://charts.rook.io/release
-      default = "v1.18.11";
+      default = "v1.20.6";
     };
 
     dashboard = mkEnableOption ''
