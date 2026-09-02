@@ -1,1 +1,10 @@
-Updated default version of helm chart tigera-operator of https://github.com/projectcalico/calico from v3.31.5 to v3.32.1
+Updated default version of helm chart tigera-operator of https://github.com/projectcalico/calico from v3.31.5 to v3.32.1.
+
+.. warning::
+
+   Starting with v3.32.0 custom NetworkPolicies are introduced by the tigera-operator
+   which prevent scraping of metrics of calico-kube-controllers by default.
+   A workaround has been implemented. Please ensure a full rollout of
+   :ref:`apply-k8s-supplements.sh <actions-references.apply-k8s-supplementssh>` is done.
+
+_

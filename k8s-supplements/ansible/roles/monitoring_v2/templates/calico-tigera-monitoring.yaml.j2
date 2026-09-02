@@ -94,6 +94,45 @@ spec:
     - port: metrics-port
       path: /metrics
 
+# Since Calico Tigera v3.32 a NetworkPolicy is automatically deployed which
+# prevents scraping metrics from the calico-kube-controllers
+# There is currently no way to avoid that via helm values
+# Therefore, we have to override the NetworkPolicy by introducing
+# a new tier which has a lower order than the calico-system tier
+# and adding a NetworkPolicy to that tier which allows scraping the
+# calico-kube-controller metrics from the supplied Prometheus instance
+#
+# See https://github.com/projectcalico/calico/issues/13370
+{% if k8s_network_calico_helm_chart_version is version('3.32.0', 'ge') %}
+---
+apiVersion: projectcalico.org/v3
+kind: Tier
+metadata:
+  name: calico-system-override
+spec:
+  defaultAction: Pass
+  order: 75
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: calico-kube-controllers-allow-monitoring
+  namespace: calico-system
+spec:
+  selector: app.kubernetes.io/name == 'calico-kube-controllers'
+  tier: calico-system-override
+  order: 1000
+  types:
+    - Ingress
+  ingress:
+  - action: Allow
+    protocol: TCP
+    destination:
+      ports: ['9094']
+    source:
+      namespaceSelector: kubernetes.io/metadata.name == '{{ monitoring_helm_release_namespace }}'
+      selector: app.kubernetes.io/name == 'prometheus'
+{% endif %}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
