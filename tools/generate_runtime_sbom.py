@@ -1,3 +1,15 @@
+"""
+Generating SBOM of runtime dependencies, it collects dependencies of Helm Charts
+and ansible galaxy collections.
+
+Args:
+    -a, --ansible <file>: file path to the ansible galaxy requirement file
+    -n, --nix-helm <dir>: directory path to the nix files which declare helm charts
+
+Returns:
+    Generates a SBOM as a json file.
+"""
+
 import argparse
 import datetime
 import json
@@ -9,9 +21,8 @@ import yaml
 
 # CLI Arguments
 parser = argparse.ArgumentParser(description="Generating SBOM for runtime dependencies")
-parser.add_argument("-i", "--input", help="Path of the requirement file")
-parser.add_argument("-n", "--nix", help="Path of the nix helm file")
-parser.add_argument("-a", "--anisble", help="Path of the ansible helm file")
+parser.add_argument("-a", "--ansible", help="Path of the ansible requirement file")
+parser.add_argument("-n", "--nix-helm", help="Path of the nix helm file")
 parser.add_argument("-o", "--output", help="Path of the requirement file")
 args = parser.parse_args()
 
@@ -49,7 +60,7 @@ def getRequirementsHelmNix(path):
                     if not match:
                         continue
                     component = {"name": match.group(1), "repo": match.group(2)}
-                    for next_line in lines[i + 1: i + 8]:
+                    for next_line in lines[i + 1 : i + 8]:
                         match = re.search(versionPattern, next_line)
                         if not match:
                             continue
@@ -64,7 +75,7 @@ def generateComponents():
     """write a component"""
 
     components = []
-    col = getRequirementsAnsible(args.input)
+    col = getRequirementsAnsible(args.ansible)
     for comp in col:
         tmpDict = {
             "type": "application",
@@ -76,7 +87,7 @@ def generateComponents():
         }
         components.append(tmpDict)
 
-    col = getRequirementsHelmNix(args.nix)
+    col = getRequirementsHelmNix(args.nix_helm)
     for comp in col:
         tmpDict = {
             "type": "application",
@@ -120,7 +131,7 @@ def writeSBOM(path):
     }
 
     with open(path, "w") as file:
-        json.dump(sbomContent, file)
+        json.dump(sbomContent, file, indent=4)
 
 
 if __name__ == "__main__":
