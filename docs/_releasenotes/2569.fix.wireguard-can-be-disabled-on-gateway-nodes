@@ -1,0 +1,2 @@
+The :ref:`apply-prepare-gw.sh action <actions-references.apply-prepare-gwsh>` does not fail anymore if
+:ref:`configuration-options.yk8s.wireguard.enabled` is set to ``false``.
