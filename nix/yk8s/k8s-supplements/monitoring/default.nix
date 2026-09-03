@@ -84,7 +84,7 @@ in {
       defaultRepoUrl = "https://prometheus-community.github.io/helm-charts";
       defaultChartRef = "kube-prometheus-stack";
       # renovate: datasource=helm depName=kube-prometheus-stack registryUrl=https://prometheus-community.github.io/helm-charts
-      defaultChartVersion = "84.5.0";
+      defaultChartVersion = "89.1.0";
       defaultReleaseNamespace = "monitoring";
       defaultReleaseName = "prometheus-stack";
       valuesDocUrl = "https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml";
