@@ -125,6 +125,10 @@
     - direnv allow
     - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
     - ./after_script_cleanup.sh
+    # Cleanup the Thanos buckets in the external Thanos OpenStack project
+    - source /root/thanos-openrc.sh
+    - openstack container delete --recursive $(yq -r .config.bucket /root/thanos.yaml)
+    - openstack container create $(yq -r .config.bucket /root/thanos.yaml)
 
   artifacts:
     reports:
