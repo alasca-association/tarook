@@ -1,5 +1,5 @@
 ---
-strongswan_service: '{{ (ansible_distribution_release in ["bullseye", "bookworm"]) | ternary("strongswan", "strongswan-swanctl") }}'
+strongswan_service: 'strongswan'
 
 # NOTE:
 # This is a pragmatic workaround. The k8s API configuration has been moved
