@@ -55,10 +55,7 @@ filter k8s_worker_v6 {
 protocol bgp {{ hostname | replace('-', '_') }} {
     ipv4 {
         table master4;
-        import filter {
-            scopeUniverse = true; # adaptation of scope = SCOPE_UNIVERSE
-            accept;
-        };
+        import all;
         export filter k8s_worker;
     };
     local {{ networking_fixed_ip }} as {{ k8s_network_bgp_gateway_as }};
@@ -70,10 +67,7 @@ protocol bgp {{ hostname | replace('-', '_') }} {
 protocol bgp {{ "%s_v6" | format(hostname | replace('-', '_')) }} {
     ipv6 {
         table master6;
-        import filter {
-            scopeUniverse = true; # adaptation of scope = SCOPE_UNIVERSE
-            accept;
-        };
+        import all;
         export filter k8s_worker_v6;
     };
     local {{ networking_fixed_ip_v6 | ansible.utils.ipaddr }} as {{ k8s_network_bgp_gateway_as }};
