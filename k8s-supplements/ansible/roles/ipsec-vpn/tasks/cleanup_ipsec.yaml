@@ -8,7 +8,7 @@
     name: "{{ strongswan_service }}"
     state: stopped
     enabled: false
-  when: ansible_facts.services['strongswan-swanctl.service'] is defined
+  when: ansible_facts.services[strongswan_service+'.service'] is defined
 
 - name: Purge the IPsec setup
   become: true
