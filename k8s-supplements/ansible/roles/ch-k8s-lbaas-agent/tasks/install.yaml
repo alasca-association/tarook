@@ -86,13 +86,6 @@
     notify:
     - restart ch-k8s-lbaas-agent
 
-  # Migration task, remove me with TAROOK v12
-  - name: Remove legacy no-SNAT configuration
-    file:
-      state: absent
-      path: "/etc/bird.d/01-no-snat.conf"
-    notify: restart bird
-
   - name: Start service
     systemd:
       name: ch-k8s-lbaas-agent
