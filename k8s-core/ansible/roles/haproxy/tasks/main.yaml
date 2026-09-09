@@ -51,6 +51,54 @@
     group: root
   notify: Restart the haproxy service
 
+- name: Ensure HAProxy systemd drop-in directory exists
+  become: true
+  file:
+    path: /etc/systemd/system/haproxy.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Add HAProxy override for ordering after keepalived
+  become: true
+  copy:
+    dest: /etc/systemd/system/haproxy.service.d/run-after-keepalived.conf
+    content: |
+      [Unit]
+      After=keepalived.service
+      Wants=keepalived.service
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Restart the haproxy service
+
+- name: Force setting net.ipv4.ip_nonlocal_bind before HAProxy starts
+  become: true
+  when: ipv4_enabled | bool
+  copy:
+    dest: /etc/systemd/system/haproxy.service.d/nonlocal-bind-v4.conf
+    content: |
+      [Service]
+      ExecStartPre=/sbin/sysctl -w net.ipv4.ip_nonlocal_bind=1
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Restart the haproxy service
+
+- name: Force setting net.ipv6.ip_nonlocal_bind before HAProxy starts
+  become: true
+  when: ipv6_enabled | bool
+  copy:
+    dest: /etc/systemd/system/haproxy.service.d/nonlocal-bind-v6.conf
+    content: |
+      [Service]
+      ExecStartPre=/sbin/sysctl -w net.ipv6.ip_nonlocal_bind=1
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Restart the haproxy service
+
 - name: Ensure the haproxy service is enabled and started
   become: true
   systemd:
