@@ -1,0 +1,11 @@
+HashiCorp `rotated their Linux package signing key<https://status.hashicorp.com/incidents/ey12gp4e>`__ on 2026-09-09.
+This broke updating the ``apt`` cache on all instances.
+The new key seems to be valid as it is listed on their `security page<https://www.hashicorp.com/security/`__.
+
+To deploy the new key, it is necessary to reexecute the bootstrap process on each node:
+
+.. code::console
+
+   ./managed-k8s/actions/apply-k8s-core.sh bootstrap.yaml
+
+_
