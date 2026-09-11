@@ -6,7 +6,6 @@
     state: present
     name:
       - curl
-      - apt-transport-https
       - gnupg
   register: task_result
   until: task_result is not failed
