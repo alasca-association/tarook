@@ -234,9 +234,11 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-suppleme
 
 **Default:**::
 
-  if config.yk8s.openstack.enabled
-  then config.yk8s.openstack.network_mtu
-  else 1500
+  if config.yk8s.openstack.enabled && config.yk8s.infra.ipv6_enabled
+  then config.yk8s.openstack.network_mtu - 70
+  else if config.yk8s.openstack.enabled && config.yk8s.infra.ipv4_enabled
+  then config.yk8s.openstack.network_mtu - 50
+  else 1500;
   
 
 
