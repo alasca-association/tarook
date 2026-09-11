@@ -13,3 +13,14 @@ Configure cluster
 - :ref:`configuration-options.yk8s.proxmox.clone.node_name`
 - :ref:`configuration-options.yk8s.proxmox.datastore_id`
 - :ref:`configuration-options.yk8s.proxmox.nodes`
+
+.. todo::
+   TODO: @proxmox::MTU
+   remove when MTU for Proxmox has been implemented
+
+.. note::
+   Calico's MTU is set to a default of ``1500`` for non-OpenStack deployments.
+
+   In eBPF mode, VXLAN is used to forward Kubernetes NodePort traffic.
+   Depending on your network configuration, you need to manually adjust
+   :ref:`configuration-options.yk8s.kubernetes.network.calico.helm.values.installation.calicoNetwork.mtu`.
