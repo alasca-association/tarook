@@ -1,0 +1,2 @@
+The Calico network MTU for OpenStack has been reduced by the VXLAN overhead to
+ensure NodePort traffic can be forward between nodes without packet fragmentation.
