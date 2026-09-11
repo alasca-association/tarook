@@ -4,18 +4,6 @@
   # run only once per run per node
   become: true
   block:
-  - name: Install prerequisites
-    apt:
-      update_cache: true
-      state: present
-      name:
-      - apt-transport-https
-      - gnupg
-    register: task_result
-    until: task_result is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
-
   - name: Ensure keyrings directory exists
     file:
       state: directory
