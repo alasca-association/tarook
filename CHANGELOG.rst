@@ -17,6 +17,25 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v12.1.6 (2026-09-11)
+--------------------
+
+Changed functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- HashiCorp `rotated their Linux package signing key<https://status.hashicorp.com/incidents/ey12gp4e>`__ on 2026-09-09.
+  This broke updating the ``apt`` cache on all instances.
+  The new key seems to be valid as it is listed on their `security page<https://www.hashicorp.com/security/`__.
+
+  To deploy the new key, it is necessary to reexecute the bootstrap process on each node:
+
+  .. code::console
+
+     ./managed-k8s/actions/apply-k8s-core.sh bootstrap.yaml
+
+  _ (`!2639 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2639>`_)
+
+
 v12.1.5 (2026-07-17)
 --------------------
 
