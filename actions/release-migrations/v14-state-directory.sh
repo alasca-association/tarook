@@ -26,17 +26,15 @@ EOF
 
 # shellcheck disable=SC2181
 if [[ $? -ne 0 ]]; then
-    errorf "Automatic migration failed. Please manually remove the following block the ``flake.nix`` file in your cluster repository:
-
-    .. code::
+    errorf "Automatic migration failed.
+Please remove the following block from ``flake.nix`` in your cluster repository:
 
     # Don't change this except you know what you're doing
     yk8s.state_directory =
         if builtins.pathExists ./state
         then ./state
         else null;
-
-    "
+"
     exit 1
 fi
 
