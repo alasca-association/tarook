@@ -5,7 +5,7 @@ actions_dir="$(dirname "$0")/.."
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
 
-if ! grep state_directory flake.nix &>/dev/null; then
+if ! grep --quiet state_directory flake.nix; then
     notef "No state_directory assignment found in flake.nix. Skipping migration."
     exit 0
 fi
