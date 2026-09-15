@@ -12,21 +12,16 @@ fi
 
 notef "Trying to patch flake.nix..."
 
-cat <<'EOF' | git apply &>/dev/null
-diff --git a/flake.nix b/flake.nix
-index fdfdc1c67..a03cea27f 100644
+cat <<'EOF' | git apply --unidiff-zero
 --- a/flake.nix
 +++ b/flake.nix
-@@ -22,9 +22,3 @@
-         formatter = inputs.yk8s.packages.${system}.alejandra-tree;
-         imports = [./config];
+@@ -1,6 +1,0 @@
 -
 -        # Don't change this except you know what you're doing
 -        yk8s.state_directory =
 -          if builtins.pathExists ./state
 -          then ./state
 -          else null;
-       };
 EOF
 
 # shellcheck disable=SC2181
