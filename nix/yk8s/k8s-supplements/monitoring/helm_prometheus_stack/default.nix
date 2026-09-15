@@ -131,23 +131,28 @@ in {
         port = 10257;
         targetPort = 10257;
       };
-      serviceMonitor = {
-        enabled = true;
-        https = true;
-        insecureSkipVerify = true;
-        relabelings = [
-          {
-            sourceLabels = [
-              "__meta_kubernetes_pod_node_name"
-            ];
-            separator = ";";
-            regex = "^(.*)$";
-            targetLabel = "nodename";
-            replacement = "$1";
-            action = "replace";
-          }
-        ];
-      };
+      serviceMonitor =
+        {
+          enabled = true;
+          https = true;
+          relabelings = [
+            {
+              sourceLabels = [
+                "__meta_kubernetes_pod_node_name"
+              ];
+              separator = ";";
+              regex = "^(.*)$";
+              targetLabel = "nodename";
+              replacement = "$1";
+              action = "replace";
+            }
+          ];
+        }
+        // (
+          if (lib.toInt (lib.versions.major cfg.helm.chart_version)) >= 90
+          then {tlsConfig.insecureSkipVerify = true;}
+          else {insecureSkipVerify = true;}
+        );
     };
     coreDNS = {
       inherit affinity tolerations;
@@ -189,14 +194,23 @@ in {
             else "SingleStack";
         };
       };
-      serviceMonitor = {
-        enabled = true;
-        scheme = "https";
-        insecureSkipVerify = false;
-        caFile = "/etc/prometheus/secrets/etcd-metrics-proxy/server.crt";
-        certFile = "/etc/prometheus/secrets/etcd-metrics-proxy/client.crt";
-        keyFile = "/etc/prometheus/secrets/etcd-metrics-proxy/client.key";
-      };
+      serviceMonitor = let
+        tlsSettings = {
+          insecureSkipVerify = false;
+          caFile = "/etc/prometheus/secrets/etcd-metrics-proxy/server.crt";
+          certFile = "/etc/prometheus/secrets/etcd-metrics-proxy/client.crt";
+          keyFile = "/etc/prometheus/secrets/etcd-metrics-proxy/client.key";
+        };
+      in
+        {
+          enabled = true;
+          scheme = "https";
+        }
+        // (
+          if (lib.toInt (lib.versions.major cfg.helm.chart_version)) >= 90
+          then {tlsConfig = tlsSettings;}
+          else tlsSettings
+        );
     };
     kubeScheduler = {
       enabled = true;
@@ -205,23 +219,28 @@ in {
         port = 10259;
         targetPort = 10259;
       };
-      serviceMonitor = {
-        enabled = true;
-        https = true;
-        insecureSkipVerify = true;
-        relabelings = [
-          {
-            sourceLabels = [
-              "__meta_kubernetes_pod_node_name"
-            ];
-            separator = ";";
-            regex = "^(.*)$";
-            targetLabel = "nodename";
-            replacement = "$1";
-            action = "replace";
-          }
-        ];
-      };
+      serviceMonitor =
+        {
+          enabled = true;
+          https = true;
+          relabelings = [
+            {
+              sourceLabels = [
+                "__meta_kubernetes_pod_node_name"
+              ];
+              separator = ";";
+              regex = "^(.*)$";
+              targetLabel = "nodename";
+              replacement = "$1";
+              action = "replace";
+            }
+          ];
+        }
+        // (
+          if (lib.toInt (lib.versions.major cfg.helm.chart_version)) >= 90
+          then {tlsConfig.insecureSkipVerify = true;}
+          else {insecureSkipVerify = true;}
+        );
     };
     kubeProxy = {
       enabled = config.yk8s.kubernetes.network.kube_proxy.enabled;

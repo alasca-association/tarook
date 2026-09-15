@@ -1,0 +1,1 @@
+Support for tlsConfig blocks in kube-prometheus-stack Helm chart >= 90.0.0 has been enabled.
