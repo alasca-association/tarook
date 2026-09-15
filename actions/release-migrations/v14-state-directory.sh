@@ -12,7 +12,7 @@ fi
 
 notef "Trying to patch flake.nix..."
 
-cat <<'EOF' | git apply --unidiff-zero
+if cat <<'EOF' | git apply --unidiff-zero
 --- a/flake.nix
 +++ b/flake.nix
 @@ -1,6 +1,0 @@
@@ -23,9 +23,7 @@ cat <<'EOF' | git apply --unidiff-zero
 -          then ./state
 -          else null;
 EOF
-
-# shellcheck disable=SC2181
-if [[ $? -ne 0 ]]; then
+then
     errorf "Automatic migration failed.
 Please remove the following block from ``flake.nix`` in your cluster repository:
 
@@ -36,6 +34,6 @@ Please remove the following block from ``flake.nix`` in your cluster repository:
         else null;
 "
     exit 1
+else
+    notef "Patch applied successfully"
 fi
-
-notef "Success."
