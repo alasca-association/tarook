@@ -1,0 +1,1 @@
+Compatibility between Calico and Kubernetes versions is now checked at evaluation time.

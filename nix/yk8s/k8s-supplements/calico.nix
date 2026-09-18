@@ -233,6 +233,41 @@ in {
       whisker.enabled = false;
     };
 
-  config.yk8s._targets.ansible.assertions = [];
+  config.yk8s._targets.ansible.assertions = [
+    (let
+      # Compatibility Matrix between minor versions of Calico and Kubernetes.
+      # Has to be updated when updating Calico and when adding a new Kubernetes version.
+      # Check https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements#kubernetes-requirements
+      k8sVersionCompatibility = {
+        "3.30" = [
+          "1.31"
+          "1.32"
+          "1.33"
+          "1.34"
+          "1.35"
+        ];
+        "3.31" = [
+          "1.32"
+          "1.33"
+          "1.34"
+          "1.35"
+        ];
+        "3.32" = [
+          "1.34"
+          "1.35"
+          "1.36"
+        ];
+      };
+      calicoMajorMinor = lib.versions.majorMinor cfg.helm.chart_version;
+      k8sMajorMinor = lib.versions.majorMinor config.yk8s.kubernetes.version;
+      compatibleK8sVersions = lib.getAttr calicoMajorMinor k8sVersionCompatibility;
+    in {
+      assertion = lib.elem k8sMajorMinor compatibleK8sVersions;
+      message = ''
+        yk8s.kubernetes.network.calico.helm.chart_version: Calico version ${calicoMajorMinor} is not compatible with Kubernetes version ${k8sMajorMinor}
+        Check https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements#kubernetes-requirements for a compatible version.
+      '';
+    })
+  ];
   config.yk8s._targets.ansible.warnings = [];
 }
