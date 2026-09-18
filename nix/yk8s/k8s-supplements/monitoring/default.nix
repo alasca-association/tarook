@@ -180,7 +180,7 @@ in {
       defaultRepoUrl = "https://nvidia.github.io/dcgm-exporter/helm-charts";
       defaultChartRef = "dcgm-exporter";
       # renovate: datasource=helm depName=dcgm-exporter registryUrl=https://nvidia.github.io/dcgm-exporter/helm-charts
-      defaultChartVersion = "4.8.3";
+      defaultChartVersion = "4.8.4";
       defaultReleaseNamespace = "monitoring";
       defaultReleaseName = "nvidia-dcgm-exporter";
       valuesDocUrl = "https://github.com/NVIDIA/dcgm-exporter/blob/main/deployment/values.yaml";
