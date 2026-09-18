@@ -305,6 +305,13 @@ in {
               "gateway"
             ];
           };
+          os = mkOption {
+            description = ''
+              The operating system of the node
+            '';
+            type = types.enum ["ubuntu" "nixos"];
+            default = "ubuntu";
+          };
           image = mkOption {
             type = with types; nullOr yk8s.openstack.imageName;
             default = null;
@@ -682,6 +689,7 @@ in {
                     else local_ipv4_address;
                   port_id = networkValues.port;
                   local_ipv4_address = networkValues.fixed_ip_v4;
+                  inherit (nodeValues) os;
                 }
                 // lib.optionalAttrs config.yk8s.infra.ipv6_enabled {
                   local_ipv6_address = lib.removePrefix "[" (lib.removeSuffix "]" networkValues.fixed_ip_v6);

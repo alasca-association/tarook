@@ -5,6 +5,7 @@
   flake-parts-lib,
   ...
 }: {
+  imports = [(flake-parts-lib.importApply ./nixos {inherit localFlake;})];
   options = {
     perSystem =
       flake-parts-lib.mkPerSystemOption
