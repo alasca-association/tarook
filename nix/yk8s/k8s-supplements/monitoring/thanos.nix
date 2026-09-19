@@ -186,7 +186,7 @@ in {
       descriptionName = "Bitnami Thanos";
       defaultChartRef = "oci://registry-1.docker.io/bitnamicharts/thanos";
       # renovate: datasource=docker depName=registry-1.docker.io/bitnamicharts/thanos
-      defaultChartVersion = "17.2.3";
+      defaultChartVersion = "17.3.1";
       defaultReleaseNamespace = "monitoring";
       defaultReleaseName = "thanos";
       valuesDocUrl = "https://github.com/bitnami/charts/blob/main/bitnami/thanos/values.yaml";
