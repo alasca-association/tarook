@@ -110,6 +110,13 @@ table inet filter {
         type filter hook input priority 0; policy drop;
         iif lo accept comment "Accept any localhost traffic"
 
+        {% if ipv4_enabled%}
+        tcp dport 179 ip saddr @ipv4_internal_accepted accept comment "Accept BGP from internal peers (handles simultaneous TCP open between BGP peers)"
+        {% endif %}
+        {% if ipv6_enabled %}
+        tcp dport 179 ip6 saddr @ipv6_internal_accepted accept comment "Accept BGP from internal peers (handles simultaneous TCP open between BGP peers)"
+        {% endif %}
+
         jump base_checks
 
         tcp dport ssh accept comment "Accept SSH connections from anywhere"
@@ -141,6 +148,13 @@ table inet filter {
 
     chain forward {
         type filter hook forward priority 0; policy drop;
+
+        {% if ipv4_enabled%}
+        tcp dport 179 ip saddr @ipv4_internal_accepted accept comment "Accept BGP from internal peers (handles simultaneous TCP open between BGP peers)"
+        {% endif %}
+        {% if ipv6_enabled %}
+        tcp dport 179 ip6 saddr @ipv6_internal_accepted accept comment "Accept BGP from internal peers (handles simultaneous TCP open between BGP peers)"
+        {% endif %}
 
         jump base_checks
 

@@ -32,8 +32,8 @@ in {
         f1a = "Ubuntu 22.04 LTS x64";
       };
       debian = selectByRegion {
-        f1d = "Debian 12";
-        f1a = "Debian 12 (bookworm)";
+        f1d = "Debian 13";
+        f1a = "Debian 13 (trixie)";
       };
     in {
       azs = [

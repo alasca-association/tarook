@@ -21,12 +21,12 @@ BGP peers. By default, only per-node pod networks are announced.
 
 **Default:**::
 
-  false
+  true
 
 
 **Example:**::
 
-  true
+  false
 
 
 **Declared by**
