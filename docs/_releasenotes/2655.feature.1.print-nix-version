@@ -1,0 +1,1 @@
+:ref:`update-inventory.sh <actions-references.update-inventorysh>` now prints used Nix versions to make debugging easier.
