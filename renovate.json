@@ -71,7 +71,16 @@
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.*?) packageName=(?<packageName>.*?)\\n\\s*default\\s=\\s\"(?<currentValue>.*?)\";\\n"
       ]
+    },
+    {
+      "description": "Default nvidia-container-toolkit version in role defaults",
+      "customType": "regex",
+      "managerFilePatterns": ["/^k8s-core/ansible/roles/nvidia-container-toolkit/defaults/main\\.yaml$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?) packageName=(?<packageName>.*?)\\nnvidia_container_toolkit_version: \"(?<currentValue>.*?)\""
+      ]
     }
+
   ],
   "separateMinorPatch": true,
   "packageRules": [
