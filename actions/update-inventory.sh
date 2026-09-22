@@ -69,6 +69,8 @@ check_nix_version
 
 if [[ -e "state" ]]; then git add state; fi
 set -f # disable glob expansion because we need to pass TAROOK_NIX_FLAGS unquoted
+notef "Nix CLI: $(nix --version)"
+notef "Nix Store $(nix store info --json | jq -r '"(" + .url + "): " + .version')"
  # shellcheck disable=SC2086
 out=$(nix build --override-input yk8s "$code_repository" --print-out-paths --no-link ${TAROOK_NIX_FLAGS:-} ".#yk8s-outputs-$target")
 set +f
