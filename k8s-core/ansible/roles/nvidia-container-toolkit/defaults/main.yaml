@@ -1,0 +1,4 @@
+---
+# renovate: datasource=github-releases depName=NVIDIA/nvidia-container-toolkit
+nvidia_container_toolkit_version: "1.19.1"
+...

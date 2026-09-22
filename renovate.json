@@ -71,7 +71,16 @@
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.*?) packageName=(?<packageName>.*?)\\n\\s*default\\s=\\s\"(?<currentValue>.*?)\";\\n"
       ]
+    },
+    {
+      "description": "Default",
+      "customType": "regex",
+      "managerFilePatterns": ["/^k8s-core/ansible/roles/nvidia-container-toolkit/tasks/main.yaml\\.yaml$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?) packageName=(?<packageName>.*?)\\n\\s*default\\s=\\s\"(?<currentValue>.*?)\";\\n"
+      ]
     }
+
   ],
   "separateMinorPatch": true,
   "packageRules": [

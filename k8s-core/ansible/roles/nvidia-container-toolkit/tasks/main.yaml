@@ -41,10 +41,11 @@
       autoremove: true
       allow_change_held_packages: true
       name:
-      - nvidia-container-toolkit
-      - nvidia-container-toolkit-base
-      - libnvidia-container-tools
-      - libnvidia-container1
+      - nvidia-container-toolkit={{ nvidia_container_toolkit_version }}-1"
+      - nvidia-container-toolkit-base={{ nvidia_container_toolkit_version }}-1"
+      - libnvidia-container-tools={{ nvidia_container_toolkit_version }}-1"
+      - libnvidia-container1={{ nvidia_container_toolkit_version }}-1"
+      state: present
     register: nvidia_container_toolkit_pkg
     until: nvidia_container_toolkit_pkg is not failed
     retries: "{{ error_retries }}"
