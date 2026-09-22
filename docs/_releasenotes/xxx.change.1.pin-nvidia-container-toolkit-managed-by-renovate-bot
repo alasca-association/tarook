@@ -1,0 +1,6 @@
+The nvidia-container-toolkit package versions has been
+pinned and further updates being managed by Renovate.
+
+The libraries and utilities on a Kubernetes node with GPU
+capability are installed or updated only if the node has
+not been fully initialized yet or with explicit consent.
