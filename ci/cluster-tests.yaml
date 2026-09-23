@@ -82,8 +82,9 @@
     - cp res/custom-play.yaml k8s-custom/main.yaml
       # Note that this is basically a dummy keypair that is not used to protect any significant data
     - gpg --quick-generate-key --batch --passphrase '' mk8s-ci@gitlab rsa1024 encr never
-      # Ensure that the project is clean
+      # Ensure that OpenStack projects are really clean
     - python3 clean-up-os-project.py
+    - "(unset ${!OS_*}; source /root/bucket-openrc.sh; python3 clean-up-os-project.py)"
 
   script:
     - export VAULT_ADDR=https://yaook-vault:8200
@@ -123,6 +124,9 @@
     - direnv allow
     - eval $(direnv export bash) # This mimics `cd`ing into the directory with an interactive shell
     - ./after_script_cleanup.sh
+      # Cleanup OpenStack projects
+    - python3 clean-up-os-project.py
+    - "(unset ${!OS_*}; source /root/bucket-openrc.sh; python3 clean-up-os-project.py)"
 
   artifacts:
     reports:
