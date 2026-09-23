@@ -143,6 +143,18 @@ def main():
             process_deletion_outcome(
                 conn.delete_server_group(server_group['id'])
             )
+
+        print("---\nDelete Containers\n---")
+        for container in conn.object_store.containers():
+            print(f"Delete objects in container {container['name']}")
+            for obj in conn.object_store.objects(container['name']):
+                # not using process_deletion_outcome here as that would spam the output
+                conn.object_store.delete_object(obj, container=container['name'])
+
+            print(f"Delete container {container['name']}")
+            process_deletion_outcome(
+                conn.delete_container(container['name'])
+            )
     finally:
         print("===\nDisconnect from OpenStack\n===")
         conn.close()
