@@ -2,7 +2,7 @@
 - name: Create calico BGP configuration and apply peering
   delegate_to: "{{ groups['orchestrator'] | first }}"
   block:
-  - name: Wait for Calico API servers to be up and running
+  - name: Wait for all Calico API servers to be up and running
     kubernetes.core.k8s_info:
       api_version: operator.tigera.io/v1
       kind: APIServer
@@ -10,7 +10,8 @@
     # Retry this task on failures
     register: calico_apiserver
     until:
-    - (calico_apiserver.resources[0].status.state | default('')) in ['Ready', 'Failed']
+    - calico_apiserver.resources | length >= 1
+    - calico_apiserver.resources | map(attribute='status.state', default='') | select('ne', 'Ready') | list | length == 0
     retries: 120
     delay: "{{ error_delay }}"
 

@@ -1,0 +1,1 @@
+A rollout now fails if not all calico-apiservers get ready.
