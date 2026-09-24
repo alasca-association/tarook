@@ -29,6 +29,149 @@ An arbitrary ID (four octet unsigned integer) used by Calico as BGP Identifier
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
 
 
+.. _configuration-options.yk8s.kubernetes.network.calico.crd.helm.chart_ref:
+
+``yk8s.kubernetes.network.calico.crd.helm.chart_ref``
+#####################################################
+
+The chart reference (relative to the repository) of the Calico CRDs Helm chart.
+
+
+**Type:**::
+
+  RFC3986 relative URL path or RFC3986 URL
+
+
+**Default:**::
+
+  "crd.projectcalico.org.v1"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+
+
+.. _configuration-options.yk8s.kubernetes.network.calico.crd.helm.chart_repo_url:
+
+``yk8s.kubernetes.network.calico.crd.helm.chart_repo_url``
+##########################################################
+
+The URL to the Helm repository for the Calico CRDs Helm chart.
+
+
+**Type:**::
+
+  null or RFC3986 URL
+
+
+**Default:**::
+
+  "https://docs.tigera.io/calico/charts"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+
+
+.. _configuration-options.yk8s.kubernetes.network.calico.crd.helm.chart_version:
+
+``yk8s.kubernetes.network.calico.crd.helm.chart_version``
+#########################################################
+
+Version of the Calico CRDs Helm chart to be used.
+
+If the version shall be unpinned, set to: ``null``.
+
+
+**Type:**::
+
+  null or Helm chart version (Semantic version 2 string or OCI image tag)
+
+
+**Default:**::
+
+  "3.32.1"
+
+
+**Example:**::
+
+  "1.2.3"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+
+
+.. _configuration-options.yk8s.kubernetes.network.calico.crd.helm.release_name:
+
+``yk8s.kubernetes.network.calico.crd.helm.release_name``
+########################################################
+
+The release name inside the cluster for Calico CRDs.
+
+
+**Type:**::
+
+  non-empty string
+
+
+**Default:**::
+
+  "calico-crds"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+
+
+.. _configuration-options.yk8s.kubernetes.network.calico.crd.helm.release_namespace:
+
+``yk8s.kubernetes.network.calico.crd.helm.release_namespace``
+#############################################################
+
+The namespace in which to install Calico CRDs.
+
+
+**Type:**::
+
+  RFC1123 subdomain label (lowercase) or RFC1035 subdomain label (lowercase)
+
+
+**Default:**::
+
+  "tigera-operator"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+
+
+.. _configuration-options.yk8s.kubernetes.network.calico.crd.helm.values:
+
+``yk8s.kubernetes.network.calico.crd.helm.values``
+##################################################
+
+Helm values for the Calico CRDs helm chart.
+
+Some values are set by default through Tarook, but arbitrary values can be set.
+For a full list of possible values, see
+https://github.com/projectcalico/calico/blob/master/charts/crd.projectcalico.org.v1/values.yaml
+
+
+**Type:**::
+
+  open submodule of (attribute set containing JSON compatible values)
+
+
+**Default:**::
+
+  { }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/k8s-supplements/calico.nix
+
+
 .. _configuration-options.yk8s.kubernetes.network.calico.enabled:
 
 ``yk8s.kubernetes.network.calico.enabled``
@@ -138,7 +281,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "3.31.7"
+  "3.32.1"
 
 
 **Example:**::

@@ -45,6 +45,27 @@
       retries: "{{ error_retries }}"
       delay: "{{ error_delay }}"
 
+    - name: Template Calico CRDs chart
+      when: k8s_network_calico_helm_chart_version is version('3.32.0', 'ge')
+      kubernetes.core.helm_template:
+        chart_repo_url: "{{ k8s_network_calico_crd_helm_chart_repo_url }}"
+        chart_version: "{{ k8s_network_calico_crd_helm_chart_version }}"
+        chart_ref: "{{ k8s_network_calico_crd_helm_chart_ref }}"
+        release_namespace: "{{ k8s_network_calico_crd_helm_release_namespace }}"
+        release_name: "{{ k8s_network_calico_crd_helm_release_name }}"
+      register: calico_crds
+
+    - name: Apply Calico CRDs
+      when: k8s_network_calico_helm_chart_version is version('3.32.0', 'ge')
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ calico_crds.stdout | from_yaml_all }}"
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
     - name: Deploy Tigera operator chart
       kubernetes.core.helm:
         chart_repo_url: "{{ k8s_network_calico_helm_chart_repo_url }}"
@@ -57,7 +78,9 @@
 
     # Give the operator some time to create the CRDs
     - name: Pause for 20s
-      when: not (tigera_operator_exists | bool)
+      when:
+        - k8s_network_calico_helm_chart_version is version('3.32.0', 'lt')
+        - not (tigera_operator_exists | bool)
       pause:
         seconds: 20
 
