@@ -33,7 +33,7 @@
   - 1
   - "100%"
   roles:
-  - role: audit-logs
+  - role: kubeadm-reconfigure-apiserver
   - role: k8s-master
     tags: k8s-master
   - role: cluster-health-verification
