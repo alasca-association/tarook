@@ -89,7 +89,11 @@
         "matchPackageNames": ["kubernetes/kubernetes"],
         "updateTypes": ["major", "minor"],
         "enabled": false
+      },
+      {
+        "description": "Group Calico packages",
+        "matchSourceUrls": ["https://github.com/projectcalico/calico"],
+        "groupName": "Calico"
       }
-
   ]
 }
