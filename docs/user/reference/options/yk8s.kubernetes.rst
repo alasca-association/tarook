@@ -2007,12 +2007,12 @@ Kubernetes version
 
 **Type:**::
 
-  Kubernetes version (one of: 1.33.x, 1.34.x, 1.35.x, 1.36.x)
+  Kubernetes version (one of: 1.33.x, 1.34.x, 1.35.x, 1.36.x, 1.37.x)
 
 
 **Default:**::
 
-  "1.36.4"
+  "1.37.1"
 
 
 **Declared by**
