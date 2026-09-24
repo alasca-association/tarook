@@ -192,7 +192,7 @@ in {
       defaultRepoUrl = "https://prometheus-community.github.io/helm-charts";
       defaultChartRef = "prometheus-blackbox-exporter";
       # renovate: datasource=helm depName=prometheus-blackbox-exporter registryUrl=https://prometheus-community.github.io/helm-charts
-      defaultChartVersion = "11.18.0";
+      defaultChartVersion = "11.19.1";
       defaultReleaseNamespace = "monitoring";
       defaultReleaseName = "kms-blackbox";
       valuesDocUrl = "https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-blackbox-exporter/values.yaml";
