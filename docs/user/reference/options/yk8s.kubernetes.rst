@@ -1338,6 +1338,39 @@ The order in which patches with the same priority are applied is undefined.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
+.. _configuration-options.yk8s.kubernetes.kubeadm.upgradeConfigurations:
+
+``yk8s.kubernetes.kubeadm.upgradeConfigurations``
+#################################################
+
+Per node kubeadm UpgradeConfigurations
+
+Values are expected be adhere to the schema documented at
+https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/#kubeadm-k8s-io-v1beta4-UpgradeConfiguration
+
+There must be an entry for each master node.
+
+.. attention::
+
+   UpgradeConfigurations will only passed to
+   ``kubeadm upgrade apply`` and  ``kubeadm upgrade node``
+   on master nodes.
+
+
+**Type:**::
+
+  attribute set of (attribute set containing JSON compatible values)
+
+
+**Default:**::
+
+  { }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/upgrade-configuration.nix
+
+
 .. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions:
 
 ``yk8s.kubernetes.kubelet.defaultOptions``
