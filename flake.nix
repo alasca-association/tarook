@@ -18,9 +18,7 @@
     };
     bombon = {
       url = "git+https://github.com/nikstur/bombon?shallow=1";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 

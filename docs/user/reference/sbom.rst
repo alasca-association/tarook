@@ -1,9 +1,9 @@
 SBOM
 ====
 
-Tarook provides an Build Software Bill of Material (Build SBOM), which uses the
-CycloneDX format. That means the SBOM is been generated in the build process of
-a new realease.
+Tarook provides a Build Software Bill of Materials (Build SBOM), using the
+CycloneDX format. This means the SBOM has been generated during the build process of
+a new release.
 
 Captured dependencies
 ---------------------

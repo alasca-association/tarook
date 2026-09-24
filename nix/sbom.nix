@@ -14,7 +14,7 @@
         ...
       }: {
         config = {
-          packages = lib.mkIf (system == "x86_64-linux") (
+          packages = (
             lib.mapAttrs' (name: env: {
               name = "sbom-${name}";
               value = inputs.bombon.lib.${system}.buildBom env {};

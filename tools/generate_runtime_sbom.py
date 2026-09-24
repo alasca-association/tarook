@@ -120,7 +120,7 @@ def writeSBOM(path):
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%dT%XZ"),
             "authors": [
                 {
-                    "email": "test@cloudandheat.com",
+                    "email": "hello@alasca.cloud",
                 },
             ],
             "component": {
