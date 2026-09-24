@@ -84,7 +84,7 @@ Apply Scripts
 General
 ~~~~~~~
 
-.. figure:: /img/apply-script.drawio.svg
+.. figure:: /img/apply-script.svg
    :scale: 80%
    :alt: Apply Custom Script Visualization
    :align: center
