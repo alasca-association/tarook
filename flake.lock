@@ -7,10 +7,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1788254115,
-        "narHash": "sha256-T8/OSWCb7m1S+TbE+T+r0jV7+1PhvqUmkW8K+jZjN60=",
+        "lastModified": 1792170504,
+        "narHash": "sha256-K8SOnnNlTtwD45qQ5gxVFzLnvF8zT5ahzF60yRFGoF0=",
         "ref": "refs/heads/main",
-        "rev": "3e3374ca1cfd9c708ad53fd37184db88864e6376",
+        "rev": "4a14633102eba4823800596fa61ce3a8270530e4",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/nikstur/bombon"
@@ -26,10 +26,10 @@
         "nixpkgs-lib": "nixpkgs-lib"
       },
       "locked": {
-        "lastModified": 1788450739,
-        "narHash": "sha256-glZLQlzIn1fXH6PazR2iUmTo7kzzyYSshrWhLS9TqCU=",
+        "lastModified": 1790898470,
+        "narHash": "sha256-zTwuwezD0w3hpga6a6P8emidzAZFyWqlNeRBlpWOOl8=",
         "ref": "refs/heads/main",
-        "rev": "31729ca8cbdb4fa927b34e5f4353e6a83f39e993",
+        "rev": "024633cd702b10285db5cb19b40ad48d2399ba60",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/hercules-ci/flake-parts"
@@ -58,10 +58,10 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1790533781,
-        "narHash": "sha256-F+b8u43BVF5DlM0pz7JQSbtbwKy5PrHIT5zQUekXsD0=",
+        "lastModified": 1792295010,
+        "narHash": "sha256-F7meJtbqGttmUoMmYjRRgkVs42sn7bh7vvRvLPlUN98=",
         "ref": "nixos-26.05",
-        "rev": "cf5e76507c6e23b59f7e0ffcc7baa2a39ddd8442",
+        "rev": "8ce73368d1efd4d657e9064d29b144a52046b4e8",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/NixOS/nixpkgs"
@@ -75,10 +75,10 @@
     },
     "nixpkgs-lib": {
       "locked": {
-        "lastModified": 1789871957,
-        "narHash": "sha256-cY6TV3IPWCsvJP+EPLvX2rRJa8YNXuybodVy1mY2L1E=",
+        "lastModified": 1792290253,
+        "narHash": "sha256-Kgup1sH+/4qilwusTsSZ4PVjvVABEu5mrgWcZqZ7ePw=",
         "ref": "refs/heads/master",
-        "rev": "5bdaa90a7fb7ae9892329e23f1474add69e092fe",
+        "rev": "d0f596215fbb1603854039023c281b7c2ed1fd33",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/nix-community/nixpkgs.lib"
@@ -108,10 +108,10 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1789785513,
-        "narHash": "sha256-B44WL6h0XoLjJ41bUPJk0X5SDinLCII//6EcBLXKiJ0=",
+        "lastModified": 1792094642,
+        "narHash": "sha256-zp8ToDMnqZcu4o4IH9pdwXFXGp7yLm/M0dEnNWnyd7I=",
         "ref": "nixos-unstable",
-        "rev": "20b1ddd1aa5ace70c9468305030aa4f9ef79671b",
+        "rev": "fe13242281a67641c0102cdb1087f0ebe586c7df",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/NixOS/nixpkgs"
@@ -183,10 +183,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1784465933,
-        "narHash": "sha256-5fZTF5lCVnHisTmXICtIIjHAEsqDXx3RgD+Q/r5Bxpg=",
+        "lastModified": 1792320669,
+        "narHash": "sha256-ejdemeNa8TK1dcep3oMHmTvfEp+D7D6bnnE2tS59baM=",
         "ref": "refs/heads/main",
-        "rev": "f2f0ca1895f15e18e308769bdae77030ae093b8c",
+        "rev": "b6c05a45b2435cb3471d6f135ddb0b3c2934cc45",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/terranix/terranix"
