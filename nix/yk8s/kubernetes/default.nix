@@ -199,6 +199,7 @@ in {
       ++ lib.optional (cfg.apiserver.memory_limit != null)
       {
         patchtype = "json";
+        identifier = "memory-limit";
         patch = [
           {
             op = "add";
@@ -211,6 +212,7 @@ in {
       ++ [
         {
           patchtype = "json";
+          identifier = "ttl";
           patch = [
             {
               op = "add";
@@ -225,6 +227,7 @@ in {
       # a change of the manifest, so the kubelet restarts the kube-apiserver.
       ++ lib.optional cfg.apiserver.audit_logs.enabled {
         patchtype = "strategic";
+        identifier = "policy-sha";
         patch.metadata.annotations."tarook.cloud/audit-policy-sha256" =
           builtins.hashString "sha256" (builtins.toJSON (filterNull cfg.apiserver.audit_logs.policy));
       };
