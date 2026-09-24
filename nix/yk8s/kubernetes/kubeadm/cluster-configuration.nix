@@ -11,7 +11,12 @@ in {
     clusterConfiguration = lib.mkOption {
       type = types.yk8s.formats.jsonValue;
     };
+    clusterConfigurationFile = lib.mkOption {
+      type = types.pathInStore;
+      readOnly = true;
+    };
   };
+  config.yk8s.kubernetes.kubeadm.clusterConfigurationFile = (yk8s-lib.mkYaml "clusterConfiguration.yaml" cfg.kubeadm.clusterConfiguration).outPath;
   config.yk8s.kubernetes.kubeadm.clusterConfiguration = let
     inherit
       (config.yk8s.infra)
