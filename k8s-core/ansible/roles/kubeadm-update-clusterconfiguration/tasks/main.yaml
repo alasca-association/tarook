@@ -1,0 +1,25 @@
+---
+# Skip if the node is not initialized yet, because then there is no kube-apiserver around
+# In this case, the configuration is done via the kubeadm-init-config in the k8s-master role
+# on cluster initializtion and joining nodes get the configuration from the kubadm ConfigMap
+# TODO: run only once and skip if cluster doesn't exist yet
+- name: Skip role
+  when: (ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized')) == 'not_initialized'
+  meta: end_role
+
+- name: Patch kubeadm-config ConfigMap
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: kubeadm-config
+        namespace: kube-system
+      data:
+        ClusterConfiguration: "{{ lookup('file', k8s_kubeadm_clusterConfigurationFile) }}"
+  register: kubeadm_configmap_patched
+  until: kubeadm_configmap_patched is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
+...

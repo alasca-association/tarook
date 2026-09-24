@@ -19,107 +19,16 @@
   when: (ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized')) == 'not_initialized'
   meta: end_role
 
-- name: Patch kubeadm ConfigMap ClusterConfiguration
-  delegate_to: "{{ groups['orchestrator'] | first }}"
-  run_once: true
-  block:
-  - name: Get current ConfigMap
-    kubernetes.core.k8s_info:
-      api_version: v1
-      kind: ConfigMap
-      name: kubeadm-config
-      namespace: kube-system
-    register: kubeadm_configmap
-    until: kubeadm_configmap is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
-
-  - name: Modify ClusterConfiguration
-    vars:
-      patch:
-        apiServer:
-          extraArgs:
-          - name: audit-log-maxage
-            value: '1'
-          - name: audit-log-maxbackup
-            value: '1'
-          - name: audit-log-maxsize
-            value: "{{ k8s_apiserver_audit_logs_max_size | to_json }}"
-          - name: audit-log-path
-            value: /var/log/kubernetes/audit/audit.log
-          - name: audit-policy-file
-            value: /etc/kubernetes/audit-policy.yaml
-          extraVolumes:
-          - name: "audit-policy"
-            hostPath: "/etc/kubernetes/audit-policy.yaml"
-            mountPath: "/etc/kubernetes/audit-policy.yaml"
-            readOnly: true
-            pathType: File
-          - name: "audit-log"
-            hostPath: "/var/log/kubernetes/audit/"
-            mountPath: "/var/log/kubernetes/audit/"
-            pathType: DirectoryOrCreate
-    block:
-    - name: Set fact about current ClusterConfiguration
-      set_fact:
-        cluster_configuration: "{{ kubeadm_configmap.resources[0].data.ClusterConfiguration | from_yaml }}"
-
-    - name: Remove audit-logs specifics from cluster configuration
-      when: not (k8s_apiserver_audit_logs_enabled | bool)
-      ansible.utils.update_fact:
-        updates:
-        - path: cluster_configuration.apiServer.extraArgs
-          value: "{{ cluster_configuration.apiServer.extraArgs | default([]) | difference(patch.apiServer.extraArgs) }}"
-        - path: cluster_configuration.apiServer.extraVolumes
-          value: "{{ cluster_configuration.apiServer.extraVolumes | default([]) | difference(patch.apiServer.extraVolumes) }}"
-      register: updated_cluster_configuration_removal
-
-    - name: Add audit-logs specifics to cluster configuration
-      when: k8s_apiserver_audit_logs_enabled | bool
-      ansible.utils.update_fact:
-        updates:
-        - path: cluster_configuration.apiServer.extraArgs
-          value: "{{ cluster_configuration.apiServer.extraArgs | default([]) | union(patch.apiServer.extraArgs) }}"
-        - path: cluster_configuration.apiServer.extraVolumes
-          value: "{{ cluster_configuration.apiServer.extraVolumes | default([]) | union(patch.apiServer.extraVolumes) }}"
-      register: updated_cluster_configuration_addition
-
-  - name: Patch kubeadm-config ConfigMap
-    vars:
-      updated_cluster_configuration: "{{ updated_cluster_configuration_removal.skipped | default(False) | ternary(updated_cluster_configuration_addition, updated_cluster_configuration_removal) }}"
-    kubernetes.core.k8s:
-      definition:
-        apiVersion: v1
-        kind: ConfigMap
-        metadata:
-          name: kubeadm-config
-          namespace: kube-system
-        data:
-          ClusterConfiguration: "{{ updated_cluster_configuration.cluster_configuration | to_nice_yaml(indent=2) }}"
-    register: kubeadm_configmap_patched
-    until: kubeadm_configmap_patched is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
+- name: Update ClusterConfiguration
+  include_role:
+    name: kubeadm-update-clusterconfiguration
 
 - name: Regenerate kube-apiserver manifests
   become: true
   block:
-  - name: Get current ConfigMap
-    become: false
-    delegate_to: "{{ groups['orchestrator'] | first }}"
-    kubernetes.core.k8s_info:
-      api_version: v1
-      kind: ConfigMap
-      name: kubeadm-config
-      namespace: kube-system
-    register: kubeadm_configmap
-    until: kubeadm_configmap is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
-
-  - name: Create ClusterConfiguration file on host
-    template:
-      src: kubeadm-init-apiserver-config-bundle.yaml.j2
+  - name: Upload bundled kubeadm-init-config.yaml
+    copy:
+      src: "{{ k8s_kubeadm_initConfigurationBundles[inventory_hostname] }}"
       dest: /tmp/cluster-configuration.yaml
       owner: root
       group: root

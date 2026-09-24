@@ -185,6 +185,7 @@
     state: directory
     mode: u=rwx,go-rwx
 
+# TODO: dont run this twice. it is already a dependency of reconfigure-apiserver
 - name: Synchronize kubeadm-patches
   include_role:
     name: kubeadm-patches
