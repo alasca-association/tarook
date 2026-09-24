@@ -52,62 +52,6 @@ in {
       );
     };
     proxy.disabled = !cfg.network.kube_proxy.enabled;
-    apiServer = let
-      auditLogsDir = "/var/log/kubernetes/audit";
-    in {
-      extraArgs =
-        [
-          {
-            name = "service-account-issuer";
-            value = "https://kubernetes.default.svc";
-          }
-          {
-            name = "service-account-signing-key-file";
-            value = "/etc/kubernetes/pki/sa.key";
-          }
-          {
-            name = "enable-admission-plugins";
-            value = "NodeRestriction";
-          }
-        ]
-        ++ lib.optionals cfg.apiserver.audit_logs.enabled [
-          {
-            name = "audit-policy-file";
-            value = cfg.apiserver.audit_logs.policy_remote_file;
-          }
-          {
-            name = "audit-log-path";
-            value = "${auditLogsDir}/audit.log";
-          }
-          {
-            name = "audit-log-maxage";
-            value = "1";
-          }
-          {
-            name = "audit-log-maxsize";
-            value = toString cfg.apiserver.audit_logs.max_size;
-          }
-          {
-            name = "audit-log-maxbackup";
-            value = "1";
-          }
-        ];
-      extraVolumes = lib.optionals cfg.apiserver.audit_logs.enabled [
-        {
-          name = "audit-policy";
-          hostPath = cfg.apiserver.audit_logs.policy_remote_file;
-          mountPath = cfg.apiserver.audit_logs.policy_remote_file;
-          readOnly = true;
-          pathType = "File";
-        }
-        {
-          name = "audit-log";
-          hostPath = auditLogsDir;
-          mountPath = auditLogsDir;
-          pathType = "DirectoryOrCreate";
-        }
-      ];
-    };
     etcd.local = {
       dataDir = "/var/lib/etcd";
       extraArgs = lib.optional (ipv4_enabled && ipv6_enabled) {
