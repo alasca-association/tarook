@@ -53,7 +53,6 @@ in {
     };
     proxy.disabled = !cfg.network.kube_proxy.enabled;
     apiServer = let
-      auditPolicyPath = "/etc/kubernetes/audit-policy.yaml";
       auditLogsDir = "/var/log/kubernetes/audit";
     in {
       extraArgs =
@@ -74,7 +73,7 @@ in {
         ++ lib.optionals cfg.apiserver.audit_logs.enabled [
           {
             name = "audit-policy-file";
-            value = auditPolicyPath;
+            value = cfg.apiserver.audit_logs.policy_remote_file;
           }
           {
             name = "audit-log-path";
@@ -96,8 +95,8 @@ in {
       extraVolumes = lib.optionals cfg.apiserver.audit_logs.enabled [
         {
           name = "audit-policy";
-          hostPath = auditPolicyPath;
-          mountPath = auditPolicyPath;
+          hostPath = cfg.apiserver.audit_logs.policy_remote_file;
+          mountPath = cfg.apiserver.audit_logs.policy_remote_file;
           readOnly = true;
           pathType = "File";
         }

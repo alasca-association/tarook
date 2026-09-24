@@ -155,6 +155,11 @@ in {
           type = types.pathInStore;
           default = toString (mkYaml "audit-policy.yaml" (filterNull cfg.apiserver.audit_logs.policy));
         };
+        policy_remote_file = mkInternalOption {
+          readOnly = true;
+          type = types.path;
+          default = "/etc/kubernetes/audit-policy.yaml";
+        };
       };
     };
     controller_manager = {
