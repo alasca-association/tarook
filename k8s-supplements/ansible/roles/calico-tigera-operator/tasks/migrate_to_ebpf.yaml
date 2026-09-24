@@ -32,7 +32,7 @@
 
   - name: Set ClusterConfiguration.proxy.disabled
     include_role:
-      name: kubeadm-kube-proxy
+      name: kubeadm-update-clusterconfiguration
 
   - name: Ensure kube-proxy daemonset is absent
     delegate_to: "{{ groups['orchestrator'] | first }}"
