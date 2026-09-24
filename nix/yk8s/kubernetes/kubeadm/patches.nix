@@ -22,6 +22,14 @@ in {
             type = types.int;
             default = 0;
           };
+          identifier = mkOption {
+            description = ''
+              An optional string that will be part of the patch's filename in order to
+              quickly identify it.
+            '';
+            type = types.strMatching "[a-z0-9]*";
+            default = "";
+          };
           patchtype = mkOption {
             description = ''
               The type of the patch.
@@ -127,7 +135,7 @@ in {
         name = "kubeadm-patches";
         paths = lib.flatten (
           lib.mapAttrsToList (
-            target: map (p: yk8s-lib.mkJsonAtPath "${target}${p.suffix}+${p.patchtype}.json" p.patch)
+            target: map (p: yk8s-lib.mkJsonAtPath "${target}${p.suffix}${p.identifier}+${p.patchtype}.json" p.patch)
           )
           patches
         );
