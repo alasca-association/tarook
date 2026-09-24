@@ -3,6 +3,14 @@
   become: true
   when: do_upgrade | bool
   block:
+    - name: Upload kubeadm-upgrade-config.yaml
+      copy:
+        src: "{{ k8s_kubeadm_upgradeConfigurations[inventory_hostname] }}"
+        dest: /tmp/kubeadm-upgrade-config.yaml
+        owner: root
+        group: root
+        mode: 0600
+
     - name: Run kubeadm upgrade plan  # noqa no-changed-when
       vars:
         kubeadm_expression:
@@ -11,10 +19,12 @@
           - "plan"
           - "v{{ next_k8s_version }}"
           - "--ignore-preflight-errors=CreateJob" # timeout is hardcoded to 15s, so we ignore errors
+          # NOTE: --config=/tmp/kubeadm-upgrade-config.yaml can't be used here
+          #       because `kubernetesVersion` (next_k8s_version) is currently not known
+          #       when the configuration is rendered but required to be specified
       include_role:
         name: helpers/kubeadm-command
 
-    # Do not renew certificates here because we rolled out our own chain
     # --yes auto-confirms and makes upgrade non-interactive
     - name: Execute the upgrade
       vars:
@@ -24,12 +34,14 @@
           - "apply"
           - "v{{ next_k8s_version }}"
           - "--yes"
-          - "--certificate-renewal=false"
-          - "--ignore-preflight-errors=CreateJob"
-          - "--patches"
-          - "{{ k8s_kubeadm_patches_remote_dir }}"
+          - "--config=/tmp/kubeadm-upgrade-config.yaml"
       include_role:
         name: helpers/kubeadm-command
+
+    - name: Remove kubeadm-upgrade-config.yaml
+      file:
+        path: /tmp/kubeadm-upgrade-config.yaml
+        state: absent
 
 # Running kubeadm upgrade apply potentially resets
 # the KubeletConfiguration on the node
@@ -38,3 +50,4 @@
   include_role:
     name: kubelet-configuration
 ...
+

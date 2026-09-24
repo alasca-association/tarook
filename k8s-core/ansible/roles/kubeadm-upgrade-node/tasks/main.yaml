@@ -1,18 +1,30 @@
 ---
-- name: Run kubeadm upgrade node on CP node  # noqa no-changed-when
-  when:
+- when:
     - do_upgrade | bool
     - "'masters' in group_names"
-  vars:
-    kubeadm_expression:
-      - "kubeadm"
-      - "upgrade"
-      - "node"
-      - "--patches"
-      - "/etc/kubernetes/kubeadm-patches"
-      - "--certificate-renewal=false"
-  include_role:
-    name: helpers/kubeadm-command
+  block:
+  - name: Upload kubeadm-upgrade-config.yaml
+    copy:
+      src: "{{ k8s_kubeadm_upgradeConfigurations[inventory_hostname] }}"
+      dest: /tmp/kubeadm-upgrade-config.yaml
+      owner: root
+      group: root
+      mode: 0600
+
+  - name: Run kubeadm upgrade node on CP node  # noqa no-changed-when
+    vars:
+      kubeadm_expression:
+        - "kubeadm"
+        - "upgrade"
+        - "node"
+        - "--config=/tmp/kubeadm-upgrade-config.yaml"
+    include_role:
+      name: helpers/kubeadm-command
+
+  - name: Remove kubeadm-upgrade-config.yaml
+    file:
+      path: /tmp/kubeadm-upgrade-config.yaml
+      state: absent
 
 - name: Run kubeadm upgrade node on worker node  # noqa no-changed-when
   when:
@@ -25,6 +37,7 @@
       - "node"
   include_role:
     name: helpers/kubeadm-command
+
 
 # Running kubeadm upgrade node potentially resets
 # the KubeletConfiguration on the node

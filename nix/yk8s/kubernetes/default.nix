@@ -244,6 +244,7 @@ in {
             ["kubeadm" "clusterConfiguration"] # proxied by kubeadm.initConfigurationBundles
             ["kubeadm" "initConfigurations"] # proxied by kubeadm.initConfigurationBundles and kubeadm.initConfigurationFiles
             ["kubeadm" "joinConfigurations"] # proxied by kubeadm.joinConfigurationFiles
+            ["kubeadm" "upgradeConfigurations"] # proxied by kubeadm.upgradeConfigurationFiles
           ])
         # recusively filter null values on kubelet subset
         (lib.updateManyAttrsByPath [
@@ -257,6 +258,7 @@ in {
         ["kubeadm" "initConfigurationBundles"]
         ["kubeadm" "initConfigurationFiles"]
         ["kubeadm" "joinConfigurationFiles"]
+        ["kubeadm" "upgradeConfigurationFiles"]
         ["kubelet" "defaultOptions"]
         ["kubelet" "finalNodeOptions"]
         ["network" "calico" "helm" "values"]
