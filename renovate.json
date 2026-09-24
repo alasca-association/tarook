@@ -94,6 +94,11 @@
         "description": "Group Calico packages",
         "matchSourceUrls": ["https://github.com/projectcalico/calico"],
         "groupName": "Calico"
+      },
+      {
+        "description": "Group Envoy packages",
+        "matchSourceUrls": ["https://github.com/envoyproxy/gateway"],
+        "groupName": "Envoy"
       }
   ]
 }
