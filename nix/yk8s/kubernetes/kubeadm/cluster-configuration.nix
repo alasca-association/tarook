@@ -24,12 +24,19 @@ in {
     apiVersion = "kubeadm.k8s.io/v1beta4";
     kind = "ClusterConfiguration";
     kubernetesVersion = "v${cfg.version}";
+    caCertificateValidityPeriod = "87600h0m0s";
+    certificateValidityPeriod = "8760h0m0s";
+    certificatesDir = "/etc/kubernetes/pki";
+    clusterName = "kubernetes";
+    encryptionAlgorithm = "RSA-2048";
+    imageRepository = "registry.k8s.io";
     controlPlaneEndpoint = "${
       if ipv4_enabled
       then networking_fixed_ip
       else "[${networking_fixed_ip_v6}]"
     }:${toString cfg.apiserver.frontend_port}";
     networking = {
+      dnsDomain = "cluster.local";
       podSubnet = lib.concatStringsSep "," (
         (lib.optional ipv4_enabled cfg.network.pod_subnet)
         ++ (lib.optional ipv6_enabled cfg.network.pod_subnet_v6)
@@ -97,9 +104,12 @@ in {
         }
       ];
     };
-    etcd.local.extraArgs = lib.optional (ipv4_enabled && ipv6_enabled) {
-      name = "listen-metrics-urls";
-      value = "http://127.0.0.1:2381,http://[::1]:2381";
+    etcd.local = {
+      dataDir = "/var/lib/etcd";
+      extraArgs = lib.optional (ipv4_enabled && ipv6_enabled) {
+        name = "listen-metrics-urls";
+        value = "http://127.0.0.1:2381,http://[::1]:2381";
+      };
     };
     controllerManager.extraArgs =
       [
