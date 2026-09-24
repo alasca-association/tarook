@@ -9,6 +9,7 @@
           - "kubeadm"
           - "upgrade"
           - "plan"
+          - "v{{ next_k8s_version }}"
           - "--ignore-preflight-errors=CreateJob" # timeout is hardcoded to 15s, so we ignore errors
       include_role:
         name: helpers/kubeadm-command
