@@ -4,6 +4,22 @@ generate-sbom:
   needs:
     - build_image
   script:
+    - echo "Create template for SBOM metadata..."
+    - |
+      cat > template-sbom.cdx.json <<EOF
+      {
+        "bomFormat": "CycloneDX",
+        "specVersion": "1.7",
+        "version": 1,
+        "metadata": {
+          "component": {
+            "type": "application",
+            "name": "tarook",
+            "version": "$(cat ./version)"
+          }
+        }
+      }
+      EOF
     - echo "Generating Nix package SBOMs..."
     - nix build .#sbom-dev -o sbom-dev.cdx.json
     - nix build .#sbom-ci -o sbom-ci.cdx.json
@@ -12,7 +28,7 @@ generate-sbom:
     - echo "Generating Runtime dependencies SBOM..."
     - python3 tools/generate_runtime_sbom.py -a $CI_PROJECT_DIR/ansible/requirements.yaml -n $CI_PROJECT_DIR/nix/yk8s/k8s-supplements -o runtime-sbom.cdx.json
     - echo "Merge the SBOMs and validate..."
-    - cyclonedx merge --input-files sbom-dev.cdx.json sbom-ci.cdx.json tarook-ci-image.cdx.json runtime-sbom.cdx.json --output-file sbom.cdx.json
+    - cyclonedx merge --input-files template-sbom.cdx.json sbom-dev.cdx.json sbom-ci.cdx.json tarook-ci-image.cdx.json runtime-sbom.cdx.json --output-file sbom.cdx.json
     - cyclonedx validate --input-file sbom.cdx.json
   artifacts:
     name: "tarook-sbom"
