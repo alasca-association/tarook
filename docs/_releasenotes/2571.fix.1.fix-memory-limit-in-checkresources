@@ -1,2 +1,2 @@
-Fixed the memory limit detection in `checkResources` function
+Fixed the memory limit detection in ``checkResources`` function
 so that memory request and limit warnings are reported correctly.
