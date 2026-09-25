@@ -229,7 +229,7 @@
               nativeBuildInputs = [pkgs.rsync config.yk8s-env.environments.docs];
             } ''
               mkdir $out
-              rsync -rl --chmod 664 --exclude CHANGELOG.rst ${self}/ .
+              rsync -rl --chmod 664 ${self}/ .
               rsync -rL --chmod 664 --delete ${referenceOptionsRST}/ docs/user/reference/options
               towncrier build --version x.x.x --keep
               sphinx-build -W docs $out
