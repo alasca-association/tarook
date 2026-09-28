@@ -23,6 +23,10 @@ in {
       subnet_v6_cidr = "fd00::/120";
     };
     openstack = let
+      ubuntu26 = selectByRegion {
+        f1d = "Ubuntu 26.04";
+        f1a = "Ubuntu 26.04 LTS x64";
+      };
       ubuntu24 = selectByRegion {
         f1d = "Ubuntu 24.04";
         f1a = "Ubuntu 24.04 LTS x64";
@@ -50,14 +54,14 @@ in {
           f1d = "SCS-2T-4-25s";
           f1a = "M";
         };
-        image = ubuntu24;
+        image = ubuntu26;
       };
       worker_defaults = {
         flavor = selectByRegion {
           f1d = "SCS-2T-4-25s";
           f1a = "M";
         };
-        image = ubuntu24;
+        image = ubuntu26;
       };
       gateway_defaults = {
         flavor = selectByRegion {
@@ -73,11 +77,12 @@ in {
         };
         master-1 = {
           role = "master";
-          image = ubuntu22;
           az = "AZ1";
+          image = ubuntu24;
         };
         master-2 = {
           role = "master";
+          image = ubuntu22;
         };
         worker-storage-0 = {
           role = "worker";
@@ -85,7 +90,7 @@ in {
             f1d = "SCS-8T-16-100s";
             f1a = "XL";
           };
-          image = ubuntu22;
+          image = ubuntu24;
         };
         worker-cpu-0 = {
           role = "worker";
@@ -94,7 +99,7 @@ in {
             f1d = "SCS-4T-8-50s";
             f1a = "L";
           };
-          image = ubuntu22;
+          image = ubuntu24;
         };
         worker-storage-1 = {
           role = "worker";
@@ -119,6 +124,7 @@ in {
             f1d = "SCS-8T-16-100s";
             f1a = "XL";
           };
+          image = ubuntu22;
         };
         worker-gpu-0 = {
           role = "worker";
@@ -130,6 +136,7 @@ in {
         worker-cpu-2 = {
           role = "worker";
           anti_affinity_group = "worker-node-anti-affinity";
+          image = ubuntu22;
         };
       };
       cinder_volume_type = selectByRegion {
