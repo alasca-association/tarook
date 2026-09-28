@@ -1,1 +1,0 @@
-kube-proxy can now be disabled, see :ref:`configuration-options.yk8s.kubernetes.network.kube_proxy.enabled`
