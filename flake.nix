@@ -16,6 +16,12 @@
         import-tree.url = "git+https://github.com/vic/import-tree?shallow=1";
       };
     };
+    bombon = {
+      url = "git+https://github.com/nikstur/bombon?shallow=1";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
   };
 
   outputs = inputs @ {
@@ -30,6 +36,7 @@
       imports = [
         ./nix/renderDocs.nix
         ./nix/yk8s-env.nix
+        ./nix/sbom.nix
         ./ci/container-image
       ];
       perSystem = {
