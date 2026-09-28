@@ -1,0 +1,1 @@
+The CI/CD pipeline now uses Ubuntu 22.04 LTS, Ubuntu 24.04 LTS and Ubuntu 26.04 LTS images for master and worker nodes.
