@@ -1,5 +1,26 @@
 {
   "nodes": {
+    "bombon": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788254115,
+        "narHash": "sha256-T8/OSWCb7m1S+TbE+T+r0jV7+1PhvqUmkW8K+jZjN60=",
+        "ref": "refs/heads/main",
+        "rev": "3e3374ca1cfd9c708ad53fd37184db88864e6376",
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/nikstur/bombon"
+      },
+      "original": {
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/nikstur/bombon"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": "nixpkgs-lib"
@@ -37,10 +58,10 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1789885152,
-        "narHash": "sha256-mDNo95riUw8k0MA2Btzj/OuiMcfLKofqIliLYsLbrSY=",
+        "lastModified": 1790533781,
+        "narHash": "sha256-F+b8u43BVF5DlM0pz7JQSbtbwKy5PrHIT5zQUekXsD0=",
         "ref": "nixos-26.05",
-        "rev": "6d663c0533ff269008fb84e45930151e37c99db9",
+        "rev": "cf5e76507c6e23b59f7e0ffcc7baa2a39ddd8442",
         "shallow": true,
         "type": "git",
         "url": "https://github.com/NixOS/nixpkgs"
@@ -121,6 +142,7 @@
     },
     "root": {
       "inputs": {
+        "bombon": "bombon",
         "flake-parts": "flake-parts",
         "nixpkgs": "nixpkgs",
         "nixpkgs-terraform157": "nixpkgs-terraform157",

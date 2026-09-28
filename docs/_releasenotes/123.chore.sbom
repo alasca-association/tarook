@@ -1,0 +1,3 @@
+Implement the generation of SBOMs in the pipeline. The SBOM contains nix
+dependencies, image dependencies from containers used in the pipieline and runtime
+dependencies (Ansible Galaxy Collections and Helm Charts).
