@@ -4,6 +4,53 @@ FAQ and Troubleshooting
 FAQ - Frequently Asked Questions
 --------------------------------
 
+.. _faq.wg-up-permission-denied:
+
+“Why do I get ``fopen: Permission denied`` when running ``wg-up.sh``?”
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Possible symptoms when running the :ref:`wg-up.sh <actions-references.wg-upsh>` script:
+
+.. code:: console
+
+   $ ./managed-k8s/actions/wg-up.sh
+   [#] ip link add dev <interface> type wireguard
+   [#] wg addconf <interface> /dev/fd/63
+   [#] ip -4 address add <address> dev <interface>
+   [#] ip link set mtu 1380 up dev <interface>
+   [#] ip -4 route add <subnet> dev <interface>
+   [#] ip -4 route add <subnet> dev <interface>
+   fopen: Permission denied
+
+Recent Ubuntu releases ship an AppArmor profile for ``wg`` (``/etc/apparmor.d/wg``).
+``wg-up.sh`` sets the private key with ``sudo wg set ... private-key /dev/stdin``.
+Because the key is passed through a pipe that your user owns, ``wg`` needs the
+``dac_read_search`` capability to read it, which the default profile does not
+grant.
+
+You can confirm this by checking the kernel log for AppArmor denials:
+
+.. code:: console
+
+   $ sudo journalctl -k | grep 'apparmor="DENIED"' | grep 'profile="wg"'
+
+The log shows denials for both ``dac_read_search`` and ``dac_override``. The
+kernel only falls back to ``dac_override`` after ``dac_read_search`` is denied,
+so allowing ``dac_read_search`` is enough.
+
+To fix it, allow the missing capability in the site-specific override of the
+profile and reload it:
+
+.. code:: console
+
+   $ sudo mkdir -p /etc/apparmor.d/local
+   $ sudo tee -a /etc/apparmor.d/local/wg >/dev/null <<'EOF'
+   capability dac_read_search,
+   EOF
+   $ sudo apparmor_parser -r /etc/apparmor.d/wg
+
+Afterwards, run ``./managed-k8s/actions/wg-up.sh`` again.
+
 .. _faq.how-do-i-ssh-into-my-cluster-nodes:
 
 “How do I login into the cluster?”

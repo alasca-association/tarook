@@ -35,3 +35,8 @@ As outlined in :ref:`user.explanation.architecture-overview`, Wireguard is used 
 
    $ # Generate the public key
    $ wg pubkey < ~/.wireguard/wg.key
+
+.. note::
+
+   If ``wg-up.sh`` later fails with ``fopen: Permission denied``,
+   see :ref:`faq.wg-up-permission-denied`.

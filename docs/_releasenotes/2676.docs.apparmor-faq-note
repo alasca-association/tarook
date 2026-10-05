@@ -1,0 +1,1 @@
+Add an FAQ entry for ``fopen: Permission denied`` when AppArmor blocks ``wg-up.sh``.
