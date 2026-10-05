@@ -1,0 +1,5 @@
+Fixed multiple checks for presence/absence of secrets in Vault
+that could lead to ungraceful regeneration of the Kubernetes service account key
+(`Bug #904 <https://gitlab.com/alasca.cloud/tarook/tarook/-/work_items/904>`),
+the ch-k8s-lbaas shared secret or Wireguard endpoint keys,
+for instance when Vault was unreachable.

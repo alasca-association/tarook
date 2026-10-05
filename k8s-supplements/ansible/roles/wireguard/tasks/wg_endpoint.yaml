@@ -18,11 +18,32 @@
       no_log: true  # prevent private key from being exposed
       block:
         - name: Lookup key in vault  # noqa ignore-errors
+          community.hashi_vault.vault_kv2_get:
+            auth_method: approle
+            mount_point: "{{ vault_nodes_approle }}"
+            engine_mount_point: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv"
+            path: "wireguard/wg{{ endpoint.id }}-key"
+            role_id: "{{ vault_node_role_id }}"
+            secret_id: "{{ vault_node_secret_id }}"
+            token_validate: false
           ignore_errors: true
-          # Check if the key exists
-          set_fact:
-            wg_gw_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'wireguard/wg' ~ endpoint.id ~ '-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key }}"
           register: wg_lookup
+        # HACK: Unfortunately the hashi_vault module does not provide more granualar
+        #       error reporting than failure or success which is why we have to
+        #       check the failure message.
+        #       We can't use `failed_when` here because the `msg` attribute is not
+        #       accessible to it. Therefore we use `ignore_errors` in combination
+        #       with conditional `fail`.
+        - when: >
+            wg_lookup is failed
+            and not wg_lookup.msg.startswith("Invalid or missing path")
+          fail:
+            msg: >
+              Could not verify the presence or absence of
+              the Vault secret 'wireguard/wg{{ endpoint.id }}-key'
+              mounted at '{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv':
+
+              {{ wg_lookup }}
 
         - name: Create new wireguard private key of the gateway  # noqa no-changed-when
           command: wg genkey
@@ -31,6 +52,7 @@
             - not wg_conf.stat.exists
             - wg_key_new_name is skipped
             - wg_lookup is failed
+            - "'private_key' not in (wg_lookup.data.data | default({}))"
 
         - name: Store generated key in vault
           when:

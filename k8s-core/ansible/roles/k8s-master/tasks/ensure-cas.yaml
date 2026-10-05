@@ -10,73 +10,103 @@
   # This is based on the k8s best practices
   # https://kubernetes.io/docs/setup/best-practices/certificates/
 
-  - name: Load service account key from Vault # noqa ignore-errors
-    ignore_errors: true
-    no_log: true  # prevent private key from being exposed
-    set_fact:
-      service_account_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'k8s/service-account-key', engine_mount_point=('%s/%s/kv' | format(vault_path_prefix, vault_cluster_name)), mount_point=vault_nodes_approle, auth_method='approle', role_id=vault_node_role_id, secret_id=vault_node_secret_id).data.data.private_key | b64decode }}"
+  - name: Ensure service account key
+    block:
+    - name: Load service account key from Vault # noqa ignore-errors
+      no_log: true  # prevent private key from being exposed
+      community.hashi_vault.vault_kv2_get:
+        auth_method: approle
+        mount_point: "{{ vault_nodes_approle }}"
+        engine_mount_point: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv"
+        path: "k8s/service-account-key"
+        role_id: "{{ vault_node_role_id }}"
+        secret_id: "{{ vault_node_secret_id }}"
+        token_validate: false
+      register: load_service_account_key
+      ignore_errors: true
+    # HACK: Unfortunately the hashi_vault module does not provide more granualar
+    #       error reporting than failure or success which is why we have to
+    #       check the failure message.
+    #       We can't use `failed_when` here because the `msg` attribute is not
+    #       accessible to it. Therefore we use `ignore_errors` in combination
+    #       with conditional `fail`.
+    - when: >
+        load_service_account_key is failed
+        and not load_service_account_key.msg.startswith("Invalid or missing path")
+      fail:
+        msg: >
+          Could not verify the presence or absence of
+          the Vault secret 'k8s/service-account-key'
+          mounted at '{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv':
 
-  - name: Generate private key if necessary
-    when: service_account_key is not defined
-    delegate_to: "{{ groups['orchestrator'] | first }}"
-    no_log: true  # prevent private key from being exposed
-    community.crypto.openssl_privatekey:
-      return_content: true
-      type: "RSA"
-      path: "{{ etc_dir }}/sa.key"
-      mode: u=rw,go-rwx
-    register: generated_service_account_key
+          {{ load_service_account_key }}
 
-  - name: Delete generated private key from disk
-    delegate_to: "{{ groups['orchestrator'] | first }}"
-    no_log: true  # prevent private key from being exposed
-    file:
-      state: absent
-      path: "{{ etc_dir }}/sa.key"
+    - name: Use service account key loaded from Vault
+      when: "'private_key' in (load_service_account_key.data.data | default({}))"
+      set_fact:
+        service_account_key: "{{ load_service_account_key.data.data.private_key | b64decode }}"
 
-  - name: Store generated key in vault
-    when: service_account_key is not defined
-    delegate_to: "{{ groups['orchestrator'] | first }}"
-    no_log: true  # prevent private key from being exposed
-    community.hashi_vault.vault_write:
-      auth_method: approle
-      mount_point: "{{ vault_nodes_approle }}"
-      role_id: "{{ vault_node_role_id }}"
-      secret_id: "{{ vault_node_secret_id }}"
-      path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv/data/k8s/service-account-key"
-      data:
-        data:
-          private_key: "{{ generated_service_account_key.privatekey | b64encode }}"
+    - name: Generate new service account key
+      when: "'private_key' not in (load_service_account_key.data.data | default({}))"
+      block:
+      - name: Generate service account key (private key)
+        delegate_to: "{{ groups['orchestrator'] | first }}"
+        no_log: true  # prevent private key from being exposed
+        community.crypto.openssl_privatekey:
+          return_content: true
+          type: "RSA"
+          path: "{{ etc_dir }}/sa.key"
+          mode: u=rw,go-rwx
+        register: generated_service_account_key
 
-  - name: Use generated service account key
-    when: service_account_key is not defined
-    no_log: true  # prevent private key from being exposed
-    set_fact:
-      service_account_key: "{{ generated_service_account_key.privatekey }}"
+      - name: Delete generated private key from disk
+        delegate_to: "{{ groups['orchestrator'] | first }}"
+        no_log: true  # prevent private key from being exposed
+        file:
+          state: absent
+          path: "{{ etc_dir }}/sa.key"
 
-  - name: Derive service account public key
-    community.crypto.openssl_privatekey_info:
-      content: "{{ service_account_key }}"
-    register: service_account_key_info
+      - name: Store generated key in vault
+        delegate_to: "{{ groups['orchestrator'] | first }}"
+        no_log: true  # prevent private key from being exposed
+        community.hashi_vault.vault_write:
+          auth_method: approle
+          mount_point: "{{ vault_nodes_approle }}"
+          role_id: "{{ vault_node_role_id }}"
+          secret_id: "{{ vault_node_secret_id }}"
+          path: "{{ vault_path_prefix }}/{{ vault_cluster_name }}/kv/data/k8s/service-account-key"
+          data:
+            data:
+              private_key: "{{ generated_service_account_key.privatekey | b64encode }}"
 
-  - name: Write service account private key
-    become: true
-    no_log: true  # prevent private key from being exposed
-    copy:
-      dest: /etc/kubernetes/pki/sa.key
-      content: "{{ service_account_key }}"
-      owner: root
-      group: root
-      mode: u=r
+      - name: Use new service account key uploaded to Vault
+        no_log: true  # prevent private key from being exposed
+        set_fact:
+          service_account_key: "{{ generated_service_account_key.privatekey }}"
 
-  - name: Write service account public key
-    become: true
-    copy:
-      dest: /etc/kubernetes/pki/sa.pub
-      content: "{{ service_account_key_info.public_key }}"
-      owner: root
-      group: root
-      mode: ugo=r
+    - name: Derive service account public key
+      community.crypto.openssl_privatekey_info:
+        content: "{{ service_account_key }}"
+      register: service_account_key_info
+
+    - name: Write service account private key
+      become: true
+      no_log: true  # prevent private key from being exposed
+      copy:
+        dest: /etc/kubernetes/pki/sa.key
+        content: "{{ service_account_key }}"
+        owner: root
+        group: root
+        mode: u=r
+
+    - name: Write service account public key
+      become: true
+      copy:
+        dest: /etc/kubernetes/pki/sa.pub
+        content: "{{ service_account_key_info.public_key }}"
+        owner: root
+        group: root
+        mode: ugo=r
 
   - name: Get certificate authority data
     include_tasks: get-certificate-authority-data.yaml
