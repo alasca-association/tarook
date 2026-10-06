@@ -1,0 +1,1 @@
+Dropped support for the deprecated Vault kv secret ``wireguard-key``.

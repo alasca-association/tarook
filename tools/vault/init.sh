@@ -209,10 +209,6 @@ ${k8s_node_policies_current:?}
 EOF
 
 define gateway_policies_current <<EOF
-path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/wireguard-key" {
-    capabilities = ["create", "update", "read"]
-}
-
 path "$common_path_prefix/{{ identity.entity.aliases.$nodes_approle_accessor.metadata.yaook_deployment }}/kv/data/wireguard/*" {
     capabilities = ["create", "update", "read"]
 }
@@ -357,10 +353,6 @@ path "$common_path_prefix/+/kv/data/ipmi/*" {
 
 path "$common_path_prefix/+/kv/data/etcdbackup" {
     capabilities = ["read"]
-}
-
-path "$common_path_prefix/+/kv/data/wireguard-key" {
-    capabilities = ["create", "update", "read"]
 }
 
 path "$common_path_prefix/+/kv/data/wireguard/*" {
