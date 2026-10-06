@@ -1,46 +1,47 @@
 #!/usr/bin/env bash
 set -euo pipefail
-submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/alasca.cloud/tarook/tarook.git}"
-
-###
-# Before doing anything else, we check whether a branch was passed via -b
-# If so, we run the init script from the specified branch instead,
-# passing all other arguments unaltered
-# NOTE: There should be no logic before this, in order to ensure compatibility with all branches that provide #init
-for arg in "$@"; do
-    if [[ "$arg" == -b ]]; then
-        # Branch was passed
-
-        branch=""
-        other_args=()
-
-        while [[ $# -gt 0 ]]; do
-            case "$1" in
-                -b)
-                    branch="$2"
-                    shift 2
-                    ;;
-                *)
-                    other_args+=("$1")
-                    shift
-                    ;;
-            esac
-        done
-
-        url="git+${submodule_managed_k8s_url}?ref=${branch}"
-        >&2 echo "Executing init script from ${url}"
-        export managed_k8s_latest_release=false
-        export managed_k8s_git_branch="$branch"
-        exec nix run "${url}#init" -- "${other_args[@]}"
-    fi
-done
-#
-###
-
 actions_dir="$(dirname "$0")"
 
 # shellcheck source=actions/lib.sh
 . "$actions_dir/lib.sh"
+
+submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/alasca.cloud/tarook/tarook.git}"
+
+###
+# Before doing anything else, we check whether we're already on the correct branch.
+# If not, we run the init script from the specified branch, defaulting to the latest release and
+# pass all other arguments unaltered.
+# NOTE: There should be no logic before this, in order to ensure compatibility with all branches that provide #init
+if [[ -z "${tarook_dispatched_to_branch:-""}" ]]; then
+    branch="release/v$version_major_minor"
+    other_args=()
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -b)
+                branch="$2"
+                shift 2
+                ;;
+            *)
+                other_args+=("$1")
+                shift
+                ;;
+        esac
+    done
+
+    url="git+${submodule_managed_k8s_url}?ref=${branch}"
+    >&2 echo "Executing init script from ${url}"
+
+    export tarook_dispatched_to_branch="$branch"
+
+    # These two variables are still needed for releases <=v14.
+    export managed_k8s_latest_release=false
+    export managed_k8s_git_branch="$branch"
+
+    exec nix run "${url}#init" -- "${other_args[@]}"
+fi
+#
+###
 
 usage() {
     >&2 echo "Usage: nix run <flake-url>#init -- [-b BRANCH] TEMPLATE"
@@ -74,22 +75,12 @@ submodule_base="submodules"
 
 if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
     if [ ! -d "$submodule_managed_k8s_name" ]; then
-        if [ "${managed_k8s_latest_release:-true}"  == "true" ]; then
-            # Checkout latest release
-            echo ''
-            notef "Adding $submodule_managed_k8s_name submodule on release v$version_major_minor..."
+        # Checkout specified branch
 
-            run git submodule add -b "release/v$version_major_minor" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
-        elif [ -n "${managed_k8s_git_branch:-}" ]; then
-            # Checkout specified branch
+        echo ''
+        notef "Adding $submodule_managed_k8s_name submodule on branch $tarook_dispatched_to_branch..."
 
-            echo ''
-            notef "Adding $submodule_managed_k8s_name submodule on branch $managed_k8s_git_branch..."
-
-            run git submodule add -b "$managed_k8s_git_branch" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
-        else
-            run git submodule add "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
-        fi
+        run git submodule add -b "$tarook_dispatched_to_branch" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
     else
         pushd "$cluster_repository/$submodule_managed_k8s_name" > /dev/null
         run git remote set-url origin "$submodule_managed_k8s_url"
