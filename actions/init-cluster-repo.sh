@@ -11,8 +11,10 @@ submodule_managed_k8s_branch_default="release/v$version_major_minor"
 usage() {
     >&2 echo "Usage: nix run <flake-url>#init -- [-b BRANCH] TEMPLATE"
     >&2 echo ""
-    >&2 echo "Arguments:"
+    >&2 echo "Options:"
     >&2 echo "    -b BRANCH   Tarook branch to checkout in git submodule"
+    >&2 echo ""
+    >&2 echo "Positional arguments:"
     >&2 echo "    TEMPLATE    Flavor of initial configuration to setup"
     >&2 echo "                One of: $(cluster_repo_template_list)"
 }
@@ -25,8 +27,14 @@ while [[ $# -gt 0 ]]; do
             arg_branch="$2"
             shift 2
             ;;
+        -*|--*)
+            errorf "Unsupported argument '${1}'"
+            echo >&2
+            usage
+            exit 2
+            ;;
         *)
-            other_args+=( "$1" )
+            positional_args+=( "$1" )
             shift 1
             ;;
     esac
@@ -62,7 +70,7 @@ then
     managed_k8s_latest_release=false \
     managed_k8s_git_branch="${branch}" \
     managed_k8s_init_no_flake_switch=true \
-      exec nix run "${url}#init" -- "${other_args[@]}"
+      exec nix run "${url}#init" -- "${positional_args[@]}"
 fi
 # TODO: @deprecated::v14.0
 #       Once Tarook v14.0, which introduced the -b option, is not supported anymore,
@@ -76,15 +84,15 @@ fi
 #      exec nix run "${url}#init" -- "${args[@]}"
 #fi
 
-other_args_num=1
-if [ "${#other_args}" -ne "$other_args_num" ]; then
-    errorf "Expecting $other_args_num argument(s), but ${#other_args} were given"
+positional_args_num=1
+if [ "${#positional_args}" -ne "$positional_args_num" ]; then
+    errorf "Expecting $positional_args_num positional argument(s), but ${#positional_args} were given"
     echo >&2
     usage
     exit 2
 fi
 
-template="${other_args[0]}"
+template="${positional_args[0]}"
 
 
 ### initialization logic
