@@ -6,48 +6,7 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 
 submodule_managed_k8s_url="${MANAGED_K8S_GIT:-https://gitlab.com/alasca.cloud/tarook/tarook.git}"
-
-###
-# Before doing anything else, we check whether a branch was passed via -b
-# If so, we run the init script from the specified branch instead,
-# passing all other arguments unaltered
-# NOTE: There should be no logic before this, in order to ensure compatibility with all branches that provide #init
-branch=""
-other_args=()
-
-for arg in "$@"; do
-    if [[ "$arg" == -b ]]; then
-        branch_passed=true
-    fi
-done
-
-if [[ "${branch_passed:-false}" == "true" ]]; then
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-            -b)
-                branch="$2"
-                shift 2
-                ;;
-            *)
-                other_args+=("$1")
-                shift
-                ;;
-        esac
-    done
-elif [[ -z "${managed_k8s_git_branch:-""}" ]]; then
-    branch="release/v$version_major_minor"
-    other_args=("$@")
-fi
-
-if [[ -n "$branch" ]]; then
-        url="git+${submodule_managed_k8s_url}?ref=${branch}"
-        >&2 echo "Executing init script from ${url}"
-        export managed_k8s_latest_release=false
-        export managed_k8s_git_branch="$branch"
-        exec nix run "${url}#init" -- "${other_args[@]}"
-fi
-#
-###
+submodule_managed_k8s_branch_default="release/v$version_major_minor"
 
 usage() {
     >&2 echo "Usage: nix run <flake-url>#init -- [-b BRANCH] TEMPLATE"
@@ -58,17 +17,79 @@ usage() {
     >&2 echo "                One of: $(cluster_repo_template_list)"
 }
 
-arg_num=1
-if [ "$#" -ne "$arg_num" ]; then
-    errorf "Expecting $arg_num argument(s), but $# were given"
+# Parse commandline arguments
+args=("$@")
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -b)
+            arg_branch="$2"
+            shift 2
+            ;;
+        *)
+            other_args+=( "$1" )
+            shift 1
+            ;;
+    esac
+done
+
+# Set branch from commandline or `managed_k8s_git_branch` envvar or to default
+if [[ "${arg_branch+x}" == "x" ]]; then
+    branch="${arg_branch}"
+# TODO: @deprecated::v14.0
+#       Once Tarook v14.0 is not supported anymore, this elif block shall be removed
+elif [[ "${managed_k8s_git_branch+x}" == "x" ]]; then
+    branch="${managed_k8s_git_branch}"
+else
+    branch="${submodule_managed_k8s_branch_default}"
+fi
+
+# Switch to flake of the given branch
+# if we did not already switch
+# NOTE: There should be no initialization logic before this, in order to ensure compatibility with all branches that provide #init
+if
+  (
+    [[ "${arg_branch+x}" == "x" ]] \
+    || [[ -z "${managed_k8s_git_branch:-""}" ]]
+  ) \
+  || (
+    [[ "${managed_k8s_init_no_flake_switch@a}" == *x* ]] \
+    && [[ "${managed_k8s_init_no_flake_switch}" != "true" ]]
+  )
+then
+    url="git+${submodule_managed_k8s_url}?ref=${branch}"
+    >&2 echo "Executing init script from ${url}"
+
+    managed_k8s_latest_release=false \
+    managed_k8s_git_branch="${branch}" \
+    managed_k8s_init_no_flake_switch=true \
+      exec nix run "${url}#init" -- "${other_args[@]}"
+fi
+# TODO: @deprecated::v14.0
+#       Once Tarook v14.0, which introduced the -b option, is not supported anymore,
+#       the block above shall be replaced with the following one.
+#if [[ "${managed_k8s_init_no_flake_switch@a}" == *x* ]] \
+#&& [[ "${managed_k8s_init_no_flake_switch}" != "true" ]]; then
+#    url="git+${submodule_managed_k8s_url}?ref=${branch}"
+#    >&2 echo "Executing init script from ${url}"
+#
+#    managed_k8s_init_no_flake_switch=true \
+#      exec nix run "${url}#init" -- "${args[@]}"
+#fi
+
+other_args_num=1
+if [ "${#other_args[@]}" -ne "$other_args_num" ]; then
+    errorf "Expecting $other_args_num argument(s), but ${#other_args[@]} were given"
     echo >&2
     usage
     exit 2
 fi
 
-check_nix_version
+template="${other_args[0]}"
 
-template="${1}"
+
+### initialization logic
+
+check_nix_version
 
 if [[ "$template" == */* || ! -e "${cluster_repo_template_dir:?}/${template:?}" ]]; then
     errorf "Unsupported template."
@@ -84,9 +105,9 @@ if [ ! "$actions_dir" == "./$submodule_managed_k8s_name/actions" ]; then
         # Checkout specified branch
 
         echo ''
-        notef "Adding $submodule_managed_k8s_name submodule on branch $managed_k8s_git_branch..."
+        notef "Adding $submodule_managed_k8s_name submodule on branch $branch..."
 
-        run git submodule add -b "$managed_k8s_git_branch" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
+        run git submodule add -b "$branch" "$submodule_managed_k8s_url" "$submodule_managed_k8s_name"
     else
         pushd "$cluster_repository/$submodule_managed_k8s_name" > /dev/null
         run git remote set-url origin "$submodule_managed_k8s_url"
@@ -140,3 +161,4 @@ notef 'then run git commit -v to check and commit your changes'
 
 notef 'Make sure to set your user specific variables in one'
 notef 'of the supported ways, see '"$submodule_managed_k8s_name"'/templates/yaook-k8s-env.template.sh'
+
