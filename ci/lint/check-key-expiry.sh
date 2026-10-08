@@ -27,8 +27,8 @@ find . -name '*.gpg' -print0 | while IFS= read -r -d '' keyfile; do
         continue
         fi
         echo "INFO: Key expires on $(date --date=@"$expiry_date" '+%Y-%m-%d')"
-        if [[ $expiry_date -le $(date -d "+90 days" +%s) ]]; then
-        echo "ERROR: $keyfile expires in less than 90 days"
+        if [[ $expiry_date -le $(date -d "+30 days" +%s) ]]; then
+        echo "ERROR: $keyfile expires in less than 30 days"
         echo 1 > "$rc"
         fi
     done
