@@ -582,6 +582,30 @@ in which case it will match the amount of availability zones by default.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 
 
+.. _configuration-options.yk8s.openstack.gateway_defaults.anti_affinity_group:
+
+``yk8s.openstack.gateway_defaults.anti_affinity_group``
+#######################################################
+
+Leaving this empty means to not join any anti affinity group
+
+Immutable when deployed.
+
+
+**Type:**::
+
+  null or non-empty string
+
+
+**Default:**::
+
+  null
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
+
+
 .. _configuration-options.yk8s.openstack.gateway_defaults.common_name:
 
 ``yk8s.openstack.gateway_defaults.common_name``
@@ -727,6 +751,30 @@ Will most of the time be set via the environment variable TF_VAR_keypair
 **Default:**::
 
   "\${var.keypair}"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
+
+
+.. _configuration-options.yk8s.openstack.master_defaults.anti_affinity_group:
+
+``yk8s.openstack.master_defaults.anti_affinity_group``
+######################################################
+
+Leaving this empty means to not join any anti affinity group
+
+Immutable when deployed.
+
+
+**Type:**::
+
+  null or non-empty string
+
+
+**Default:**::
+
+  null
 
 
 **Declared by**
@@ -944,7 +992,6 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 ``yk8s.openstack.nodes.<name>.anti_affinity_group``
 ###################################################
 
-Must not be set when role!="worker".
 If left empty no anti affinity group will be joined.
 
 
@@ -1203,6 +1250,8 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/openstack
 ######################################################
 
 Leaving this empty means to not join any anti affinity group
+
+Immutable when deployed.
 
 
 **Type:**::
