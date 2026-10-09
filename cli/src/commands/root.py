@@ -1,5 +1,7 @@
 import click
 
+import handlers
+
 from lib import exec_cmd
 
 
@@ -9,14 +11,15 @@ from lib import exec_cmd
         allow_extra_args=True,
     )
 )
+@click.option(
+    "-b",
+    "--branch",
+    help="The branch from which to initialize the new cluster",
+)
 @click.pass_context
-def init(ctx):
+def init(ctx, branch):
     """Initialize the cluster repository"""
-    exec_cmd(
-        ctx.obj["cluster_repo"],
-        ctx.obj["code_path"] / "actions/init-cluster-repo.sh",
-        ctx.args,
-    )
+    handlers.init.dispatch(ctx.obj["cluster_repo"], branch, ctx.args)
 
 
 @click.command
