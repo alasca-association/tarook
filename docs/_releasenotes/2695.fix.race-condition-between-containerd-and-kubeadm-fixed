@@ -1,0 +1,5 @@
+Fixed a race condition
+where ``kubeadm upgrade node``'s preflight checks would fail for worker nodes
+after they have been rebooted
+because containerd did not come up fast enough.
+(`Bug #907 <https://gitlab.com/alasca.cloud/tarook/tarook/-/work_items/907>`_)
