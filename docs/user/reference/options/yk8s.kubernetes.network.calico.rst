@@ -90,7 +90,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "3.32.1"
+  "3.32.2"
 
 
 **Example:**::
