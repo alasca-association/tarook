@@ -17,8 +17,14 @@ in {
   options.yk8s.kubernetes.network = mkSubSection {
     _docs.order = 8;
 
-    kube_proxy.enabled = mkDisableOption ''
-      kube-proxy. Disable if you want to use an eBPF dataplane
+    kube_proxy.enabled = mkEnableOption ''
+      kube-proxy.
+
+      .. warning::
+
+         kube-proxy interferes with Calico running in eBPF dataplane mode, which is the default.
+         Enable with care.
+
     '';
 
     pod_subnet = mkOption {
