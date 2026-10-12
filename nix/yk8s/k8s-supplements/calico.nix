@@ -179,7 +179,6 @@ in {
     };
   };
 
-  config.yk8s.kubernetes.network.kube_proxy.enabled = false;
   config.yk8s.kubernetes.network.calico.helm.values =
     {
       installation = {
@@ -260,6 +259,16 @@ in {
       whisker.enabled = false;
     };
 
-  config.yk8s._targets.ansible.assertions = [];
+  config.yk8s._targets.ansible.assertions = [
+    {
+      assertion = cfg.enabled -> cfg.helm.values.installation.calicoNetwork.linuxDataplane == "BPF" -> !config.yk8s.kubernetes.network.kube_proxy.enabled;
+      message = ''
+        Running Calico in eBPF dataplane mode (config.yk8s.kubernetes.network.calico.helm.values.installation.calicoNetwork.linuxDataplane)
+        requires kube-proxy to be disabled (config.yk8s.kubernetes.network.kube_proxy.enabled).
+        Depending on what you want to achieve, either disable kube-proxy or switch Calico
+        to another dataplane mode.
+      '';
+    }
+  ];
   config.yk8s._targets.ansible.warnings = [];
 }

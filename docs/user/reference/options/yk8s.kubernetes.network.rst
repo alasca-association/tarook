@@ -128,7 +128,13 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/n
 ``yk8s.kubernetes.network.kube_proxy.enabled``
 ##############################################
 
-Whether to enable kube-proxy. Disable if you want to use an eBPF dataplane
+Whether to enable kube-proxy.
+
+.. warning::
+
+   kube-proxy interferes with Calico running in eBPF dataplane mode, which is the default.
+   Reenable with care.
+
 .
 
 **Type:**::
@@ -138,12 +144,12 @@ Whether to enable kube-proxy. Disable if you want to use an eBPF dataplane
 
 **Default:**::
 
-  true
+  false
 
 
 **Example:**::
 
-  false
+  true
 
 
 **Declared by**

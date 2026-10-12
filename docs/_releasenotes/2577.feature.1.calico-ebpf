@@ -1,1 +1,6 @@
-kube-proxy can now be disabled, see :ref:`configuration-options.yk8s.kubernetes.network.kube_proxy.enabled`
+kube-proxy is now disabled by default as Calico is configured to use the eBPF dataplane mode now.
+It can be reenabled via :ref:`configuration-options.yk8s.kubernetes.network.kube_proxy.enabled`.
+
+.. warning::
+
+   kube-proxy interferes with Calico running in eBPF dataplane mode.
