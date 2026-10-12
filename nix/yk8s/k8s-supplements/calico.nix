@@ -46,7 +46,7 @@ in {
       defaultRepoUrl = "https://docs.tigera.io/calico/charts";
       defaultChartRef = "tigera-operator";
       # renovate: datasource=helm depName=tigera-operator registryUrl=https://docs.tigera.io/calico/charts
-      defaultChartVersion = "3.32.2";
+      defaultChartVersion = "3.33.0";
       defaultReleaseNamespace = "tigera-operator";
       defaultReleaseName = "calico";
       valuesDocUrl = "https://github.com/projectcalico/calico/blob/master/charts/tigera-operator/values.yaml";
@@ -135,7 +135,7 @@ in {
       # it should be decided whether synchronization of both chart versions must be enforced or not.
       # See discussion in: https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2466#note_3464067306
       # renovate: datasource=helm depName=crd.projectcalico.org.v1 registryUrl=https://docs.tigera.io/calico/charts
-      defaultChartVersion = "3.32.1";
+      defaultChartVersion = "3.33.0";
       defaultReleaseNamespace = "tigera-operator";
       defaultReleaseName = "calico-crds";
       valuesDocUrl = "https://github.com/projectcalico/calico/blob/master/charts/crd.projectcalico.org.v1/values.yaml";
