@@ -27,7 +27,11 @@ if [ -f "$RELEASENOTE_FILE" ]; then
   exit 2
 fi
 
-if [[ $DATASOURCE == 'helm' ]]; then
+if [[ $SOURCE_URL == 'https://github.com/projectcalico/calico' ]]; then
+  echo "Updated default version of Calico helm charts of $SOURCE_URL from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
+elif [[ $SOURCE_URL == 'https://github.com/envoyproxy/gateway' ]]; then
+  echo "Updated default version of Envoy helm charts of $SOURCE_URL from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
+elif [[ $DATASOURCE == 'helm' ]]; then
   if [[ -z $SOURCE_URL ]]; then
     echo "Updated default version of helm chart $DEP_NAME from $CURRENT_VERSION to $NEW_VERSION" > "$RELEASENOTE_FILE"
   else
