@@ -1,30 +1,65 @@
 ---
-- name: Run kubeadm upgrade node on CP node  # noqa no-changed-when
+- name: Run kubeadm upgrade node on CP node
   when:
     - do_upgrade | bool
     - "'masters' in group_names"
-  vars:
-    kubeadm_expression:
-      - "kubeadm"
-      - "upgrade"
-      - "node"
-      - "--patches"
-      - "/etc/kubernetes/kubeadm-patches"
-      - "--certificate-renewal=false"
-  include_role:
-    name: helpers/kubeadm-command
+  block:
+    - name: Run kubeadm upgrade node preflight on CP node  # noqa no-changed-when
+      vars:
+        kubeadm_expression:
+          - "kubeadm"
+          - "upgrade"
+          - "node"
+          - "preflight"
+          - "--patches"
+          - "/etc/kubernetes/kubeadm-patches"
+          - "--certificate-renewal=false"
+      include_role:
+        name: helpers/kubeadm-command
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+    - name: Run kubeadm upgrade node on CP node  # noqa no-changed-when
+      vars:
+        kubeadm_expression:
+          - "kubeadm"
+          - "upgrade"
+          - "node"
+          - "--patches"
+          - "/etc/kubernetes/kubeadm-patches"
+          - "--certificate-renewal=false"
+          # preflight checks are done by the previous task
+          - "--skip-phases"
+          - "preflight"
+      include_role:
+        name: helpers/kubeadm-command
 
-- name: Run kubeadm upgrade node on worker node  # noqa no-changed-when
+- name: Run kubeadm upgrade node on worker node
   when:
     - do_upgrade | bool
     - "'workers' in group_names"
-  vars:
-    kubeadm_expression:
-      - "kubeadm"
-      - "upgrade"
-      - "node"
-  include_role:
-    name: helpers/kubeadm-command
+  block:
+    - name: Run kubeadm upgrade node preflight on worker node  # noqa no-changed-when
+      vars:
+        kubeadm_expression:
+          - "kubeadm"
+          - "upgrade"
+          - "node"
+          - "preflight"
+      include_role:
+        name: helpers/kubeadm-command
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+    - name: Run kubeadm upgrade node on worker node  # noqa no-changed-when
+      vars:
+        kubeadm_expression:
+          - "kubeadm"
+          - "upgrade"
+          - "node"
+          # preflight checks are done by the previous task
+          - "--skip-phases"
+          - "preflight"
+      include_role:
+        name: helpers/kubeadm-command
 
 # Running kubeadm upgrade node potentially resets
 # the KubeletConfiguration on the node
