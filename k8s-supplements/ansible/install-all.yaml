@@ -17,6 +17,9 @@
 - name: Install monitoring stack
   import_playbook: install-monitoring.yaml
 
+- name: Install Envoy Gateway
+  import_playbook: install-envoy-gateway.yaml
+
 - name: Install cert-manager
   import_playbook: install-cert-manager.yaml
 
@@ -25,9 +28,6 @@
 
 - name: Install Ingress controller
   import_playbook: install-ingress.yaml
-
-- name: Install Envoy Gateway
-  import_playbook: install-envoy-gateway.yaml
 
 - name: Install etcd-backup
   import_playbook: install-etcd-backup.yaml
