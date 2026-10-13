@@ -1,0 +1,21 @@
+Updated default version of helm chart flux2 of https://github.com/fluxcd-community/helm-charts from 2.16.4 to 2.18.4
+
+.. important::
+
+   The flux2 chart v2.18.4 ships Flux v2.8.8.
+
+   Flux v2.7 and v2.8 `removed several deprecated beta APIs <https://github.com/fluxcd/flux2/discussions/5572>`__,
+   e.g. ``helm.toolkit.fluxcd.io/v2beta2`` and ``kustomize.toolkit.fluxcd.io/v1beta2``.
+   Flux resources already stored in the cluster are migrated automatically
+   by a pre-upgrade hook when the chart is upgraded.
+   Manifests you apply yourself (e.g. from Git) must be updated to the
+   stable API versions before upgrading, otherwise they will be rejected.
+   ``flux migrate -v 2.6 -f <path>`` rewrites them for you.
+
+   ``image.toolkit.fluxcd.io/v1beta2`` and ``notification.toolkit.fluxcd.io/v1beta2``
+   still work with this release but will be removed in Flux v2.9.
+   Migrate them after upgrading with ``flux migrate -v 2.8 -f <path>``.
+
+   **Do not skip this release when upgrading to a later one.**
+
+_
