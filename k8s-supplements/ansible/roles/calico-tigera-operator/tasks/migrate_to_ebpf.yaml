@@ -54,3 +54,31 @@
         spec:
           calicoNetwork:
             linuxDataplane: BPF
+
+  # The tigera-operator will immediately recreate it
+  # but it won't adapt it if it ever has been manually edited
+  # which would potentially cause complete connectivity loss
+  # during the migration to the eBPF dataplane
+  # if the FelixConfiguration does not contain
+  # "spec.bpfEnabled: true"
+  - name: Remove existing FelixConfiguration
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    kubernetes.core.k8s:
+      api_version: crd.projectcalico.org/v1
+      kind: FelixConfiguration
+      name: default
+      state: absent
+
+  - name: Wait for the tigera-operator to recreate FelixConfiguration with BPF enabled
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    kubernetes.core.k8s_info:
+      api_version: crd.projectcalico.org/v1
+      kind: FelixConfiguration
+      name: default
+    register: felix_config
+    until:
+    - felix_config.resources | length > 0
+    - felix_config.resources[0].spec.bpfEnabled | default(false)
+    retries: 120
+    delay: 5
+...

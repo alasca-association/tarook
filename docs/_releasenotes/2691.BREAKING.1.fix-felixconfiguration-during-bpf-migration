@@ -1,0 +1,28 @@
+Calico is now deployed in eBPF mode.
+For existing deployments running in iptables, ipvs or nftables mode,
+a migration is necessary.
+The migration is disruptive.
+
+Run the following to perform the migration:
+
+.. important::
+
+   When performing a release migration (see :doc:`/user/guide/upgrade-release`),
+   the Calico migration to the eBPF dataplane
+   must be executed **before** running the :ref:`apply-all action <actions-references.apply-allsh>`.
+
+.. important::
+
+   During the migration, the default ``FelixConfiguration`` will be recreated
+   which removes any manually added configuration.
+   Custom configuration of the ``FelixConfiguration`` must be handled via
+   :ref:`Calico's helm values <configuration-options.yk8s.kubernetes.network.calico.helm.values>`
+   as the tigera-operator refuses to continue managing it
+   if it detects manual changes.
+
+.. code:: console
+
+   $ MANAGED_K8S_RELEASE_THE_KRAKEN=true \
+     ./managed-k8s/actions/apply-k8s-supplements.sh install-calico.yaml
+
+_
