@@ -10,6 +10,9 @@
   tolerations = mkTolerations {inherit (cfg) scheduling_key;};
 in {
   config.yk8s.k8s-service-layer.prometheus.helm.values = {
+    # Enable/Disable kube-proxy scraping depending on whether kube-proxy is enabled
+    kubeProxy.enabled = config.yk8s.kubernetes.network.kube_proxy.enabled;
+    defaultRules.rules.kubeProxy = config.yk8s.kubernetes.network.kube_proxy.enabled;
     prometheus = {
       enabled = true;
       thanosService = {
