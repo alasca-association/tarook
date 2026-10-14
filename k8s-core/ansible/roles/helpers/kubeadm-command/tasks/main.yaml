@@ -19,6 +19,8 @@
     shell: "umask 077 && {{ kubeadm_expression | map('quote') | join(' ') }}"
     async: 1800
     poll: 3
+    retries: "{{ kubeadm_retries | default(0) }}"
+    delay: "{{ kubeadm_delay | default(0) }}"
 
 - name: Run kubeadm command on control plane node
   become: true
@@ -30,6 +32,8 @@
       shell: "umask 077 && {{ kubeadm_expression | map('quote') | join(' ') }}"
       async: 1800
       poll: 3
+      retries: "{{ kubeadm_retries | default(0) }}"
+      delay: "{{ kubeadm_delay | default(0) }}"
       register: kubeadm_command
     always:
     - include_tasks: reveal-ca-key.yaml

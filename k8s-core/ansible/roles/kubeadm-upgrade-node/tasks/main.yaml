@@ -14,10 +14,10 @@
           - "--patches"
           - "/etc/kubernetes/kubeadm-patches"
           - "--certificate-renewal=false"
+        kubeadm_retries: "{{ error_retries }}"
+        kubeadm_delay: "{{ error_delay }}"
       include_role:
         name: helpers/kubeadm-command
-      retries: "{{ error_retries }}"
-      delay: "{{ error_delay }}"
     - name: Run kubeadm upgrade node on CP node  # noqa no-changed-when
       vars:
         kubeadm_expression:
@@ -45,10 +45,10 @@
           - "upgrade"
           - "node"
           - "preflight"
+        kubeadm_retries: "{{ error_retries }}"
+        kubeadm_delay: "{{ error_delay }}"
       include_role:
         name: helpers/kubeadm-command
-      retries: "{{ error_retries }}"
-      delay: "{{ error_delay }}"
     - name: Run kubeadm upgrade node on worker node  # noqa no-changed-when
       vars:
         kubeadm_expression:
