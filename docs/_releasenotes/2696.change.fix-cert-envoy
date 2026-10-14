@@ -1,0 +1,2 @@
+Since Tarook supports Gateway API (via Envoy),
+cert-manager's integration for it will be enabled alongside by default.

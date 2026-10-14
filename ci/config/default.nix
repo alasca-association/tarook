@@ -328,6 +328,9 @@ in {
       fluxcd = {
         enabled = true;
       };
+      envoy-gateway = {
+        enabled = true;
+      };
     };
     testing = {
       force_reboot_nodes = true;

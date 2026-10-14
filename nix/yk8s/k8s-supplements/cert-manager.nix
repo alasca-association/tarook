@@ -115,17 +115,20 @@ in {
       inherit affinity tolerations;
       cainjector = {inherit affinity tolerations;};
       webhook = {inherit affinity tolerations;};
+      config =
+        {}
+        // lib.optionalAttrs config.yk8s.k8s-service-layer.envoy-gateway.enabled (
+          if lib.versionOlder config.yk8s.k8s-service-layer.envoy-gateway.helm.chart_version "1.21"
+          then {enableGatewayAPI = lib.mkDefault true;}
+          else {gatewayAPI.enabled = lib.mkDefault true;}
+        );
     }
     // lib.optionalAttrs config.yk8s.kubernetes.monitoring.enabled {
       prometheus = {
         enabled = true;
         servicemonitor.enabled = true;
         servicemonitor.labels = config.yk8s.k8s-service-layer.prometheus.common_labels;
-      } // lib.optionalAttrs config.yk8s.k8s-service-layer.envoy-gateway.enabled (
-        if lib.versionOlder config.yk8s.k8s-service-layer.envoy-gateway.helm.chart_version "1.21"
-        then {enableGatewayAPI = lib.mkDefault true;}
-        else {gatewayAPI.enabled = lib.mkDefault true;}
-      );
+      };
     };
 
   config.yk8s._targets.ansible.assertions = [];
