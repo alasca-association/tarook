@@ -23,4 +23,9 @@
         imports = [./config];
       };
     };
+
+  nixConfig = {
+    extra-substituters = "https://nix-cache.tarook.cloud";
+    extra-trusted-public-keys = "nix-cache.tarook.cloud-2:2X2yPTrpwmakhSgS83FVB2fKkG6IzfOJ1AGIIcvNyM0=";
+  };
 }

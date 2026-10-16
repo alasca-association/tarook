@@ -53,27 +53,13 @@ dependencies locked to specific versions so everybody can produce the same ident
 
       experimental-features = nix-command flakes
 
-3. (Optional) Add our binary cache in ``/etc/nix/nix.conf``
-   so you won't have to build anything from source
-
-   .. code:: ini
-
-      extra-substituters = https://nix-cache.tarook.cloud
-      extra-trusted-public-keys = nix-cache.tarook.cloud-2:2X2yPTrpwmakhSgS83FVB2fKkG6IzfOJ1AGIIcvNyM0=
-
-   .. note::
-
-      The binary cache must be configured in ``/etc/nix/nix.conf``.
-      Adding it to ``~/.config/nix/nix.conf`` is only doable if the current user
-      is added as ``trusted-user`` in ``/etc/nix/nix.conf`` which would have security implications.
-
-4. Restart the systemd service in order for the changes in ``nix.conf`` to take effect.
+3. Restart the systemd service in order for the changes in ``nix.conf`` to take effect.
 
    .. code:: console
 
       $ sudo systemctl daemon-reload
       $ sudo systemctl restart nix-daemon
 
-5. Install `direnv <https://direnv.net>`__ and configure its hook for your shell. This is not strictly necessary,
+4. Install `direnv <https://direnv.net>`__ and configure its hook for your shell. This is not strictly necessary,
    but the rest of the guide assumes that direnv is available. You can enter the virtual environments and set
    all necessary environment variables manually instead, but then you're on your own.

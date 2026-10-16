@@ -40,7 +40,7 @@
   variables:
     _ANSIBLE_TEMPLAR_UNTRUSTED_TEMPLATE_BEHAVIOR: error
     RUNNER_AFTER_SCRIPT_TIMEOUT: 30m
-    TAROOK_NIX_FLAGS: "--impure"
+    TAROOK_NIX_FLAGS: "${TAROOK_NIX_FLAGS} --impure"
     ANSIBLE_FORCE_COLOR: "true"
     managed_k8s_latest_release: "false"
     # CI/CD Variables are not available in services, so we have to bounce them

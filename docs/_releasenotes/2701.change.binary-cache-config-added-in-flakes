@@ -1,0 +1,4 @@
+Added config for our Nix binary cache at https://nix-cache.tarook.cloud to our flakes.
+We don't recommended anymore to configure our cache globally.
+Instead :ref:`update-inventory.sh<actions-references.update-inventorysh>` will
+ask to use and trust our cache (only for Tarook-related builds only).

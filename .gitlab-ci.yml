@@ -26,6 +26,8 @@ variables:
     - "true"
   CI_PAGES_URL_PRIMARY: "https://docs.tarook.cloud"
 
+  TAROOK_NIX_FLAGS: "--accept-flake-config"
+
 # Pipelines run on devel branch, release-(prepare)-branches and merge requests
 workflow:
   rules:
