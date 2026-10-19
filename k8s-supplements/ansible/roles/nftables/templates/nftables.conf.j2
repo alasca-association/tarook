@@ -5,7 +5,7 @@
 
 flush ruleset
 
-define wan = {{ ansible_default_ipv4.interface }}
+define wan = {{ ansible_facts['default_ipv4']['interface'] }}
 define haproxy_stats_port = {{ haproxy_stats_port }}
 define haproxy_prom_metrics_port = 9101
 define keepalived_prom_metrics_port = 9650

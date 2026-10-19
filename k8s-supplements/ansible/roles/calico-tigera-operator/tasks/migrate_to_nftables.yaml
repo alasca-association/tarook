@@ -57,6 +57,6 @@
           template:
             metadata:
               annotations:
-                kubectl.kubernetes.io/restartedAt: "{{ ansible_date_time.iso8601 }}"
+                kubectl.kubernetes.io/restartedAt: "{{ ansible_facts['date_time']['iso8601'] }}"
     when: kube_proxy_cm.resources | length > 0
 ...

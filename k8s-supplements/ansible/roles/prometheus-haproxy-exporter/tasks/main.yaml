@@ -1,6 +1,6 @@
 ---
 - name: Installation on Debian
-  when: ansible_os_family == 'Debian'
+  when: ansible_facts['os_family'] == 'Debian'
   block:
     - name: Install prometheus-haproxy-exporter
       become: true

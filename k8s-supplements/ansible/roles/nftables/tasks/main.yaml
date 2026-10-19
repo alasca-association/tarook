@@ -21,7 +21,7 @@
   set_fact:
     priv_ip_cidr: "{{ ip | ansible.utils.ipaddr('network/prefix') }}"
   vars:
-    ip: "{{ ansible_default_ipv4.address }}/{{ ansible_default_ipv4.netmask }}"
+    ip: "{{ ansible_facts['default_ipv4']['address'] }}/{{ ansible_facts['default_ipv4']['netmask'] }}"
 
 - name: Create drop-in directory for other rules
   become: true
