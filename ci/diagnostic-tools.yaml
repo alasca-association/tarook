@@ -11,23 +11,13 @@
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, script]
   - ./managed-k8s/actions/k8s-login.sh
   - export KUBECONFIG="$(pwd)/etc/admin.conf"
+  # We have to remove the taints for sonobuoy to complete
   - kubectl taint node ci-worker-gpu-0 k8s.yaook.cloud/gpu-node=true:NoSchedule-
   - kubectl taint node ci-worker-storage-0 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
   - kubectl taint node ci-worker-storage-1 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
   - kubectl taint node ci-worker-storage-2 scheduling.mk8s.cloudandheat.com/storage=true:NoSchedule-
    # Run sonobuoy in conformance mode and wait until tests are finished
-  - sonobuoy run --mode=certified-conformance --wait
-  # Save artifacts
-  - mkdir -p diagnostics/sonobuoy/
-  - sonobuoy retrieve diagnostics/sonobuoy/
-  - tar xzf diagnostics/sonobuoy/*.tar.gz -C diagnostics/sonobuoy/
-  # check whether sonobuoy failed
-  - outfile=$(sonobuoy retrieve)
-  - |
-    if [[ $(sonobuoy results $outfile | grep "Status: failed" | wc -l) -gt 0 ]]; then
-      echo "Sonobuoy failed. Please have a look at the jobs artifacts for details." 1>&2
-      exit 1
-    fi
+  - ./managed-k8s/ci/sonobuoy.sh
   after_script:
   - !reference [.prepare_spawn_test_cleanup_k8s_cluster, after_script]
   artifacts:
