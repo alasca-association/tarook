@@ -1,0 +1,4 @@
+The HAProxy health check for the kube-apiservers now uses ``/readyz``.
+A kube-apiserver which cannot reach its etcd member is now taken out of the load balancing and existing connections to it are closed.
+Previously, requests to such a kube-apiserver hung,
+which could cause repeated leader election failures of kube-controller-manager and kube-scheduler.
