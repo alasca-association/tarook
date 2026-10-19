@@ -1,0 +1,11 @@
+Tarook's Ansible code no longer relies on facts being injected as top-level
+variables (e.g. ``ansible_os_family``) and uses ``ansible_facts['os_family']``
+instead, which silences the corresponding ``INJECT_FACTS_AS_VARS`` deprecation
+warning.
+
+If you use custom playbooks or roles (``k8s-custom``), please migrate them as well:
+ansible-core 2.24 will stop injecting facts as ``ansible_*`` variables by default,
+so references like ``ansible_distribution`` or ``ansible_default_ipv4.interface``
+must become ``ansible_facts['distribution']`` and
+``ansible_facts['default_ipv4']['interface']``.
+Connection variables such as ``ansible_host`` or ``ansible_user`` are not affected.
