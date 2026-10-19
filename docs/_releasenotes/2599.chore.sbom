@@ -1,1 +1,0 @@
-The CI now generates SBOMs containing Nix dependencies, image dependencies from containers used in the pipeline and runtime dependencies (Ansible Galaxy Collections and Helm Charts).
