@@ -1,1 +1,0 @@
-The git protocol is now used for Flake inputs in order to avoid GitHub API rate limits.
