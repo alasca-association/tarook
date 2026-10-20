@@ -9,24 +9,28 @@
   inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
 in {
   options.yk8s.containerd = mkTopSection {
+    _docs.preface = ''
+      Changes to the following options only directly affect newly provisioned Kubernetes nodes,
+      because restarting containerd is considered unsafe for already initialized Kubernetes nodes.
+
+      To apply configuration changes on **all** Kubernetes nodes,
+      either do a :doc:`Kubernetes upgrade </user/guide/kubernetes/upgrading-kubernetes>`,
+      do a host OS update on all nodes via
+      :ref:`update-kubernetes-nodes.sh<actions-references.update-kubernetes-nodessh>`,
+      or, if you are brave, run:
+
+      .. warning::
+
+         This is potentially disruptive.
+
+         .. code:: console
+
+            $ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-core.sh prepare-k8s-nodes.yaml
+
+    '';
     version = mkOption {
       description = ''
         The containerd version to be deployed on Kubernetes nodes.
-
-        Changes to this option only directly affect newly provisioned Kubernetes nodes.
-        To adjust the containerd version on **all** Kubernetes nodes,
-        either do a :doc:`Kubernetes upgrade </user/guide/kubernetes/upgrading-kubernetes>`,
-        update the OS packages on all nodes via
-        :ref:`update-kubernetes-nodes.sh<actions-references.update-kubernetes-nodessh>`,
-        or, if you are brave, run:
-
-        .. warning::
-
-           This is potentially disruptive.
-
-        .. code:: console
-
-           $ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-core.sh prepare-k8s-nodes.yaml
 
         .. note::
 
