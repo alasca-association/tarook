@@ -1,0 +1,2 @@
+containerd is now by default configured to discard downloaded image layers after they have been unpacked,
+see :ref:`configuration-options.yk8s.containerd.discard_unpacked_layers`.

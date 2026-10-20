@@ -6,7 +6,7 @@
 }: let
   cfg = config.yk8s.containerd;
   inherit (lib) mkOption;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types mkDisableOption;
 in {
   options.yk8s.containerd = mkTopSection {
     _docs.preface = ''
@@ -42,6 +42,20 @@ in {
       default = "2.3.5";
       example = "2.2.1";
     };
+    discard_unpacked_layers = mkDisableOption ''
+      discarding of unpacked layers.
+      This allows containerd's garbage collection
+      to remove layers from the content store after
+      successfully unpacking these layers to the snapshotter.
+
+      .. note::
+
+         Already existing layers in the content store will not be removed.
+         We recommend to run ``ctr -n k8s.io content prune references``
+         on each Kubernetes node when enabling this option.
+
+      See `full configuration of containerd <https://containerd.io/docs/2.4/cri/config/#full-configuration>`__
+    '';
     mirrors = mkOption {
       description = ''
         Registry mirrors which will be configured for containerd.
