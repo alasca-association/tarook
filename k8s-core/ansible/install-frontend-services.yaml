@@ -6,6 +6,7 @@
 
 - name: Fail if node got not bootstrapped once, yet
   hosts: frontend
+  strategy: free  # noqa: run-once[play]
   tasks:
   - name: Fail if node got not bootstrapped once, yet
     when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)
@@ -23,6 +24,7 @@
 
 - name: Configure sysctl on frontend nodes
   hosts: frontend
+  strategy: free  # noqa: run-once[play]
   gather_facts: false
   roles:
   - role: nf-conntrack
@@ -30,6 +32,7 @@
 
 - name: Install & configure frontend services
   hosts: frontend
+  strategy: free  # noqa: run-once[play]
   gather_facts: true
   vars_files:
   - vars/disruption.yaml
@@ -48,6 +51,7 @@
 
 - name: Set static fact that frontend node is initialized
   hosts: frontend
+  strategy: free  # noqa: run-once[play]
   gather_facts: false
   tasks:
   - name: Set static fact that frontend node is initialized

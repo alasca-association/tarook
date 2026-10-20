@@ -4,6 +4,7 @@
 
 - name: Sanity checks
   hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  strategy: free  # noqa: run-once[play]
   tasks:
   - name: Sanity checks for Kubernetes control-plane nodes
     when: "'masters' in group_names"
@@ -20,6 +21,7 @@
 
 - name: Onboard node
   hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  strategy: free  # noqa: run-once[play]
   vars_files:
   - vars/disruption.yaml
   - vars/auto_generated_preamble.yaml
@@ -40,6 +42,7 @@
 
 - name: Harden SSH
   hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  strategy: free  # noqa: run-once[play]
   become: true
   vars_files:
   - vars/ssh-hardening.yaml
@@ -83,6 +86,7 @@
 
 - name: Prepare node
   hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  strategy: free  # noqa: run-once[play]
   gather_facts: true # we need facts and at this point in time we can get them
   vars_files:
   - vars/auto_generated_preamble.yaml
@@ -141,6 +145,7 @@
 
 - name: Update apt cache
   hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  strategy: free  # noqa: run-once[play]
   vars_files:
   - vars/retries.yaml
   tasks:
@@ -155,6 +160,7 @@
 
 - name: Detect GPU
   hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  strategy: free  # noqa: run-once[play]
   vars_files:
   - vars/retries.yaml
   roles:
@@ -168,6 +174,7 @@
 
 - name: Set static fact that node got bootstrapped once
   hosts: "{{ target_hosts | default('all:!orchestrator') }}"
+  strategy: free  # noqa: run-once[play]
   gather_facts: false
   tags:
   - bootstrap

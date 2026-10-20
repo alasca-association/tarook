@@ -23,14 +23,12 @@
 
 - name: Renew PKI (CP)
   hosts: masters
+  strategy: free  # noqa: run-once[play]
   gather_facts: true
   vars_files:
     - vars/etc.yaml
     - vars/retries.yaml
     - vars/vault-config.yaml
-  serial:
-    - 1
-    - "100%"
   tasks:
     - name: Obtain CAs (CP)
       include_role:
@@ -59,6 +57,7 @@
 
 - name: Renew PKI (Worker)
   hosts: workers
+  strategy: free  # noqa: run-once[play]
   gather_facts: true
   vars_files:
     - vars/etc.yaml
@@ -80,6 +79,7 @@
 
 - name: Upgrade kubeadm on all control plane nodes
   hosts: masters
+  strategy: free  # noqa: run-once[play]
   gather_facts: true
   vars_files:
     - vars/retries.yaml

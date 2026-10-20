@@ -7,6 +7,7 @@
 - name: Destroy the cluster
   hosts: k8s_nodes
   become: true
+  strategy: free  # noqa: run-once[play]
   tasks:
     - name: Check if kubeadm exists
       command: which kubeadm

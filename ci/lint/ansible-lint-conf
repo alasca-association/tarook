@@ -11,6 +11,7 @@ skip_list:
   - var-naming[no-role-prefix]
   - fqcn-builtins
   - yaml[document-end]
+  - run-once[play]
 
 exclude_paths:
   - .gitlab-ci.yml

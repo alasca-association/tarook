@@ -4,6 +4,7 @@
 
 - name: Fail if node got not bootstrapped once, yet
   hosts: all:!orchestrator
+  strategy: free  # noqa: run-once[play]
   tasks:
   - name: Fail if node got not bootstrapped once, yet
     when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)
@@ -21,6 +22,7 @@
 
 - name: Spawn the K8s control plane
   hosts: masters
+  strategy: free  # noqa: run-once[play]
   gather_facts: true
   vars_files:
   - vars/disruption.yaml
@@ -41,6 +43,7 @@
 
 - name: Spawn and configure the K8s worker nodes
   hosts: workers
+  strategy: free  # noqa: run-once[play]
   gather_facts: true
   vars_files:
   - vars/disruption.yaml
@@ -55,6 +58,7 @@
 
 - name: Configure Kubelet of K8s nodes
   hosts: k8s_nodes
+  strategy: free  # noqa: run-once[play]
   gather_facts: true
   vars_files:
   - vars/retries.yaml

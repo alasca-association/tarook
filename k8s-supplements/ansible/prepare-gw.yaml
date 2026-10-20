@@ -14,6 +14,7 @@
 
 - name: Configure load balancer and VPN on Gateways nodes
   hosts: gateways
+  strategy: free  # noqa: run-once[play]
   gather_facts: true
   vars_files:
   - vars/disruption.yaml

@@ -37,6 +37,7 @@
 
 - name: Fail if node got not bootstrapped once, yet
   hosts: k8s_nodes
+  strategy: free  # noqa: run-once[play]
   tasks:
   - name: Fail if node got not bootstrapped once, yet
     when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)
@@ -54,6 +55,7 @@
 
 - name: Check K8s setup
   hosts: k8s_nodes
+  strategy: free  # noqa: run-once[play]
   become: false
   gather_facts: false
   vars_files:
@@ -89,6 +91,7 @@
 
 - name: Validate Kubernetes network configuration
   hosts: k8s_nodes
+  strategy: free  # noqa: run-once[play]
   vars_files:
   - vars/retries.yaml
   roles:
@@ -112,6 +115,7 @@
 
 - name: Test Calico CNI Support
   hosts: k8s_nodes
+  strategy: free  # noqa: run-once[play]
   gather_facts: false
   vars_files:
   - vars/retries.yaml

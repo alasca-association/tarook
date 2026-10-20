@@ -21,6 +21,7 @@
 
 - name: Prepare the k8s nodes
   hosts: k8s_nodes
+  strategy: free  # noqa: run-once[play]
   gather_facts: true
   vars_files:
   - vars/etc.yaml

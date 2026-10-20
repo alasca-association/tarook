@@ -8,6 +8,7 @@
 
 - name: Fail if node got not bootstrapped once, yet
   hosts: k8s_nodes
+  strategy: free  # noqa: run-once[play]
   tasks:
     - name: Fail if node got not bootstrapped once, yet
       when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)

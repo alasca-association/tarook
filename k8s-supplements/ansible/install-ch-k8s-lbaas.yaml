@@ -6,6 +6,7 @@
 
 - name: Fail if node got not bootstrapped once, yet
   hosts: frontend
+  strategy: free  # noqa: run-once[play]
   tasks:
   - name: Fail if node got not bootstrapped once, yet
     when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)
@@ -36,6 +37,7 @@
 
 - name: Install ch-k8s-lbaas
   hosts: frontend
+  strategy: free  # noqa: run-once[play]
   vars_files:
   - vars/auto_generated_preamble.yaml
   - vars/disruption.yaml

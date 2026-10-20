@@ -6,6 +6,7 @@
 
 - name: Fail if node got not bootstrapped once, yet
   hosts: frontend
+  strategy: free  # noqa: run-once[play]
   tasks:
   - name: Fail if node got not bootstrapped once, yet
     when: not (ansible_local['bootstrap']['bootstrapped'] | default(False) | bool)
@@ -36,6 +37,7 @@
 - name: Upgrade all uninitialized frontend nodes
   gather_facts: true
   hosts: not_initialized_frontend_nodes
+  strategy: free  # noqa: run-once[play]
   vars_files:
   - vars/disruption.yaml
   - vars/retries.yaml
