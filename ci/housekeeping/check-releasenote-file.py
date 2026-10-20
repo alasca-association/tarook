@@ -24,7 +24,7 @@ def get_releasenote_files(
 
     note_files = repository.git.diff(
         target_branch,
-        "--name-only", "--diff-filter=A",
+        "--name-only", "--diff-filter=AR",
         "--", note_directory
     )
 
