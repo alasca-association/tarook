@@ -24,18 +24,20 @@ frontend k8s_front
 
 {% macro backend_common_options() -%}
   mode tcp
-  http-check expect status 403
+  http-check expect status 200
   option redispatch
   log global
   balance roundrobin
   timeout connect 10s
   timeout server 600s
+  timeout check 5s
+  default-server inter 2s fall 3 rise 2 on-marked-down shutdown-sessions
 {%- endmacro %}
 
 {% if ipv4_enabled %}
 backend k8s_back
   option httpchk
-  http-check send meth GET ver HTTP/1.1 hdr Host 192.168.0.14
+  http-check send meth GET uri /readyz ver HTTP/1.1 hdr Host 192.168.0.14
   {{ backend_common_options() }}
 
   {% for host in groups['masters'] %}
@@ -46,7 +48,7 @@ backend k8s_back
 {% if ipv6_enabled %}
 backend k8s_back6
   option httpchk
-  http-check send meth GET ver HTTP/1.1 hdr Host fe80::14
+  http-check send meth GET uri /readyz ver HTTP/1.1 hdr Host fe80::14
   {{ backend_common_options() }}
 
   {% for host in groups['masters'] %}
