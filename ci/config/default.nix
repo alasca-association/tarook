@@ -46,7 +46,7 @@ in {
       };
       master_defaults = {
         flavor = selectByRegion {
-          f1d = "SCS-2T-4-25s";
+          f1d = "SCS-2T-8-25s";
         };
         image = ubuntu26;
       };
