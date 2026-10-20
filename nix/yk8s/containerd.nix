@@ -6,7 +6,7 @@
 }: let
   cfg = config.yk8s.containerd;
   inherit (lib) mkOption;
-  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types;
+  inherit (yk8s-lib) mkTopSection mkGroupVarsFile types mkDisableOption;
 in {
   options.yk8s.containerd = mkTopSection {
     _docs.preface = ''
@@ -41,6 +41,17 @@ in {
       default = "2.3.5";
       example = "2.2.1";
     };
+    discard_unpacked_layers = mkDisableOption ''
+      discard of unpacked layers.
+      ``discard_unpacked_layers`` allows GC to remove layers from the content store after
+      successfully unpacking these layers to the snapshotter.
+
+      .. note::
+
+         Changes do only apply to images pulled afterwards.
+
+      See `full configuration of containerd <https://containerd.io/docs/2.4/cri/config/#full-configuration>`__
+    '';
     mirrors = mkOption {
       description = ''
         Registry mirrors which will be configured for containerd.

@@ -22,6 +22,41 @@ or, if you are brave, run:
       $ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-core.sh prepare-k8s-nodes.yaml
 
 
+.. _configuration-options.yk8s.containerd.discard_unpacked_layers:
+
+``yk8s.containerd.discard_unpacked_layers``
+###########################################
+
+Whether to enable discard of unpacked layers.
+``discard_unpacked_layers`` allows GC to remove layers from the content store after
+successfully unpacking these layers to the snapshotter.
+
+.. note::
+
+   Changes do only apply to images pulled afterwards.
+
+See `full configuration of containerd <https://containerd.io/docs/2.4/cri/config/#full-configuration>`__
+.
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  true
+
+
+**Example:**::
+
+  false
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/containerd.nix
+
+
 .. _configuration-options.yk8s.containerd.mirrors:
 
 ``yk8s.containerd.mirrors``
