@@ -1,1 +1,0 @@
-The helm chart for nvidia-dcgm-exporter can now be configured with arbitrary values through :ref:`configuration-options.yk8s.k8s-service-layer.prometheus.nvidia_dcgm_exporter.helm.values`.
