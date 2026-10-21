@@ -25,19 +25,15 @@ in {
     openstack = let
       ubuntu26 = selectByRegion {
         f1d = "Ubuntu 26.04";
-        f1a = "Ubuntu 26.04 LTS x64";
       };
       ubuntu24 = selectByRegion {
         f1d = "Ubuntu 24.04";
-        f1a = "Ubuntu 24.04 LTS x64";
       };
       ubuntu22 = selectByRegion {
         f1d = "Ubuntu 22.04";
-        f1a = "Ubuntu 22.04 LTS x64";
       };
       debian = selectByRegion {
         f1d = "Debian 13";
-        f1a = "Debian 13 (trixie)";
       };
     in {
       azs = [
@@ -47,26 +43,22 @@ in {
       ];
       public_network = selectByRegion {
         f1d = "public";
-        f1a = "shared-public-IPv4";
       };
       master_defaults = {
         flavor = selectByRegion {
-          f1d = "SCS-2T-4-25s";
-          f1a = "M";
+          f1d = "SCS-2T-8-25s";
         };
         image = ubuntu26;
       };
       worker_defaults = {
         flavor = selectByRegion {
           f1d = "SCS-2T-4-25s";
-          f1a = "M";
         };
         image = ubuntu26;
       };
       gateway_defaults = {
         flavor = selectByRegion {
           f1d = "SCS-1T-1-15s";
-          f1a = "XS";
         };
         image = debian;
       };
@@ -88,7 +80,6 @@ in {
           role = "worker";
           flavor = selectByRegion {
             f1d = "SCS-8T-16-100s";
-            f1a = "XL";
           };
           image = ubuntu24;
         };
@@ -97,7 +88,6 @@ in {
           anti_affinity_group = "worker-node-anti-affinity";
           flavor = selectByRegion {
             f1d = "SCS-4T-8-50s";
-            f1a = "L";
           };
           image = ubuntu24;
         };
@@ -105,7 +95,6 @@ in {
           role = "worker";
           flavor = selectByRegion {
             f1d = "SCS-4T-8-50s";
-            f1a = "L";
           };
           az = "AZ2";
         };
@@ -114,7 +103,6 @@ in {
           anti_affinity_group = "worker-node-anti-affinity";
           flavor = selectByRegion {
             f1d = "SCS-4T-8-50s";
-            f1a = "L";
           };
           az = "AZ3";
         };
@@ -122,7 +110,6 @@ in {
           role = "worker";
           flavor = selectByRegion {
             f1d = "SCS-8T-16-100s";
-            f1a = "XL";
           };
           image = ubuntu22;
         };
@@ -130,7 +117,6 @@ in {
           role = "worker";
           flavor = selectByRegion {
             f1d = "CH-8C:32:100s-GN:1xA2";
-            f1a = "CH-8C:32:100s-GN:1xTeslaT4";
           };
         };
         worker-cpu-2 = {
@@ -141,7 +127,6 @@ in {
       };
       cinder_volume_type = selectByRegion {
         f1d = "f1c-hdd";
-        f1a = "three_times_replicated-sitewide";
       };
     };
     load-balancing = {
