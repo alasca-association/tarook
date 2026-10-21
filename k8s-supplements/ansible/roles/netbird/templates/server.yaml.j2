@@ -1,0 +1,122 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: netbird-server-config
+  namespace: {{ netbird_namespace | to_json }}
+type: Opaque
+data:
+  config.yaml: {{ netbird_config | b64encode | to_json }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: netbird-data
+  namespace: {{ netbird_namespace | to_json }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: {{ netbird_storage_class | to_json }}
+  resources:
+    requests:
+      storage: {{ netbird_storage_size | to_json }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbird-server
+  namespace: {{ netbird_namespace | to_json }}
+  labels:
+    app.kubernetes.io/name: netbird-server
+    app.kubernetes.io/part-of: netbird
+  annotations:
+    # fingerprint of the rendered pod template, used to detect restarts
+    yaook.cloud/pod-template-hash: {{ netbird_server_template_hash | default('') | to_json }}
+spec:
+  # SQLite on a RWO volume: there must never be two instances
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: netbird-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: netbird-server
+        app.kubernetes.io/part-of: netbird
+      annotations:
+        checksum/config: {{ netbird_config | hash('sha256') | to_json }}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      affinity: {{ netbird_affinity | to_json }}
+      tolerations: {{ netbird_tolerations | to_json }}
+      containers:
+      - name: netbird-server
+        image: {{ netbird_server_image | to_json }}
+        args: ["--config", "/etc/netbird/config.yaml"]
+        env:
+        - name: NB_SETUP_PAT_ENABLED
+          value: {{ netbird_setup_pat_enabled | bool | string | lower | to_json }}
+        ports:
+        - name: http
+          containerPort: {{ netbird_listen_port }}
+          protocol: TCP
+        - name: stun
+          containerPort: {{ netbird_stun_port }}
+          protocol: UDP
+        - name: health
+          containerPort: {{ netbird_health_port }}
+          protocol: TCP
+        - name: metrics
+          containerPort: {{ netbird_metrics_port }}
+          protocol: TCP
+        # /health dials the public relay URL. It checks end-to-end
+        # reachability via the Gateway. It must not be used for probes because the
+        # Gateway is only created after bootstrap, and an outage of the Gateway
+        # or DNS must not restart the server or remove it from its Services.
+        readinessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 20
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            memory: 1Gi
+        volumeMounts:
+        - name: config
+          mountPath: /etc/netbird
+          readOnly: true
+        - name: data
+          mountPath: /var/lib/netbird
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: config
+        secret:
+          secretName: netbird-server-config
+      - name: data
+        persistentVolumeClaim:
+          claimName: netbird-data
+      - name: tmp
+        emptyDir: {}
