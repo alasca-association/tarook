@@ -15,8 +15,14 @@ python3.pkgs.buildPythonApplication (finalAttrs: {
   ];
 
   dependencies = with python3.pkgs; [
+    ansible-runner
     click
+    pyyaml
   ];
+
+  passthru = {
+    inherit python3;
+  };
 
   meta = {
     description = "CLI tool to manage Tarook Kubernetes Clusters";

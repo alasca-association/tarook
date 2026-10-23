@@ -1,5 +1,6 @@
 import click
 
+import handlers.addons
 from lib import exec_cmd
 
 
@@ -70,3 +71,10 @@ def supplements(ctx, playbook):
 def custom(ctx):
     """Apply custom play"""
     exec_cmd(ctx.obj["cluster_repo"], ctx.obj["code_path"] / "actions/apply-custom.sh")
+
+
+@apply.command
+@click.pass_context
+def addons(ctx):
+    """Apply addons"""
+    handlers.addons.apply(ctx.obj["cluster_repo"], ctx.obj["code_path"])

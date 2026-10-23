@@ -32,6 +32,7 @@
           };
         };
         imports = [
+          ./addons.nix
           ./conf-vars.nix
           ./infra.nix
           ./terraform.nix
