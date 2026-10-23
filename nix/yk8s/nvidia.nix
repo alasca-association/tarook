@@ -11,6 +11,18 @@
   inherit (yk8s-lib.options) mkHelmReleaseOptions;
 in {
   options.yk8s.nvidia = mkTopSection {
+    container_toolkit = {
+      version = mkOption {
+        description = ''
+          The NVIDIA Container Toolkit version to be deployed on Kubernetes nodes and
+          is a collection of libraries and utilities to build and run GPU-accelerated containers.
+        '';
+        type = types.yk8s.version.semver2VersionStr;
+        # renovate: datasource=github-releases packageName=NVIDIA/nvidia-container-toolkit
+        default = "1.20.1";
+        example = "1.14.0";
+      };
+    };
     vgpu = {
       driver_blob_url = mkOption {
         description = ''
