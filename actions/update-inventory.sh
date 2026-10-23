@@ -6,7 +6,7 @@ actions_dir="$(dirname "$0")"
 . "$actions_dir/lib.sh"
 
 # Available targets
-declare -a targets=("conf_vars" "vault" "terraform" "ansible")
+declare -a targets=("conf_vars" "vault" "terraform" "ansible" "addons")
 
 # print help message
 function helpf() {
