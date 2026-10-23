@@ -5,6 +5,34 @@ yk8s.nvidia
 
 
 
+.. _configuration-options.yk8s.nvidia.container_toolkit.version:
+
+``yk8s.nvidia.container_toolkit.version``
+#########################################
+
+The NVIDIA Container Toolkit version to be deployed on Kubernetes nodes and
+is a collection of libraries and utilities to build and run GPU-accelerated containers.
+
+
+**Type:**::
+
+  Semantic version 2 string
+
+
+**Default:**::
+
+  "1.20.1"
+
+
+**Example:**::
+
+  "1.14.0"
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/nvidia.nix
+
+
 .. _configuration-options.yk8s.nvidia.device_plugin.helm.chart_ref:
 
 ``yk8s.nvidia.device_plugin.helm.chart_ref``
