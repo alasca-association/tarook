@@ -1,5 +1,6 @@
 import click
 
+import handlers.config
 from lib import exec_cmd
 
 
@@ -52,8 +53,8 @@ def kubernetes_nodes(ctx, skip_upgrade_checks):
 @click.pass_context
 def inventory(ctx, target):
     """Update the inventory. This is run automatically by all dependent tasks"""
-    exec_cmd(
+    handlers.config.update_inventory(
         ctx.obj["cluster_repo"],
-        ctx.obj["code_path"] / "actions/update-inventory.sh",
-        [target],
+        ctx.obj["code_path"],
+        target,
     )
