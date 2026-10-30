@@ -17,6 +17,15 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v14.0.5 (2026-10-30)
+--------------------
+
+Bugfixes
+~~~~~~~~
+
+- The flake inputs have been updated in order to fix `CVE-2026-111943 "eMudhra Intermediate CA Compromise" <https://gitlab.com/groups/alasca.cloud/tarook/-/work_items/1>`__ (`!2713 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2713>`_)
+
+
 v14.0.4 (2026-09-16)
 --------------------
 
