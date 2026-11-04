@@ -39,7 +39,6 @@ in {
         Kubernetes version
       '';
       type = types.yk8s.k8s.kubernetesVersions [
-        [1 33]
         [1 34]
         [1 35]
         [1 36]
