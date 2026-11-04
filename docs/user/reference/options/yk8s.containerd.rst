@@ -4,6 +4,62 @@ yk8s.containerd
 ^^^^^^^^^^^^^^^
 
 
+By default changes to the following options are only applied to newly provisioned Kubernetes nodes,
+because restarting containerd is considered unsafe for already initialized Kubernetes nodes.
+
+To apply configuration changes on **all** Kubernetes nodes, do one of the following:
+
+a. Run a :doc:`Kubernetes upgrade </user/guide/kubernetes/upgrading-kubernetes>` with :ref:`actions-references.upgradesh`
+b. Run a host OS update against all nodes with :ref:`actions-references.update-kubernetes-nodessh`
+c. Run :ref:`actions-references.apply-k8s-coresh` with disruption allowed (not recommended)
+
+   .. warning::
+
+      This is potentially disruptive,
+      because it does not drain nodes before restarting components like containerd.
+
+      .. code:: console
+
+         $ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-core.sh prepare-k8s-nodes.yaml
+
+
+.. _configuration-options.yk8s.containerd.discard_unpacked_layers:
+
+``yk8s.containerd.discard_unpacked_layers``
+###########################################
+
+Whether to enable discarding of unpacked layers.
+This allows containerd's garbage collection
+to remove layers from the content store after
+successfully unpacking these layers to the snapshotter.
+
+.. note::
+
+   Already existing layers in the content store will not be removed.
+   We recommend to run ``ctr -n k8s.io content prune references``
+   on each Kubernetes node when enabling this option.
+
+See `full configuration of containerd <https://containerd.io/docs/2.4/cri/config/#full-configuration>`__
+.
+
+**Type:**::
+
+  boolean
+
+
+**Default:**::
+
+  true
+
+
+**Example:**::
+
+  false
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/containerd.nix
+
 
 .. _configuration-options.yk8s.containerd.mirrors:
 
@@ -122,21 +178,6 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/containerd.n
 ###########################
 
 The containerd version to be deployed on Kubernetes nodes.
-
-Changes to this option only directly affect newly provisioned Kubernetes nodes.
-To adjust the containerd version on **all** Kubernetes nodes,
-either do a :doc:`Kubernetes upgrade </user/guide/kubernetes/upgrading-kubernetes>`,
-update the OS packages on all nodes via
-:ref:`update-kubernetes-nodes.sh<actions-references.update-kubernetes-nodessh>`,
-or, if you are brave, run:
-
-.. warning::
-
-   This is potentially disruptive.
-
-.. code:: console
-
-   $ MANAGED_K8S_RELEASE_THE_KRAKEN=true bash managed-k8s/actions/apply-k8s-core.sh prepare-k8s-nodes.yaml
 
 .. note::
 
