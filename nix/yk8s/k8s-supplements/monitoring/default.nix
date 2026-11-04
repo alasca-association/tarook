@@ -204,7 +204,7 @@ in {
       defaultRepoUrl = "https://prometheus-community.github.io/helm-charts";
       defaultChartRef = "prometheus-adapter";
       # renovate: datasource=helm depName=prometheus-adapter registryUrl=https://prometheus-community.github.io/helm-charts
-      defaultChartVersion = "5.3.0";
+      defaultChartVersion = "5.4.0";
       defaultReleaseNamespace = "monitoring";
       defaultReleaseName = "prometheus-adapter";
       valuesDocUrl = "https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-adapter/values.yaml";
