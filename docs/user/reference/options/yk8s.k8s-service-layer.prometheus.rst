@@ -723,7 +723,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "91.9.0"
+  "93.1.0"
 
 
 **Example:**::
