@@ -74,7 +74,7 @@ in {
         };
         master-2 = {
           role = "master";
-          image = ubuntu22;
+          image = debian;
         };
         worker-storage-0 = {
           role = "worker";
@@ -118,6 +118,7 @@ in {
           flavor = selectByRegion {
             f1d = "CH-8C:32:100s-GN:1xA2";
           };
+          image = debian;
         };
         worker-cpu-2 = {
           role = "worker";
