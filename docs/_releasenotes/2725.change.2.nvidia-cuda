@@ -1,0 +1,5 @@
+The Nvidia CUDA repository is configured as a deb822 ``.sources`` file now.
+For existing nodes, this change takes effect on the next
+:doc:`Kubernetes upgrade </user/guide/kubernetes/upgrading-kubernetes>`
+or
+:ref:`system update<actions-references.update-kubernetes-nodessh>`.

@@ -1,4 +1,8 @@
 ---
+# The drivers are pinned to the 595 branch, which is set in two places:
+# the Ubuntu package names and the Debian pinning package.
+# Before switching to another branch, verify that it supports the GPUs
+# in use and that existing nodes can be migrated to it.
 - name: Install GPU drivers
   become: true
   when:
@@ -24,7 +28,14 @@
     apt:
       state: present
       name:
-      - "linux-headers-{{ ansible_kernel }}"
+      # HACK: @TODO: Try to find a better solution
+      # Headers metapackage of the running kernel's flavor, e.g.
+      # linux-headers-cloud-amd64 for "6.12.57+deb13-cloud-amd64" (Debian) or
+      # linux-headers-generic for "6.8.0-87-generic" (Ubuntu).
+      # The flavor is what remains after dropping the version parts, which start with a digit.
+      # The metapackage pulls in the headers of kernels installed later, so DKMS
+      # can build the nvidia module for them before the next reboot.
+      - "linux-headers-{{ ansible_kernel | split('-') | reject('match', '[0-9]') | join('-') }}"
       - gcc
     register: task_result
     until: task_result is not failed
@@ -48,41 +59,102 @@
       group: root
       mode: u=rw,go=r
 
+  # TODO: @deprecated This task can be dropped in a release >=v17
+  - name: Remove legacy apt configuration
+    community.general.file_remove:
+      path: /etc/apt/sources.list.d
+      pattern: developer_download_nvidia_com_compute_cuda_repos_*.list
+
   - name: Add nvidia cuda repository
     vars:
-      distribution_string: "{{ '%s%s' | format(ansible_distribution | lower, ansible_distribution_version | replace('.', '')) }}"
-    apt_repository:
-      repo: "deb [signed-by=/etc/apt/keyrings/nvidia-cuda-driver.gpg] https://developer.download.nvidia.com/compute/cuda/repos/{{ distribution_string }}/x86_64/ /"
-      state: present
-      update_cache: true
-    register: task_result
-    until: task_result is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
+      # For Debian, we just want to use the major version (e.g. '13' instead of '13.1')
+      distribution_string: "{{ ansible_distribution | lower }}{{ ansible_distribution_major_version if ansible_distribution == 'Debian' else ansible_distribution_version | replace('.', '') }}"
+      deb_arch: "{{ {'x86_64': 'amd64', 'aarch64': 'arm64'}[ansible_architecture] }}"
+    copy:
+      dest: /etc/apt/sources.list.d/nvidia-cuda.sources
+      owner: root
+      group: root
+      mode: 0644
+      content: |
+        Types: deb
+        URIs: https://developer.download.nvidia.com/compute/cuda/repos/{{ distribution_string }}/{{ deb_arch }}/
+        Suites: /
+        Signed-By: /etc/apt/keyrings/nvidia-cuda-driver.gpg
 
-  # We must install a supported version for datacenters
-  # https://docs.nvidia.com/datacenter/tesla/drivers/latest/supported-drivers-and-cuda-toolkit-versions.html
-  - name: Install nvidia cuda drivers
-    apt:
-      update_cache: false  # this is done in the task before
-      install_recommends: false
-      autoremove: true
-      allow_change_held_packages: true
-      name:
+  # https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/ubuntu.html
+  # TODO: https://gitlab.com/alasca.cloud/tarook/tarook/-/work_items/910
+  - name: Install nvidia cuda drivers on Ubuntu  # noqa package-latest
+    when: ansible_distribution == 'Ubuntu'
+    vars:
+      nvidia_driver_packages:
       - nvidia-headless-595
       - nvidia-utils-595
+    block:
+    # We must install a supported version for datacenters
+    # https://docs.nvidia.com/datacenter/tesla/drivers/latest/supported-drivers-and-cuda-toolkit-versions.html
+    - name: Install nvidia cuda drivers on Ubuntu  # noqa package-latest
+      apt:
+        update_cache: true
+        install_recommends: false
+        autoremove: true
+        allow_change_held_packages: true
+        name: "{{ nvidia_driver_packages }}"
+        state: latest
+      register: installed_driver_ubuntu
+      until: installed_driver_ubuntu is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
 
-    register: installed_driver
-    until: installed_driver is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
+    - name: Prevent the cuda-drivers from being updated automatically
+      dpkg_selections:
+        name: "{{ item }}"
+        selection: hold
+      loop: "{{ nvidia_driver_packages }}"
 
-  - name: Prevent the cuda-drivers from being updated automatically  # noqa no-changed-when
-    command: apt-mark hold nvidia-utils-595 nvidia-headless-595
+  # https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/debian.html
+  - name: Install nvidia cuda drivers on Debian
+    when: ansible_distribution == 'Debian'
+    vars:
+      nvidia_driver_packages:
+      - nvidia-driver-cuda
+      - nvidia-kernel-open-dkms
+    block:
+    # We must install a supported version for datacenters
+    # https://docs.nvidia.com/datacenter/tesla/drivers/latest/supported-drivers-and-cuda-toolkit-versions.html
+    - name: Pin nvidia driver branch  # noqa package-latest
+      apt:
+        update_cache: true
+        name: nvidia-driver-pinning-595
+        state: latest
+      register: task_result
+      until: task_result is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
+    - name: Install nvidia cuda drivers  # noqa package-latest
+      apt:
+        install_recommends: false
+        autoremove: true
+        allow_change_held_packages: true
+        name: "{{ nvidia_driver_packages }}"
+        state: latest
+      register: installed_driver_debian
+      until: installed_driver_debian is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
+    - name: Prevent the cuda-drivers from being updated automatically
+      dpkg_selections:
+        name: "{{ item }}"
+        selection: hold
+      loop: "{{ nvidia_driver_packages }}"
 
   - name: Update initramfs  # noqa no-changed-when no-handler
     command: "update-initramfs -k {{ ansible_kernel }} -uv"
-    when: blacklisted_nouveau.changed or installed_driver.changed
+    when: >-
+      blacklisted_nouveau is changed
+      or installed_driver_ubuntu is changed
+      or installed_driver_debian is changed
     register: ramfs
 
   - name: Reboot block (gpu)  # noqa no-handler
