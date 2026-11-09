@@ -68,7 +68,7 @@ in {
     };
     proxy.disabled = !cfg.network.kube_proxy.enabled;
     apiServer = let
-      auditPolicyPath = "/etc/kubernetes/audit-policy.yaml";
+      auditPolicyPath = cfg.apiserver.audit_logs.policy_remote_file;
       auditLogsDir = "/var/log/kubernetes/audit/";
     in {
       extraArgs =

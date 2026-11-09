@@ -155,6 +155,12 @@ in {
           type = types.pathInStore;
           default = toString (mkYaml "audit-policy.yaml" (filterNull cfg.apiserver.audit_logs.policy));
         };
+        policy_remote_file = mkInternalOption {
+          description = "Location of the audit policy on the control plane nodes";
+          readOnly = true;
+          type = types.yk8s.posix.absolutePath;
+          default = "/etc/kubernetes/audit-policy.yaml";
+        };
       };
     };
     controller_manager = {
@@ -213,7 +219,15 @@ in {
             }
           ];
         }
-      ];
+      ]
+      # The kube-apiserver reads the audit policy only on startup.
+      # Annotating the static Pod with the policy's checksum makes every policy change
+      # a change of the manifest, so the kubelet restarts the kube-apiserver.
+      ++ lib.optional cfg.apiserver.audit_logs.enabled {
+        patchtype = "strategic";
+        patch.metadata.annotations."tarook.cloud/audit-policy-sha256" =
+          builtins.hashString "sha256" (builtins.toJSON (filterNull cfg.apiserver.audit_logs.policy));
+      };
   };
   config.yk8s._targets.ansible.assertions = [
     {
