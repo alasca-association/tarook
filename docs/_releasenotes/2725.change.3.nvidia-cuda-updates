@@ -1,0 +1,5 @@
+The Nvidida driver packages on Ubuntu are updated to the latest point release on a
+:doc:`Kubernetes upgrade </user/guide/kubernetes/upgrading-kubernetes>`
+or
+:ref:`system update<actions-references.update-kubernetes-nodessh>`.
+Previously, the installed point release was kept and never got updated.
