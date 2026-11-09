@@ -23,20 +23,29 @@
       group: root
       mode: u=rw,go=r
 
+  # TODO: @deprecated This task can be dropped in a release >=v17
+  - name: Remove legacy libnvidia-container repository file
+    file:
+      path: /etc/apt/sources.list.d/nvidia-container-toolkit.list
+      state: absent
+
   - name: Add libnvidia-container repository
-    apt_repository:
-      repo: "deb [signed-by=/etc/apt/keyrings/libnvidia-container.gpg] https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH) /"
-      state: present
-      filename: nvidia-container-toolkit
-      update_cache: true
-    register: task_result
-    until: task_result is not failed
-    retries: "{{ error_retries }}"
-    delay: "{{ error_delay }}"
+    vars:
+      deb_arch: "{{ {'x86_64': 'amd64', 'aarch64': 'arm64'}[ansible_architecture] }}"
+    copy:
+      dest: /etc/apt/sources.list.d/nvidia-container-toolkit.sources
+      owner: root
+      group: root
+      mode: u=rw,go=r
+      content: |
+        Types: deb
+        URIs: https://nvidia.github.io/libnvidia-container/stable/deb/{{ deb_arch }}/
+        Suites: /
+        Signed-By: /etc/apt/keyrings/libnvidia-container.gpg
 
   - name: Install nvidia-container-toolkit package
     apt:
-      update_cache: false  # this is done in the task before
+      update_cache: true
       install_recommends: false
       autoremove: true
       allow_change_held_packages: true
