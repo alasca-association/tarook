@@ -40,7 +40,7 @@ in {
       defaultRepoUrl = "https://fluxcd-community.github.io/helm-charts";
       defaultChartRef = "flux2";
       # renovate: datasource=helm depName=flux2 registryUrl=https://fluxcd-community.github.io/helm-charts
-      defaultChartVersion = "2.16.4";
+      defaultChartVersion = "2.18.4";
       defaultReleaseNamespace = "k8s-svc-flux-system";
       defaultReleaseName = "flux2";
       valuesDocUrl = "https://github.com/fluxcd-community/helm-charts/blob/main/charts/flux2/values.yaml";
@@ -76,6 +76,10 @@ in {
     };
     sourceController = {
       inherit affinity tolerations priorityClassName;
+    };
+    crds.migration = {
+      inherit affinity tolerations;
+      enabled = true;
     };
     prometheus = {
       podMonitor = {
