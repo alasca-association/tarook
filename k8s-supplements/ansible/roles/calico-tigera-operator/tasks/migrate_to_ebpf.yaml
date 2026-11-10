@@ -27,6 +27,56 @@
         Please use MANAGED_K8S_RELEASE_THE_KRAKEN=true if you want to enable Calico eBPF.
       success_msg: "Disruption allowed. Continuing migration to eBPF mode"
 
+  # Older Calico versions may contain eBPF related bugs
+  # Therefore an update is done before switching to eBPF
+  - name: Update Calico before switching to eBPF
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    run_once: true
+    block:
+    - name: Template Calico CRDs chart
+      when: k8s_network_calico_helm_chart_version is version('3.32.0', 'ge')
+      kubernetes.core.helm_template:
+        chart_repo_url: "{{ k8s_network_calico_crd_helm_chart_repo_url }}"
+        chart_version: "{{ k8s_network_calico_crd_helm_chart_version }}"
+        chart_ref: "{{ k8s_network_calico_crd_helm_chart_ref }}"
+        release_namespace: "{{ k8s_network_calico_crd_helm_release_namespace }}"
+        release_name: "{{ k8s_network_calico_crd_helm_release_name }}"
+      register: calico_crds
+
+    - name: Apply Calico CRDs
+      when: k8s_network_calico_helm_chart_version is version('3.32.0', 'ge')
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ calico_crds.stdout | from_yaml_all }}"
+      # Retry this task on failures
+      register: k8s_apply
+      until: k8s_apply is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
+    - name: Update Tigera operator chart
+      kubernetes.core.helm:
+        chart_repo_url: "{{ k8s_network_calico_helm_chart_repo_url }}"
+        chart_version: "{{ k8s_network_calico_helm_chart_version }}"
+        chart_ref: "{{ k8s_network_calico_helm_chart_ref }}"
+        release_namespace: "{{ k8s_network_calico_helm_release_namespace }}"
+        release_name: "{{ k8s_network_calico_helm_release_name }}"
+        release_state: present
+        reset_then_reuse_values: true
+        reset_values: false
+
+    - name: Wait for the operator to report the new Calico version
+      kubernetes.core.k8s_info:
+        api_version: operator.tigera.io/v1
+        kind: Installation
+        name: default
+      register: calico_installation
+      until: >-
+        (calico_installation.resources[0].status.calicoVersion | default(''))
+        == 'v' ~ k8s_network_calico_helm_chart_version
+      retries: 300
+      delay: 10
+
   - name: Include nftables migration
     include_tasks: migrate_to_nftables.yaml
 
@@ -79,6 +129,6 @@
     until:
     - felix_config.resources | length > 0
     - felix_config.resources[0].spec.bpfEnabled | default(false)
-    retries: 120
-    delay: 5
+    retries: 300
+    delay: 10
 ...
