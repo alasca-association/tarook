@@ -24,8 +24,10 @@
         copy_links: true
         perms: false
         delete: true
+        # The file stamps in the Nix store are all the same,
+        # so compare the content instead of size and modification time
+        checksum: true
         rsync_opts:
           - "--chown=root:root"
           - "--chmod=F440"
-          - "--ignore-times"  # important as the file stamps in the Nix store are all the same
 ...
