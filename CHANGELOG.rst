@@ -17,6 +17,21 @@ General information about release upgrades are documented at
 
 .. towncrier release notes start
 
+v15.0.2 (2026-11-11)
+--------------------
+
+Changed Functionality
+~~~~~~~~~~~~~~~~~~~~~
+
+- When migrating Calico to the eBPF mode, it is now updated *before* switching the mode (see `Breaking Changes`_). (`!2726 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2726>`_)
+
+
+Bugfixes
+~~~~~~~~
+
+- A bug has been fixed which rendered ``kubernetesServiceEndpoint.host`` in :ref:`configuration-options.yk8s.kubernetes.network.calico.crd.helm.values` to null when using the defaults supplied by Tarook in IPv6-only clusters. (`!2726 <https://gitlab.com/alasca.cloud/tarook/tarook/-/merge_requests/2726>`_)
+
+
 v15.0.1 (2026-10-30)
 --------------------
 

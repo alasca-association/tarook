@@ -247,7 +247,10 @@ in {
         "node-role.kubernetes.io/control-plane" = "";
       };
       kubernetesServiceEndpoint = {
-        host = config.yk8s.infra.networking_fixed_ip;
+        host =
+          if config.yk8s.infra.ipv4_enabled
+          then config.yk8s.infra.networking_fixed_ip
+          else config.yk8s.infra.networking_fixed_ip_v6;
         port = config.yk8s.kubernetes.apiserver.frontend_port;
       };
     }
