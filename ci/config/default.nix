@@ -189,6 +189,10 @@ in {
             "nodefs.inodesFree" = "7%";
           };
         };
+        # TODO: Remove after #909
+        defaultOptions = {
+          resolvConf = "/run/systemd/resolve/resolv.conf";
+        };
       };
       apiserver = {
         frontend_port = 8888;
