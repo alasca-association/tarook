@@ -35,11 +35,7 @@
         dest: /etc/apt/sources.list.d/kubernetes-community.list
         content: |
           {{ _auto_generated_preamble }}
-          {% if apt_proxy_url is not none %}
-          deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] http://pkgs.k8s.io/core:/stable:/v{{ repo_version }}/deb/ /
-          {% else %}
           deb [signed-by=/etc/apt/keyrings/kubeadm.gpg] https://pkgs.k8s.io/core:/stable:/v{{ repo_version }}/deb/ /
-          {% endif %}
         owner: root
         group: root
         mode: 0640

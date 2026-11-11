@@ -40,6 +40,9 @@ in {
     (mkRemovedOptionModule ["miscellaneous" "container_mirror_default_host"] "Use containerd.mirrors instead")
     (mkRemovedOptionModule ["miscellaneous" "container_mirrors"] "Use containerd.mirrors instead")
     (mkRemovedOptionModule ["miscellaneous" "wireguard_on_workers"] "")
+    (mkRemovedOptionModule ["miscellaneous" "apt_proxy_url"] ''
+      It did not configure an APT proxy anymore, but only switched some package repositories from HTTPS to HTTP.
+    '')
   ];
   options.yk8s.miscellaneous = mkTopSection {
     _docs.preface = ''
@@ -143,16 +146,6 @@ in {
         }
         "config.yk8s.miscellaneous.custom_ntp_servers: "
         v;
-    };
-
-    apt_proxy_url = mkOption {
-      description = ''
-        APT Proxy Configuration
-        As a secondary effect, https repositories are not used, since
-        those don't work with caching proxies like apt-cacher-ng.
-      '';
-      type = with types; nullOr yk8s.networking.httpHostPathUrl;
-      default = null;
     };
   };
   config.yk8s._targets.ansible.assertions = [
