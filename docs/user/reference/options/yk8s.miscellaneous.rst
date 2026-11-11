@@ -8,30 +8,6 @@ This section contains various configuration options for special use
 cases. You won’t need to enable and adjust any of these under normal
 circumstances.
 
-.. _configuration-options.yk8s.miscellaneous.apt_proxy_url:
-
-``yk8s.miscellaneous.apt_proxy_url``
-####################################
-
-APT Proxy Configuration
-As a secondary effect, https repositories are not used, since
-those don't work with caching proxies like apt-cacher-ng.
-
-
-**Type:**::
-
-  null or RFC3986 HTTP URL (scheme, authority and path only)
-
-
-**Default:**::
-
-  null
-
-
-**Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/miscellaneous.nix
-
-
 .. _configuration-options.yk8s.miscellaneous.cluster_behind_proxy:
 
 ``yk8s.miscellaneous.cluster_behind_proxy``

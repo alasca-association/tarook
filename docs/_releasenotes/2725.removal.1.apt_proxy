@@ -1,0 +1,5 @@
+The configuration option ``yk8s.miscellaneous.apt_proxy_url`` has been removed.
+Since v4.0.0, it did not configure an APT proxy anymore,
+but only switched the Docker, Kubernetes and HashiCorp package repositories from HTTPS to HTTP.
+These repositories are always accessed via HTTPS now.
+If your configuration still sets the option, remove it.
