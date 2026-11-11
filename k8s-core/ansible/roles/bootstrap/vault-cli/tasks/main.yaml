@@ -20,12 +20,21 @@
       group: root
       mode: u=rw,go=r
 
-  - name: Add Hashicorp repository to sources.list
+  # TODO: @deprecated This task can be dropped in a release >=v17
+  - name: Remove legacy apt configuration
+    file:
+      path: /etc/apt/sources.list.d/hashicorp.list
+      state: absent
+
+  - name: Add Hashicorp repository
     copy:
-      dest: /etc/apt/sources.list.d/hashicorp.list
+      dest: /etc/apt/sources.list.d/hashicorp.sources
       content: |
-        {{ _auto_generated_preamble }}
-        deb [signed-by=/etc/apt/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main
+        Types: deb
+        URIs: https://apt.releases.hashicorp.com
+        Suites: {{ ansible_distribution_release }}
+        Components: main
+        Signed-By: /etc/apt/keyrings/hashicorp-archive-keyring.gpg
       owner: root
       group: root
       mode: 0640
