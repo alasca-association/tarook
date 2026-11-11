@@ -1,1 +1,0 @@
-A bug has been fixed which rendered ``kubernetesServiceEndpoint.host`` in :ref:`configuration-options.yk8s.kubernetes.network.calico.crd.helm.values` to null when using the defaults supplied by Tarook in IPv6-only clusters.

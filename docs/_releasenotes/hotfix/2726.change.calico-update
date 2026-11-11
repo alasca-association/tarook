@@ -1,1 +1,0 @@
-When migrating Calico to the eBPF mode, it is now updated *before* switching the mode (see `Breaking Changes`_).
