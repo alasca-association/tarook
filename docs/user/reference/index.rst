@@ -11,6 +11,7 @@ User References
     options/index
     cluster-repository
     environmental-variables
+    operating-system
     cluster
     ssh-algos
     sbom
