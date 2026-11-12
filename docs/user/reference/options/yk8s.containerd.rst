@@ -191,7 +191,7 @@ The containerd version to be deployed on Kubernetes nodes.
 
 **Default:**::
 
-  "2.3.5"
+  "2.4.2"
 
 
 **Example:**::
