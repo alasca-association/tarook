@@ -39,7 +39,7 @@ in {
       '';
       type = types.yk8s.version.semver2VersionStr;
       # renovate: datasource=github-releases packageName=containerd/containerd
-      default = "2.3.5";
+      default = "2.3.7";
       example = "2.2.1";
     };
     discard_unpacked_layers = mkDisableOption ''
