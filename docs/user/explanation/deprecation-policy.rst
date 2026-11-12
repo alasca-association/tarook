@@ -1,27 +1,57 @@
 Deprecation Policy
 ==================
 
-Below we outline our policy on deprecating and removing features and Kubernetes releases.
+This page describes how Tarook deprecates and removes features,
+Vault policies and Kubernetes releases,
+and how long Tarook releases are supported.
 
-For the removal of features and K8s releases from Tarook we will give an advanced
-notice of at least 30 days. This notice is given using the
-`changelog <https://docs.tarook.cloud/devel/releasenotes.html>`__.
+Announcements
+-------------
 
-Support for older releases of TAROOK
----------------------------------------
+Every deprecation and removal is announced in the
+:doc:`release notes </releasenotes>`.
 
-A release becomes EOL when there are three newer (major/minor) versions but earliest four weeks
-after it has been released. Until then a release will be supported with hotfixes.
+Deprecated Features
+-------------------
 
-Change of vault policies
-------------------------
+A deprecated feature keeps working, but will be removed in a future release.
+Avoid it in new deployments and plan to migrate away from it.
 
-When we need to change vault policies we will first add the new policy and keep both - old and new - in our codebase to allow for transitions from one version to the next.
-This is handled as a feature change.
-After some time (at least 30 days) we will remove the old policy. This will be a breaking change.
+A deprecated feature is removed at the earliest in the next major release
+following the release that announces the deprecation.
 
-Removal of Kubernetes releases
-------------------------------
+Vault Policies
+--------------
 
-We will always try to support at least two Kubernetes versions. We will drop the support for older versions earliest
-when they become EOL and announce the removal in advance.
+When a HashiCorp Vault policy has to change,
+the change is made in two steps,
+so that clusters can move from one Tarook version to the next:
+
+#. The new policy is added alongside the old one.
+   This is a feature change.
+#. After at least 30 days, the old policy is removed.
+   This is a breaking change.
+
+See :doc:`/developer/explanation/release-and-versioning-policy`
+for how feature and breaking changes affect version numbers.
+
+Kubernetes Releases
+-------------------
+
+Tarook aims to support all Kubernetes versions that are maintained upstream.
+Support for a Kubernetes version is dropped no earlier than its upstream
+`end of life <https://kubernetes.io/releases/>`__.
+
+Tarook Releases
+---------------
+
+Supported Tarook releases receive hotfixes.
+A release reaches end of life (EOL) once three newer major or minor releases
+have been published, but no earlier than four weeks after its own release.
+
+For example, if v16.0, v16.1 and v17.0 are released after v15.0,
+v15.0 reaches end of life with the release of v17.0,
+provided v15.0 is at least four weeks old by then.
+
+The currently supported releases are listed on the
+`Releases <https://meta.docs.tarook.cloud/supported_releases.html>`__ page.
