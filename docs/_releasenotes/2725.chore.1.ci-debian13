@@ -1,1 +1,0 @@
-The CI/CD pipeline now uses Debian 13 images for one control plane node and the GPU worker.

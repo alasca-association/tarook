@@ -1,1 +1,0 @@
-Fix reachability of Vault on Kubernetes in IPv4-only setups where the IPv6 stack is completely absent.
