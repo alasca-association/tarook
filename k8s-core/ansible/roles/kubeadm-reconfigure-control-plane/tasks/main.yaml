@@ -1,0 +1,84 @@
+---
+# Nodes that are not initialized yet get the configuration
+# on 'kubeadm init' or 'kubeadm join' in the k8s-master role.
+- name: Skip nodes that are not initialized yet
+  when: (ansible_local['kubernetes-initialized']['k8s_install_status'] | default('not_initialized')) != 'initialized'
+  meta: end_role
+
+- name: Synchronize kubeadm-patches
+  include_role:
+    name: kubeadm-patches
+
+- name: Upload audit log policy file
+  include_tasks: audit-policy.yaml
+
+- name: Update kubeadm-config ConfigMap
+  include_tasks: kubeadm-config.yaml
+
+# Regenerates the static Pod manifests from the kubeadm-config ConfigMap.
+# kubeadm replaces only the changed ones, one after another, waits for each
+# component to become ready again and restores the previous manifest otherwise.
+#
+# kubeadm does not read ca.key here, so helpers/kubeadm-command is not needed.
+- name: Reconfigure the control plane of this node
+  block:
+  - name: Regenerate static Pods with kubeadm
+    become: true
+    command:
+      argv:
+      - kubeadm
+      - upgrade
+      - node
+      - phase
+      - control-plane
+      - --patches
+      - "{{ k8s_kubeadm_patches_remote_dir }}"
+      - --certificate-renewal=false
+      # --etcd-upgrade kubeadm copies the whole etcd data directory
+      # to /etc/kubernetes/tmp on every run and keeps the copy.
+      - --etcd-upgrade=false
+    async: 1800
+    poll: 3
+    register: kubeadm_upgrade_node_control_plane
+    changed_when: "'upgraded successfully' in kubeadm_upgrade_node_control_plane.stdout"
+  rescue:
+  - name: Restore previous ClusterConfiguration in kubeadm-config ConfigMap
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    become: false
+    kubernetes.core.k8s:
+      definition:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: kubeadm-config
+          namespace: kube-system
+        data:
+          ClusterConfiguration: "{{ kubeadm_config_cm.resources[0].data.ClusterConfiguration }}"
+    register: kubeadm_config_cm_restored
+    until: kubeadm_config_cm_restored is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
+
+  - name: Fail because the control plane could not be reconfigured
+    fail:
+      msg: |
+        kubeadm could not reconfigure the control plane of {{ inventory_hostname }}
+        and restored the previous manifest of the failed component.
+        The previous kubeadm-config ConfigMap has been restored.
+
+# kubeadm creates a backup directory on every run, it stays empty if nothing changed
+# If it's not empty, we want to keep it for easier (manual) rollback
+- name: Remove empty backup directories of kubeadm
+  become: true
+  command: find /etc/kubernetes/tmp -maxdepth 1 -name 'kubeadm-backup-manifests-*' -empty -print -delete
+  register: kubeadm_empty_backups
+  changed_when: kubeadm_empty_backups.stdout | length > 0
+
+# Must be removed after the kube-apiserver has been reconfigured
+- name: Remove audit log policy file
+  become: true
+  when: not (k8s_apiserver_audit_logs_enabled | bool)
+  file:
+    state: absent
+    path: "{{ k8s_apiserver_audit_logs_policy_remote_file }}"
+...

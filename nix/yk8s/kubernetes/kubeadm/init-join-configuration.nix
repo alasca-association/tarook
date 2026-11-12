@@ -67,10 +67,6 @@ in {
         timeouts.tlsBootstrap = "10m0s";
       };
     };
-    initConfigurationFiles = mkInternalOption {
-      type = with types; attrsOf pathInStore;
-      readOnly = true;
-    };
     joinConfigurationFiles = mkInternalOption {
       type = with types; attrsOf pathInStore;
       readOnly = true;
@@ -138,7 +134,6 @@ in {
     initConfigurations = lib.mapAttrs mkInitConfiguration config.yk8s.infra.final_hosts.masters.hosts;
     joinConfigurations = lib.mapAttrs mkJoinConfiguration config.yk8s.infra.final_hosts.k8s_nodes.hosts;
 
-    initConfigurationFiles = lib.mapAttrs (hostName: yk8s-lib.mkYaml "${hostName}-initConfiguration.yaml") cfg.kubeadm.initConfigurations;
     initConfigurationBundles =
       lib.mapAttrs (
         hostName: initConfiguration:

@@ -19,6 +19,16 @@
         This is automatically done if the install-all
         playbook of either k8s-core or k8s-supplements is executed.
 
+- name: Reconfigure the K8s control plane
+  hosts: masters
+  gather_facts: true
+  vars_files:
+  - vars/retries.yaml
+  serial: 1  # only one control plane node is reconfigured at a time.
+  roles:
+  - role: kubeadm-reconfigure-control-plane
+    tags: kubeadm-reconfigure-control-plane
+
 - name: Spawn the K8s control plane
   hosts: masters
   gather_facts: true
@@ -33,7 +43,6 @@
   - 1
   - "100%"
   roles:
-  - role: audit-logs
   - role: k8s-master
     tags: k8s-master
   - role: cluster-health-verification

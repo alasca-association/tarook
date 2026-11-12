@@ -1,0 +1,41 @@
+---
+- name: Get kubeadm-config ConfigMap
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  become: false
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: ConfigMap
+    name: kubeadm-config
+    namespace: kube-system
+  register: kubeadm_config_cm
+  until: kubeadm_config_cm is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
+
+- name: Update ClusterConfiguration in kubeadm-config ConfigMap
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  become: false
+  vars:
+    current_cluster_configuration: "{{ kubeadm_config_cm.resources[0].data.ClusterConfiguration | from_yaml }}"
+    # Excluding kubernetesVersion because this is changed by 'kubeadm upgrade'
+    # It differs from the configured one until the configuration is updated automatically
+    # by kubeadm after an upgrade.
+    desired_cluster_configuration: >-
+      {{
+        lookup('file', k8s_kubeadm_clusterConfigurationFile) | from_yaml
+        | combine({'kubernetesVersion': current_cluster_configuration.kubernetesVersion})
+      }}
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: kubeadm-config
+        namespace: kube-system
+      data:
+        ClusterConfiguration: "{{ desired_cluster_configuration | to_nice_yaml(indent=2) }}"
+  register: kubeadm_config_cm_patched
+  until: kubeadm_config_cm_patched is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
+...

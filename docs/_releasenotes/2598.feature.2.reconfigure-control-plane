@@ -1,0 +1,8 @@
+Changes of the ClusterConfiguration,
+e.g. via :ref:`configuration-options.yk8s.kubernetes.apiserver.audit_logs.enabled`
+or :ref:`configuration-options.yk8s.kubernetes.kubeadm.extraClusterConfiguration`,
+are now applied to existing clusters.
+The ``kubeadm-config`` ConfigMap is updated and the control plane nodes are reconfigured one after another
+with ``kubeadm upgrade node phase control-plane``.
+Changes of the etcd settings are still only applied on Kubernetes upgrades.
+Manual changes of the ``kubeadm-config`` ConfigMap are overwritten.

@@ -260,8 +260,8 @@ in {
             ["kubeadm" "extraInitConfiguration"] # merged into kubeadm.initConfigurations
             ["kubeadm" "extraJoinConfiguration"] # merged into kubeadm.joinConfigurations
             ["kubeadm" "patches"] # proxied by kubeadm.patches_dir
-            ["kubeadm" "clusterConfiguration"] # proxied by kubeadm.initConfigurationBundles
-            ["kubeadm" "initConfigurations"] # proxied by kubeadm.initConfigurationBundles and kubeadm.initConfigurationFiles
+            ["kubeadm" "clusterConfiguration"] # proxied by kubeadm.initConfigurationBundles and kubeadm.clusterConfigurationFile
+            ["kubeadm" "initConfigurations"] # proxied by kubeadm.initConfigurationBundles
             ["kubeadm" "joinConfigurations"] # proxied by kubeadm.joinConfigurationFiles
           ])
         # recusively filter null values on kubelet subset
@@ -274,7 +274,6 @@ in {
       ];
       unflat = [
         ["kubeadm" "initConfigurationBundles"]
-        ["kubeadm" "initConfigurationFiles"]
         ["kubeadm" "joinConfigurationFiles"]
         ["kubelet" "defaultOptions"]
         ["kubelet" "finalNodeOptions"]

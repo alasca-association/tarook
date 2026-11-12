@@ -189,6 +189,11 @@
   include_role:
     name: kubeadm-patches
 
+- name: Upload audit log policy file
+  include_role:
+    name: kubeadm-reconfigure-control-plane
+    tasks_from: audit-policy.yaml
+
 - name: Spawn K8s cluster with 'kubeadm init'
   when:
   - local_kube_apiserver_status is failed
@@ -336,10 +341,6 @@
 
 - name: Provide CA certificates as ConfigMap
   include_tasks: provide-ca-as-cm.yaml
-
-- name: Set ClusterConfiguration.proxy.disabled
-  include_role:
-    name: kubeadm-kube-proxy
 
 # See docs ref:cluster.node-labeling
 - name: "Ensure K8s node labels"

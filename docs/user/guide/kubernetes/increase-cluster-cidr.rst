@@ -13,16 +13,14 @@ Increase K8s cluster CIDR
 Steps to change the cluster-cidr:
 ---------------------------------
 
-1. Change podSubnet in kubeadm configmap: kube-system/kubeadm-config
+1. Change :ref:`configuration-options.yk8s.kubernetes.network.pod_subnet`
+   and apply the k8s-core stage.
+   This changes podSubnet in the kubeadm configmap kube-system/kubeadm-config
+   and cluster-cidr of the kube-controller-manager on every master node.
 
 2. (If kube-proxy is enabled) Change clusterCIDR in kube-proxy configmap: kube-system/kube-proxy
 
-3. Change cluster-cidr on every master node:
-   ``/etc/kubernetes/manifests/kube-controller-manager.yaml``
-
-   kubelet will automatically recreate the kube-controller container
-
-4. add additional calico ippools:
+3. add additional calico ippools:
 
    .. code:: yaml
 
@@ -40,7 +38,7 @@ Steps to change the cluster-cidr:
 
    => `IPPools have to be applied with calicoctl instead of kubectl <https://github.com/projectcalico/calico/issues/2923>`__.
 
-5. Optional: change pod_subnet in
+4. Optional: change pod_subnet in
    ``/var/lib/metal-controller/{CLUSTER}/config`` in the
    metal-controller running in the deploy cluster.
 
