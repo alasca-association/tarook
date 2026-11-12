@@ -21,6 +21,10 @@ Tarook distinguishes between the following support levels:
    Known issues and breaking changes are possible.
    Not recommended for production clusters.
 
+**Deprecated**
+   Support will be discontinued in a future release.
+   See the :doc:`/user/explanation/deprecation-policy`.
+
 CPU Architecture
 ----------------
 
@@ -63,7 +67,7 @@ This applies to both control plane and worker nodes (including GPU workers).
      - Support level
    * - Ubuntu
      - 22.04 LTS (Jammy Jellyfish)
-     - Supported
+     - Deprecated [#calico-ubuntu2204]_
    * - Ubuntu
      - 24.04 LTS (Noble Numbat)
      - Supported
@@ -95,6 +99,13 @@ This applies to both control plane and worker nodes (including GPU workers).
     :ref:`configuration-options.yk8s.kubernetes.kubelet.masterOptions`,
     :ref:`configuration-options.yk8s.kubernetes.kubelet.workerOptions` or
     :ref:`configuration-options.yk8s.kubernetes.kubelet.nodeOptions` instead.
+
+.. [#calico-ubuntu2204]
+
+   Calico v3.32.3 and later in eBPF mode (the default) do not work on Ubuntu 22.04.
+   The kernel's BPF verifier rejects Calico's eBPF programs,
+   so the ``calico-node`` Pods do not become ready
+   and (IPv6) traffic to and from Pods on those nodes fails.
 
 .. [#k8s-on-debian-13]
 
