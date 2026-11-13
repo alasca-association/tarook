@@ -113,6 +113,13 @@ in {
       type = types.pathInStore;
       readOnly = true;
     };
+    patchFiles = mkInternalOption {
+      description = ''
+        The kubeadm patch files of each node by file name.
+      '';
+      type = with types; attrsOf (attrsOf yk8s.formats.jsonValue);
+      readOnly = true;
+    };
     patches_remote_dir = mkInternalOption {
       readOnly = true;
       type = types.yk8s.posix.absolutePath;
@@ -121,24 +128,37 @@ in {
   };
 
   config.yk8s.kubernetes.kubeadm = {
-    patches_dir = let
-      patches = lib.mapAttrs (_: v: let
-        maxLength = lib.stringLength (toString (lib.length v));
+    patchFiles = let
+      sortedPatches = lib.mapAttrs (_: lib.sort (a: b: a.priority < b.priority)) cfg.kubeadm.patches;
+      # kubeadm applies the patches of a target in the order of their file names
+      toFiles = lib.concatMapAttrs (target: v: let
+        # Pad the numbers to the same width, otherwise e.g. "10" sorts before "2"
+        width = lib.stringLength (toString (lib.length v));
       in
-        lib.pipe v [
-          (lib.sort (a: b: a.priority < b.priority)) # Sort patches by priority
-          (lib.imap0 (i: v: v // {suffix = lib.fixedWidthNumber maxLength i;})) # Create suffix from priority with unique values starting from 0
-        ])
-      cfg.kubeadm.patches;
+        lib.listToAttrs (lib.imap0 (i: p: lib.nameValuePair "${target}${lib.fixedWidthNumber width i}${p.identifier}+${p.patchtype}.json" p.patch) v));
     in
-      (pkgs.buildEnv {
-        name = "kubeadm-patches";
-        paths = lib.flatten (
-          lib.mapAttrsToList (
-            target: map (p: yk8s-lib.mkJsonAtPath "${target}${p.suffix}${p.identifier}+${p.patchtype}.json" p.patch)
+      lib.mapAttrs (
+        _: hostValues:
+          toFiles (
+            # Worker nodes only need the patches for the kubelet
+            if hostValues.role == "master"
+            then sortedPatches
+            else {inherit (sortedPatches) kubeletconfiguration;}
           )
-          patches
-        );
-      }).outPath;
+      )
+      config.yk8s.infra.final_hosts.k8s_nodes.hosts;
+
+    # One directory per node
+    patches_dir =
+      (pkgs.linkFarm "kubeadm-patches" (
+        lib.concatLists (lib.mapAttrsToList (
+            node:
+              lib.mapAttrsToList (name: patch: {
+                name = "${node}/${name}";
+                path = yk8s-lib.mkJson name patch;
+              })
+          )
+          cfg.kubeadm.patchFiles)
+      )).outPath;
   };
 }

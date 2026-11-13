@@ -23,6 +23,8 @@
       - "kubeadm"
       - "upgrade"
       - "node"
+      - "--patches"
+      - "{{ k8s_kubeadm_patches_remote_dir }}"
   include_role:
     name: helpers/kubeadm-command
 

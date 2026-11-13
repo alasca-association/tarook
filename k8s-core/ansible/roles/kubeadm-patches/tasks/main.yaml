@@ -18,7 +18,7 @@
 
     - name: Synchronize kubeadm patch files
       ansible.posix.synchronize:
-        src: "{{ k8s_kubeadm_patches_dir }}/"
+        src: "{{ k8s_kubeadm_patches_dir }}/{{ inventory_hostname }}/"
         dest: "{{ k8s_kubeadm_patches_remote_dir }}"
         owner: false
         copy_links: true

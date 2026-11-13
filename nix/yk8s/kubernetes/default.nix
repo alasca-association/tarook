@@ -266,6 +266,7 @@ in {
             ["kubeadm" "clusterConfiguration"] # proxied by kubeadm.initConfigurationBundles and kubeadm.clusterConfigurationFile
             ["kubeadm" "initConfigurations"] # proxied by kubeadm.initConfigurationBundles
             ["kubeadm" "joinConfigurations"] # proxied by kubeadm.joinConfigurationFiles
+            ["kubeadm" "patchFiles"] # proxied by kubeadm.patches_dir
           ])
         # recusively filter null values on kubelet subset
         (lib.updateManyAttrsByPath [

@@ -125,10 +125,10 @@ in {
         discovery.file.kubeConfigPath = "/etc/kubernetes/kubelet.conf";
         # v1beta4 moved discovery.timeout to timeouts.discovery
         timeouts.discovery = "5m0s";
+        patches.directory = cfg.kubeadm.patches_remote_dir;
       }
       // lib.optionalAttrs (hostValues.role == "master") {
         controlPlane.localAPIEndpoint = mkLocalAPIEndpoint hostValues;
-        patches.directory = cfg.kubeadm.patches_remote_dir;
       };
   in {
     initConfigurations = lib.mapAttrs mkInitConfiguration config.yk8s.infra.final_hosts.masters.hosts;

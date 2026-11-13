@@ -182,6 +182,8 @@
         - include_role:
             name: update-system
         - include_role:
+            name: kubeadm-patches
+        - include_role:
             name: kubeadm-upgrade-node
         - include_role:
             name: kubeadm-upgrade-kubelet
