@@ -1,3 +1,0 @@
-Support for Ubuntu 22.04 on Kubernetes nodes has been marked as deprecated,
-see :ref:`supported-operating-systems`.
-Please migrate affected nodes to Ubuntu 24.04, 26.04 or Debian 13.
