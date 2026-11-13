@@ -138,13 +138,27 @@ in {
         lib.listToAttrs (lib.imap0 (i: p: lib.nameValuePair "${target}${lib.fixedWidthNumber width i}${p.identifier}+${p.patchtype}.json" p.patch) v));
     in
       lib.mapAttrs (
-        _: hostValues:
-          toFiles (
-            # Worker nodes only need the patches for the kubelet
+        node: hostValues: let
+          # Worker nodes only need the patches for the kubelet
+          patches =
             if hostValues.role == "master"
             then sortedPatches
-            else {inherit (sortedPatches) kubeletconfiguration;}
-          )
+            else {inherit (sortedPatches) kubeletconfiguration;};
+        in
+          toFiles (patches
+            // {
+              # Appended after the sorted patches, so it is applied last
+              # and the kubelet options of the node take precedence
+              kubeletconfiguration =
+                patches.kubeletconfiguration
+                ++ [
+                  {
+                    patchtype = "merge";
+                    identifier = "node-options";
+                    patch = yk8s-lib.transform.filterNull cfg.kubelet.finalNodeOptions.${node};
+                  }
+                ];
+            })
       )
       config.yk8s.infra.final_hosts.k8s_nodes.hosts;
 

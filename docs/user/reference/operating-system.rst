@@ -78,28 +78,6 @@ This applies to both control plane and worker nodes (including GPU workers).
      - 13 (Trixie)
      - Experimental [#k8s-on-debian-13]_
 
-.. important::
-
-    Recent ``kubeadm`` versions have a
-    `known issue (#909) <https://gitlab.com/alasca.cloud/tarook/tarook/-/work_items/909>`__
-    on operating systems that use ``systemd-resolved``,
-    which affects all operating systems listed above.
-    Set ``resolvConf`` for ``kubelet`` to ``/run/systemd/resolve/resolv.conf``
-    explicitly.
-    The recommended place is
-    :ref:`configuration-options.yk8s.kubernetes.kubelet.defaultOptions`:
-
-    .. code:: nix
-
-      yk8s.kubernetes.kubelet.defaultOptions = {
-        resolvConf = "/run/systemd/resolve/resolv.conf";
-      };
-
-    To set it only for some nodes, use
-    :ref:`configuration-options.yk8s.kubernetes.kubelet.masterOptions`,
-    :ref:`configuration-options.yk8s.kubernetes.kubelet.workerOptions` or
-    :ref:`configuration-options.yk8s.kubernetes.kubelet.nodeOptions` instead.
-
 .. [#calico-ubuntu2204]
 
    Calico v3.32.3 and later in eBPF mode (the default) do not work on Ubuntu 22.04.

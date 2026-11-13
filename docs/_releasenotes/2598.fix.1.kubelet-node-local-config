@@ -1,0 +1,13 @@
+Node-local kubelet configuration written by kubeadm is not discarded anymore.
+Previously, Tarook overwrote ``/var/lib/kubelet/config.yaml`` with the content of the cluster-wide ``kubelet-config`` ConfigMap merged with the configured kubelet options.
+This dropped settings which kubeadm determines per node,
+most notably ``resolvConf`` on nodes running systemd-resolved
+(`#909 <https://gitlab.com/alasca.cloud/tarook/tarook/-/work_items/909>`__).
+On clusters created with kubeadm v1.35.9, v1.36.5, v1.37.1 or newer,
+which do not store that value in the ConfigMap anymore,
+this caused CoreDNS to crash loop.
+Now kubeadm writes the file and applies the configured kubelet options of the node as a kubeadm patch,
+also on ``kubeadm join`` and ``kubeadm upgrade``.
+Nested options are merged into the values written by kubeadm instead of replacing them.
+Patches from :ref:`configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration` are not discarded anymore either.
+The workaround of setting ``resolvConf`` explicitly is not needed anymore.

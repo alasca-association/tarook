@@ -266,10 +266,6 @@
     include_role:
       name: k8s-login
 
-  - name: Configure kubelet
-    include_role:
-      name: kubelet-configuration
-
   - name: Set static fact that kubernetes is initialized
     vars:
       content:

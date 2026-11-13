@@ -1,5 +1,4 @@
 ---
-# The ConfigMap contains settings supplied by kubeadm should not be removed
 - name: Retrieve global KubeletConfiguration from ConfigMap
   delegate_to: "{{ groups['orchestrator'] | first }}"
   run_once: true
@@ -21,16 +20,54 @@
     dest: "/var/lib/kubelet/config.yaml.bak~"
     mode: 0400
 
-# This merges the global KubeletConfig with the node-specific configured options
-- name: Write merged KubeletConfiguration to file
+- name: Synchronize kubeadm-patches
+  include_role:
+    name: kubeadm-patches
+
+- name: Let kubeadm write the KubeletConfiguration of this node
   become: true
-  copy:
-    content: "{{ kubelet_cluster_config.resources[0].data.kubelet | from_yaml | combine(k8s_kubelet_finalNodeOptions[inventory_hostname]) | to_nice_yaml }}"
-    dest: /var/lib/kubelet/config.yaml
+  command:
+    argv:
+    - kubeadm
+    - upgrade
+    - node
+    - phase
+    - kubelet-config
+    - --patches
+    - "{{ k8s_kubeadm_patches_remote_dir }}"
+  changed_when: false
+
+# kubeadm backs up the previous file on every run, we keep our own backup
+- name: Find backups of the KubeletConfiguration made by kubeadm
+  become: true
+  find:
+    paths: /etc/kubernetes/tmp
+    patterns: "kubeadm-kubelet-config*"
+    file_type: directory
+  register: kubeadm_kubelet_config_backups
+
+- name: Remove backups of the KubeletConfiguration made by kubeadm
+  become: true
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ kubeadm_kubelet_config_backups.files }}"
+
+# kubeadm keeps the mode of an existing file, but creates it world-readable
+- name: Restrict access to the KubeletConfiguration file
+  become: true
+  file:
+    path: /var/lib/kubelet/config.yaml
     owner: root
     group: root
     mode: 0600
+
+- name: Check whether the KubeletConfiguration changed
+  become: true
+  command: cmp --silent /var/lib/kubelet/config.yaml.bak~ /var/lib/kubelet/config.yaml
   register: kubelet_config_apply
+  changed_when: kubelet_config_apply.rc == 1
+  failed_when: kubelet_config_apply.rc > 1
 
 - name: Restart kubelet
   become: true
@@ -50,7 +87,7 @@
   - name: Gather service facts
     service_facts:
 
-  - name: Check if kubelet is running
+  - name: Fail if kubelet is not running
     fail:
       msg: "kubelet is not running"
     when:

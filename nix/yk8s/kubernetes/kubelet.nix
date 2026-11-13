@@ -72,6 +72,21 @@ in {
           It is not validated whether the supplied configuration
           is a valid kubelet configuration.
 
+        .. note::
+
+          The cluster-wide ``kubelet-config`` ConfigMap is only updated
+          after the kubelets were restarted successfully with the new options.
+          An entry removed from a map in ``defaultOptions`` (e.g. from ``evictionHard``)
+          is therefore only removed from the nodes when
+          :ref:`actions-references.apply-k8s-coresh` runs a second time.
+
+          A top-level option removed from ``defaultOptions`` (e.g. ``maxPods``)
+          stays in the ConfigMap and thus on the nodes.
+          To reset it, set it to its default value instead,
+          or remove it from the ConfigMap as well
+          (``kubectl -n kube-system edit configmap kubelet-config``)
+          and run :ref:`actions-references.apply-k8s-coresh` again.
+
       '';
       example = {
         maxPods = 110;
