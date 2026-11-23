@@ -15,6 +15,20 @@ The installation can be activated by setting
 For further configuration options please refer to
 :ref:`the Flux configuration section <configuration-options.yk8s.k8s-service-layer.fluxcd>`.
 
+Monitoring
+----------
+
+If :ref:`monitoring <configuration-options.yk8s.kubernetes.monitoring.enabled>`
+is enabled, Flux is hooked up to the Prometheus stack automatically:
+
+- A ``PodMonitor`` is created by the Flux Helm chart so that Prometheus
+  scrapes the metrics of the Flux controllers.
+- kube-state-metrics is configured to export the state of the Flux resources
+  (e.g. ``Kustomization``, ``HelmRelease``, ``GitRepository``) as
+  ``gotk_resource_info`` metric, including the labels ``ready``,
+  ``suspended`` and ``revision``.
+  The Flux controllers do not export these information themselves.
+
 To learn more about fluxcd, please refer to the
 `official documentation <https://fluxcd.io/flux/concepts/>`__
 of the tool.

@@ -9,6 +9,7 @@
   inherit (yk8s-lib.k8s) mkAffinity mkTolerations;
 in {
   imports = [
+    ./fluxcd.nix
     ./grafana.nix
     ./prometheus.nix
   ];
@@ -207,7 +208,11 @@ in {
           enabled = true;
           scheme = "https";
         }
-        // (if versionAtLeast90 then {inherit tlsConfig;} else tlsConfig);
+        // (
+          if versionAtLeast90
+          then {inherit tlsConfig;}
+          else tlsConfig
+        );
     };
     kubeScheduler = {
       enabled = true;

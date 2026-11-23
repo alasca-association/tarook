@@ -1,0 +1,7 @@
+If FluxCD and monitoring are both enabled
+(:ref:`configuration-options.yk8s.k8s-service-layer.fluxcd.enabled`
+and
+:ref:`configuration-options.yk8s.kubernetes.monitoring.enabled`),
+Flux is now hooked up to the Prometheus stack.
+kube-state-metrics exports the state of the Flux resources
+(as metric ``gotk_resource_info``).

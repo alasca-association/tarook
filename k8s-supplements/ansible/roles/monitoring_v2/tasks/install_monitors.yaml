@@ -106,15 +106,17 @@
     tags:
     - calico-service-monitor
 
-  - name: Create a pod monitor for fluxcd
+  # The pod monitor is created by the fluxcd Helm chart, see
+  # yk8s.config.k8s-service-layer.fluxcd.helm.values.prometheus.podMonitor
+  # TODO: @deprecated This task can be dropped in a release >=v18
+  - name: Delete the legacy pod monitor for fluxcd
     when: fluxcd_enabled | bool
     kubernetes.core.k8s:
-      state: present
-      apply: true
-      definition: "{{ lookup('template', 'fluxcd_podmonitor.yaml.j2') }}"
-      validate:
-        fail_on_error: true
-        strict: true
+      state: absent
+      api_version: monitoring.coreos.com/v1
+      kind: PodMonitor
+      name: flux-system
+      namespace: "{{ fluxcd_helm_release_namespace }}"
     # Retry this task on failures
     register: k8s_apply
     until: k8s_apply is not failed

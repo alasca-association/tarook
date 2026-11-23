@@ -175,7 +175,7 @@
 - name: Check fluxcd's monitoring endpoints
   when: fluxcd_enabled | bool
   vars:
-    job_name: "{{ fluxcd_helm_release_namespace }}/flux-system"
+    job_name: "{{ fluxcd_helm_release_namespace }}/{{ fluxcd_helm_release_name }}"
   kubernetes.core.k8s_exec:
     namespace: "{{ check_prometheus_scraping_namespace }}"
     pod: prometheus-test-scraper

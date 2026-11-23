@@ -84,11 +84,12 @@ in {
     prometheus = {
       podMonitor = {
         create = config.yk8s.kubernetes.monitoring.enabled;
-        # TODO: Hook up to the prometheus-stack configuration
-        additionalLabels = {
-          "app.kubernetes.io/component" = "monitoring";
-          release = "prometheus-stack"; # That's the default podmonitor selector of our prometheus
-        };
+        additionalLabels =
+          {
+            "app.kubernetes.io/component" = "monitoring";
+            release = config.yk8s.k8s-service-layer.prometheus.helm.release_name;
+          }
+          // config.yk8s.k8s-service-layer.prometheus.common_labels;
       };
     };
   };

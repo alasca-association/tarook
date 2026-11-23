@@ -1,0 +1,3 @@
+The ``PodMonitor`` of the Flux Helm chart now follows the release name and the
+:ref:`common labels <configuration-options.yk8s.k8s-service-layer.prometheus.common_labels>`
+of the Prometheus stack.
