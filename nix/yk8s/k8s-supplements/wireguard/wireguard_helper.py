@@ -228,8 +228,12 @@ def _assign_ipv4_addresses(
             if existing_address in reserved_addresses or existing_address not in subnet:
                 raise DataError(
                     "user {!r} has the address {!s} assigned which is not "
-                    "in the subnet {!s} or already in use by a different "
-                    "user".format(
+                    "in the subnet {!s} or already in use by a different user "
+                    "\nIf there is no conflict in your configuration, "
+                    "you might have hit Bug #913 "
+                    "(https://gitlab.com/alasca.cloud/tarook/tarook/-/work_items/913). "
+                    "Rerun multiple times until success in this case."
+                    "".format(
                         new_user.name,
                         existing_address,
                         subnet,
