@@ -37,7 +37,7 @@ currently hardcoded to ``1``.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/apiserver
 
 
 .. _configuration-options.yk8s.kubernetes.apiserver.audit_logs.max_size:
@@ -59,7 +59,7 @@ Maximum size of apiserver audit log files in megabytes before it gets rotated
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/apiserver
 
 
 .. _configuration-options.yk8s.kubernetes.apiserver.audit_logs.policy:
@@ -294,7 +294,7 @@ Note that this option is not type checked by Nix, so make sure that it it's a va
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/apiserver
 
 
 .. _configuration-options.yk8s.kubernetes.apiserver.event_ttl:
@@ -325,7 +325,7 @@ A respective patch file will be generated for
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/apiserver
 
 
 .. _configuration-options.yk8s.kubernetes.apiserver.frontend_port:
@@ -346,7 +346,7 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/apiserver
 
 
 .. _configuration-options.yk8s.kubernetes.apiserver.memory_limit:
@@ -378,7 +378,7 @@ If set, a respective patch file will be generated for
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/apiserver
 
 
 .. _configuration-options.yk8s.kubernetes.controller_manager.enable_signing_requests:
@@ -486,6 +486,22 @@ https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/cluster-configuration.nix
 
 
+.. _configuration-options.yk8s.kubernetes.kubeadm.clusterConfigurationFile:
+
+``yk8s.kubernetes.kubeadm.clusterConfigurationFile``
+####################################################
+
+
+
+**Type:**::
+
+  path in the Nix store
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/cluster-configuration.nix
+
+
 .. _configuration-options.yk8s.kubernetes.kubeadm.initConfigurations:
 
 ``yk8s.kubernetes.kubeadm.initConfigurations``
@@ -564,6 +580,29 @@ for further information on how to configure.
       patchtype = "json";
     }
   ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.identifier:
+
+``yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.identifier``
+##################################################################
+
+An optional string that will be part of the patch's filename in order to
+quickly identify it.
+
+
+**Type:**::
+
+  string matching the pattern [a-z0-9]*
+
+
+**Default:**::
+
+  ""
 
 
 **Declared by**
@@ -705,6 +744,29 @@ for further information on how to configure.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd.*.identifier:
+
+``yk8s.kubernetes.kubeadm.patches.etcd.*.identifier``
+#####################################################
+
+An optional string that will be part of the patch's filename in order to
+quickly identify it.
+
+
+**Type:**::
+
+  string matching the pattern [a-z0-9]*
+
+
+**Default:**::
+
+  ""
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
+
+
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd.*.patch:
 
 ``yk8s.kubernetes.kubeadm.patches.etcd.*.patch``
@@ -834,6 +896,29 @@ for further information on how to configure.
       patchtype = "json";
     }
   ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.identifier:
+
+``yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.identifier``
+###############################################################
+
+An optional string that will be part of the patch's filename in order to
+quickly identify it.
+
+
+**Type:**::
+
+  string matching the pattern [a-z0-9]*
+
+
+**Default:**::
+
+  ""
 
 
 **Declared by**
@@ -975,6 +1060,29 @@ for further information on how to configure.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.identifier:
+
+``yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.identifier``
+########################################################################
+
+An optional string that will be part of the patch's filename in order to
+quickly identify it.
+
+
+**Type:**::
+
+  string matching the pattern [a-z0-9]*
+
+
+**Default:**::
+
+  ""
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
+
+
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.patch:
 
 ``yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.patch``
@@ -1110,6 +1218,29 @@ for further information on how to configure.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.identifier:
+
+``yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.identifier``
+###############################################################
+
+An optional string that will be part of the patch's filename in order to
+quickly identify it.
+
+
+**Type:**::
+
+  string matching the pattern [a-z0-9]*
+
+
+**Default:**::
+
+  ""
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
+
+
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.patch:
 
 ``yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.patch``
@@ -1239,6 +1370,29 @@ for further information on how to configure.
       patchtype = "json";
     }
   ]
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.identifier:
+
+``yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.identifier``
+#####################################################################
+
+An optional string that will be part of the patch's filename in order to
+quickly identify it.
+
+
+**Type:**::
+
+  string matching the pattern [a-z0-9]*
+
+
+**Default:**::
+
+  ""
 
 
 **Declared by**
