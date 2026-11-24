@@ -37,7 +37,7 @@
       src: renew-ssh-certificates.service
       owner: root
       group: root
-      mode: 0755
+      mode: 0644
 
   - name: Deploy renew SSH certificate timer
     copy:
@@ -45,7 +45,7 @@
       src: renew-ssh-certificates.timer
       owner: root
       group: root
-      mode: 0755
+      mode: 0644
 
   - name: Enable timer
     systemd_service:
