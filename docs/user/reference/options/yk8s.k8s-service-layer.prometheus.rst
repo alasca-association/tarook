@@ -318,7 +318,7 @@ If the version shall be unpinned, set to: ``null``.
 
 **Default:**::
 
-  "11.21.1"
+  "12.0.0"
 
 
 **Example:**::
