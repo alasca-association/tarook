@@ -144,7 +144,7 @@ in {
                   apiVersion = "kubelet.config.k8s.io/v1beta1";
                   kind = "KubeletConfiguration";
                 }
-                // yk8s-lib.transform.filterNull cfg.kubelet.defaultOptions)
+                // cfg.kubelet.kubeletConfiguration)
             ]
             ++ lib.optional cfg.network.kube_proxy.enabled cfg.network.kube_proxy.kubeProxyConfiguration)
       )

@@ -1,0 +1,4 @@
+``config.yk8s.kubernetes.kubelet.defaultOptions`` has been renamed to
+:ref:`configuration-options.yk8s.kubernetes.kubelet.extraKubeletConfiguration`
+to align it with the other extra options.
+The old name still works, but causes a warning.

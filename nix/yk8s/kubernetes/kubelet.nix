@@ -9,6 +9,12 @@
   inherit (modules-lib) mkRenamedOptionModule;
   inherit (lib) mkOption mkEnableOption;
   inherit (yk8s-lib) mkOptional mkInternalOption types;
+  # The settings of Tarook for all nodes, extraKubeletConfiguration is merged into them
+  tarookOptions = {
+    containerRuntimeEndpoint = "${config.yk8s.kubernetes.cri_url}";
+    serializeImagePulls = false;
+    maxParallelImagePulls = 3;
+  };
   kubeletSubmodule = types.submodule {
     freeformType = types.attrsOf types.yk8s.formats.jsonValue;
     options = {
@@ -45,15 +51,21 @@ in {
     (mkRenamedOptionModule ["kubernetes" "kubelet" "pod_limit"] ["kubernetes" "kubelet" "pod_limit_worker"])
     (mkRenamedOptionModule ["kubernetes" "kubelet" "pod_limit_master"] ["kubernetes" "kubelet" "masterOptions" "maxPods"])
     (mkRenamedOptionModule ["kubernetes" "kubelet" "pod_limit_worker"] ["kubernetes" "kubelet" "workerOptions" "maxPods"])
-    (mkRenamedOptionModule ["kubernetes" "kubelet" "evictionsoft_memory_period"] ["kubernetes" "kubelet" "defaultOptions" "evictionSoft" "memory.period"])
-    (mkRenamedOptionModule ["kubernetes" "kubelet" "evictionhard_nodefs_available"] ["kubernetes" "kubelet" "defaultOptions" "evictionHard" "nodefs.available"])
-    (mkRenamedOptionModule ["kubernetes" "kubelet" "evictionhard_nodefs_inodesfree"] ["kubernetes" "kubelet" "defaultOptions" "evictionHard" "nodesfs.inodesFree"])
+    (mkRenamedOptionModule ["kubernetes" "kubelet" "evictionsoft_memory_period"] ["kubernetes" "kubelet" "extraKubeletConfiguration" "evictionSoft" "memory.period"])
+    (mkRenamedOptionModule ["kubernetes" "kubelet" "evictionhard_nodefs_available"] ["kubernetes" "kubelet" "extraKubeletConfiguration" "evictionHard" "nodefs.available"])
+    (mkRenamedOptionModule ["kubernetes" "kubelet" "evictionhard_nodefs_inodesfree"] ["kubernetes" "kubelet" "extraKubeletConfiguration" "evictionHard" "nodesfs.inodesFree"])
+    (mkRenamedOptionModule ["kubernetes" "kubelet" "defaultOptions"] ["kubernetes" "kubelet" "extraKubeletConfiguration"])
   ];
 
   options.yk8s.kubernetes.kubelet = {
-    defaultOptions = mkOption {
+    extraKubeletConfiguration = mkOption {
       description = ''
-        Default kubelet configuration applied to all nodes.
+        Extra settings for the ``KubeletConfiguration`` of all nodes.
+
+        They are merged into the settings that Tarook sets for all nodes
+        (``containerRuntimeEndpoint`` pointing to containerd,
+        ``serializeImagePulls = false`` and ``maxParallelImagePulls = 3``)
+        and take precedence.
 
         All options can be found in the official documentation:
         https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/#kubelet-config-k8s-io-v1beta1-KubeletConfiguration
@@ -76,11 +88,11 @@ in {
 
           The cluster-wide ``kubelet-config`` ConfigMap is only updated
           after the kubelets were restarted successfully with the new options.
-          An entry removed from a map in ``defaultOptions`` (e.g. from ``evictionHard``)
+          An entry removed from a map in ``extraKubeletConfiguration`` (e.g. from ``evictionHard``)
           is therefore only removed from the nodes when
           :ref:`actions-references.apply-k8s-coresh` runs a second time.
 
-          A top-level option removed from ``defaultOptions`` (e.g. ``maxPods``)
+          A top-level option removed from ``extraKubeletConfiguration`` (e.g. ``maxPods``)
           stays in the ConfigMap and thus on the nodes.
           To reset it, set it to its default value instead,
           or remove it from the ConfigMap as well
@@ -212,6 +224,14 @@ in {
       type = types.attrsOf kubeletSubmodule;
       default = {};
     };
+    kubeletConfiguration = mkInternalOption {
+      description = ''
+        Kubelet configuration for all nodes: the settings of Tarook merged with extraKubeletConfiguration.
+      '';
+      type = types.attrsOf types.yk8s.formats.jsonValue;
+      readOnly = true;
+      default = yk8s-lib.transform.filterNull (lib.recursiveUpdate tarookOptions cfg.extraKubeletConfiguration);
+    };
     finalNodeOptions = mkInternalOption {
       description = ''
         Final kubelet configuration for all nodes after merging all overrides and defaults.
@@ -221,7 +241,7 @@ in {
       default =
         lib.mapAttrs (
           node: opts: let
-            baseOptions = cfg.defaultOptions;
+            baseOptions = cfg.kubeletConfiguration;
             roleOptions = builtins.getAttr opts.role {
               master = cfg.masterOptions;
               worker = cfg.workerOptions;
@@ -232,12 +252,6 @@ in {
         )
         config.yk8s.infra.final_hosts.k8s_nodes.hosts;
     };
-  };
-
-  config.yk8s.kubernetes.kubelet.defaultOptions = {
-    containerRuntimeEndpoint = lib.mkDefault "${config.yk8s.kubernetes.cri_url}";
-    serializeImagePulls = lib.mkDefault false;
-    maxParallelImagePulls = lib.mkDefault 3;
   };
 
   config.yk8s._targets.ansible.assertions =

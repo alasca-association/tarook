@@ -145,7 +145,7 @@
         name: kubelet-config
         namespace: kube-system
       data:
-        kubelet: "{{ kubelet_cluster_config.resources[0].data.kubelet | from_yaml | combine(k8s_kubelet_defaultOptions) | to_nice_yaml }}"
+        kubelet: "{{ kubelet_cluster_config.resources[0].data.kubelet | from_yaml | combine(k8s_kubelet_kubeletConfiguration) | to_nice_yaml }}"
   register: kubelet_configmap_patched
   until: kubelet_configmap_patched is not failed
   retries: "{{ error_retries }}"

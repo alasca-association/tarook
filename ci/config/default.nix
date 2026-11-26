@@ -172,7 +172,7 @@ in {
       is_gpu_cluster = true;
       virtualize_gpu = false;
       kubelet = {
-        defaultOptions = {
+        extraKubeletConfiguration = {
           maxPods = 110;
         };
         workerOptions = {
