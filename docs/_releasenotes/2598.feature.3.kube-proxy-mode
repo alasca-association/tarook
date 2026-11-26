@@ -1,3 +1,8 @@
-The proxy mode of kube-proxy can be set via :ref:`configuration-options.yk8s.kubernetes.network.kube_proxy.mode`,
-further settings via :ref:`configuration-options.yk8s.kubernetes.network.kube_proxy.extraKubeProxyConfiguration`.
-Both are only applied when the cluster is created.
+The proxy mode of kube-proxy can be set via :ref:`configuration-options.yk8s.kubernetes.network.kube_proxy.mode`.
+It is only applied when the cluster is created; applying the configuration fails if kube-proxy runs in another mode.
+Further settings can be set via :ref:`configuration-options.yk8s.kubernetes.network.kube_proxy.extraKubeProxyConfiguration`.
+They are applied to existing clusters by updating the ``kube-system/kube-proxy`` ConfigMap and restarting kube-proxy.
+If kube-proxy does not become ready with the new configuration, the previous configuration is restored.
+Manual changes of values set by Tarook are overwritten.
+The monitoring does not patch ``metricsBindAddress`` of kube-proxy anymore,
+which set an IPv4 address on IPv6-only clusters.

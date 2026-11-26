@@ -1,0 +1,133 @@
+---
+# kube-proxy reads its configuration from the kube-proxy ConfigMap,
+# which kubeadm also keeps on Kubernetes upgrades.
+- name: Get kube-proxy ConfigMap
+  delegate_to: "{{ groups['orchestrator'] | first }}"
+  become: false
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: ConfigMap
+    name: kube-proxy
+    namespace: kube-system
+  register: kube_proxy_cm
+  until: kube_proxy_cm is not failed
+  retries: "{{ error_retries }}"
+  delay: "{{ error_delay }}"
+
+# The proxy mode is only set when the cluster is created.
+# kube-proxy runs in iptables mode if it is empty.
+- name: Check that kube-proxy runs in the configured mode
+  when: kube_proxy_cm.resources | length > 0
+  vars:
+    running_kube_proxy_mode: >-
+      {{ (kube_proxy_cm.resources[0].data['config.conf'] | from_yaml).mode | default('iptables', true) }}
+  assert:
+    that: running_kube_proxy_mode == k8s_network_kube_proxy_mode
+    quiet: true
+    fail_msg: >-
+      kube-proxy runs in {{ running_kube_proxy_mode }} mode,
+      but config.yk8s.kubernetes.network.kube_proxy.mode is {{ k8s_network_kube_proxy_mode }}.
+      The mode is only applied when the cluster is created.
+      Set the option to {{ running_kube_proxy_mode }}
+      or switch kube-proxy manually as described in the documentation of the option.
+
+# The configuration is merged into the ConfigMap because the ConfigMap also contains
+# values set by kubeadm, e.g. clientConnection.kubeconfig.
+# The proxy mode is not changed: kube-proxy does not remove the rules
+# of the previous mode when switching between iptables and ipvs.
+- name: Update kube-proxy configuration
+  when:
+  - kube_proxy_cm.resources | length > 0
+  - desired_kube_proxy_configuration != current_kube_proxy_configuration
+  vars:
+    current_kube_proxy_configuration: "{{ kube_proxy_cm.resources[0].data['config.conf'] | from_yaml }}"
+    desired_kube_proxy_configuration: >-
+      {{
+        current_kube_proxy_configuration
+        | combine(
+          lookup('file', k8s_network_kube_proxy_kubeProxyConfigurationFile) | from_yaml
+          | dict2items | rejectattr('key', 'equalto', 'mode') | items2dict,
+          recursive=True
+        )
+      }}
+    # kube-proxy is restarted on one node after another
+    kube_proxy_restart_timeout: "{{ 120 + 30 * (groups['k8s_nodes'] | length) }}"
+  block:
+  - name: Update KubeProxyConfiguration in kube-proxy ConfigMap
+    delegate_to: "{{ groups['orchestrator'] | first }}"
+    become: false
+    kubernetes.core.k8s:
+      api_version: v1
+      kind: ConfigMap
+      name: kube-proxy
+      namespace: kube-system
+      state: patched
+      definition:
+        data:
+          config.conf: "{{ desired_kube_proxy_configuration | to_nice_yaml(indent=2) }}"
+    register: kube_proxy_cm_patched
+    until: kube_proxy_cm_patched is not failed
+    retries: "{{ error_retries }}"
+    delay: "{{ error_delay }}"
+
+  - name: Restart kube-proxy
+    block:
+    - name: Restart kube-proxy with the new configuration
+      delegate_to: "{{ groups['orchestrator'] | first }}"
+      become: false
+      kubernetes.core.k8s:
+        api_version: apps/v1
+        kind: DaemonSet
+        name: kube-proxy
+        namespace: kube-system
+        state: patched
+        wait: true
+        wait_timeout: "{{ kube_proxy_restart_timeout }}"
+        definition:
+          spec:
+            template:
+              metadata:
+                annotations:
+                  kubectl.kubernetes.io/restartedAt: "{{ now(utc=true).isoformat() }}"
+    rescue:
+    - name: Restore previous kube-proxy configuration
+      delegate_to: "{{ groups['orchestrator'] | first }}"
+      become: false
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: ConfigMap
+        name: kube-proxy
+        namespace: kube-system
+        state: patched
+        definition:
+          data:
+            config.conf: "{{ kube_proxy_cm.resources[0].data['config.conf'] }}"
+      register: kube_proxy_cm_restored
+      until: kube_proxy_cm_restored is not failed
+      retries: "{{ error_retries }}"
+      delay: "{{ error_delay }}"
+
+    - name: Restart kube-proxy with the previous configuration
+      delegate_to: "{{ groups['orchestrator'] | first }}"
+      become: false
+      kubernetes.core.k8s:
+        api_version: apps/v1
+        kind: DaemonSet
+        name: kube-proxy
+        namespace: kube-system
+        state: patched
+        wait: true
+        wait_timeout: "{{ kube_proxy_restart_timeout }}"
+        definition:
+          spec:
+            template:
+              metadata:
+                annotations:
+                  kubectl.kubernetes.io/restartedAt: "{{ now(utc=true).isoformat() }}"
+
+    - name: Fail because kube-proxy could not be reconfigured
+      fail:
+        msg: |
+          kube-proxy did not become ready with the new configuration.
+          The previous configuration has been restored.
+...

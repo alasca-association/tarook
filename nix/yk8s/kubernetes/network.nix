@@ -30,7 +30,15 @@ in {
       mode = mkOption {
         description = ''
           Which proxy mode to use. Note that ``ipvs`` mode is deprecated.
+
           It is only applied when the cluster is created.
+          If it differs from the mode kube-proxy runs in, applying the configuration fails.
+          To switch the mode of an existing cluster, change ``mode`` in the ``kube-system/kube-proxy`` ConfigMap,
+          restart kube-proxy (``kubectl -n kube-system rollout restart daemonset kube-proxy``)
+          and set this option accordingly.
+          When switching to or from ``nftables``, Calico's dataplane has to be switched as well.
+          When switching between ``iptables`` and ``ipvs``, the rules of the previous mode stay on the nodes
+          until they are removed, e.g. by rebooting the nodes one after another.
         '';
         type = types.enum ["iptables" "nftables" "ipvs"];
         default =
@@ -52,14 +60,16 @@ in {
         description = ''
           Extra settings for the ``KubeProxyConfiguration``, see the
           `kube-proxy Configuration (v1alpha1) <https://kubernetes.io/docs/reference/config-api/kube-proxy-config.v1alpha1/>`_.
-          It is only applied when the cluster is created.
 
           The settings are merged into the configuration that Tarook generates and take precedence.
           Lists are appended.
           The proxy mode is set via :ref:`configuration-options.yk8s.kubernetes.network.kube_proxy.mode`.
 
-          If kube-proxy is enabled, the rendered configuration is part of the files referenced by
-          ``k8s_kubeadm_initConfigurationBundles`` in
+          Changes are applied to existing clusters and kube-proxy is restarted.
+          Fields that are removed here keep their value in the cluster.
+
+          To see the rendered configuration, look at the file referenced by
+          ``k8s_network_kube_proxy_kubeProxyConfigurationFile`` in
           ``inventory/yaook-k8s/group_vars/all/kubernetes.yaml``
           (updated by :ref:`update-inventory.sh <actions-references.update-inventorysh>`).
           The configuration of an existing cluster is stored in the ``kube-system/kube-proxy`` ConfigMap.
@@ -69,6 +79,11 @@ in {
         example = {
           conntrack.maxPerCore = 65536;
         };
+      };
+      kubeProxyConfigurationFile = mkInternalOption {
+        type = types.pathInStore;
+        readOnly = true;
+        default = toString (yk8s-lib.mkYaml "kubeProxyConfiguration.yaml" cfg.kube_proxy.kubeProxyConfiguration);
       };
     };
 

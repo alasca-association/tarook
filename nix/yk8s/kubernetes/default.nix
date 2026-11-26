@@ -257,7 +257,7 @@ in {
             ["kubelet" "masterOptions"] # merged into kubelet.finalNodeOptions
             ["kubelet" "nodeOptions"] # merged into kubelet.finalNodeOptions
             ["kubelet" "workerOptions"] # merged into kubelet.finalNodeOptions
-            ["network" "kube_proxy" "kubeProxyConfiguration"] # proxied by kubeadm.initConfigurationBundles
+            ["network" "kube_proxy" "kubeProxyConfiguration"] # proxied by kubeadm.initConfigurationBundles and network.kube_proxy.kubeProxyConfigurationFile
             ["network" "kube_proxy" "extraKubeProxyConfiguration"] # merged into network.kube_proxy.kubeProxyConfiguration
             ["kubeadm" "extraClusterConfiguration"] # merged into kubeadm.clusterConfiguration
             ["kubeadm" "extraInitConfiguration"] # merged into kubeadm.initConfigurations
