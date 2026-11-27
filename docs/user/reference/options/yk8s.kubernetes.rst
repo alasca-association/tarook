@@ -465,6 +465,145 @@ so that the driver and surrounding framework is deployed.
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes
 
 
+.. _configuration-options.yk8s.kubernetes.kubeadm.extraClusterConfiguration:
+
+``yk8s.kubernetes.kubeadm.extraClusterConfiguration``
+#####################################################
+
+Extra settings for the kubeadm ``ClusterConfiguration``, see the
+`kubeadm Configuration (v1beta4) <https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/>`_.
+
+They are merged into the configuration that Tarook generates and take precedence.
+Lists are appended, except for lists of entries with a ``name``, e.g. ``extraArgs``,
+whose entries replace the generated entries with the same name.
+Fields that are set from other options, e.g. ``kubernetesVersion``, cannot be set here.
+
+Changes are applied to existing clusters, except for the etcd settings,
+which are applied on the next Kubernetes upgrade.
+
+To see the rendered configuration, look at the file referenced by
+``k8s_kubeadm_clusterConfigurationFile`` in
+``inventory/yaook-k8s/group_vars/all/kubernetes.yaml``
+(updated by :ref:`update-inventory.sh <actions-references.update-inventorysh>`).
+The configuration of an existing cluster is stored in the ``kube-system/kubeadm-config`` ConfigMap.
+
+
+**Type:**::
+
+  attribute set of (attribute set containing JSON compatible values)
+
+
+**Default:**::
+
+  { }
+
+
+**Example:**::
+
+  {
+    apiServer = {
+      extraArgs = [
+        {
+          name = "profiling";
+          value = "false";
+        }
+      ];
+    };
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/cluster-configuration.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.extraInitConfiguration:
+
+``yk8s.kubernetes.kubeadm.extraInitConfiguration``
+##################################################
+
+Extra settings for the kubeadm ``InitConfiguration`` of the control plane nodes, see the
+`kubeadm Configuration (v1beta4) <https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/>`_.
+It is only used when the cluster is created.
+
+The settings are merged into the configuration that Tarook generates for each node
+and take precedence.
+Lists are appended, except for lists of entries with a ``name``, e.g. ``kubeletExtraArgs``,
+whose entries replace the generated entries with the same name.
+Node-specific fields, e.g. ``nodeRegistration.name``, cannot be set here.
+
+To see the rendered configurations, look at the files referenced by
+``k8s_kubeadm_initConfigurationBundles`` in
+``inventory/yaook-k8s/group_vars/all/kubernetes.yaml``
+(updated by :ref:`update-inventory.sh <actions-references.update-inventorysh>`).
+
+
+**Type:**::
+
+  attribute set of (attribute set containing JSON compatible values)
+
+
+**Default:**::
+
+  { }
+
+
+**Example:**::
+
+  {
+    timeouts = {
+      controlPlaneComponentHealthCheck = "8m0s";
+    };
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/init-join-configuration.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.extraJoinConfiguration:
+
+``yk8s.kubernetes.kubeadm.extraJoinConfiguration``
+##################################################
+
+Extra settings for the kubeadm ``JoinConfiguration`` of all nodes, see the
+`kubeadm Configuration (v1beta4) <https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/>`_.
+It is only used when a node joins the cluster.
+
+The settings are merged into the configuration that Tarook generates for each node
+and take precedence.
+Lists are appended, except for lists of entries with a ``name``, e.g. ``kubeletExtraArgs``,
+whose entries replace the generated entries with the same name.
+Node-specific fields, e.g. ``nodeRegistration.name``, cannot be set here.
+
+To see the rendered configurations, look at the files referenced by
+``k8s_kubeadm_joinConfigurationFiles`` in
+``inventory/yaook-k8s/group_vars/all/kubernetes.yaml``
+(updated by :ref:`update-inventory.sh <actions-references.update-inventorysh>`).
+
+
+**Type:**::
+
+  attribute set of (attribute set containing JSON compatible values)
+
+
+**Default:**::
+
+  { }
+
+
+**Example:**::
+
+  {
+    timeouts = {
+      tlsBootstrap = "10m0s";
+    };
+  }
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/init-join-configuration.nix
+
+
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment:
 
 ``yk8s.kubernetes.kubeadm.patches.corednsdeployment``
@@ -504,7 +643,30 @@ for further information on how to configure.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.identifier:
+
+``yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.identifier``
+##################################################################
+
+An optional string that will be part of the patch's filename in order to
+quickly identify it.
+
+
+**Type:**::
+
+  string matching the pattern [a-z0-9-]*
+
+
+**Default:**::
+
+  ""
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.patch:
@@ -548,7 +710,7 @@ to convert your existing patches to Nix.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.patchtype:
@@ -573,7 +735,7 @@ For an explanation on each of them, see
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.corednsdeployment.*.priority:
@@ -597,7 +759,7 @@ The order in which patches with the same priority are applied is undefined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd:
@@ -639,7 +801,30 @@ for further information on how to configure.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd.*.identifier:
+
+``yk8s.kubernetes.kubeadm.patches.etcd.*.identifier``
+#####################################################
+
+An optional string that will be part of the patch's filename in order to
+quickly identify it.
+
+
+**Type:**::
+
+  string matching the pattern [a-z0-9-]*
+
+
+**Default:**::
+
+  ""
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd.*.patch:
@@ -683,7 +868,7 @@ to convert your existing patches to Nix.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd.*.patchtype:
@@ -708,7 +893,7 @@ For an explanation on each of them, see
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.etcd.*.priority:
@@ -732,7 +917,7 @@ The order in which patches with the same priority are applied is undefined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver:
@@ -774,7 +959,30 @@ for further information on how to configure.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.identifier:
+
+``yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.identifier``
+###############################################################
+
+An optional string that will be part of the patch's filename in order to
+quickly identify it.
+
+
+**Type:**::
+
+  string matching the pattern [a-z0-9-]*
+
+
+**Default:**::
+
+  ""
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.patch:
@@ -818,7 +1026,7 @@ to convert your existing patches to Nix.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.patchtype:
@@ -843,7 +1051,7 @@ For an explanation on each of them, see
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-apiserver.*.priority:
@@ -867,7 +1075,7 @@ The order in which patches with the same priority are applied is undefined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager:
@@ -909,7 +1117,30 @@ for further information on how to configure.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.identifier:
+
+``yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.identifier``
+########################################################################
+
+An optional string that will be part of the patch's filename in order to
+quickly identify it.
+
+
+**Type:**::
+
+  string matching the pattern [a-z0-9-]*
+
+
+**Default:**::
+
+  ""
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.patch:
@@ -953,7 +1184,7 @@ to convert your existing patches to Nix.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.patchtype:
@@ -978,7 +1209,7 @@ For an explanation on each of them, see
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-controller-manager.*.priority:
@@ -1002,7 +1233,7 @@ The order in which patches with the same priority are applied is undefined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler:
@@ -1044,7 +1275,30 @@ for further information on how to configure.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.identifier:
+
+``yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.identifier``
+###############################################################
+
+An optional string that will be part of the patch's filename in order to
+quickly identify it.
+
+
+**Type:**::
+
+  string matching the pattern [a-z0-9-]*
+
+
+**Default:**::
+
+  ""
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.patch:
@@ -1088,7 +1342,7 @@ to convert your existing patches to Nix.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.patchtype:
@@ -1113,7 +1367,7 @@ For an explanation on each of them, see
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kube-scheduler.*.priority:
@@ -1137,7 +1391,7 @@ The order in which patches with the same priority are applied is undefined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration:
@@ -1179,7 +1433,30 @@ for further information on how to configure.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
+
+
+.. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.identifier:
+
+``yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.identifier``
+#####################################################################
+
+An optional string that will be part of the patch's filename in order to
+quickly identify it.
+
+
+**Type:**::
+
+  string matching the pattern [a-z0-9-]*
+
+
+**Default:**::
+
+  ""
+
+
+**Declared by**
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.patch:
@@ -1223,7 +1500,7 @@ to convert your existing patches to Nix.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.patchtype:
@@ -1248,7 +1525,7 @@ For an explanation on each of them, see
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
 .. _configuration-options.yk8s.kubernetes.kubeadm.patches.kubeletconfiguration.*.priority:
@@ -1272,15 +1549,20 @@ The order in which patches with the same priority are applied is undefined.
 
 
 **Declared by**
-https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm-patches.nix
+https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubeadm/patches.nix
 
 
-.. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions:
+.. _configuration-options.yk8s.kubernetes.kubelet.extraKubeletConfiguration:
 
-``yk8s.kubernetes.kubelet.defaultOptions``
-##########################################
+``yk8s.kubernetes.kubelet.extraKubeletConfiguration``
+#####################################################
 
-Default kubelet configuration applied to all nodes.
+Extra settings for the ``KubeletConfiguration`` of all nodes.
+
+They are merged into the settings that Tarook sets for all nodes
+(``containerRuntimeEndpoint`` pointing to containerd,
+``serializeImagePulls = false`` and ``maxParallelImagePulls = 3``)
+and take precedence.
 
 All options can be found in the official documentation:
 https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/#kubelet-config-k8s-io-v1beta1-KubeletConfiguration
@@ -1298,6 +1580,21 @@ or role:
 
   It is not validated whether the supplied configuration
   is a valid kubelet configuration.
+
+.. note::
+
+  The cluster-wide ``kubelet-config`` ConfigMap is only updated
+  after the kubelets were restarted successfully with the new options.
+  An entry removed from a map in ``extraKubeletConfiguration`` (e.g. from ``evictionHard``)
+  is therefore only removed from the nodes when
+  :ref:`actions-references.apply-k8s-coresh` runs a second time.
+
+  A top-level option removed from ``extraKubeletConfiguration`` (e.g. ``maxPods``)
+  stays in the ConfigMap and thus on the nodes.
+  To reset it, set it to its default value instead,
+  or remove it from the ConfigMap as well
+  (``kubectl -n kube-system edit configmap kubelet-config``)
+  and run :ref:`actions-references.apply-k8s-coresh` again.
 
 
 
@@ -1336,10 +1633,10 @@ or role:
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
 
 
-.. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions.evictionHard:
+.. _configuration-options.yk8s.kubernetes.kubelet.extraKubeletConfiguration.evictionHard:
 
-``yk8s.kubernetes.kubelet.defaultOptions.evictionHard``
-#######################################################
+``yk8s.kubernetes.kubelet.extraKubeletConfiguration.evictionHard``
+##################################################################
 
 A map of signal names to quantities that defines hard eviction thresholds. If unset, the kubeadm/kubelet default will be used.
 
@@ -1364,10 +1661,10 @@ A map of signal names to quantities that defines hard eviction thresholds. If un
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
 
 
-.. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions.evictionSoft:
+.. _configuration-options.yk8s.kubernetes.kubelet.extraKubeletConfiguration.evictionSoft:
 
-``yk8s.kubernetes.kubelet.defaultOptions.evictionSoft``
-#######################################################
+``yk8s.kubernetes.kubelet.extraKubeletConfiguration.evictionSoft``
+##################################################################
 
 A map of signal names to quantities that defines soft eviction thresholds. If unset, the kubeadm/kubelet default will be used.
 
@@ -1392,10 +1689,10 @@ A map of signal names to quantities that defines soft eviction thresholds. If un
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
 
 
-.. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions.evictionSoftGracePeriod:
+.. _configuration-options.yk8s.kubernetes.kubelet.extraKubeletConfiguration.evictionSoftGracePeriod:
 
-``yk8s.kubernetes.kubelet.defaultOptions.evictionSoftGracePeriod``
-##################################################################
+``yk8s.kubernetes.kubelet.extraKubeletConfiguration.evictionSoftGracePeriod``
+#############################################################################
 
 A map of signal names to quantities that defines grace periods for each soft eviction signal. If unset, the kubeadm/kubelet default will be used.
 
@@ -1420,10 +1717,10 @@ A map of signal names to quantities that defines grace periods for each soft evi
 https://gitlab.com/alasca.cloud/tarook/tarook/-/tree/devel/nix/yk8s/kubernetes/kubelet.nix
 
 
-.. _configuration-options.yk8s.kubernetes.kubelet.defaultOptions.maxPods:
+.. _configuration-options.yk8s.kubernetes.kubelet.extraKubeletConfiguration.maxPods:
 
-``yk8s.kubernetes.kubelet.defaultOptions.maxPods``
-##################################################
+``yk8s.kubernetes.kubelet.extraKubeletConfiguration.maxPods``
+#############################################################
 
 The maximum number of Pods that can run on this Kubelet. If unset, the kubeadm/kubelet default will be used.
 
